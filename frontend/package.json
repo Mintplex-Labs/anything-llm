@@ -1,0 +1,50 @@
+{
+  "name": "anything-llm-frontend",
+  "private": false,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "vite --open",
+    "build": "vite build",
+    "lint": "yarn prettier --write ./src",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "@metamask/jazzicon": "^2.0.0",
+    "@react-oauth/google": "^0.11.0",
+    "buffer": "^6.0.3",
+    "email-validator": "^2.0.4",
+    "he": "^1.2.0",
+    "js-file-download": "^0.4.12",
+    "moment-timezone": "^0.5.43",
+    "pluralize": "^8.0.0",
+    "react": "^18.2.0",
+    "react-confetti-explosion": "^2.1.2",
+    "react-device-detect": "^2.2.2",
+    "react-dom": "^18.2.0",
+    "react-drag-drop-files": "^2.3.7",
+    "react-feather": "^2.0.10",
+    "react-loading-skeleton": "^3.1.0",
+    "react-router-dom": "^6.3.0",
+    "react-type-animation": "^3.0.1",
+    "text-case": "^1.0.9",
+    "truncate": "^3.0.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-react": "^4.0.0-beta.0",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.38.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.3.4",
+    "postcss": "^8.4.23",
+    "prettier": "^2.4.1",
+    "rollup-plugin-visualizer": "^5.9.0",
+    "tailwindcss": "^3.3.1",
+    "vite": "^4.3.0"
+  }
+}

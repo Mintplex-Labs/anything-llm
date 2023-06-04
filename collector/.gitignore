@@ -1,0 +1,6 @@
+outputs/*/*.json
+hotdir/*
+hotdir/processed/*
+!hotdir/__HOTDIR__.md
+!hotdir/processed
+

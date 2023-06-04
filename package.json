@@ -1,0 +1,15 @@
+{
+  "name": "socials-to-chat",
+  "version": "1.0.0",
+  "description": "Turn creator socials into chatbots with long-term-memory though a simple UI",
+  "main": "index.js",
+  "author": "Timothy Carambat (Mintplex Labs)",
+  "license": "MIT",
+  "scripts": {
+    "setup": "cd server && yarn && cd .. && yarn setup:envs && echo \"Please run yarn dev:server and yarn dev:frontend in separate terminal tabs.\"",
+    "setup:envs": "cd server && cp -n .env.example .env.development && cd ../collector && cp -n .env.example .env && cd ..",
+    "dev:server": "cd server && yarn dev",
+    "dev:frontend": "cd frontend && yarn start"
+  },
+  "private": false
+}
