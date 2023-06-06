@@ -9,7 +9,8 @@ A full-stack application and tool suite that enables you to turn any document, r
 
 ### Watch the demo!
 
-_tbd_
+[![Watch the video](https://img.youtube.com/vi/0vZ69AIP_hM/maxresdefault.jpg)](https://youtu.be/0vZ69AIP_hM)
+
 
 ### Product Overview
 AnythingLLM aims to be a full-stack application where you can use commercial off-the-shelf LLMs with Long-term-memory solutions or use popular open source LLM and vectorDB solutions.
