@@ -9,7 +9,9 @@
     "setup": "cd server && yarn && cd .. && yarn setup:envs && echo \"Please run yarn dev:server and yarn dev:frontend in separate terminal tabs.\"",
     "setup:envs": "cd server && cp -n .env.example .env.development && cd ../collector && cp -n .env.example .env && cd ..",
     "dev:server": "cd server && yarn dev",
-    "dev:frontend": "cd frontend && yarn start"
+    "dev:frontend": "cd frontend && yarn start",
+    "prod:server": "cd server && yarn start",
+    "prod:frontend": "cd frontend && yarn start"
   },
   "private": false
 }
