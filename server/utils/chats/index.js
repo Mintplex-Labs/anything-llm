@@ -1,50 +1,49 @@
-const { v4: uuidv4 } = require('uuid');
-const { OpenAi } = require('../openAi');
-const { Pinecone } = require('../pinecone');
-const { WorkspaceChats } = require('../../models/workspaceChats');
+const { v4: uuidv4 } = require("uuid");
+const { OpenAi } = require("../openAi");
+const { WorkspaceChats } = require("../../models/workspaceChats");
 const { resetMemory } = require("./commands/reset");
-const moment = require('moment')
+const moment = require("moment");
+const { getVectorDbClass } = require("../helpers");
 
 function convertToChatHistory(history = []) {
-  const formattedHistory = []
+  const formattedHistory = [];
   history.forEach((history) => {
-    const { prompt, response, createdAt } = history
+    const { prompt, response, createdAt } = history;
     const data = JSON.parse(response);
     formattedHistory.push([
       {
-        role: 'user',
+        role: "user",
         content: prompt,
         sentAt: moment(createdAt).unix(),
       },
       {
-        role: 'assistant',
+        role: "assistant",
         content: data.text,
         sources: data.sources || [],
         sentAt: moment(createdAt).unix(),
       },
-    ])
-  })
+    ]);
+  });
 
-  return formattedHistory.flat()
+  return formattedHistory.flat();
 }
 
 function convertToPromptHistory(history = []) {
-  const formattedHistory = []
+  const formattedHistory = [];
   history.forEach((history) => {
-    const { prompt, response } = history
+    const { prompt, response } = history;
     const data = JSON.parse(response);
     formattedHistory.push([
-      { role: 'user', content: prompt },
-      { role: 'assistant', content: data.text },
-    ])
-  })
-  return formattedHistory.flat()
+      { role: "user", content: prompt },
+      { role: "assistant", content: data.text },
+    ]);
+  });
+  return formattedHistory.flat();
 }
-
 
 const VALID_COMMANDS = {
-  '/reset': resetMemory,
-}
+  "/reset": resetMemory,
+};
 
 function grepCommand(message) {
   const availableCommands = Object.keys(VALID_COMMANDS);
@@ -57,52 +56,63 @@ function grepCommand(message) {
     }
   }
 
-  return null
+  return null;
 }
 
-async function chatWithWorkspace(workspace, message, chatMode = 'query') {
+async function chatWithWorkspace(workspace, message, chatMode = "query") {
   const uuid = uuidv4();
   const openai = new OpenAi();
+  const VectorDb = getVectorDbClass();
+  const command = grepCommand(message);
 
-  const command = grepCommand(message)
   if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
     return await VALID_COMMANDS[command](workspace, message, uuid);
   }
 
-  const { safe, reasons = [] } = await openai.isSafe(message)
+  const { safe, reasons = [] } = await openai.isSafe(message);
   if (!safe) {
     return {
       id: uuid,
-      type: 'abort',
+      type: "abort",
       textResponse: null,
       sources: [],
       close: true,
-      error: `This message was moderated and will not be allowed. Violations for ${reasons.join(', ')} found.`
+      error: `This message was moderated and will not be allowed. Violations for ${reasons.join(
+        ", "
+      )} found.`,
     };
   }
 
-  const hasVectorizedSpace = await Pinecone.hasNamespace(workspace.slug);
+  const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   if (!hasVectorizedSpace) {
-    const rawHistory = await WorkspaceChats.forWorkspace(workspace.id)
+    const rawHistory = await WorkspaceChats.forWorkspace(workspace.id);
     const chatHistory = convertToPromptHistory(rawHistory);
     const response = await openai.sendChat(chatHistory, message);
-    const data = { text: response, sources: [], type: 'chat' }
+    const data = { text: response, sources: [], type: "chat" };
 
-    await WorkspaceChats.new({ workspaceId: workspace.id, prompt: message, response: data })
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: data,
+    });
     return {
       id: uuid,
-      type: 'textResponse',
+      type: "textResponse",
       textResponse: response,
       sources: [],
       close: true,
       error: null,
     };
   } else {
-    const { response, sources, message: error } = await Pinecone[chatMode]({ namespace: workspace.slug, input: message });
+    const {
+      response,
+      sources,
+      message: error,
+    } = await VectorDb[chatMode]({ namespace: workspace.slug, input: message });
     if (!response) {
       return {
         id: uuid,
-        type: 'abort',
+        type: "abort",
         textResponse: null,
         sources: [],
         close: true,
@@ -110,11 +120,15 @@ async function chatWithWorkspace(workspace, message, chatMode = 'query') {
       };
     }
 
-    const data = { text: response, sources, type: chatMode }
-    await WorkspaceChats.new({ workspaceId: workspace.id, prompt: message, response: data })
+    const data = { text: response, sources, type: chatMode };
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: data,
+    });
     return {
       id: uuid,
-      type: 'textResponse',
+      type: "textResponse",
       textResponse: response,
       sources,
       close: true,
@@ -124,5 +138,5 @@ async function chatWithWorkspace(workspace, message, chatMode = 'query') {
 }
 module.exports = {
   convertToChatHistory,
-  chatWithWorkspace
-}
+  chatWithWorkspace,
+};

@@ -10,17 +10,19 @@
     "node": ">=18.12.1"
   },
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --ignore documents index.js",
-    "start": "NODE_ENV=production node index.js"
+    "dev": "NODE_ENV=development nodemon --ignore documents --ignore vector-cache --trace-warnings index.js",
+    "start": "NODE_ENV=production node index.js",
+    "lint": "yarn prettier --write ./endpoints ./models ./utils index.js"
   },
   "dependencies": {
     "@googleapis/youtube": "^9.0.0",
     "@pinecone-database/pinecone": "^0.1.6",
     "body-parser": "^1.20.2",
+    "chromadb": "^1.5.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "langchain": "^0.0.81",
+    "langchain": "^0.0.90",
     "moment": "^2.29.4",
     "openai": "^3.2.1",
     "pinecone-client": "^1.1.0",
@@ -30,6 +32,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "prettier": "^2.4.1"
   }
 }

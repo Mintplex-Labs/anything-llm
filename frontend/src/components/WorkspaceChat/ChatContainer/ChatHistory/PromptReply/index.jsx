@@ -2,6 +2,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import Jazzicon from "../../../../UserIcon";
 import { decode as HTMLDecode } from "he";
+import { v4 } from "uuid";
 
 function PromptReply({
   uuid,
