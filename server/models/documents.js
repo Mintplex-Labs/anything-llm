@@ -19,7 +19,9 @@ const Document = {
     const { open } = require("sqlite");
 
     const db = await open({
-      filename: "anythingllm.db",
+      filename: `${
+        !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : ""
+      }anythingllm.db`,
       driver: sqlite3.Database,
     });
 

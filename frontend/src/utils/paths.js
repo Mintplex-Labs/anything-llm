@@ -3,13 +3,16 @@ export default {
     return "/";
   },
   github: () => {
-    return "/";
+    return "https://github.com/Mintplex-Labs/anything-llm";
   },
   docs: () => {
-    return "/";
+    return "https://discord.com/invite/6UyHPeGZAC";
   },
   mailToMintplex: () => {
     return "mailto:team@mintplex.xyz";
+  },
+  hosting: () => {
+    return "https://form.typeform.com/to/KdSCdSvq";
   },
   workspace: {
     chat: (slug) => {

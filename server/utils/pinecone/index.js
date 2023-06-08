@@ -2,49 +2,22 @@ const { PineconeClient } = require("@pinecone-database/pinecone");
 const { PineconeStore } = require("langchain/vectorstores/pinecone");
 const { OpenAI } = require("langchain/llms/openai");
 const { ChatOpenAI } = require("langchain/chat_models/openai");
-const {
-  VectorDBQAChain,
-  LLMChain,
-  RetrievalQAChain,
-  ConversationalRetrievalQAChain,
-} = require("langchain/chains");
+const { VectorDBQAChain, LLMChain } = require("langchain/chains");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
-const {
-  VectorStoreRetrieverMemory,
-  BufferMemory,
-} = require("langchain/memory");
+const { VectorStoreRetrieverMemory } = require("langchain/memory");
 const { PromptTemplate } = require("langchain/prompts");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../files");
 const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
-
-const toChunks = (arr, size) => {
-  return Array.from({ length: Math.ceil(arr.length / size) }, (_v, i) =>
-    arr.slice(i * size, i * size + size)
-  );
-};
-
-function curateSources(sources = []) {
-  const knownDocs = [];
-  const documents = [];
-  for (const source of sources) {
-    const { metadata = {} } = source;
-    if (
-      Object.keys(metadata).length > 0 &&
-      !knownDocs.includes(metadata.title)
-    ) {
-      documents.push({ ...metadata });
-      knownDocs.push(metadata.title);
-    }
-  }
-
-  return documents;
-}
+const { toChunks, curateSources } = require("../helpers");
 
 const Pinecone = {
-  name: 'Pinecone',
+  name: "Pinecone",
   connect: async function () {
+    if (process.env.VECTOR_DB !== "pinecone")
+      throw new Error("Pinecone::Invalid ENV settings");
+
     const client = new PineconeClient();
     await client.init({
       apiKey: process.env.PINECONE_API_KEY,
@@ -327,6 +300,4 @@ const Pinecone = {
   },
 };
 
-module.exports = {
-  Pinecone,
-};
+module.exports.Pinecone = Pinecone;

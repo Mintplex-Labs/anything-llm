@@ -6,16 +6,21 @@ function chatEndpoints(app) {
   if (!app) return;
 
   app.post("/workspace/:slug/chat", async (request, response) => {
-    const { slug } = request.params;
-    const { message, mode = "query" } = reqBody(request);
-    const workspace = await Workspace.get(`slug = '${slug}'`);
-    if (!workspace) {
-      response.sendStatus(400).end();
-      return;
-    }
+    try {
+      const { slug } = request.params;
+      const { message, mode = "query" } = reqBody(request);
+      const workspace = await Workspace.get(`slug = '${slug}'`);
+      if (!workspace) {
+        response.sendStatus(400).end();
+        return;
+      }
 
-    const result = await chatWithWorkspace(workspace, message, mode);
-    response.status(200).json({ ...result });
+      const result = await chatWithWorkspace(workspace, message, mode);
+      response.status(200).json({ ...result });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
   });
 }
 
