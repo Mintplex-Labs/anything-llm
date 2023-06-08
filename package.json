@@ -15,7 +15,7 @@
     "dev:server": "cd server && yarn dev",
     "dev:frontend": "cd frontend && yarn start",
     "prod:server": "cd server && yarn start",
-    "prod:frontend": "cd frontend && yarn start"
+    "prod:frontend": "cd frontend && yarn build"
   },
   "private": false
 }
