@@ -5,6 +5,9 @@
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "lint": "cd server && yarn lint && cd .. && cd frontend && yarn lint",
     "setup": "cd server && yarn && cd .. && yarn setup:envs && echo \"Please run yarn dev:server and yarn dev:frontend in separate terminal tabs.\"",
