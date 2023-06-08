@@ -74,20 +74,38 @@ export default function KeysModal({ hideModal = noop }) {
                 />
                 <div className="h-[2px] w-full bg-gray-200 dark:bg-stone-600" />
                 <ShowKey
-                  name="Pinecone DB API Key"
-                  value={settings?.PineConeKey ? "*".repeat(20) : ""}
-                  valid={!!settings?.PineConeKey}
+                  name="Vector DB Choice"
+                  value={settings?.VectorDB}
+                  valid={!!settings?.VectorDB}
                 />
-                <ShowKey
-                  name="Pinecone DB Environment"
-                  value={settings?.PineConeEnvironment}
-                  valid={!!settings?.PineConeEnvironment}
-                />
-                <ShowKey
-                  name="Pinecone DB Index"
-                  value={settings?.PinceConeIndex}
-                  valid={!!settings?.PinceConeIndex}
-                />
+                {settings?.VectorDB === "pinecone" && (
+                  <>
+                    <ShowKey
+                      name="Pinecone DB API Key"
+                      value={settings?.PineConeKey ? "*".repeat(20) : ""}
+                      valid={!!settings?.PineConeKey}
+                    />
+                    <ShowKey
+                      name="Pinecone DB Environment"
+                      value={settings?.PineConeEnvironment}
+                      valid={!!settings?.PineConeEnvironment}
+                    />
+                    <ShowKey
+                      name="Pinecone DB Index"
+                      value={settings?.PineConeIndex}
+                      valid={!!settings?.PineConeIndex}
+                    />
+                  </>
+                )}
+                {settings?.VectorDB === "chroma" && (
+                  <>
+                    <ShowKey
+                      name="Chroma Endpoint"
+                      value={settings?.ChromaEndpoint}
+                      valid={!!settings?.ChromaEndpoint}
+                    />
+                  </>
+                )}
               </div>
             )}
           </div>

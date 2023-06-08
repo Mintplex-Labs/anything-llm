@@ -16,9 +16,8 @@ export default function DefaultChatContainer() {
   const MESSAGES = [
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${
-          popMsg ? "chat__message" : ""
-        }`}
+        className={`flex w-full mt-2 justify-start ${popMsg ? "chat__message" : ""
+          }`}
       >
         <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -34,9 +33,8 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${
-          popMsg ? "chat__message" : ""
-        }`}
+        className={`flex w-full mt-2 justify-start ${popMsg ? "chat__message" : ""
+          }`}
       >
         <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -51,17 +49,16 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${
-          popMsg ? "chat__message" : ""
-        }`}
+        className={`flex w-full mt-2 justify-start ${popMsg ? "chat__message" : ""
+          }`}
       >
         <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
             AnythingLLM can run totally locally on your machine with little
             overhead you wont even notice it's there! No GPU needed. Cloud and
-            on-premises installtion is available as well.
+            on-premises installation is available as well.
             <br />
-            The AI tooling ecosytem gets more powerful everyday. AnythingLLM
+            The AI tooling ecosystem gets more powerful everyday. AnythingLLM
             makes it easy to use.
           </p>
           <a
@@ -79,9 +76,8 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-end ${
-          popMsg ? "chat__message" : ""
-        }`}
+        className={`flex w-full mt-2 justify-end ${popMsg ? "chat__message" : ""
+          }`}
       >
         <div className="p-4 max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -93,9 +89,8 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${
-          popMsg ? "chat__message" : ""
-        }`}
+        className={`flex w-full mt-2 justify-start ${popMsg ? "chat__message" : ""
+          }`}
       >
         <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -122,14 +117,13 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-end ${
-          popMsg ? "chat__message" : ""
-        }`}
+        className={`flex w-full mt-2 justify-end ${popMsg ? "chat__message" : ""
+          }`}
       >
         <div className="p-4 max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
             Is this like an AI dropbox or something? What about chatting? It is
-            a chatbot isnt it?
+            a chatbot isn't it?
           </p>
         </div>
       </div>
@@ -137,9 +131,8 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${
-          popMsg ? "chat__message" : ""
-        }`}
+        className={`flex w-full mt-2 justify-start ${popMsg ? "chat__message" : ""
+          }`}
       >
         <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -168,9 +161,8 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-end ${
-          popMsg ? "chat__message" : ""
-        }`}
+        className={`flex w-full mt-2 justify-end ${popMsg ? "chat__message" : ""
+          }`}
       >
         <div className="p-4 max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -182,9 +174,8 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${
-          popMsg ? "chat__message" : ""
-        }`}
+        className={`flex w-full mt-2 justify-start ${popMsg ? "chat__message" : ""
+          }`}
       >
         <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">

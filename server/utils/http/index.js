@@ -1,5 +1,5 @@
 function reqBody(request) {
-  return typeof request.body === 'string'
+  return typeof request.body === "string"
     ? JSON.parse(request.body)
     : request.body;
 }
