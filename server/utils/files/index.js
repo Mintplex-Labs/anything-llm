@@ -4,7 +4,11 @@ const { v5: uuidv5 } = require("uuid");
 
 async function collectDocumentData(folderName = null) {
   if (!folderName) throw new Error("No docPath provided in request");
-  const folder = path.resolve(__dirname, `../../documents/${folderName}`);
+  const folder =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, `../../documents/${folderName}`)
+      : path.resolve(process.env.STORAGE_DIR, `documents/${folderName}`);
+
   const dirExists = fs.existsSync(folder);
   if (!dirExists)
     throw new Error(
@@ -28,7 +32,11 @@ async function collectDocumentData(folderName = null) {
 // eg: youtube-subject/video-123.json
 async function fileData(filePath = null) {
   if (!filePath) throw new Error("No docPath provided in request");
-  const fullPath = path.resolve(__dirname, `../../documents/${filePath}`);
+
+  const fullPath =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, `../../documents/${filePath}`)
+      : path.resolve(process.env.STORAGE_DIR, `documents/${filePath}`);
   const fileExists = fs.existsSync(fullPath);
   if (!fileExists) return null;
 
@@ -37,9 +45,12 @@ async function fileData(filePath = null) {
 }
 
 async function viewLocalFiles() {
-  const folder = path.resolve(__dirname, `../../documents`);
+  const folder =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, `../../documents`)
+      : path.resolve(process.env.STORAGE_DIR, `documents`);
   const dirExists = fs.existsSync(folder);
-  if (!dirExists) return {};
+  if (!dirExists) fs.mkdirSync(folder);
 
   const directory = {
     name: "documents",
@@ -49,7 +60,12 @@ async function viewLocalFiles() {
 
   for (const file of fs.readdirSync(folder)) {
     if (path.extname(file) === ".md") continue;
-    const folderPath = path.resolve(__dirname, `../../documents/${file}`);
+
+    const folderPath =
+      process.env.NODE_ENV === "development"
+        ? path.resolve(__dirname, `../../documents/${file}`)
+        : path.resolve(process.env.STORAGE_DIR, `documents/${file}`);
+
     const isFolder = fs.lstatSync(folderPath).isDirectory();
     if (isFolder) {
       const subdocs = {
@@ -88,7 +104,10 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
   if (!filename) return checkOnly ? false : { exists: false, chunks: [] };
 
   const digest = uuidv5(filename, uuidv5.URL);
-  const file = path.resolve(__dirname, `../../vector-cache/${digest}.json`);
+  const file =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, `../../vector-cache/${digest}.json`)
+      : path.resolve(process.env.STORAGE_DIR, `vector-cache/${digest}.json`);
   const exists = fs.existsSync(file);
 
   if (checkOnly) return exists;
@@ -109,7 +128,10 @@ async function storeVectorResult(vectorData = [], filename = null) {
   console.log(
     `Caching vectorized results of ${filename} to prevent duplicated embedding.`
   );
-  const folder = path.resolve(__dirname, `../../vector-cache`);
+  const folder =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, `../../vector-cache`)
+      : path.resolve(process.env.STORAGE_DIR, `vector-cache`);
 
   if (!fs.existsSync(folder)) fs.mkdirSync(folder);
 
