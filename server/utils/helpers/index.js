@@ -1,5 +1,6 @@
 const { Pinecone } = require("../pinecone");
 const { Chroma } = require("../chroma");
+const { LanceDb } = require('../lancedb');
 
 function getVectorDbClass() {
   const vectorSelection = process.env.VECTOR_DB || "pinecone";
@@ -8,6 +9,8 @@ function getVectorDbClass() {
       return Pinecone;
     case "chroma":
       return Chroma;
+    case "lancedb":
+      return LanceDb
     default:
       return Pinecone;
   }
