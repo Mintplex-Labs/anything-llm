@@ -80,7 +80,8 @@ export default function Sidebar() {
                   <IndexCount />
                 </div>
                 <a
-                  href=""
+                  href={paths.hosting()}
+                  target="_blank"
                   className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
                 >
                   <Cpu className="h-4 w-4" />
@@ -89,12 +90,13 @@ export default function Sidebar() {
                   </p>
                 </a>
                 <a
-                  href=""
+                  href={paths.hosting()}
+                  target="_blank"
                   className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100  dark:bg-stone-800 dark:hover:bg-stone-900"
                 >
                   <Briefcase className="h-4 w-4" />
                   <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                    Enterpise Installation
+                    Enterprise Installation
                   </p>
                 </a>
               </div>

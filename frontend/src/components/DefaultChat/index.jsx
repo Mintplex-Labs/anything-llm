@@ -3,6 +3,7 @@ import { GitHub, GitMerge, Mail, Plus } from "react-feather";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
+import paths from "../../utils/paths";
 
 export default function DefaultChatContainer() {
   const [mockMsgs, setMockMessages] = useState([]);
@@ -65,7 +66,8 @@ export default function DefaultChatContainer() {
             makes it easy to use.
           </p>
           <a
-            href=""
+            href={paths.github()}
+            target="_blank"
             className="mt-4 w-fit flex flex-grow gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900 dark:bg-stone-900"
           >
             <GitMerge className="h-4 w-4" />
@@ -192,7 +194,8 @@ export default function DefaultChatContainer() {
           </p>
           <div className="flex items-center gap-x-4">
             <a
-              href=""
+              href={paths.github()}
+              target="_blank"
               className="mt-4 w-fit flex flex-grow gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900 dark:bg-stone-900"
             >
               <GitHub className="h-4 w-4" />
@@ -201,7 +204,7 @@ export default function DefaultChatContainer() {
               </p>
             </a>
             <a
-              href=""
+              href={paths.mailToMintplex()}
               className="mt-4 w-fit flex flex-grow gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900 dark:bg-stone-900"
             >
               <Mail className="h-4 w-4" />
