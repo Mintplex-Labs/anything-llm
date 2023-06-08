@@ -1,4 +1,7 @@
-if (process.env.NODE_ENV === 'development') require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
+process.env.NODE_ENV === "development"
+  ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
+  : require("dotenv").config();
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -25,26 +28,31 @@ workspaceEndpoints(app);
 chatEndpoints(app);
 
 app.post("/v/:command", async (request, response) => {
-  const VectorDb = getVectorDbClass();
-  const { command } = request.params;
-  if (!Object.getOwnPropertyNames(VectorDb).includes(command)) {
-    response.status(500).json({
-      message: "invalid interface command",
-      commands: Object.getOwnPropertyNames(VectorDb),
-    });
-    return;
-  }
-
   try {
-    const body = reqBody(request);
-    const resBody = await VectorDb[command](body);
-    response.status(200).json({ ...resBody });
+    const VectorDb = getVectorDbClass();
+    const { command } = request.params;
+    if (!Object.getOwnPropertyNames(VectorDb).includes(command)) {
+      response.status(500).json({
+        message: "invalid interface command",
+        commands: Object.getOwnPropertyNames(VectorDb),
+      });
+      return;
+    }
+
+    try {
+      const body = reqBody(request);
+      const resBody = await VectorDb[command](body);
+      response.status(200).json({ ...resBody });
+    } catch (e) {
+      // console.error(e)
+      console.error(JSON.stringify(e));
+      response.status(500).json({ error: e.message });
+    }
+    return;
   } catch (e) {
-    // console.error(e)
-    console.error(JSON.stringify(e));
-    response.status(500).json({ error: e.message });
+    console.log(e.message, e);
+    response.sendStatus(500).end();
   }
-  return;
 });
 
 app.all("*", function (_, response) {

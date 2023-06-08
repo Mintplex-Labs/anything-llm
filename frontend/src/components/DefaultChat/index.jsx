@@ -16,8 +16,9 @@ export default function DefaultChatContainer() {
   const MESSAGES = [
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${popMsg ? "chat__message" : ""
-          }`}
+        className={`flex w-full mt-2 justify-start ${
+          popMsg ? "chat__message" : ""
+        }`}
       >
         <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -33,8 +34,9 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${popMsg ? "chat__message" : ""
-          }`}
+        className={`flex w-full mt-2 justify-start ${
+          popMsg ? "chat__message" : ""
+        }`}
       >
         <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -49,8 +51,9 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${popMsg ? "chat__message" : ""
-          }`}
+        className={`flex w-full mt-2 justify-start ${
+          popMsg ? "chat__message" : ""
+        }`}
       >
         <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -76,8 +79,9 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-end ${popMsg ? "chat__message" : ""
-          }`}
+        className={`flex w-full mt-2 justify-end ${
+          popMsg ? "chat__message" : ""
+        }`}
       >
         <div className="p-4 max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -89,8 +93,9 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${popMsg ? "chat__message" : ""
-          }`}
+        className={`flex w-full mt-2 justify-start ${
+          popMsg ? "chat__message" : ""
+        }`}
       >
         <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -117,8 +122,9 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-end ${popMsg ? "chat__message" : ""
-          }`}
+        className={`flex w-full mt-2 justify-end ${
+          popMsg ? "chat__message" : ""
+        }`}
       >
         <div className="p-4 max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -131,8 +137,9 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${popMsg ? "chat__message" : ""
-          }`}
+        className={`flex w-full mt-2 justify-start ${
+          popMsg ? "chat__message" : ""
+        }`}
       >
         <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -161,8 +168,9 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-end ${popMsg ? "chat__message" : ""
-          }`}
+        className={`flex w-full mt-2 justify-end ${
+          popMsg ? "chat__message" : ""
+        }`}
       >
         <div className="p-4 max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
@@ -174,8 +182,9 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${popMsg ? "chat__message" : ""
-          }`}
+        className={`flex w-full mt-2 justify-start ${
+          popMsg ? "chat__message" : ""
+        }`}
       >
         <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
           <p className="text-slate-800 dark:text-slate-200 font-semibold">
