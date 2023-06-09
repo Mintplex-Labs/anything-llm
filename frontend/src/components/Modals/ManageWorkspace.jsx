@@ -14,6 +14,7 @@ import { nFormatter } from "../../utils/numbers";
 import { dollarFormat } from "../../utils/numbers";
 import paths from "../../utils/paths";
 import { useParams } from "react-router-dom";
+import { titleCase } from "text-case";
 
 const noop = () => false;
 export default function ManageWorkspace({ hideModal = noop, workspace }) {
@@ -24,15 +25,19 @@ export default function ManageWorkspace({ hideModal = noop, workspace }) {
   const [directories, setDirectories] = useState(null);
   const [originalDocuments, setOriginalDocuments] = useState([]);
   const [selectedFiles, setSelectFiles] = useState([]);
+  const [vectordb, setVectorDB] = useState(null);
+  const [showingNoRemovalModal, setShowingNoRemovalModal] = useState(false);
 
   useEffect(() => {
     async function fetchKeys() {
       const _workspace = await Workspace.bySlug(workspace.slug);
       const localFiles = await System.localFiles();
+      const settings = await System.keys();
       const originalDocs = _workspace.documents.map((doc) => doc.docpath) || [];
       setDirectories(localFiles);
       setOriginalDocuments([...originalDocs]);
       setSelectFiles([...originalDocs]);
+      setVectorDB(settings?.VectorDB);
       setLoading(false);
     }
     fetchKeys();
@@ -97,11 +102,25 @@ export default function ManageWorkspace({ hideModal = noop, workspace }) {
       : selectedFiles.some((doc) => doc.includes(filepath));
   };
 
+  const isOriginalDoc = (filepath) => {
+    const isFolder = !filepath.includes("/");
+    return isFolder
+      ? originalDocuments.some((doc) => doc.includes(filepath.split("/")[0]))
+      : originalDocuments.some((doc) => doc.includes(filepath));
+  };
+
   const toggleSelection = (filepath) => {
     const isFolder = !filepath.includes("/");
     const parent = isFolder ? filepath : filepath.split("/")[0];
 
     if (isSelected(filepath)) {
+      // Certain vector DBs do not contain the ability to delete vectors
+      // so we cannot remove from these. The user will have to clear the entire workspace.
+      if (["lancedb"].includes(vectordb) && isOriginalDoc(filepath)) {
+        setShowingNoRemovalModal(true);
+        return false;
+      }
+
       const updatedDocs = isFolder
         ? selectedFiles.filter((doc) => !doc.includes(parent))
         : selectedFiles.filter((doc) => !doc.includes(filepath));
@@ -166,6 +185,12 @@ export default function ManageWorkspace({ hideModal = noop, workspace }) {
           hideConfirm={() => setShowConfirmation(false)}
           additions={docChanges().adds}
           updateWorkspace={updateWorkspace}
+        />
+      )}
+      {showingNoRemovalModal && (
+        <CannotRemoveModal
+          hideModal={() => setShowingNoRemovalModal(false)}
+          vectordb={vectordb}
         />
       )}
       <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-black bg-opacity-50 flex items-center justify-center">
@@ -455,6 +480,42 @@ function ConfirmationModal({
               className="border border-gray-800 text-gray-800 hover:bg-gray-100 px-4 py-1 rounded-lg dark:text-slate-200 dark:border-slate-200 dark:hover:bg-stone-900"
             >
               Continue
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  );
+}
+
+function CannotRemoveModal({ hideModal, vectordb }) {
+  return (
+    <dialog
+      open={true}
+      style={{ zIndex: 100 }}
+      className="fixed top-0 flex bg-black bg-opacity-50 w-[100vw] h-full items-center justify-center "
+    >
+      <div className="px-10 p-4 w-1/2 rounded-lg bg-white shadow dark:bg-stone-700 text-black dark:text-slate-200">
+        <div className="flex flex-col w-full">
+          <p className="text-lg font-semibold text-red-500">
+            You cannot remove this document!
+          </p>
+
+          <div className="flex flex-col gap-y-1">
+            <p className="text-base mt-4">
+              {titleCase(vectordb)} does not support atomic removal of
+              documents.
+              <br />
+              Unfortunately, you will have to delete the entire workspace to
+              remove this document from being referenced.
+            </p>
+          </div>
+          <div className="flex w-full justify-center items-center mt-4">
+            <button
+              onClick={hideModal}
+              className="text-gray-800 hover:bg-gray-100 px-4 py-1 rounded-lg dark:text-slate-200 dark:hover:bg-stone-900"
+            >
+              I Understand
             </button>
           </div>
         </div>

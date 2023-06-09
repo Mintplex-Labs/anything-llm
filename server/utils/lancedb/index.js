@@ -101,6 +101,12 @@ const LanceDb = {
     fs.rm(`${client.uri}/${namespace}.lance`, { recursive: true }, () => null);
     return true;
   },
+  deleteDocumentFromNamespace: async function (_namespace, _docId) {
+    console.error(
+      `LanceDB:deleteDocumentFromNamespace - unsupported operation. No changes made to vector db.`
+    );
+    return false;
+  },
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
