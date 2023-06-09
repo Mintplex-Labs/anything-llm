@@ -5,3 +5,4 @@ vector-cache/*.json
 !documents/DOCUMENTS.md
 logs/server.log
 *.db
+lancedb

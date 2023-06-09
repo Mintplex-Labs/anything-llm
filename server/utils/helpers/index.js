@@ -1,8 +1,7 @@
-
 function getVectorDbClass() {
   const { Pinecone } = require("../pinecone");
   const { Chroma } = require("../chroma");
-  const { LanceDb } = require('../lancedb');
+  const { LanceDb } = require("../lancedb");
 
   const vectorSelection = process.env.VECTOR_DB || "pinecone";
   switch (vectorSelection) {
@@ -11,7 +10,7 @@ function getVectorDbClass() {
     case "chroma":
       return Chroma;
     case "lancedb":
-      return LanceDb
+      return LanceDb;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
   }

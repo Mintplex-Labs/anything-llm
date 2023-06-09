@@ -65,14 +65,6 @@ const Chroma = {
       modelName: model,
     });
   },
-  chatLLM: function () {
-    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
-    return new ChatOpenAI({
-      openAIApiKey: process.env.OPEN_AI_KEY,
-      temperature: 0.7,
-      modelName: model,
-    });
-  },
   embedChunk: async function (openai, textChunk) {
     const {
       data: { data },
@@ -273,16 +265,6 @@ const Chroma = {
         message: "Invalid query - no documents found for workspace!",
       };
     }
-
-    // const collection = await client.getCollection({ name: namespace, embeddingFunction: this.embeddingFunc() })
-    // const results = await collection.get({
-    //   where: {
-    //     description: 'a custom file uploaded by the user.'
-    //   },
-    //   includes: ['ids']
-    // })
-    // console.log(results)
-    // return { response: null, sources: [], }
 
     const vectorStore = await ChromaStore.fromExistingCollection(
       this.embedder(),
