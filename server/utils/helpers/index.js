@@ -1,7 +1,7 @@
 function getVectorDbClass() {
-  const { Pinecone } = require("../pinecone");
-  const { Chroma } = require("../chroma");
-  const { LanceDb } = require("../lancedb");
+  const { Pinecone } = require("../vectorDbProviders/pinecone");
+  const { Chroma } = require("../vectorDbProviders/chroma");
+  const { LanceDb } = require("../vectorDbProviders/lance");
 
   const vectorSelection = process.env.VECTOR_DB || "pinecone";
   switch (vectorSelection) {

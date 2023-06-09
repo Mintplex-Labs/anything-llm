@@ -1,8 +1,8 @@
 const lancedb = require("vectordb");
-const { toChunks } = require("../helpers");
+const { toChunks } = require("../../helpers");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
-const { storeVectorResult, cachedVectorInformation } = require("../files");
+const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
 
@@ -126,7 +126,7 @@ const LanceDb = {
     documentData = {},
     fullFilePath = null
   ) {
-    const { DocumentVectors } = require("../../models/vectors");
+    const { DocumentVectors } = require("../../../models/vectors");
     try {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;

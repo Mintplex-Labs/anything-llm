@@ -5,10 +5,10 @@ const { ChatOpenAI } = require("langchain/chat_models/openai");
 const { VectorDBQAChain } = require("langchain/chains");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
-const { storeVectorResult, cachedVectorInformation } = require("../files");
+const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
-const { toChunks, curateSources } = require("../helpers");
+const { toChunks, curateSources } = require("../../helpers");
 
 const Chroma = {
   name: "Chroma",
@@ -112,7 +112,7 @@ const Chroma = {
     documentData = {},
     fullFilePath = null
   ) {
-    const { DocumentVectors } = require("../../models/vectors");
+    const { DocumentVectors } = require("../../../models/vectors");
     try {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
@@ -235,7 +235,7 @@ const Chroma = {
     }
   },
   deleteDocumentFromNamespace: async function (namespace, docId) {
-    const { DocumentVectors } = require("../../models/vectors");
+    const { DocumentVectors } = require("../../../models/vectors");
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) return;
     const collection = await client.getCollection({
