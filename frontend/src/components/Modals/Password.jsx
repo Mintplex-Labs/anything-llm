@@ -88,7 +88,9 @@ export function usePasswordModal() {
       if (import.meta.env.DEV) {
         setRequiresAuth(false);
       } else {
-        const currentToken = window.localStorage.getItem("anythingllm_authtoken");
+        const currentToken = window.localStorage.getItem(
+          "anythingllm_authtoken"
+        );
         const settings = await System.keys();
         const requiresAuth = settings?.RequiresAuth || false;
 
