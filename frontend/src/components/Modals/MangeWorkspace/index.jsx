@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X } from 'react-feather';
+import { X } from "react-feather";
 import System from "../../../models/system";
 import Workspace from "../../../models/workspace";
 import paths from "../../../utils/paths";
@@ -18,7 +18,7 @@ export default function ManageWorkspace({ hideModal = noop, workspace }) {
   const [originalDocuments, setOriginalDocuments] = useState([]);
   const [selectedFiles, setSelectFiles] = useState([]);
   const [vectordb, setVectorDB] = useState(null);
-  const [showingNoRemovalModal, setShowingNoRemovalModal] = useState(false)
+  const [showingNoRemovalModal, setShowingNoRemovalModal] = useState(false);
 
   useEffect(() => {
     async function fetchKeys() {
@@ -29,7 +29,7 @@ export default function ManageWorkspace({ hideModal = noop, workspace }) {
       setDirectories(localFiles);
       setOriginalDocuments([...originalDocs]);
       setSelectFiles([...originalDocs]);
-      setVectorDB(settings?.VectorDB)
+      setVectorDB(settings?.VectorDB);
       setLoading(false);
     }
     fetchKeys();
@@ -99,7 +99,7 @@ export default function ManageWorkspace({ hideModal = noop, workspace }) {
     return isFolder
       ? originalDocuments.some((doc) => doc.includes(filepath.split("/")[0]))
       : originalDocuments.some((doc) => doc.includes(filepath));
-  }
+  };
 
   const toggleSelection = (filepath) => {
     const isFolder = !filepath.includes("/");
@@ -108,7 +108,7 @@ export default function ManageWorkspace({ hideModal = noop, workspace }) {
     if (isSelected(filepath)) {
       // Certain vector DBs do not contain the ability to delete vectors
       // so we cannot remove from these. The user will have to clear the entire workspace.
-      if (['lancedb'].includes(vectordb) && isOriginalDoc(filepath)) {
+      if (["lancedb"].includes(vectordb) && isOriginalDoc(filepath)) {
         setShowingNoRemovalModal(true);
         return false;
       }

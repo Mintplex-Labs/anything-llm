@@ -1,10 +1,7 @@
 import React from "react";
 import { titleCase } from "text-case";
 
-export default function CannotRemoveModal({
-  hideModal,
-  vectordb,
-}) {
+export default function CannotRemoveModal({ hideModal, vectordb }) {
   return (
     <dialog
       open={true}
@@ -19,7 +16,11 @@ export default function CannotRemoveModal({
 
           <div className="flex flex-col gap-y-1">
             <p className="text-base mt-4">
-              {titleCase(vectordb)} does not support atomic removal of documents.<br />Unfortunately, you will have to delete the entire workspace to remove this document from being referenced.
+              {titleCase(vectordb)} does not support atomic removal of
+              documents.
+              <br />
+              Unfortunately, you will have to delete the entire workspace to
+              remove this document from being referenced.
             </p>
           </div>
           <div className="flex w-full justify-center items-center mt-4">

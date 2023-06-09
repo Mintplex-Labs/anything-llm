@@ -1,6 +1,13 @@
+const { decodeJWT } = require("../http");
+
 function validatedRequest(request, response, next) {
   // When in development passthrough auth token for ease of development.
-  if (process.env.NODE_ENV === "development" || !process.env.AUTH_TOKEN) {
+  // Or if the user simply did not set an Auth token or JWT Secret
+  if (
+    process.env.NODE_ENV === "development" ||
+    !process.env.AUTH_TOKEN ||
+    !process.env.JWT_SECRET
+  ) {
     next();
     return;
   }
@@ -22,7 +29,8 @@ function validatedRequest(request, response, next) {
     return;
   }
 
-  if (token !== process.env.AUTH_TOKEN) {
+  const { p } = decodeJWT(token);
+  if (p !== process.env.AUTH_TOKEN) {
     response.status(403).json({
       error: "Invalid auth token found.",
     });
