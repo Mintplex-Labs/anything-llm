@@ -85,34 +85,32 @@ export function usePasswordModal() {
   useEffect(() => {
     async function checkAuthReq() {
       if (!window) return;
-      // if (import.meta.env.DEV) {
-      //   setRequiresAuth(false);
-      // } else {
-      const currentToken = window.localStorage.getItem("anythingllm_authtoken");
-      const settings = await System.keys();
-      const requiresAuth = settings?.RequiresAuth || false;
+      if (import.meta.env.DEV) {
+        setRequiresAuth(false);
+      } else {
+        const currentToken = window.localStorage.getItem("anythingllm_authtoken");
+        const settings = await System.keys();
+        const requiresAuth = settings?.RequiresAuth || false;
 
-      // If Auth is disabled - skip check
-      if (!requiresAuth) {
-        setRequiresAuth(requiresAuth);
-        return;
-      }
-
-      if (!!currentToken) {
-        const valid = await System.checkAuth(currentToken);
-        if (!valid) {
-          setRequiresAuth(true);
-          window.localStorage.removeItem("anythingllm_authtoken");
-          return;
-        } else {
-          setRequiresAuth(false);
+        // If Auth is disabled - skip check
+        if (!requiresAuth) {
+          setRequiresAuth(requiresAuth);
           return;
         }
+
+        if (!!currentToken) {
+          const valid = await System.checkAuth(currentToken);
+          if (!valid) {
+            setRequiresAuth(true);
+            window.localStorage.removeItem("anythingllm_authtoken");
+            return;
+          } else {
+            setRequiresAuth(false);
+            return;
+          }
+        }
+        setRequiresAuth(true);
       }
-
-      setRequiresAuth(true);
-
-      // }
     }
     checkAuthReq();
   }, []);
