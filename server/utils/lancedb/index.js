@@ -8,7 +8,22 @@ const { v4: uuidv4 } = require("uuid");
 
 // Since we roll our own results for prompting we
 // have to manually curate sources as well.
-function curateSources(results = []) {}
+function curateLanceSources(sources = []) {
+  const knownDocs = [];
+  const documents = [];
+  for (const source of sources) {
+    const { text: _t, vector: _v, score: _s, ...metadata } = source;
+    if (
+      Object.keys(metadata).length > 0 &&
+      !knownDocs.includes(metadata.title)
+    ) {
+      documents.push({ ...metadata });
+      knownDocs.push(metadata.title);
+    }
+  }
+
+  return documents;
+}
 
 const LanceDb = {
   uri: `${
@@ -218,7 +233,7 @@ const LanceDb = {
     const collection = await client.openTable(namespace);
     const relevantResults = await collection
       .search(queryVector)
-      .metric("cosine")
+      .metricType("cosine")
       .limit(2)
       .execute();
     const messages = [
@@ -231,10 +246,11 @@ const LanceDb = {
       { role: "user", content: input },
     ];
     const responseText = await this.getChatCompletion(this.openai(), messages);
+
     return {
       response: responseText,
-      sources: curateSources(relevantResults),
-      message: "tmp",
+      sources: curateLanceSources(relevantResults),
+      message: false,
     };
   },
   "namespace-stats": async function (reqBody = {}) {
