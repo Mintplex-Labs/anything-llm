@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X } from "react-feather";
+import { AlertCircle, X } from "react-feather";
 import System from "../../models/system";
 
 const noop = () => false;
@@ -16,8 +16,6 @@ export default function KeysModal({ hideModal = noop }) {
     fetchKeys();
   }, []);
 
-  const allSettingsValid =
-    !!settings && Object.values(settings).every((val) => !!val);
   return (
     <div class="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-black bg-opacity-50 flex items-center justify-center">
       <div
@@ -48,20 +46,13 @@ export default function KeysModal({ hideModal = noop }) {
               </div>
             ) : (
               <div className="w-full flex flex-col gap-y-4">
-                {allSettingsValid ? (
-                  <div className="bg-green-300 p-4 rounded-lg border border-green-600 text-green-700 w-full">
-                    <p>All system settings are defined. You are good to go!</p>
-                  </div>
-                ) : (
-                  <div className="bg-red-300 p-4 rounded-lg border border-red-600 text-red-700 w-full text-sm">
-                    <p>
-                      ENV setttings are missing - this software will not
-                      function fully.
-                      <br />
-                      After updating restart the server.
-                    </p>
-                  </div>
-                )}
+                <div className="bg-orange-300 p-4 rounded-lg border border-orange-600 text-orange-700 w-full items-center flex gap-x-2">
+                  <AlertCircle className="h-8 w-8" />
+                  <p>
+                    Ensure all fields are green before attempting to use
+                    AnythingLLM or it may not function as expected!
+                  </p>
+                </div>
                 <ShowKey
                   name="OpenAI API Key"
                   value={settings?.OpenAiKey ? "*".repeat(20) : ""}

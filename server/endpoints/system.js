@@ -48,13 +48,11 @@ function systemEndpoints(app) {
     try {
       const { password } = reqBody(request);
       if (password !== process.env.AUTH_TOKEN) {
-        response
-          .status(402)
-          .json({
-            valid: false,
-            token: null,
-            message: "Invalid password provided",
-          });
+        response.status(402).json({
+          valid: false,
+          token: null,
+          message: "Invalid password provided",
+        });
         return;
       }
 

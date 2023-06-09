@@ -5,9 +5,11 @@
 ### How to get started
 
 **Requirements**
+
 - Pinecone account (free or paid)
 
 **Instructions**
+
 - Create an index on your Pinecone account. Name can be anything eg: `my-primary-index`
 - Metric `cosine`
 - Dimensions `1536` since we use OpenAI for embeddings
