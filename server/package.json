@@ -1,6 +1,6 @@
 {
-  "name": "socials-to-chat-server",
-  "version": "1.0.0",
+  "name": "anything-llm-server",
+  "version": "0.0.1-beta",
   "description": "Server endpoints to process or create content for chatting",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",

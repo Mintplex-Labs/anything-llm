@@ -1,7 +1,7 @@
 {
-  "name": "socials-to-chat",
-  "version": "1.0.0",
-  "description": "Turn creator socials into chatbots with long-term-memory though a simple UI",
+  "name": "anything-llm",
+  "version": "0.0.1-beta",
+  "description": "Turn anything into a chattable document through a simple UI",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
