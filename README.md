@@ -2,7 +2,8 @@
 
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/tim.svg?style=social&label=Follow%20%40Timothy%20Carambat)](https://twitter.com/tcarambat) [![](https://dcbadge.vercel.app/api/server/6UyHPeGZAC?compact=true&style=flat)](https://discord.gg/6UyHPeGZAC)
 
-A full-stack application and tool suite that enables you to turn any document, resource, or piece of content into a piece of data that any LLM can use as reference during chatting. This application runs with very minimal overhead as by default the LLM and vectorDB are hosted remotely, but can be swapped for local instances. Currently this project supports Pinecone & ChromaDB for vector storage and OpenAI for chatting.
+A full-stack application and tool suite that enables you to turn any document, resource, or piece of content into a piece of data that any LLM can use as reference during chatting. This application runs with very minimal overhead as by default the LLM and vectorDB are hosted remotely, but can be swapped for local instances. Currently this project supports [Pinecone](https://pinecone.io), [ChromaDB](https://trychroma.com) & more for vector storage and [OpenAI](https://openai.com) for LLM/chatting.
+
 
 ![Chatting](/images/screenshots/chat.png)
 [view more screenshots](/images/screenshots/SCREENSHOTS.md)
@@ -38,8 +39,8 @@ This monorepo consists of three main sections:
 - `yarn` and `node` on your machine
 - `python` 3.8+ for running scripts in `collector/`.
 - access to an LLM like `GPT-3.5`, `GPT-4`*.
-- a [Pinecone.io](https://pinecone.io) free account* **or** Local Chroma instance running.
-*you can use drop in replacements for these. This is just the easiest to get up and running fast.
+- a [Pinecone.io](https://pinecone.io) free account*.
+*you can use drop in replacements for these. This is just the easiest to get up and running fast. We support multiple vector database providers.
 
 ### How to get started
 - `yarn setup` from the project root directory.
