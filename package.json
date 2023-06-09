@@ -1,7 +1,7 @@
 {
-  "name": "socials-to-chat",
-  "version": "1.0.0",
-  "description": "Turn creator socials into chatbots with long-term-memory though a simple UI",
+  "name": "anything-llm",
+  "version": "0.0.1",
+  "description": "A full-stack personalized AI assistant",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
