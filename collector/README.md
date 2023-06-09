@@ -17,7 +17,7 @@ _these resources are under development or require PR_
 
 ### Setup
 This example will be using python3.9, but will work with 3.8+. Tested on MacOs. Untested on Windows
-- install virtualenv for python3.8+ first before any other steps. `python3.9 -m pip install virutalenv`
+- install virtualenv for python3.8+ first before any other steps. `python3.9 -m pip install virtualenv`
 - `cd collector` from root directory
 - `python3.9 -m virtualenv v-env`
 - `source v-env/bin/activate`
