@@ -14,7 +14,6 @@ const { getVectorDbClass } = require("./utils/helpers");
 const app = express();
 
 app.use(cors({ origin: true }));
-app.use(validatedRequest);
 app.use(bodyParser.text());
 app.use(bodyParser.json());
 app.use(
@@ -23,6 +22,8 @@ app.use(
   })
 );
 
+app.use("/system/*", validatedRequest);
+app.use("/workspace/*", validatedRequest);
 systemEndpoints(app);
 workspaceEndpoints(app);
 chatEndpoints(app);

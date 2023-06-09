@@ -30,6 +30,7 @@
     "sqlite": "^4.2.1",
     "sqlite3": "^5.1.6",
     "uuid": "^9.0.0",
+    "jsonwebtoken": "^8.5.1",
     "vectordb": "0.1.5-beta"
   },
   "devDependencies": {
