@@ -26,9 +26,8 @@ function curateLanceSources(sources = []) {
 }
 
 const LanceDb = {
-  uri: `${
-    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./"
-  }lancedb`,
+  uri: `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./"
+    }lancedb`,
   name: "LanceDb",
   connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
@@ -283,6 +282,4 @@ const LanceDb = {
   },
 };
 
-module.exports = {
-  LanceDb,
-};
+module.exports.LanceDb = LanceDb
