@@ -1,7 +1,7 @@
 {
   "name": "anything-llm-frontend",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.0.1-beta",
   "type": "module",
   "scripts": {
     "start": "vite --open",
@@ -12,22 +12,15 @@
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@metamask/jazzicon": "^2.0.0",
-    "@react-oauth/google": "^0.11.0",
     "buffer": "^6.0.3",
-    "email-validator": "^2.0.4",
     "he": "^1.2.0",
-    "js-file-download": "^0.4.12",
-    "moment-timezone": "^0.5.43",
     "pluralize": "^8.0.0",
     "react": "^18.2.0",
-    "react-confetti-explosion": "^2.1.2",
     "react-device-detect": "^2.2.2",
     "react-dom": "^18.2.0",
-    "react-drag-drop-files": "^2.3.7",
     "react-feather": "^2.0.10",
     "react-loading-skeleton": "^3.1.0",
     "react-router-dom": "^6.3.0",
-    "react-type-animation": "^3.0.1",
     "text-case": "^1.0.9",
     "truncate": "^3.0.0",
     "uuid": "^9.0.0"
