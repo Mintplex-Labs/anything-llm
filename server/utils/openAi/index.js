@@ -3,7 +3,7 @@ class OpenAi {
   constructor() {
     const config = new Configuration({
       apiKey: process.env.OPEN_AI_KEY,
-      organization: "org-amIuvAIIcdUmN5YCiwRayVfb",
+      // organization: "org-123xyz", // Optional
     });
     const openai = new OpenAIApi(config);
     this.openai = openai;
