@@ -1,53 +1,53 @@
-const { ChromaClient, OpenAIEmbeddingFunction } = require("chromadb");
-const { Chroma: ChromaStore } = require("langchain/vectorstores/chroma");
-const { OpenAI } = require("langchain/llms/openai");
-const { ChatOpenAI } = require("langchain/chat_models/openai");
-const { VectorDBQAChain } = require("langchain/chains");
+const lancedb = require("vectordb");
+const { toChunks } = require("../helpers");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../files");
 const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
-const { toChunks, curateSources } = require("../helpers");
 
-const Chroma = {
-  name: "Chroma",
+// Since we roll our own results for prompting we
+// have to manually curate sources as well.
+function curateLanceSources(sources = []) {
+  const knownDocs = [];
+  const documents = [];
+  for (const source of sources) {
+    const { text: _t, vector: _v, score: _s, ...metadata } = source;
+    if (
+      Object.keys(metadata).length > 0 &&
+      !knownDocs.includes(metadata.title)
+    ) {
+      documents.push({ ...metadata });
+      knownDocs.push(metadata.title);
+    }
+  }
+
+  return documents;
+}
+
+const LanceDb = {
+  uri: `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./"
+    }lancedb`,
+  name: "LanceDb",
   connect: async function () {
-    if (process.env.VECTOR_DB !== "chroma")
-      throw new Error("Chroma::Invalid ENV settings");
+    if (process.env.VECTOR_DB !== "lancedb")
+      throw new Error("LanceDB::Invalid ENV settings");
 
-    const client = new ChromaClient({
-      path: process.env.CHROMA_ENDPOINT, // if not set will fallback to localhost:8000
-    });
-
-    const isAlive = await client.heartbeat();
-    if (!isAlive)
-      throw new Error(
-        "ChromaDB::Invalid Heartbeat received - is the instance online?"
-      );
+    const client = await lancedb.connect(this.uri);
     return { client };
   },
   heartbeat: async function () {
-    const { client } = await this.connect();
-    return { heartbeat: await client.heartbeat() };
+    await this.connect();
+    return { heartbeat: Number(new Date()) };
   },
   totalIndicies: async function () {
-    const { client } = await this.connect();
-    const collections = await client.listCollections();
-    var totalVectors = 0;
-    for (const collectionObj of collections) {
-      const collection = await client
-        .getCollection({ name: collectionObj.name })
-        .catch(() => null);
-      if (!collection) continue;
-      totalVectors += await collection.count();
-    }
-    return totalVectors;
+    return 0; // Unsupported for LanceDB - so always zero
   },
   embeddingFunc: function () {
-    return new OpenAIEmbeddingFunction({
-      openai_api_key: process.env.OPEN_AI_KEY,
-    });
+    return new lancedb.OpenAIEmbeddingFunction(
+      "context",
+      process.env.OPEN_AI_KEY
+    );
   },
   embedder: function () {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
@@ -56,14 +56,6 @@ const Chroma = {
     const config = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
     const openai = new OpenAIApi(config);
     return openai;
-  },
-  llm: function () {
-    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
-    return new OpenAI({
-      openAIApiKey: process.env.OPEN_AI_KEY,
-      temperature: 0.7,
-      modelName: model,
-    });
   },
   embedChunk: async function (openai, textChunk) {
     const {
@@ -76,36 +68,58 @@ const Chroma = {
       ? data[0].embedding
       : null;
   },
+  getChatCompletion: async function (openai, messages = []) {
+    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
+    const { data } = await openai.createChatCompletion({
+      model,
+      messages,
+    });
+
+    if (!data.hasOwnProperty("choices")) return null;
+    return data.choices[0].message.content;
+  },
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    const collection = await client
-      .getCollection({ name: namespace })
-      .catch(() => null);
+    const collection = await client.openTable(namespace).catch(() => false);
     if (!collection) return null;
 
     return {
       ...collection,
-      vectorCount: await collection.count(),
     };
+  },
+  updateOrCreateCollection: async function (client, data = [], namespace) {
+    if (await this.hasNamespace(namespace)) {
+      const collection = await client.openTable(namespace);
+      const result = await collection.add(data);
+      console.log({ result });
+      return true;
+    }
+
+    const result = await client.createTable(namespace, data);
+    console.log({ result });
+    return true;
   },
   hasNamespace: async function (namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
-    return await this.namespaceExists(client, namespace);
+    const exists = await this.namespaceExists(client, namespace);
+    return exists;
   },
   namespaceExists: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    const collection = await client
-      .getCollection({ name: namespace })
-      .catch((e) => {
-        console.error("ChromaDB::namespaceExists", e.message);
-        return null;
-      });
-    return !!collection;
+    const collections = await client.tableNames();
+    return collections.includes(namespace);
   },
   deleteVectorsInNamespace: async function (client, namespace = null) {
-    await client.deleteCollection({ name: namespace });
+    const fs = require("fs");
+    fs.rm(`${client.uri}/${namespace}.lance`, { recursive: true }, () => null);
     return true;
+  },
+  deleteDocumentFromNamespace: async function (_namespace, _docId) {
+    console.error(
+      `LanceDB:deleteDocumentFromNamespace - unsupported operation. No changes made to vector db.`
+    );
+    return false;
   },
   addDocumentToNamespace: async function (
     namespace,
@@ -121,45 +135,27 @@ const Chroma = {
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
-        const collection = await client.getOrCreateCollection({
-          name: namespace,
-          metadata: { "hnsw:space": "cosine" },
-          embeddingFunction: this.embeddingFunc(),
-        });
         const { chunks } = cacheResult;
         const documentVectors = [];
+        const submissions = [];
 
         for (const chunk of chunks) {
-          const submission = {
-            ids: [],
-            embeddings: [],
-            metadatas: [],
-            documents: [],
-          };
-
-          // Before sending to Chroma and saving the records to our db
-          // we need to assign the id of each chunk that is stored in the cached file.
           chunk.forEach((chunk) => {
             const id = uuidv4();
             const { id: _id, ...metadata } = chunk.metadata;
             documentVectors.push({ docId, vectorId: id });
-            submission.ids.push(id);
-            submission.embeddings.push(chunk.values);
-            submission.metadatas.push(metadata);
-            submission.documents.push(metadata.text);
+            submissions.push({ id: id, vector: chunk.values, ...metadata });
           });
-
-          const additionResult = await collection.add(submission);
-          if (!additionResult)
-            throw new Error("Error embedding into ChromaDB", additionResult);
         }
 
+        console.log(submissions);
+        await this.updateOrCreateCollection(client, submissions, namespace);
         await DocumentVectors.bulkInsert(documentVectors);
         return true;
       }
 
       // If we are here then we are going to embed and store a novel document.
-      // We have to do this manually as opposed to using LangChains `Chroma.fromDocuments`
+      // We have to do this manually as opposed to using LangChains `xyz.fromDocuments`
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
       const textSplitter = new RecursiveCharacterTextSplitter({
@@ -171,14 +167,8 @@ const Chroma = {
       console.log("Chunks created from document:", textChunks.length);
       const documentVectors = [];
       const vectors = [];
+      const submissions = [];
       const openai = this.openai();
-
-      const submission = {
-        ids: [],
-        embeddings: [],
-        metadatas: [],
-        documents: [],
-      };
 
       for (const textChunk of textChunks) {
         const vectorValues = await this.embedChunk(openai, textChunk);
@@ -193,12 +183,12 @@ const Chroma = {
             metadata: { ...metadata, text: textChunk },
           };
 
-          submission.ids.push(vectorRecord.id);
-          submission.embeddings.push(vectorRecord.values);
-          submission.metadatas.push(metadata);
-          submission.documents.push(textChunk);
-
           vectors.push(vectorRecord);
+          submissions.push({
+            id: vectorRecord.id,
+            vector: vectorRecord.values,
+            ...vectorRecord.metadata,
+          });
           documentVectors.push({ docId, vectorId: vectorRecord.id });
         } else {
           console.error(
@@ -207,23 +197,13 @@ const Chroma = {
         }
       }
 
-      const { client } = await this.connect();
-      const collection = await client.getOrCreateCollection({
-        name: namespace,
-        metadata: { "hnsw:space": "cosine" },
-        embeddingFunction: this.embeddingFunc(),
-      });
-
       if (vectors.length > 0) {
         const chunks = [];
-
-        console.log("Inserting vectorized chunks into Chroma collection.");
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
-        const additionResult = await collection.add(submission);
-        if (!additionResult)
-          throw new Error("Error embedding into ChromaDB", additionResult);
-
+        console.log("Inserting vectorized chunks into LanceDB collection.");
+        const { client } = await this.connect();
+        await this.updateOrCreateCollection(client, submissions, namespace);
         await storeVectorResult(chunks, fullFilePath);
       }
 
@@ -233,25 +213,6 @@ const Chroma = {
       console.error("addDocumentToNamespace", e.message);
       return false;
     }
-  },
-  deleteDocumentFromNamespace: async function (namespace, docId) {
-    const { DocumentVectors } = require("../../models/vectors");
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace))) return;
-    const collection = await client.getCollection({
-      name: namespace,
-      embeddingFunction: this.embeddingFunc(),
-    });
-
-    const knownDocuments = await DocumentVectors.where(`docId = '${docId}'`);
-    if (knownDocuments.length === 0) return;
-
-    const vectorIds = knownDocuments.map((doc) => doc.vectorId);
-    await collection.delete({ ids: vectorIds });
-
-    const indexes = knownDocuments.map((doc) => doc.id);
-    await DocumentVectors.deleteIds(indexes);
-    return true;
   },
   query: async function (reqBody = {}) {
     const { namespace = null, input } = reqBody;
@@ -266,19 +227,28 @@ const Chroma = {
       };
     }
 
-    const vectorStore = await ChromaStore.fromExistingCollection(
-      this.embedder(),
-      { collectionName: namespace, url: process.env.CHROMA_ENDPOINT }
-    );
-    const model = this.llm();
-    const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
-      k: 5,
-      returnSourceDocuments: true,
-    });
-    const response = await chain.call({ query: input });
+    // LanceDB does not have langchainJS support so we roll our own here.
+    const queryVector = await this.embedChunk(this.openai(), input);
+    const collection = await client.openTable(namespace);
+    const relevantResults = await collection
+      .search(queryVector)
+      .metricType("cosine")
+      .limit(2)
+      .execute();
+    const messages = [
+      {
+        role: "system",
+        content: `The following is a friendly conversation between a human and an AI. The AI is very casual and talkative and responds with a friendly tone. If the AI does not know the answer to a question, it truthfully says it does not know.
+      Relevant pieces of information for context of the current query:
+      ${relevantResults.map((result) => result.text).join("\n\n")}`,
+      },
+      { role: "user", content: input },
+    ];
+    const responseText = await this.getChatCompletion(this.openai(), messages);
+
     return {
-      response: response.text,
-      sources: curateSources(response.sourceDocuments),
+      response: responseText,
+      sources: curateLanceSources(relevantResults),
       message: false,
     };
   },
@@ -299,17 +269,17 @@ const Chroma = {
     if (!(await this.namespaceExists(client, namespace)))
       throw new Error("Namespace by that name does not exist.");
 
-    const details = await this.namespace(client, namespace);
     await this.deleteVectorsInNamespace(client, namespace);
     return {
-      message: `Namespace ${namespace} was deleted along with ${details?.vectorCount} vectors.`,
+      message: `Namespace ${namespace} was deleted.`,
     };
   },
   reset: async function () {
     const { client } = await this.connect();
-    await client.reset();
+    const fs = require("fs");
+    fs.rm(`${client.uri}`, { recursive: true }, () => null);
     return { reset: true };
   },
 };
 
-module.exports.Chroma = Chroma;
+module.exports.LanceDb = LanceDb
