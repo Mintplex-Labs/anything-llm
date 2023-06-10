@@ -1,7 +1,6 @@
 const { ChromaClient, OpenAIEmbeddingFunction } = require("chromadb");
 const { Chroma: ChromaStore } = require("langchain/vectorstores/chroma");
 const { OpenAI } = require("langchain/llms/openai");
-const { ChatOpenAI } = require("langchain/chat_models/openai");
 const { VectorDBQAChain } = require("langchain/chains");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
@@ -12,7 +11,7 @@ const { toChunks, curateSources } = require("../../helpers");
 
 const Chroma = {
   name: "Chroma",
-  connect: async function () {
+  connect: async function() {
     if (process.env.VECTOR_DB !== "chroma")
       throw new Error("Chroma::Invalid ENV settings");
 
@@ -27,11 +26,11 @@ const Chroma = {
       );
     return { client };
   },
-  heartbeat: async function () {
+  heartbeat: async function() {
     const { client } = await this.connect();
     return { heartbeat: await client.heartbeat() };
   },
-  totalIndicies: async function () {
+  totalIndicies: async function() {
     const { client } = await this.connect();
     const collections = await client.listCollections();
     var totalVectors = 0;
@@ -44,20 +43,20 @@ const Chroma = {
     }
     return totalVectors;
   },
-  embeddingFunc: function () {
+  embeddingFunc: function() {
     return new OpenAIEmbeddingFunction({
       openai_api_key: process.env.OPEN_AI_KEY,
     });
   },
-  embedder: function () {
+  embedder: function() {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
   },
-  openai: function () {
+  openai: function() {
     const config = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
     const openai = new OpenAIApi(config);
     return openai;
   },
-  llm: function () {
+  llm: function() {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     return new OpenAI({
       openAIApiKey: process.env.OPEN_AI_KEY,
@@ -65,18 +64,19 @@ const Chroma = {
       modelName: model,
     });
   },
-  embedChunk: async function (openai, textChunk) {
+  embedChunks: async function(openai, chunks) {
     const {
       data: { data },
     } = await openai.createEmbedding({
       model: "text-embedding-ada-002",
-      input: textChunk,
+      input: chunks,
     });
-    return data.length > 0 && data[0].hasOwnProperty("embedding")
-      ? data[0].embedding
+    return data.length > 0 &&
+      data.every((embd) => embd.hasOwnProperty("embedding"))
+      ? data.map((embd) => embd.embedding)
       : null;
   },
-  namespace: async function (client, namespace = null) {
+  namespace: async function(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
       .getCollection({ name: namespace })
@@ -88,12 +88,12 @@ const Chroma = {
       vectorCount: await collection.count(),
     };
   },
-  hasNamespace: async function (namespace = null) {
+  hasNamespace: async function(namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
     return await this.namespaceExists(client, namespace);
   },
-  namespaceExists: async function (client, namespace = null) {
+  namespaceExists: async function(client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
       .getCollection({ name: namespace })
@@ -103,11 +103,11 @@ const Chroma = {
       });
     return !!collection;
   },
-  deleteVectorsInNamespace: async function (client, namespace = null) {
+  deleteVectorsInNamespace: async function(client, namespace = null) {
     await client.deleteCollection({ name: namespace });
     return true;
   },
-  addDocumentToNamespace: async function (
+  addDocumentToNamespace: async function(
     namespace,
     documentData = {},
     fullFilePath = null
@@ -180,31 +180,31 @@ const Chroma = {
         documents: [],
       };
 
-      for (const textChunk of textChunks) {
-        const vectorValues = await this.embedChunk(openai, textChunk);
+      const vectorValues = await this.embedChunks(openai, textChunks);
 
-        if (!!vectorValues) {
+      if (!!vectorValues) {
+        for (const [i, vector] of vectorValues.entries()) {
           const vectorRecord = {
             id: uuidv4(),
-            values: vectorValues,
+            values: vector,
             // [DO NOT REMOVE]
             // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
             // https://github.com/hwchase17/langchainjs/blob/2def486af734c0ca87285a48f1a04c057ab74bdf/langchain/src/vectorstores/pinecone.ts#L64
-            metadata: { ...metadata, text: textChunk },
+            metadata: { ...metadata, text: textChunks[i] },
           };
 
           submission.ids.push(vectorRecord.id);
           submission.embeddings.push(vectorRecord.values);
           submission.metadatas.push(metadata);
-          submission.documents.push(textChunk);
+          submission.documents.push(textChunks[i]);
 
           vectors.push(vectorRecord);
           documentVectors.push({ docId, vectorId: vectorRecord.id });
-        } else {
-          console.error(
-            "Could not use OpenAI to embed document chunk! This document will not be recorded."
-          );
         }
+      } else {
+        console.error(
+          "Could not use OpenAI to embed document chunks! This document will not be recorded."
+        );
       }
 
       const { client } = await this.connect();
@@ -234,7 +234,7 @@ const Chroma = {
       return false;
     }
   },
-  deleteDocumentFromNamespace: async function (namespace, docId) {
+  deleteDocumentFromNamespace: async function(namespace, docId) {
     const { DocumentVectors } = require("../../../models/vectors");
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) return;
@@ -253,7 +253,7 @@ const Chroma = {
     await DocumentVectors.deleteIds(indexes);
     return true;
   },
-  query: async function (reqBody = {}) {
+  query: async function(reqBody = {}) {
     const { namespace = null, input } = reqBody;
     if (!namespace || !input) throw new Error("Invalid request body");
 
@@ -282,7 +282,7 @@ const Chroma = {
       message: false,
     };
   },
-  "namespace-stats": async function (reqBody = {}) {
+  "namespace-stats": async function(reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { client } = await this.connect();
@@ -293,7 +293,7 @@ const Chroma = {
       ? stats
       : { message: "No stats were able to be fetched from DB for namespace" };
   },
-  "delete-namespace": async function (reqBody = {}) {
+  "delete-namespace": async function(reqBody = {}) {
     const { namespace = null } = reqBody;
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace)))
@@ -305,7 +305,7 @@ const Chroma = {
       message: `Namespace ${namespace} was deleted along with ${details?.vectorCount} vectors.`,
     };
   },
-  reset: async function () {
+  reset: async function() {
     const { client } = await this.connect();
     await client.reset();
     return { reset: true };
