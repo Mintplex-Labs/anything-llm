@@ -179,7 +179,7 @@ pyobjc-framework-VideoSubscriberAccount==9.1.1
 pyobjc-framework-VideoToolbox==9.1.1
 pyobjc-framework-Vision==9.1.1
 pyobjc-framework-WebKit==9.1.1
-pypandoc==1.11
+pypandoc==1.4
 pyppeteer==1.0.2
 pyquery==2.0.0
 python-dateutil==2.8.2
