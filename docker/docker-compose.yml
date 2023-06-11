@@ -1,0 +1,23 @@
+version: '3.9'
+
+networks:
+  anything-llm:
+    driver: bridge
+
+services:
+  anything-llm:
+    container_name: anything-llm
+    image: anything-llm:latest
+    build:
+      context: ../.
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - "../server/documents:/app/documents"
+      - "../server/vector-cache:/app/vector-cache"
+      - "../server/anythingllm.db:/app/anythingllm.db"
+    ports:
+      - '3001:3001'
+    env_file:
+      - .env
+    networks:
+      - anything-llm
