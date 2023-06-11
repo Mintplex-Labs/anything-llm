@@ -6,3 +6,4 @@ vector-cache/*.json
 logs/server.log
 *.db
 lancedb
+public/

@@ -5,6 +5,7 @@ process.env.NODE_ENV === "development"
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const path = require("path");
 const { validatedRequest } = require("./utils/middleware/validatedRequest");
 const { reqBody } = require("./utils/http");
 const { systemEndpoints } = require("./endpoints/system");
@@ -12,6 +13,7 @@ const { workspaceEndpoints } = require("./endpoints/workspaces");
 const { chatEndpoints } = require("./endpoints/chat");
 const { getVectorDbClass } = require("./utils/helpers");
 const app = express();
+const apiRouter = express.Router();
 
 app.use(cors({ origin: true }));
 app.use(bodyParser.text());
@@ -22,13 +24,13 @@ app.use(
   })
 );
 
-app.use("/system/*", validatedRequest);
-app.use("/workspace/*", validatedRequest);
-systemEndpoints(app);
-workspaceEndpoints(app);
-chatEndpoints(app);
+apiRouter.use("/system/*", validatedRequest);
+apiRouter.use("/workspace/*", validatedRequest);
+systemEndpoints(apiRouter);
+workspaceEndpoints(apiRouter);
+chatEndpoints(apiRouter);
 
-app.post("/v/:command", async (request, response) => {
+apiRouter.post("/v/:command", async (request, response) => {
   try {
     const VectorDb = getVectorDbClass();
     const { command } = request.params;
@@ -55,6 +57,16 @@ app.post("/v/:command", async (request, response) => {
     response.sendStatus(500).end();
   }
 });
+
+app.use("/api", apiRouter);
+
+if (process.env.NODE_ENV !== "development") {
+  app.use(express.static(path.resolve(__dirname, 'public'), {extensions: ["js"]}));
+
+  app.use("/", function (_, response) {
+    response.sendFile(path.join(__dirname, "public", "index.html"));
+  })
+}
 
 app.all("*", function (_, response) {
   response.sendStatus(404);
