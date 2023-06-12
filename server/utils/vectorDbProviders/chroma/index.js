@@ -1,7 +1,6 @@
 const { ChromaClient, OpenAIEmbeddingFunction } = require("chromadb");
 const { Chroma: ChromaStore } = require("langchain/vectorstores/chroma");
 const { OpenAI } = require("langchain/llms/openai");
-const { ChatOpenAI } = require("langchain/chat_models/openai");
 const { VectorDBQAChain } = require("langchain/chains");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
