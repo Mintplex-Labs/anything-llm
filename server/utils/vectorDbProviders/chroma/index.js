@@ -11,7 +11,7 @@ const { toChunks, curateSources } = require("../../helpers");
 
 const Chroma = {
   name: "Chroma",
-  connect: async function() {
+  connect: async function () {
     if (process.env.VECTOR_DB !== "chroma")
       throw new Error("Chroma::Invalid ENV settings");
 
@@ -26,11 +26,11 @@ const Chroma = {
       );
     return { client };
   },
-  heartbeat: async function() {
+  heartbeat: async function () {
     const { client } = await this.connect();
     return { heartbeat: await client.heartbeat() };
   },
-  totalIndicies: async function() {
+  totalIndicies: async function () {
     const { client } = await this.connect();
     const collections = await client.listCollections();
     var totalVectors = 0;
@@ -43,20 +43,20 @@ const Chroma = {
     }
     return totalVectors;
   },
-  embeddingFunc: function() {
+  embeddingFunc: function () {
     return new OpenAIEmbeddingFunction({
       openai_api_key: process.env.OPEN_AI_KEY,
     });
   },
-  embedder: function() {
+  embedder: function () {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
   },
-  openai: function() {
+  openai: function () {
     const config = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
     const openai = new OpenAIApi(config);
     return openai;
   },
-  llm: function() {
+  llm: function () {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     return new OpenAI({
       openAIApiKey: process.env.OPEN_AI_KEY,
@@ -64,7 +64,7 @@ const Chroma = {
       modelName: model,
     });
   },
-  embedChunks: async function(openai, chunks) {
+  embedChunks: async function (openai, chunks) {
     const {
       data: { data },
     } = await openai.createEmbedding({
@@ -76,7 +76,7 @@ const Chroma = {
       ? data.map((embd) => embd.embedding)
       : null;
   },
-  namespace: async function(client, namespace = null) {
+  namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
       .getCollection({ name: namespace })
@@ -88,12 +88,12 @@ const Chroma = {
       vectorCount: await collection.count(),
     };
   },
-  hasNamespace: async function(namespace = null) {
+  hasNamespace: async function (namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
     return await this.namespaceExists(client, namespace);
   },
-  namespaceExists: async function(client, namespace = null) {
+  namespaceExists: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
       .getCollection({ name: namespace })
@@ -103,11 +103,11 @@ const Chroma = {
       });
     return !!collection;
   },
-  deleteVectorsInNamespace: async function(client, namespace = null) {
+  deleteVectorsInNamespace: async function (client, namespace = null) {
     await client.deleteCollection({ name: namespace });
     return true;
   },
-  addDocumentToNamespace: async function(
+  addDocumentToNamespace: async function (
     namespace,
     documentData = {},
     fullFilePath = null
@@ -234,7 +234,7 @@ const Chroma = {
       return false;
     }
   },
-  deleteDocumentFromNamespace: async function(namespace, docId) {
+  deleteDocumentFromNamespace: async function (namespace, docId) {
     const { DocumentVectors } = require("../../../models/vectors");
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) return;
@@ -253,7 +253,7 @@ const Chroma = {
     await DocumentVectors.deleteIds(indexes);
     return true;
   },
-  query: async function(reqBody = {}) {
+  query: async function (reqBody = {}) {
     const { namespace = null, input } = reqBody;
     if (!namespace || !input) throw new Error("Invalid request body");
 
@@ -282,7 +282,7 @@ const Chroma = {
       message: false,
     };
   },
-  "namespace-stats": async function(reqBody = {}) {
+  "namespace-stats": async function (reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { client } = await this.connect();
@@ -293,7 +293,7 @@ const Chroma = {
       ? stats
       : { message: "No stats were able to be fetched from DB for namespace" };
   },
-  "delete-namespace": async function(reqBody = {}) {
+  "delete-namespace": async function (reqBody = {}) {
     const { namespace = null } = reqBody;
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace)))
@@ -305,7 +305,7 @@ const Chroma = {
       message: `Namespace ${namespace} was deleted along with ${details?.vectorCount} vectors.`,
     };
   },
-  reset: async function() {
+  reset: async function () {
     const { client } = await this.connect();
     await client.reset();
     return { reset: true };

@@ -14,7 +14,7 @@ const { toChunks, curateSources } = require("../../helpers");
 
 const Pinecone = {
   name: "Pinecone",
-  connect: async function() {
+  connect: async function () {
     if (process.env.VECTOR_DB !== "pinecone")
       throw new Error("Pinecone::Invalid ENV settings");
 
@@ -31,15 +31,15 @@ const Pinecone = {
     if (!status.ready) throw new Error("Pinecode::Index not ready.");
     return { client, pineconeIndex, indexName: process.env.PINECONE_INDEX };
   },
-  embedder: function() {
+  embedder: function () {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
   },
-  openai: function() {
+  openai: function () {
     const config = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
     const openai = new OpenAIApi(config);
     return openai;
   },
-  embedChunks: async function(openai, chunks) {
+  embedChunks: async function (openai, chunks) {
     const {
       data: { data },
     } = await openai.createEmbedding({
@@ -51,7 +51,7 @@ const Pinecone = {
       ? data.map((embd) => embd.embedding)
       : null;
   },
-  llm: function() {
+  llm: function () {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     return new OpenAI({
       openAIApiKey: process.env.OPEN_AI_KEY,
@@ -59,7 +59,7 @@ const Pinecone = {
       modelName: model,
     });
   },
-  chatLLM: function() {
+  chatLLM: function () {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     return new ChatOpenAI({
       openAIApiKey: process.env.OPEN_AI_KEY,
@@ -67,7 +67,7 @@ const Pinecone = {
       modelName: model,
     });
   },
-  totalIndicies: async function() {
+  totalIndicies: async function () {
     const { pineconeIndex } = await this.connect();
     const { namespaces } = await pineconeIndex.describeIndexStats1();
     return Object.values(namespaces).reduce(
@@ -75,26 +75,26 @@ const Pinecone = {
       0
     );
   },
-  namespace: async function(index, namespace = null) {
+  namespace: async function (index, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const { namespaces } = await index.describeIndexStats1();
     return namespaces.hasOwnProperty(namespace) ? namespaces[namespace] : null;
   },
-  hasNamespace: async function(namespace = null) {
+  hasNamespace: async function (namespace = null) {
     if (!namespace) return false;
     const { pineconeIndex } = await this.connect();
     return await this.namespaceExists(pineconeIndex, namespace);
   },
-  namespaceExists: async function(index, namespace = null) {
+  namespaceExists: async function (index, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const { namespaces } = await index.describeIndexStats1();
     return namespaces.hasOwnProperty(namespace);
   },
-  deleteVectorsInNamespace: async function(index, namespace = null) {
+  deleteVectorsInNamespace: async function (index, namespace = null) {
     await index.delete1({ namespace, deleteAll: true });
     return true;
   },
-  addDocumentToNamespace: async function(
+  addDocumentToNamespace: async function (
     namespace,
     documentData = {},
     fullFilePath = null
@@ -194,7 +194,7 @@ const Pinecone = {
       return false;
     }
   },
-  deleteDocumentFromNamespace: async function(namespace, docId) {
+  deleteDocumentFromNamespace: async function (namespace, docId) {
     const { DocumentVectors } = require("../../../models/vectors");
     const { pineconeIndex } = await this.connect();
     if (!(await this.namespaceExists(pineconeIndex, namespace))) return;
@@ -212,7 +212,7 @@ const Pinecone = {
     await DocumentVectors.deleteIds(indexes);
     return true;
   },
-  "namespace-stats": async function(reqBody = {}) {
+  "namespace-stats": async function (reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { pineconeIndex } = await this.connect();
@@ -223,7 +223,7 @@ const Pinecone = {
       ? stats
       : { message: "No stats were able to be fetched from DB" };
   },
-  "delete-namespace": async function(reqBody = {}) {
+  "delete-namespace": async function (reqBody = {}) {
     const { namespace = null } = reqBody;
     const { pineconeIndex } = await this.connect();
     if (!(await this.namespaceExists(pineconeIndex, namespace)))
@@ -235,7 +235,7 @@ const Pinecone = {
       message: `Namespace ${namespace} was deleted along with ${details.vectorCount} vectors.`,
     };
   },
-  query: async function(reqBody = {}) {
+  query: async function (reqBody = {}) {
     const { namespace = null, input } = reqBody;
     if (!namespace || !input) throw new Error("Invalid request body");
 
@@ -267,7 +267,7 @@ const Pinecone = {
   },
   // This implementation of chat also expands the memory of the chat itself
   // and adds more tokens to the PineconeDB instance namespace
-  chat: async function(reqBody = {}) {
+  chat: async function (reqBody = {}) {
     const { namespace = null, input } = reqBody;
     if (!namespace || !input) throw new Error("Invalid request body");
 
