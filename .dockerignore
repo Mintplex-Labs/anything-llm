@@ -2,4 +2,5 @@ server/documents/**
 server/vector-cache/**
 collector/hotdir/**
 collector/v-env/**
+collector/outputs/**
 **/.env
