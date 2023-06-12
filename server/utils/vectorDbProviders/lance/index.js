@@ -26,30 +26,31 @@ function curateLanceSources(sources = []) {
 }
 
 const LanceDb = {
-  uri: `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./"
-    }lancedb`,
+  uri: `${
+    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./"
+  }lancedb`,
   name: "LanceDb",
-  connect: async function() {
+  connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
       throw new Error("LanceDB::Invalid ENV settings");
 
     const client = await lancedb.connect(this.uri);
     return { client };
   },
-  heartbeat: async function() {
+  heartbeat: async function () {
     await this.connect();
     return { heartbeat: Number(new Date()) };
   },
-  totalIndicies: async function() {
+  totalIndicies: async function () {
     return 0; // Unsupported for LanceDB - so always zero
   },
-  embeddingFunc: function() {
+  embeddingFunc: function () {
     return new lancedb.OpenAIEmbeddingFunction(
       "context",
       process.env.OPEN_AI_KEY
     );
   },
-  embedChunks: async function(openai, chunks) {
+  embedChunks: async function (openai, chunks) {
     const {
       data: { data },
     } = await openai.createEmbedding({
@@ -61,15 +62,15 @@ const LanceDb = {
       ? data.map((embd) => embd.embedding)
       : null;
   },
-  embedder: function() {
+  embedder: function () {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
   },
-  openai: function() {
+  openai: function () {
     const config = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
     const openai = new OpenAIApi(config);
     return openai;
   },
-  getChatCompletion: async function(openai, messages = []) {
+  getChatCompletion: async function (openai, messages = []) {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     const { data } = await openai.createChatCompletion({
       model,
@@ -79,7 +80,7 @@ const LanceDb = {
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
   },
-  namespace: async function(client, namespace = null) {
+  namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client.openTable(namespace).catch(() => false);
     if (!collection) return null;
@@ -88,7 +89,7 @@ const LanceDb = {
       ...collection,
     };
   },
-  updateOrCreateCollection: async function(client, data = [], namespace) {
+  updateOrCreateCollection: async function (client, data = [], namespace) {
     if (await this.hasNamespace(namespace)) {
       const collection = await client.openTable(namespace);
       const result = await collection.add(data);
@@ -100,29 +101,29 @@ const LanceDb = {
     console.log({ result });
     return true;
   },
-  hasNamespace: async function(namespace = null) {
+  hasNamespace: async function (namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
     const exists = await this.namespaceExists(client, namespace);
     return exists;
   },
-  namespaceExists: async function(client, namespace = null) {
+  namespaceExists: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collections = await client.tableNames();
     return collections.includes(namespace);
   },
-  deleteVectorsInNamespace: async function(client, namespace = null) {
+  deleteVectorsInNamespace: async function (client, namespace = null) {
     const fs = require("fs");
     fs.rm(`${client.uri}/${namespace}.lance`, { recursive: true }, () => null);
     return true;
   },
-  deleteDocumentFromNamespace: async function(_namespace, _docId) {
+  deleteDocumentFromNamespace: async function (_namespace, _docId) {
     console.error(
       `LanceDB:deleteDocumentFromNamespace - unsupported operation. No changes made to vector db.`
     );
     return false;
   },
-  addDocumentToNamespace: async function(
+  addDocumentToNamespace: async function (
     namespace,
     documentData = {},
     fullFilePath = null
@@ -217,7 +218,7 @@ const LanceDb = {
       return false;
     }
   },
-  query: async function(reqBody = {}) {
+  query: async function (reqBody = {}) {
     const { namespace = null, input } = reqBody;
     if (!namespace || !input) throw new Error("Invalid request body");
 
@@ -255,7 +256,7 @@ const LanceDb = {
       message: false,
     };
   },
-  "namespace-stats": async function(reqBody = {}) {
+  "namespace-stats": async function (reqBody = {}) {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { client } = await this.connect();
@@ -266,7 +267,7 @@ const LanceDb = {
       ? stats
       : { message: "No stats were able to be fetched from DB for namespace" };
   },
-  "delete-namespace": async function(reqBody = {}) {
+  "delete-namespace": async function (reqBody = {}) {
     const { namespace = null } = reqBody;
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace)))
@@ -277,7 +278,7 @@ const LanceDb = {
       message: `Namespace ${namespace} was deleted.`,
     };
   },
-  reset: async function() {
+  reset: async function () {
     const { client } = await this.connect();
     const fs = require("fs");
     fs.rm(`${client.uri}`, { recursive: true }, () => null);
