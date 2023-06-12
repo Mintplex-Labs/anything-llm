@@ -44,8 +44,9 @@ This monorepo consists of three main sections:
 
 ### How to get started
 - `yarn setup` from the project root directory.
-
-This will fill in the required `.env` files you'll need in each of the application sections. Go fill those out before proceeding or else things won't work right.
+  - This will fill in the required `.env` files you'll need in each of the application sections. Go fill those out before proceeding or else things won't work right.
+- `cd frontend && yarn install && cd ../server && yarn install` from the project root directory.
+ 
 
 Next, you will need some content to embed. This could be a Youtube Channel, Medium articles, local text files, word documents, and the list goes on. This is where you will use the `collector/` part of the repo.
 
