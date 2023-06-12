@@ -53,7 +53,7 @@ Next, you will need some content to embed. This could be a Youtube Channel, Medi
 
 [Learn about documents](./server/documents/DOCUMENTS.md)
 
-[Learn about vector caching](./server/documents/VECTOR_CACHE.md)
+[Learn about vector caching](./server/vector-cache/VECTOR_CACHE.md)
 
 ### Contributing
 - create issue
