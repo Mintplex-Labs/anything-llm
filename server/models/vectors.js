@@ -12,13 +12,14 @@ const DocumentVectors = {
   createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
   lastUpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP
   `,
-  db: async function() {
+  db: async function () {
     const sqlite3 = require("sqlite3").verbose();
     const { open } = require("sqlite");
 
     const db = await open({
-      filename: `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : ""
-        }anythingllm.db`,
+      filename: `${
+        !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : ""
+      }anythingllm.db`,
       driver: sqlite3.Database,
     });
 
@@ -28,7 +29,7 @@ const DocumentVectors = {
     db.on("trace", (sql) => console.log(sql));
     return db;
   },
-  bulkInsert: async function(vectorRecords = []) {
+  bulkInsert: async function (vectorRecords = []) {
     if (vectorRecords.length === 0) return;
 
     const db = await this.db();
@@ -52,7 +53,7 @@ const DocumentVectors = {
 
     return { documentsInserted: vectorRecords.length };
   },
-  deleteForWorkspace: async function(workspaceId) {
+  deleteForWorkspace: async function (workspaceId) {
     const documents = await Document.forWorkspace(workspaceId);
     const docIds = [...new Set(documents.map((doc) => doc.docId))];
     const ids = (
@@ -61,17 +62,18 @@ const DocumentVectors = {
     await this.deleteIds(ids);
     return true;
   },
-  where: async function(clause = "", limit = null) {
+  where: async function (clause = "", limit = null) {
     const db = await this.db();
     const results = await db.all(
-      `SELECT * FROM ${this.tablename} ${clause ? `WHERE ${clause}` : ""} ${!!limit ? `LIMIT ${limit}` : ""
+      `SELECT * FROM ${this.tablename} ${clause ? `WHERE ${clause}` : ""} ${
+        !!limit ? `LIMIT ${limit}` : ""
       }`
     );
 
     db.close();
     return results;
   },
-  deleteIds: async function(ids = []) {
+  deleteIds: async function (ids = []) {
     const db = await this.db();
     await db.get(
       `DELETE FROM ${this.tablename} WHERE id IN (${ids.join(", ")}) `
