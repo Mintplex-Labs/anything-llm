@@ -1,2 +1,5 @@
-documents/*
-vector-cache/*
+server/documents/**
+server/vector-cache/**
+collector/hotdir/**
+collector/v-env/**
+**/.env
