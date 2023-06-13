@@ -14,7 +14,7 @@ def gitbook():
 
   primary_source = urlparse(url)
   output_path = f"./outputs/gitbook-logs/{primary_source.netloc}"
-  transaction_output_dir = f"../server/documents/gitbook-{primary_source.netloc}"
+  transaction_output_dir = f"../server/storage/documents/gitbook-{primary_source.netloc}"
 
   if os.path.exists(output_path) == False:os.makedirs(output_path)
   if os.path.exists(transaction_output_dir) == False: os.makedirs(transaction_output_dir)

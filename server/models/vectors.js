@@ -18,7 +18,7 @@ const DocumentVectors = {
 
     const db = await open({
       filename: `${
-        !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : ""
+        !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "storage/"
       }anythingllm.db`,
       driver: sqlite3.Database,
     });

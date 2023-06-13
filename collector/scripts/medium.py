@@ -23,7 +23,7 @@ def medium():
     exit(1)
 
   totalTokenCount = 0
-  transaction_output_dir = f"../server/documents/medium-{handle}"
+  transaction_output_dir = f"../server/storage/documents/medium-{handle}"
   if os.path.isdir(transaction_output_dir) == False:
     os.makedirs(transaction_output_dir)
 

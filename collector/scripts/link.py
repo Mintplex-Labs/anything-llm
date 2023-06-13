@@ -36,7 +36,7 @@ def link():
     output_path = f"./outputs/website-logs"
 
     transaction_output_filename = f"article-{source.path.replace('/','_')}.json"
-    transaction_output_dir = f"../server/documents/website-{source.netloc}"
+    transaction_output_dir = f"../server/storage/documents/website-{source.netloc}"
 
     if os.path.isdir(output_path) == False:
       os.makedirs(output_path)
@@ -109,7 +109,7 @@ def links():
       output_path = f"./outputs/website-logs"
 
       transaction_output_filename = f"article-{source.path.replace('/','_')}.json"
-      transaction_output_dir = f"../server/documents/website-{source.netloc}"
+      transaction_output_dir = f"../server/storage/documents/website-{source.netloc}"
 
       if os.path.isdir(output_path) == False:
         os.makedirs(output_path)
