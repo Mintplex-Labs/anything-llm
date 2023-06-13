@@ -28,7 +28,18 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 
 # Create a group and user with specific UID and GID
 RUN groupadd -g $ARG_GID anythingllm && \
-    useradd -u $ARG_UID -m -d /app -s /bin/bash -g anythingllm anythingllm
+    useradd -u $ARG_UID -m -d /app -s /bin/bash -g anythingllm anythingllm && \
+    mkdir -p /app/frontend/ /app/server/ /app/collector/ && chown -R anythingllm:anythingllm /app
+
+# Copy the docker entrypoint and healthcheck scripts
+COPY ./docker/docker-entrypoint.sh /usr/local/bin/
+COPY ./docker/docker-healthcheck.sh /usr/local/bin/
+
+# Ensure the scripts are executable
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
+    chmod +x /usr/local/bin/docker-healthcheck.sh
+
+USER anythingllm
 
 WORKDIR /app
 
@@ -70,16 +81,6 @@ RUN cd /app/collector && \
 ENV NODE_ENV=production
 ENV PATH=/app/collector/v-env/bin:$PATH
 
-# Copy the docker entrypoint and healthcheck scripts
-COPY ./docker/docker-entrypoint.sh /usr/local/bin/
-COPY ./docker/docker-healthcheck.sh /usr/local/bin/
-
-# Ensure the scripts are executable
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
-    chmod +x /usr/local/bin/docker-healthcheck.sh
-
-RUN chown -R anythingllm:anythingllm /app
-
 # Expose the server port
 EXPOSE 3001
 
@@ -89,7 +90,5 @@ HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
 
 # Run the server
 ENTRYPOINT ["docker-entrypoint.sh"]
-
-USER anythingllm
 
 CMD ["node", "/app/server/index.js"]
