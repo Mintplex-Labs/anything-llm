@@ -31,17 +31,26 @@ const DocumentVectors = {
   },
   bulkInsert: async function (vectorRecords = []) {
     if (vectorRecords.length === 0) return;
-    const db = await this.db();
-    const stmt = await db.prepare(
-      `INSERT INTO ${this.tablename} (docId, vectorId) VALUES (?, ?)`
-    );
-    for (const record of vectorRecords) {
-      const { docId, vectorId } = record;
-      stmt.run([docId, vectorId]);
-    }
 
+    const db = await this.db();
+
+    // Build a single query string with multiple placeholders for the INSERT operation
+    const placeholders = vectorRecords.map(() => "(?, ?)").join(", ");
+
+    const stmt = await db.prepare(
+      `INSERT INTO ${this.tablename} (docId, vectorId) VALUES ${placeholders}`
+    );
+
+    // Flatten the vectorRecords array to match the order of placeholders
+    const values = vectorRecords.reduce(
+      (arr, record) => arr.concat([record.docId, record.vectorId]),
+      []
+    );
+
+    stmt.run(values);
     stmt.finalize();
     db.close();
+
     return { documentsInserted: vectorRecords.length };
   },
   deleteForWorkspace: async function (workspaceId) {
