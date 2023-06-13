@@ -11,7 +11,7 @@
   "scripts": {
     "lint": "cd server && yarn lint && cd .. && cd frontend && yarn lint",
     "setup": "cd server && yarn && cd ../frontend && yarn && cd .. && yarn setup:envs && echo \"Please run yarn dev:server and yarn dev:frontend in separate terminal tabs.\"",
-    "setup:envs": "cd server && cp -n .env.example .env.development && cd ../collector && cp -n .env.example .env && cd ..",
+    "setup:envs": "cp -n ./server/.env.example ./server/.env.development && cp -n ./collector/.env.example ./collector/.env && cp -n ./docker/.env.example ./docker/.env && echo \"All ENV files copied!\n\"",
     "dev:server": "cd server && yarn dev",
     "dev:frontend": "cd frontend && yarn start",
     "prod:server": "cd server && yarn start",

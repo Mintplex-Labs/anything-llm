@@ -7,3 +7,7 @@ logs/server.log
 *.db
 storage/lancedb
 public/
+
+# For legacy copies of repo
+documents
+vector-cache
