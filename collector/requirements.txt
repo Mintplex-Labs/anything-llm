@@ -61,7 +61,7 @@ pycparser==2.21
 pydantic==1.10.8
 pyee==8.2.2
 Pygments==2.15.1
-pypandoc==1.11
+pypandoc==1.14
 pypdf==3.9.0
 pyppeteer==1.0.2
 pyquery==2.0.0

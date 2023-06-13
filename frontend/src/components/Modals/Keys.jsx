@@ -17,27 +17,27 @@ export default function KeysModal({ hideModal = noop }) {
   }, []);
 
   return (
-    <div class="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-black bg-opacity-50 flex items-center justify-center">
       <div
         className="flex fixed top-0 left-0 right-0 w-full h-full"
         onClick={hideModal}
       />
-      <div class="relative w-full max-w-2xl max-h-full">
-        <div class="relative bg-white rounded-lg shadow dark:bg-stone-700">
-          <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+      <div className="relative w-full max-w-2xl max-h-full">
+        <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
+          <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
               Your System Settings
             </h3>
             <button
               onClick={hideModal}
               type="button"
-              class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+              className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
               data-modal-hide="staticModal"
             >
               <X className="text-gray-300 text-lg" />
             </button>
           </div>
-          <div class="p-6 space-y-6 flex h-full w-full">
+          <div className="p-6 space-y-6 flex h-full w-full">
             {loading ? (
               <div className="w-full h-full flex items-center justify-center">
                 <p className="text-gray-800 dark:text-gray-200 text-base">
@@ -100,11 +100,11 @@ export default function KeysModal({ hideModal = noop }) {
               </div>
             )}
           </div>
-          <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+          <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
             <button
               onClick={hideModal}
               type="button"
-              class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+              className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
             >
               Close
             </button>
@@ -120,8 +120,8 @@ function ShowKey({ name, value, valid }) {
     return (
       <div>
         <label
-          for="error"
-          class="block mb-2 text-sm font-medium text-red-700 dark:text-red-500"
+          htmlFor="error"
+          className="block mb-2 text-sm font-medium text-red-700 dark:text-red-500"
         >
           {name}
         </label>
@@ -129,11 +129,11 @@ function ShowKey({ name, value, valid }) {
           type="text"
           id="error"
           disabled={true}
-          class="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
+          className="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
           placeholder={name}
           defaultValue={value}
         />
-        <p class="mt-2 text-sm text-red-600 dark:text-red-500">
+        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
           Need setup in .env file.
         </p>
       </div>
@@ -141,10 +141,10 @@ function ShowKey({ name, value, valid }) {
   }
 
   return (
-    <div class="mb-6">
+    <div className="mb-6">
       <label
-        for="success"
-        class="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200"
+        htmlFor="success"
+        className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200"
       >
         {name}
       </label>
@@ -152,7 +152,7 @@ function ShowKey({ name, value, valid }) {
         type="text"
         id="success"
         disabled={true}
-        class="border border-white text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-green-500"
+        className="border border-white text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-green-500"
         defaultValue={value}
       />
     </div>

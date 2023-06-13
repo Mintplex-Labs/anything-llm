@@ -119,10 +119,11 @@ export default function ManageWorkspace({ hideModal = noop, workspace }) {
       setSelectFiles([...new Set(updatedDocs)]);
     } else {
       var newDocs = [];
-      if (isFolder) {
-        const folderItems = directories.items.find(
-          (item) => item.name === parent
-        ).items;
+      var parentDirs = directories.items.find(
+        (item) => item.name === parent
+      )
+      if (isFolder && parentDirs) {
+        const folderItems = parentDirs.items;
         newDocs = folderItems.map((item) => parent + "/" + item.name);
       } else {
         newDocs = [filepath];
