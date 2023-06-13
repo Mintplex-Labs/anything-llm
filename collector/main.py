@@ -1,5 +1,5 @@
 import os
-from whaaaaat import prompt, Separator
+from InquirerPy import inquirer
 from scripts.youtube import youtube
 from scripts.link import link, links
 from scripts.substack import substack
@@ -20,57 +20,46 @@ def main():
     selection = input("Your selection: ")
     method = methods.get(str(selection))
   else:
-    questions = [
-      {
-          "type": "list",
-          "name": "collector",
-          "message": "What kind of data would you like to add to convert into long-term memory?",
-          "choices": [
-              "YouTube Channel",
-              "Substack",
-              "Medium",
-              "Article or Blog Link(s)",
-              "Gitbook",
-              Separator(),
-              {"name": "Twitter", "disabled": "Needs PR"},
-              "Abort",
-          ],
-      },
-    ]
-    method = prompt(questions).get('collector')
-  
-  if('Article or Blog Link' in method):
-    questions = [
-      {
-          "type": "list",
-          "name": "collector",
-          "message": "Do you want to scrape a single article/blog/url or many at once?",
-          "choices": [
-            'Single URL',
-            'Multiple URLs',
-            'Abort',
-          ],
-      },
-    ]
-    method = prompt(questions).get('collector')
-    if(method == 'Single URL'):
+    method = inquirer.select(
+      message="What kind of data would you like to add to convert into long-term memory?",
+      choices=[
+        {"name": "YouTube Channel", "value": "YouTube Channel"},
+        {"name": "Substack", "value": "Substack"},
+        {"name": "Medium", "value": "Medium"},
+        {"name": "Article or Blog Link(s)", "value": "Article or Blog Link(s)"},
+        {"name": "Gitbook", "value": "Gitbook"},
+        {"name": "Twitter", "value": "Twitter", "disabled": "Needs PR"},
+        {"name": "Abort", "value": "Abort"},
+      ],
+    ).execute()
+
+  if 'Article or Blog Link' in method:
+    method = inquirer.select(
+      message="Do you want to scrape a single article/blog/url or many at once?",
+      choices=[
+        {"name": "Single URL", "value": "Single URL"},
+        {"name": "Multiple URLs", "value": "Multiple URLs"},
+        {"name": "Abort", "value": "Abort"},
+      ],
+    ).execute()
+    if method == 'Single URL':
       link()
       exit(0)
-    if(method == 'Multiple URLs'):
+    if method == 'Multiple URLs':
       links()
       exit(0)
 
-  if(method == 'Abort'): exit(0)
-  if(method == 'YouTube Channel'): 
+  if method == 'Abort': exit(0)
+  if method == 'YouTube Channel':
     youtube()
     exit(0)
-  if(method == 'Substack'):
+  if method == 'Substack':
     substack()
     exit(0)
-  if(method == 'Medium'):
+  if method == 'Medium':
     medium()
     exit(0)
-  if(method == 'Gitbook'):
+  if method == 'Gitbook':
     gitbook()
     exit(0)
 

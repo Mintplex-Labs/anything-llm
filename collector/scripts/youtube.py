@@ -17,7 +17,7 @@ def youtube():
         exit(1)
 
     channel_data = fetch_channel_video_information(channel_id)
-    transaction_output_dir = f"../server/documents/youtube-{channel_data.get('channelTitle')}"
+    transaction_output_dir = f"../server/storage/documents/youtube-{channel_data.get('channelTitle')}"
 
     if os.path.isdir(transaction_output_dir) == False:
       os.makedirs(transaction_output_dir)

@@ -1,8 +1,9 @@
 .env.production
 .env.development
-documents/*
-vector-cache/*.json
-!documents/DOCUMENTS.md
+storage/documents/*
+storage/vector-cache/*.json
+!storage/documents/DOCUMENTS.md
 logs/server.log
 *.db
-lancedb
+storage/lancedb
+public/

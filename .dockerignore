@@ -1,0 +1,13 @@
+server/storage/documents/**
+server/storage/vector-cache/**
+server/storage/*.db
+server/storage/lancedb
+collector/hotdir/**
+collector/v-env/**
+collector/outputs/**
+**/node_modules/
+**/dist/
+**/v-env/
+**/__pycache__/
+**/.env
+**/.env.*

@@ -27,7 +27,7 @@ function curateLanceSources(sources = []) {
 
 const LanceDb = {
   uri: `${
-    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./"
+    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
   }lancedb`,
   name: "LanceDb",
   connect: async function () {

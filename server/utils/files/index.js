@@ -6,7 +6,7 @@ async function collectDocumentData(folderName = null) {
   if (!folderName) throw new Error("No docPath provided in request");
   const folder =
     process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../documents/${folderName}`)
+      ? path.resolve(__dirname, `../../storage/documents/${folderName}`)
       : path.resolve(process.env.STORAGE_DIR, `documents/${folderName}`);
 
   const dirExists = fs.existsSync(folder);
@@ -35,7 +35,7 @@ async function fileData(filePath = null) {
 
   const fullPath =
     process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../documents/${filePath}`)
+      ? path.resolve(__dirname, `../../storage/documents/${filePath}`)
       : path.resolve(process.env.STORAGE_DIR, `documents/${filePath}`);
   const fileExists = fs.existsSync(fullPath);
   if (!fileExists) return null;
@@ -47,7 +47,7 @@ async function fileData(filePath = null) {
 async function viewLocalFiles() {
   const folder =
     process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../documents`)
+      ? path.resolve(__dirname, `../../storage/documents`)
       : path.resolve(process.env.STORAGE_DIR, `documents`);
   const dirExists = fs.existsSync(folder);
   if (!dirExists) fs.mkdirSync(folder);
@@ -63,7 +63,7 @@ async function viewLocalFiles() {
 
     const folderPath =
       process.env.NODE_ENV === "development"
-        ? path.resolve(__dirname, `../../documents/${file}`)
+        ? path.resolve(__dirname, `../../storage/documents/${file}`)
         : path.resolve(process.env.STORAGE_DIR, `documents/${file}`);
 
     const isFolder = fs.lstatSync(folderPath).isDirectory();
@@ -106,7 +106,7 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
   const digest = uuidv5(filename, uuidv5.URL);
   const file =
     process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../vector-cache/${digest}.json`)
+      ? path.resolve(__dirname, `../../storage/vector-cache/${digest}.json`)
       : path.resolve(process.env.STORAGE_DIR, `vector-cache/${digest}.json`);
   const exists = fs.existsSync(file);
 
@@ -130,7 +130,7 @@ async function storeVectorResult(vectorData = [], filename = null) {
   );
   const folder =
     process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../vector-cache`)
+      ? path.resolve(__dirname, `../../storage/vector-cache`)
       : path.resolve(process.env.STORAGE_DIR, `vector-cache`);
 
   if (!fs.existsSync(folder)) fs.mkdirSync(folder);

@@ -1,0 +1,30 @@
+version: '3.9'
+
+networks:
+  anything-llm:
+    driver: bridge
+  # chroma_net:
+  #   external: true
+
+services:
+  anything-llm:
+    container_name: anything-llm
+    image: anything-llm:latest
+    build:
+      context: ../.
+      dockerfile: ./docker/Dockerfile
+      args:
+        ARG_UID: ${UID}
+        ARG_GID: ${GID}
+    volumes:
+      - "../server/storage:/app/server/storage"
+      - "../collector/hotdir/:/app/collector/hotdir"
+      - "../collector/outputs/:/app/collector/outputs"
+    user: "${UID}:${GID}"
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    networks:
+      - anything-llm
+      # - chroma_net

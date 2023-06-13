@@ -52,9 +52,9 @@ Next, you will need some content to embed. This could be a Youtube Channel, Medi
 
 [Go set up and run collector scripts](./collector/README.md)
 
-[Learn about documents](./server/documents/DOCUMENTS.md)
+[Learn about documents](./server/storage/documents/DOCUMENTS.md)
 
-[Learn about vector caching](./server/vector-cache/VECTOR_CACHE.md)
+[Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
 
 ### Contributing
 - create issue

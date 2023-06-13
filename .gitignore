@@ -5,6 +5,5 @@ v-env
 node_modules
 __pycache__
 v-env
-*.lock
 .DS_Store
 
