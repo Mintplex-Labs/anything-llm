@@ -26,9 +26,8 @@ function curateLanceSources(sources = []) {
 }
 
 const LanceDb = {
-  uri: `${
-    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
-  }lancedb`,
+  uri: `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
+    }lancedb`,
   name: "LanceDb",
   connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
@@ -91,13 +90,11 @@ const LanceDb = {
   updateOrCreateCollection: async function (client, data = [], namespace) {
     if (await this.hasNamespace(namespace)) {
       const collection = await client.openTable(namespace);
-      const result = await collection.add(data);
-      console.log({ result });
+      await collection.add(data);
       return true;
     }
 
-    const result = await client.createTable(namespace, data);
-    console.log({ result });
+    await client.createTable(namespace, data);
     return true;
   },
   hasNamespace: async function (namespace = null) {
@@ -149,7 +146,6 @@ const LanceDb = {
           });
         }
 
-        console.log(submissions);
         await this.updateOrCreateCollection(client, submissions, namespace);
         await DocumentVectors.bulkInsert(documentVectors);
         return true;
