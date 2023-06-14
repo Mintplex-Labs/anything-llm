@@ -4,6 +4,7 @@ from requests_html import HTMLSession
 from langchain.document_loaders import UnstructuredHTMLLoader
 from .link_utils import  append_meta
 from .utils import tokenize, ada_v2_cost
+from requests.exceptions import ReadTimeout
     
 # Example Channel URL https://tim.blog/2022/08/09/nft-insider-trading-policy/
 def link():
@@ -83,57 +84,71 @@ def links():
     print("No valid links provided!")
     exit(1)
 
-  totalTokens = 0
-  for link in links:
-    print(f"Working on {link}...")
-    session = HTMLSession()
-    req = session.get(link)
-    if(req.ok == False):
-      print(f"Could not reach {link} - skipping!")
-      continue
-    
-    req.html.render()
-    full_text = None
-    with tempfile.NamedTemporaryFile(mode = "w") as tmp:
-      tmp.write(req.html.html)
-      tmp.seek(0)
-      loader = UnstructuredHTMLLoader(tmp.name)
-      data = loader.load()[0]
-      full_text = data.page_content
-      tmp.close()
-  
-    link = append_meta(req, full_text, True)
-    if(len(full_text) > 0):
-      source = urlparse(req.url)
-      output_filename = f"website-{source.netloc}-{source.path.replace('/','_')}.json"
-      output_path = f"./outputs/website-logs"
+  parse_links(links)
 
-      transaction_output_filename = f"article-{source.path.replace('/','_')}.json"
-      transaction_output_dir = f"../server/storage/documents/website-{source.netloc}"
 
-      if os.path.isdir(output_path) == False:
-        os.makedirs(output_path)
 
-      if os.path.isdir(transaction_output_dir) == False:
-        os.makedirs(transaction_output_dir)
+# parse links from array
+def parse_links(links):
+    totalTokens = 0
+    for link in links:
+        if link.endswith(".pdf"):
+            print(f"Skipping PDF file: {link}")
+            continue
+                
+        print(f"Working on {link}...")
+        session = HTMLSession()
+        
+        req = session.get(link, timeout=20) 
 
-      full_text = append_meta(req, full_text)
-      tokenCount = len(tokenize(full_text))
-      link['pageContent'] = full_text
-      link['token_count_estimate'] = tokenCount
-      totalTokens += tokenCount
+        if not req.ok:
+            print(f"Could not reach {link} - skipping!")
+            continue
+        
+        req.html.render(timeout=10)    
 
-      with open(f"{output_path}/{output_filename}", 'w', encoding='utf-8') as file:
-        json.dump(link, file, ensure_ascii=True, indent=4)
+        full_text = None
+        with tempfile.NamedTemporaryFile(mode="w") as tmp:
+            tmp.write(req.html.html)
+            tmp.seek(0)
+            loader = UnstructuredHTMLLoader(tmp.name)
+            data = loader.load()[0]
+            full_text = data.page_content
+            tmp.close()
+        
+        link = append_meta(req, full_text, True)
+        if len(full_text) > 0:
+            source = urlparse(req.url)
+            output_filename = f"website-{source.netloc}-{source.path.replace('/','_')}.json"
+            output_path = f"./outputs/website-logs"
 
-      with open(f"{transaction_output_dir}/{transaction_output_filename}", 'w', encoding='utf-8') as file:
-        json.dump(link, file, ensure_ascii=True, indent=4)
-    else:
-      print(f"Could not parse any meaningful data from {link}.")
-      continue
+            transaction_output_filename = f"article-{source.path.replace('/','_')}.json"
+            transaction_output_dir = f"../server/storage/documents/website-{source.netloc}"
 
-  print(f"\n\n[Success]: {len(links)} article or link contents fetched!")
-  print(f"////////////////////////////")
-  print(f"Your estimated cost to embed this data using OpenAI's text-embedding-ada-002 model at $0.0004 / 1K tokens will cost {ada_v2_cost(totalTokens)} using {totalTokens} tokens.")
-  print(f"////////////////////////////")
-  exit(0)
+            if not os.path.isdir(output_path):
+                os.makedirs(output_path)
+
+            if not os.path.isdir(transaction_output_dir):
+                os.makedirs(transaction_output_dir)
+
+            full_text = append_meta(req, full_text)
+            tokenCount = len(tokenize(full_text))
+            link['pageContent'] = full_text
+            link['token_count_estimate'] = tokenCount
+            totalTokens += tokenCount
+
+            with open(f"{output_path}/{output_filename}", 'w', encoding='utf-8') as file:
+                json.dump(link, file, ensure_ascii=True, indent=4)
+
+            with open(f"{transaction_output_dir}/{transaction_output_filename}", 'w', encoding='utf-8') as file:
+                json.dump(link, file, ensure_ascii=True, indent=4)
+
+            req.session.close()
+        else:
+            print(f"Could not parse any meaningful data from {link}.")
+            continue    
+
+    print(f"\n\n[Success]: {len(links)} article or link contents fetched!")
+    print(f"////////////////////////////")
+    print(f"Your estimated cost to embed this data using OpenAI's text-embedding-ada-002 model at $0.0004 / 1K tokens will cost {ada_v2_cost(totalTokens)} using {totalTokens} tokens.")
+    print(f"////////////////////////////")
