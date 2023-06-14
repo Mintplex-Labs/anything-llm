@@ -16,7 +16,7 @@ import chalk from 'chalk';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPLACEMENT_KEY = '!SUB::USER::CONTENT!'
 
-const envPath = path.resolve(__dirname, `.env`)
+const envPath = path.resolve(__dirname, `../../docker/.env`)
 const envFileExists = fs.existsSync(envPath);
 
 if (!envFileExists) {
@@ -39,16 +39,18 @@ const settings = fs.readFileSync(envPath, "utf8")
   .filter((i) => !!i)
 
 
-const templatePath = path.resolve(__dirname, `cf_template.json`);
+const templatePath = path.resolve(__dirname, `cf_template.template`);
 const templateString = fs.readFileSync(templatePath, "utf8");
 const template = JSON.parse(templateString);
 
 const cmdIdx = template.Resources.AnythingLLMInstance.Properties.UserData['Fn::Base64']['Fn::Join'][1].findIndex((cmd) => cmd === REPLACEMENT_KEY)
 template.Resources.AnythingLLMInstance.Properties.UserData['Fn::Base64']['Fn::Join'][1].splice(cmdIdx, 1, ...settings);
 
-const output = path.resolve(__dirname, `../aws_cf_deploy_anything_llm.json`);
+const output = path.resolve(__dirname, `aws_cf_deploy_anything_llm.json`);
 fs.writeFileSync(output, JSON.stringify(template, null, 2), "utf8");
 
 console.log(chalk.greenBright('[SUCCESS]'), 'Deploy AnythingLLM on AWS CloudFormation using your template document.');
-console.log(chalk.greenBright('File Created:'), 'aws_cf_deploy_anything_llm.json in project root.');
+console.log(chalk.greenBright('File Created:'), 'aws_cf_deploy_anything_llm.json in aws/cloudformation directory.');
+console.log(chalk.blueBright('[INFO]'), 'Refer to aws/cloudformation/DEPLOY.md for how to use this file.');
+
 exit();

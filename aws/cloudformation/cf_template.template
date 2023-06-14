@@ -1,5 +1,19 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Create a stack that runs AnythingLLM on a single instance",
+  "Parameters": {
+    "InstanceType": {
+      "Description": "EC2 instance type",
+      "Type": "String",
+      "Default": "t2.micro"
+    },
+    "InstanceVolume": {
+      "Description": "Storage size of disk on Instance in GB",
+      "Type": "Number",
+      "Default": 10,
+      "MinValue": 2
+    }
+  },
   "Resources": {
     "AnythingLLMInstance": {
       "Type": "AWS::EC2::Instance",
@@ -13,7 +27,9 @@
             "AMI"
           ]
         },
-        "InstanceType": "t2.micro",
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
         "SecurityGroupIds": [
           {
             "Ref": "AnythingLLMInstanceSecurityGroup"
@@ -31,7 +47,9 @@
               ]
             },
             "Ebs": {
-              "VolumeSize": 24
+              "VolumeSize": {
+                "Ref": "InstanceVolume"
+              }
             }
           }
         ],

@@ -16,7 +16,7 @@
     "dev:frontend": "cd frontend && yarn start",
     "prod:server": "cd server && yarn start",
     "prod:frontend": "cd frontend && yarn build",
-    "generate::cloudformation": "node docker/generateCloudformation.mjs"
+    "generate:cloudformation": "node aws/cloudformation/generate.mjs"
   },
   "private": false,
   "devDependencies": {
