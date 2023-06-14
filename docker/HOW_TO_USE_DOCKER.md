@@ -9,15 +9,30 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 - `git clone` this repo and `cd anything-llm` to get to the root directory.
 - `yarn setup:envs` from repo root & fill out the `.env` file that is then created in `./docker/`
 - `cd docker/`
-- `docker-compose up -d --build` to build the image - this will take a few moments.
+- To build the image, **use any of these commands based on your CPU architecture**.
+  
+  **This will use `amd64` (common on Windows/Intel Mac)**
 
-Your docker host will show the image as online one the build process is completed. This will build the app to `http://localhost:3001`.
+  ```
+  docker-compose up -d --build
+  ```
+  
+  **This will use `arm64` (M1/M2 Mac)**
+
+  ```
+  ARCH=arm64 docker-compose up -d --build
+  ```
+
+  This step will take a few moments on the first run.
+
+
+Your docker host will show the image as online once the build process is completed. This will build the app to `http://localhost:3001`.
 
 ## How to use the user interface
-- To access the full application visit `http://localhost:3001` in your browser.
+- To access the full application, visit `http://localhost:3001` in your browser.
 
 ## How to add files to my system
-- To run the collector scripts to grab external data (articles, URLs, etc)
+- To run the collector scripts to grab external data (articles, URLs, etc.)
   - `docker exec -it --workdir=/app/collector anything-llm python main.py`
 
 - To run the collector on local documents you want to provide to it
@@ -29,7 +44,7 @@ Your docker host will show the image as online one the build process is complete
 
 
 ## ⚠️ Vector DB support ⚠️
-Out of the box all vector databases are supported. Any vector databases requiring special configuration are listed below.
+Out of the box, all vector databases are supported. Any vector databases requiring special configuration are listed below.
 
 ### Using local ChromaDB with Dockerized AnythingLLM
 - Ensure in your `./docker/.env` file that you have
