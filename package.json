@@ -15,7 +15,11 @@
     "dev:server": "cd server && yarn dev",
     "dev:frontend": "cd frontend && yarn start",
     "prod:server": "cd server && yarn start",
-    "prod:frontend": "cd frontend && yarn build"
+    "prod:frontend": "cd frontend && yarn build",
+    "generate:cloudformation": "node aws/cloudformation/generate.mjs"
   },
-  "private": false
+  "private": false,
+  "devDependencies": {
+    "chalk": "^5.2.0"
+  }
 }
