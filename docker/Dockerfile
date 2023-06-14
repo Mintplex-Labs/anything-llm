@@ -96,7 +96,7 @@ RUN if [ "$ARG_CLOUD_BUILD" = 1 ] ; then \
     echo "Reowning all files as user!" && \
     mkdir -p app/server/storage app/server/storage/documents app/server/storage/vector-cache app/server/storage/lancedb && \
     touch anythingllm.db && \
-    chown -Rv anythingllm:anythingllm /app/collector /app/server; \
+    chown -R anythingllm:anythingllm /app/collector /app/server; \
   fi
 USER anythingllm
 
