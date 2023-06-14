@@ -16,6 +16,7 @@ services:
       args:
         ARG_UID: ${UID}
         ARG_GID: ${GID}
+        ARCH: ${ARCH:-amd64}
     volumes:
       - "../server/storage:/app/server/storage"
       - "../collector/hotdir/:/app/collector/hotdir"
