@@ -90,7 +90,7 @@
                 "sudo systemctl enable docker\n",
                 "sudo systemctl start docker\n",
                 "sudo yum install git -y\n",
-                "git clone -b cloud-deploy https://github.com/Mintplex-Labs/anything-llm.git /home/ec2-user/anything-llm\n",
+                "git clone https://github.com/Mintplex-Labs/anything-llm.git /home/ec2-user/anything-llm\n",
                 "cd /home/ec2-user/anything-llm/docker\n",
                 "cat >> .env << \"END\"\n",
                 "!SUB::USER::CONTENT!",

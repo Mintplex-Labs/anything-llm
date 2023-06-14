@@ -37,7 +37,7 @@ const settings = fs.readFileSync(envPath, "utf8")
   .replace(/^\s*\n/gm, "")
   .split('\n')
   .filter((i) => !!i)
-
+  .map((i) => i + '\n')
 
 const templatePath = path.resolve(__dirname, `cf_template.template`);
 const templateString = fs.readFileSync(templatePath, "utf8");
