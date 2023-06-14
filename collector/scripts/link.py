@@ -4,7 +4,7 @@ from requests_html import HTMLSession
 from langchain.document_loaders import UnstructuredHTMLLoader
 from .link_utils import  append_meta
 from .utils import tokenize, ada_v2_cost
-from requests.exceptions import ReadTimeout
+import re
     
 # Example Channel URL https://tim.blog/2022/08/09/nft-insider-trading-policy/
 def link():
@@ -92,8 +92,8 @@ def links():
 def parse_links(links):
     totalTokens = 0
     for link in links:
-        if link.endswith(".pdf"):
-            print(f"Skipping PDF file: {link}")
+        if extensions_to_ignore(link):
+            print(f"Skipping PDF/Image file: {link}")
             continue
                 
         print(f"Working on {link}...")
@@ -152,3 +152,11 @@ def parse_links(links):
     print(f"////////////////////////////")
     print(f"Your estimated cost to embed this data using OpenAI's text-embedding-ada-002 model at $0.0004 / 1K tokens will cost {ada_v2_cost(totalTokens)} using {totalTokens} tokens.")
     print(f"////////////////////////////")
+
+def extensions_to_ignore(string):
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.pdf']
+
+    pattern = r'\b(' + '|'.join(re.escape(ext) for ext in image_extensions) + r')\b'
+    match = re.search(pattern, string, re.IGNORECASE)
+
+    return match is not None    
