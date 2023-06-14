@@ -4,6 +4,7 @@ FROM ubuntu:jammy-20230522 AS base
 # Build arguments
 ARG ARG_UID
 ARG ARG_GID
+ARG ARG_CLOUD_BUILD
 
 # Install system dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -87,6 +88,15 @@ EXPOSE 3001
 # Setup the healthcheck
 HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
   CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
+
+# Docker will still install deps as root so need to force chown
+# or else 
+USER root
+RUN if [ "$ARG_CLOUD_BUILD" = 1 ] ; then \
+    echo "Reowning all files as user!" && \
+    chown -R anythingllm:anythingllm /app/collector app/server; \
+  fi
+USER anythingllm
 
 # Run the server
 ENTRYPOINT ["docker-entrypoint.sh"]
