@@ -4,6 +4,7 @@ FROM ubuntu:jammy-20230522 AS base
 # Build arguments
 ARG ARG_UID
 ARG ARG_GID
+ARG ARCH=amd64 # Default to amd64 if not provided
 
 # Install system dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -19,9 +20,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     curl -LO https://github.com/yarnpkg/yarn/releases/download/v1.22.19/yarn_1.22.19_all.deb \
         && dpkg -i yarn_1.22.19_all.deb \
         && rm yarn_1.22.19_all.deb && \
-    curl -LO https://github.com/jgm/pandoc/releases/download/3.1.3/pandoc-3.1.3-1-amd64.deb \
-        && dpkg -i pandoc-3.1.3-1-amd64.deb \
-        && rm pandoc-3.1.3-1-amd64.deb && \
+    curl -LO https://github.com/jgm/pandoc/releases/download/3.1.3/pandoc-3.1.3-1-${ARCH}.deb \
+        && dpkg -i pandoc-3.1.3-1-${ARCH}.deb \
+        && rm pandoc-3.1.3-1-${ARCH}.deb && \
     rm -rf /var/lib/apt/lists/* /usr/share/icons && \
     dpkg-reconfigure -f noninteractive tzdata && \
     python3 -m pip install --no-cache-dir virtualenv
