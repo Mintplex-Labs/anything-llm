@@ -13,6 +13,7 @@ def parse_sitemap(url):
     
     return urls
 
+# Example sitemap URL https://www.nerdwallet.com/blog/wp-sitemap-news-articles-1.xml
 def sitemap():
     sitemap_url = input("Enter the URL of the sitemap: ")
     
