@@ -12,12 +12,26 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import { exit } from 'process';
-import chalk from 'chalk';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPLACEMENT_KEY = '!SUB::USER::CONTENT!'
 
 const envPath = path.resolve(__dirname, `../../docker/.env`)
 const envFileExists = fs.existsSync(envPath);
+
+const chalk = {
+  redBright: function (text) {
+    return `\x1b[31m${text}\x1b[0m`
+  },
+  cyan: function (text) {
+    return `\x1b[36m${text}\x1b[0m`
+  },
+  greenBright: function (text) {
+    return `\x1b[32m${text}\x1b[0m`
+  },
+  blueBright: function (text) {
+    return `\x1b[34m${text}\x1b[0m`
+  }
+}
 
 if (!envFileExists) {
   console.log(chalk.redBright('[ABORT]'), 'You do not have an .env file in your ./docker/ folder. You need to create it first.');

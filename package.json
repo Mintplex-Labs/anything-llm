@@ -18,8 +18,5 @@
     "prod:frontend": "cd frontend && yarn build",
     "generate:cloudformation": "node aws/cloudformation/generate.mjs"
   },
-  "private": false,
-  "devDependencies": {
-    "chalk": "^5.2.0"
-  }
+  "private": false
 }
