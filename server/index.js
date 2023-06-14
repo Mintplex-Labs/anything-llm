@@ -61,11 +61,13 @@ apiRouter.post("/v/:command", async (request, response) => {
 app.use("/api", apiRouter);
 
 if (process.env.NODE_ENV !== "development") {
-  app.use(express.static(path.resolve(__dirname, 'public'), {extensions: ["js"]}));
+  app.use(
+    express.static(path.resolve(__dirname, "public"), { extensions: ["js"] })
+  );
 
   app.use("/", function (_, response) {
     response.sendFile(path.join(__dirname, "public", "index.html"));
-  })
+  });
 }
 
 app.all("*", function (_, response) {
