@@ -3,6 +3,7 @@ import { AlertTriangle } from "react-feather";
 import Jazzicon from "../../../../UserIcon";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
+import renderMarkdown from "../../../../../utils/chat/markdown";
 
 function HistoricalMessage({
   message,
@@ -52,9 +53,10 @@ function HistoricalMessage({
     <div ref={replyRef} className="flex justify-start items-end mb-4">
       <Jazzicon size={30} user={{ uid: workspace.slug }} />
       <div className="ml-2 py-3 px-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
-        <span className="whitespace-pre-line text-slate-800 dark:text-slate-200 font-semibold">
-          {message}
-        </span>
+        <span
+          className="whitespace-pre-line text-slate-800 dark:text-slate-200 font-semibold flex flex-col gap-y-1"
+          dangerouslySetInnerHTML={{ __html: renderMarkdown(message) }}
+        />
         <Citations sources={sources} />
       </div>
     </div>
