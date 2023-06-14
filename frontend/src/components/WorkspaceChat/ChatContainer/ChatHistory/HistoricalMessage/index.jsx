@@ -54,7 +54,7 @@ function HistoricalMessage({
       <Jazzicon size={30} user={{ uid: workspace.slug }} />
       <div className="ml-2 py-3 px-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
         <span
-          className="whitespace-pre-line text-slate-800 dark:text-slate-200 font-semibold"
+          className="whitespace-pre-line text-slate-800 dark:text-slate-200 font-semibold flex flex-col gap-y-1"
           dangerouslySetInnerHTML={{ __html: renderMarkdown(message) }}
         />
         <Citations sources={sources} />
