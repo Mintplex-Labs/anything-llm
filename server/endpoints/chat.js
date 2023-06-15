@@ -14,8 +14,7 @@ function chatEndpoints(app) {
         response.sendStatus(400).end();
         return;
       }
-      response.sendStatus(400).end();
-      return;
+
       const result = await chatWithWorkspace(workspace, message, mode);
       response.status(200).json({ ...result });
     } catch (e) {
