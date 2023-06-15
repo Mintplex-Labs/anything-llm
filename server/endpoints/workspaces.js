@@ -5,6 +5,11 @@ const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { convertToChatHistory } = require("../utils/chats");
 const { getVectorDbClass } = require("../utils/helpers");
+const { setupMulter } = require("../utils/files/multer");
+const {
+  fileUploadProgress,
+} = require("../utils/middleware/fileUploadProgress");
+const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -41,6 +46,36 @@ function workspaceEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.post(
+    "/workspace/:slug/upload",
+    fileUploadProgress,
+    handleUploads.single("file"),
+    async function (request, _) {
+      const { originalname } = request.file;
+      const processingOnline = await checkPythonAppAlive();
+
+      if (!processingOnline) {
+        console.log(
+          `Python processing API is not online. Document ${originalname} will not be processed automatically.`
+        );
+        return;
+      }
+
+      const { success, reason } = await processDocument(originalname);
+      if (!success) {
+        console.log(
+          `Python processing API was not able to process document ${originalname}. Reason: ${reason}`
+        );
+        return false;
+      }
+
+      console.log(
+        `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
+      );
+      return;
+    }
+  );
 
   app.post("/workspace/:slug/update-embeddings", async (request, response) => {
     try {
@@ -127,6 +162,33 @@ function workspaceEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+}
+
+const PYTHON_API = "http://0.0.0.0:8888";
+async function checkPythonAppAlive() {
+  return await fetch(`${PYTHON_API}`)
+    .then((res) => res.ok)
+    .catch((e) => false);
+}
+
+async function processDocument(filename = "") {
+  if (!filename) return false;
+  return await fetch(`${PYTHON_API}/process`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ filename }),
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Response could not be completed");
+      return res.json();
+    })
+    .then((res) => res)
+    .catch((e) => {
+      console.log(e.message);
+      return { success: false, reason: e.message };
+    });
 }
 
 module.exports = { workspaceEndpoints };

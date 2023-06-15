@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Archive, Sliders, X } from "react-feather";
+import { Archive, Sliders, UploadCloud, X } from "react-feather";
 import DocumentSettings from "./Documents";
 import WorkspaceSettings from "./Settings";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
+import UploadToWorkspace from "./Upload";
 
 const TABS = {
   documents: DocumentSettings,
   settings: WorkspaceSettings,
+  upload: UploadToWorkspace,
 };
 
 const noop = () => false;
@@ -73,6 +75,13 @@ function WorkspaceSettingTabs({ selectedTab, changeTab }) {
           displayName="Documents"
           tabName="documents"
           icon={<Archive className="h-4 w-4" />}
+          onClick={changeTab}
+        />
+        <WorkspaceTab
+          active={selectedTab === "upload"}
+          displayName="Upload Docs"
+          tabName="upload"
+          icon={<UploadCloud className="h-4 w-4" />}
           onClick={changeTab}
         />
         <WorkspaceTab

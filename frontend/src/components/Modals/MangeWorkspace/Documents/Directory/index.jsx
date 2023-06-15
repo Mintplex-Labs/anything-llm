@@ -135,10 +135,10 @@ export default function Directory({
       </div>
       {showDetails && (
         <div className="ml-[20px] flex flex-col gap-y-1 my-1 p-2 rounded-md bg-slate-200 font-mono text-sm overflow-x-scroll">
-          {Object.entries(meta).map(([key, value]) => {
+          {Object.entries(meta).map(([key, value], i) => {
             if (key === "cached") return null;
             return (
-              <p className="whitespace-pre">
+              <p key={i} className="whitespace-pre">
                 {key}: {value}
               </p>
             );
