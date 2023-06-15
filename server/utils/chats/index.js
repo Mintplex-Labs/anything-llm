@@ -87,7 +87,7 @@ async function chatWithWorkspace(workspace, message, chatMode = "query") {
   if (!hasVectorizedSpace) {
     const rawHistory = await WorkspaceChats.forWorkspace(workspace.id);
     const chatHistory = convertToPromptHistory(rawHistory);
-    const response = await openai.sendChat(chatHistory, message);
+    const response = await openai.sendChat(chatHistory, message, workspace);
     const data = { text: response, sources: [], type: "chat" };
 
     await WorkspaceChats.new({
@@ -108,7 +108,11 @@ async function chatWithWorkspace(workspace, message, chatMode = "query") {
       response,
       sources,
       message: error,
-    } = await VectorDb[chatMode]({ namespace: workspace.slug, input: message });
+    } = await VectorDb[chatMode]({
+      namespace: workspace.slug,
+      input: message,
+      workspace,
+    });
     if (!response) {
       return {
         id: uuid,

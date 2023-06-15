@@ -20,6 +20,28 @@ function workspaceEndpoints(app) {
     }
   });
 
+  app.post("/workspace/:slug/update", async (request, response) => {
+    try {
+      const { slug = null } = request.params;
+      const data = reqBody(request);
+      const currWorkspace = await Workspace.get(`slug = '${slug}'`);
+
+      if (!currWorkspace) {
+        response.sendStatus(400).end();
+        return;
+      }
+
+      const { workspace, message } = await Workspace.update(
+        currWorkspace.id,
+        data
+      );
+      response.status(200).json({ workspace, message });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
   app.post("/workspace/:slug/update-embeddings", async (request, response) => {
     try {
       const { slug = null } = request.params;

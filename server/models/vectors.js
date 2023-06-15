@@ -1,8 +1,8 @@
+const { checkForMigrations } = require("../utils/database");
 const { Document } = require("./documents");
 
 // TODO: Do we want to store entire vectorized chunks in here
 // so that we can easily spin up temp-namespace clones for threading
-//
 const DocumentVectors = {
   tablename: "document_vectors",
   colsInit: `
@@ -12,7 +12,17 @@ const DocumentVectors = {
   createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
   lastUpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP
   `,
-  db: async function () {
+  migrateTable: async function () {
+    console.log(
+      `\x1b[34m[MIGRATING]\x1b[0m Checking for DocumentVector migrations`
+    );
+    const db = await this.db(false);
+    await checkForMigrations(this, db);
+  },
+  migrations: function () {
+    return [];
+  },
+  db: async function (tracing = true) {
     const sqlite3 = require("sqlite3").verbose();
     const { open } = require("sqlite");
 
@@ -26,7 +36,8 @@ const DocumentVectors = {
     await db.exec(
       `CREATE TABLE IF NOT EXISTS ${this.tablename} (${this.colsInit})`
     );
-    db.on("trace", (sql) => console.log(sql));
+
+    if (tracing) db.on("trace", (sql) => console.log(sql));
     return db;
   },
   bulkInsert: async function (vectorRecords = []) {

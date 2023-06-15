@@ -7,7 +7,7 @@ import {
   FolderPlus,
   Zap,
 } from "react-feather";
-import { nFormatter } from "../../../../utils/numbers";
+import { nFormatter } from "../../../../../utils/numbers";
 
 export default function Directory({
   files,

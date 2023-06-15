@@ -12,6 +12,7 @@ const { systemEndpoints } = require("./endpoints/system");
 const { workspaceEndpoints } = require("./endpoints/workspaces");
 const { chatEndpoints } = require("./endpoints/chat");
 const { getVectorDbClass } = require("./utils/helpers");
+const { validateTablePragmas } = require("./utils/database");
 const app = express();
 const apiRouter = express.Router();
 
@@ -25,8 +26,9 @@ app.use(
 );
 
 apiRouter.use("/system/*", validatedRequest);
-apiRouter.use("/workspace/*", validatedRequest);
 systemEndpoints(apiRouter);
+
+apiRouter.use("/workspace/*", validatedRequest);
 workspaceEndpoints(apiRouter);
 chatEndpoints(apiRouter);
 
@@ -75,7 +77,8 @@ app.all("*", function (_, response) {
 });
 
 app
-  .listen(process.env.SERVER_PORT || 3001, () => {
+  .listen(process.env.SERVER_PORT || 3001, async () => {
+    await validateTablePragmas();
     console.log(
       `Example app listening on port ${process.env.SERVER_PORT || 3001}`
     );

@@ -56,12 +56,12 @@ const Chroma = {
     const openai = new OpenAIApi(config);
     return openai;
   },
-  llm: function () {
+  llm: function ({ temperature = 0.7 }) {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     return new OpenAI({
       openAIApiKey: process.env.OPEN_AI_KEY,
-      temperature: 0.7,
       modelName: model,
+      temperature,
     });
   },
   embedChunk: async function (openai, textChunk) {
@@ -253,7 +253,7 @@ const Chroma = {
     return true;
   },
   query: async function (reqBody = {}) {
-    const { namespace = null, input } = reqBody;
+    const { namespace = null, input, workspace = {} } = reqBody;
     if (!namespace || !input) throw new Error("Invalid request body");
 
     const { client } = await this.connect();
@@ -269,7 +269,10 @@ const Chroma = {
       this.embedder(),
       { collectionName: namespace, url: process.env.CHROMA_ENDPOINT }
     );
-    const model = this.llm();
+    const model = this.llm({
+      temperature: workspace?.openAiTemp,
+    });
+
     const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
       k: 5,
       returnSourceDocuments: true,

@@ -1,6 +1,7 @@
 const { fileData } = require("../utils/files");
 const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass } = require("../utils/helpers");
+const { checkForMigrations } = require("../utils/database");
 
 const Document = {
   tablename: "workspace_documents",
@@ -14,7 +15,15 @@ const Document = {
   createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
   lastUpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP
   `,
-  db: async function () {
+  migrateTable: async function () {
+    console.log(`\x1b[34m[MIGRATING]\x1b[0m Checking for Document migrations`);
+    const db = await this.db(false);
+    await checkForMigrations(this, db);
+  },
+  migrations: function () {
+    return [];
+  },
+  db: async function (tracing = true) {
     const sqlite3 = require("sqlite3").verbose();
     const { open } = require("sqlite");
 
@@ -28,7 +37,8 @@ const Document = {
     await db.exec(
       `CREATE TABLE IF NOT EXISTS ${this.tablename} (${this.colsInit})`
     );
-    db.on("trace", (sql) => console.log(sql));
+
+    if (tracing) db.on("trace", (sql) => console.log(sql));
     return db;
   },
   forWorkspace: async function (workspaceId = null) {
