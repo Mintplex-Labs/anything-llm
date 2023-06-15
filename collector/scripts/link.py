@@ -4,7 +4,6 @@ from requests_html import HTMLSession
 from langchain.document_loaders import UnstructuredHTMLLoader
 from .link_utils import  append_meta
 from .utils import tokenize, ada_v2_cost
-from requests.exceptions import ReadTimeout
     
 # Example Channel URL https://tim.blog/2022/08/09/nft-insider-trading-policy/
 def link():
@@ -91,11 +90,7 @@ def links():
 # parse links from array
 def parse_links(links):
     totalTokens = 0
-    for link in links:
-        if link.endswith(".pdf"):
-            print(f"Skipping PDF file: {link}")
-            continue
-                
+    for link in links:               
         print(f"Working on {link}...")
         session = HTMLSession()
         
