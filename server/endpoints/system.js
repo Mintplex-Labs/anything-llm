@@ -2,6 +2,7 @@ process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
 const { viewLocalFiles } = require("../utils/files");
+const { checkPythonAppAlive } = require("../utils/files/documentProcessor");
 const { getVectorDbClass } = require("../utils/helpers");
 const { reqBody, makeJWT } = require("../utils/http");
 
@@ -83,6 +84,16 @@ function systemEndpoints(app) {
     try {
       const localFiles = await viewLocalFiles();
       response.status(200).json({ localFiles });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.get("/system/document-processing-status", async (_, response) => {
+    try {
+      const online = await checkPythonAppAlive();
+      response.sendStatus(online ? 200 : 503);
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();

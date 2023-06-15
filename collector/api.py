@@ -14,8 +14,3 @@ def process_file():
 @api.route('/', methods=['GET'])
 def root():
   return "<p>Use POST /process with filename key in JSON body in order to process a file. File by that name must exist in hotdir already.</p>"
-
-if __name__ == '__main__':
-  from waitress import serve
-  print("--- Document processing API is online at localhost:8888 ---\n")
-  serve(api, host="0.0.0.0", port=8888)

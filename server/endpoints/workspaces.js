@@ -9,6 +9,10 @@ const { setupMulter } = require("../utils/files/multer");
 const {
   fileUploadProgress,
 } = require("../utils/middleware/fileUploadProgress");
+const {
+  checkPythonAppAlive,
+  processDocument,
+} = require("../utils/files/documentProcessor");
 const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
@@ -162,33 +166,6 @@ function workspaceEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
-}
-
-const PYTHON_API = "http://0.0.0.0:8888";
-async function checkPythonAppAlive() {
-  return await fetch(`${PYTHON_API}`)
-    .then((res) => res.ok)
-    .catch((e) => false);
-}
-
-async function processDocument(filename = "") {
-  if (!filename) return false;
-  return await fetch(`${PYTHON_API}/process`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ filename }),
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error("Response could not be completed");
-      return res.json();
-    })
-    .then((res) => res)
-    .catch((e) => {
-      console.log(e.message);
-      return { success: false, reason: e.message };
-    });
 }
 
 module.exports = { workspaceEndpoints };

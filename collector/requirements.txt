@@ -29,6 +29,7 @@ Flask==2.3.2
 frozenlist==1.3.3
 grapheme==0.6.0
 greenlet==2.0.2
+gunicorn==20.1.0
 h11==0.14.0
 httpcore==0.16.3
 httpx==0.23.3
@@ -100,7 +101,6 @@ unstructured==0.7.1
 urllib3==1.26.16
 uuid==1.30
 w3lib==2.1.1
-waitress==2.1.2
 wcwidth==0.2.6
 websockets==10.4
 Werkzeug==2.3.6

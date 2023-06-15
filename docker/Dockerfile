@@ -33,13 +33,15 @@ RUN groupadd -g $ARG_GID anythingllm && \
     useradd -u $ARG_UID -m -d /app -s /bin/bash -g anythingllm anythingllm && \
     mkdir -p /app/frontend/ /app/server/ /app/collector/ && chown -R anythingllm:anythingllm /app
 
-# Copy the docker entrypoint and healthcheck scripts
+# Copy docker helper scripts
 COPY ./docker/docker-entrypoint.sh /usr/local/bin/
 COPY ./docker/docker-healthcheck.sh /usr/local/bin/
+COPY ./docker/dual_boot.sh /usr/local/bin/
 
 # Ensure the scripts are executable
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
-    chmod +x /usr/local/bin/docker-healthcheck.sh
+    chmod +x /usr/local/bin/docker-healthcheck.sh && \
+    chmod +x /usr/local/bin/dual_boot.sh
 
 USER anythingllm
 
@@ -104,4 +106,4 @@ USER anythingllm
 # Run the server
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-CMD ["node", "/app/server/index.js"]
+CMD /bin/bash /usr/local/bin/dual_boot.sh

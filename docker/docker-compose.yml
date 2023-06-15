@@ -3,8 +3,6 @@ version: '3.9'
 networks:
   anything-llm:
     driver: bridge
-  # chroma_net:
-  #   external: true
 
 services:
   anything-llm:
@@ -16,7 +14,7 @@ services:
       args:
         ARG_UID: ${UID}
         ARG_GID: ${GID}
-        ARG_CLOUD_BUILD: ${CLOUD_BUILD}
+        ARG_CLOUD_BUILD: ${CLOUD_BUILD:-0}
         ARCH: ${ARCH:-amd64}
     volumes:
       - "../server/storage:/app/server/storage"
@@ -29,4 +27,3 @@ services:
       - .env
     networks:
       - anything-llm
-      # - chroma_net

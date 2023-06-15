@@ -59,6 +59,13 @@ const System = {
         return { valid: false, message: e.message };
       });
   },
+  checkDocumentProcessorOnline: async () => {
+    return await fetch(`${API_BASE}/system/document-processing-status`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => res.ok)
+      .catch(() => false);
+  },
 };
 
 export default System;
