@@ -15,6 +15,22 @@ const Workspace = {
 
     return { workspace, message };
   },
+  update: async function (slug, data = {}) {
+    const { workspace, message } = await fetch(
+      `${API_BASE}/workspace/${slug}/update`,
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        return { workspace: null, message: e.message };
+      });
+
+    return { workspace, message };
+  },
   modifyEmbeddings: async function (slug, changes = {}) {
     const { workspace, message } = await fetch(
       `${API_BASE}/workspace/${slug}/update-embeddings`,

@@ -69,11 +69,16 @@ const LanceDb = {
       ? data[0].embedding
       : null;
   },
-  getChatCompletion: async function (openai, messages = []) {
+  getChatCompletion: async function (
+    openai,
+    messages = [],
+    { temperature = 0.7 }
+  ) {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     const { data } = await openai.createChatCompletion({
       model,
       messages,
+      temperature,
     });
 
     if (!data.hasOwnProperty("choices")) return null;
@@ -213,7 +218,7 @@ const LanceDb = {
     }
   },
   query: async function (reqBody = {}) {
-    const { namespace = null, input } = reqBody;
+    const { namespace = null, input, workspace = {} } = reqBody;
     if (!namespace || !input) throw new Error("Invalid request body");
 
     const { client } = await this.connect();
@@ -242,7 +247,9 @@ const LanceDb = {
       },
       { role: "user", content: input },
     ];
-    const responseText = await this.getChatCompletion(this.openai(), messages);
+    const responseText = await this.getChatCompletion(this.openai(), messages, {
+      temperature: workspace?.openAiTemp,
+    });
 
     return {
       response: responseText,

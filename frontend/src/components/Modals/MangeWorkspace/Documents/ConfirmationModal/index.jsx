@@ -1,5 +1,5 @@
 import React from "react";
-import { dollarFormat } from "../../../../utils/numbers";
+import { dollarFormat } from "../../../../../utils/numbers";
 
 export default function ConfirmationModal({
   directories,

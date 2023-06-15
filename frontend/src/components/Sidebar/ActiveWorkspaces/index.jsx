@@ -75,7 +75,7 @@ export default function ActiveWorkspaces() {
         );
       })}
       {showing && !!selectedWs && (
-        <ManageWorkspace hideModal={hideModal} workspace={selectedWs} />
+        <ManageWorkspace hideModal={hideModal} providedSlug={selectedWs.slug} />
       )}
     </>
   );

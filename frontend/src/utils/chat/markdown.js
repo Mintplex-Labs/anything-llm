@@ -31,6 +31,6 @@ window.copySnippet = function () {
   }, 5000);
 };
 
-export default function renderMarkdown(text) {
+export default function renderMarkdown(text = "") {
   return markdown.render(text);
 }

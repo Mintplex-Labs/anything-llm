@@ -40,7 +40,7 @@ class OpenAi {
     return { safe: false, reasons };
   }
 
-  async sendChat(chatHistory = [], prompt) {
+  async sendChat(chatHistory = [], prompt, workspace = {}) {
     const model = process.env.OPEN_MODEL_PREF;
     if (!this.isValidChatModel(model))
       throw new Error(
@@ -50,7 +50,7 @@ class OpenAi {
     const textResponse = await this.openai
       .createChatCompletion({
         model,
-        temperature: 0.7,
+        temperature: Number(workspace?.openAiTemp ?? 0.7),
         n: 1,
         messages: [
           { role: "system", content: "" },

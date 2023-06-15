@@ -1,7 +1,6 @@
 const { PineconeClient } = require("@pinecone-database/pinecone");
 const { PineconeStore } = require("langchain/vectorstores/pinecone");
 const { OpenAI } = require("langchain/llms/openai");
-const { ChatOpenAI } = require("langchain/chat_models/openai");
 const { VectorDBQAChain, LLMChain } = require("langchain/chains");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { VectorStoreRetrieverMemory } = require("langchain/memory");
@@ -50,20 +49,12 @@ const Pinecone = {
       ? data[0].embedding
       : null;
   },
-  llm: function () {
+  llm: function ({ temperature = 0.7 }) {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     return new OpenAI({
       openAIApiKey: process.env.OPEN_AI_KEY,
-      temperature: 0.7,
       modelName: model,
-    });
-  },
-  chatLLM: function () {
-    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
-    return new ChatOpenAI({
-      openAIApiKey: process.env.OPEN_AI_KEY,
-      temperature: 0.7,
-      modelName: model,
+      temperature,
     });
   },
   totalIndicies: async function () {
@@ -233,7 +224,7 @@ const Pinecone = {
     };
   },
   query: async function (reqBody = {}) {
-    const { namespace = null, input } = reqBody;
+    const { namespace = null, input, workspace = {} } = reqBody;
     if (!namespace || !input) throw new Error("Invalid request body");
 
     const { pineconeIndex } = await this.connect();
@@ -250,7 +241,9 @@ const Pinecone = {
       namespace,
     });
 
-    const model = this.llm();
+    const model = this.llm({
+      temperature: workspace?.openAiTemp,
+    });
     const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
       k: 5,
       returnSourceDocuments: true,
@@ -265,7 +258,7 @@ const Pinecone = {
   // This implementation of chat also expands the memory of the chat itself
   // and adds more tokens to the PineconeDB instance namespace
   chat: async function (reqBody = {}) {
-    const { namespace = null, input } = reqBody;
+    const { namespace = null, input, workspace = {} } = reqBody;
     if (!namespace || !input) throw new Error("Invalid request body");
 
     const { pineconeIndex } = await this.connect();
@@ -284,7 +277,9 @@ const Pinecone = {
       memoryKey: "history",
     });
 
-    const model = this.llm();
+    const model = this.llm({
+      temperature: workspace?.openAiTemp,
+    });
     const prompt =
       PromptTemplate.fromTemplate(`The following is a friendly conversation between a human and an AI. The AI is very casual and talkative and responds with a friendly tone. If the AI does not know the answer to a question, it truthfully says it does not know.
   Relevant pieces of previous conversation:
