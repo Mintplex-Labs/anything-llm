@@ -10,6 +10,7 @@ services:
   anything-llm:
     container_name: anything-llm
     image: anything-llm:latest
+    platform: linux/amd64
     build:
       context: ../.
       dockerfile: ./docker/Dockerfile
@@ -17,7 +18,6 @@ services:
         ARG_UID: ${UID}
         ARG_GID: ${GID}
         ARG_CLOUD_BUILD: ${CLOUD_BUILD}
-        ARCH: ${ARCH:-amd64}
     volumes:
       - "../server/storage:/app/server/storage"
       - "../collector/hotdir/:/app/collector/hotdir"
