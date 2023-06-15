@@ -41,7 +41,7 @@ COPY ./docker/dual_boot.sh /usr/local/bin/
 # Ensure the scripts are executable
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-healthcheck.sh && \
-    chmod +x /usr/local/bin/dual_boot.sh
+    chmod 777 /usr/local/bin/dual_boot.sh
 
 USER anythingllm
 
