@@ -37,15 +37,32 @@ async function checkForMigrations(model, db) {
   return;
 }
 
-async function validateTablePragmas() {
-  const { Workspace } = require("../../models/workspace");
-  const { Document } = require("../../models/documents");
-  const { DocumentVectors } = require("../../models/vectors");
-  const { WorkspaceChats } = require("../../models/workspaceChats");
-  await Workspace.migrateTable();
-  await Document.migrateTable();
-  await DocumentVectors.migrateTable();
-  await WorkspaceChats.migrateTable();
+// Note(tcarambat): When building in production via Docker the SQLite file will not exist
+// and if this function tries to run on boot the file will not exist
+// and the server will abort and the container will exit.
+// This function will run each reload on dev but on production
+// it will be stubbed until the /api/migrate endpoint is GET.
+async function validateTablePragmas(force = false) {
+  try {
+    if (process.env.NODE_ENV !== "development" && force === false) {
+      console.log(
+        `\x1b[34m[MIGRATIONS STUBBED]\x1b[0m Please ping /migrate once server starts to run migrations`
+      );
+      return;
+    }
+
+    const { Workspace } = require("../../models/workspace");
+    const { Document } = require("../../models/documents");
+    const { DocumentVectors } = require("../../models/vectors");
+    const { WorkspaceChats } = require("../../models/workspaceChats");
+    await Workspace.migrateTable();
+    await Document.migrateTable();
+    await DocumentVectors.migrateTable();
+    await WorkspaceChats.migrateTable();
+  } catch (e) {
+    console.error(`validateTablePragmas: Migrations failed`, e);
+  }
+  return;
 }
 
 module.exports = {

@@ -1,6 +1,7 @@
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
+const { validateTablePragmas } = require("../utils/database");
 const { viewLocalFiles } = require("../utils/files");
 const {
   checkPythonAppAlive,
@@ -13,6 +14,11 @@ function systemEndpoints(app) {
   if (!app) return;
 
   app.get("/ping", (_, response) => {
+    response.sendStatus(200);
+  });
+
+  app.get("/migrate", async (_, response) => {
+    await validateTablePragmas(true);
     response.sendStatus(200);
   });
 
