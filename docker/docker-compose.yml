@@ -14,7 +14,6 @@ services:
       args:
         ARG_UID: ${UID}
         ARG_GID: ${GID}
-        ARG_CLOUD_BUILD: ${CLOUD_BUILD:-0}
         ARCH: ${ARCH:-amd64}
     volumes:
       - "../server/storage:/app/server/storage"

@@ -4,7 +4,6 @@ FROM ubuntu:jammy-20230522 AS base
 # Build arguments
 ARG ARG_UID
 ARG ARG_GID
-ARG ARG_CLOUD_BUILD=0 # Default to local docker build
 ARG ARCH=amd64 # Default to amd64 if not provided
 
 # Install system dependencies

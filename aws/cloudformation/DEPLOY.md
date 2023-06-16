@@ -11,7 +11,7 @@ The output of this cloudformation stack will be:
 
 **Requirements**
 - An AWS account with billing information.
-  - AnythingLLM can run within the free tier using a t2.micro and 10Gib SSD hard disk volume
+  - AnythingLLM (GUI + document processor) must use a t2.small minimum and 10Gib SSD hard disk volume
 - `.env` file that is filled out with your settings and set up in the `docker/` folder
 
 ## How to deploy on AWS
