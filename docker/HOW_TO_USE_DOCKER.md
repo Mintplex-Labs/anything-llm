@@ -9,22 +9,7 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 - `git clone` this repo and `cd anything-llm` to get to the root directory.
 - `yarn setup:envs` from repo root & fill out the `.env` file that is then created in `./docker/`
 - `cd docker/`
-- To build the image, **use any of these commands based on your CPU architecture**.
-  
-  **This will use `amd64` (common on Windows/Intel Mac)**
-
-  ```
-  docker-compose up -d --build
-  ```
-  
-  **This will use `arm64` (M1/M2 Mac)**
-
-  ```
-  ARCH=arm64 docker-compose up -d --build
-  ```
-
-  This step will take a few moments on the first run.
-
+- `docker-compose up -d --build` to build the image - this will take a few moments.
 
 Your docker host will show the image as online once the build process is completed. This will build the app to `http://localhost:3001`.
 
