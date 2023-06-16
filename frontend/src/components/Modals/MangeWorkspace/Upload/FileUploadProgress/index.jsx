@@ -23,7 +23,7 @@ function FileUploadProgressComponent({
         setTimerMs(Number(new Date()) - start);
       }, 100);
 
-      // Chunk streaming not working in production so we just site and wait
+      // Chunk streaming not working in production so we just sit and wait
       await Workspace.uploadFile(slug, formData);
       setStatus("complete");
       clearInterval(timer);
