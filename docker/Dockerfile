@@ -97,6 +97,7 @@ HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
 USER root
 RUN if [ "$ARG_CLOUD_BUILD" = 1 ] ; then \
     echo "Reowning all files as user!" && \
+    cd /app && \
     mkdir -p /app/server/storage app/server/storage/documents /app/server/storage/vector-cache /app/server/storage/lancedb && \
     touch /app/server/storage/anythingllm.db && \
     chown -R anythingllm:anythingllm /app/collector /app/server; \
