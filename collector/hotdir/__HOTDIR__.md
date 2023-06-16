@@ -8,7 +8,7 @@ Once converted the original file will be moved to the `hotdir/processed` folder 
 
 **Supported File types**
 - `.md`
-- `.text`
+- `.txt`
 - `.pdf`
 
 __requires more development__
