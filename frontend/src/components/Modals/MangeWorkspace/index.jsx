@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Archive, Sliders, X } from "react-feather";
+import { Archive, Sliders, UploadCloud, X } from "react-feather";
 import DocumentSettings from "./Documents";
 import WorkspaceSettings from "./Settings";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
+import System from "../../../models/system";
+import UploadToWorkspace from "./Upload";
 
 const TABS = {
   documents: DocumentSettings,
   settings: WorkspaceSettings,
+  upload: UploadToWorkspace,
 };
 
 const noop = () => false;
@@ -18,6 +21,15 @@ export default function ManageWorkspace({
   const { slug } = useParams();
   const [selectedTab, setSelectedTab] = useState("documents");
   const [workspace, setWorkspace] = useState(null);
+  const [fileTypes, setFileTypes] = useState(null);
+
+  useEffect(() => {
+    async function checkSupportedFiletypes() {
+      const acceptedTypes = await System.acceptedDocumentTypes();
+      setFileTypes(acceptedTypes ?? {});
+    }
+    checkSupportedFiletypes();
+  }, []);
 
   useEffect(() => {
     async function fetchWorkspace() {
@@ -57,7 +69,11 @@ export default function ManageWorkspace({
               changeTab={setSelectedTab}
             />
           </div>
-          <Component hideModal={hideModal} workspace={workspace} />
+          <Component
+            hideModal={hideModal}
+            workspace={workspace}
+            fileTypes={fileTypes}
+          />
         </div>
       </div>
     </div>
@@ -73,6 +89,13 @@ function WorkspaceSettingTabs({ selectedTab, changeTab }) {
           displayName="Documents"
           tabName="documents"
           icon={<Archive className="h-4 w-4" />}
+          onClick={changeTab}
+        />
+        <WorkspaceTab
+          active={selectedTab === "upload"}
+          displayName="Upload Docs"
+          tabName="upload"
+          icon={<UploadCloud className="h-4 w-4" />}
           onClick={changeTab}
         />
         <WorkspaceTab

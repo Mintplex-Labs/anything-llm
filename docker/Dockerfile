@@ -4,7 +4,6 @@ FROM ubuntu:jammy-20230522 AS base
 # Build arguments
 ARG ARG_UID
 ARG ARG_GID
-ARG ARG_CLOUD_BUILD=0 # Default to local docker build
 
 # Install system dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -32,13 +31,15 @@ RUN groupadd -g $ARG_GID anythingllm && \
     useradd -u $ARG_UID -m -d /app -s /bin/bash -g anythingllm anythingllm && \
     mkdir -p /app/frontend/ /app/server/ /app/collector/ && chown -R anythingllm:anythingllm /app
 
-# Copy the docker entrypoint and healthcheck scripts
+# Copy docker helper scripts
 COPY ./docker/docker-entrypoint.sh /usr/local/bin/
 COPY ./docker/docker-healthcheck.sh /usr/local/bin/
+COPY ./docker/dual_boot.sh /usr/local/bin/
 
 # Ensure the scripts are executable
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
-    chmod +x /usr/local/bin/docker-healthcheck.sh
+    chmod +x /usr/local/bin/docker-healthcheck.sh && \
+    chmod 777 /usr/local/bin/dual_boot.sh
 
 USER anythingllm
 
@@ -89,18 +90,7 @@ EXPOSE 3001
 HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
   CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
 
-# Docker will still install deps as root so need to force chown
-# or else
-USER root
-RUN if [ "$ARG_CLOUD_BUILD" = 1 ] ; then \
-    echo "Reowning all files as user!" && \
-    mkdir -p app/server/storage app/server/storage/documents app/server/storage/vector-cache app/server/storage/lancedb && \
-    touch anythingllm.db && \
-    chown -R anythingllm:anythingllm /app/collector /app/server; \
-  fi
-USER anythingllm
-
 # Run the server
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-CMD ["node", "/app/server/index.js"]
+CMD /bin/bash /usr/local/bin/dual_boot.sh

@@ -43,3 +43,9 @@ If collection fails at any point in the process it will pick up where it last ba
 - [Enable YouTube Data APIV3](https://console.cloud.google.com/apis/library/youtube.googleapis.com)
 - Once enabled generate a Credential key for this API
 - Paste your key after `GOOGLE_APIS_KEY=` in your `collector/.env` file.
+
+### Running the document processing API locally
+From the `collector` directory with the `v-env` active run `flask run --host '0.0.0.0' --port 8888`.
+Now uploads from the frontend will be processed as if you ran the `watch.py` script manually.
+
+**Docker**: If you run this application via docker the API is already started for you and no additional action is needed.

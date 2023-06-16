@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import Directory from "./Directory";
 import ConfirmationModal from "./ConfirmationModal";
 import CannotRemoveModal from "./CannotRemoveModal";
+import { AlertTriangle } from "react-feather";
 
 export default function DocumentSettings({ workspace }) {
   const { slug } = useParams();
@@ -17,16 +18,21 @@ export default function DocumentSettings({ workspace }) {
   const [selectedFiles, setSelectFiles] = useState([]);
   const [vectordb, setVectorDB] = useState(null);
   const [showingNoRemovalModal, setShowingNoRemovalModal] = useState(false);
+  const [hasFiles, setHasFiles] = useState(true);
 
   useEffect(() => {
     async function fetchKeys() {
       const localFiles = await System.localFiles();
       const settings = await System.keys();
       const originalDocs = workspace.documents.map((doc) => doc.docpath) || [];
+      const hasAnyFiles = localFiles.items.some(
+        (folder) => folder?.items?.length > 0
+      );
       setDirectories(localFiles);
       setOriginalDocuments([...originalDocs]);
       setSelectFiles([...originalDocs]);
       setVectorDB(settings?.VectorDB);
+      setHasFiles(hasAnyFiles);
       setLoading(false);
     }
     fetchKeys();
@@ -162,6 +168,16 @@ export default function DocumentSettings({ workspace }) {
       )}
       <div className="p-6 flex h-full w-full max-h-[80vh] overflow-y-scroll">
         <div className="flex flex-col gap-y-1 w-full">
+          {!hasFiles && (
+            <div className="mb-4 w-full gap-x-2 rounded-lg h-10 border bg-orange-200 border-orange-800 dark:bg-orange-300 text-orange-800 flex  items-center justify-center">
+              <AlertTriangle className="h-6 w-6" />
+              <p className="text-sm">
+                You don't have any files uploaded. Upload a file via the "Upload
+                Docs" tab.
+              </p>
+            </div>
+          )}
+
           <div className="flex flex-col mb-2">
             <p className="text-gray-800 dark:text-stone-200 text-base ">
               Select folders to add or remove from workspace.
