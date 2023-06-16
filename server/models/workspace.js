@@ -48,13 +48,6 @@ const Workspace = {
     const sqlite3 = require("sqlite3").verbose();
     const { open } = require("sqlite");
 
-    console.log(
-      `expected anythingllm.db at: `,
-      `${
-        !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "storage/"
-      }anythingllm.db`
-    );
-
     const db = await open({
       filename: `${
         !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "storage/"
