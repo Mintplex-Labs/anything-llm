@@ -98,9 +98,11 @@ USER root
 RUN if [ "$ARG_CLOUD_BUILD" = 1 ] ; then \
     echo "Reowning all files as user!" && \
     cd /app && \
-    mkdir -p /app/server/storage app/server/storage/documents /app/server/storage/vector-cache /app/server/storage/lancedb && \
+    mkdir -p /app/server/storage /app/server/storage/documents /app/server/storage/vector-cache /app/server/storage/lancedb && \
+    chmod 777 /app/server/storage && \
     touch /app/server/storage/anythingllm.db && \
-    chown -R anythingllm:anythingllm /app/collector /app/server; \
+    chown -R anythingllm:anythingllm /app/collector /app/server && \
+    echo "Reowning files completed!"; \
   fi
 USER anythingllm
 
