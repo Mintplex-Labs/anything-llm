@@ -92,20 +92,6 @@ EXPOSE 3001
 HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
   CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
 
-# Docker will still install deps as root so need to force chown
-# or else 
-USER root
-RUN if [ "$ARG_CLOUD_BUILD" = 1 ] ; then \
-    echo "Reowning all files as user!" && \
-    cd /app && \
-    mkdir -p /app/server/storage /app/server/storage/documents /app/server/storage/vector-cache /app/server/storage/lancedb && \
-    chmod 777 /app/server/storage && \
-    touch /app/server/storage/anythingllm.db && \
-    chown -R anythingllm:anythingllm /app/collector /app/server && \
-    echo "Reowning files completed!"; \
-  fi
-USER anythingllm
-
 # Run the server
 ENTRYPOINT ["docker-entrypoint.sh"]
 
