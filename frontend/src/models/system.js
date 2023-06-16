@@ -66,6 +66,14 @@ const System = {
       .then((res) => res.ok)
       .catch(() => false);
   },
+  acceptedDocumentTypes: async () => {
+    return await fetch(`${API_BASE}/system/accepted-document-types`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.types)
+      .catch(() => null);
+  },
 };
 
 export default System;

@@ -7,20 +7,27 @@ import { v4 } from "uuid";
 import System from "../../../../models/system";
 import { Frown } from "react-feather";
 
-export default function UploadToWorkspace({ workspace }) {
+export default function UploadToWorkspace({ workspace, fileTypes }) {
   const [ready, setReady] = useState(null);
   const [files, setFiles] = useState([]);
-
-  const onDrop = useCallback(async (acceptedFiles) => {
-    const newFiles = acceptedFiles.map((file) => {
+  const onDrop = useCallback(async (acceptedFiles, rejections) => {
+    const newAccepted = acceptedFiles.map((file) => {
       return {
         uid: v4(),
         file,
       };
     });
-    setFiles([...files, ...newFiles]);
+    const newRejected = rejections.map((file) => {
+      return {
+        uid: v4(),
+        file: file.file,
+        rejected: true,
+        reason: file.errors[0].code,
+      };
+    });
+
+    setFiles([...files, ...newAccepted, ...newRejected]);
   }, []);
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   useEffect(() => {
     async function checkProcessorOnline() {
@@ -29,6 +36,13 @@ export default function UploadToWorkspace({ workspace }) {
     }
     checkProcessorOnline();
   }, []);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: {
+      ...fileTypes,
+    },
+  });
 
   const deleteWorkspace = async () => {
     if (
@@ -117,11 +131,19 @@ export default function UploadToWorkspace({ workspace }) {
                 key={file.uid}
                 file={file.file}
                 slug={workspace.slug}
+                rejected={file?.rejected}
+                reason={file?.reason}
               />
             ))}
           </div>
         )}
       </div>
+      <p className="text-gray-600 dark:text-stone-400 text-xs ">
+        supported file extensions are{" "}
+        <code className="text-xs bg-gray-200 text-gray-800 dark:bg-stone-800 dark:text-slate-400 font-mono rounded-sm px-1">
+          {Object.values(fileTypes).flat().join(" ")}
+        </code>
+      </p>
     </ModalWrapper>
   );
 }
@@ -144,10 +166,10 @@ function ModalWrapper({ deleteWorkspace, children }) {
               <div className="mt-2 text-gray-600 dark:text-stone-400 text-xs">
                 <div className="w-[1px] bg-stone-400 w-full" />
                 Local Environment Notice: You must have the{" "}
-                <code className=" text-xs bg-gray-200 text-gray-800 dark:bg-stone-800 dark:text-slate-400 font-mono rounded-lg p-1">
-                  collector/watch.py
+                <code className="text-xs bg-gray-200 text-gray-800 dark:bg-stone-800 dark:text-slate-400 font-mono rounded-sm px-1">
+                  python document processor app
                 </code>{" "}
-                script running for these documents to automatically process.
+                running for these documents to process.
               </div>
             )}
           </div>

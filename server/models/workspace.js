@@ -48,13 +48,17 @@ const Workspace = {
     const sqlite3 = require("sqlite3").verbose();
     const { open } = require("sqlite");
 
-    console.log(`expected anythingllm.db at: `, `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "storage/"
-      }anythingllm.db`);
-
+    console.log(
+      `expected anythingllm.db at: `,
+      `${
+        !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "storage/"
+      }anythingllm.db`
+    );
 
     const db = await open({
-      filename: `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "storage/"
-        }anythingllm.db`,
+      filename: `${
+        !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "storage/"
+      }anythingllm.db`,
       driver: sqlite3.Database,
     });
 
@@ -152,7 +156,8 @@ const Workspace = {
   where: async function (clause = "", limit = null) {
     const db = await this.db();
     const results = await db.all(
-      `SELECT * FROM ${this.tablename} ${clause ? `WHERE ${clause}` : ""} ${!!limit ? `LIMIT ${limit}` : ""
+      `SELECT * FROM ${this.tablename} ${clause ? `WHERE ${clause}` : ""} ${
+        !!limit ? `LIMIT ${limit}` : ""
       }`
     );
     db.close();

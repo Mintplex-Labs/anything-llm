@@ -5,6 +5,16 @@ async function checkPythonAppAlive() {
     .catch((e) => false);
 }
 
+async function acceptedFileTypes() {
+  return await fetch(`${PYTHON_API}/accepts`)
+    .then((res) => {
+      if (!res.ok) throw new Error("Could not reach");
+      return res.json();
+    })
+    .then((res) => res)
+    .catch(() => null);
+}
+
 async function processDocument(filename = "") {
   if (!filename) return false;
   return await fetch(`${PYTHON_API}/process`, {
@@ -28,4 +38,5 @@ async function processDocument(filename = "") {
 module.exports = {
   checkPythonAppAlive,
   processDocument,
+  acceptedFileTypes,
 };

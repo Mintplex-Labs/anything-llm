@@ -2,7 +2,10 @@ process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
 const { viewLocalFiles } = require("../utils/files");
-const { checkPythonAppAlive } = require("../utils/files/documentProcessor");
+const {
+  checkPythonAppAlive,
+  acceptedFileTypes,
+} = require("../utils/files/documentProcessor");
 const { getVectorDbClass } = require("../utils/helpers");
 const { reqBody, makeJWT } = require("../utils/http");
 
@@ -94,6 +97,21 @@ function systemEndpoints(app) {
     try {
       const online = await checkPythonAppAlive();
       response.sendStatus(online ? 200 : 503);
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.get("/system/accepted-document-types", async (_, response) => {
+    try {
+      const types = await acceptedFileTypes();
+      if (!types) {
+        response.sendStatus(404).end();
+        return;
+      }
+
+      response.status(200).json({ types });
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();

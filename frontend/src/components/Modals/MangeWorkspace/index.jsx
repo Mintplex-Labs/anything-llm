@@ -4,6 +4,7 @@ import DocumentSettings from "./Documents";
 import WorkspaceSettings from "./Settings";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
+import System from "../../../models/system";
 import UploadToWorkspace from "./Upload";
 
 const TABS = {
@@ -20,6 +21,15 @@ export default function ManageWorkspace({
   const { slug } = useParams();
   const [selectedTab, setSelectedTab] = useState("documents");
   const [workspace, setWorkspace] = useState(null);
+  const [fileTypes, setFileTypes] = useState(null);
+
+  useEffect(() => {
+    async function checkSupportedFiletypes() {
+      const acceptedTypes = await System.acceptedDocumentTypes();
+      setFileTypes(acceptedTypes ?? {});
+    }
+    checkSupportedFiletypes();
+  }, []);
 
   useEffect(() => {
     async function fetchWorkspace() {
@@ -59,7 +69,11 @@ export default function ManageWorkspace({
               changeTab={setSelectedTab}
             />
           </div>
-          <Component hideModal={hideModal} workspace={workspace} />
+          <Component
+            hideModal={hideModal}
+            workspace={workspace}
+            fileTypes={fileTypes}
+          />
         </div>
       </div>
     </div>
