@@ -4,6 +4,8 @@ from requests_html import HTMLSession
 from langchain.document_loaders import UnstructuredHTMLLoader
 from .link_utils import  append_meta
 from .utils import tokenize, ada_v2_cost
+import requests
+from bs4 import BeautifulSoup
     
 # Example Channel URL https://tim.blog/2022/08/09/nft-insider-trading-policy/
 def link():
@@ -64,6 +66,29 @@ def link():
   print(f"////////////////////////////")
   exit(0)
 
+def crawler():
+  prompt = "Paste in root URI of the pages of interest: "
+  new_link = input(prompt)
+  filter_value = input("Add a filter value for the url to ensure links don't wander too far: ")
+  #extract this from the uri provided
+  root_site = urlparse(new_link).scheme + "://" + urlparse(new_link).hostname
+  links = []
+  urls = new_link
+  links.append(new_link)
+  grab = requests.get(urls)
+  soup = BeautifulSoup(grab.text, 'html.parser')
+
+  # traverse paragraphs from soup
+  for link in soup.find_all("a"):
+    data = link.get('href').strip()
+    if filter_value in data:
+      print (data)
+      links.append(root_site + data)
+    else:
+       print (data + " does not apply for linking...")
+  #parse the links found  
+  parse_links(links)
+
 def links():
   links = []
   prompt = "Paste in the URL of an online article or blog: "
@@ -84,7 +109,6 @@ def links():
     exit(1)
 
   parse_links(links)
-
 
 
 # parse links from array
