@@ -189,7 +189,7 @@ export function SidebarMobileHeader() {
         />
         <div
           ref={sidebarRef}
-          className="fixed top-0 left-0 z-10 rounded-r-[26px] bg-white dark:bg-black-900 w-[70%] p-[18px] "
+          className="h-[100vh] fixed top-0 left-0 z-10 rounded-r-[26px] bg-white dark:bg-black-900 w-[70%] p-[18px] "
         >
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             {/* Header Information */}
@@ -208,9 +208,12 @@ export function SidebarMobileHeader() {
             </div>
 
             {/* Primary Body */}
-            <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
-              <div className="h-auto sidebar-items dark:sidebar-items">
-                <div className="flex flex-col gap-y-4 h-[65vh] pb-8 overflow-y-scroll no-scroll">
+            <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-hidden ">
+              <div className="h-auto md:sidebar-items md:dark:sidebar-items">
+                <div
+                  style={{ height: "calc(100vw - -3rem)" }}
+                  className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
+                >
                   <div className="flex gap-x-2 items-center justify-between">
                     <button
                       onClick={showNewWsModal}
