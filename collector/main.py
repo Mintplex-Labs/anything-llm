@@ -1,7 +1,7 @@
 import os
 from InquirerPy import inquirer
 from scripts.youtube import youtube
-from scripts.link import link, links
+from scripts.link import link, links, crawler
 from scripts.substack import substack
 from scripts.medium import medium
 from scripts.gitbook import gitbook
@@ -42,6 +42,7 @@ def main():
       choices=[
         {"name": "Single URL", "value": "Single URL"},
         {"name": "Multiple URLs", "value": "Multiple URLs"},
+        {"name": "URL Crawler", "value": "URL Crawler"},
         {"name": "Abort", "value": "Abort"},
       ],
     ).execute()
@@ -50,6 +51,9 @@ def main():
       exit(0)
     if method == 'Multiple URLs':
       links()
+      exit(0)
+    if method == 'URL Crawler':
+      crawler()
       exit(0)
 
   if method == 'Abort': exit(0)
