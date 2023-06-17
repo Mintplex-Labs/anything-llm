@@ -57,8 +57,8 @@ export default function ActiveWorkspaces() {
                   : "hover:bg-slate-100 dark:hover:bg-stone-900 "
               }`}
             >
-              <Book className="h-4 w-4" />
-              <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
+              <Book className="h-4 w-4 flex-shrink-0" />
+              <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold whitespace-nowrap overflow-hidden ">
                 {workspace.name}
               </p>
             </a>
