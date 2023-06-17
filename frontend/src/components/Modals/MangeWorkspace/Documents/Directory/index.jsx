@@ -42,7 +42,7 @@ export default function Directory({
             className="flex gap-x-2 items-center  cursor-pointer w-full"
             onClick={() => toggleExpanded(!isExpanded)}
           >
-            <h2 className="text-2xl">{files.name}</h2>
+            <h2 className="text-base md:text-2xl">{files.name}</h2>
             {files.items.some((files) => files.type === "folder") ? (
               <p className="text-xs italic">{files.items.length} folders</p>
             ) : (

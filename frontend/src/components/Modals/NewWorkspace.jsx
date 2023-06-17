@@ -63,7 +63,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                     Error: {error}
                   </p>
                 )}
-                <p className="text-gray-800 dark:text-slate-200 text-sm">
+                <p className="text-gray-800 dark:text-slate-200 text-xs md:text-sm">
                   After creating a workspace you will be able to add and remove
                   documents from it.
                 </p>
