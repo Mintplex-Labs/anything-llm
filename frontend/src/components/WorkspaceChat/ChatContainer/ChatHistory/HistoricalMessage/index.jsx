@@ -21,9 +21,9 @@ function HistoricalMessage({
   if (role === "user") {
     return (
       <div className="flex justify-end mb-4 items-start">
-        <div className="mr-2 py-1 px-4 max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
+        <div className="mr-2 py-1 px-4 w-fit md:max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
           <span
-            className={`inline-block p-2 rounded-lg whitespace-pre-line text-slate-800 dark:text-slate-200 font-semibold`}
+            className={`inline-block p-2 rounded-lg whitespace-pre-line text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base`}
           >
             {message}
           </span>
@@ -52,9 +52,9 @@ function HistoricalMessage({
   return (
     <div ref={replyRef} className="flex justify-start items-end mb-4">
       <Jazzicon size={30} user={{ uid: workspace.slug }} />
-      <div className="ml-2 py-3 px-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
+      <div className="ml-2 py-3 px-4 overflow-x-scroll w-fit md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
         <span
-          className="whitespace-pre-line text-slate-800 dark:text-slate-200 font-semibold flex flex-col gap-y-1"
+          className="whitespace-pre-line text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base flex flex-col gap-y-1"
           dangerouslySetInnerHTML={{ __html: renderMarkdown(message) }}
         />
         <Citations sources={sources} />

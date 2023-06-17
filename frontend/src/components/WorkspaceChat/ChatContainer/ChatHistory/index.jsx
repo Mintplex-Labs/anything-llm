@@ -1,7 +1,6 @@
 import { Frown } from "react-feather";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
-// import paths from '../../../../../utils/paths';
 
 export default function ChatHistory({ history = [], workspace }) {
   if (history.length === 0) {
@@ -20,7 +19,7 @@ export default function ChatHistory({ history = [], workspace }) {
 
   return (
     <div
-      className="h-[89%] pb-[100px] pt-[50px] md:pt-0 md:pb-5 mx-2 md:mx-0 overflow-y-scroll flex flex-col justify-between md:justify-start"
+      className="h-[89%] pb-[100px] md:pt-[50px] md:pt-0 md:pb-5 mx-2 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
       id="chat-history"
     >
       {history.map(

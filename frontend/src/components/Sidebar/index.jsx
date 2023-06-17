@@ -133,8 +133,8 @@ export default function Sidebar() {
 }
 
 export function SidebarMobileHeader() {
-  const [showSidebar, setShowSidebar] = useState(true);
-  const [showBgOverlay, setShowBgOverlay] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [showBgOverlay, setShowBgOverlay] = useState(false);
   const sidebarRef = useRef(null);
   const {
     showing: showingKeyModal,
@@ -177,19 +177,19 @@ export function SidebarMobileHeader() {
         style={{
           transform: showSidebar ? `translateX(0vw)` : `translateX(-100vw)`,
         }}
-        className={`fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
+        className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
       >
         <div
           className={`${
             showBgOverlay
               ? "transition-all opacity-1"
               : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 z-1 bg-black-900 bg-opacity-75 w-screen h-screen`}
+          }  duration-500 fixed top-0 left-0 bg-black-900 bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div
           ref={sidebarRef}
-          className="h-[100vh] fixed top-0 left-0 z-10 rounded-r-[26px] bg-white dark:bg-black-900 w-[70%] p-[18px] "
+          className="h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-white dark:bg-black-900 w-[70%] p-[18px] "
         >
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             {/* Header Information */}
