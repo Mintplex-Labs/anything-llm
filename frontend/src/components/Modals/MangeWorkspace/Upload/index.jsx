@@ -78,12 +78,12 @@ export default function UploadToWorkspace({ workspace, fileTypes }) {
     return (
       <ModalWrapper deleteWorkspace={deleteWorkspace}>
         <div className="outline-none transition-all duration-300 bg-red-200 flex h-[20rem] overflow-y-scroll overflow-x-hidden rounded-lg">
-          <div className="flex flex-col gap-y-1 w-full h-full items-center justify-center">
+          <div className="flex flex-col gap-y-1 w-full h-full items-center justify-center md:px-0 px-2">
             <Frown className="w-8 h-8 text-red-800" />
-            <p className="text-red-800 text-xs">
+            <p className="text-red-800 text-xs text-center">
               Document processor is offline.
             </p>
-            <p className="text-red-800 text-xs">
+            <p className="text-red-800 text-[10px] md:text-xs text-center">
               you cannot upload documents from the UI right now
             </p>
           </div>

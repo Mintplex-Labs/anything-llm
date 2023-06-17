@@ -83,26 +83,26 @@ export default function ManageWorkspace({
 function WorkspaceSettingTabs({ selectedTab, changeTab }) {
   return (
     <div>
-      <ul className="flex flex-wrap -mb-px text-sm gap-x-2 font-medium text-center text-gray-500 dark:text-gray-400">
+      <ul className="flex md:flex-wrap overflow-x-scroll no-scroll -mb-px text-sm gap-x-2 font-medium text-center text-gray-500 dark:text-gray-400">
         <WorkspaceTab
           active={selectedTab === "documents"}
           displayName="Documents"
           tabName="documents"
-          icon={<Archive className="h-4 w-4" />}
+          icon={<Archive className="h-4 w-4 flex-shrink-0" />}
           onClick={changeTab}
         />
         <WorkspaceTab
           active={selectedTab === "upload"}
           displayName="Upload Docs"
           tabName="upload"
-          icon={<UploadCloud className="h-4 w-4" />}
+          icon={<UploadCloud className="h-4 w-4 flex-shrink-0" />}
           onClick={changeTab}
         />
         <WorkspaceTab
           active={selectedTab === "settings"}
           displayName="Settings"
           tabName="settings"
-          icon={<Sliders className="h-4 w-4" />}
+          icon={<Sliders className="h-4 w-4 flex-shrink-0" />}
           onClick={changeTab}
         />
       </ul>
@@ -126,7 +126,7 @@ function WorkspaceTab({
         disabled={active}
         onClick={() => onClick(tabName)}
         className={
-          "flex items-center gap-x-1 p-4 border-b-2 rounded-t-lg group " +
+          "flex items-center gap-x-1 p-4 border-b-2 rounded-t-lg group whitespace-nowrap " +
           classes
         }
       >
