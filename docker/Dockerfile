@@ -34,12 +34,10 @@ RUN groupadd -g $ARG_GID anythingllm && \
 # Copy docker helper scripts
 COPY ./docker/docker-entrypoint.sh /usr/local/bin/
 COPY ./docker/docker-healthcheck.sh /usr/local/bin/
-COPY ./docker/dual_boot.sh /usr/local/bin/
 
 # Ensure the scripts are executable
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
-    chmod +x /usr/local/bin/docker-healthcheck.sh && \
-    chmod 777 /usr/local/bin/dual_boot.sh
+    chmod +x /usr/local/bin/docker-healthcheck.sh
 
 USER anythingllm
 
@@ -91,6 +89,4 @@ HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
   CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
 
 # Run the server
-ENTRYPOINT ["docker-entrypoint.sh"]
-
-CMD /bin/bash /usr/local/bin/dual_boot.sh
+ENTRYPOINT ["/bin/bash", "/usr/local/bin/docker-entrypoint.sh"]
