@@ -80,12 +80,14 @@ def crawler():
 
   # traverse paragraphs from soup
   for link in soup.find_all("a"):
-    data = link.get('href').strip()
-    if filter_value in data:
-      print (data)
-      links.append(root_site + data)
-    else:
-       print (data + " does not apply for linking...")
+    data = link.get('href')
+    if (data is not None):
+      if filter_value in data:
+        data = data.strip()
+        print (data)
+        links.append(root_site + data)
+      else:
+        print (data + " does not apply for linking...")
   #parse the links found  
   parse_links(links)
 
