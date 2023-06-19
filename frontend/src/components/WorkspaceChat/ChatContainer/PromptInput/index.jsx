@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { isMobile } from "react-device-detect";
 import { Loader, Menu, Send, X } from "react-feather";
 
 export default function PromptInput({
@@ -24,6 +25,7 @@ export default function PromptInput({
     }
   };
   const adjustTextArea = (event) => {
+    if (isMobile) return false;
     const element = event.target;
     element.style.height = "1px";
     element.style.height =
@@ -37,10 +39,10 @@ export default function PromptInput({
   };
 
   return (
-    <div className="w-full fixed md:absolute bottom-0 left-0">
+    <div className="w-full fixed md:absolute bottom-0 left-0 z-10">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-y-1 bg-transparentrounded-t-lg w-3/4 mx-auto"
+        className="flex flex-col gap-y-1 bg-white dark:bg-black-900 md:bg-transparent rounded-t-lg md:w-3/4 w-full mx-auto"
       >
         <div className="flex items-center py-2 px-4 rounded-lg">
           {/* Toggle selector? */}
@@ -64,7 +66,11 @@ export default function PromptInput({
             }}
             value={message}
             className="cursor-text max-h-[100px] md:min-h-[40px] block mx-2 md:mx-4 p-2.5 w-full text-[16px] md:text-sm rounded-lg border bg-gray-50 border-gray-300 placeholder-gray-400 text-gray-900 dark:text-white dark:bg-stone-600 dark:border-stone-700 dark:placeholder-stone-400"
-            placeholder="Shift + Enter for newline. Enter to submit."
+            placeholder={
+              isMobile
+                ? "Enter your message here."
+                : "Shift + Enter for newline. Enter to submit."
+            }
           />
           <button
             ref={formRef}

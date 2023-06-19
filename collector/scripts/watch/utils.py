@@ -15,8 +15,13 @@ def file_creation_time(path_to_file):
   except AttributeError:
     return datetime.today().strftime('%Y-%m-%d %H:%M:%S')
 
-def move_source(working_dir='hotdir', new_destination_filename= ''):
-  destination = f"{working_dir}/processed"
+def move_source(working_dir='hotdir', new_destination_filename='', failed=False, remove=False):
+  if remove and os.path.exists(f"{working_dir}/{new_destination_filename}"):
+    print(f"{new_destination_filename} deleted from filesystem")
+    os.remove(f"{working_dir}/{new_destination_filename}")
+    return
+
+  destination = f"{working_dir}/processed" if not failed else f"{working_dir}/failed"
   if os.path.exists(destination) == False:
     os.mkdir(destination)
   

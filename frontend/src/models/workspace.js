@@ -97,6 +97,14 @@ const Workspace = {
 
     return result;
   },
+  uploadFile: async function (slug, formData) {
+    const response = await fetch(`${API_BASE}/workspace/${slug}/upload`, {
+      method: "POST",
+      body: formData,
+      headers: baseHeaders(),
+    });
+    return response;
+  },
 };
 
 export default Workspace;

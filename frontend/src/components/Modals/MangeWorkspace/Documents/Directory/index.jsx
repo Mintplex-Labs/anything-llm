@@ -42,7 +42,7 @@ export default function Directory({
             className="flex gap-x-2 items-center  cursor-pointer w-full"
             onClick={() => toggleExpanded(!isExpanded)}
           >
-            <h2 className="text-2xl">{files.name}</h2>
+            <h2 className="text-base md:text-2xl">{files.name}</h2>
             {files.items.some((files) => files.type === "folder") ? (
               <p className="text-xs italic">{files.items.length} folders</p>
             ) : (
@@ -135,10 +135,10 @@ export default function Directory({
       </div>
       {showDetails && (
         <div className="ml-[20px] flex flex-col gap-y-1 my-1 p-2 rounded-md bg-slate-200 font-mono text-sm overflow-x-scroll">
-          {Object.entries(meta).map(([key, value]) => {
+          {Object.entries(meta).map(([key, value], i) => {
             if (key === "cached") return null;
             return (
-              <p className="whitespace-pre">
+              <p key={i} className="whitespace-pre">
                 {key}: {value}
               </p>
             );

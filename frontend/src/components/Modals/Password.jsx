@@ -31,7 +31,7 @@ export default function PasswordModal() {
         <form ref={formEl} onSubmit={handleLogin}>
           <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
             <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-md md:text-xl font-semibold text-gray-900 dark:text-white">
                 This workspace is password protected.
               </h3>
             </div>
@@ -58,7 +58,7 @@ export default function PasswordModal() {
                     Error: {error}
                   </p>
                 )}
-                <p className="text-gray-800 dark:text-slate-200 text-sm">
+                <p className="text-gray-800 dark:text-slate-200 md:text-sm text-xs">
                   You will only have to enter this password once. After
                   successful login it will be stored in your browser.
                 </p>

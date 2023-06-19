@@ -26,7 +26,7 @@ export default function KeysModal({ hideModal = noop }) {
         <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
           <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Your System Settings
+              System Settings
             </h3>
             <button
               onClick={hideModal}
@@ -48,7 +48,7 @@ export default function KeysModal({ hideModal = noop }) {
               <div className="w-full flex flex-col gap-y-4">
                 <div className="bg-orange-300 p-4 rounded-lg border border-orange-600 text-orange-700 w-full items-center flex gap-x-2">
                   <AlertCircle className="h-8 w-8" />
-                  <p>
+                  <p className="text-sm md:text-base ">
                     Ensure all fields are green before attempting to use
                     AnythingLLM or it may not function as expected!
                   </p>

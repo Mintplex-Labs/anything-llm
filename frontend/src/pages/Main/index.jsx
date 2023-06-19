@@ -6,6 +6,7 @@ import ChatPlaceholder from "../../components/WorkspaceChat/LoadingChat";
 import PasswordModal, {
   usePasswordModal,
 } from "../../components/Modals/Password";
+import { isMobile } from "react-device-detect";
 
 export default function Main() {
   const { requiresAuth } = usePasswordModal();
@@ -14,7 +15,7 @@ export default function Main() {
       <>
         {requiresAuth && <PasswordModal />}
         <div className="w-screen h-screen overflow-hidden bg-orange-100 dark:bg-stone-700 flex">
-          <SidebarPlaceholder />
+          {!isMobile && <SidebarPlaceholder />}
           <ChatPlaceholder />
         </div>
       </>
@@ -23,7 +24,7 @@ export default function Main() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-orange-100 dark:bg-stone-700 flex">
-      <Sidebar />
+      {!isMobile && <Sidebar />}
       <DefaultChatContainer />
     </div>
   );
