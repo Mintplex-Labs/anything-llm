@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Archive, Sliders, X } from "react-feather";
+import { Archive, Sliders, UploadCloud, X } from "react-feather";
 import DocumentSettings from "./Documents";
 import WorkspaceSettings from "./Settings";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
+import System from "../../../models/system";
+import UploadToWorkspace from "./Upload";
 
 const TABS = {
   documents: DocumentSettings,
   settings: WorkspaceSettings,
+  upload: UploadToWorkspace,
 };
 
 const noop = () => false;
@@ -18,6 +21,15 @@ export default function ManageWorkspace({
   const { slug } = useParams();
   const [selectedTab, setSelectedTab] = useState("documents");
   const [workspace, setWorkspace] = useState(null);
+  const [fileTypes, setFileTypes] = useState(null);
+
+  useEffect(() => {
+    async function checkSupportedFiletypes() {
+      const acceptedTypes = await System.acceptedDocumentTypes();
+      setFileTypes(acceptedTypes ?? {});
+    }
+    checkSupportedFiletypes();
+  }, []);
 
   useEffect(() => {
     async function fetchWorkspace() {
@@ -57,7 +69,11 @@ export default function ManageWorkspace({
               changeTab={setSelectedTab}
             />
           </div>
-          <Component hideModal={hideModal} workspace={workspace} />
+          <Component
+            hideModal={hideModal}
+            workspace={workspace}
+            fileTypes={fileTypes}
+          />
         </div>
       </div>
     </div>
@@ -67,19 +83,26 @@ export default function ManageWorkspace({
 function WorkspaceSettingTabs({ selectedTab, changeTab }) {
   return (
     <div>
-      <ul className="flex flex-wrap -mb-px text-sm gap-x-2 font-medium text-center text-gray-500 dark:text-gray-400">
+      <ul className="flex md:flex-wrap overflow-x-scroll no-scroll -mb-px text-sm gap-x-2 font-medium text-center text-gray-500 dark:text-gray-400">
         <WorkspaceTab
           active={selectedTab === "documents"}
           displayName="Documents"
           tabName="documents"
-          icon={<Archive className="h-4 w-4" />}
+          icon={<Archive className="h-4 w-4 flex-shrink-0" />}
+          onClick={changeTab}
+        />
+        <WorkspaceTab
+          active={selectedTab === "upload"}
+          displayName="Upload Docs"
+          tabName="upload"
+          icon={<UploadCloud className="h-4 w-4 flex-shrink-0" />}
           onClick={changeTab}
         />
         <WorkspaceTab
           active={selectedTab === "settings"}
           displayName="Settings"
           tabName="settings"
-          icon={<Sliders className="h-4 w-4" />}
+          icon={<Sliders className="h-4 w-4 flex-shrink-0" />}
           onClick={changeTab}
         />
       </ul>
@@ -103,7 +126,7 @@ function WorkspaceTab({
         disabled={active}
         onClick={() => onClick(tabName)}
         className={
-          "flex items-center gap-x-1 p-4 border-b-2 rounded-t-lg group " +
+          "flex items-center gap-x-1 p-4 border-b-2 rounded-t-lg group whitespace-nowrap " +
           classes
         }
       >

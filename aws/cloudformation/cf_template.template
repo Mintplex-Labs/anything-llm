@@ -5,13 +5,13 @@
     "InstanceType": {
       "Description": "EC2 instance type",
       "Type": "String",
-      "Default": "t2.micro"
+      "Default": "t2.small"
     },
     "InstanceVolume": {
       "Description": "Storage size of disk on Instance in GB",
       "Type": "Number",
       "Default": 10,
-      "MinValue": 2
+      "MinValue": 4
     }
   },
   "Resources": {
@@ -96,7 +96,6 @@
                 "!SUB::USER::CONTENT!",
                 "UID=\"1000\"\n",
                 "GID=\"1000\"\n",
-                "CLOUD_BUILD=1\n",
                 "END\n",
                 "cd ../frontend\n",
                 "rm -rf .env.production\n",
@@ -105,6 +104,17 @@
                 "VITE_API_BASE=\"/api\"\n",
                 "END\n",
                 "sudo docker-compose -f /home/ec2-user/anything-llm/docker/docker-compose.yml up -d\n",
+                "echo \"Container ID: $(sudo docker ps --latest --quiet)\"\n",
+                "sudo docker container exec -u 0 -t $(sudo docker ps --latest --quiet) mkdir -p /app/server/storage /app/server/storage/documents /app/server/storage/vector-cache /app/server/storage/lancedb\n",
+                "echo \"Placeholder folders in storage created.\"\n",
+                "sudo docker container exec -u 0 -t $(sudo docker ps --latest --quiet) touch /app/server/storage/anythingllm.db\n",
+                "echo \"SQLite DB placeholder set.\"\n",
+                "sudo docker container exec -u 0 -t $(sudo docker ps --latest --quiet) chown -R anythingllm:anythingllm /app/collector /app/server\n",
+                "echo \"File permissions corrected.\"\n",
+                "export ONLINE=$(curl -Is http://localhost:3001/api/ping | head -n 1|cut -d$' ' -f2)\n",
+                "echo \"Health check: $ONLINE\"\n",
+                "if [ \"$ONLINE\" = 200 ] ; then echo \"Running migrations...\" && curl -Is http://localhost:3001/api/migrate | head -n 1|cut -d$' ' -f2; fi\n",
+                "echo \"Setup complete! AnythingLLM instance is now online!\"\n",
                 "\n",
                 "--//--\n"
               ]

@@ -291,3 +291,7 @@ a {
     background-position: 100% 50%;
   }
 }
+
+.grid-loader > circle {
+  fill: #008eff;
+}

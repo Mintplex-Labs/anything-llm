@@ -10,3 +10,10 @@ FILETYPES = {
     '.docx': as_docx,
     '.odt': as_odt,
 }
+
+ACCEPTED_MIMES = {
+    'text/plain': ['.txt', '.md'],
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+    'application/vnd.oasis.opendocument.text': ['.odt'],
+    'application/pdf': ['.pdf'],
+}

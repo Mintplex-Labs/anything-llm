@@ -25,7 +25,7 @@ function PromptReply({
     return (
       <div className="chat__message flex justify-start mb-4 items-end">
         <Jazzicon size={30} user={{ uid: workspace.slug }} />
-        <div className="ml-2 pt-2 px-6 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
+        <div className="ml-2 pt-2 px-6 w-fit md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
           <span className={`inline-block p-2`}>
             <div className="dot-falling"></div>
           </span>
@@ -58,9 +58,9 @@ function PromptReply({
       className="mb-4 flex justify-start items-end"
     >
       <Jazzicon size={30} user={{ uid: workspace.slug }} />
-      <div className="ml-2 py-3 px-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
+      <div className="ml-2 py-3 px-4 overflow-x-scroll w-fit md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
         <span
-          className="whitespace-pre-line text-slate-800 dark:text-slate-200 font-semibold flex flex-col gap-y-1"
+          className="whitespace-pre-line text-slate-800 dark:text-slate-200 flex flex-col gap-y-1 font-[500] md:font-semibold text-sm md:text-base"
           dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
         />
         <Citations sources={sources} />

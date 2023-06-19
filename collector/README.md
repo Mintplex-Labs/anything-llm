@@ -34,6 +34,12 @@ As files are processed you will see data being written to both the `collector/ou
 
 If collection fails at any point in the process it will pick up where it last bailed out so you are not reusing credits.
 
+### Running the document processing API locally
+From the `collector` directory with the `v-env` active run `flask run --host '0.0.0.0' --port 8888`.
+Now uploads from the frontend will be processed as if you ran the `watch.py` script manually.
+
+**Docker**: If you run this application via docker the API is already started for you and no additional action is needed.
+
 ### How to get a Google Cloud API Key (YouTube data collection only)
 **required to fetch YouTube transcripts and data**
 - Have a google account

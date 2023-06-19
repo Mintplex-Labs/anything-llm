@@ -4,6 +4,8 @@ import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
 import paths from "../../utils/paths";
+import { isMobile } from "react-device-detect";
+import { SidebarMobileHeader } from "../Sidebar";
 
 export default function DefaultChatContainer() {
   const [mockMsgs, setMockMessages] = useState([]);
@@ -21,8 +23,8 @@ export default function DefaultChatContainer() {
           popMsg ? "chat__message" : ""
         }`}
       >
-        <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-semibold">
+        <div className="p-4 max-w-full md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
+          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
             Welcome to AnythingLLM, AnythingLLM is an open-source AI tool by
             Mintplex Labs that turns <i>anything</i> into a trained chatbot you
             can query and chat with. AnythingLLM is a BYOK (bring-your-own-keys)
@@ -39,8 +41,8 @@ export default function DefaultChatContainer() {
           popMsg ? "chat__message" : ""
         }`}
       >
-        <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-semibold">
+        <div className="p-4 max-w-full md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
+          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
             AnythingLLM is the easiest way to put powerful AI products like
             OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services
             together in a neat package with no fuss to increase your
@@ -56,8 +58,8 @@ export default function DefaultChatContainer() {
           popMsg ? "chat__message" : ""
         }`}
       >
-        <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-semibold">
+        <div className="p-4 max-w-full md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
+          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
             AnythingLLM can run totally locally on your machine with little
             overhead you wont even notice it's there! No GPU needed. Cloud and
             on-premises installation is available as well.
@@ -71,7 +73,7 @@ export default function DefaultChatContainer() {
             className="mt-4 w-fit flex flex-grow gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900 dark:bg-stone-900"
           >
             <GitMerge className="h-4 w-4" />
-            <p className="text-slate-800 dark:text-slate-200 text-lg leading-loose">
+            <p className="text-slate-800 dark:text-slate-200 text-sm md:text-lg leading-loose">
               Create an issue on Github
             </p>
           </a>
@@ -85,8 +87,8 @@ export default function DefaultChatContainer() {
           popMsg ? "chat__message" : ""
         }`}
       >
-        <div className="p-4 max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-semibold">
+        <div className="p-4 max-w-full md:max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
+          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
             How do I get started?!
           </p>
         </div>
@@ -99,8 +101,8 @@ export default function DefaultChatContainer() {
           popMsg ? "chat__message" : ""
         }`}
       >
-        <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-semibold">
+        <div className="p-4 max-w-full md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
+          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
             It's simple. All collections are organized into buckets we call{" "}
             <b>"Workspaces"</b>. Workspaces are buckets of files, documents,
             images, PDFs, and other files which will be transformed into
@@ -114,7 +116,7 @@ export default function DefaultChatContainer() {
             className="mt-4 w-fit flex flex-grow gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900 dark:bg-stone-900"
           >
             <Plus className="h-4 w-4" />
-            <p className="text-slate-800 dark:text-slate-200 text-lg leading-loose">
+            <p className="text-slate-800 dark:text-slate-200 text-sm md:text-lg leading-loose">
               Create your first workspace
             </p>
           </button>
@@ -128,8 +130,8 @@ export default function DefaultChatContainer() {
           popMsg ? "chat__message" : ""
         }`}
       >
-        <div className="p-4 max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-semibold">
+        <div className="p-4 max-w-full md:max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
+          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
             Is this like an AI dropbox or something? What about chatting? It is
             a chatbot isn't it?
           </p>
@@ -143,8 +145,8 @@ export default function DefaultChatContainer() {
           popMsg ? "chat__message" : ""
         }`}
       >
-        <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-semibold">
+        <div className="p-4 max-w-full md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
+          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
             AnythingLLM is more than a smarter Dropbox.
             <br />
             <br />
@@ -174,8 +176,8 @@ export default function DefaultChatContainer() {
           popMsg ? "chat__message" : ""
         }`}
       >
-        <div className="p-4 max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-semibold">
+        <div className="p-4 max-w-full md:max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
+          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
             Wow, this sounds amazing, let me try it out already!
           </p>
         </div>
@@ -188,18 +190,18 @@ export default function DefaultChatContainer() {
           popMsg ? "chat__message" : ""
         }`}
       >
-        <div className="p-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-semibold">
+        <div className="p-4 max-w-full md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
+          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
             Have Fun!
           </p>
-          <div className="flex items-center gap-x-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
             <a
               href={paths.github()}
               target="_blank"
               className="mt-4 w-fit flex flex-grow gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900 dark:bg-stone-900"
             >
               <GitHub className="h-4 w-4" />
-              <p className="text-slate-800 dark:text-slate-200 text-lg leading-loose">
+              <p className="text-slate-800 dark:text-slate-200 text-sm md:text-lg leading-loose">
                 Star on GitHub
               </p>
             </a>
@@ -208,7 +210,7 @@ export default function DefaultChatContainer() {
               className="mt-4 w-fit flex flex-grow gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900 dark:bg-stone-900"
             >
               <Mail className="h-4 w-4" />
-              <p className="text-slate-800 dark:text-slate-200 text-lg leading-loose">
+              <p className="text-slate-800 dark:text-slate-200 text-sm md:text-lg leading-loose">
                 Contact Mintplex Labs
               </p>
             </a>
@@ -245,9 +247,10 @@ export default function DefaultChatContainer() {
 
   return (
     <div
-      style={{ height: "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative ml-[2px] mr-[8px] my-[16px] rounded-[26px] bg-white dark:bg-black-900 min-w-[82%] p-[18px] h-full overflow-y-scroll"
+      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-white dark:bg-black-900 md:min-w-[82%] p-[18px] h-full overflow-y-scroll"
     >
+      {isMobile && <SidebarMobileHeader />}
       {mockMsgs.map((content, i) => {
         return <React.Fragment key={i}>{content}</React.Fragment>;
       })}

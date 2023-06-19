@@ -5,6 +5,15 @@ const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { convertToChatHistory } = require("../utils/chats");
 const { getVectorDbClass } = require("../utils/helpers");
+const { setupMulter } = require("../utils/files/multer");
+const {
+  fileUploadProgress,
+} = require("../utils/middleware/fileUploadProgress");
+const {
+  checkPythonAppAlive,
+  processDocument,
+} = require("../utils/files/documentProcessor");
+const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -41,6 +50,36 @@ function workspaceEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.post(
+    "/workspace/:slug/upload",
+    fileUploadProgress,
+    handleUploads.single("file"),
+    async function (request, _) {
+      const { originalname } = request.file;
+      const processingOnline = await checkPythonAppAlive();
+
+      if (!processingOnline) {
+        console.log(
+          `Python processing API is not online. Document ${originalname} will not be processed automatically.`
+        );
+        return;
+      }
+
+      const { success, reason } = await processDocument(originalname);
+      if (!success) {
+        console.log(
+          `Python processing API was not able to process document ${originalname}. Reason: ${reason}`
+        );
+        return false;
+      }
+
+      console.log(
+        `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
+      );
+      return;
+    }
+  );
 
   app.post("/workspace/:slug/update-embeddings", async (request, response) => {
     try {

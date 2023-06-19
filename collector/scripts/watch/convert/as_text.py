@@ -8,6 +8,7 @@ def as_text(**kwargs):
   parent_dir = kwargs.get('directory', 'hotdir')
   filename = kwargs.get('filename')
   ext = kwargs.get('ext', '.txt')
+  remove = kwargs.get('remove_on_complete', False)
   fullpath = f"{parent_dir}/{filename}{ext}"
   content = open(fullpath).read()
 
@@ -24,5 +25,5 @@ def as_text(**kwargs):
   }
   
   write_to_server_documents(data, f"{slugify(filename)}-{data.get('id')}")
-  move_source(parent_dir, f"{filename}{ext}")
+  move_source(parent_dir, f"{filename}{ext}", remove=remove)
   print(f"[SUCCESS]: {filename}{ext} converted & ready for embedding.\n")
