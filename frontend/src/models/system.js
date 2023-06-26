@@ -74,6 +74,18 @@ const System = {
       .then((res) => res?.types)
       .catch(() => null);
   },
+  updateSystem: async (data) => {
+    return await fetch(`${API_BASE}/system/update-env`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { newValues: null, error: e.message };
+      });
+  },
 };
 
 export default System;
