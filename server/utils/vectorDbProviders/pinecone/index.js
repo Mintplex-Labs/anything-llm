@@ -38,6 +38,21 @@ const Pinecone = {
     const openai = new OpenAIApi(config);
     return openai;
   },
+  getChatCompletion: async function (
+    openai,
+    messages = [],
+    { temperature = 0.7 }
+  ) {
+    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
+    const { data } = await openai.createChatCompletion({
+      model,
+      messages,
+      temperature,
+    });
+
+    if (!data.hasOwnProperty("choices")) return null;
+    return data.choices[0].message.content;
+  },
   embedChunk: async function (openai, textChunk) {
     const {
       data: { data },
@@ -64,6 +79,27 @@ const Pinecone = {
       (a, b) => a + (b?.vectorCount || 0),
       0
     );
+  },
+  similarityResponse: async function (index, namespace, queryVector) {
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+    };
+    const response = await index.query({
+      queryRequest: {
+        namespace,
+        vector: queryVector,
+        topK: 4,
+        includeMetadata: true,
+      },
+    });
+
+    response.matches.forEach((match) => {
+      result.contextTexts.push(match.metadata.text);
+      result.sourceDocuments.push(match);
+    });
+
+    return result;
   },
   namespace: async function (index, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
@@ -255,10 +291,17 @@ const Pinecone = {
       message: false,
     };
   },
-  // This implementation of chat also expands the memory of the chat itself
-  // and adds more tokens to the PineconeDB instance namespace
+  // This implementation of chat uses the chat history and modifies the system prompt at execution
+  // this is improved over the regular langchain implementation so that chats do not directly modify embeddings
+  // because then multi-user support will have all conversations mutating the base vector collection to which then
+  // the only solution is replicating entire vector databases per user - which will very quickly consume space on VectorDbs
   chat: async function (reqBody = {}) {
-    const { namespace = null, input, workspace = {} } = reqBody;
+    const {
+      namespace = null,
+      input,
+      workspace = {},
+      chatHistory = [],
+    } = reqBody;
     if (!namespace || !input) throw new Error("Invalid request body");
 
     const { pineconeIndex } = await this.connect();
@@ -267,31 +310,33 @@ const Pinecone = {
         "Invalid namespace - has it been collected and seeded yet?"
       );
 
-    const vectorStore = await PineconeStore.fromExistingIndex(this.embedder(), {
+    const queryVector = await this.embedChunk(this.openai(), input);
+    const { contextTexts, sourceDocuments } = await this.similarityResponse(
       pineconeIndex,
       namespace,
+      queryVector
+    );
+    const prompt = {
+      role: "system",
+      content: `Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.
+Context:
+${contextTexts
+          .map((text, i) => {
+            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+          })
+          .join("")}`,
+    };
+    const memory = [prompt, ...chatHistory, { role: "user", content: input }];
+
+    const responseText = await this.getChatCompletion(this.openai(), memory, {
+      temperature: workspace?.openAiTemp ?? 0.7,
     });
 
-    const memory = new VectorStoreRetrieverMemory({
-      vectorStoreRetriever: vectorStore.asRetriever(1),
-      memoryKey: "history",
-    });
-
-    const model = this.llm({
-      temperature: workspace?.openAiTemp,
-    });
-    const prompt =
-      PromptTemplate.fromTemplate(`The following is a friendly conversation between a human and an AI. The AI is very casual and talkative and responds with a friendly tone. If the AI does not know the answer to a question, it truthfully says it does not know.
-  Relevant pieces of previous conversation:
-  {history}
-  
-  Current conversation:
-  Human: {input}
-  AI:`);
-
-    const chain = new LLMChain({ llm: model, prompt, memory });
-    const response = await chain.call({ input });
-    return { response: response.text, sources: [], message: false };
+    return {
+      response: responseText,
+      sources: curateSources(sourceDocuments),
+      message: false,
+    };
   },
 };
 
