@@ -8,6 +8,7 @@ const {
   acceptedFileTypes,
 } = require("../utils/files/documentProcessor");
 const { getVectorDbClass } = require("../utils/helpers");
+const { updateENV } = require("../utils/helpers/updateENV");
 const { reqBody, makeJWT } = require("../utils/http");
 
 function systemEndpoints(app) {
@@ -26,10 +27,14 @@ function systemEndpoints(app) {
     try {
       const vectorDB = process.env.VECTOR_DB || "pinecone";
       const results = {
+        CanDebug: !!!process.env.NO_DEBUG,
         RequiresAuth: !!process.env.AUTH_TOKEN,
         VectorDB: vectorDB,
         OpenAiKey: !!process.env.OPEN_AI_KEY,
         OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
+        AuthToken: !!process.env.AUTH_TOKEN,
+        JWTSecret: !!process.env.JWT_SECRET,
+        StorageDir: process.env.STORAGE_DIR,
         ...(vectorDB === "pinecone"
           ? {
               PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
@@ -118,6 +123,17 @@ function systemEndpoints(app) {
       }
 
       response.status(200).json({ types });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.post("/system/update-env", async (request, response) => {
+    try {
+      const body = reqBody(request);
+      const { newValues, error } = updateENV(body);
+      response.status(200).json({ newValues, error });
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();

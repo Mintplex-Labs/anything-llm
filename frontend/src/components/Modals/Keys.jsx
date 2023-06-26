@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AlertCircle, X } from "react-feather";
+import { AlertCircle, Loader, X } from "react-feather";
 import System from "../../models/system";
 
 const noop = () => false;
@@ -55,36 +55,48 @@ export default function KeysModal({ hideModal = noop }) {
                 </div>
                 <ShowKey
                   name="OpenAI API Key"
+                  env="OpenAiKey"
                   value={settings?.OpenAiKey ? "*".repeat(20) : ""}
                   valid={settings?.OpenAiKey}
+                  allowDebug={settings?.CanDebug}
                 />
                 <ShowKey
                   name="OpenAI Model for chats"
+                  env="OpenAiModelPref"
                   value={settings?.OpenAiModelPref}
                   valid={!!settings?.OpenAiModelPref}
+                  allowDebug={settings?.CanDebug}
                 />
                 <div className="h-[2px] w-full bg-gray-200 dark:bg-stone-600" />
                 <ShowKey
                   name="Vector DB Choice"
+                  env="VectorDB"
                   value={settings?.VectorDB}
                   valid={!!settings?.VectorDB}
+                  allowDebug={settings?.CanDebug}
                 />
                 {settings?.VectorDB === "pinecone" && (
                   <>
                     <ShowKey
                       name="Pinecone DB API Key"
+                      env="PineConeKey"
                       value={settings?.PineConeKey ? "*".repeat(20) : ""}
                       valid={!!settings?.PineConeKey}
+                      allowDebug={settings?.CanDebug}
                     />
                     <ShowKey
                       name="Pinecone DB Environment"
+                      env="PineConeEnvironment"
                       value={settings?.PineConeEnvironment}
                       valid={!!settings?.PineConeEnvironment}
+                      allowDebug={settings?.CanDebug}
                     />
                     <ShowKey
                       name="Pinecone DB Index"
+                      env="PineConeIndex"
                       value={settings?.PineConeIndex}
                       valid={!!settings?.PineConeIndex}
+                      allowDebug={settings?.CanDebug}
                     />
                   </>
                 )}
@@ -92,8 +104,10 @@ export default function KeysModal({ hideModal = noop }) {
                   <>
                     <ShowKey
                       name="Chroma Endpoint"
+                      env="ChromaEndpoint"
                       value={settings?.ChromaEndpoint}
                       valid={!!settings?.ChromaEndpoint}
+                      allowDebug={settings?.CanDebug}
                     />
                   </>
                 )}
@@ -115,47 +129,150 @@ export default function KeysModal({ hideModal = noop }) {
   );
 }
 
-function ShowKey({ name, value, valid }) {
-  if (!valid) {
+function ShowKey({ name, env, value, valid, allowDebug = true }) {
+  const [isValid, setIsValid] = useState(valid);
+  const [debug, setDebug] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    const data = {};
+    const form = new FormData(e.target);
+    for (var [key, value] of form.entries()) data[key] = value;
+    const { newValues, error } = await System.updateSystem(data);
+    if (!!error) {
+      alert(error);
+      setSaving(false);
+      setIsValid(false);
+      return;
+    }
+
+    setSaving(false);
+    setDebug(false);
+    setIsValid(true);
+  };
+
+  if (!isValid) {
     return (
-      <div>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label
+            htmlFor="error"
+            className="block mb-2 text-sm font-medium text-red-700 dark:text-red-500"
+          >
+            {name}
+          </label>
+          <input
+            type="text"
+            id="error"
+            name={env}
+            disabled={!debug}
+            className="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
+            placeholder={name}
+            defaultValue={value}
+            required={true}
+            autoComplete="off"
+          />
+          <div className="flex items-center justify-between">
+            <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+              Need setup in .env file.
+            </p>
+            {allowDebug && (
+              <>
+                {debug ? (
+                  <div className="flex items-center gap-x-2 mt-2">
+                    {saving ? (
+                      <>
+                        <Loader className="animate-spin h-4 w-4 text-slate-300 dark:text-slate-500" />
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setDebug(false)}
+                          className="text-xs text-slate-300 dark:text-slate-500"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="text-xs text-blue-300 dark:text-blue-500"
+                        >
+                          Save
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setDebug(true)}
+                    className="mt-2 text-xs text-slate-300 dark:text-slate-500"
+                  >
+                    Debug
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </form>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="mb-6">
         <label
-          htmlFor="error"
-          className="block mb-2 text-sm font-medium text-red-700 dark:text-red-500"
+          htmlFor="success"
+          className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200"
         >
           {name}
         </label>
         <input
           type="text"
-          id="error"
-          disabled={true}
-          className="bg-red-50 border border-red-500 text-red-900 placeholder-red-700 text-sm rounded-lg focus:ring-red-500 dark:bg-gray-700 focus:border-red-500 block w-full p-2.5 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500"
-          placeholder={name}
+          id="success"
+          name={env}
+          disabled={!debug}
+          className="border border-white text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-green-500"
           defaultValue={value}
+          required={true}
+          autoComplete="off"
         />
-        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-          Need setup in .env file.
-        </p>
+        {allowDebug && (
+          <div className="flex items-center justify-end">
+            {debug ? (
+              <div className="flex items-center gap-x-2 mt-2">
+                {saving ? (
+                  <>
+                    <Loader className="animate-spin h-4 w-4 text-slate-300 dark:text-slate-500" />
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => setDebug(false)}
+                      className="text-xs text-slate-300 dark:text-slate-500"
+                    >
+                      Cancel
+                    </button>
+                    <button className="text-xs text-blue-300 dark:text-blue-500">
+                      Save
+                    </button>
+                  </>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => setDebug(true)}
+                className="mt-2 text-xs text-slate-300 dark:text-slate-500"
+              >
+                Debug
+              </button>
+            )}
+          </div>
+        )}
       </div>
-    );
-  }
-
-  return (
-    <div className="mb-6">
-      <label
-        htmlFor="success"
-        className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200"
-      >
-        {name}
-      </label>
-      <input
-        type="text"
-        id="success"
-        disabled={true}
-        className="border border-white text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-green-500"
-        defaultValue={value}
-      />
-    </div>
+    </form>
   );
 }
 
