@@ -25,6 +25,7 @@ function toChunks(arr, size) {
 function curateSources(sources = []) {
   const knownDocs = [];
   const documents = [];
+
   for (const source of sources) {
     const { metadata = {} } = source;
     if (

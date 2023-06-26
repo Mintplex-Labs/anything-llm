@@ -64,11 +64,11 @@ const WorkspaceChats = {
 
     return { chat, message: null };
   },
-  forWorkspace: async function (workspaceId = null) {
+  forWorkspace: async function (workspaceId = null, limit = null) {
     if (!workspaceId) return [];
     return await this.where(
       `workspaceId = ${workspaceId} AND include = true`,
-      null,
+      limit,
       "ORDER BY id ASC"
     );
   },
@@ -104,8 +104,8 @@ const WorkspaceChats = {
     const db = await this.db();
     const results = await db.all(
       `SELECT * FROM ${this.tablename} ${clause ? `WHERE ${clause}` : ""} ${
-        !!limit ? `LIMIT ${limit}` : ""
-      } ${!!order ? order : ""}`
+        !!order ? order : ""
+      } ${!!limit ? `LIMIT ${limit}` : ""} `
     );
     db.close();
 

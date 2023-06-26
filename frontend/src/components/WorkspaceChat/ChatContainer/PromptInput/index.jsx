@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, memo, useEffect } from "react";
 import { isMobile } from "react-device-detect";
-import { Loader, Menu, Send, X } from "react-feather";
+import { Loader, Menu, X } from "react-feather";
 
 export default function PromptInput({
   workspace,
@@ -35,6 +35,17 @@ export default function PromptInput({
   };
 
   const setTextCommand = (command = "") => {
+    const storageKey = `workspace_chat_mode_${workspace.slug}`;
+    if (command === "/query") {
+      window.localStorage.setItem(storageKey, "query");
+      window.dispatchEvent(new Event("workspace_chat_mode_update"));
+      return;
+    } else if (command === "/conversation") {
+      window.localStorage.setItem(storageKey, "chat");
+      window.dispatchEvent(new Event("workspace_chat_mode_update"));
+      return;
+    }
+
     onChange({ target: { value: `${command} ${message}` } });
   };
 
@@ -45,13 +56,19 @@ export default function PromptInput({
         className="flex flex-col gap-y-1 bg-white dark:bg-black-900 md:bg-transparent rounded-t-lg md:w-3/4 w-full mx-auto"
       >
         <div className="flex items-center py-2 px-4 rounded-lg">
-          {/* Toggle selector? */}
-          {/* <button
+          <CommandMenu
+            workspace={workspace}
+            show={showMenu}
+            handleClick={setTextCommand}
+            hide={() => setShowMenu(false)}
+          />
+          <button
             onClick={() => setShowMenu(!showMenu)}
             type="button"
-            className="p-2 text-slate-200 bg-transparent rounded-md hover:bg-gray-50 dark:hover:bg-stone-500">
+            className="p-2 text-slate-200 bg-transparent rounded-md hover:bg-gray-50 dark:hover:bg-stone-500"
+          >
             <Menu className="w-4 h-4 md:h-6 md:w-6" />
-          </button> */}
+          </button>
           <textarea
             onKeyUp={adjustTextArea}
             onKeyDown={captureEnter}
@@ -94,19 +111,92 @@ export default function PromptInput({
             <span className="sr-only">Send message</span>
           </button>
         </div>
-        <Tracking />
+        <Tracking workspaceSlug={workspace.slug} />
       </form>
     </div>
   );
 }
 
-const Tracking = () => {
+const Tracking = memo(({ workspaceSlug }) => {
+  const storageKey = `workspace_chat_mode_${workspaceSlug}`;
+  const [chatMode, setChatMode] = useState(
+    window.localStorage.getItem(storageKey) ?? "chat"
+  );
+
+  useEffect(() => {
+    function watchForChatModeChange() {
+      if (!workspaceSlug) return;
+      window.addEventListener(`workspace_chat_mode_update`, () => {
+        try {
+          const chatMode = window.localStorage.getItem(storageKey);
+          setChatMode(chatMode);
+        } catch {}
+      });
+    }
+    watchForChatModeChange();
+  }, [workspaceSlug]);
+
   return (
-    <div className="flex flex-col w-full justify-center items-center gap-y-2 mb-2 px-4 mx:px-0">
-      <p className="text-slate-400 text-xs">
+    <div className="flex flex-col md:flex-row w-full justify-center items-center gap-2 mb-2 px-4 mx:px-0">
+      <p className="bg-stone-600 text-slate-400 text-xs px-2 rounded-lg font-mono text-center">
+        Chat mode: {chatMode}
+      </p>
+      <p className="text-slate-400 text-xs text-center">
         Responses from system may produce inaccurate or invalid responses - use
         with caution.
       </p>
     </div>
   );
-};
+});
+
+function CommandMenu({ workspace, show, handleClick, hide }) {
+  if (!show) return null;
+  const COMMANDS = [
+    {
+      cmd: "/conversation",
+      description: "- switch to chat mode (remembers recent chat history) .",
+    },
+    {
+      cmd: "/query",
+      description: "- switch to query mode (does not remember previous chats).",
+    },
+    { cmd: "/reset", description: "- clear current chat history." },
+  ];
+
+  return (
+    <div className="absolute top-[-25vh] md:top-[-23vh] min-h-[200px] flex flex-col rounded-lg border border-slate-400 p-2 pt-4 bg-stone-600">
+      <div className="flex justify-between items-center border-b border-slate-400 px-2 py-1 ">
+        <p className="text-slate-200">Available Commands</p>
+        <button
+          type="button"
+          onClick={hide}
+          className="p-2 rounded-lg hover:bg-slate-500 rounded-full text-slate-400"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+
+      <div className="flex flex-col">
+        {COMMANDS.map((item, i) => {
+          const { cmd, description } = item;
+          return (
+            <div className="border-b border-slate-400 p-1">
+              <button
+                key={i}
+                type="button"
+                onClick={() => {
+                  handleClick(cmd);
+                  hide();
+                }}
+                className="w-full px-4 py-2  flex items-center rounded-lg hover:bg-slate-500 gap-x-1 disabled:cursor-not-allowed"
+              >
+                <p className="text-slate-200 font-semibold">{cmd}</p>
+                <p className="text-slate-400 text-sm">{description}</p>
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

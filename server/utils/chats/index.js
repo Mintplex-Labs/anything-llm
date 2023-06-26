@@ -59,7 +59,7 @@ function grepCommand(message) {
   return null;
 }
 
-async function chatWithWorkspace(workspace, message, chatMode = "query") {
+async function chatWithWorkspace(workspace, message, chatMode = "chat") {
   const uuid = uuidv4();
   const openai = new OpenAi();
   const VectorDb = getVectorDbClass();
@@ -104,6 +104,8 @@ async function chatWithWorkspace(workspace, message, chatMode = "query") {
       error: null,
     };
   } else {
+    const rawHistory = await WorkspaceChats.forWorkspace(workspace.id, 20);
+    const chatHistory = convertToPromptHistory(rawHistory);
     const {
       response,
       sources,
@@ -112,6 +114,7 @@ async function chatWithWorkspace(workspace, message, chatMode = "query") {
       namespace: workspace.slug,
       input: message,
       workspace,
+      chatHistory,
     });
     if (!response) {
       return {
