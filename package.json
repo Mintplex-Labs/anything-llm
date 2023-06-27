@@ -18,5 +18,8 @@
     "prod:frontend": "cd frontend && yarn build",
     "generate:cloudformation": "node aws/cloudformation/generate.mjs"
   },
-  "private": false
+  "private": false,
+  "dependencies": {
+    "vectordb": "^0.1.8"
+  }
 }

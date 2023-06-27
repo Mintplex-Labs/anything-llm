@@ -11,3 +11,5 @@ public/
 # For legacy copies of repo
 documents
 vector-cache
+vector-cache_old
+_anythingllm.db

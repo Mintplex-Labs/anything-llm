@@ -46,7 +46,7 @@ class OpenAi {
 
   async sendChat(chatHistory = [], prompt, workspace = {}) {
     const model = process.env.OPEN_MODEL_PREF;
-    console.log("sendChat: Sending chat to url " + process.env.BASEPATH); 
+    
     
     if (!this.isValidChatModel(model))
       throw new Error(
