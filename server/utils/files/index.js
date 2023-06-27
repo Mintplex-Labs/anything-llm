@@ -141,10 +141,51 @@ async function storeVectorResult(vectorData = [], filename = null) {
   return;
 }
 
+// Purges a file from the documents/ folder.
+async function purgeSourceDocument(filename = null) {
+  if (!filename) return;
+  console.log(`Purging document of ${filename}.`);
+
+  const filePath =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, `../../storage/documents`, filename)
+      : path.resolve(process.env.STORAGE_DIR, `documents`, filename);
+
+  if (!fs.existsSync(filePath)) {
+    console.log(`Could not located cachefile for ${filename}`, filePath);
+    return;
+  }
+
+  fs.rmSync(filePath);
+  return;
+}
+
+// Purges a vector-cache file from the vector-cache/ folder.
+async function purgeVectorCache(filename = null) {
+  if (!filename) return;
+  console.log(`Purging cached vectorized results of ${filename}.`);
+
+  const digest = uuidv5(filename, uuidv5.URL);
+  const filePath =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, `../../storage/vector-cache`, `${digest}.json`)
+      : path.resolve(process.env.STORAGE_DIR, `vector-cache`, `${digest}.json`);
+
+  if (!fs.existsSync(filePath)) {
+    console.log(`Could not located cache file for ${filename}`, filePath);
+    return;
+  }
+
+  fs.rmSync(filePath);
+  return;
+}
+
 module.exports = {
   cachedVectorInformation,
   collectDocumentData,
   viewLocalFiles,
+  purgeSourceDocument,
+  purgeVectorCache,
   storeVectorResult,
   fileData,
 };

@@ -7,6 +7,7 @@ const {
   checkPythonAppAlive,
   acceptedFileTypes,
 } = require("../utils/files/documentProcessor");
+const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV } = require("../utils/helpers/updateENV");
 const { reqBody, makeJWT } = require("../utils/http");
@@ -88,6 +89,17 @@ function systemEndpoints(app) {
       const VectorDb = getVectorDbClass();
       const vectorCount = await VectorDb.totalIndicies();
       response.status(200).json({ vectorCount });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.delete("/system/remove-document", async (request, response) => {
+    try {
+      const { name, meta } = reqBody(request);
+      await purgeDocument(name, meta);
+      response.sendStatus(200).end();
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();

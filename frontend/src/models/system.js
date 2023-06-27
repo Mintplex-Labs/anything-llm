@@ -86,6 +86,18 @@ const System = {
         return { newValues: null, error: e.message };
       });
   },
+  deleteDocument: async (name, meta) => {
+    return await fetch(`${API_BASE}/system/remove-document`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ name, meta }),
+    })
+      .then((res) => res.ok)
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
 };
 
 export default System;
