@@ -10,7 +10,6 @@ export default function handleChat(
 
   if (type === "abort") {
     setLoadingResponse(false);
-    alert(error);
     setChatHistory([
       ...remHistory,
       {
