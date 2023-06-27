@@ -23,7 +23,7 @@ export default function Directory({
   const handleDelete = async (name, meta) => {
     if (
       !window.confirm(
-        "Are you sure you want to delete this document?\nThis will require you to re-upload and re-embed it.\nThis document will be removed from any document that is currently referencing it.\nThis action is not reversible."
+        "Are you sure you want to delete this document?\nThis will require you to re-upload and re-embed it.\nThis document will be removed from any workspace that is currently referencing it.\nThis action is not reversible."
       )
     )
       return false;
