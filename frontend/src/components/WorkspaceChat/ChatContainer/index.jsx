@@ -50,13 +50,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
       const chatResult = await Workspace.sendChat(
         workspace,
-        promptMessage.userMessage
+        promptMessage.userMessage,
+        window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
+          "chat"
       );
-      if (!chatResult) {
-        alert("Could not send chat.");
-        setLoadingResponse(false);
-        return;
-      }
       handleChat(
         chatResult,
         setLoadingResponse,

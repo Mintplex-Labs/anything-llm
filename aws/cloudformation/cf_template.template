@@ -96,6 +96,7 @@
                 "!SUB::USER::CONTENT!",
                 "UID=\"1000\"\n",
                 "GID=\"1000\"\n",
+                "NO_DEBUG=\"true\"\n",
                 "END\n",
                 "cd ../frontend\n",
                 "rm -rf .env.production\n",

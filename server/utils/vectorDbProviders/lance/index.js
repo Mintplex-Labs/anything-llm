@@ -84,6 +84,27 @@ const LanceDb = {
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
   },
+  similarityResponse: async function (client, namespace, queryVector) {
+    const collection = await client.openTable(namespace);
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+    };
+
+    const response = await collection
+      .search(queryVector)
+      .metricType("cosine")
+      .limit(5)
+      .execute();
+
+    response.forEach((item) => {
+      const { vector: _, ...rest } = item;
+      result.contextTexts.push(rest.text);
+      result.sourceDocuments.push(rest);
+    });
+
+    return result;
+  },
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client.openTable(namespace).catch(() => false);
@@ -232,28 +253,78 @@ const LanceDb = {
 
     // LanceDB does not have langchainJS support so we roll our own here.
     const queryVector = await this.embedChunk(this.openai(), input);
-    const collection = await client.openTable(namespace);
-    const relevantResults = await collection
-      .search(queryVector)
-      .metricType("cosine")
-      .limit(2)
-      .execute();
-    const messages = [
-      {
-        role: "system",
-        content: `The following is a friendly conversation between a human and an AI. The AI is very casual and talkative and responds with a friendly tone. If the AI does not know the answer to a question, it truthfully says it does not know.
-      Relevant pieces of information for context of the current query:
-      ${relevantResults.map((result) => result.text).join("\n\n")}`,
-      },
-      { role: "user", content: input },
-    ];
-    const responseText = await this.getChatCompletion(this.openai(), messages, {
-      temperature: workspace?.openAiTemp,
+    const { contextTexts, sourceDocuments } = await this.similarityResponse(
+      client,
+      namespace,
+      queryVector
+    );
+    const prompt = {
+      role: "system",
+      content: `Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.
+    Context:
+    ${contextTexts
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
+    };
+    const memory = [prompt, { role: "user", content: input }];
+    const responseText = await this.getChatCompletion(this.openai(), memory, {
+      temperature: workspace?.openAiTemp ?? 0.7,
     });
 
     return {
       response: responseText,
-      sources: curateLanceSources(relevantResults),
+      sources: curateLanceSources(sourceDocuments),
+      message: false,
+    };
+  },
+  // This implementation of chat uses the chat history and modifies the system prompt at execution
+  // this is improved over the regular langchain implementation so that chats do not directly modify embeddings
+  // because then multi-user support will have all conversations mutating the base vector collection to which then
+  // the only solution is replicating entire vector databases per user - which will very quickly consume space on VectorDbs
+  chat: async function (reqBody = {}) {
+    const {
+      namespace = null,
+      input,
+      workspace = {},
+      chatHistory = [],
+    } = reqBody;
+    if (!namespace || !input) throw new Error("Invalid request body");
+
+    const { client } = await this.connect();
+    if (!(await this.namespaceExists(client, namespace))) {
+      return {
+        response: null,
+        sources: [],
+        message: "Invalid query - no documents found for workspace!",
+      };
+    }
+
+    const queryVector = await this.embedChunk(this.openai(), input);
+    const { contextTexts, sourceDocuments } = await this.similarityResponse(
+      client,
+      namespace,
+      queryVector
+    );
+    const prompt = {
+      role: "system",
+      content: `Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.
+    Context:
+    ${contextTexts
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
+    };
+    const memory = [prompt, ...chatHistory, { role: "user", content: input }];
+    const responseText = await this.getChatCompletion(this.openai(), memory, {
+      temperature: workspace?.openAiTemp ?? 0.7,
+    });
+
+    return {
+      response: responseText,
+      sources: curateLanceSources(sourceDocuments),
       message: false,
     };
   },
