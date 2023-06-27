@@ -3,7 +3,6 @@ class OpenAi {
   constructor() {
     const config = new Configuration({
       apiKey: process.env.OPEN_AI_KEY,
-      // organization: "org-123xyz", // Optional
     });
     const openai = new OpenAIApi(config);
     this.openai = openai;
@@ -23,6 +22,11 @@ class OpenAi {
         if (res.results.length === 0)
           throw new Error("OpenAI moderation: No results length!");
         return res.results[0];
+      })
+      .catch((error) => {
+        throw new Error(
+          `OpenAI::CreateModeration failed with: ${error.message}`
+        );
       });
 
     if (!flagged) return { safe: true, reasons: [] };
@@ -65,6 +69,12 @@ class OpenAi {
         if (res.choices.length === 0)
           throw new Error("OpenAI chat: No results length!");
         return res.choices[0].message.content;
+      })
+      .catch((error) => {
+        console.log(error);
+        throw new Error(
+          `OpenAI::createChatCompletion failed with: ${error.message}`
+        );
       });
 
     return textResponse;

@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require("uuid");
 const { reqBody } = require("../utils/http");
 const { Workspace } = require("../models/workspace");
 const { chatWithWorkspace } = require("../utils/chats");
@@ -18,8 +19,14 @@ function chatEndpoints(app) {
       const result = await chatWithWorkspace(workspace, message, mode);
       response.status(200).json({ ...result });
     } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+      response.status(500).json({
+        id: uuidv4(),
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error: e.message,
+      });
     }
   });
 }
