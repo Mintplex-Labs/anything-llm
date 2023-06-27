@@ -52,7 +52,7 @@ const Chroma = {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
   },
   openai: function () {
-    const config = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
+    const config = new Configuration({ apiKey: process.env.OPEN_AI_KEY, basePath: process.env.BASEPATH });
     const openai = new OpenAIApi(config);
     return openai;
   },
@@ -297,7 +297,6 @@ const Chroma = {
         message: "Invalid query - no documents found for workspace!",
       };
     }
-
     const vectorStore = await ChromaStore.fromExistingCollection(
       this.embedder(),
       { collectionName: namespace, url: process.env.CHROMA_ENDPOINT }
@@ -305,7 +304,6 @@ const Chroma = {
     const model = this.llm({
       temperature: workspace?.openAiTemp,
     });
-
     const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
       k: 5,
       returnSourceDocuments: true,

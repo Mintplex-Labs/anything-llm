@@ -69,18 +69,23 @@ async function chatWithWorkspace(workspace, message, chatMode = "chat") {
     return await VALID_COMMANDS[command](workspace, message, uuid);
   }
 
-  const { safe, reasons = [] } = await openai.isSafe(message);
-  if (!safe) {
-    return {
-      id: uuid,
-      type: "abort",
-      textResponse: null,
-      sources: [],
-      close: true,
-      error: `This message was moderated and will not be allowed. Violations for ${reasons.join(
-        ", "
-      )} found.`,
-    };
+  // AC: this is written so that the existing code base can stay in place, and the bypass still
+  // has to be explicitly stated as true. If it's not set at all in the ENV it should still function.
+  if (!(process.env.BYPASS_MODERATION == "true"))
+  {
+    const { safe, reasons = [] } = await openai.isSafe(message);
+    if (!safe) {
+      return {
+        id: uuid,
+        type: "abort",
+        textResponse: null,
+        sources: [],
+        close: true,
+        error: `This message was moderated and will not be allowed. Violations for ${reasons.join(
+          ", "
+        )} found.`,
+      };
+    }
   }
 
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
@@ -104,7 +109,9 @@ async function chatWithWorkspace(workspace, message, chatMode = "chat") {
       error: null,
     };
   } else {
-    const rawHistory = await WorkspaceChats.forWorkspace(workspace.id, 20);
+    var chat_memory = workspace?.openAiHistory;
+    console.debug(chat_memory);
+    const rawHistory = await WorkspaceChats.forWorkspace(workspace.id, chat_memory);
     const chatHistory = convertToPromptHistory(rawHistory);
     const {
       response,
