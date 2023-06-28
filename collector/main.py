@@ -6,6 +6,7 @@ from scripts.substack import substack
 from scripts.medium import medium
 from scripts.gitbook import gitbook
 from scripts.sitemap import sitemap
+from scripts.twitter import twitter
 
 def main():
   if os.name == 'nt':
@@ -30,7 +31,7 @@ def main():
         {"name": "Medium", "value": "Medium"},
         {"name": "Article or Blog Link(s)", "value": "Article or Blog Link(s)"},
         {"name": "Gitbook", "value": "Gitbook"},
-        {"name": "Twitter", "value": "Twitter", "disabled": "Needs PR"},
+        {"name": "Twitter", "value": "Twitter"},
         {"name": "Sitemap", "value": "Sitemap"},
         {"name": "Abort", "value": "Abort"},
       ],
@@ -71,6 +72,9 @@ def main():
     exit(0)
   if method == 'Sitemap':
     sitemap()
+    exit(0)
+  if method == 'Twitter':
+    twitter()
     exit(0)
 
   print("Selection was not valid.")
