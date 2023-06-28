@@ -150,11 +150,11 @@ export default function WorkspaceSettings({ workspace }) {
                   Chat History
                 </label>
                 <p className="text-xs text-gray-600 dark:text-stone-400">
-                  Chat history: how far back in teh current discussion will 
-                  chat pull responses.
+                  Chat history: The number of previous chats that 
+                  will be included in the response's short-term memory.
                   <br />
-                  Default 20. Anything more than 45 is likely to cause significant failures
-                  as well as higher costs.
+                  Recommend 20. Anything more than 45 is likely to lead to 
+                  continuous chat failures depending on message size.
                   <br />
                   Recommended: 20
                 </p>
@@ -162,8 +162,8 @@ export default function WorkspaceSettings({ workspace }) {
               <input
                 name="openAiHistory"
                 type="number"
-                min={0.0}
-                max={45.0}
+                min={1}
+                max={45}
                 step={1}
                 onWheel={(e) => e.target.blur()}
                 defaultValue={workspace?.openAiHistory ?? 20}

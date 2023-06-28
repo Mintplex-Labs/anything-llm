@@ -111,7 +111,6 @@ const Workspace = {
       this.writable.includes(key)
     );
     const values = Object.values(data);
-    // console.log(validKeys);
     if (validKeys.length === 0 || validKeys.length !== values.length)
       return { workspace: { id }, message: "No valid fields to update!" };
       
