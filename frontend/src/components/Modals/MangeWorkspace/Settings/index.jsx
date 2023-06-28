@@ -140,6 +140,40 @@ export default function WorkspaceSettings({ workspace }) {
                 onChange={() => setHasChanges(true)}
               />
             </div>
+
+            <div>
+              <div className="flex flex-col gap-y-1 mb-4">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Chat History
+                </label>
+                <p className="text-xs text-gray-600 dark:text-stone-400">
+                  Chat history: The number of previous chats that 
+                  will be included in the response's short-term memory.
+                  <br />
+                  Recommend 20. Anything more than 45 is likely to lead to 
+                  continuous chat failures depending on message size.
+                  <br />
+                  Recommended: 20
+                </p>
+              </div>
+              <input
+                name="openAiHistory"
+                type="number"
+                min={1}
+                max={45}
+                step={1}
+                onWheel={(e) => e.target.blur()}
+                defaultValue={workspace?.openAiHistory ?? 20}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="20"
+                required={true}
+                autoComplete="off"
+                onChange={() => setHasChanges(true)}
+              />
+            </div>
           </div>
 
           {error && (

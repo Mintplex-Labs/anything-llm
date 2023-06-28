@@ -10,6 +10,7 @@ const Workspace = {
     "slug",
     "vectorTag",
     "openAiTemp",
+    "openAiHistory",
     "lastUpdatedAt",
   ],
   colsInit: `
@@ -19,6 +20,7 @@ const Workspace = {
   vectorTag TEXT DEFAULT NULL,
   createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
   openAiTemp REAL DEFAULT NULL,
+  openAiHistory INTEGER DEFAULT 20,
   lastUpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP
   `,
   migrateTable: async function () {
@@ -41,6 +43,11 @@ const Workspace = {
                                   UPDATE ${this.tablename} SET lastUpdatedAt = CURRENT_TIMESTAMP WHERE id = old.id;
                                  END`,
         doif: true,
+      },
+      {
+        colName: "openAiHistory",
+        execCmd: `ALTER TABLE ${this.tablename} ADD COLUMN openAiHistory INTEGER DEFAULT 20`,
+        doif: false,
       },
     ];
   },
@@ -106,7 +113,7 @@ const Workspace = {
     const values = Object.values(data);
     if (validKeys.length === 0 || validKeys.length !== values.length)
       return { workspace: { id }, message: "No valid fields to update!" };
-
+      
     const template = `UPDATE ${this.tablename} SET ${validKeys.map((key) => {
       return `${key}=?`;
     })} WHERE id = ?`;
@@ -120,7 +127,7 @@ const Workspace = {
         return { success: false, message: error.message };
       });
 
-    db.close();
+      db.close();
     if (!success) {
       return { workspace: null, message };
     }
