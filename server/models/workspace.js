@@ -113,7 +113,7 @@ const Workspace = {
     const values = Object.values(data);
     if (validKeys.length === 0 || validKeys.length !== values.length)
       return { workspace: { id }, message: "No valid fields to update!" };
-      
+
     const template = `UPDATE ${this.tablename} SET ${validKeys.map((key) => {
       return `${key}=?`;
     })} WHERE id = ?`;
@@ -127,7 +127,7 @@ const Workspace = {
         return { success: false, message: error.message };
       });
 
-      db.close();
+    db.close();
     if (!success) {
       return { workspace: null, message };
     }

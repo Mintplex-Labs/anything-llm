@@ -105,8 +105,11 @@ async function chatWithWorkspace(workspace, message, chatMode = "chat") {
     };
   } else {
     var messageLimit = workspace?.openAiHistory;
-    
-    const rawHistory = await WorkspaceChats.forWorkspace(workspace.id, messageLimit);
+
+    const rawHistory = await WorkspaceChats.forWorkspace(
+      workspace.id,
+      messageLimit
+    );
     const chatHistory = convertToPromptHistory(rawHistory);
     const {
       response,

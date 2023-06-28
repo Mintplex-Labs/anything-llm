@@ -150,13 +150,11 @@ export default function WorkspaceSettings({ workspace }) {
                   Chat History
                 </label>
                 <p className="text-xs text-gray-600 dark:text-stone-400">
-                  Chat history: The number of previous chats that 
-                  will be included in the response's short-term memory.
+                  The number of previous chats that will be included in the
+                  response's short-term memory.
                   <br />
-                  Recommend 20. Anything more than 45 is likely to lead to 
+                  Recommend 20. Anything more than 45 is likely to lead to
                   continuous chat failures depending on message size.
-                  <br />
-                  Recommended: 20
                 </p>
               </div>
               <input
