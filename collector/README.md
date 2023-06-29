@@ -48,9 +48,6 @@ Now uploads from the frontend will be processed as if you ran the `watch.py` scr
   - ![GCP Project Bar](../images/gcp-project-bar.png)
 - [Enable YouTube Data APIV3](https://console.cloud.google.com/apis/library/youtube.googleapis.com)
 - Once enabled generate a Credential key for this API
-<<<<<<< HEAD
-- Paste your key after `GOOGLE_APIS_KEY=` in your `collector/.env` file.
-=======
 - Paste your key after `GOOGLE_APIS_KEY=` in your `collector/.env` file.
 
 ### Using ther Twitter API
@@ -63,4 +60,3 @@ Now uploads from the frontend will be processed as if you ran the `watch.py` scr
   * TW_ACCESS_TOKEN
   * TW_ACCESS_TOKEN_SECRET
   populate the .env with the values
->>>>>>> e477cbc (Twitter Feature)
