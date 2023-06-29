@@ -6,7 +6,7 @@ from scripts.substack import substack
 from scripts.medium import medium
 from scripts.gitbook import gitbook
 from scripts.sitemap import sitemap
-from scripts.twitter import twitter
+from scripts.twitter import twitter 
 
 def main():
   if os.name == 'nt':

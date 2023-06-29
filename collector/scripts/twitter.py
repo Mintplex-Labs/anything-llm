@@ -8,7 +8,6 @@ import pandas as pd
 import json
 from .utils import tokenize, ada_v2_cost
 
-
 def twitter():
     #get user and number of tweets to read
     username = input("user timeline to read from (blank to ignore): ")
