@@ -69,7 +69,7 @@ def link():
 def crawler():
   prompt = "Paste in root URI of the pages of interest: "
   new_link = input(prompt)
-  filter_value = input("Add a filter value for the url to ensure links don't wander too far: ")
+  filter_value = input("Add a filter value for the url to ensure links don't wander too far. eg: 'my-domain.com': ")
   #extract this from the uri provided
   root_site = urlparse(new_link).scheme + "://" + urlparse(new_link).hostname
   links = []
@@ -82,11 +82,16 @@ def crawler():
   for link in soup.find_all("a"):
     data = link.get('href')
     if (data is not None):
-      if filter_value in data:
-        data = data.strip()
-        print (data)
-        links.append(root_site + data)
-      else:
+      fullpath = data if data[0] != '/' else f"{root_site}{data}"
+      try:
+        destination = urlparse(fullpath).scheme + "://" + urlparse(fullpath).hostname + (urlparse(fullpath).path if urlparse(fullpath).path is not None else '')
+        if filter_value in destination:
+          data = destination.strip()
+          print (data)
+          links.append(data)
+        else:
+          print (data + " does not apply for linking...")
+      except:
         print (data + " does not apply for linking...")
   #parse the links found  
   parse_links(links)
