@@ -49,3 +49,14 @@ Now uploads from the frontend will be processed as if you ran the `watch.py` scr
 - [Enable YouTube Data APIV3](https://console.cloud.google.com/apis/library/youtube.googleapis.com)
 - Once enabled generate a Credential key for this API
 - Paste your key after `GOOGLE_APIS_KEY=` in your `collector/.env` file.
+
+### Using ther Twitter API
+***required to get data form twitter with tweepy**
+- Go to https://developer.twitter.com/en/portal/dashboard with your twitter account
+- Create a new Project App
+  - Get your 4 keys and place them in your `collector.env` file
+  * TW_CONSUMER_KEY
+  * TW_CONSUMER_SECRET
+  * TW_ACCESS_TOKEN
+  * TW_ACCESS_TOKEN_SECRET
+  populate the .env with the values
