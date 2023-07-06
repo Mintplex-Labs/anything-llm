@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Archive, Sliders, UploadCloud, X } from "react-feather";
+import { Archive, Sliders, UploadCloud, X, Save } from "react-feather";
 import DocumentSettings from "./Documents";
 import WorkspaceSettings from "./Settings";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
 import System from "../../../models/system";
 import UploadToWorkspace from "./Upload";
+import ExportContents from "./Export";
 
 const TABS = {
   documents: DocumentSettings,
   settings: WorkspaceSettings,
   upload: UploadToWorkspace,
+  export: ExportContents,
 };
 
 const noop = () => false;
@@ -103,6 +105,13 @@ function WorkspaceSettingTabs({ selectedTab, changeTab }) {
           displayName="Settings"
           tabName="settings"
           icon={<Sliders className="h-4 w-4 flex-shrink-0" />}
+          onClick={changeTab}
+        />
+        <WorkspaceTab
+          active={selectedTab === "export"}
+          displayName="Export"
+          tabName="export"
+          icon={<Save className="h-4 w-4 flex-shrink-0" />}
           onClick={changeTab}
         />
       </ul>
