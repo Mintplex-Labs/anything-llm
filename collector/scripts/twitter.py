@@ -14,11 +14,15 @@ def twitter():
     searchQuery = input("Search term, or leave blank to get user tweets (blank to ignore): ")
     tweetCount = input("Gather the last number of tweets: ")
     
-    #read your API kes to call the api.
-    consumer_key = os.environ["TW_CONSUMER_KEY"]
-    consumer_secret = os.environ["TW_CONSUMER_SECRET"]
-    access_token = os.environ["TW_ACCESS_TOKEN"]
-    access_token_secret = os.environ["TW_ACCESS_TOKEN_SECRET"]
+    # Read your API keys to call the API.
+    consumer_key = os.environ.get("TW_CONSUMER_KEY")
+    consumer_secret = os.environ.get("TW_CONSUMER_SECRET")
+    access_token = os.environ.get("TW_ACCESS_TOKEN")
+    access_token_secret = os.environ.get("TW_ACCESS_TOKEN_SECRET")
+
+    # Check if any of the required environment variables is missing.
+    if not consumer_key or not consumer_secret or not access_token or not access_token_secret:
+        raise EnvironmentError("One of the twitter API environment variables are missing.")
 
     # Pass in our twitter API authentication key
     auth = tweepy.OAuth1UserHandler(
@@ -83,6 +87,8 @@ def twitter():
 
 
 def twitter_meta(row, metadata_only = False):
+  # Note that /anyuser is a known twitter hack for not knowing the user's handle
+  # https://stackoverflow.com/questions/897107/can-i-fetch-the-tweet-from-twitter-if-i-know-the-tweets-id
   url = f"http://twitter.com/anyuser/status/{row['id']}"
   title = f"Tweet {row['id']}"
   meta = {
