@@ -1,0 +1,23 @@
+{
+  "name": "anything-llm",
+  "version": "0.0.1-beta",
+  "description": "Turn anything into a chattable document through a simple UI",
+  "main": "index.js",
+  "author": "Timothy Carambat (Mintplex Labs)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "lint": "cd server && yarn lint && cd .. && cd frontend && yarn lint",
+    "setup": "cd server && yarn && cd ../frontend && yarn && cd .. && yarn setup:envs && echo \"Please run yarn dev:server and yarn dev:frontend in separate terminal tabs.\"",
+    "setup:envs": "cp -n ./server/.env.example ./server/.env.development && cp -n ./collector/.env.example ./collector/.env && cp -n ./docker/.env.example ./docker/.env && echo \"All ENV files copied!\n\"",
+    "dev:server": "cd server && yarn dev",
+    "dev:frontend": "cd frontend && yarn start",
+    "prod:server": "cd server && yarn start",
+    "prod:frontend": "cd frontend && yarn build",
+    "generate:cloudformation": "node aws/cloudformation/generate.mjs",
+    "generate::gcp_deployment": "node gcp/deployment/generate.mjs"  
+  },
+  "private": false
+}
