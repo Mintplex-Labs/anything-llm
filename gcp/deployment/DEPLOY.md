@@ -19,7 +19,9 @@ Open your terminal
 1. Generate your specific cloudformation document by running `yarn generate:gcp_deployment` from the project root directory.
 2. Thsi will create a new file (gcp_deploy_anything_llm_with_env.yaml) in the gcp/deployment folder.
 3. Log in to your GCP account using the following command:
-    ''' gcloud auth login '''
+    ```
+    gcloud auth login 
+    ```
 
 4. After successful login, Run the following command to create a deployment using the Deployment Manager CLI:
 
@@ -27,14 +29,20 @@ Open your terminal
 
 Once you execute these steps, the CLI will initiate the deployment process on GCP based on your configuration file. You can monitor the deployment status and view the outputs using the Google Cloud Console or the Deployment Manager CLI commands.
 
-''' gcloud compute instances get-serial-port-output anything-llm-instance ''' 
+```
+gcloud compute instances get-serial-port-output anything-llm-instance 
+```
 
 ssh into the instance
 
-''' gcloud compute ssh anything-llm-instance '''
+```
+gcloud compute ssh anything-llm-instance 
+```
 
 Delete the deployment
-''' gcloud deployment-manager deployments delete anything-llm-deployment '''
+```
+gcloud deployment-manager deployments delete anything-llm-deployment 
+```
 
 ## Please read this notice before submitting issues about your deployment
 
