@@ -17,7 +17,7 @@ The output of this cloudformation stack will be:
 ## How to deploy on GCP
 Open your terminal
 1. Generate your specific cloudformation document by running `yarn generate:gcp_deployment` from the project root directory.
-2. Thsi will create a new file (gcp_deploy_anything_llm_with_env.yaml) in the gcp/deployment folder.
+2. This will create a new file (`gcp_deploy_anything_llm_with_env.yaml`) in the `gcp/deployment` folder.
 3. Log in to your GCP account using the following command:
     ```
     gcloud auth login 
