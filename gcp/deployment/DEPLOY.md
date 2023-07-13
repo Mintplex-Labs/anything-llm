@@ -49,7 +49,7 @@ gcloud deployment-manager deployments delete anything-llm-deployment
 **Note:** 
 Your instance will not be available instantly. Depending on the instance size you launched with it can take anywhere from 10-20 minutes to fully boot up.
 
-If you want to check the instances progress, navigate to [your deployed EC2 instances](https://us-west-1.console.aws.amazon.com/ec2/home) and connect to your instance via SSH in browser.
+If you want to check the instances progress, navigate to [your deployed instances](https://console.cloud.google.com/compute/instances) and connect to your instance via SSH in browser.
 
 Once connected run `sudo tail -f /var/log/cloud-init-output.log` and wait for the file to conclude deployment of the docker image.
 
