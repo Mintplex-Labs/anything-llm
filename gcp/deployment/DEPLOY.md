@@ -25,7 +25,9 @@ Open your terminal
 
 4. After successful login, Run the following command to create a deployment using the Deployment Manager CLI:
 
-  ``` gcloud deployment-manager deployments create anything-llm-deployment --config gcp/deployment/gcp_deploy_anything_llm_with_env.yaml ```
+  ``` 
+  gcloud deployment-manager deployments create anything-llm-deployment --config gcp/deployment/gcp_deploy_anything_llm_with_env.yaml
+```
 
 Once you execute these steps, the CLI will initiate the deployment process on GCP based on your configuration file. You can monitor the deployment status and view the outputs using the Google Cloud Console or the Deployment Manager CLI commands.
 
