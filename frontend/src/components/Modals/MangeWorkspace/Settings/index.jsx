@@ -161,7 +161,7 @@ export default function WorkspaceSettings({ workspace }) {
                 name="openAiHistory"
                 type="number"
                 min={1}
-                max={45}
+                max={99}
                 step={1}
                 onWheel={(e) => e.target.blur()}
                 defaultValue={workspace?.openAiHistory ?? 20}
