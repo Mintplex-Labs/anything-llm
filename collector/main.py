@@ -6,6 +6,7 @@ from scripts.substack import substack
 from scripts.medium import medium
 from scripts.gitbook import gitbook
 from scripts.sitemap import sitemap
+from scripts.twitter import twitter 
 
 def main():
   if os.name == 'nt':
@@ -15,7 +16,8 @@ def main():
       '3': 'Substack',
       '4': 'Medium',
       '5': 'Gitbook',
-      '6': 'Sitemap',
+      '6': 'Twitter',
+      '7': 'Sitemap',
     }
     print("There are options for data collection to make this easier for you.\nType the number of the method you wish to execute.")
     print("1. YouTube Channel\n2. Article or Blog Link (Single)\n3. Substack\n4. Medium\n\n[In development]:\nTwitter\n\n")
@@ -30,7 +32,7 @@ def main():
         {"name": "Medium", "value": "Medium"},
         {"name": "Article or Blog Link(s)", "value": "Article or Blog Link(s)"},
         {"name": "Gitbook", "value": "Gitbook"},
-        {"name": "Twitter", "value": "Twitter", "disabled": "Needs PR"},
+        {"name": "Twitter", "value": "Twitter"},
         {"name": "Sitemap", "value": "Sitemap"},
         {"name": "Abort", "value": "Abort"},
       ],
@@ -71,8 +73,10 @@ def main():
     exit(0)
   if method == 'Sitemap':
     sitemap()
+    exit(0)   
+  if method == 'Twitter':
+    twitter()
     exit(0)
-
   print("Selection was not valid.")
   exit(1)
 
