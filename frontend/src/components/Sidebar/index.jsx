@@ -7,10 +7,13 @@ import {
   Key,
   Menu,
   Plus,
+  Tool,
 } from "react-feather";
 import IndexCount from "./IndexCount";
 import LLMStatus from "./LLMStatus";
-import KeysModal, { useKeysModal } from "../Modals/Keys";
+import SystemSettingsModal, {
+  useSystemSettingsModal,
+} from "../Modals/Settings";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
@@ -20,10 +23,10 @@ import paths from "../../utils/paths";
 export default function Sidebar() {
   const sidebarRef = useRef(null);
   const {
-    showing: showingKeyModal,
-    showModal: showKeyModal,
-    hideModal: hideKeyModal,
-  } = useKeysModal();
+    showing: showingSystemSettingsModal,
+    showModal: showSystemSettingsModal,
+    hideModal: hideSystemSettingsModal,
+  } = useSystemSettingsModal();
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
@@ -45,10 +48,10 @@ export default function Sidebar() {
             </p>
             <div className="flex gap-x-2 items-center text-slate-500">
               <button
-                onClick={showKeyModal}
+                onClick={showSystemSettingsModal}
                 className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
               >
-                <Key className="h-4 w-4 " />
+                <Tool className="h-4 w-4 " />
               </button>
             </div>
           </div>
@@ -126,7 +129,9 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-      {showingKeyModal && <KeysModal hideModal={hideKeyModal} />}
+      {showingSystemSettingsModal && (
+        <SystemSettingsModal hideModal={hideSystemSettingsModal} />
+      )}
       {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
     </>
   );
@@ -137,10 +142,10 @@ export function SidebarMobileHeader() {
   const [showBgOverlay, setShowBgOverlay] = useState(false);
   const sidebarRef = useRef(null);
   const {
-    showing: showingKeyModal,
-    showModal: showKeyModal,
-    hideModal: hideKeyModal,
-  } = useKeysModal();
+    showing: showingSystemSettingsModal,
+    showModal: showSystemSettingsModal,
+    hideModal: hideSystemSettingsModal,
+  } = useSystemSettingsModal();
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
@@ -199,10 +204,10 @@ export function SidebarMobileHeader() {
               </p>
               <div className="flex gap-x-2 items-center text-slate-500">
                 <button
-                  onClick={showKeyModal}
+                  onClick={showSystemSettingsModal}
                   className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
                 >
-                  <Key className="h-4 w-4 " />
+                  <Tool className="h-4 w-4 " />
                 </button>
               </div>
             </div>
@@ -283,7 +288,9 @@ export function SidebarMobileHeader() {
             </div>
           </div>
         </div>
-        {showingKeyModal && <KeysModal hideModal={hideKeyModal} />}
+        {showingSystemSettingsModal && (
+          <SystemSettingsModal hideModal={hideSystemSettingsModal} />
+        )}
         {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
       </div>
     </>
