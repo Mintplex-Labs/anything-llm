@@ -1,3 +1,5 @@
+import { API_BASE } from "./constants";
+
 export default {
   home: () => {
     return "/";
@@ -18,5 +20,8 @@ export default {
     chat: (slug) => {
       return `/workspace/${slug}`;
     },
+  },
+  exports: () => {
+    return `${API_BASE.replace("/api", "")}/system/data-exports`;
   },
 };

@@ -129,9 +129,9 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-      {showingSystemSettingsModal && (
-        <SystemSettingsModal hideModal={hideSystemSettingsModal} />
-      )}
+      {/* {showingSystemSettingsModal && ( */}
+      <SystemSettingsModal hideModal={hideSystemSettingsModal} />
+      {/* )} */}
       {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
     </>
   );
