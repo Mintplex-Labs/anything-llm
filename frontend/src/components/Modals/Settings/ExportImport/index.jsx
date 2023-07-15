@@ -174,11 +174,14 @@ function ImportData() {
 
   if (!!result) {
     return (
-      <div className="w-full flex gap-1 justify-center items-center px-6 py-4 border border-green-200 rounded-lg dark:border-green-600 bg-green-200 group">
-        <CheckCircle className="h-4 w-4 text-green-800 " />
-        <p className="text-green-800 text-sm">
-          Import was completed successfully
-        </p>
+      <div className="w-full flex flex-col gap-y-1 gap-1 justify-center items-center px-6 py-4 border border-green-200 rounded-lg dark:border-green-600 bg-green-200 group">
+        <div className="flex items-center gap-x-1">
+          <CheckCircle className="h-4 w-4 text-green-800 " />
+          <p className="text-green-800 text-sm">
+            Import was completed successfully
+          </p>
+        </div>
+        <p className="text-green-800 text-xs italic">please reload the page to see the results of the import.</p>
       </div>
     );
   }
