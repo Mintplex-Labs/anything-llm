@@ -4,6 +4,7 @@ process.env.NODE_ENV === "development"
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const serveIndex = require("serve-index");
 const cors = require("cors");
 const path = require("path");
 const { validatedRequest } = require("./utils/middleware/validatedRequest");
@@ -71,6 +72,11 @@ if (process.env.NODE_ENV !== "development") {
     response.sendFile(path.join(__dirname, "public", "index.html"));
   });
 }
+
+app.use(
+  "/system/data-exports",
+  serveIndex(__dirname + "/storage/exports", { icons: true })
+);
 
 app.all("*", function (_, response) {
   response.sendStatus(404);

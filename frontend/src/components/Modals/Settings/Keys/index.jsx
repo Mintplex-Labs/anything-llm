@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { AlertCircle, Loader, X } from "react-feather";
-import System from "../../models/system";
+import System from "../../../../models/system";
 
 const noop = () => false;
-export default function KeysModal({ hideModal = noop }) {
+export default function SystemKeys({ hideModal = noop }) {
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState({});
 
+  function validSettings(settings) {
+    return (
+      settings?.OpenAiKey &&
+      !!settings?.OpenAiModelPref &&
+      !!settings?.VectorDB &&
+      (settings?.VectorDB === "chroma" ? !!settings?.ChromaEndpoint : true) &&
+      (settings?.VectorDB === "pinecone"
+        ? !!settings?.PineConeKey &&
+          !!settings?.PineConeEnvironment &&
+          !!settings?.PineConeIndex
+        : true)
+    );
+  }
   useEffect(() => {
     async function fetchKeys() {
       const settings = await System.keys();
@@ -17,35 +30,25 @@ export default function KeysModal({ hideModal = noop }) {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-black bg-opacity-50 flex items-center justify-center">
-      <div
-        className="flex fixed top-0 left-0 right-0 w-full h-full"
-        onClick={hideModal}
-      />
-      <div className="relative w-full max-w-2xl max-h-full">
-        <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
-          <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-              System Settings
-            </h3>
-            <button
-              onClick={hideModal}
-              type="button"
-              className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-              data-modal-hide="staticModal"
-            >
-              <X className="text-gray-300 text-lg" />
-            </button>
-          </div>
-          <div className="p-6 space-y-6 flex h-full w-full">
-            {loading ? (
-              <div className="w-full h-full flex items-center justify-center">
-                <p className="text-gray-800 dark:text-gray-200 text-base">
-                  loading system settings
-                </p>
-              </div>
-            ) : (
-              <div className="w-full flex flex-col gap-y-4">
+    <div className="relative w-full max-w-2xl max-h-full">
+      <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
+        <div className="flex items-start justify-between px-6 py-4">
+          <p className="text-gray-800 dark:text-stone-200 text-base ">
+            These are the credentials and settings for how your AnythingLLM
+            instance will function. Its important these keys are current and
+            correct.
+          </p>
+        </div>
+        <div className="p-6 space-y-6 flex h-full w-full">
+          {loading ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <p className="text-gray-800 dark:text-gray-200 text-base">
+                loading system settings
+              </p>
+            </div>
+          ) : (
+            <div className="w-full flex flex-col gap-y-4">
+              {!validSettings(settings) && (
                 <div className="bg-orange-300 p-4 rounded-lg border border-orange-600 text-orange-700 w-full items-center flex gap-x-2">
                   <AlertCircle className="h-8 w-8" />
                   <p className="text-sm md:text-base ">
@@ -53,76 +56,76 @@ export default function KeysModal({ hideModal = noop }) {
                     AnythingLLM or it may not function as expected!
                   </p>
                 </div>
-                <ShowKey
-                  name="OpenAI API Key"
-                  env="OpenAiKey"
-                  value={settings?.OpenAiKey ? "*".repeat(20) : ""}
-                  valid={settings?.OpenAiKey}
-                  allowDebug={settings?.CanDebug}
-                />
-                <ShowKey
-                  name="OpenAI Model for chats"
-                  env="OpenAiModelPref"
-                  value={settings?.OpenAiModelPref}
-                  valid={!!settings?.OpenAiModelPref}
-                  allowDebug={settings?.CanDebug}
-                />
-                <div className="h-[2px] w-full bg-gray-200 dark:bg-stone-600" />
-                <ShowKey
-                  name="Vector DB Choice"
-                  env="VectorDB"
-                  value={settings?.VectorDB}
-                  valid={!!settings?.VectorDB}
-                  allowDebug={settings?.CanDebug}
-                />
-                {settings?.VectorDB === "pinecone" && (
-                  <>
-                    <ShowKey
-                      name="Pinecone DB API Key"
-                      env="PineConeKey"
-                      value={settings?.PineConeKey ? "*".repeat(20) : ""}
-                      valid={!!settings?.PineConeKey}
-                      allowDebug={settings?.CanDebug}
-                    />
-                    <ShowKey
-                      name="Pinecone DB Environment"
-                      env="PineConeEnvironment"
-                      value={settings?.PineConeEnvironment}
-                      valid={!!settings?.PineConeEnvironment}
-                      allowDebug={settings?.CanDebug}
-                    />
-                    <ShowKey
-                      name="Pinecone DB Index"
-                      env="PineConeIndex"
-                      value={settings?.PineConeIndex}
-                      valid={!!settings?.PineConeIndex}
-                      allowDebug={settings?.CanDebug}
-                    />
-                  </>
-                )}
-                {settings?.VectorDB === "chroma" && (
-                  <>
-                    <ShowKey
-                      name="Chroma Endpoint"
-                      env="ChromaEndpoint"
-                      value={settings?.ChromaEndpoint}
-                      valid={!!settings?.ChromaEndpoint}
-                      allowDebug={settings?.CanDebug}
-                    />
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
-            <button
-              onClick={hideModal}
-              type="button"
-              className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-            >
-              Close
-            </button>
-          </div>
+              )}
+              <ShowKey
+                name="OpenAI API Key"
+                env="OpenAiKey"
+                value={settings?.OpenAiKey ? "*".repeat(20) : ""}
+                valid={settings?.OpenAiKey}
+                allowDebug={settings?.CanDebug}
+              />
+              <ShowKey
+                name="OpenAI Model for chats"
+                env="OpenAiModelPref"
+                value={settings?.OpenAiModelPref}
+                valid={!!settings?.OpenAiModelPref}
+                allowDebug={settings?.CanDebug}
+              />
+              <div className="h-[2px] w-full bg-gray-200 dark:bg-stone-600" />
+              <ShowKey
+                name="Vector DB Choice"
+                env="VectorDB"
+                value={settings?.VectorDB}
+                valid={!!settings?.VectorDB}
+                allowDebug={settings?.CanDebug}
+              />
+              {settings?.VectorDB === "pinecone" && (
+                <>
+                  <ShowKey
+                    name="Pinecone DB API Key"
+                    env="PineConeKey"
+                    value={settings?.PineConeKey ? "*".repeat(20) : ""}
+                    valid={!!settings?.PineConeKey}
+                    allowDebug={settings?.CanDebug}
+                  />
+                  <ShowKey
+                    name="Pinecone DB Environment"
+                    env="PineConeEnvironment"
+                    value={settings?.PineConeEnvironment}
+                    valid={!!settings?.PineConeEnvironment}
+                    allowDebug={settings?.CanDebug}
+                  />
+                  <ShowKey
+                    name="Pinecone DB Index"
+                    env="PineConeIndex"
+                    value={settings?.PineConeIndex}
+                    valid={!!settings?.PineConeIndex}
+                    allowDebug={settings?.CanDebug}
+                  />
+                </>
+              )}
+              {settings?.VectorDB === "chroma" && (
+                <>
+                  <ShowKey
+                    name="Chroma Endpoint"
+                    env="ChromaEndpoint"
+                    value={settings?.ChromaEndpoint}
+                    valid={!!settings?.ChromaEndpoint}
+                    allowDebug={settings?.CanDebug}
+                  />
+                </>
+              )}
+            </div>
+          )}
+        </div>
+        <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+          <button
+            onClick={hideModal}
+            type="button"
+            className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>
@@ -274,16 +277,4 @@ function ShowKey({ name, env, value, valid, allowDebug = true }) {
       </div>
     </form>
   );
-}
-
-export function useKeysModal() {
-  const [showing, setShowing] = useState(false);
-  const showModal = () => {
-    setShowing(true);
-  };
-  const hideModal = () => {
-    setShowing(false);
-  };
-
-  return { showing, showModal, hideModal };
 }
