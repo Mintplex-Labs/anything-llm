@@ -1,6 +1,3 @@
-# Copyright (c) HashiCorp, Inc.
-# SPDX-License-Identifier: MIT
-
 terraform {
   required_version = ">= 1.0.0"
 
@@ -14,7 +11,7 @@ terraform {
 
 provider "digitalocean" {  
   # Add your DigitalOcean API token here  
-  token = "dop_v1_b286a37421004aff55400d342f5f2e2f36f73f5157ba81744ccbe2ada957cd03"  
+  token = "DigitalOcean API token"  
 }  
 
   
