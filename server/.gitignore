@@ -2,6 +2,8 @@
 .env.development
 storage/documents/*
 storage/vector-cache/*.json
+storage/exports
+storage/imports
 !storage/documents/DOCUMENTS.md
 logs/server.log
 *.db

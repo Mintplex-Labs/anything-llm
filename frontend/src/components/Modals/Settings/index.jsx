@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Key, X } from "react-feather";
+import { Archive, Cloud, Key, X } from "react-feather";
 import SystemKeys from "./Keys";
+import ExportOrImportData from "./ExportImport";
 
 const TABS = {
   keys: SystemKeys,
+  exportimport: ExportOrImportData,
 };
 
 const noop = () => false;
@@ -51,6 +53,13 @@ function SettingTabs({ selectedTab, changeTab }) {
           displayName="Keys"
           tabName="keys"
           icon={<Key className="h-4 w-4 flex-shrink-0" />}
+          onClick={changeTab}
+        />
+        <SettingTab
+          active={selectedTab === "exportimport"}
+          displayName="Export or Import"
+          tabName="exportimport"
+          icon={<Archive className="h-4 w-4 flex-shrink-0" />}
           onClick={changeTab}
         />
       </ul>
