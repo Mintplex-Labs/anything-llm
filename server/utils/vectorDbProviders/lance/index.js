@@ -27,8 +27,9 @@ function curateLanceSources(sources = []) {
 }
 
 const LanceDb = {
-  uri: `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
-    }lancedb`,
+  uri: `${
+    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
+  }lancedb`,
   name: "LanceDb",
   connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
@@ -277,10 +278,10 @@ const LanceDb = {
       content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
-          .map((text, i) => {
-            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-          })
-          .join("")}`,
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
     };
     const memory = [prompt, { role: "user", content: input }];
     const responseText = await this.getChatCompletion(this.openai(), memory, {
@@ -326,10 +327,10 @@ const LanceDb = {
       content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
-          .map((text, i) => {
-            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-          })
-          .join("")}`,
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
     };
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
     const responseText = await this.getChatCompletion(this.openai(), memory, {

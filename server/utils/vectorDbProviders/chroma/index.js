@@ -80,7 +80,11 @@ const Chroma = {
       temperature,
     });
   },
-  embedChunks: async function (openai, chunks) {
+  embedTextInput: async function (openai, textInput) {
+    const result = await this.embedChunks(openai, textInput);
+    return result?.[0] || [];
+  },
+  embedChunks: async function (openai, chunks = []) {
     const {
       data: { data },
     } = await openai.createEmbedding({
@@ -341,7 +345,7 @@ const Chroma = {
       };
     }
 
-    const queryVector = await this.embedChunk(this.openai(), input);
+    const queryVector = await this.embedTextInput(this.openai(), input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,

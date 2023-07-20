@@ -34,6 +34,12 @@ function curateSources(sources = []) {
     ) {
       documents.push({ ...metadata });
       knownDocs.push(metadata.title);
+    } else if (
+      Object.keys(source).length > 0 &&
+      !knownDocs.includes(source.title)
+    ) {
+      documents.push({ ...source });
+      knownDocs.push(source.title);
     }
   }
 
