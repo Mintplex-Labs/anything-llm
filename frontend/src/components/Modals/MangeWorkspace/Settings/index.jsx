@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Workspace from "../../../../models/workspace";
 import paths from "../../../../utils/paths";
+import { chatPrompt } from "../../../../utils/chat";
 
 export default function WorkspaceSettings({ workspace }) {
   const formEl = useRef(null);
@@ -136,6 +137,35 @@ export default function WorkspaceSettings({ workspace }) {
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="0.7"
                 required={true}
+                autoComplete="off"
+                onChange={() => setHasChanges(true)}
+              />
+            </div>
+
+            <div>
+              <div className="flex flex-col gap-y-1 mb-4">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Prompt
+                </label>
+                <p className="text-xs text-gray-600 dark:text-stone-400">
+                  The prompt that will be used on this workspace. Define the
+                  context and instructions for the AI to generate a response.
+                  You should to provide a carefully crafted prompt so the AI can
+                  generate a relevant and accurate response.
+                </p>
+              </div>
+              <textarea
+                name="openAiPrompt"
+                maxLength={500}
+                rows={5}
+                defaultValue={chatPrompt(workspace)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
+                required={true}
+                wrap="soft"
                 autoComplete="off"
                 onChange={() => setHasChanges(true)}
               />

@@ -5,6 +5,7 @@ const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
+const { chatPrompt } = require("../../chats");
 
 // Since we roll our own results for prompting we
 // have to manually curate sources as well.
@@ -260,7 +261,7 @@ const LanceDb = {
     );
     const prompt = {
       role: "system",
-      content: `Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.
+      content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
       .map((text, i) => {
@@ -309,7 +310,7 @@ const LanceDb = {
     );
     const prompt = {
       role: "system",
-      content: `Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.
+      content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
       .map((text, i) => {

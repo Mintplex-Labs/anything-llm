@@ -8,6 +8,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, curateSources } = require("../../helpers");
+const { chatPrompt } = require("../../chats");
 
 const Chroma = {
   name: "Chroma",
@@ -303,7 +304,7 @@ const Chroma = {
       { collectionName: namespace, url: process.env.CHROMA_ENDPOINT }
     );
     const model = this.llm({
-      temperature: workspace?.openAiTemp,
+      temperature: workspace?.openAiTemp ?? 0.7,
     });
 
     const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
@@ -347,7 +348,7 @@ const Chroma = {
     );
     const prompt = {
       role: "system",
-      content: `Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.
+      content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
       .map((text, i) => {

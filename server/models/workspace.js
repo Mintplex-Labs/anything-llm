@@ -12,6 +12,7 @@ const Workspace = {
     "openAiTemp",
     "openAiHistory",
     "lastUpdatedAt",
+    "openAiPrompt",
   ],
   colsInit: `
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,7 +22,8 @@ const Workspace = {
   createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
   openAiTemp REAL DEFAULT NULL,
   openAiHistory INTEGER DEFAULT 20,
-  lastUpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP
+  lastUpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+  openAiPrompt TEXT DEFAULT NULL
   `,
   migrateTable: async function () {
     console.log(`\x1b[34m[MIGRATING]\x1b[0m Checking for Workspace migrations`);
@@ -33,6 +35,11 @@ const Workspace = {
       {
         colName: "openAiTemp",
         execCmd: `ALTER TABLE ${this.tablename} ADD COLUMN openAiTemp REAL DEFAULT NULL`,
+        doif: false,
+      },
+      {
+        colName: "openAiPrompt",
+        execCmd: `ALTER TABLE ${this.tablename} ADD COLUMN openAiPrompt TEXT DEFAULT NULL`,
         doif: false,
       },
       {
