@@ -8,6 +8,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, curateSources } = require("../../helpers");
+const { chatPrompt } = require("../../chats");
 
 const Chroma = {
   name: "Chroma",
@@ -56,12 +57,27 @@ const Chroma = {
     const openai = new OpenAIApi(config);
     return openai;
   },
-  llm: function () {
+  getChatCompletion: async function (
+    openai,
+    messages = [],
+    { temperature = 0.7 }
+  ) {
+    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
+    const { data } = await openai.createChatCompletion({
+      model,
+      messages,
+      temperature,
+    });
+
+    if (!data.hasOwnProperty("choices")) return null;
+    return data.choices[0].message.content;
+  },
+  llm: function ({ temperature = 0.7 }) {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     return new OpenAI({
       openAIApiKey: process.env.OPEN_AI_KEY,
-      temperature: 0.7,
       modelName: model,
+      temperature,
     });
   },
   embedChunks: async function (openai, chunks) {
@@ -75,6 +91,24 @@ const Chroma = {
       data.every((embd) => embd.hasOwnProperty("embedding"))
       ? data.map((embd) => embd.embedding)
       : null;
+  },
+  similarityResponse: async function (client, namespace, queryVector) {
+    const collection = await client.getCollection({ name: namespace });
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+    };
+
+    const response = await collection.query({
+      queryEmbeddings: queryVector,
+      nResults: 4,
+    });
+    response.ids[0].forEach((_, i) => {
+      result.contextTexts.push(response.documents[0][i]);
+      result.sourceDocuments.push(response.metadatas[0][i]);
+    });
+
+    return result;
   },
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
@@ -254,7 +288,7 @@ const Chroma = {
     return true;
   },
   query: async function (reqBody = {}) {
-    const { namespace = null, input } = reqBody;
+    const { namespace = null, input, workspace = {} } = reqBody;
     if (!namespace || !input) throw new Error("Invalid request body");
 
     const { client } = await this.connect();
@@ -270,7 +304,10 @@ const Chroma = {
       this.embedder(),
       { collectionName: namespace, url: process.env.CHROMA_ENDPOINT }
     );
-    const model = this.llm();
+    const model = this.llm({
+      temperature: workspace?.openAiTemp ?? 0.7,
+    });
+
     const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
       k: 5,
       returnSourceDocuments: true,
@@ -279,6 +316,55 @@ const Chroma = {
     return {
       response: response.text,
       sources: curateSources(response.sourceDocuments),
+      message: false,
+    };
+  },
+  // This implementation of chat uses the chat history and modifies the system prompt at execution
+  // this is improved over the regular langchain implementation so that chats do not directly modify embeddings
+  // because then multi-user support will have all conversations mutating the base vector collection to which then
+  // the only solution is replicating entire vector databases per user - which will very quickly consume space on VectorDbs
+  chat: async function (reqBody = {}) {
+    const {
+      namespace = null,
+      input,
+      workspace = {},
+      chatHistory = [],
+    } = reqBody;
+    if (!namespace || !input) throw new Error("Invalid request body");
+
+    const { client } = await this.connect();
+    if (!(await this.namespaceExists(client, namespace))) {
+      return {
+        response: null,
+        sources: [],
+        message: "Invalid query - no documents found for workspace!",
+      };
+    }
+
+    const queryVector = await this.embedChunk(this.openai(), input);
+    const { contextTexts, sourceDocuments } = await this.similarityResponse(
+      client,
+      namespace,
+      queryVector
+    );
+    const prompt = {
+      role: "system",
+      content: `${chatPrompt(workspace)}
+    Context:
+    ${contextTexts
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
+    };
+    const memory = [prompt, ...chatHistory, { role: "user", content: input }];
+    const responseText = await this.getChatCompletion(this.openai(), memory, {
+      temperature: workspace?.openAiTemp ?? 0.7,
+    });
+
+    return {
+      response: responseText,
+      sources: curateSources(sourceDocuments),
       message: false,
     };
   },

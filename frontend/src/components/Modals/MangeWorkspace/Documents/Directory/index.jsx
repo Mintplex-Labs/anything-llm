@@ -7,7 +7,8 @@ import {
   FolderPlus,
   Zap,
 } from "react-feather";
-import { nFormatter } from "../../../../utils/numbers";
+import { nFormatter } from "../../../../../utils/numbers";
+import System from "../../../../../models/system";
 
 export default function Directory({
   files,
@@ -19,6 +20,16 @@ export default function Directory({
   const [isExpanded, toggleExpanded] = useState(false);
   const [showDetails, toggleDetails] = useState(false);
   const [showZap, setShowZap] = useState(false);
+  const handleDelete = async (name, meta) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this document?\nThis will require you to re-upload and re-embed it.\nThis document will be removed from any workspace that is currently referencing it.\nThis action is not reversible."
+      )
+    )
+      return false;
+    document?.getElementById(meta?.id)?.remove();
+    await System.deleteDocument(name, meta);
+  };
 
   if (files.type === "folder") {
     return (
@@ -42,7 +53,7 @@ export default function Directory({
             className="flex gap-x-2 items-center  cursor-pointer w-full"
             onClick={() => toggleExpanded(!isExpanded)}
           >
-            <h2 className="text-2xl">{files.name}</h2>
+            <h2 className="text-base md:text-2xl">{files.name}</h2>
             {files.items.some((files) => files.type === "folder") ? (
               <p className="text-xs italic">{files.items.length} folders</p>
             ) : (
@@ -73,7 +84,7 @@ export default function Directory({
 
   const { name, type: _type, ...meta } = files;
   return (
-    <div className="ml-[20px] my-2">
+    <div className="ml-[20px] my-2" id={meta.id}>
       <div className="flex items-center">
         {meta?.cached && (
           <button
@@ -134,15 +145,25 @@ export default function Directory({
         </div>
       </div>
       {showDetails && (
-        <div className="ml-[20px] flex flex-col gap-y-1 my-1 p-2 rounded-md bg-slate-200 font-mono text-sm overflow-x-scroll">
-          {Object.entries(meta).map(([key, value]) => {
-            if (key === "cached") return null;
-            return (
-              <p className="whitespace-pre">
-                {key}: {value}
-              </p>
-            );
-          })}
+        <div className="w-full flex flex-col">
+          <div className="ml-[20px] flex flex-col gap-y-1 my-1 p-2 rounded-md bg-slate-200 font-mono text-sm overflow-x-scroll">
+            {Object.entries(meta).map(([key, value], i) => {
+              if (key === "cached") return null;
+              return (
+                <p key={i} className="whitespace-pre">
+                  {key}: {value}
+                </p>
+              );
+            })}
+          </div>
+          <div
+            onClick={() => handleDelete(`${parent}/${name}`, meta)}
+            className="flex items-center justify-end w-full"
+          >
+            <button className="text-sm text-slate-400 dark:text-stone-500 hover:text-red-500">
+              Purge Document
+            </button>
+          </div>
         </div>
       )}
     </div>

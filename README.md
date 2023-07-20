@@ -42,18 +42,23 @@ This monorepo consists of three main sections:
 - a [Pinecone.io](https://pinecone.io) free account*.
 *you can use drop in replacements for these. This is just the easiest to get up and running fast. We support multiple vector database providers.
 
-### How to get started
-- `yarn setup` from the project root directory.
+## How to get started (Docker - simple setup)
+[Get up and running in minutes with Docker](./docker/HOW_TO_USE_DOCKER.md)
 
-This will fill in the required `.env` files you'll need in each of the application sections. Go fill those out before proceeding or else things won't work right.
+
+### How to get started (Development environment)
+- `yarn setup` from the project root directory.
+  - This will fill in the required `.env` files you'll need in each of the application sections. Go fill those out before proceeding or else things won't work right.
+- `cd frontend && yarn install && cd ../server && yarn install` from the project root directory.
+ 
 
 Next, you will need some content to embed. This could be a Youtube Channel, Medium articles, local text files, word documents, and the list goes on. This is where you will use the `collector/` part of the repo.
 
 [Go set up and run collector scripts](./collector/README.md)
 
-[Learn about documents](./server/documents/DOCUMENTS.md)
+[Learn about documents](./server/storage/documents/DOCUMENTS.md)
 
-[Learn about vector caching](./server/documents/VECTOR_CACHE.md)
+[Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
 
 ### Contributing
 - create issue

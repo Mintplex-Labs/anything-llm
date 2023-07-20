@@ -27,7 +27,7 @@ def substack():
   print(f"{len(valid_publications)} of {len(publications)} publications are readable publically text posts - collecting those.")
   
   totalTokenCount = 0
-  transaction_output_dir = f"../server/documents/substack-{subdomain}"
+  transaction_output_dir = f"../server/storage/documents/substack-{subdomain}"
   if os.path.isdir(transaction_output_dir) == False:
     os.makedirs(transaction_output_dir)
 

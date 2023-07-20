@@ -5,6 +5,7 @@ const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
+const { chatPrompt } = require("../../chats");
 
 // Since we roll our own results for prompting we
 // have to manually curate sources as well.
@@ -26,9 +27,8 @@ function curateLanceSources(sources = []) {
 }
 
 const LanceDb = {
-  uri: `${
-    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./"
-  }lancedb`,
+  uri: `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
+    }lancedb`,
   name: "LanceDb",
   connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
@@ -70,15 +70,52 @@ const LanceDb = {
     const openai = new OpenAIApi(config);
     return openai;
   },
-  getChatCompletion: async function (openai, messages = []) {
+  embedChunk: async function (openai, textChunk) {
+    const {
+      data: { data },
+    } = await openai.createEmbedding({
+      model: "text-embedding-ada-002",
+      input: textChunk,
+    });
+    return data.length > 0 && data[0].hasOwnProperty("embedding")
+      ? data[0].embedding
+      : null;
+  },
+  getChatCompletion: async function (
+    openai,
+    messages = [],
+    { temperature = 0.7 }
+  ) {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     const { data } = await openai.createChatCompletion({
       model,
       messages,
+      temperature,
     });
 
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
+  },
+  similarityResponse: async function (client, namespace, queryVector) {
+    const collection = await client.openTable(namespace);
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+    };
+
+    const response = await collection
+      .search(queryVector)
+      .metricType("cosine")
+      .limit(5)
+      .execute();
+
+    response.forEach((item) => {
+      const { vector: _, ...rest } = item;
+      result.contextTexts.push(rest.text);
+      result.sourceDocuments.push(rest);
+    });
+
+    return result;
   },
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
@@ -92,13 +129,11 @@ const LanceDb = {
   updateOrCreateCollection: async function (client, data = [], namespace) {
     if (await this.hasNamespace(namespace)) {
       const collection = await client.openTable(namespace);
-      const result = await collection.add(data);
-      console.log({ result });
+      await collection.add(data);
       return true;
     }
 
-    const result = await client.createTable(namespace, data);
-    console.log({ result });
+    await client.createTable(namespace, data);
     return true;
   },
   hasNamespace: async function (namespace = null) {
@@ -150,7 +185,6 @@ const LanceDb = {
           });
         }
 
-        console.log(submissions);
         await this.updateOrCreateCollection(client, submissions, namespace);
         await DocumentVectors.bulkInsert(documentVectors);
         return true;
@@ -219,7 +253,7 @@ const LanceDb = {
     }
   },
   query: async function (reqBody = {}) {
-    const { namespace = null, input } = reqBody;
+    const { namespace = null, input, workspace = {} } = reqBody;
     if (!namespace || !input) throw new Error("Invalid request body");
 
     const { client } = await this.connect();
@@ -233,26 +267,78 @@ const LanceDb = {
 
     // LanceDB does not have langchainJS support so we roll our own here.
     const queryVector = await this.embedChunk(this.openai(), input);
-    const collection = await client.openTable(namespace);
-    const relevantResults = await collection
-      .search(queryVector)
-      .metricType("cosine")
-      .limit(2)
-      .execute();
-    const messages = [
-      {
-        role: "system",
-        content: `The following is a friendly conversation between a human and an AI. The AI is very casual and talkative and responds with a friendly tone. If the AI does not know the answer to a question, it truthfully says it does not know.
-      Relevant pieces of information for context of the current query:
-      ${relevantResults.map((result) => result.text).join("\n\n")}`,
-      },
-      { role: "user", content: input },
-    ];
-    const responseText = await this.getChatCompletion(this.openai(), messages);
+    const { contextTexts, sourceDocuments } = await this.similarityResponse(
+      client,
+      namespace,
+      queryVector
+    );
+    const prompt = {
+      role: "system",
+      content: `${chatPrompt(workspace)}
+    Context:
+    ${contextTexts
+          .map((text, i) => {
+            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+          })
+          .join("")}`,
+    };
+    const memory = [prompt, { role: "user", content: input }];
+    const responseText = await this.getChatCompletion(this.openai(), memory, {
+      temperature: workspace?.openAiTemp ?? 0.7,
+    });
 
     return {
       response: responseText,
-      sources: curateLanceSources(relevantResults),
+      sources: curateLanceSources(sourceDocuments),
+      message: false,
+    };
+  },
+  // This implementation of chat uses the chat history and modifies the system prompt at execution
+  // this is improved over the regular langchain implementation so that chats do not directly modify embeddings
+  // because then multi-user support will have all conversations mutating the base vector collection to which then
+  // the only solution is replicating entire vector databases per user - which will very quickly consume space on VectorDbs
+  chat: async function (reqBody = {}) {
+    const {
+      namespace = null,
+      input,
+      workspace = {},
+      chatHistory = [],
+    } = reqBody;
+    if (!namespace || !input) throw new Error("Invalid request body");
+
+    const { client } = await this.connect();
+    if (!(await this.namespaceExists(client, namespace))) {
+      return {
+        response: null,
+        sources: [],
+        message: "Invalid query - no documents found for workspace!",
+      };
+    }
+
+    const queryVector = await this.embedChunk(this.openai(), input);
+    const { contextTexts, sourceDocuments } = await this.similarityResponse(
+      client,
+      namespace,
+      queryVector
+    );
+    const prompt = {
+      role: "system",
+      content: `${chatPrompt(workspace)}
+    Context:
+    ${contextTexts
+          .map((text, i) => {
+            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+          })
+          .join("")}`,
+    };
+    const memory = [prompt, ...chatHistory, { role: "user", content: input }];
+    const responseText = await this.getChatCompletion(this.openai(), memory, {
+      temperature: workspace?.openAiTemp ?? 0.7,
+    });
+
+    return {
+      response: responseText,
+      sources: curateLanceSources(sourceDocuments),
       message: false,
     };
   },

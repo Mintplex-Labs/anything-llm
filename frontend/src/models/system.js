@@ -59,6 +59,70 @@ const System = {
         return { valid: false, message: e.message };
       });
   },
+  checkDocumentProcessorOnline: async () => {
+    return await fetch(`${API_BASE}/system/document-processing-status`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => res.ok)
+      .catch(() => false);
+  },
+  acceptedDocumentTypes: async () => {
+    return await fetch(`${API_BASE}/system/accepted-document-types`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.types)
+      .catch(() => null);
+  },
+  updateSystem: async (data) => {
+    return await fetch(`${API_BASE}/system/update-env`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { newValues: null, error: e.message };
+      });
+  },
+  deleteDocument: async (name, meta) => {
+    return await fetch(`${API_BASE}/system/remove-document`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ name, meta }),
+    })
+      .then((res) => res.ok)
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
+  dataExport: async () => {
+    return await fetch(`${API_BASE}/system/data-export`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res)
+      .catch((e) => {
+        console.error(e);
+        return { filename: null, error: e.message };
+      });
+  },
+  importData: async (formData) => {
+    return await fetch(`${API_BASE}/system/data-import`, {
+      method: "POST",
+      body: formData,
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res)
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
 };
 
 export default System;

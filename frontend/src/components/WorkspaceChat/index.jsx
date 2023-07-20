@@ -24,7 +24,7 @@ export default function WorkspaceChat({ loading, workspace }) {
   }, [workspace, loading]);
 
   if (loadingHistory) return <LoadingChat />;
-  if (!loading && !loadingHistory && !workspace)
+  if (!loading && !loadingHistory && !workspace) {
     return (
       <>
         {loading === false && !workspace && (
@@ -57,6 +57,7 @@ export default function WorkspaceChat({ loading, workspace }) {
         <LoadingChat />
       </>
     );
+  }
 
   return <ChatContainer workspace={workspace} knownHistory={history} />;
 }

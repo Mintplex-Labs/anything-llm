@@ -59,7 +59,7 @@ function grepCommand(message) {
   return null;
 }
 
-async function chatWithWorkspace(workspace, message, chatMode = "query") {
+async function chatWithWorkspace(workspace, message, chatMode = "chat") {
   const uuid = uuidv4();
   const openai = new OpenAi();
   const VectorDb = getVectorDbClass();
@@ -87,7 +87,7 @@ async function chatWithWorkspace(workspace, message, chatMode = "query") {
   if (!hasVectorizedSpace) {
     const rawHistory = await WorkspaceChats.forWorkspace(workspace.id);
     const chatHistory = convertToPromptHistory(rawHistory);
-    const response = await openai.sendChat(chatHistory, message);
+    const response = await openai.sendChat(chatHistory, message, workspace);
     const data = { text: response, sources: [], type: "chat" };
 
     await WorkspaceChats.new({
@@ -104,11 +104,23 @@ async function chatWithWorkspace(workspace, message, chatMode = "query") {
       error: null,
     };
   } else {
+    var messageLimit = workspace?.openAiHistory;
+
+    const rawHistory = await WorkspaceChats.forWorkspace(
+      workspace.id,
+      messageLimit
+    );
+    const chatHistory = convertToPromptHistory(rawHistory);
     const {
       response,
       sources,
       message: error,
-    } = await VectorDb[chatMode]({ namespace: workspace.slug, input: message });
+    } = await VectorDb[chatMode]({
+      namespace: workspace.slug,
+      input: message,
+      workspace,
+      chatHistory,
+    });
     if (!response) {
       return {
         id: uuid,
@@ -136,7 +148,16 @@ async function chatWithWorkspace(workspace, message, chatMode = "query") {
     };
   }
 }
+
+function chatPrompt(workspace) {
+  return (
+    workspace?.openAiPrompt ??
+    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
+  );
+}
+
 module.exports = {
   convertToChatHistory,
   chatWithWorkspace,
+  chatPrompt,
 };

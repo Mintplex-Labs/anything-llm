@@ -1,8 +1,9 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import Jazzicon from "../../../../UserIcon";
-import { decode as HTMLDecode } from "he";
 import { v4 } from "uuid";
+import { decode as HTMLDecode } from "he";
+import renderMarkdown from "../../../../../utils/chat/markdown";
 
 function PromptReply({
   uuid,
@@ -24,7 +25,7 @@ function PromptReply({
     return (
       <div className="chat__message flex justify-start mb-4 items-end">
         <Jazzicon size={30} user={{ uid: workspace.slug }} />
-        <div className="ml-2 pt-2 px-6 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
+        <div className="ml-2 pt-2 px-6 w-fit md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
           <span className={`inline-block p-2`}>
             <div className="dot-falling"></div>
           </span>
@@ -54,14 +55,14 @@ function PromptReply({
     <div
       key={uuid}
       ref={replyRef}
-      className="chat__message mb-4 flex justify-start items-end"
+      className="mb-4 flex justify-start items-end"
     >
       <Jazzicon size={30} user={{ uid: workspace.slug }} />
-      <div className="ml-2 py-3 px-4 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
-        <p className="text-[15px] whitespace-pre-line break-words text-slate-800 dark:text-slate-200 font-semibold">
-          {reply}
-          {!closed && <i className="not-italic blink">|</i>}
-        </p>
+      <div className="ml-2 py-3 px-4 overflow-x-scroll w-fit md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
+        <span
+          className="whitespace-pre-line text-slate-800 dark:text-slate-200 flex flex-col gap-y-1 font-[500] md:font-semibold text-sm md:text-base"
+          dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
+        />
         <Citations sources={sources} />
       </div>
     </div>
