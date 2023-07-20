@@ -42,8 +42,21 @@ const LanceDb = {
     await this.connect();
     return { heartbeat: Number(new Date()) };
   },
+  tables: async function () {
+    const fs = require("fs");
+    const { client } = await this.connect();
+    const dirs = fs.readdirSync(client.uri);
+    return dirs.map((folder) => folder.replace(".lance", ""));
+  },
   totalIndicies: async function () {
-    return 0; // Unsupported for LanceDB - so always zero
+    const { client } = await this.connect();
+    const tables = await this.tables();
+    let count = 0;
+    for (const tableName of tables) {
+      const table = await client.openTable(tableName);
+      count += await table.countRows();
+    }
+    return count;
   },
   embeddingFunc: function () {
     return new lancedb.OpenAIEmbeddingFunction(
@@ -121,7 +134,8 @@ const LanceDb = {
     };
   },
   updateOrCreateCollection: async function (client, data = [], namespace) {
-    if (await this.hasNamespace(namespace)) {
+    const hasNamespace = await this.hasNamespace(namespace);
+    if (hasNamespace) {
       const collection = await client.openTable(namespace);
       await collection.add(data);
       return true;
@@ -136,9 +150,9 @@ const LanceDb = {
     const exists = await this.namespaceExists(client, namespace);
     return exists;
   },
-  namespaceExists: async function (client, namespace = null) {
+  namespaceExists: async function (_client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    const collections = await client.tableNames();
+    const collections = await this.tables();
     return collections.includes(namespace);
   },
   deleteVectorsInNamespace: async function (client, namespace = null) {
@@ -146,11 +160,24 @@ const LanceDb = {
     fs.rm(`${client.uri}/${namespace}.lance`, { recursive: true }, () => null);
     return true;
   },
-  deleteDocumentFromNamespace: async function (_namespace, _docId) {
-    console.error(
-      `LanceDB:deleteDocumentFromNamespace - unsupported operation. No changes made to vector db.`
+  deleteDocumentFromNamespace: async function (namespace, docId) {
+    const { client } = await this.connect();
+    const exists = await this.namespaceExists(client, namespace);
+    if (!exists) {
+      console.error(
+        `LanceDB:deleteDocumentFromNamespace - namespace ${namespace} does not exist.`
+      );
+      return;
+    }
+
+    const { DocumentVectors } = require("../../../models/vectors");
+    const table = await client.openTable(namespace);
+    const vectorIds = (await DocumentVectors.where(`docId = '${docId}'`)).map(
+      (record) => record.vectorId
     );
-    return false;
+
+    await table.delete(`id IN (${vectorIds.map((v) => `'${v}'`).join(",")})`);
+    return true;
   },
   addDocumentToNamespace: async function (
     namespace,
