@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Workspace from "../../../../models/workspace";
 import paths from "../../../../utils/paths";
+import { chatPrompt } from "../../../../utils/chat";
 
 export default function WorkspaceSettings({ workspace }) {
   const formEl = useRef(null);
@@ -160,10 +161,7 @@ export default function WorkspaceSettings({ workspace }) {
                 name="openAiPrompt"
                 maxLength={500}
                 rows={5}
-                defaultValue={
-                  workspace?.openAiPrompt ??
-                  "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
-                }
+                defaultValue={chatPrompt(workspace)}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
                 required={true}

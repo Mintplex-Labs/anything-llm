@@ -8,6 +8,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, curateSources } = require("../../helpers");
+const { chatPrompt } = require("../../chats");
 
 const Chroma = {
   name: "Chroma",
@@ -347,10 +348,7 @@ const Chroma = {
     );
     const prompt = {
       role: "system",
-      content: `${
-        workspace?.openAiPrompt ??
-        "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
-      }
+      content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
       .map((text, i) => {
