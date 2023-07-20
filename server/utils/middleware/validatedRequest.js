@@ -4,7 +4,7 @@ function validatedRequest(request, response, next) {
   // When in development passthrough auth token for ease of development.
   // Or if the user simply did not set an Auth token or JWT Secret
   if (
-    // process.env.NODE_ENV === "development" || // TODO: UNCOMMENT
+    process.env.NODE_ENV === "development" ||
     !process.env.AUTH_TOKEN ||
     !process.env.JWT_SECRET
   ) {

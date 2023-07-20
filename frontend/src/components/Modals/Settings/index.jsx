@@ -12,7 +12,7 @@ const TABS = {
 
 const noop = () => false;
 export default function SystemSettingsModal({ hideModal = noop }) {
-  const [selectedTab, setSelectedTab] = useState("password");
+  const [selectedTab, setSelectedTab] = useState("keys");
   const Component = TABS[selectedTab || "keys"];
 
   return (
