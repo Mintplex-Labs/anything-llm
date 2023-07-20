@@ -16,8 +16,8 @@
     "dev:frontend": "cd frontend && yarn start",
     "prod:server": "cd server && yarn start",
     "prod:frontend": "cd frontend && yarn build",
-    "generate:cloudformation": "node aws/cloudformation/generate.mjs",
-    "generate::gcp_deployment": "node gcp/deployment/generate.mjs"
+    "generate:cloudformation": "node cloud-deployments/aws/cloudformation/generate.mjs",
+    "generate::gcp_deployment": "node cloud-deployments/gcp/deployment/generate.mjs"
   },
   "private": false
 }

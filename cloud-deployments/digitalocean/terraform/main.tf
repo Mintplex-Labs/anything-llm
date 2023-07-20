@@ -27,7 +27,7 @@ resource "digitalocean_droplet" "anything_llm_instance" {
 }  
 
 locals {  
-  env_content = file("../../docker/.env")  
+  env_content = file("../../../docker/.env")  
   formatted_env_content = join("\n", [  
     for line in split("\n", local.env_content) :  
     line  

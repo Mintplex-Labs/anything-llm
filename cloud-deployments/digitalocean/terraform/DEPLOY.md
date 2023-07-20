@@ -2,7 +2,7 @@
 
 With a DigitalOcean account, you can easily deploy a private AnythingLLM instance using Terraform. This will create a URL that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys, and they will not be exposed. However, if you want your instance to be protected, it is highly recommended that you set the `AUTH_TOKEN` and `JWT_SECRET` variables in the `docker/` ENV.
 
-[Refer to .env.example](../../docker/HOW_TO_USE_DOCKER.md) for data format.
+[Refer to .env.example](../../../docker/HOW_TO_USE_DOCKER.md) for data format.
 
 The output of this Terraform configuration will be:
 - 1 DigitalOcean Droplet

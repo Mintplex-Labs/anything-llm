@@ -12,7 +12,7 @@ With an AWS account you can easily deploy a private AnythingLLM instance on AWS.
 Done.
 
 **Custom Launch**
-[Refer to .env.example](../../docker/HOW_TO_USE_DOCKER.md) for data format.
+[Refer to .env.example](../../../docker/HOW_TO_USE_DOCKER.md) for data format.
 
 The output of this cloudformation stack will be:
 - 1 EC2 Instance
@@ -32,11 +32,11 @@ The output of this cloudformation stack will be:
 4. Ensure you are deploying in a geographic zone that is nearest to your physical location to reduce latency.
 5. Click `Create Stack`
 
-![Create Stack](/images/screenshots/create_stack.png)
+![Create Stack](../../../images/screenshots/create_stack.png)
 
 6. Upload your `aws_cf_deploy_anything_llm.json` to the stack
 
-![Upload Stack](/images/screenshots/upload.png)
+![Upload Stack](../../../images/screenshots/upload.png)
 
 7. Click `Next` and give your stack a name. This is superficial.
 8. No other changes are needed, just proceed though each step
@@ -44,7 +44,7 @@ The output of this cloudformation stack will be:
 10. Wait for stack events to finish and be marked as `Completed`
 11. View `Outputs` tab.
 
-![Stack Output](/images/screenshots/cf_outputs.png)
+![Stack Output](../../../images/screenshots/cf_outputs.png)
 
 ## Please read this notice before submitting issues about your deployment
 
