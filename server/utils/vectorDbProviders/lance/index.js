@@ -27,9 +27,8 @@ function curateLanceSources(sources = []) {
 }
 
 const LanceDb = {
-  uri: `${
-    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
-  }lancedb`,
+  uri: `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
+    }lancedb`,
   name: "LanceDb",
   connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
@@ -51,7 +50,11 @@ const LanceDb = {
       process.env.OPEN_AI_KEY
     );
   },
-  embedChunks: async function (openai, chunks) {
+  embedTextInput: async function (openai, textInput) {
+    const result = await this.embedChunks(openai, textInput);
+    return result?.[0] || [];
+  },
+  embedChunks: async function (openai, chunks = []) {
     const {
       data: { data },
     } = await openai.createEmbedding({
@@ -70,17 +73,6 @@ const LanceDb = {
     const config = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
     const openai = new OpenAIApi(config);
     return openai;
-  },
-  embedChunk: async function (openai, textChunk) {
-    const {
-      data: { data },
-    } = await openai.createEmbedding({
-      model: "text-embedding-ada-002",
-      input: textChunk,
-    });
-    return data.length > 0 && data[0].hasOwnProperty("embedding")
-      ? data[0].embedding
-      : null;
   },
   getChatCompletion: async function (
     openai,
@@ -207,33 +199,30 @@ const LanceDb = {
       const submissions = [];
       const openai = this.openai();
 
-      for (const textChunk of textChunks) {
-        const vectorValues = await this.embedChunk(openai, textChunk);
+      const vectorValues = await this.embedChunks(openai, textChunks);
+      if (!!vectorValues && vectorValues.length > 0) {
+        for (const [i, vector] of vectorValues.entries()) {
+          const vectorRecord = {
+            id: uuidv4(),
+            values: vector,
+            // [DO NOT REMOVE]
+            // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
+            // https://github.com/hwchase17/langchainjs/blob/2def486af734c0ca87285a48f1a04c057ab74bdf/langchain/src/vectorstores/pinecone.ts#L64
+            metadata: { ...metadata, text: textChunks[i] },
+          };
 
-        if (!!vectorValues) {
-          for (const [i, vector] of vectorValues.entries()) {
-            const vectorRecord = {
-              id: uuidv4(),
-              values: vector,
-              // [DO NOT REMOVE]
-              // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
-              // https://github.com/hwchase17/langchainjs/blob/2def486af734c0ca87285a48f1a04c057ab74bdf/langchain/src/vectorstores/pinecone.ts#L64
-              metadata: { ...metadata, text: textChunks[i] },
-            };
-
-            vectors.push(vectorRecord);
-            submissions.push({
-              id: vectorRecord.id,
-              vector: vectorRecord.values,
-              ...vectorRecord.metadata,
-            });
-            documentVectors.push({ docId, vectorId: vectorRecord.id });
-          }
-        } else {
-          console.error(
-            "Could not use OpenAI to embed document chunks! This document will not be recorded."
-          );
+          vectors.push(vectorRecord);
+          submissions.push({
+            id: vectorRecord.id,
+            vector: vectorRecord.values,
+            ...vectorRecord.metadata,
+          });
+          documentVectors.push({ docId, vectorId: vectorRecord.id });
         }
+      } else {
+        console.error(
+          "Could not use OpenAI to embed document chunks! This document will not be recorded."
+        );
       }
 
       if (vectors.length > 0) {
@@ -267,7 +256,7 @@ const LanceDb = {
     }
 
     // LanceDB does not have langchainJS support so we roll our own here.
-    const queryVector = await this.embedChunk(this.openai(), input);
+    const queryVector = await this.embedTextInput(this.openai(), input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
@@ -278,10 +267,10 @@ const LanceDb = {
       content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+          .map((text, i) => {
+            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+          })
+          .join("")}`,
     };
     const memory = [prompt, { role: "user", content: input }];
     const responseText = await this.getChatCompletion(this.openai(), memory, {
@@ -316,7 +305,7 @@ const LanceDb = {
       };
     }
 
-    const queryVector = await this.embedChunk(this.openai(), input);
+    const queryVector = await this.embedTextInput(this.openai(), input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
@@ -327,10 +316,10 @@ const LanceDb = {
       content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+          .map((text, i) => {
+            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+          })
+          .join("")}`,
     };
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
     const responseText = await this.getChatCompletion(this.openai(), memory, {
