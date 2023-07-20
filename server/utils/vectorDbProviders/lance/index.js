@@ -51,6 +51,22 @@ const LanceDb = {
       process.env.OPEN_AI_KEY
     );
   },
+  embedTextInput: async function (openai, textInput) {
+    const result = await this.embedChunks(openai, textInput);
+    return result?.[0] || [];
+  },
+  embedChunks: async function (openai, chunks = []) {
+    const {
+      data: { data },
+    } = await openai.createEmbedding({
+      model: "text-embedding-ada-002",
+      input: chunks,
+    });
+    return data.length > 0 &&
+      data.every((embd) => embd.hasOwnProperty("embedding"))
+      ? data.map((embd) => embd.embedding)
+      : null;
+  },
   embedder: function () {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
   },
@@ -58,17 +74,6 @@ const LanceDb = {
     const config = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
     const openai = new OpenAIApi(config);
     return openai;
-  },
-  embedChunk: async function (openai, textChunk) {
-    const {
-      data: { data },
-    } = await openai.createEmbedding({
-      model: "text-embedding-ada-002",
-      input: textChunk,
-    });
-    return data.length > 0 && data[0].hasOwnProperty("embedding")
-      ? data[0].embedding
-      : null;
   },
   getChatCompletion: async function (
     openai,
@@ -194,18 +199,17 @@ const LanceDb = {
       const vectors = [];
       const submissions = [];
       const openai = this.openai();
+      const vectorValues = await this.embedChunks(openai, textChunks);
 
-      for (const textChunk of textChunks) {
-        const vectorValues = await this.embedChunk(openai, textChunk);
-
-        if (!!vectorValues) {
+      if (!!vectorValues && vectorValues.length > 0) {
+        for (const [i, vector] of vectorValues.entries()) {
           const vectorRecord = {
             id: uuidv4(),
-            values: vectorValues,
+            values: vector,
             // [DO NOT REMOVE]
             // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
             // https://github.com/hwchase17/langchainjs/blob/2def486af734c0ca87285a48f1a04c057ab74bdf/langchain/src/vectorstores/pinecone.ts#L64
-            metadata: { ...metadata, text: textChunk },
+            metadata: { ...metadata, text: textChunks[i] },
           };
 
           vectors.push(vectorRecord);
@@ -215,11 +219,11 @@ const LanceDb = {
             ...vectorRecord.metadata,
           });
           documentVectors.push({ docId, vectorId: vectorRecord.id });
-        } else {
-          console.error(
-            "Could not use OpenAI to embed document chunk! This document will not be recorded."
-          );
         }
+      } else {
+        console.error(
+          "Could not use OpenAI to embed document chunks! This document will not be recorded."
+        );
       }
 
       if (vectors.length > 0) {
@@ -253,7 +257,7 @@ const LanceDb = {
     }
 
     // LanceDB does not have langchainJS support so we roll our own here.
-    const queryVector = await this.embedChunk(this.openai(), input);
+    const queryVector = await this.embedTextInput(this.openai(), input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
@@ -302,7 +306,7 @@ const LanceDb = {
       };
     }
 
-    const queryVector = await this.embedChunk(this.openai(), input);
+    const queryVector = await this.embedTextInput(this.openai(), input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
