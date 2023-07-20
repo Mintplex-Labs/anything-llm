@@ -28,7 +28,7 @@ function curateLanceSources(sources = []) {
 const LanceDb = {
   uri: `${
     !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
-    }lancedb`,
+  }lancedb`,
   name: "LanceDb",
   connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
@@ -260,13 +260,16 @@ const LanceDb = {
     );
     const prompt = {
       role: "system",
-      content: `${workspace?.openAiPrompt ?? "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."}
+      content: `${
+        workspace?.openAiPrompt ??
+        "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
+      }
     Context:
     ${contextTexts
-          .map((text, i) => {
-            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-          })
-          .join("")}`,
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
     };
     const memory = [prompt, { role: "user", content: input }];
     const responseText = await this.getChatCompletion(this.openai(), memory, {
@@ -309,13 +312,16 @@ const LanceDb = {
     );
     const prompt = {
       role: "system",
-      content: `${workspace?.openAiPrompt ?? "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."}
+      content: `${
+        workspace?.openAiPrompt ??
+        "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
+      }
     Context:
     ${contextTexts
-          .map((text, i) => {
-            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-          })
-          .join("")}`,
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
     };
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
     const responseText = await this.getChatCompletion(this.openai(), memory, {

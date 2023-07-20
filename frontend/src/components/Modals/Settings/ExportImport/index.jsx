@@ -181,7 +181,9 @@ function ImportData() {
             Import was completed successfully
           </p>
         </div>
-        <p className="text-green-800 text-xs italic">please reload the page to see the results of the import.</p>
+        <p className="text-green-800 text-xs italic">
+          please reload the page to see the results of the import.
+        </p>
       </div>
     );
   }
