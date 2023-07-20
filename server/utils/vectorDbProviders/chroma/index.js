@@ -210,7 +210,7 @@ const Chroma = {
       const documentVectors = [];
       const vectors = [];
       const openai = this.openai();
-
+      const vectorValues = await this.embedChunks(openai, textChunks);
       const submission = {
         ids: [],
         embeddings: [],
@@ -218,9 +218,7 @@ const Chroma = {
         documents: [],
       };
 
-      const vectorValues = await this.embedChunks(openai, textChunks);
-
-      if (!!vectorValues) {
+      if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
           const vectorRecord = {
             id: uuidv4(),

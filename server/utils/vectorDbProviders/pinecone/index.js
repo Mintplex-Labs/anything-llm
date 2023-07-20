@@ -54,7 +54,11 @@ const Pinecone = {
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
   },
-  embedChunks: async function (openai, chunks) {
+  embedTextInput: async function (openai, textInput) {
+    const result = await this.embedChunks(openai, textInput);
+    return result?.[0] || [];
+  },
+  embedChunks: async function (openai, chunks = []) {
     const {
       data: { data },
     } = await openai.createEmbedding({
@@ -176,10 +180,9 @@ const Pinecone = {
       const documentVectors = [];
       const vectors = [];
       const openai = this.openai();
-
       const vectorValues = await this.embedChunks(openai, textChunks);
 
-      if (!!vectorValues) {
+      if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
           const vectorRecord = {
             id: uuidv4(),
@@ -314,7 +317,7 @@ const Pinecone = {
         "Invalid namespace - has it been collected and seeded yet?"
       );
 
-    const queryVector = await this.embedChunk(this.openai(), input);
+    const queryVector = await this.embedTextInput(this.openai(), input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       pineconeIndex,
       namespace,
