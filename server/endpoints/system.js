@@ -13,6 +13,7 @@ const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV } = require("../utils/helpers/updateENV");
 const { reqBody, makeJWT } = require("../utils/http");
 const { setupDataImports } = require("../utils/files/multer");
+const { v4 } = require("uuid");
 const { handleImports } = setupDataImports();
 
 function systemEndpoints(app) {
@@ -149,6 +150,20 @@ function systemEndpoints(app) {
       const body = reqBody(request);
       const { newValues, error } = updateENV(body);
       response.status(200).json({ newValues, error });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.post("/system/update-password", async (request, response) => {
+    try {
+      const { usePassword, newPassword } = reqBody(request);
+      const { error } = updateENV({
+        AuthToken: usePassword ? newPassword : "",
+        JWTSecret: usePassword ? v4() : "",
+      });
+      response.status(200).json({ success: !error, error });
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();

@@ -86,6 +86,18 @@ const System = {
         return { newValues: null, error: e.message };
       });
   },
+  updateSystemPassword: async (data) => {
+    return await fetch(`${API_BASE}/system/update-password`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
   deleteDocument: async (name, meta) => {
     return await fetch(`${API_BASE}/system/remove-document`, {
       method: "DELETE",

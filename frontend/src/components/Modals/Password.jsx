@@ -85,7 +85,8 @@ export function usePasswordModal() {
   useEffect(() => {
     async function checkAuthReq() {
       if (!window) return;
-      if (import.meta.env.DEV) {
+      if (import.meta.env.DEV && false) {
+        // TODO: REMOVE
         setRequiresAuth(false);
       } else {
         const currentToken = window.localStorage.getItem(
