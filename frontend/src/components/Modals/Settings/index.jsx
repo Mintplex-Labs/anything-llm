@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Archive, Cloud, Key, X } from "react-feather";
+import { Archive, Lock, Key, X } from "react-feather";
 import SystemKeys from "./Keys";
 import ExportOrImportData from "./ExportImport";
+import PasswordProtection from "./PasswordProtection";
 
 const TABS = {
   keys: SystemKeys,
   exportimport: ExportOrImportData,
+  password: PasswordProtection,
 };
 
 const noop = () => false;
@@ -60,6 +62,13 @@ function SettingTabs({ selectedTab, changeTab }) {
           displayName="Export or Import"
           tabName="exportimport"
           icon={<Archive className="h-4 w-4 flex-shrink-0" />}
+          onClick={changeTab}
+        />
+        <SettingTab
+          active={selectedTab === "password"}
+          displayName="Password Protection"
+          tabName="password"
+          icon={<Lock className="h-4 w-4 flex-shrink-0" />}
           onClick={changeTab}
         />
       </ul>
