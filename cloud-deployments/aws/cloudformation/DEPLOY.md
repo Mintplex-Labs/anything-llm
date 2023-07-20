@@ -2,16 +2,16 @@
 
 With an AWS account you can easily deploy a private AnythingLLM instance on AWS. This will create a url that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys and they will not be exposed - however if you want your instance to be protected it is highly recommend that you set the `AUTH_TOKEN` and `JWT_SECRET` variables in the `docker/` ENV.
 
-**Quick Launch**
+**Quick Launch (EASY)**
 2. Log in to your AWS account
 3. Open [CloudFormation](https://us-west-1.console.aws.amazon.com/cloudformation/home)
 4. Ensure you are deploying in a geographic zone that is nearest to your physical location to reduce latency.
 5. Click `Create Stack`
-6. Use the file `aws_no_creds.json` as your JSON template.
-7. Launch. On first boot fill out your ENV keys and you are fully live.
+6. Use the file `create_anythinng_llm_instance.json` as your JSON template.
+7. Launch. On first boot fill out your ENV keys and you are fully live. Time to boot is approximately 60 seconds.
 Done.
 
-**Custom Launch**
+**Custom Launch and Build From Source**
 [Refer to .env.example](../../../docker/HOW_TO_USE_DOCKER.md) for data format.
 
 The output of this cloudformation stack will be:
