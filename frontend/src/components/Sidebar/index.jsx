@@ -4,7 +4,6 @@ import {
   Briefcase,
   Cpu,
   GitHub,
-  Key,
   Menu,
   Plus,
   Tool,
@@ -19,6 +18,7 @@ import NewWorkspaceModal, {
 } from "../Modals/NewWorkspace";
 import ActiveWorkspaces from "./ActiveWorkspaces";
 import paths from "../../utils/paths";
+import Discord from "../Icons/Discord";
 
 export default function Sidebar() {
   const sidebarRef = useRef(null);
@@ -116,6 +116,12 @@ export default function Sidebar() {
                     className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-slate-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
                   >
                     <BookOpen className="h-4 w-4 " />
+                  </a>
+                  <a
+                    href={paths.discord()}
+                    className="transition-all duration-300 p-2 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-800 group"
+                  >
+                    <Discord className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
                   </a>
                 </div>
                 <a
@@ -275,6 +281,12 @@ export function SidebarMobileHeader() {
                       className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-slate-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
                     >
                       <BookOpen className="h-4 w-4 " />
+                    </a>
+                    <a
+                      href={paths.discord()}
+                      className="transition-all duration-300 p-2 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-800 group"
+                    >
+                      <Discord className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
                     </a>
                   </div>
                   <a
