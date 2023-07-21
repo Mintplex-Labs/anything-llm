@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Create a stack that runs AnythingLLM on a single instance from the Mintplex Labs Inc maintained AWS AMI image..",
+  "Description": "Create a stack that runs AnythingLLM on a single instance from the Mintplex Labs Inc maintained AWS AMI image.",
   "Parameters": {
     "InstanceType": {
       "Description": "EC2 instance type",
