@@ -9,11 +9,11 @@ import PasswordModal, {
 import { isMobile } from "react-device-detect";
 
 export default function Main() {
-  const { requiresAuth } = usePasswordModal();
+  const { requiresAuth, mode } = usePasswordModal();
   if (requiresAuth === null || requiresAuth) {
     return (
       <>
-        {requiresAuth && <PasswordModal />}
+        {requiresAuth && <PasswordModal mode={mode} />}
         <div className="w-screen h-screen overflow-hidden bg-orange-100 dark:bg-stone-700 flex">
           {!isMobile && <SidebarPlaceholder />}
           <ChatPlaceholder />

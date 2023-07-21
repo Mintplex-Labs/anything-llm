@@ -144,9 +144,9 @@ export default function Sidebar() {
 }
 
 export function SidebarMobileHeader() {
+  const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
-  const sidebarRef = useRef(null);
   const {
     showing: showingSystemSettingsModal,
     showModal: showSystemSettingsModal,

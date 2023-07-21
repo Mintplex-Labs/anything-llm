@@ -11,9 +11,11 @@ const {
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV } = require("../utils/helpers/updateENV");
-const { reqBody, makeJWT } = require("../utils/http");
+const { reqBody, makeJWT, userFromSession } = require("../utils/http");
 const { setupDataImports } = require("../utils/files/multer");
 const { v4 } = require("uuid");
+const { SystemSettings } = require("../models/systemSettings");
+const { User } = require("../models/user");
 const { handleImports } = setupDataImports();
 
 function systemEndpoints(app) {
@@ -28,8 +30,11 @@ function systemEndpoints(app) {
     response.sendStatus(200);
   });
 
-  app.get("/setup-complete", (_, response) => {
+  app.get("/setup-complete", async (_, response) => {
     try {
+      const multiUserMode =
+        (await SystemSettings.get(`label = 'multi_user_mode'`))?.value ||
+        "false";
       const vectorDB = process.env.VECTOR_DB || "pinecone";
       const results = {
         CanDebug: !!!process.env.NO_DEBUG,
@@ -40,6 +45,7 @@ function systemEndpoints(app) {
         AuthToken: !!process.env.AUTH_TOKEN,
         JWTSecret: !!process.env.JWT_SECRET,
         StorageDir: process.env.STORAGE_DIR,
+        MultiUserMode: multiUserMode === "true",
         ...(vectorDB === "pinecone"
           ? {
               PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
@@ -60,28 +66,86 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/check-token", (_, response) => {
-    response.sendStatus(200).end();
-  });
-
-  app.post("/request-token", (request, response) => {
+  app.get("/system/check-token", async (request, response) => {
     try {
-      const { password } = reqBody(request);
-      if (password !== process.env.AUTH_TOKEN) {
-        response.status(402).json({
-          valid: false,
-          token: null,
-          message: "Invalid password provided",
-        });
+      const multiUserMode =
+        (await SystemSettings.get("label = 'multi_user_mode'"))?.value ===
+        "true";
+      if (multiUserMode) {
+        const user = await userFromSession(request);
+        if (!user) {
+          response.sendStatus(403).end();
+          return;
+        }
+
+        response.sendStatus(200).end();
         return;
       }
 
-      response.status(200).json({
-        valid: true,
-        token: makeJWT({ p: password }, "30d"),
-        message: null,
-      });
-      return;
+      response.sendStatus(200).end();
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.post("/request-token", async (request, response) => {
+    try {
+      const multiUserMode =
+        (await SystemSettings.get("label = 'multi_user_mode'"))?.value ===
+        "true";
+      if (multiUserMode) {
+        const { username, password } = reqBody(request);
+
+        const existingUser = await User.get(`username = '${username}'`);
+        if (!existingUser) {
+          response.status(200).json({
+            user: null,
+            valid: false,
+            token: null,
+            message: "[001] Invalid login credentials.",
+          });
+          return;
+        }
+
+        const bcrypt = require("bcrypt");
+        if (!bcrypt.compareSync(password, existingUser.password)) {
+          response.status(200).json({
+            user: null,
+            valid: false,
+            token: null,
+            message: "[002] Invalid login credentials.",
+          });
+          return;
+        }
+
+        response.status(200).json({
+          valid: true,
+          user: existingUser,
+          token: makeJWT(
+            { id: existingUser.id, username: existingUser.username },
+            "30d"
+          ),
+          message: null,
+        });
+        return;
+      } else {
+        const { password } = reqBody(request);
+        if (password !== process.env.AUTH_TOKEN) {
+          response.status(401).json({
+            valid: false,
+            token: null,
+            message: "Invalid password provided",
+          });
+          return;
+        }
+
+        response.status(200).json({
+          valid: true,
+          token: makeJWT({ p: password }, "30d"),
+          message: null,
+        });
+      }
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();
@@ -164,6 +228,37 @@ function systemEndpoints(app) {
         JWTSecret: usePassword ? v4() : "",
       });
       response.status(200).json({ success: !error, error });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.post("/system/enable-multi-user", async (request, response) => {
+    try {
+      const { username, password } = reqBody(request);
+      const multiUserModeEnabled =
+        (await SystemSettings.get(`label = 'multi_user_mode'`))?.value ===
+        "true";
+      if (multiUserModeEnabled) {
+        response
+          .status(200)
+          .json({
+            success: false,
+            error: "Multi-user mode is already enabled.",
+          });
+        return;
+      }
+
+      const { user, error } = await User.create({
+        username,
+        password,
+        role: "admin",
+      });
+      await SystemSettings.updateSettings({ multi_user_mode: true });
+      process.env.AUTH_TOKEN = null;
+      process.env.JWT_SECRET = process.env.JWT_SECRET ?? v4(); // Make sure JWT_SECRET is set for JWT issuance.
+      response.status(200).json({ success: !!user, error });
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();
