@@ -58,6 +58,14 @@ const LanceDb = {
     }
     return count;
   },
+  namespaceCount: async function (_namespace = null) {
+    const { client } = await this.connect();
+    const exists = await this.namespaceExists(client, _namespace);
+    if (!exists) return 0;
+
+    const table = await client.openTable(_namespace);
+    return (await table.countRows()) || 0;
+  },
   embeddingFunc: function () {
     return new lancedb.OpenAIEmbeddingFunction(
       "context",

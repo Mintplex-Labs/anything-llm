@@ -7,13 +7,13 @@ const bodyParser = require("body-parser");
 const serveIndex = require("serve-index");
 const cors = require("cors");
 const path = require("path");
-const { validatedRequest } = require("./utils/middleware/validatedRequest");
 const { reqBody } = require("./utils/http");
 const { systemEndpoints } = require("./endpoints/system");
 const { workspaceEndpoints } = require("./endpoints/workspaces");
 const { chatEndpoints } = require("./endpoints/chat");
 const { getVectorDbClass } = require("./utils/helpers");
 const { validateTablePragmas } = require("./utils/database");
+const { adminEndpoints } = require("./endpoints/admin");
 const app = express();
 const apiRouter = express.Router();
 
@@ -26,12 +26,11 @@ app.use(
   })
 );
 
-apiRouter.use("/system/*", validatedRequest);
+app.use("/api", apiRouter);
 systemEndpoints(apiRouter);
-
-apiRouter.use("/workspace/*", validatedRequest);
 workspaceEndpoints(apiRouter);
 chatEndpoints(apiRouter);
+adminEndpoints(apiRouter);
 
 apiRouter.post("/v/:command", async (request, response) => {
   try {
@@ -60,8 +59,6 @@ apiRouter.post("/v/:command", async (request, response) => {
     response.sendStatus(500).end();
   }
 });
-
-app.use("/api", apiRouter);
 
 if (process.env.NODE_ENV !== "development") {
   app.use(

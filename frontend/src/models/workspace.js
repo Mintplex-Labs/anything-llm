@@ -49,6 +49,7 @@ const Workspace = {
   },
   chatHistory: async function (slug) {
     const history = await fetch(`${API_BASE}/workspace/${slug}/chats`, {
+      method: "GET",
       headers: baseHeaders(),
     })
       .then((res) => res.json())
@@ -71,7 +72,10 @@ const Workspace = {
     return chatResult;
   },
   all: async function () {
-    const workspaces = await fetch(`${API_BASE}/workspaces`)
+    const workspaces = await fetch(`${API_BASE}/workspaces`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
       .then((res) => res.json())
       .then((res) => res.workspaces || [])
       .catch(() => []);

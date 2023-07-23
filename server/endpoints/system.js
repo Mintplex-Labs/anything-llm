@@ -11,11 +11,17 @@ const {
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV } = require("../utils/helpers/updateENV");
-const { reqBody, makeJWT, userFromSession } = require("../utils/http");
+const {
+  reqBody,
+  makeJWT,
+  userFromSession,
+  multiUserMode,
+} = require("../utils/http");
 const { setupDataImports } = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
+const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { handleImports } = setupDataImports();
 
 function systemEndpoints(app) {
@@ -32,9 +38,6 @@ function systemEndpoints(app) {
 
   app.get("/setup-complete", async (_, response) => {
     try {
-      const multiUserMode =
-        (await SystemSettings.get(`label = 'multi_user_mode'`))?.value ||
-        "false";
       const vectorDB = process.env.VECTOR_DB || "pinecone";
       const results = {
         CanDebug: !!!process.env.NO_DEBUG,
@@ -45,7 +48,7 @@ function systemEndpoints(app) {
         AuthToken: !!process.env.AUTH_TOKEN,
         JWTSecret: !!process.env.JWT_SECRET,
         StorageDir: process.env.STORAGE_DIR,
-        MultiUserMode: multiUserMode === "true",
+        MultiUserMode: await SystemSettings.isMultiUserMode(),
         ...(vectorDB === "pinecone"
           ? {
               PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
@@ -66,38 +69,36 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/check-token", async (request, response) => {
-    try {
-      const multiUserMode =
-        (await SystemSettings.get("label = 'multi_user_mode'"))?.value ===
-        "true";
-      if (multiUserMode) {
-        const user = await userFromSession(request);
-        if (!user) {
-          response.sendStatus(403).end();
+  app.get(
+    "/system/check-token",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (multiUserMode(response)) {
+          const user = await userFromSession(request, response);
+          if (!user) {
+            response.sendStatus(403).end();
+            return;
+          }
+
+          response.sendStatus(200).end();
           return;
         }
 
         response.sendStatus(200).end();
-        return;
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
       }
-
-      response.sendStatus(200).end();
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
     }
-  });
+  );
 
   app.post("/request-token", async (request, response) => {
     try {
-      const multiUserMode =
-        (await SystemSettings.get("label = 'multi_user_mode'"))?.value ===
-        "true";
-      if (multiUserMode) {
+      if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-
         const existingUser = await User.get(`username = '${username}'`);
+
         if (!existingUser) {
           response.status(200).json({
             user: null,
@@ -152,7 +153,7 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/system-vectors", async (_, response) => {
+  app.get("/system/system-vectors", [validatedRequest], async (_, response) => {
     try {
       const VectorDb = getVectorDbClass();
       const vectorCount = await VectorDb.totalIndicies();
@@ -163,18 +164,22 @@ function systemEndpoints(app) {
     }
   });
 
-  app.delete("/system/remove-document", async (request, response) => {
-    try {
-      const { name, meta } = reqBody(request);
-      await purgeDocument(name, meta);
-      response.sendStatus(200).end();
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+  app.delete(
+    "/system/remove-document",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { name, meta } = reqBody(request);
+        await purgeDocument(name, meta);
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
-  app.get("/system/local-files", async (_, response) => {
+  app.get("/system/local-files", [validatedRequest], async (_, response) => {
     try {
       const localFiles = await viewLocalFiles();
       response.status(200).json({ localFiles });
@@ -184,88 +189,104 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/document-processing-status", async (_, response) => {
-    try {
-      const online = await checkPythonAppAlive();
-      response.sendStatus(online ? 200 : 503);
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
-    }
-  });
-
-  app.get("/system/accepted-document-types", async (_, response) => {
-    try {
-      const types = await acceptedFileTypes();
-      if (!types) {
-        response.sendStatus(404).end();
-        return;
+  app.get(
+    "/system/document-processing-status",
+    [validatedRequest],
+    async (_, response) => {
+      try {
+        const online = await checkPythonAppAlive();
+        response.sendStatus(online ? 200 : 503);
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
       }
-
-      response.status(200).json({ types });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
     }
-  });
+  );
 
-  app.post("/system/update-env", async (request, response) => {
-    try {
-      const body = reqBody(request);
-      const { newValues, error } = updateENV(body);
-      response.status(200).json({ newValues, error });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+  app.get(
+    "/system/accepted-document-types",
+    [validatedRequest],
+    async (_, response) => {
+      try {
+        const types = await acceptedFileTypes();
+        if (!types) {
+          response.sendStatus(404).end();
+          return;
+        }
+
+        response.status(200).json({ types });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
-  app.post("/system/update-password", async (request, response) => {
-    try {
-      const { usePassword, newPassword } = reqBody(request);
-      const { error } = updateENV({
-        AuthToken: usePassword ? newPassword : "",
-        JWTSecret: usePassword ? v4() : "",
-      });
-      response.status(200).json({ success: !error, error });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+  app.post(
+    "/system/update-env",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const body = reqBody(request);
+        const { newValues, error } = updateENV(body);
+        response.status(200).json({ newValues, error });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
-  app.post("/system/enable-multi-user", async (request, response) => {
-    try {
-      const { username, password } = reqBody(request);
-      const multiUserModeEnabled =
-        (await SystemSettings.get(`label = 'multi_user_mode'`))?.value ===
-        "true";
-      if (multiUserModeEnabled) {
-        response
-          .status(200)
-          .json({
+  app.post(
+    "/system/update-password",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { usePassword, newPassword } = reqBody(request);
+        const { error } = updateENV({
+          AuthToken: usePassword ? newPassword : "",
+          JWTSecret: usePassword ? v4() : "",
+        });
+        response.status(200).json({ success: !error, error });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/enable-multi-user",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { username, password } = reqBody(request);
+        const multiUserModeEnabled = await SystemSettings.isMultiUserMode();
+        if (multiUserModeEnabled) {
+          response.status(200).json({
             success: false,
             error: "Multi-user mode is already enabled.",
           });
-        return;
+          return;
+        }
+
+        const { user, error } = await User.create({
+          username,
+          password,
+          role: "admin",
+        });
+        await SystemSettings.updateSettings({ multi_user_mode: true });
+        process.env.AUTH_TOKEN = null;
+        process.env.JWT_SECRET = process.env.JWT_SECRET ?? v4(); // Make sure JWT_SECRET is set for JWT issuance.
+        response.status(200).json({ success: !!user, error });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
       }
-
-      const { user, error } = await User.create({
-        username,
-        password,
-        role: "admin",
-      });
-      await SystemSettings.updateSettings({ multi_user_mode: true });
-      process.env.AUTH_TOKEN = null;
-      process.env.JWT_SECRET = process.env.JWT_SECRET ?? v4(); // Make sure JWT_SECRET is set for JWT issuance.
-      response.status(200).json({ success: !!user, error });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
     }
-  });
+  );
 
-  app.get("/system/data-export", async (_, response) => {
+  app.get("/system/data-export", [validatedRequest], async (_, response) => {
     try {
       const { filename, error } = await exportData();
       response.status(200).json({ filename, error });
@@ -275,18 +296,22 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/data-exports/:filename", (request, response) => {
-    const filePath =
-      __dirname + "/../storage/exports/" + request.params.filename;
-    response.download(filePath, request.params.filename, (err) => {
-      if (err) {
-        response.send({
-          error: err,
-          msg: "Problem downloading the file",
-        });
-      }
-    });
-  });
+  app.get(
+    "/system/data-exports/:filename",
+    [validatedRequest],
+    (request, response) => {
+      const filePath =
+        __dirname + "/../storage/exports/" + request.params.filename;
+      response.download(filePath, request.params.filename, (err) => {
+        if (err) {
+          response.send({
+            error: err,
+            msg: "Problem downloading the file",
+          });
+        }
+      });
+    }
+  );
 
   app.post(
     "/system/data-import",

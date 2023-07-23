@@ -163,7 +163,7 @@ function LogoutTab({ user }) {
         }}
         className="flex items-center gap-x-1 p-4 border-b-2 rounded-t-lg group whitespace-nowrap border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
       >
-        <LogOut className="h-4 w-4 flex-shrink-0" /> Log out
+        <LogOut className="h-4 w-4 flex-shrink-0" /> Log out of {user.username}
       </button>
     </li>
   );

@@ -1,40 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  BookOpen,
-  Briefcase,
-  Cpu,
-  GitHub,
-  Menu,
-  Plus,
-  Shield,
-  Tool,
-} from "react-feather";
-import IndexCount from "./IndexCount";
-import LLMStatus from "./LLMStatus";
-import SystemSettingsModal, {
-  useSystemSettingsModal,
-} from "../Modals/Settings";
-import NewWorkspaceModal, {
-  useNewWorkspaceModal,
-} from "../Modals/NewWorkspace";
-import ActiveWorkspaces from "./ActiveWorkspaces";
+import { BookOpen, GitHub, Menu, Users, X } from "react-feather";
+import IndexCount from "../Sidebar/IndexCount";
+import LLMStatus from "../Sidebar/LLMStatus";
 import paths from "../../utils/paths";
 import Discord from "../Icons/Discord";
-import useUser from "../../hooks/useUser";
 
-export default function Sidebar() {
+export default function AdminSidebar() {
   const sidebarRef = useRef(null);
-  const {
-    showing: showingSystemSettingsModal,
-    showModal: showSystemSettingsModal,
-    hideModal: hideSystemSettingsModal,
-  } = useSystemSettingsModal();
-  const {
-    showing: showingNewWsModal,
-    showModal: showNewWsModal,
-    hideModal: hideNewWsModal,
-  } = useNewWorkspaceModal();
-
   return (
     <>
       <div
@@ -46,16 +18,15 @@ export default function Sidebar() {
           {/* Header Information */}
           <div className="flex w-full items-center justify-between">
             <p className="text-xl font-base text-slate-600 dark:text-slate-200">
-              AnythingLLM
+              AnythingLLM Admin
             </p>
             <div className="flex gap-x-2 items-center text-slate-500">
-              <AdminHome />
-              <button
-                onClick={showSystemSettingsModal}
+              <a
+                href={paths.home()}
                 className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
               >
-                <Tool className="h-4 w-4 " />
-              </button>
+                <X className="h-4 w-4" />
+              </a>
             </div>
           </div>
 
@@ -63,18 +34,11 @@ export default function Sidebar() {
           <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
             <div className="h-auto sidebar-items dark:sidebar-items">
               <div className="flex flex-col gap-y-4 h-[65vh] pb-8 overflow-y-scroll no-scroll">
-                <div className="flex gap-x-2 items-center justify-between">
-                  <button
-                    onClick={showNewWsModal}
-                    className="flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                      New workspace
-                    </p>
-                  </button>
-                </div>
-                <ActiveWorkspaces />
+                <Option
+                  href={paths.admin.users()}
+                  btnText="User Management"
+                  icon={<Users className="h-4 w-4 flex-shrink-0" />}
+                />
               </div>
             </div>
             <div>
@@ -83,26 +47,6 @@ export default function Sidebar() {
                   <LLMStatus />
                   <IndexCount />
                 </div>
-                <a
-                  href={paths.hosting()}
-                  target="_blank"
-                  className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
-                >
-                  <Cpu className="h-4 w-4" />
-                  <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                    Managed cloud hosting
-                  </p>
-                </a>
-                <a
-                  href={paths.hosting()}
-                  target="_blank"
-                  className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100  dark:bg-stone-800 dark:hover:bg-stone-900"
-                >
-                  <Briefcase className="h-4 w-4" />
-                  <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                    Enterprise Installation
-                  </p>
-                </a>
               </div>
 
               {/* Footer */}
@@ -138,10 +82,6 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-      {showingSystemSettingsModal && (
-        <SystemSettingsModal hideModal={hideSystemSettingsModal} />
-      )}
-      {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
     </>
   );
 }
@@ -150,16 +90,6 @@ export function SidebarMobileHeader() {
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
-  const {
-    showing: showingSystemSettingsModal,
-    showModal: showSystemSettingsModal,
-    hideModal: hideSystemSettingsModal,
-  } = useSystemSettingsModal();
-  const {
-    showing: showingNewWsModal,
-    showModal: showNewWsModal,
-    hideModal: hideNewWsModal,
-  } = useNewWorkspaceModal();
 
   useEffect(() => {
     function handleBg() {
@@ -209,16 +139,15 @@ export function SidebarMobileHeader() {
             {/* Header Information */}
             <div className="flex w-full items-center justify-between">
               <p className="text-xl font-base text-slate-600 dark:text-slate-200">
-                AnythingLLM
+                AnythingLLM Admin
               </p>
               <div className="flex gap-x-2 items-center text-slate-500">
-                <AdminHome />
-                <button
-                  onClick={showSystemSettingsModal}
+                <a
+                  href={paths.home()}
                   className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
                 >
-                  <Tool className="h-4 w-4 " />
-                </button>
+                  <X className="h-4 w-4" />
+                </a>
               </div>
             </div>
 
@@ -229,18 +158,11 @@ export function SidebarMobileHeader() {
                   style={{ height: "calc(100vw - -3rem)" }}
                   className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
                 >
-                  <div className="flex gap-x-2 items-center justify-between">
-                    <button
-                      onClick={showNewWsModal}
-                      className="flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900"
-                    >
-                      <Plus className="h-4 w-4" />
-                      <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                        New workspace
-                      </p>
-                    </button>
-                  </div>
-                  <ActiveWorkspaces />
+                  <Option
+                    href={paths.admin.users()}
+                    btnText="User Management"
+                    icon={<Users className="h-4 w-4 flex-shrink-0" />}
+                  />
                 </div>
               </div>
               <div>
@@ -249,26 +171,6 @@ export function SidebarMobileHeader() {
                     <LLMStatus />
                     <IndexCount />
                   </div>
-                  <a
-                    href={paths.hosting()}
-                    target="_blank"
-                    className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
-                  >
-                    <Cpu className="h-4 w-4" />
-                    <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                      Managed cloud hosting
-                    </p>
-                  </a>
-                  <a
-                    href={paths.hosting()}
-                    target="_blank"
-                    className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100  dark:bg-stone-800 dark:hover:bg-stone-900"
-                  >
-                    <Briefcase className="h-4 w-4" />
-                    <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                      Enterprise Installation
-                    </p>
-                  </a>
                 </div>
 
                 {/* Footer */}
@@ -304,24 +206,28 @@ export function SidebarMobileHeader() {
             </div>
           </div>
         </div>
-        {showingSystemSettingsModal && (
-          <SystemSettingsModal hideModal={hideSystemSettingsModal} />
-        )}
-        {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
       </div>
     </>
   );
 }
 
-function AdminHome() {
-  const { user } = useUser();
-  if (!user || user?.role !== "admin") return null;
+const Option = ({ btnText, icon, href }) => {
+  const isActive = window.location.pathname === href;
   return (
-    <a
-      href={paths.admin.users()}
-      className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
-    >
-      <Shield className="h-4 w-4" />
-    </a>
+    <div className="flex gap-x-2 items-center justify-between">
+      <a
+        href={href}
+        className={`flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center ${
+          isActive
+            ? "bg-gray-100 dark:bg-stone-600"
+            : "hover:bg-slate-100 dark:hover:bg-stone-900 "
+        }`}
+      >
+        {icon}
+        <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold whitespace-nowrap overflow-hidden ">
+          {btnText}
+        </p>
+      </a>
+    </div>
   );
-}
+};

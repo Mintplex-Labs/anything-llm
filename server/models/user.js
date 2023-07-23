@@ -6,6 +6,7 @@ const User = {
   username TEXT UNIQUE,
   password TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT "default",
+  suspended INTEGER NOT NULL DEFAULT 0,
   createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
   lastUpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP
   `,
@@ -30,7 +31,7 @@ const User = {
     });
 
     await db.exec(
-      `CREATE TABLE IF NOT EXISTS ${this.tablename} (${this.colsInit})`
+      `PRAGMA foreign_keys = ON;CREATE TABLE IF NOT EXISTS ${this.tablename} (${this.colsInit})`
     );
 
     if (tracing) db.on("trace", (sql) => console.log(sql));
@@ -64,14 +65,87 @@ const User = {
 
     return { user, error: null };
   },
+  update: async function (userId, updates = {}) {
+    const user = await this.get(`id = ${userId}`);
+    if (!user) return { success: false, error: "User does not exist." };
+    const { username, password, role } = updates;
+    const toUpdate = {};
+
+    if (user.username !== username && username?.length > 0) {
+      const usedUsername = !!(await this.get(`username = '${username}'`));
+      if (usedUsername)
+        return { success: false, error: `${username} is already in use.` };
+      toUpdate.username = username;
+    }
+
+    if (!!password) {
+      const bcrypt = require("bcrypt");
+      toUpdate.password = bcrypt.hashSync(password, 10);
+    }
+
+    if (user.role !== role && ["admin", "default"].includes(role)) {
+      // If was existing admin and that has been changed
+      // make sure at least one admin exists
+      if (user.role === "admin") {
+        const validAdminCount = (await this.count(`role = 'admin'`)) > 1;
+        if (!validAdminCount)
+          return {
+            success: false,
+            error: `There would be no admins if this action was completed. There must be at least one admin.`,
+          };
+      }
+
+      toUpdate.role = role;
+    }
+
+    if (Object.keys(toUpdate).length !== 0) {
+      const values = Object.values(toUpdate);
+      const template = `UPDATE ${this.tablename} SET ${Object.keys(
+        toUpdate
+      ).map((key) => {
+        return `${key}=?`;
+      })} WHERE id = ?`;
+
+      const db = await this.db();
+      const { success, message } = await db
+        .run(template, [...values, userId])
+        .then(() => {
+          return { success: true, message: null };
+        })
+        .catch((error) => {
+          return { success: false, message: error.message };
+        });
+
+      db.close();
+      if (!success) {
+        console.error(message);
+        return { success: false, error: message };
+      }
+    }
+
+    return { success: true, error: null };
+  },
   get: async function (clause = "") {
     const db = await this.db();
     const result = await db
-      .get(`SELECT * FROM ${this.tablename} WHERE ${clause}`)
+      .get(
+        `SELECT * FROM ${this.tablename} ${clause ? `WHERE ${clause}` : clause}`
+      )
       .then((res) => res || null);
     if (!result) return null;
     db.close();
     return { ...result };
+  },
+  count: async function (clause = null) {
+    const db = await this.db();
+    const { count } = await db.get(
+      `SELECT COUNT(*) as count FROM ${this.tablename} ${
+        clause ? `WHERE ${clause}` : ""
+      } `
+    );
+    db.close();
+
+    return count;
   },
   delete: async function (clause = "") {
     const db = await this.db();

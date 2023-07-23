@@ -86,6 +86,11 @@ const Pinecone = {
       0
     );
   },
+  namespaceCount: async function (_namespace = null) {
+    const { pineconeIndex } = await this.connect();
+    const namespace = await this.namespace(pineconeIndex, _namespace);
+    return namespace?.vectorCount || 0;
+  },
   similarityResponse: async function (index, namespace, queryVector) {
     const result = {
       contextTexts: [],

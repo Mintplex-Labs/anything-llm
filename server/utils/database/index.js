@@ -1,5 +1,3 @@
-const { SystemSettings } = require("../../models/systemSettings");
-
 function checkColumnTemplate(tablename = null, column = null) {
   if (!tablename || !column)
     throw new Error(`Migration Error`, { tablename, column });
@@ -52,13 +50,17 @@ async function validateTablePragmas(force = false) {
       );
       return;
     }
-
+    const { SystemSettings } = require("../../models/systemSettings");
+    const { User } = require("../../models/user");
     const { Workspace } = require("../../models/workspace");
+    const { WorkspaceUser } = require("../../models/workspaceUsers");
     const { Document } = require("../../models/documents");
     const { DocumentVectors } = require("../../models/vectors");
     const { WorkspaceChats } = require("../../models/workspaceChats");
     await SystemSettings.migrateTable();
+    await User.migrateTable();
     await Workspace.migrateTable();
+    await WorkspaceUser.migrateTable();
     await Document.migrateTable();
     await DocumentVectors.migrateTable();
     await WorkspaceChats.migrateTable();
