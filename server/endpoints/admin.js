@@ -1,6 +1,7 @@
 const { Invite } = require("../models/invite");
 const { User } = require("../models/user");
 const { Workspace } = require("../models/workspace");
+const { WorkspaceChats } = require("../models/workspaceChats");
 const { userFromSession, reqBody } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 
@@ -221,6 +222,48 @@ function adminEndpoints(app) {
 
         const { id } = request.params;
         await Workspace.delete(`id = ${id}`);
+        response.status(200).json({ success, error });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/admin/workspace-chats",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        if (!user || user?.role !== "admin") {
+          response.sendStatus(401).end();
+          return;
+        }
+        const { offset = 0 } = reqBody(request);
+        const chats = await WorkspaceChats.whereWithData(`id >= ${offset}`, 20);
+        const hasPages = (await WorkspaceChats.count()) > 20;
+        response.status(200).json({ chats: chats.reverse(), hasPages });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/admin/workspace-chats/:id",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        if (!user || user?.role !== "admin") {
+          response.sendStatus(401).end();
+          return;
+        }
+
+        const { id } = request.params;
+        await WorkspaceChats.delete(`id = ${id}`);
         response.status(200).json({ success, error });
       } catch (e) {
         console.error(e);

@@ -3,12 +3,13 @@ import { Routes, Route } from "react-router-dom";
 import { ContextWrapper } from "./AuthContext";
 import PrivateRoute, { AdminRoute } from "./components/PrivateRoute";
 import InvitePage from "./pages/Invite";
-import AdminWorkspaces from "./pages/Admin/Workspaces";
 
 const Main = lazy(() => import("./pages/Main"));
 const WorkspaceChat = lazy(() => import("./pages/WorkspaceChat"));
 const AdminUsers = lazy(() => import("./pages/Admin/Users"));
 const AdminInvites = lazy(() => import("./pages/Admin/Invitations"));
+const AdminWorkspaces = lazy(() => import("./pages/Admin/Workspaces"));
+const AdminChats = lazy(() => import("./pages/Admin/Chats"));
 
 export default function App() {
   return (
@@ -34,6 +35,10 @@ export default function App() {
           <Route
             path="/admin/workspaces"
             element={<AdminRoute Component={AdminWorkspaces} />}
+          />
+          <Route
+            path="/admin/workspace-chats"
+            element={<AdminRoute Component={AdminChats} />}
           />
         </Routes>
       </ContextWrapper>

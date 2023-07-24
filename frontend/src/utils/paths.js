@@ -37,5 +37,8 @@ export default {
     workspaces: () => {
       return `/admin/workspaces`;
     },
+    chats: () => {
+      return "/admin/workspace-chats";
+    },
   },
 };

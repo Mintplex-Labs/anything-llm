@@ -1,5 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { BookOpen, GitHub, Mail, Menu, Users, X } from "react-feather";
+import {
+  BookOpen,
+  GitHub,
+  Mail,
+  Menu,
+  MessageSquare,
+  Users,
+  X,
+} from "react-feather";
 import IndexCount from "../Sidebar/IndexCount";
 import LLMStatus from "../Sidebar/LLMStatus";
 import paths from "../../utils/paths";
@@ -48,6 +56,11 @@ export default function AdminSidebar() {
                   href={paths.admin.workspaces()}
                   btnText="Workspace Management"
                   icon={<BookOpen className="h-4 w-4 flex-shrink-0" />}
+                />
+                <Option
+                  href={paths.admin.chats()}
+                  btnText="Workspace Chat Management"
+                  icon={<MessageSquare className="h-4 w-4 flex-shrink-0" />}
                 />
               </div>
             </div>

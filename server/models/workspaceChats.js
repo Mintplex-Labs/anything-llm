@@ -106,10 +106,14 @@ const WorkspaceChats = {
 
     return;
   },
-  get: async function (clause = "") {
+  get: async function (clause = "", limit = null, order = null) {
     const db = await this.db();
     const result = await db
-      .get(`SELECT * FROM ${this.tablename} WHERE ${clause}`)
+      .get(
+        `SELECT * FROM ${this.tablename} WHERE ${clause} ${
+          !!order ? order : ""
+        } ${!!limit ? `LIMIT ${limit}` : ""}`
+      )
       .then((res) => res || null);
     db.close();
 
@@ -128,10 +132,38 @@ const WorkspaceChats = {
     const results = await db.all(
       `SELECT * FROM ${this.tablename} ${clause ? `WHERE ${clause}` : ""} ${
         !!order ? order : ""
-      } ${!!limit ? `LIMIT ${limit}` : ""} `
+      } ${!!limit ? `LIMIT ${limit}` : ""}`
     );
     db.close();
 
+    return results;
+  },
+  count: async function (clause = null) {
+    const db = await this.db();
+    const { count } = await db.get(
+      `SELECT COUNT(*) as count FROM ${this.tablename} ${
+        clause ? `WHERE ${clause}` : ""
+      } `
+    );
+    db.close();
+
+    return count;
+  },
+  whereWithData: async function (clause = "", limit = null, order = null) {
+    const { Workspace } = require("./workspace");
+    const { User } = require("./user");
+    const results = await this.where(clause, limit, order);
+    for (const res of results) {
+      const workspace = await Workspace.get(`id = ${res.workspaceId}`);
+      res.workspace = workspace
+        ? { name: workspace.name, slug: workspace.slug }
+        : { name: "deleted workspace", slug: null };
+
+      const user = await User.get(`id = ${res.user_id}`);
+      res.user = user
+        ? { username: user.username }
+        : { username: "deleted user" };
+    }
     return results;
   },
 };
