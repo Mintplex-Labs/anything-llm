@@ -54,6 +54,21 @@ const WorkspaceUser = {
     db.close();
     return;
   },
+  createManyUsers: async function (userIds = [], workspaceId) {
+    if (userIds.length === 0) return;
+    const db = await this.db();
+    const stmt = await db.prepare(
+      `INSERT INTO ${this.tablename} (user_id, workspace_id) VALUES (?,?)`
+    );
+
+    for (const userId of userIds) {
+      stmt.run([userId, workspaceId]);
+    }
+
+    stmt.finalize();
+    db.close();
+    return;
+  },
   create: async function (userId = 0, workspaceId = 0) {
     const db = await this.db();
     const { success, message } = await db

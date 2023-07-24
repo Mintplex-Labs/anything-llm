@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { ContextWrapper } from "./AuthContext";
 import PrivateRoute, { AdminRoute } from "./components/PrivateRoute";
 import InvitePage from "./pages/Invite";
+import AdminWorkspaces from "./pages/Admin/Workspaces";
 
 const Main = lazy(() => import("./pages/Main"));
 const WorkspaceChat = lazy(() => import("./pages/WorkspaceChat"));
@@ -29,6 +30,10 @@ export default function App() {
           <Route
             path="/admin/users"
             element={<AdminRoute Component={AdminUsers} />}
+          />
+          <Route
+            path="/admin/workspaces"
+            element={<AdminRoute Component={AdminWorkspaces} />}
           />
         </Routes>
       </ContextWrapper>

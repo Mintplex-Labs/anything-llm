@@ -86,6 +86,58 @@ const Admin = {
         return { success: false, error: e.message };
       });
   },
+
+  // Workspaces Mgmt
+  workspaces: async () => {
+    return await fetch(`${API_BASE}/admin/workspaces`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.workspaces || [])
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  newWorkspace: async (name) => {
+    return await fetch(`${API_BASE}/admin/workspaces/new`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ name }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { workspace: null, error: e.message };
+      });
+  },
+  updateUsersInWorkspace: async (workspaceId, userIds = []) => {
+    return await fetch(
+      `${API_BASE}/admin/workspaces/${workspaceId}/update-users`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ userIds }),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+  deleteWorkspace: async (workspaceId) => {
+    return await fetch(`${API_BASE}/admin/workspaces/${workspaceId}`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
 };
 
 export default Admin;

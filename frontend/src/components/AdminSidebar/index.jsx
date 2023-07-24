@@ -44,6 +44,11 @@ export default function AdminSidebar() {
                   btnText="User Management"
                   icon={<Users className="h-4 w-4 flex-shrink-0" />}
                 />
+                <Option
+                  href={paths.admin.workspaces()}
+                  btnText="Workspace Management"
+                  icon={<BookOpen className="h-4 w-4 flex-shrink-0" />}
+                />
               </div>
             </div>
             <div>

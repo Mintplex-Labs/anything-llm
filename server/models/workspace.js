@@ -218,6 +218,21 @@ const Workspace = {
 
     return workspaces;
   },
+  whereWithUsers: async function (clause = "", limit = null, orderBy = null) {
+    const workspaces = await this.where(clause, limit, orderBy);
+    for (const workspace of workspaces) {
+      const userIds = (
+        await WorkspaceUser.where(`workspace_id = ${workspace.id}`)
+      ).map((rel) => rel.user_id);
+      workspace.userIds = userIds;
+    }
+    return workspaces;
+  },
+  updateUsers: async function (workspaceId, userIds = []) {
+    await WorkspaceUser.delete(`workspace_id = ${workspaceId}`);
+    await WorkspaceUser.createManyUsers(userIds, workspaceId);
+    return { success: true, error: null };
+  },
 };
 
 module.exports = { Workspace };

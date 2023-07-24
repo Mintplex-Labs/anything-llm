@@ -34,5 +34,8 @@ export default {
     invites: () => {
       return `/admin/invites`;
     },
+    workspaces: () => {
+      return `/admin/workspaces`;
+    },
   },
 };

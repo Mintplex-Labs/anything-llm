@@ -256,42 +256,6 @@ a {
   height: 100px !important;
 }
 
-.blink {
-  animation: blink 1.5s steps(1) infinite;
-}
-
-@keyframes blink {
-  0% {
-    opacity: 0;
-  }
-
-  50% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-  }
-}
-
-.background-animate {
-  background-size: 400%;
-  -webkit-animation: bgAnimate 10s ease infinite;
-  -moz-animation: bgAnimate 10s ease infinite;
-  animation: bgAnimate 10s ease infinite;
-}
-
-@keyframes bgAnimate {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
 .grid-loader > circle {
   fill: #008eff;
 }
@@ -299,7 +263,6 @@ a {
 dialog {
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.2s;
   display: flex;
   flex-direction: column;
   align-items: center;
