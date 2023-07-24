@@ -76,7 +76,7 @@ function systemEndpoints(app) {
       try {
         if (multiUserMode(response)) {
           const user = await userFromSession(request, response);
-          if (!user) {
+          if (!user || user.suspended) {
             response.sendStatus(403).end();
             return;
           }
@@ -120,6 +120,16 @@ function systemEndpoints(app) {
           return;
         }
 
+        if (existingUser.suspended) {
+          response.status(200).json({
+            user: null,
+            valid: false,
+            token: null,
+            message: "[004] Account suspended by admin.",
+          });
+          return;
+        }
+
         response.status(200).json({
           valid: true,
           user: existingUser,
@@ -136,7 +146,7 @@ function systemEndpoints(app) {
           response.status(401).json({
             valid: false,
             token: null,
-            message: "Invalid password provided",
+            message: "[003] Invalid password provided",
           });
           return;
         }

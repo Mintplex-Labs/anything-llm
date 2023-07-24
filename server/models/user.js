@@ -68,8 +68,8 @@ const User = {
   update: async function (userId, updates = {}) {
     const user = await this.get(`id = ${userId}`);
     if (!user) return { success: false, error: "User does not exist." };
-    const { username, password, role } = updates;
-    const toUpdate = {};
+    const { username, password, role, suspended = 0 } = updates;
+    const toUpdate = { suspended };
 
     if (user.username !== username && username?.length > 0) {
       const usedUsername = !!(await this.get(`username = '${username}'`));
