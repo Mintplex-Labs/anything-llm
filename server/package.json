@@ -36,6 +36,7 @@
     "sqlite": "^4.2.1",
     "sqlite3": "^5.1.6",
     "uuid": "^9.0.0",
+    "uuid-apikey": "^1.5.3",
     "vectordb": "0.1.12"
   },
   "devDependencies": {

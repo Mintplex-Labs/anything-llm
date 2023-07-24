@@ -14,6 +14,7 @@ const { chatEndpoints } = require("./endpoints/chat");
 const { getVectorDbClass } = require("./utils/helpers");
 const { validateTablePragmas } = require("./utils/database");
 const { adminEndpoints } = require("./endpoints/admin");
+const { inviteEndpoints } = require("./endpoints/invite");
 const app = express();
 const apiRouter = express.Router();
 
@@ -31,6 +32,7 @@ systemEndpoints(apiRouter);
 workspaceEndpoints(apiRouter);
 chatEndpoints(apiRouter);
 adminEndpoints(apiRouter);
+inviteEndpoints(apiRouter);
 
 apiRouter.post("/v/:command", async (request, response) => {
   try {

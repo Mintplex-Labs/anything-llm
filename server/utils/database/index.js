@@ -57,6 +57,8 @@ async function validateTablePragmas(force = false) {
     const { Document } = require("../../models/documents");
     const { DocumentVectors } = require("../../models/vectors");
     const { WorkspaceChats } = require("../../models/workspaceChats");
+    const { Invite } = require("../../models/invite");
+
     await SystemSettings.migrateTable();
     await User.migrateTable();
     await Workspace.migrateTable();
@@ -64,6 +66,7 @@ async function validateTablePragmas(force = false) {
     await Document.migrateTable();
     await DocumentVectors.migrateTable();
     await WorkspaceChats.migrateTable();
+    await Invite.migrateTable();
   } catch (e) {
     console.error(`validateTablePragmas: Migrations failed`, e);
   }

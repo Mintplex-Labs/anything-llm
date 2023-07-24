@@ -31,5 +31,8 @@ export default {
     users: () => {
       return `/admin/users`;
     },
+    invites: () => {
+      return `/admin/invites`;
+    },
   },
 };

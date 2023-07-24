@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { BookOpen, GitHub, Menu, Users, X } from "react-feather";
+import { BookOpen, GitHub, Mail, Menu, Users, X } from "react-feather";
 import IndexCount from "../Sidebar/IndexCount";
 import LLMStatus from "../Sidebar/LLMStatus";
 import paths from "../../utils/paths";
@@ -34,6 +34,11 @@ export default function AdminSidebar() {
           <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
             <div className="h-auto sidebar-items dark:sidebar-items">
               <div className="flex flex-col gap-y-4 h-[65vh] pb-8 overflow-y-scroll no-scroll">
+                <Option
+                  href={paths.admin.invites()}
+                  btnText="Invitation Management"
+                  icon={<Mail className="h-4 w-4 flex-shrink-0" />}
+                />
                 <Option
                   href={paths.admin.users()}
                   btnText="User Management"
