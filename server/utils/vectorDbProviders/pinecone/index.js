@@ -10,6 +10,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, curateSources } = require("../../helpers");
+const { chatPrompt } = require("../../chats");
 
 const Pinecone = {
   name: "Pinecone",
@@ -53,15 +54,20 @@ const Pinecone = {
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
   },
-  embedChunk: async function (openai, textChunk) {
+  embedTextInput: async function (openai, textInput) {
+    const result = await this.embedChunks(openai, textInput);
+    return result?.[0] || [];
+  },
+  embedChunks: async function (openai, chunks = []) {
     const {
       data: { data },
     } = await openai.createEmbedding({
       model: "text-embedding-ada-002",
-      input: textChunk,
+      input: chunks,
     });
-    return data.length > 0 && data[0].hasOwnProperty("embedding")
-      ? data[0].embedding
+    return data.length > 0 &&
+      data.every((embd) => embd.hasOwnProperty("embedding"))
+      ? data.map((embd) => embd.embedding)
       : null;
   },
   llm: function ({ temperature = 0.7 }) {
@@ -174,25 +180,26 @@ const Pinecone = {
       const documentVectors = [];
       const vectors = [];
       const openai = this.openai();
-      for (const textChunk of textChunks) {
-        const vectorValues = await this.embedChunk(openai, textChunk);
+      const vectorValues = await this.embedChunks(openai, textChunks);
 
-        if (!!vectorValues) {
+      if (!!vectorValues && vectorValues.length > 0) {
+        for (const [i, vector] of vectorValues.entries()) {
           const vectorRecord = {
             id: uuidv4(),
-            values: vectorValues,
+            values: vector,
             // [DO NOT REMOVE]
             // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
             // https://github.com/hwchase17/langchainjs/blob/2def486af734c0ca87285a48f1a04c057ab74bdf/langchain/src/vectorstores/pinecone.ts#L64
-            metadata: { ...metadata, text: textChunk },
+            metadata: { ...metadata, text: textChunks[i] },
           };
+
           vectors.push(vectorRecord);
           documentVectors.push({ docId, vectorId: vectorRecord.id });
-        } else {
-          console.error(
-            "Could not use OpenAI to embed document chunk! This document will not be recorded."
-          );
         }
+      } else {
+        console.error(
+          "Could not use OpenAI to embed document chunks! This document will not be recorded."
+        );
       }
 
       if (vectors.length > 0) {
@@ -278,7 +285,7 @@ const Pinecone = {
     });
 
     const model = this.llm({
-      temperature: workspace?.openAiTemp,
+      temperature: workspace?.openAiTemp ?? 0.7,
     });
     const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
       k: 5,
@@ -310,7 +317,7 @@ const Pinecone = {
         "Invalid namespace - has it been collected and seeded yet?"
       );
 
-    const queryVector = await this.embedChunk(this.openai(), input);
+    const queryVector = await this.embedTextInput(this.openai(), input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       pineconeIndex,
       namespace,
@@ -318,14 +325,15 @@ const Pinecone = {
     );
     const prompt = {
       role: "system",
-      content: `Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.
-Context:
-${contextTexts
-  .map((text, i) => {
-    return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-  })
-  .join("")}`,
+      content: `${chatPrompt(workspace)}
+    Context:
+    ${contextTexts
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
     };
+
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
 
     const responseText = await this.getChatCompletion(this.openai(), memory, {

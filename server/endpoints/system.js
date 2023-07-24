@@ -3,6 +3,7 @@ process.env.NODE_ENV === "development"
   : require("dotenv").config();
 const { validateTablePragmas } = require("../utils/database");
 const { viewLocalFiles } = require("../utils/files");
+const { exportData, unpackAndOverwriteImport } = require("../utils/files/data");
 const {
   checkPythonAppAlive,
   acceptedFileTypes,
@@ -11,6 +12,9 @@ const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV } = require("../utils/helpers/updateENV");
 const { reqBody, makeJWT } = require("../utils/http");
+const { setupDataImports } = require("../utils/files/multer");
+const { v4 } = require("uuid");
+const { handleImports } = setupDataImports();
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -151,6 +155,53 @@ function systemEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.post("/system/update-password", async (request, response) => {
+    try {
+      const { usePassword, newPassword } = reqBody(request);
+      const { error } = updateENV({
+        AuthToken: usePassword ? newPassword : "",
+        JWTSecret: usePassword ? v4() : "",
+      });
+      response.status(200).json({ success: !error, error });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.get("/system/data-export", async (_, response) => {
+    try {
+      const { filename, error } = await exportData();
+      response.status(200).json({ filename, error });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.get("/system/data-exports/:filename", (request, response) => {
+    const filePath =
+      __dirname + "/../storage/exports/" + request.params.filename;
+    response.download(filePath, request.params.filename, (err) => {
+      if (err) {
+        response.send({
+          error: err,
+          msg: "Problem downloading the file",
+        });
+      }
+    });
+  });
+
+  app.post(
+    "/system/data-import",
+    handleImports.single("file"),
+    async function (request, response) {
+      const { originalname } = request.file;
+      const { success, error } = await unpackAndOverwriteImport(originalname);
+      response.status(200).json({ success, error });
+    }
+  );
 }
 
 module.exports = { systemEndpoints };

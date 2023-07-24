@@ -27,9 +27,15 @@ const KEY_MAPPING = {
     envKey: "PINECONE_INDEX",
     checks: [],
   },
+  AuthToken: {
+    envKey: "AUTH_TOKEN",
+    checks: [],
+  },
+  JWTSecret: {
+    envKey: "JWT_SECRET",
+    checks: [],
+  },
   // Not supported yet.
-  // 'AuthToken': 'AUTH_TOKEN',
-  // 'JWTSecret': 'JWT_SECRET',
   // 'StorageDir': 'STORAGE_DIR',
 };
 

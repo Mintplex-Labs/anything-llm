@@ -5,7 +5,6 @@ import paths from "../../../../utils/paths";
 import { useParams } from "react-router-dom";
 import Directory from "./Directory";
 import ConfirmationModal from "./ConfirmationModal";
-import CannotRemoveModal from "./CannotRemoveModal";
 import { AlertTriangle } from "react-feather";
 
 export default function DocumentSettings({ workspace }) {
@@ -16,14 +15,11 @@ export default function DocumentSettings({ workspace }) {
   const [directories, setDirectories] = useState(null);
   const [originalDocuments, setOriginalDocuments] = useState([]);
   const [selectedFiles, setSelectFiles] = useState([]);
-  const [vectordb, setVectorDB] = useState(null);
-  const [showingNoRemovalModal, setShowingNoRemovalModal] = useState(false);
   const [hasFiles, setHasFiles] = useState(true);
 
   useEffect(() => {
     async function fetchKeys() {
       const localFiles = await System.localFiles();
-      const settings = await System.keys();
       const originalDocs = workspace.documents.map((doc) => doc.docpath) || [];
       const hasAnyFiles = localFiles.items.some(
         (folder) => folder?.items?.length > 0
@@ -31,7 +27,6 @@ export default function DocumentSettings({ workspace }) {
       setDirectories(localFiles);
       setOriginalDocuments([...originalDocs]);
       setSelectFiles([...originalDocs]);
-      setVectorDB(settings?.VectorDB);
       setHasFiles(hasAnyFiles);
       setLoading(false);
     }
@@ -109,13 +104,6 @@ export default function DocumentSettings({ workspace }) {
     const parent = isFolder ? filepath : filepath.split("/")[0];
 
     if (isSelected(filepath)) {
-      // Certain vector DBs do not contain the ability to delete vectors
-      // so we cannot remove from these. The user will have to clear the entire workspace.
-      if (["lancedb"].includes(vectordb) && isOriginalDoc(filepath)) {
-        setShowingNoRemovalModal(true);
-        return false;
-      }
-
       const updatedDocs = isFolder
         ? selectedFiles.filter((doc) => !doc.includes(parent))
         : selectedFiles.filter((doc) => !doc.includes(filepath));
@@ -158,12 +146,6 @@ export default function DocumentSettings({ workspace }) {
           hideConfirm={() => setShowConfirmation(false)}
           additions={docChanges().adds}
           updateWorkspace={updateWorkspace}
-        />
-      )}
-      {showingNoRemovalModal && (
-        <CannotRemoveModal
-          hideModal={() => setShowingNoRemovalModal(false)}
-          vectordb={vectordb}
         />
       )}
       <div className="p-6 flex h-full w-full max-h-[80vh] overflow-y-scroll">

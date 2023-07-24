@@ -15,7 +15,7 @@ import { exit } from 'process';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPLACEMENT_KEY = '!SUB::USER::CONTENT!'
 
-const envPath = path.resolve(__dirname, `../../docker/.env`)
+const envPath = path.resolve(__dirname, `../../../docker/.env`)
 const envFileExists = fs.existsSync(envPath);
 
 const chalk = {

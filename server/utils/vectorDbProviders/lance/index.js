@@ -5,6 +5,7 @@ const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
+const { chatPrompt } = require("../../chats");
 
 // Since we roll our own results for prompting we
 // have to manually curate sources as well.
@@ -41,14 +42,43 @@ const LanceDb = {
     await this.connect();
     return { heartbeat: Number(new Date()) };
   },
+  tables: async function () {
+    const fs = require("fs");
+    const { client } = await this.connect();
+    const dirs = fs.readdirSync(client.uri);
+    return dirs.map((folder) => folder.replace(".lance", ""));
+  },
   totalIndicies: async function () {
-    return 0; // Unsupported for LanceDB - so always zero
+    const { client } = await this.connect();
+    const tables = await this.tables();
+    let count = 0;
+    for (const tableName of tables) {
+      const table = await client.openTable(tableName);
+      count += await table.countRows();
+    }
+    return count;
   },
   embeddingFunc: function () {
     return new lancedb.OpenAIEmbeddingFunction(
       "context",
       process.env.OPEN_AI_KEY
     );
+  },
+  embedTextInput: async function (openai, textInput) {
+    const result = await this.embedChunks(openai, textInput);
+    return result?.[0] || [];
+  },
+  embedChunks: async function (openai, chunks = []) {
+    const {
+      data: { data },
+    } = await openai.createEmbedding({
+      model: "text-embedding-ada-002",
+      input: chunks,
+    });
+    return data.length > 0 &&
+      data.every((embd) => embd.hasOwnProperty("embedding"))
+      ? data.map((embd) => embd.embedding)
+      : null;
   },
   embedder: function () {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
@@ -57,17 +87,6 @@ const LanceDb = {
     const config = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
     const openai = new OpenAIApi(config);
     return openai;
-  },
-  embedChunk: async function (openai, textChunk) {
-    const {
-      data: { data },
-    } = await openai.createEmbedding({
-      model: "text-embedding-ada-002",
-      input: textChunk,
-    });
-    return data.length > 0 && data[0].hasOwnProperty("embedding")
-      ? data[0].embedding
-      : null;
   },
   getChatCompletion: async function (
     openai,
@@ -115,7 +134,8 @@ const LanceDb = {
     };
   },
   updateOrCreateCollection: async function (client, data = [], namespace) {
-    if (await this.hasNamespace(namespace)) {
+    const hasNamespace = await this.hasNamespace(namespace);
+    if (hasNamespace) {
       const collection = await client.openTable(namespace);
       await collection.add(data);
       return true;
@@ -130,9 +150,9 @@ const LanceDb = {
     const exists = await this.namespaceExists(client, namespace);
     return exists;
   },
-  namespaceExists: async function (client, namespace = null) {
+  namespaceExists: async function (_client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    const collections = await client.tableNames();
+    const collections = await this.tables();
     return collections.includes(namespace);
   },
   deleteVectorsInNamespace: async function (client, namespace = null) {
@@ -140,11 +160,24 @@ const LanceDb = {
     fs.rm(`${client.uri}/${namespace}.lance`, { recursive: true }, () => null);
     return true;
   },
-  deleteDocumentFromNamespace: async function (_namespace, _docId) {
-    console.error(
-      `LanceDB:deleteDocumentFromNamespace - unsupported operation. No changes made to vector db.`
+  deleteDocumentFromNamespace: async function (namespace, docId) {
+    const { client } = await this.connect();
+    const exists = await this.namespaceExists(client, namespace);
+    if (!exists) {
+      console.error(
+        `LanceDB:deleteDocumentFromNamespace - namespace ${namespace} does not exist.`
+      );
+      return;
+    }
+
+    const { DocumentVectors } = require("../../../models/vectors");
+    const table = await client.openTable(namespace);
+    const vectorIds = (await DocumentVectors.where(`docId = '${docId}'`)).map(
+      (record) => record.vectorId
     );
-    return false;
+
+    await table.delete(`id IN (${vectorIds.map((v) => `'${v}'`).join(",")})`);
+    return true;
   },
   addDocumentToNamespace: async function (
     namespace,
@@ -193,18 +226,17 @@ const LanceDb = {
       const vectors = [];
       const submissions = [];
       const openai = this.openai();
+      const vectorValues = await this.embedChunks(openai, textChunks);
 
-      for (const textChunk of textChunks) {
-        const vectorValues = await this.embedChunk(openai, textChunk);
-
-        if (!!vectorValues) {
+      if (!!vectorValues && vectorValues.length > 0) {
+        for (const [i, vector] of vectorValues.entries()) {
           const vectorRecord = {
             id: uuidv4(),
-            values: vectorValues,
+            values: vector,
             // [DO NOT REMOVE]
             // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
             // https://github.com/hwchase17/langchainjs/blob/2def486af734c0ca87285a48f1a04c057ab74bdf/langchain/src/vectorstores/pinecone.ts#L64
-            metadata: { ...metadata, text: textChunk },
+            metadata: { ...metadata, text: textChunks[i] },
           };
 
           vectors.push(vectorRecord);
@@ -214,11 +246,11 @@ const LanceDb = {
             ...vectorRecord.metadata,
           });
           documentVectors.push({ docId, vectorId: vectorRecord.id });
-        } else {
-          console.error(
-            "Could not use OpenAI to embed document chunk! This document will not be recorded."
-          );
         }
+      } else {
+        console.error(
+          "Could not use OpenAI to embed document chunks! This document will not be recorded."
+        );
       }
 
       if (vectors.length > 0) {
@@ -252,7 +284,7 @@ const LanceDb = {
     }
 
     // LanceDB does not have langchainJS support so we roll our own here.
-    const queryVector = await this.embedChunk(this.openai(), input);
+    const queryVector = await this.embedTextInput(this.openai(), input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
@@ -260,7 +292,7 @@ const LanceDb = {
     );
     const prompt = {
       role: "system",
-      content: `Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.
+      content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
       .map((text, i) => {
@@ -301,7 +333,7 @@ const LanceDb = {
       };
     }
 
-    const queryVector = await this.embedChunk(this.openai(), input);
+    const queryVector = await this.embedTextInput(this.openai(), input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
@@ -309,7 +341,7 @@ const LanceDb = {
     );
     const prompt = {
       role: "system",
-      content: `Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.
+      content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
       .map((text, i) => {
