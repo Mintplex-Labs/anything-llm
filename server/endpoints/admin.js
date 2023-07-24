@@ -221,7 +221,23 @@ function adminEndpoints(app) {
         }
 
         const { id } = request.params;
+        const VectorDb = getVectorDbClass();
+        const workspace = Workspace.get(`id = ${id}`);
+        if (!workspace) {
+          response.sendStatus(404).end();
+          return;
+        }
+
         await Workspace.delete(`id = ${id}`);
+        await DocumentVectors.deleteForWorkspace(id);
+        await Document.delete(`workspaceId = ${Number(id)}`);
+        await WorkspaceChats.delete(`workspaceId = ${Number(id)}`);
+        try {
+          await VectorDb["delete-namespace"]({ namespace: workspace.slug });
+        } catch (e) {
+          console.error(e.message);
+        }
+
         response.status(200).json({ success, error });
       } catch (e) {
         console.error(e);

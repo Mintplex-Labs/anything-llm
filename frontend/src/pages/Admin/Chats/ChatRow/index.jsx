@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import Admin from "../../../../models/admin";
 import truncate from "truncate";
 import { X } from "react-feather";
