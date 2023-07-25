@@ -201,7 +201,7 @@ function workspaceEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = multiUserMode(response)
           ? await Workspace.getWithUser(user, `slug = '${slug}'`)
-          : await WorkspaceChats.forWorkspace(workspace.id);
+          : await Workspace.get(`slug = '${slug}'`);
 
         if (!workspace) {
           response.sendStatus(400).end();
