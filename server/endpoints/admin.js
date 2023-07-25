@@ -312,7 +312,7 @@ function adminEndpoints(app) {
               ?.value === "true",
           message_limit:
             Number(
-              (await SystemSettings.get(`label = 'limit_user_messages'`))?.value
+              (await SystemSettings.get(`label = 'message_limit'`))?.value
             ) || 10,
         };
         response.status(200).json({ settings });

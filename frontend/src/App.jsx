@@ -2,9 +2,9 @@ import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ContextWrapper } from "./AuthContext";
 import PrivateRoute, { AdminRoute } from "./components/PrivateRoute";
-import InvitePage from "./pages/Invite";
 
 const Main = lazy(() => import("./pages/Main"));
+const InvitePage = lazy(() => import("./pages/Invite"));
 const WorkspaceChat = lazy(() => import("./pages/WorkspaceChat"));
 const AdminUsers = lazy(() => import("./pages/Admin/Users"));
 const AdminInvites = lazy(() => import("./pages/Admin/Invitations"));
