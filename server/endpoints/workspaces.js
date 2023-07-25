@@ -14,6 +14,7 @@ const {
   processDocument,
 } = require("../utils/files/documentProcessor");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const { SystemSettings } = require("../models/systemSettings");
 const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
@@ -133,6 +134,16 @@ function workspaceEndpoints(app) {
         if (!workspace) {
           response.sendStatus(400).end();
           return;
+        }
+
+        if (multiUserMode(response) && user.role !== "admin") {
+          const canDelete =
+            (await SystemSettings.get(`label = 'users_can_delete_workspaces'`))
+              ?.value === "true";
+          if (!canDelete) {
+            response.sendStatus(500).end();
+            return;
+          }
         }
 
         await Workspace.delete(`slug = '${slug.toLowerCase()}'`);

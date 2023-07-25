@@ -1,5 +1,10 @@
 const SystemSettings = {
-  supportedFields: ["multi_user_mode"],
+  supportedFields: [
+    "multi_user_mode",
+    "users_can_delete_workspaces",
+    "limit_user_messages",
+    "message_limit",
+  ],
   privateField: [],
   tablename: "system_settings",
   colsInit: `

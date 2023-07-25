@@ -1,7 +1,11 @@
+const { Document } = require("../models/documents");
 const { Invite } = require("../models/invite");
+const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
+const { DocumentVectors } = require("../models/vectors");
 const { Workspace } = require("../models/workspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
+const { getVectorDbClass } = require("../utils/helpers");
 const { userFromSession, reqBody } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 
@@ -281,6 +285,58 @@ function adminEndpoints(app) {
         const { id } = request.params;
         await WorkspaceChats.delete(`id = ${id}`);
         response.status(200).json({ success, error });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/admin/system-preferences",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        if (!user || user?.role !== "admin") {
+          response.sendStatus(401).end();
+          return;
+        }
+
+        const settings = {
+          users_can_delete_workspaces:
+            (await SystemSettings.get(`label = 'users_can_delete_workspaces'`))
+              ?.value === "true",
+          limit_user_messages:
+            (await SystemSettings.get(`label = 'limit_user_messages'`))
+              ?.value === "true",
+          message_limit:
+            Number(
+              (await SystemSettings.get(`label = 'limit_user_messages'`))?.value
+            ) || 10,
+        };
+        response.status(200).json({ settings });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/admin/system-preferences",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        if (!user || user?.role !== "admin") {
+          response.sendStatus(401).end();
+          return;
+        }
+
+        const updates = reqBody(request);
+        await SystemSettings.updateSettings(updates);
+        response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

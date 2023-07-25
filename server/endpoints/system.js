@@ -285,7 +285,12 @@ function systemEndpoints(app) {
           password,
           role: "admin",
         });
-        await SystemSettings.updateSettings({ multi_user_mode: true });
+        await SystemSettings.updateSettings({
+          multi_user_mode: true,
+          users_can_delete_workspaces: false,
+          limit_user_messages: false,
+          message_limit: 25,
+        });
         process.env.AUTH_TOKEN = null;
         process.env.JWT_SECRET = process.env.JWT_SECRET ?? v4(); // Make sure JWT_SECRET is set for JWT issuance.
         response.status(200).json({ success: !!user, error });

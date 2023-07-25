@@ -28,6 +28,9 @@ export default {
     return `${API_BASE.replace("/api", "")}/system/data-exports`;
   },
   admin: {
+    system: () => {
+      return `/admin/system-preferences`;
+    },
     users: () => {
       return `/admin/users`;
     },

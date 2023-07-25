@@ -163,6 +163,31 @@ const Admin = {
         return { success: false, error: e.message };
       });
   },
+
+  // System Preferences
+  systemPreferences: async () => {
+    return await fetch(`${API_BASE}/admin/system-preferences`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return null;
+      });
+  },
+  updateSystemPreferences: async (updates = {}) => {
+    return await fetch(`${API_BASE}/admin/system-preferences`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(updates),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
 };
 
 export default Admin;

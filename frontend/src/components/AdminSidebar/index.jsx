@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   BookOpen,
+  Database,
   GitHub,
   Mail,
   Menu,
   MessageSquare,
+  Settings,
   Users,
   X,
 } from "react-feather";
@@ -42,6 +44,11 @@ export default function AdminSidebar() {
           <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
             <div className="h-auto sidebar-items dark:sidebar-items">
               <div className="flex flex-col gap-y-4 h-[65vh] pb-8 overflow-y-scroll no-scroll">
+                <Option
+                  href={paths.admin.system()}
+                  btnText="System Preferences"
+                  icon={<Settings className="h-4 w-4 flex-shrink-0" />}
+                />
                 <Option
                   href={paths.admin.invites()}
                   btnText="Invitation Management"

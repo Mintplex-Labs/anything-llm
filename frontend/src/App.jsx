@@ -10,6 +10,7 @@ const AdminUsers = lazy(() => import("./pages/Admin/Users"));
 const AdminInvites = lazy(() => import("./pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("./pages/Admin/Workspaces"));
 const AdminChats = lazy(() => import("./pages/Admin/Chats"));
+const AdminSystem = lazy(() => import("./pages/Admin/System"));
 
 export default function App() {
   return (
@@ -24,6 +25,10 @@ export default function App() {
           <Route path="/accept-invite/:code" element={<InvitePage />} />
 
           {/* Admin Routes */}
+          <Route
+            path="/admin/system-preferences"
+            element={<AdminRoute Component={AdminSystem} />}
+          />
           <Route
             path="/admin/invites"
             element={<AdminRoute Component={AdminInvites} />}
