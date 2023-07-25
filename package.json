@@ -1,7 +1,7 @@
 {
   "name": "anything-llm",
-  "version": "0.0.1-beta",
-  "description": "Turn anything into a chattable document through a simple UI",
+  "version": "0.1.0",
+  "description": "The best solution for turning private documents into a chat bot using off-the-shelf tools and commercially viable AI technologies.",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
