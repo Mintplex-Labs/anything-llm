@@ -1,5 +1,5 @@
 <p align="center">
-    <b>AnythingLLM: A full-stack personalized AI assistant</b>. <br />
+    <b>🤖 AnythingLLM: A full-stack personalized AI assistant</b>. <br />
     A hyper-efficient and open-source document chatbot solution for all.
 </p>
 
@@ -14,7 +14,7 @@
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="License">
   </a> |
   <a href="https://docs.mintplex.xyz/anythingllm-by-mintplex-labs/" target="_blank">
-      Usage Docs
+    Docs
   </a>
 </p>
 
