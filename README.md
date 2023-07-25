@@ -54,7 +54,7 @@ This monorepo consists of three main sections:
 
 ### Requirements
 - `yarn` and `node` on your machine
-- `python` 3.8+ for running scripts in `collector/`.
+- `python` 3.9+ for running scripts in `collector/`.
 - access to an LLM like `GPT-3.5`, `GPT-4`.
 - a [Pinecone.io](https://pinecone.io) free account*.
 *you can use drop in replacements for these. This is just the easiest to get up and running fast. We support multiple vector database providers.
