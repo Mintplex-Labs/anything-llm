@@ -1,6 +1,7 @@
 const slugify = require("slugify");
 const { Document } = require("./documents");
 const { checkForMigrations } = require("../utils/database");
+const { WorkspaceUser } = require("./workspaceUsers");
 
 const Workspace = {
   tablename: "workspaces",
@@ -70,13 +71,13 @@ const Workspace = {
     });
 
     await db.exec(
-      `CREATE TABLE IF NOT EXISTS ${this.tablename} (${this.colsInit})`
+      `PRAGMA foreign_keys = ON;CREATE TABLE IF NOT EXISTS ${this.tablename} (${this.colsInit})`
     );
 
     if (tracing) db.on("trace", (sql) => console.log(sql));
     return db;
   },
-  new: async function (name = null) {
+  new: async function (name = null, creatorId = null) {
     if (!name) return { result: null, message: "name cannot be null" };
     var slug = slugify(name, { lower: true });
 
@@ -109,6 +110,10 @@ const Workspace = {
     );
     db.close();
 
+    // If created with a user then we need to create the relationship as well.
+    // If creating with an admin User it wont change anything because admins can
+    // view all workspaces anyway.
+    if (!!creatorId) await WorkspaceUser.create(creatorId, workspace.id);
     return { workspace, message: null };
   },
   update: async function (id = null, data = {}) {
@@ -142,6 +147,25 @@ const Workspace = {
     const updatedWorkspace = await this.get(`id = ${id}`);
     return { workspace: updatedWorkspace, message: null };
   },
+  getWithUser: async function (user = null, clause = "") {
+    if (user.role === "admin") return this.get(clause);
+
+    const db = await this.db();
+    const result = await db
+      .get(
+        `SELECT * FROM ${this.tablename} as workspace 
+      LEFT JOIN workspace_users as ws_users 
+      ON ws_users.workspace_id = workspace.id 
+      WHERE ws_users.user_id = ${user?.id} AND ${clause}`
+      )
+      .then((res) => res || null);
+    if (!result) return null;
+    db.close();
+
+    const workspace = { ...result, id: result.workspace_id };
+    const documents = await Document.forWorkspace(workspace.id);
+    return { ...workspace, documents };
+  },
   get: async function (clause = "") {
     const db = await this.db();
     const result = await db
@@ -160,16 +184,54 @@ const Workspace = {
 
     return true;
   },
-  where: async function (clause = "", limit = null) {
+  where: async function (clause = "", limit = null, orderBy = null) {
     const db = await this.db();
     const results = await db.all(
       `SELECT * FROM ${this.tablename} ${clause ? `WHERE ${clause}` : ""} ${
         !!limit ? `LIMIT ${limit}` : ""
-      }`
+      } ${!!orderBy ? orderBy : ""}`
     );
     db.close();
 
     return results;
+  },
+  whereWithUser: async function (
+    user,
+    clause = null,
+    limit = null,
+    orderBy = null
+  ) {
+    if (user.role === "admin") return await this.where(clause, limit);
+    const db = await this.db();
+    const results = await db.all(
+      `SELECT * FROM ${this.tablename} as workspace 
+      LEFT JOIN workspace_users as ws_users 
+      ON ws_users.workspace_id = workspace.id 
+      WHERE ws_users.user_id = ${user.id} ${clause ? `AND ${clause}` : ""} ${
+        !!limit ? `LIMIT ${limit}` : ""
+      } ${!!orderBy ? orderBy : ""}`
+    );
+    db.close();
+    const workspaces = results.map((ws) => {
+      return { ...ws, id: ws.workspace_id };
+    });
+
+    return workspaces;
+  },
+  whereWithUsers: async function (clause = "", limit = null, orderBy = null) {
+    const workspaces = await this.where(clause, limit, orderBy);
+    for (const workspace of workspaces) {
+      const userIds = (
+        await WorkspaceUser.where(`workspace_id = ${workspace.id}`)
+      ).map((rel) => rel.user_id);
+      workspace.userIds = userIds;
+    }
+    return workspaces;
+  },
+  updateUsers: async function (workspaceId, userIds = []) {
+    await WorkspaceUser.delete(`workspace_id = ${workspaceId}`);
+    await WorkspaceUser.createManyUsers(userIds, workspaceId);
+    return { success: true, error: null };
   },
 };
 

@@ -1,9 +1,10 @@
 import React, { useState, createContext } from "react";
+import { AUTH_TOKEN, AUTH_USER } from "./utils/constants";
 
 export const AuthContext = createContext(null);
 export function ContextWrapper(props) {
-  const localUser = localStorage.getItem("anythingllm_user");
-  const localAuthToken = localStorage.getItem("anythingllm_authToken");
+  const localUser = localStorage.getItem(AUTH_USER);
+  const localAuthToken = localStorage.getItem(AUTH_TOKEN);
   const [store, setStore] = useState({
     user: localUser ? JSON.parse(localUser) : null,
     authToken: localAuthToken ? localAuthToken : null,
@@ -11,13 +12,13 @@ export function ContextWrapper(props) {
 
   const [actions] = useState({
     updateUser: (user, authToken = "") => {
-      localStorage.setItem("anythingllm_user", JSON.stringify(user));
-      localStorage.setItem("anythingllm_authToken", authToken);
+      localStorage.setItem(AUTH_USER, JSON.stringify(user));
+      localStorage.setItem(AUTH_TOKEN, authToken);
       setStore({ user, authToken });
     },
     unsetUser: () => {
-      localStorage.removeItem("anythingllm_user");
-      localStorage.removeItem("anythingllm_authToken");
+      localStorage.removeItem(AUTH_USER);
+      localStorage.removeItem(AUTH_TOKEN);
       setStore({ user: null, authToken: null });
     },
   });

@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { AlertCircle, Loader, X } from "react-feather";
+import React, { useState } from "react";
+import { AlertCircle, Loader } from "react-feather";
 import System from "../../../../models/system";
 
 const noop = () => false;
-export default function SystemKeys({ hideModal = noop }) {
-  const [loading, setLoading] = useState(true);
-  const [settings, setSettings] = useState({});
-
+export default function SystemKeys({ hideModal = noop, user, settings = {} }) {
+  const canDebug = settings.MultiUserMode
+    ? settings?.CanDebug && user?.role === "admin"
+    : settings?.CanDebug;
   function validSettings(settings) {
     return (
       settings?.OpenAiKey &&
@@ -20,14 +20,6 @@ export default function SystemKeys({ hideModal = noop }) {
         : true)
     );
   }
-  useEffect(() => {
-    async function fetchKeys() {
-      const settings = await System.keys();
-      setSettings(settings);
-      setLoading(false);
-    }
-    fetchKeys();
-  }, []);
 
   return (
     <div className="relative w-full max-w-2xl max-h-full">
@@ -40,83 +32,75 @@ export default function SystemKeys({ hideModal = noop }) {
           </p>
         </div>
         <div className="p-6 space-y-6 flex h-full w-full">
-          {loading ? (
-            <div className="w-full h-full flex items-center justify-center">
-              <p className="text-gray-800 dark:text-gray-200 text-base">
-                loading system settings
-              </p>
-            </div>
-          ) : (
-            <div className="w-full flex flex-col gap-y-4">
-              {!validSettings(settings) && (
-                <div className="bg-orange-300 p-4 rounded-lg border border-orange-600 text-orange-700 w-full items-center flex gap-x-2">
-                  <AlertCircle className="h-8 w-8" />
-                  <p className="text-sm md:text-base ">
-                    Ensure all fields are green before attempting to use
-                    AnythingLLM or it may not function as expected!
-                  </p>
-                </div>
-              )}
-              <ShowKey
-                name="OpenAI API Key"
-                env="OpenAiKey"
-                value={settings?.OpenAiKey ? "*".repeat(20) : ""}
-                valid={settings?.OpenAiKey}
-                allowDebug={settings?.CanDebug}
-              />
-              <ShowKey
-                name="OpenAI Model for chats"
-                env="OpenAiModelPref"
-                value={settings?.OpenAiModelPref}
-                valid={!!settings?.OpenAiModelPref}
-                allowDebug={settings?.CanDebug}
-              />
-              <div className="h-[2px] w-full bg-gray-200 dark:bg-stone-600" />
-              <ShowKey
-                name="Vector DB Choice"
-                env="VectorDB"
-                value={settings?.VectorDB}
-                valid={!!settings?.VectorDB}
-                allowDebug={settings?.CanDebug}
-              />
-              {settings?.VectorDB === "pinecone" && (
-                <>
-                  <ShowKey
-                    name="Pinecone DB API Key"
-                    env="PineConeKey"
-                    value={settings?.PineConeKey ? "*".repeat(20) : ""}
-                    valid={!!settings?.PineConeKey}
-                    allowDebug={settings?.CanDebug}
-                  />
-                  <ShowKey
-                    name="Pinecone DB Environment"
-                    env="PineConeEnvironment"
-                    value={settings?.PineConeEnvironment}
-                    valid={!!settings?.PineConeEnvironment}
-                    allowDebug={settings?.CanDebug}
-                  />
-                  <ShowKey
-                    name="Pinecone DB Index"
-                    env="PineConeIndex"
-                    value={settings?.PineConeIndex}
-                    valid={!!settings?.PineConeIndex}
-                    allowDebug={settings?.CanDebug}
-                  />
-                </>
-              )}
-              {settings?.VectorDB === "chroma" && (
-                <>
-                  <ShowKey
-                    name="Chroma Endpoint"
-                    env="ChromaEndpoint"
-                    value={settings?.ChromaEndpoint}
-                    valid={!!settings?.ChromaEndpoint}
-                    allowDebug={settings?.CanDebug}
-                  />
-                </>
-              )}
-            </div>
-          )}
+          <div className="w-full flex flex-col gap-y-4">
+            {!validSettings(settings) && (
+              <div className="bg-orange-300 p-4 rounded-lg border border-orange-600 text-orange-700 w-full items-center flex gap-x-2">
+                <AlertCircle className="h-8 w-8" />
+                <p className="text-sm md:text-base ">
+                  Ensure all fields are green before attempting to use
+                  AnythingLLM or it may not function as expected!
+                </p>
+              </div>
+            )}
+            <ShowKey
+              name="OpenAI API Key"
+              env="OpenAiKey"
+              value={settings?.OpenAiKey ? "*".repeat(20) : ""}
+              valid={settings?.OpenAiKey}
+              allowDebug={canDebug}
+            />
+            <ShowKey
+              name="OpenAI Model for chats"
+              env="OpenAiModelPref"
+              value={settings?.OpenAiModelPref}
+              valid={!!settings?.OpenAiModelPref}
+              allowDebug={canDebug}
+            />
+            <div className="h-[2px] w-full bg-gray-200 dark:bg-stone-600" />
+            <ShowKey
+              name="Vector DB Choice"
+              env="VectorDB"
+              value={settings?.VectorDB}
+              valid={!!settings?.VectorDB}
+              allowDebug={canDebug}
+            />
+            {settings?.VectorDB === "pinecone" && (
+              <>
+                <ShowKey
+                  name="Pinecone DB API Key"
+                  env="PineConeKey"
+                  value={settings?.PineConeKey ? "*".repeat(20) : ""}
+                  valid={!!settings?.PineConeKey}
+                  allowDebug={canDebug}
+                />
+                <ShowKey
+                  name="Pinecone DB Environment"
+                  env="PineConeEnvironment"
+                  value={settings?.PineConeEnvironment}
+                  valid={!!settings?.PineConeEnvironment}
+                  allowDebug={canDebug}
+                />
+                <ShowKey
+                  name="Pinecone DB Index"
+                  env="PineConeIndex"
+                  value={settings?.PineConeIndex}
+                  valid={!!settings?.PineConeIndex}
+                  allowDebug={canDebug}
+                />
+              </>
+            )}
+            {settings?.VectorDB === "chroma" && (
+              <>
+                <ShowKey
+                  name="Chroma Endpoint"
+                  env="ChromaEndpoint"
+                  value={settings?.ChromaEndpoint}
+                  valid={!!settings?.ChromaEndpoint}
+                  allowDebug={canDebug}
+                />
+              </>
+            )}
+          </div>
         </div>
         <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
           <button
@@ -142,7 +126,7 @@ function ShowKey({ name, env, value, valid, allowDebug = true }) {
     const data = {};
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) data[key] = value;
-    const { newValues, error } = await System.updateSystem(data);
+    const { error } = await System.updateSystem(data);
     if (!!error) {
       alert(error);
       setSaving(false);
@@ -212,7 +196,7 @@ function ShowKey({ name, env, value, valid, allowDebug = true }) {
                     onClick={() => setDebug(true)}
                     className="mt-2 text-xs text-slate-300 dark:text-slate-500"
                   >
-                    Debug
+                    Change
                   </button>
                 )}
               </>
@@ -269,7 +253,7 @@ function ShowKey({ name, env, value, valid, allowDebug = true }) {
                 onClick={() => setDebug(true)}
                 className="mt-2 text-xs text-slate-300 dark:text-slate-500"
               >
-                Debug
+                Change
               </button>
             )}
           </div>

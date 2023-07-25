@@ -4,6 +4,7 @@ import Jazzicon from "../../../../UserIcon";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
 import renderMarkdown from "../../../../../utils/chat/markdown";
+import { userFromStorage } from "../../../../../utils/request";
 
 function HistoricalMessage({
   message,
@@ -28,7 +29,7 @@ function HistoricalMessage({
             {message}
           </span>
         </div>
-        <Jazzicon size={30} user={{ uid: "user" }} />
+        <Jazzicon size={30} user={{ uid: userFromStorage()?.username }} />
       </div>
     );
   }

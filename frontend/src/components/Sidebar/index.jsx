@@ -6,6 +6,7 @@ import {
   GitHub,
   Menu,
   Plus,
+  Shield,
   Tool,
 } from "react-feather";
 import IndexCount from "./IndexCount";
@@ -19,6 +20,7 @@ import NewWorkspaceModal, {
 import ActiveWorkspaces from "./ActiveWorkspaces";
 import paths from "../../utils/paths";
 import Discord from "../Icons/Discord";
+import useUser from "../../hooks/useUser";
 
 export default function Sidebar() {
   const sidebarRef = useRef(null);
@@ -47,6 +49,7 @@ export default function Sidebar() {
               AnythingLLM
             </p>
             <div className="flex gap-x-2 items-center text-slate-500">
+              <AdminHome />
               <button
                 onClick={showSystemSettingsModal}
                 className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
@@ -144,9 +147,9 @@ export default function Sidebar() {
 }
 
 export function SidebarMobileHeader() {
+  const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
-  const sidebarRef = useRef(null);
   const {
     showing: showingSystemSettingsModal,
     showModal: showSystemSettingsModal,
@@ -209,6 +212,7 @@ export function SidebarMobileHeader() {
                 AnythingLLM
               </p>
               <div className="flex gap-x-2 items-center text-slate-500">
+                <AdminHome />
                 <button
                   onClick={showSystemSettingsModal}
                   className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
@@ -306,5 +310,18 @@ export function SidebarMobileHeader() {
         {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
       </div>
     </>
+  );
+}
+
+function AdminHome() {
+  const { user } = useUser();
+  if (!user || user?.role !== "admin") return null;
+  return (
+    <a
+      href={paths.admin.system()}
+      className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+    >
+      <Shield className="h-4 w-4" />
+    </a>
   );
 }

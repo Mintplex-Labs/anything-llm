@@ -59,14 +59,19 @@ function grepCommand(message) {
   return null;
 }
 
-async function chatWithWorkspace(workspace, message, chatMode = "chat") {
+async function chatWithWorkspace(
+  workspace,
+  message,
+  chatMode = "chat",
+  user = null
+) {
   const uuid = uuidv4();
   const openai = new OpenAi();
   const VectorDb = getVectorDbClass();
   const command = grepCommand(message);
 
   if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
-    return await VALID_COMMANDS[command](workspace, message, uuid);
+    return await VALID_COMMANDS[command](workspace, message, uuid, user);
   }
 
   const { safe, reasons = [] } = await openai.isSafe(message);
@@ -84,7 +89,8 @@ async function chatWithWorkspace(workspace, message, chatMode = "chat") {
   }
 
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
-  if (!hasVectorizedSpace) {
+  const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
+  if (!hasVectorizedSpace || embeddingsCount === 0) {
     const rawHistory = await WorkspaceChats.forWorkspace(workspace.id);
     const chatHistory = convertToPromptHistory(rawHistory);
     const response = await openai.sendChat(chatHistory, message, workspace);
@@ -94,6 +100,7 @@ async function chatWithWorkspace(workspace, message, chatMode = "chat") {
       workspaceId: workspace.id,
       prompt: message,
       response: data,
+      user,
     });
     return {
       id: uuid,
@@ -137,6 +144,7 @@ async function chatWithWorkspace(workspace, message, chatMode = "chat") {
       workspaceId: workspace.id,
       prompt: message,
       response: data,
+      user,
     });
     return {
       id: uuid,

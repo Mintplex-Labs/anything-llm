@@ -35,7 +35,7 @@ const Document = {
     });
 
     await db.exec(
-      `CREATE TABLE IF NOT EXISTS ${this.tablename} (${this.colsInit})`
+      `PRAGMA foreign_keys = ON;CREATE TABLE IF NOT EXISTS ${this.tablename} (${this.colsInit})`
     );
 
     if (tracing) db.on("trace", (sql) => console.log(sql));

@@ -44,6 +44,11 @@ const Chroma = {
     }
     return totalVectors;
   },
+  namespaceCount: async function (_namespace = null) {
+    const { client } = await this.connect();
+    const namespace = await this.namespace(client, _namespace);
+    return namespace?.vectorCount || 0;
+  },
   embeddingFunc: function () {
     return new OpenAIEmbeddingFunction({
       openai_api_key: process.env.OPEN_AI_KEY,

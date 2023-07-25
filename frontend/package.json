@@ -1,7 +1,6 @@
 {
   "name": "anything-llm-frontend",
   "private": false,
-  "version": "0.0.1-beta",
   "type": "module",
   "license": "MIT",
   "scripts": {

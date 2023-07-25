@@ -27,4 +27,21 @@ export default {
   exports: () => {
     return `${API_BASE.replace("/api", "")}/system/data-exports`;
   },
+  admin: {
+    system: () => {
+      return `/admin/system-preferences`;
+    },
+    users: () => {
+      return `/admin/users`;
+    },
+    invites: () => {
+      return `/admin/invites`;
+    },
+    workspaces: () => {
+      return `/admin/workspaces`;
+    },
+    chats: () => {
+      return "/admin/workspace-chats";
+    },
+  },
 };

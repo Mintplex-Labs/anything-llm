@@ -18,6 +18,7 @@
     "@googleapis/youtube": "^9.0.0",
     "@pinecone-database/pinecone": "^0.1.6",
     "archiver": "^5.3.1",
+    "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "chromadb": "^1.5.2",
     "cors": "^2.8.5",
@@ -35,6 +36,7 @@
     "sqlite": "^4.2.1",
     "sqlite3": "^5.1.6",
     "uuid": "^9.0.0",
+    "uuid-apikey": "^1.5.3",
     "vectordb": "0.1.12"
   },
   "devDependencies": {
