@@ -53,7 +53,7 @@ export default function EditUserModal({ user }) {
                     name="username"
                     type="text"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="My Workspace"
+                    placeholder="User's username"
                     minLength={2}
                     defaultValue={user.username}
                     required={true}

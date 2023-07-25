@@ -2,7 +2,7 @@ import { API_BASE } from "../utils/constants";
 import { baseHeaders } from "../utils/request";
 
 const Admin = {
-  // User Mangement
+  // User Management
   users: async () => {
     return await fetch(`${API_BASE}/admin/users`, {
       method: "GET",

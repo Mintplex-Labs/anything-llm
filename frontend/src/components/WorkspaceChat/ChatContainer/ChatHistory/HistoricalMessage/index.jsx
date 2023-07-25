@@ -29,7 +29,7 @@ function HistoricalMessage({
             {message}
           </span>
         </div>
-        <Jazzicon size={30} user={{ uid: userFromStorage().username }} />
+        <Jazzicon size={30} user={{ uid: userFromStorage()?.username }} />
       </div>
     );
   }
