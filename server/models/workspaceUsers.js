@@ -46,8 +46,14 @@ const WorkspaceUser = {
       `INSERT INTO ${this.tablename} (user_id, workspace_id) VALUES (?,?)`
     );
 
-    for (const workspaceId of workspaceIds) {
-      stmt.run([userId, workspaceId]);
+    await db.exec("BEGIN TRANSACTION");
+    try {
+      for (const workspaceId of workspaceIds) {
+        await stmt.run([userId, workspaceId]);
+      }
+      await db.exec("COMMIT");
+    } catch {
+      await db.exec("ROLLBACK");
     }
 
     stmt.finalize();
@@ -61,8 +67,14 @@ const WorkspaceUser = {
       `INSERT INTO ${this.tablename} (user_id, workspace_id) VALUES (?,?)`
     );
 
-    for (const userId of userIds) {
-      stmt.run([userId, workspaceId]);
+    await db.exec("BEGIN TRANSACTION");
+    try {
+      for (const userId of userIds) {
+        await stmt.run([userId, workspaceId]);
+      }
+      await db.exec("COMMIT");
+    } catch {
+      await db.exec("ROLLBACK");
     }
 
     stmt.finalize();

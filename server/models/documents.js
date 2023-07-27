@@ -69,11 +69,8 @@ const Document = {
   addDocuments: async function (workspace, additions = []) {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return;
+    const insertParams = [];
 
-    const db = await this.db();
-    const stmt = await db.prepare(
-      `INSERT INTO ${this.tablename} (docId, filename, docpath, workspaceId, metadata) VALUES (?,?,?,?,?)`
-    );
     for (const path of additions) {
       const data = await fileData(path);
       if (!data) continue;
@@ -96,7 +93,8 @@ const Document = {
         console.error("Failed to vectorize", path);
         continue;
       }
-      stmt.run([
+
+      insertParams.push([
         docId,
         newDoc.filename,
         newDoc.docpath,
@@ -104,19 +102,31 @@ const Document = {
         newDoc.metadata,
       ]);
     }
+
+    const db = await this.db();
+    const stmt = await db.prepare(
+      `INSERT INTO ${this.tablename} (docId, filename, docpath, workspaceId, metadata) VALUES (?,?,?,?,?)`
+    );
+
+    await db.exec("BEGIN TRANSACTION");
+    try {
+      for (const params of insertParams) {
+        await stmt.run(params);
+      }
+      await db.exec("COMMIT");
+    } catch {
+      await db.exec("ROLLBACK");
+    }
+
     stmt.finalize();
     db.close();
-
     return;
   },
   removeDocuments: async function (workspace, removals = []) {
     const VectorDb = getVectorDbClass();
-
+    const deleteParams = [];
     if (removals.length === 0) return;
-    const db = await this.db();
-    const stmt = await db.prepare(
-      `DELETE FROM ${this.tablename} WHERE docpath = ? AND workspaceId = ?`
-    );
+
     for (const path of removals) {
       const document = await this.firstWhere(
         `docPath = '${path}' AND workspaceId = ${workspace.id}`
@@ -126,8 +136,24 @@ const Document = {
         workspace.slug,
         document.docId
       );
-      stmt.run([path, workspace.id]);
+      deleteParams.push([path, workspace.id]);
     }
+
+    const db = await this.db();
+    const stmt = await db.prepare(
+      `DELETE FROM ${this.tablename} WHERE docpath = ? AND workspaceId = ?`
+    );
+
+    await db.exec("BEGIN TRANSACTION");
+    try {
+      for (const params of deleteParams) {
+        await stmt.run(params);
+      }
+      await db.exec("COMMIT");
+    } catch {
+      await db.exec("ROLLBACK");
+    }
+
     stmt.finalize();
     db.close();
     return true;

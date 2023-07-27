@@ -58,7 +58,14 @@ const DocumentVectors = {
       []
     );
 
-    stmt.run(values);
+    await db.exec("BEGIN TRANSACTION");
+    try {
+      await stmt.run(values);
+      await db.exec("COMMIT");
+    } catch {
+      await db.exec("ROLLBACK");
+    }
+
     stmt.finalize();
     db.close();
 
