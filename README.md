@@ -26,7 +26,7 @@ A full-stack application that enables you to turn any document, resource, or pie
 
 ### Watch the demo!
 
-[![Watch the video](https://img.youtube.com/vi/0vZ69AIP_hM/maxresdefault.jpg)](https://youtu.be/0vZ69AIP_hM)
+[![Watch the video](/images/youtube.png)](https://youtu.be/0vZ69AIP_hM)
 
 
 ### Product Overview
