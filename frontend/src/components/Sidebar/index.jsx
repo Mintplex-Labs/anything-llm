@@ -83,6 +83,7 @@ export default function Sidebar() {
                   <LLMStatus />
                   <IndexCount />
                 </div>
+                 {/*
                 <a
                   href={paths.hosting()}
                   target="_blank"
@@ -103,10 +104,12 @@ export default function Sidebar() {
                     Enterprise Installation
                   </p>
                 </a>
+                */}
               </div>
 
               {/* Footer */}
               <div className="flex items-end justify-between mt-2">
+                {/* 
                 <div className="flex gap-x-1 items-center">
                   <a
                     href={paths.github()}
@@ -127,11 +130,12 @@ export default function Sidebar() {
                     <Discord className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
                   </a>
                 </div>
+                */} 
                 <a
-                  href={paths.mailToMintplex()}
+                  
                   className="transition-all duration-300 text-xs text-slate-200 dark:text-slate-600 hover:text-blue-600 dark:hover:text-blue-400"
                 >
-                  @MintplexLabs
+                  Build on AnythingLLM by @MintplexLabs
                 </a>
               </div>
             </div>
@@ -249,7 +253,7 @@ export function SidebarMobileHeader() {
                     <LLMStatus />
                     <IndexCount />
                   </div>
-                  <a
+            {/*     <a
                     href={paths.hosting()}
                     target="_blank"
                     className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
@@ -269,10 +273,14 @@ export function SidebarMobileHeader() {
                       Enterprise Installation
                     </p>
                   </a>
+                  */} 
                 </div>
 
-                {/* Footer */}
+                
+
+                
                 <div className="flex items-end justify-between mt-2">
+                  {/*
                   <div className="flex gap-x-1 items-center">
                     <a
                       href={paths.github()}
@@ -293,11 +301,12 @@ export function SidebarMobileHeader() {
                       <Discord className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
                     </a>
                   </div>
+                   */}
                   <a
-                    href={paths.mailToMintplex()}
+            
                     className="transition-all duration-300 text-xs text-slate-200 dark:text-slate-600 hover:text-blue-600 dark:hover:text-blue-400"
                   >
-                    @MintplexLabs
+                    Build on AnythingLLm by@MintplexLabs
                   </a>
                 </div>
               </div>
