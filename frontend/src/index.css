@@ -133,6 +133,26 @@ a {
   }
 }
 
+@media (prefers-color-scheme: light) {
+  .fade-up-border {
+    background: linear-gradient(
+      to bottom,
+      rgba(220, 221, 223, 10%),
+      rgb(220, 221, 223) 89%
+    );
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .fade-up-border {
+    background: linear-gradient(
+      to bottom,
+      rgba(41, 37, 36, 50%),
+      rgb(41 37 36) 90%
+    );
+  }
+}
+
 /**
  * ==============================================
  * Dot Falling
