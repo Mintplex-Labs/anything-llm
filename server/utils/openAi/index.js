@@ -1,4 +1,5 @@
 const { Configuration, OpenAIApi } = require("openai");
+
 class OpenAi {
   constructor() {
     const config = new Configuration({
@@ -7,6 +8,7 @@ class OpenAi {
     const openai = new OpenAIApi(config);
     this.openai = openai;
   }
+
   isValidChatModel(modelName = "") {
     const validModels = ["gpt-4", "gpt-3.5-turbo"];
     return validModels.includes(modelName);
@@ -78,6 +80,37 @@ class OpenAi {
       });
 
     return textResponse;
+  }
+
+  async getChatCompletion(messages = [], { temperature = 0.7 }) {
+    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
+    const { data } = await this.openai.createChatCompletion({
+      model,
+      messages,
+      temperature,
+    });
+
+    if (!data.hasOwnProperty("choices")) return null;
+    return data.choices[0].message.content;
+  }
+
+  async embedTextInput(textInput) {
+    const result = await this.embedChunks(textInput);
+    return result?.[0] || [];
+  }
+
+  async embedChunks(textChunks = []) {
+    const {
+      data: { data },
+    } = await this.openai.createEmbedding({
+      model: "text-embedding-ada-002",
+      input: textChunks,
+    });
+
+    return data.length > 0 &&
+      data.every((embd) => embd.hasOwnProperty("embedding"))
+      ? data.map((embd) => embd.embedding)
+      : null;
   }
 }
 
