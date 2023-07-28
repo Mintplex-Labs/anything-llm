@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
-const { OpenAi } = require("../openAi");
+const { OpenAi } = require("../AiProviders/openAi");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { resetMemory } = require("./commands/reset");
 const moment = require("moment");

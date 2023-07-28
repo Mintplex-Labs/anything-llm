@@ -5,7 +5,7 @@ const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { chatPrompt } = require("../../chats");
-const { OpenAi } = require("../../openAi");
+const { OpenAi } = require("../../AiProviders/openAi");
 
 const LanceDb = {
   uri: `${

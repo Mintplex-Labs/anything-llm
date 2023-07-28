@@ -8,7 +8,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks } = require("../../helpers");
 const { chatPrompt } = require("../../chats");
-const { OpenAi } = require("../../openAi");
+const { OpenAi } = require("../../AiProviders/openAi");
 
 const Chroma = {
   name: "Chroma",
@@ -324,10 +324,10 @@ const Chroma = {
       content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
-          .map((text, i) => {
-            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-          })
-          .join("")}`,
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
     };
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
     const responseText = await openAiConnector.getChatCompletion(memory, {
