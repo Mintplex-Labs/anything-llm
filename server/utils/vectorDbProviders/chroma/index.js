@@ -5,10 +5,10 @@ const { VectorDBQAChain } = require("langchain/chains");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
-const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
-const { toChunks, curateSources } = require("../../helpers");
+const { toChunks } = require("../../helpers");
 const { chatPrompt } = require("../../chats");
+const { OpenAi } = require("../../openAi");
 
 const Chroma = {
   name: "Chroma",
@@ -57,26 +57,6 @@ const Chroma = {
   embedder: function () {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
   },
-  openai: function () {
-    const config = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
-    const openai = new OpenAIApi(config);
-    return openai;
-  },
-  getChatCompletion: async function (
-    openai,
-    messages = [],
-    { temperature = 0.7 }
-  ) {
-    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
-    const { data } = await openai.createChatCompletion({
-      model,
-      messages,
-      temperature,
-    });
-
-    if (!data.hasOwnProperty("choices")) return null;
-    return data.choices[0].message.content;
-  },
   llm: function ({ temperature = 0.7 }) {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     return new OpenAI({
@@ -84,22 +64,6 @@ const Chroma = {
       modelName: model,
       temperature,
     });
-  },
-  embedTextInput: async function (openai, textInput) {
-    const result = await this.embedChunks(openai, textInput);
-    return result?.[0] || [];
-  },
-  embedChunks: async function (openai, chunks = []) {
-    const {
-      data: { data },
-    } = await openai.createEmbedding({
-      model: "text-embedding-ada-002",
-      input: chunks,
-    });
-    return data.length > 0 &&
-      data.every((embd) => embd.hasOwnProperty("embedding"))
-      ? data.map((embd) => embd.embedding)
-      : null;
   },
   similarityResponse: async function (client, namespace, queryVector) {
     const collection = await client.getCollection({ name: namespace });
@@ -212,10 +176,10 @@ const Chroma = {
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
+      const openAiConnector = new OpenAi();
       const documentVectors = [];
       const vectors = [];
-      const openai = this.openai();
-      const vectorValues = await this.embedChunks(openai, textChunks);
+      const vectorValues = await openAiConnector.embedChunks(textChunks);
       const submission = {
         ids: [],
         embeddings: [],
@@ -322,7 +286,7 @@ const Chroma = {
     const response = await chain.call({ query: input });
     return {
       response: response.text,
-      sources: curateSources(response.sourceDocuments),
+      sources: this.curateSources(response.sourceDocuments),
       message: false,
     };
   },
@@ -348,7 +312,8 @@ const Chroma = {
       };
     }
 
-    const queryVector = await this.embedTextInput(this.openai(), input);
+    const openAiConnector = new OpenAi();
+    const queryVector = await openAiConnector.embedTextInput(input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
@@ -359,19 +324,24 @@ const Chroma = {
       content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+          .map((text, i) => {
+            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+          })
+          .join("")}`,
     };
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
-    const responseText = await this.getChatCompletion(this.openai(), memory, {
+    const responseText = await openAiConnector.getChatCompletion(memory, {
       temperature: workspace?.openAiTemp ?? 0.7,
     });
 
+    // When we roll out own response we have separate metadata and texts,
+    // so for source collection we need to combine them.
+    const sources = sourceDocuments.map((metadata, i) => {
+      return { metadata: { ...metadata, text: contextTexts[i] } };
+    });
     return {
       response: responseText,
-      sources: curateSources(sourceDocuments),
+      sources: this.curateSources(sources),
       message: false,
     };
   },
@@ -402,6 +372,22 @@ const Chroma = {
     const { client } = await this.connect();
     await client.reset();
     return { reset: true };
+  },
+  curateSources: function (sources = []) {
+    const documents = [];
+    for (const source of sources) {
+      const { metadata = {} } = source;
+      if (Object.keys(metadata).length > 0) {
+        documents.push({
+          ...metadata,
+          ...(source.hasOwnProperty("pageContent")
+            ? { text: source.pageContent }
+            : {}),
+        });
+      }
+    }
+
+    return documents;
   },
 };
 

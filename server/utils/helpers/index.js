@@ -22,30 +22,7 @@ function toChunks(arr, size) {
   );
 }
 
-function curateSources(sources = []) {
-  const documents = [];
-
-  // Sometimes the source may or may not have a metadata property
-  // in the response so we search for it explicitly or just spread the entire
-  // source and check to see if at least title exists.
-  for (const source of sources) {
-    if (source.hasOwnProperty("metadata")) {
-      const { metadata = {} } = source;
-      if (Object.keys(metadata).length > 0) {
-        documents.push({ ...metadata });
-      }
-    } else {
-      if (Object.keys(source).length > 0) {
-        documents.push({ ...source });
-      }
-    }
-  }
-
-  return documents;
-}
-
 module.exports = {
   getVectorDbClass,
   toChunks,
-  curateSources,
 };

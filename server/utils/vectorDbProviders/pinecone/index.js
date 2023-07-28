@@ -1,16 +1,14 @@
 const { PineconeClient } = require("@pinecone-database/pinecone");
 const { PineconeStore } = require("langchain/vectorstores/pinecone");
 const { OpenAI } = require("langchain/llms/openai");
-const { VectorDBQAChain, LLMChain } = require("langchain/chains");
+const { VectorDBQAChain } = require("langchain/chains");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
-const { VectorStoreRetrieverMemory } = require("langchain/memory");
-const { PromptTemplate } = require("langchain/prompts");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
-const { Configuration, OpenAIApi } = require("openai");
 const { v4: uuidv4 } = require("uuid");
-const { toChunks, curateSources } = require("../../helpers");
+const { toChunks } = require("../../helpers");
 const { chatPrompt } = require("../../chats");
+const { OpenAi } = require("../../openAi");
 
 const Pinecone = {
   name: "Pinecone",
@@ -33,42 +31,6 @@ const Pinecone = {
   },
   embedder: function () {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
-  },
-  openai: function () {
-    const config = new Configuration({ apiKey: process.env.OPEN_AI_KEY });
-    const openai = new OpenAIApi(config);
-    return openai;
-  },
-  getChatCompletion: async function (
-    openai,
-    messages = [],
-    { temperature = 0.7 }
-  ) {
-    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
-    const { data } = await openai.createChatCompletion({
-      model,
-      messages,
-      temperature,
-    });
-
-    if (!data.hasOwnProperty("choices")) return null;
-    return data.choices[0].message.content;
-  },
-  embedTextInput: async function (openai, textInput) {
-    const result = await this.embedChunks(openai, textInput);
-    return result?.[0] || [];
-  },
-  embedChunks: async function (openai, chunks = []) {
-    const {
-      data: { data },
-    } = await openai.createEmbedding({
-      model: "text-embedding-ada-002",
-      input: chunks,
-    });
-    return data.length > 0 &&
-      data.every((embd) => embd.hasOwnProperty("embedding"))
-      ? data.map((embd) => embd.embedding)
-      : null;
   },
   llm: function ({ temperature = 0.7 }) {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
@@ -182,10 +144,10 @@ const Pinecone = {
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
+      const openAiConnector = new OpenAi();
       const documentVectors = [];
       const vectors = [];
-      const openai = this.openai();
-      const vectorValues = await this.embedChunks(openai, textChunks);
+      const vectorValues = await openAiConnector.embedChunks(textChunks);
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
@@ -299,7 +261,7 @@ const Pinecone = {
     const response = await chain.call({ query: input });
     return {
       response: response.text,
-      sources: curateSources(response.sourceDocuments),
+      sources: this.curateSources(response.sourceDocuments),
       message: false,
     };
   },
@@ -322,7 +284,8 @@ const Pinecone = {
         "Invalid namespace - has it been collected and seeded yet?"
       );
 
-    const queryVector = await this.embedTextInput(this.openai(), input);
+    const openAiConnector = new OpenAi();
+    const queryVector = await openAiConnector.embedTextInput(input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       pineconeIndex,
       namespace,
@@ -340,16 +303,31 @@ const Pinecone = {
     };
 
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
-
-    const responseText = await this.getChatCompletion(this.openai(), memory, {
+    const responseText = await openAiConnector.getChatCompletion(memory, {
       temperature: workspace?.openAiTemp ?? 0.7,
     });
 
     return {
       response: responseText,
-      sources: curateSources(sourceDocuments),
+      sources: this.curateSources(sourceDocuments),
       message: false,
     };
+  },
+  curateSources: function (sources = []) {
+    const documents = [];
+    for (const source of sources) {
+      const { metadata = {} } = source;
+      if (Object.keys(metadata).length > 0) {
+        documents.push({
+          ...metadata,
+          ...(source.hasOwnProperty("pageContent")
+            ? { text: source.pageContent }
+            : {}),
+        });
+      }
+    }
+
+    return documents;
   },
 };
 
