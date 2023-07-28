@@ -286,7 +286,7 @@ const Chroma = {
     const response = await chain.call({ query: input });
     return {
       response: response.text,
-      sources: this.curateSources(response.sourceDocuments), // When using Langchain we get Document objects
+      sources: this.curateSources(response.sourceDocuments),
       message: false,
     };
   },
@@ -324,10 +324,10 @@ const Chroma = {
       content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+          .map((text, i) => {
+            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+          })
+          .join("")}`,
     };
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
     const responseText = await openAiConnector.getChatCompletion(memory, {
