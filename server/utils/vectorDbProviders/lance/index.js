@@ -357,7 +357,6 @@ const LanceDb = {
       temperature: workspace?.openAiTemp ?? 0.7,
     });
 
-    console.log(curateLanceSources(sourceDocuments), sourceDocuments);
     return {
       response: responseText,
       sources: curateLanceSources(sourceDocuments),
