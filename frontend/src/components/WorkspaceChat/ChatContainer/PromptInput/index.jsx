@@ -65,7 +65,7 @@ export default function PromptInput({
           <button
             onClick={() => setShowMenu(!showMenu)}
             type="button"
-            className="p-2 text-slate-200 bg-transparent rounded-md hover:bg-gray-50 dark:hover:bg-stone-500"
+            className="p-2 text-slate-500 bg-transparent rounded-md hover:bg-gray-200 dark:hover:bg-stone-500 dark:hover:text-slate-200"
           >
             <Menu className="w-4 h-4 md:h-6 md:w-6" />
           </button>
@@ -93,14 +93,14 @@ export default function PromptInput({
             ref={formRef}
             type="submit"
             disabled={buttonDisabled}
-            className="inline-flex justify-center p-0 md:p-2 rounded-full cursor-pointer text-black-900 dark:text-slate-200 hover:bg-gray-600 dark:hover:bg-stone-500"
+            className="inline-flex justify-center p-0 md:p-2 rounded-full cursor-pointer text-black-900 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-stone-500 group"
           >
             {buttonDisabled ? (
               <Loader className="w-6 h-6 animate-spin" />
             ) : (
               <svg
                 aria-hidden="true"
-                className="w-6 h-6 rotate-45"
+                className="w-6 h-6 rotate-45 fill-gray-500 dark:fill-slate-500 group-hover:dark:fill-slate-200"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -138,7 +138,7 @@ const Tracking = memo(({ workspaceSlug }) => {
 
   return (
     <div className="flex flex-col md:flex-row w-full justify-center items-center gap-2 mb-2 px-4 mx:px-0">
-      <p className="bg-stone-600 text-slate-400 text-xs px-2 rounded-lg font-mono text-center">
+      <p className="bg-gray-200 dark:bg-stone-600 text-gray-800 dark:text-slate-400 text-xs px-2 rounded-lg font-mono text-center">
         Chat mode: {chatMode}
       </p>
       <p className="text-slate-400 text-xs text-center">
@@ -164,13 +164,13 @@ function CommandMenu({ workspace, show, handleClick, hide }) {
   ];
 
   return (
-    <div className="absolute top-[-25vh] md:top-[-23vh] min-h-[200px] flex flex-col rounded-lg border border-slate-400 p-2 pt-4 bg-stone-600">
+    <div className="absolute top-[-25vh] md:top-[-23vh] min-h-[200px] flex flex-col rounded-lg border border-slate-400 p-2 pt-4 bg-gray-50 dark:bg-stone-600">
       <div className="flex justify-between items-center border-b border-slate-400 px-2 py-1 ">
-        <p className="text-slate-200">Available Commands</p>
+        <p className="text-gray-800 dark:text-slate-200">Available Commands</p>
         <button
           type="button"
           onClick={hide}
-          className="p-2 rounded-lg hover:bg-slate-500 rounded-full text-slate-400"
+          className="p-2 rounded-lg hover:bg-gray-200 hover:dark:bg-slate-500 rounded-full text-gray-800 dark:text-slate-400"
         >
           <X className="h-4 w-4" />
         </button>
@@ -188,10 +188,14 @@ function CommandMenu({ workspace, show, handleClick, hide }) {
                   handleClick(cmd);
                   hide();
                 }}
-                className="w-full px-4 py-2  flex items-center rounded-lg hover:bg-slate-500 gap-x-1 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 flex items-center rounded-lg hover:bg-gray-300 hover:dark:bg-slate-500 gap-x-1 disabled:cursor-not-allowed"
               >
-                <p className="text-slate-200 font-semibold">{cmd}</p>
-                <p className="text-slate-400 text-sm">{description}</p>
+                <p className="text-gray-800 dark:text-slate-200 font-semibold">
+                  {cmd}
+                </p>
+                <p className="text-gray-800 dark:text-slate-300 text-sm">
+                  {description}
+                </p>
               </button>
             </div>
           );

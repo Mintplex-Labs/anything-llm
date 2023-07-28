@@ -10,16 +10,11 @@ const { chatPrompt } = require("../../chats");
 // Since we roll our own results for prompting we
 // have to manually curate sources as well.
 function curateLanceSources(sources = []) {
-  const knownDocs = [];
   const documents = [];
   for (const source of sources) {
-    const { text: _t, vector: _v, score: _s, ...metadata } = source;
-    if (
-      Object.keys(metadata).length > 0 &&
-      !knownDocs.includes(metadata.title)
-    ) {
-      documents.push({ ...metadata });
-      knownDocs.push(metadata.title);
+    const { text, vector: _v, score: _s, ...metadata } = source;
+    if (Object.keys(metadata).length > 0) {
+      documents.push({ ...metadata, text });
     }
   }
 

@@ -129,7 +129,7 @@ export default function Sidebar() {
                 </div>
                 <a
                   href={paths.mailToMintplex()}
-                  className="transition-all duration-300 text-xs text-slate-200 dark:text-slate-600 hover:text-blue-600 dark:hover:text-blue-400"
+                  className="transition-all duration-300 text-xs text-slate-500 dark:text-slate-600 hover:text-blue-600 dark:hover:text-blue-400"
                 >
                   @MintplexLabs
                 </a>
@@ -295,7 +295,7 @@ export function SidebarMobileHeader() {
                   </div>
                   <a
                     href={paths.mailToMintplex()}
-                    className="transition-all duration-300 text-xs text-slate-200 dark:text-slate-600 hover:text-blue-600 dark:hover:text-blue-400"
+                    className="transition-all duration-300 text-xs text-slate-500 dark:text-slate-600 hover:text-blue-600 dark:hover:text-blue-400"
                   >
                     @MintplexLabs
                   </a>

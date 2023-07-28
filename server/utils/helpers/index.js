@@ -23,7 +23,6 @@ function toChunks(arr, size) {
 }
 
 function curateSources(sources = []) {
-  const knownDocs = [];
   const documents = [];
 
   // Sometimes the source may or may not have a metadata property
@@ -32,17 +31,12 @@ function curateSources(sources = []) {
   for (const source of sources) {
     if (source.hasOwnProperty("metadata")) {
       const { metadata = {} } = source;
-      if (
-        Object.keys(metadata).length > 0 &&
-        !knownDocs.includes(metadata.title)
-      ) {
+      if (Object.keys(metadata).length > 0) {
         documents.push({ ...metadata });
-        knownDocs.push(metadata.title);
       }
     } else {
-      if (Object.keys(source).length > 0 && !knownDocs.includes(source.title)) {
+      if (Object.keys(source).length > 0) {
         documents.push({ ...source });
-        knownDocs.push(source.title);
       }
     }
   }
