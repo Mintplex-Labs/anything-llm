@@ -1,26 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Archive, Lock, Key, X, Users, LogOut } from "react-feather";
+import { Archive, Lock, Key, X, Users, Database } from "react-feather";
 import SystemKeys from "./Keys";
 import ExportOrImportData from "./ExportImport";
 import PasswordProtection from "./PasswordProtection";
 import System from "../../../models/system";
 import MultiUserMode from "./MultiUserMode";
-import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
-import paths from "../../../utils/paths";
 import useUser from "../../../hooks/useUser";
+import VectorDBSelection from "./VectorDbs";
 
 const TABS = {
   keys: SystemKeys,
   exportimport: ExportOrImportData,
   password: PasswordProtection,
   multiuser: MultiUserMode,
+  vectordb: VectorDBSelection,
 };
 
 const noop = () => false;
 export default function SystemSettingsModal({ hideModal = noop }) {
   const { user } = useUser();
   const [loading, setLoading] = useState(true);
-  const [selectedTab, setSelectedTab] = useState("keys");
+  // const [selectedTab, setSelectedTab] = useState("keys");
+  const [selectedTab, setSelectedTab] = useState("vectordb");
   const [settings, setSettings] = useState(null);
   const Component = TABS[selectedTab || "keys"];
 
@@ -94,13 +95,20 @@ function SettingTabs({ selectedTab, changeTab, settings, user }) {
         onClick={changeTab}
       />
       <SettingTab
+        active={selectedTab === "vectordb"}
+        displayName="Vector Database"
+        tabName="vectordb"
+        icon={<Database className="h-4 w-4 flex-shrink-0" />}
+        onClick={changeTab}
+      />
+      <SettingTab
         active={selectedTab === "exportimport"}
         displayName="Export or Import"
         tabName="exportimport"
         icon={<Archive className="h-4 w-4 flex-shrink-0" />}
         onClick={changeTab}
       />
-      {!settings?.MultiUserMode ? (
+      {!settings?.MultiUserMode && (
         <>
           <SettingTab
             active={selectedTab === "multiuser"}
@@ -117,8 +125,6 @@ function SettingTabs({ selectedTab, changeTab, settings, user }) {
             onClick={changeTab}
           />
         </>
-      ) : (
-        <LogoutTab user={user} />
       )}
     </ul>
   );
@@ -145,25 +151,6 @@ function SettingTab({
         }
       >
         {icon} {displayName}
-      </button>
-    </li>
-  );
-}
-
-function LogoutTab({ user }) {
-  if (!user) return null;
-
-  return (
-    <li className="mr-2">
-      <button
-        onClick={() => {
-          window.localStorage.removeItem(AUTH_USER);
-          window.localStorage.removeItem(AUTH_TOKEN);
-          window.location.replace(paths.home());
-        }}
-        className="flex items-center gap-x-1 p-4 border-b-2 rounded-t-lg group whitespace-nowrap border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
-      >
-        <LogOut className="h-4 w-4 flex-shrink-0" /> Log out of {user.username}
       </button>
     </li>
   );
