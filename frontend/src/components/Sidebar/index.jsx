@@ -4,6 +4,7 @@ import {
   Briefcase,
   Cpu,
   GitHub,
+  LogOut,
   Menu,
   Plus,
   Shield,
@@ -21,6 +22,8 @@ import ActiveWorkspaces from "./ActiveWorkspaces";
 import paths from "../../utils/paths";
 import Discord from "../Icons/Discord";
 import useUser from "../../hooks/useUser";
+import { userFromStorage } from "../../utils/request";
+import { AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
 
 export default function Sidebar() {
   const sidebarRef = useRef(null);
@@ -103,6 +106,7 @@ export default function Sidebar() {
                     Enterprise Installation
                   </p>
                 </a>
+                <LogoutButton />
               </div>
 
               {/* Footer */}
@@ -269,6 +273,7 @@ export function SidebarMobileHeader() {
                       Enterprise Installation
                     </p>
                   </a>
+                  <LogoutButton />
                 </div>
 
                 {/* Footer */}
@@ -323,5 +328,27 @@ function AdminHome() {
     >
       <Shield className="h-4 w-4" />
     </a>
+  );
+}
+
+function LogoutButton() {
+  if (!window.localStorage.getItem(AUTH_USER)) return null;
+  const user = userFromStorage();
+  if (!user.username) return null;
+
+  return (
+    <button
+      onClick={() => {
+        window.localStorage.removeItem(AUTH_USER);
+        window.localStorage.removeItem(AUTH_TOKEN);
+        window.location.replace(paths.home());
+      }}
+      className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
+    >
+      <LogOut className="h-4 w-4" />
+      <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
+        Log out of {user.username}
+      </p>
+    </button>
   );
 }
