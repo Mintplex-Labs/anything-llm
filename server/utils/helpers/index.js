@@ -1,18 +1,31 @@
 function getVectorDbClass() {
-  const { Pinecone } = require("../vectorDbProviders/pinecone");
-  const { Chroma } = require("../vectorDbProviders/chroma");
-  const { LanceDb } = require("../vectorDbProviders/lance");
-
   const vectorSelection = process.env.VECTOR_DB || "pinecone";
   switch (vectorSelection) {
     case "pinecone":
+      const { Pinecone } = require("../vectorDbProviders/pinecone");
       return Pinecone;
     case "chroma":
+      const { Chroma } = require("../vectorDbProviders/chroma");
       return Chroma;
     case "lancedb":
+      const { LanceDb } = require("../vectorDbProviders/lance");
       return LanceDb;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
+  }
+}
+
+function getLLMProvider() {
+  const vectorSelection = process.env.LLM_PROVIDER || "openai";
+  switch (vectorSelection) {
+    case "openai":
+      const { OpenAi } = require("../AiProviders/openAi");
+      return new OpenAi();
+    case "azure":
+      const { AzureOpenAi } = require("../AiProviders/azureOpenAi");
+      return new AzureOpenAi();
+    default:
+      throw new Error("ENV: No LLM_PROVIDER value found in environment!");
   }
 }
 
@@ -24,5 +37,6 @@ function toChunks(arr, size) {
 
 module.exports = {
   getVectorDbClass,
+  getLLMProvider,
   toChunks,
 };

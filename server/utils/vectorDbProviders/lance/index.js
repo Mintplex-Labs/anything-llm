@@ -1,11 +1,10 @@
 const lancedb = require("vectordb");
-const { toChunks } = require("../../helpers");
+const { toChunks, getLLMProvider } = require("../../helpers");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { chatPrompt } = require("../../chats");
-const { OpenAi } = require("../../AiProviders/openAi");
 
 const LanceDb = {
   uri: `${
@@ -169,11 +168,11 @@ const LanceDb = {
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
-      const openAiConnector = new OpenAi();
+      const LLMConnector = getLLMProvider();
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
-      const vectorValues = await openAiConnector.embedChunks(textChunks);
+      const vectorValues = await LLMConnector.embedChunks(textChunks);
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
@@ -230,9 +229,8 @@ const LanceDb = {
       };
     }
 
-    // LanceDB does not have langchainJS support so we roll our own here.
-    const openAiConnector = new OpenAi();
-    const queryVector = await openAiConnector.embedTextInput(input);
+    const LLMConnector = getLLMProvider();
+    const queryVector = await LLMConnector.embedTextInput(input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
@@ -249,7 +247,7 @@ const LanceDb = {
       .join("")}`,
     };
     const memory = [prompt, { role: "user", content: input }];
-    const responseText = await openAiConnector.getChatCompletion(memory, {
+    const responseText = await LLMConnector.getChatCompletion(memory, {
       temperature: workspace?.openAiTemp ?? 0.7,
     });
 
@@ -281,8 +279,8 @@ const LanceDb = {
       };
     }
 
-    const openAiConnector = new OpenAi();
-    const queryVector = await openAiConnector.embedTextInput(input);
+    const LLMConnector = getLLMProvider();
+    const queryVector = await LLMConnector.embedTextInput(input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
@@ -299,7 +297,7 @@ const LanceDb = {
       .join("")}`,
     };
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
-    const responseText = await openAiConnector.getChatCompletion(memory, {
+    const responseText = await LLMConnector.getChatCompletion(memory, {
       temperature: workspace?.openAiTemp ?? 0.7,
     });
 

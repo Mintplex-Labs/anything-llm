@@ -15,6 +15,7 @@
     "lint": "yarn prettier --write ./endpoints ./models ./utils index.js"
   },
   "dependencies": {
+    "@azure/openai": "^1.0.0-beta.3",
     "@googleapis/youtube": "^9.0.0",
     "@pinecone-database/pinecone": "^0.1.6",
     "archiver": "^5.3.1",
