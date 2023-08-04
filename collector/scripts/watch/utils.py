@@ -28,8 +28,8 @@ def move_source(working_dir='hotdir', new_destination_filename='', failed=False,
   os.replace(f"{working_dir}/{new_destination_filename}", f"{destination}/{new_destination_filename}")
   return
 
-def write_to_server_documents(data, filename):
-  destination = f"../server/storage/documents/custom-documents"
+def write_to_server_documents(data, filename, override_destination = None):
+  destination = f"../server/storage/documents/custom-documents" if override_destination == None else override_destination
   if os.path.exists(destination) == False: os.makedirs(destination)
   with open(f"{destination}/{filename}.json", 'w', encoding='utf-8') as file:
     json.dump(data, file, ensure_ascii=True, indent=4)

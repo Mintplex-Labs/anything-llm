@@ -1,4 +1,4 @@
-import os
+import os, time
 from langchain.document_loaders import PyPDFLoader
 from slugify import slugify
 from ..utils import guid, file_creation_time, write_to_server_documents, move_source
@@ -11,6 +11,7 @@ def as_pdf(**kwargs):
   ext = kwargs.get('ext', '.txt')
   remove = kwargs.get('remove_on_complete', False)
   fullpath = f"{parent_dir}/{filename}{ext}"
+  destination = f"../server/storage/documents/{slugify(filename)}-{int(time.time())}"
 
   loader = PyPDFLoader(fullpath)
   pages = loader.load_and_split()
@@ -31,7 +32,7 @@ def as_pdf(**kwargs):
       'pageContent': content,
       'token_count_estimate': len(tokenize(content))
     }
-    write_to_server_documents(data, f"{slugify(filename)}-pg{pg_num}-{data.get('id')}")
+    write_to_server_documents(data, f"{slugify(filename)}-pg{pg_num}-{data.get('id')}", destination)
 
   move_source(parent_dir, f"{filename}{ext}", remove=remove)
   print(f"[SUCCESS]: {filename}{ext} converted & ready for embedding.\n")
