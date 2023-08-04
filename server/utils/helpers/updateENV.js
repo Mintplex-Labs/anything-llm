@@ -1,4 +1,9 @@
 const KEY_MAPPING = {
+  LLMProvider: {
+    envKey: "LLM_PROVIDER",
+    checks: [isNotEmpty, supportedLLM],
+  },
+  // OpenAI Settings
   OpenAiKey: {
     envKey: "OPEN_AI_KEY",
     checks: [isNotEmpty, validOpenAIKey],
@@ -7,6 +12,25 @@ const KEY_MAPPING = {
     envKey: "OPEN_MODEL_PREF",
     checks: [isNotEmpty, validOpenAIModel],
   },
+  // Azure OpenAI Settings
+  AzureOpenAiEndpoint: {
+    envKey: "AZURE_OPENAI_ENDPOINT",
+    checks: [isNotEmpty, validAzureURL],
+  },
+  AzureOpenAiKey: {
+    envKey: "AZURE_OPENAI_KEY",
+    checks: [isNotEmpty],
+  },
+  AzureOpenAiModelPref: {
+    envKey: "OPEN_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  AzureOpenAiEmbeddingModelPref: {
+    envKey: "EMBEDDING_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Vector Database Selection Settings
   VectorDB: {
     envKey: "VECTOR_DB",
     checks: [isNotEmpty, supportedVectorDB],
@@ -27,6 +51,8 @@ const KEY_MAPPING = {
     envKey: "PINECONE_INDEX",
     checks: [],
   },
+
+  // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
     checks: [],
@@ -56,6 +82,10 @@ function validOpenAIKey(input = "") {
   return input.startsWith("sk-") ? null : "OpenAI Key must start with sk-";
 }
 
+function supportedLLM(input = "") {
+  return ["openai", "azure"].includes(input);
+}
+
 function validOpenAIModel(input = "") {
   const validModels = [
     "gpt-4",
@@ -83,6 +113,17 @@ function validChromaURL(input = "") {
   return input.slice(-1) === "/"
     ? `Chroma Instance URL should not end in a trailing slash.`
     : null;
+}
+
+function validAzureURL(input = "") {
+  try {
+    new URL(input);
+    if (!input.includes("openai.azure.com"))
+      return "URL must include openai.azure.com";
+    return null;
+  } catch {
+    return "Not a valid URL";
+  }
 }
 
 // This will force update .env variables which for any which reason were not able to be parsed or

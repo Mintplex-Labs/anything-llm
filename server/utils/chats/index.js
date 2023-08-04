@@ -3,7 +3,8 @@ const { OpenAi } = require("../AiProviders/openAi");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { resetMemory } = require("./commands/reset");
 const moment = require("moment");
-const { getVectorDbClass } = require("../helpers");
+const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { AzureOpenAi } = require("../AiProviders/azureOpenAi");
 
 function convertToChatHistory(history = []) {
   const formattedHistory = [];
@@ -66,7 +67,7 @@ async function chatWithWorkspace(
   user = null
 ) {
   const uuid = uuidv4();
-  const openai = new OpenAi();
+  const LLMConnector = getLLMProvider();
   const VectorDb = getVectorDbClass();
   const command = grepCommand(message);
 
@@ -74,7 +75,7 @@ async function chatWithWorkspace(
     return await VALID_COMMANDS[command](workspace, message, uuid, user);
   }
 
-  const { safe, reasons = [] } = await openai.isSafe(message);
+  const { safe, reasons = [] } = await LLMConnector.isSafe(message);
   if (!safe) {
     return {
       id: uuid,
@@ -93,7 +94,11 @@ async function chatWithWorkspace(
   if (!hasVectorizedSpace || embeddingsCount === 0) {
     const rawHistory = await WorkspaceChats.forWorkspace(workspace.id);
     const chatHistory = convertToPromptHistory(rawHistory);
-    const response = await openai.sendChat(chatHistory, message, workspace);
+    const response = await LLMConnector.sendChat(
+      chatHistory,
+      message,
+      workspace
+    );
     const data = { text: response, sources: [], type: "chat" };
 
     await WorkspaceChats.new({

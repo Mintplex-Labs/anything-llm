@@ -1,14 +1,9 @@
-const { ChromaClient, OpenAIEmbeddingFunction } = require("chromadb");
-const { Chroma: ChromaStore } = require("langchain/vectorstores/chroma");
-const { OpenAI } = require("langchain/llms/openai");
-const { VectorDBQAChain } = require("langchain/chains");
-const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
+const { ChromaClient } = require("chromadb");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
-const { toChunks } = require("../../helpers");
+const { toChunks, getLLMProvider } = require("../../helpers");
 const { chatPrompt } = require("../../chats");
-const { OpenAi } = require("../../AiProviders/openAi");
 
 const Chroma = {
   name: "Chroma",
@@ -48,22 +43,6 @@ const Chroma = {
     const { client } = await this.connect();
     const namespace = await this.namespace(client, _namespace);
     return namespace?.vectorCount || 0;
-  },
-  embeddingFunc: function () {
-    return new OpenAIEmbeddingFunction({
-      openai_api_key: process.env.OPEN_AI_KEY,
-    });
-  },
-  embedder: function () {
-    return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
-  },
-  llm: function ({ temperature = 0.7 }) {
-    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
-    return new OpenAI({
-      openAIApiKey: process.env.OPEN_AI_KEY,
-      modelName: model,
-      temperature,
-    });
   },
   similarityResponse: async function (client, namespace, queryVector) {
     const collection = await client.getCollection({ name: namespace });
@@ -131,7 +110,6 @@ const Chroma = {
         const collection = await client.getOrCreateCollection({
           name: namespace,
           metadata: { "hnsw:space": "cosine" },
-          embeddingFunction: this.embeddingFunc(),
         });
         const { chunks } = cacheResult;
         const documentVectors = [];
@@ -176,10 +154,10 @@ const Chroma = {
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
-      const openAiConnector = new OpenAi();
+      const LLMConnector = getLLMProvider();
       const documentVectors = [];
       const vectors = [];
-      const vectorValues = await openAiConnector.embedChunks(textChunks);
+      const vectorValues = await LLMConnector.embedChunks(textChunks);
       const submission = {
         ids: [],
         embeddings: [],
@@ -216,7 +194,6 @@ const Chroma = {
       const collection = await client.getOrCreateCollection({
         name: namespace,
         metadata: { "hnsw:space": "cosine" },
-        embeddingFunction: this.embeddingFunc(),
       });
 
       if (vectors.length > 0) {
@@ -245,7 +222,6 @@ const Chroma = {
     if (!(await this.namespaceExists(client, namespace))) return;
     const collection = await client.getCollection({
       name: namespace,
-      embeddingFunction: this.embeddingFunc(),
     });
 
     const knownDocuments = await DocumentVectors.where(`docId = '${docId}'`);
@@ -271,22 +247,36 @@ const Chroma = {
       };
     }
 
-    const vectorStore = await ChromaStore.fromExistingCollection(
-      this.embedder(),
-      { collectionName: namespace, url: process.env.CHROMA_ENDPOINT }
+    const LLMConnector = getLLMProvider();
+    const queryVector = await LLMConnector.embedTextInput(input);
+    const { contextTexts, sourceDocuments } = await this.similarityResponse(
+      client,
+      namespace,
+      queryVector
     );
-    const model = this.llm({
+    const prompt = {
+      role: "system",
+      content: `${chatPrompt(workspace)}
+    Context:
+    ${contextTexts
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
+    };
+    const memory = [prompt, { role: "user", content: input }];
+    const responseText = await LLMConnector.getChatCompletion(memory, {
       temperature: workspace?.openAiTemp ?? 0.7,
     });
 
-    const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
-      k: 5,
-      returnSourceDocuments: true,
+    // When we roll out own response we have separate metadata and texts,
+    // so for source collection we need to combine them.
+    const sources = sourceDocuments.map((metadata, i) => {
+      return { metadata: { ...metadata, text: contextTexts[i] } };
     });
-    const response = await chain.call({ query: input });
     return {
-      response: response.text,
-      sources: this.curateSources(response.sourceDocuments),
+      response: responseText,
+      sources: this.curateSources(sources),
       message: false,
     };
   },
@@ -312,8 +302,8 @@ const Chroma = {
       };
     }
 
-    const openAiConnector = new OpenAi();
-    const queryVector = await openAiConnector.embedTextInput(input);
+    const LLMConnector = getLLMProvider();
+    const queryVector = await LLMConnector.embedTextInput(input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
@@ -330,7 +320,7 @@ const Chroma = {
       .join("")}`,
     };
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
-    const responseText = await openAiConnector.getChatCompletion(memory, {
+    const responseText = await LLMConnector.getChatCompletion(memory, {
       temperature: workspace?.openAiTemp ?? 0.7,
     });
 

@@ -1,27 +1,27 @@
 import React, { useState } from "react";
 import System from "../../../../models/system";
-import ChromaLogo from "../../../../media/vectordbs/chroma.png";
-import PineconeLogo from "../../../../media/vectordbs/pinecone.png";
-import LanceDbLogo from "../../../../media/vectordbs/lancedb.png";
+import OpenAiLogo from "../../../../media/llmprovider/openai.png";
+import AzureOpenAiLogo from "../../../../media/llmprovider/azure.png";
+import AnthropicLogo from "../../../../media/llmprovider/anthropic.png";
 
 const noop = () => false;
-export default function VectorDBSelection({
+export default function LLMSelection({
   hideModal = noop,
   user,
   settings = {},
 }) {
   const [hasChanges, setHasChanges] = useState(false);
-  const [vectorDB, setVectorDB] = useState(settings?.VectorDB || "lancedb");
+  const [llmChoice, setLLMChoice] = useState(settings?.LLMProvider || "openai");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const canDebug = settings.MultiUserMode
     ? settings?.CanDebug && user?.role === "admin"
     : settings?.CanDebug;
 
-  function updateVectorChoice(selection) {
-    if (!canDebug || selection === vectorDB) return false;
+  function updateLLMChoice(selection) {
+    if (!canDebug || selection === llmChoice) return false;
     setHasChanges(true);
-    setVectorDB(selection);
+    setLLMChoice(selection);
   }
 
   const handleSubmit = async (e) => {
@@ -41,9 +41,9 @@ export default function VectorDBSelection({
       <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
         <div className="flex items-start justify-between px-6 py-4">
           <p className="text-gray-800 dark:text-stone-200 text-base ">
-            These are the credentials and settings for how your AnythingLLM
-            instance will function. Its important these keys are current and
-            correct.
+            These are the credentials and settings for your preferred LLM chat &
+            embedding provider. Its important these keys are current and correct
+            or else AnythingLLM will not function properly.
           </p>
         </div>
 
@@ -57,51 +57,50 @@ export default function VectorDBSelection({
           <div className="px-6 space-y-6 flex h-full w-full">
             <div className="w-full flex flex-col gap-y-4">
               <p className="block text-sm font-medium text-gray-800 dark:text-slate-200">
-                Vector database providers
+                LLM providers
               </p>
               <div className="w-full flex overflow-x-scroll gap-x-4 no-scroll">
-                <input hidden={true} name="VectorDB" value={vectorDB} />
-                <VectorDBOption
-                  name="Chroma"
-                  value="chroma"
-                  link="trychroma.com"
-                  description="Open source vector database you can host yourself or on the cloud."
-                  checked={vectorDB === "chroma"}
-                  image={ChromaLogo}
-                  onClick={updateVectorChoice}
+                <input hidden={true} name="LLMProvider" value={llmChoice} />
+                <LLMProviderOption
+                  name="OpenAI"
+                  value="openai"
+                  link="openai.com"
+                  description="The standard option for most non-commercial use. Provides both chat and embedding."
+                  checked={llmChoice === "openai"}
+                  image={OpenAiLogo}
+                  onClick={updateLLMChoice}
                 />
-                <VectorDBOption
-                  name="Pinecone"
-                  value="pinecone"
-                  link="pinecone.io"
-                  description="100% cloud-based vector database for enterprise use cases."
-                  checked={vectorDB === "pinecone"}
-                  image={PineconeLogo}
-                  onClick={updateVectorChoice}
+                <LLMProviderOption
+                  name="Azure OpenAi"
+                  value="azure"
+                  link="azure.microsoft.com"
+                  description="The enterprise option of OpenAI hosted on Azure services. Provides both chat and embedding."
+                  checked={llmChoice === "azure"}
+                  image={AzureOpenAiLogo}
+                  onClick={updateLLMChoice}
                 />
-                <VectorDBOption
-                  name="LanceDB"
-                  value="lancedb"
-                  link="lancedb.com"
-                  description="100% local vector DB that runs on the same instance as AnythingLLM."
-                  checked={vectorDB === "lancedb"}
-                  image={LanceDbLogo}
-                  onClick={updateVectorChoice}
+                <LLMProviderOption
+                  name="Anthropic Claude 2"
+                  value="anthropic-claude-2"
+                  link="anthropic.com"
+                  description="[COMING SOON] A friendly AI Assistant hosted by Anthropic. Provides chat services only!"
+                  checked={llmChoice === "anthropic-claude-2"}
+                  image={AnthropicLogo}
                 />
               </div>
-              {vectorDB === "pinecone" && (
+              {llmChoice === "openai" && (
                 <>
                   <div>
                     <label className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200">
-                      Pinecone DB API Key
+                      API Key
                     </label>
                     <input
-                      type="password"
-                      name="PineConeKey"
+                      type="text"
+                      name="OpenAiKey"
                       disabled={!canDebug}
                       className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
-                      placeholder="Pinecone API Key"
-                      defaultValue={settings?.PineConeKey ? "*".repeat(20) : ""}
+                      placeholder="OpenAI API Key"
+                      defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
                       required={true}
                       autoComplete="off"
                       spellCheck={false}
@@ -110,53 +109,101 @@ export default function VectorDBSelection({
 
                   <div>
                     <label className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200">
-                      Pinecone Index Environment
+                      Chat Model Selection
                     </label>
-                    <input
-                      type="text"
-                      name="PineConeEnvironment"
+                    <select
                       disabled={!canDebug}
-                      className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
-                      placeholder="us-gcp-west-1"
-                      defaultValue={settings?.PineConeEnvironment}
+                      name="OpenAiModelPref"
+                      defaultValue={settings?.OpenAiModelPref}
                       required={true}
-                      autoComplete="off"
-                      spellCheck={false}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200">
-                      Pinecone Index Name
-                    </label>
-                    <input
-                      type="text"
-                      name="PineConeIndex"
-                      disabled={!canDebug}
-                      className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
-                      placeholder="my-index"
-                      defaultValue={settings?.PineConeIndex}
-                      required={true}
-                      autoComplete="off"
-                      spellCheck={false}
-                    />
+                      className="bg-gray-50 border border-gray-500 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-stone-700 dark:border-slate-200 dark:placeholder-stone-500 dark:text-slate-200"
+                    >
+                      {[
+                        "gpt-3.5-turbo",
+                        "gpt-3.5-turbo-0613",
+                        "gpt-3.5-turbo-16k",
+                        "gpt-4",
+                        "gpt-4-0613",
+                        "gpt-4-32k",
+                        "gpt-4-32k-0613",
+                      ].map((model) => {
+                        return (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        );
+                      })}
+                    </select>
                   </div>
                 </>
               )}
 
-              {vectorDB === "chroma" && (
+              {llmChoice === "azure" && (
                 <>
                   <div>
                     <label className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200">
-                      Chroma Endpoint
+                      Azure Service Endpoint
                     </label>
                     <input
                       type="url"
-                      name="ChromaEndpoint"
+                      name="AzureOpenAiEndpoint"
                       disabled={!canDebug}
                       className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
-                      placeholder="http://localhost:8000"
-                      defaultValue={settings?.ChromaEndpoint}
+                      placeholder="https://my-azure.openai.azure.com"
+                      defaultValue={settings?.AzureOpenAiEndpoint}
+                      required={true}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200">
+                      API Key
+                    </label>
+                    <input
+                      type="password"
+                      name="AzureOpenAiKey"
+                      disabled={!canDebug}
+                      className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
+                      placeholder="Azure OpenAI API Key"
+                      defaultValue={
+                        settings?.AzureOpenAiKey ? "*".repeat(20) : ""
+                      }
+                      required={true}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200">
+                      Chat Model Deployment Name
+                    </label>
+                    <input
+                      type="text"
+                      name="AzureOpenAiModelPref"
+                      disabled={!canDebug}
+                      className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
+                      placeholder="Azure OpenAI chat model deployment name"
+                      defaultValue={settings?.AzureOpenAiModelPref}
+                      required={true}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200">
+                      Embedding Model Deployment Name
+                    </label>
+                    <input
+                      type="text"
+                      name="AzureOpenAiEmbeddingModelPref"
+                      disabled={!canDebug}
+                      className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
+                      placeholder="Azure OpenAI embedding model deployment name"
+                      defaultValue={settings?.AzureOpenAiEmbeddingModelPref}
                       required={true}
                       autoComplete="off"
                       spellCheck={false}
@@ -164,10 +211,12 @@ export default function VectorDBSelection({
                   </div>
                 </>
               )}
-              {vectorDB === "lancedb" && (
+
+              {llmChoice === "anthropic-claude-2" && (
                 <div className="w-full h-40 items-center justify-center flex">
                   <p className="text-gray-800 dark:text-slate-400">
-                    There is no configuration needed for LanceDB.
+                    This provider is unavailable and cannot be used in
+                    AnythingLLM currently.
                   </p>
                 </div>
               )}
@@ -198,7 +247,7 @@ export default function VectorDBSelection({
   );
 }
 
-const VectorDBOption = ({
+const LLMProviderOption = ({
   name,
   link,
   description,

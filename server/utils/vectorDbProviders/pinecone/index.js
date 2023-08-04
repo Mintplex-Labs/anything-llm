@@ -1,14 +1,9 @@
 const { PineconeClient } = require("@pinecone-database/pinecone");
-const { PineconeStore } = require("langchain/vectorstores/pinecone");
-const { OpenAI } = require("langchain/llms/openai");
-const { VectorDBQAChain } = require("langchain/chains");
-const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
-const { toChunks } = require("../../helpers");
+const { toChunks, getLLMProvider } = require("../../helpers");
 const { chatPrompt } = require("../../chats");
-const { OpenAi } = require("../../AiProviders/openAi");
 
 const Pinecone = {
   name: "Pinecone",
@@ -28,17 +23,6 @@ const Pinecone = {
 
     if (!status.ready) throw new Error("Pinecode::Index not ready.");
     return { client, pineconeIndex, indexName: process.env.PINECONE_INDEX };
-  },
-  embedder: function () {
-    return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
-  },
-  llm: function ({ temperature = 0.7 }) {
-    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
-    return new OpenAI({
-      openAIApiKey: process.env.OPEN_AI_KEY,
-      modelName: model,
-      temperature,
-    });
   },
   totalIndicies: async function () {
     const { pineconeIndex } = await this.connect();
@@ -144,10 +128,10 @@ const Pinecone = {
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
-      const openAiConnector = new OpenAi();
+      const LLMConnector = getLLMProvider();
       const documentVectors = [];
       const vectors = [];
-      const vectorValues = await openAiConnector.embedChunks(textChunks);
+      const vectorValues = await LLMConnector.embedChunks(textChunks);
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
@@ -246,22 +230,32 @@ const Pinecone = {
       };
     }
 
-    const vectorStore = await PineconeStore.fromExistingIndex(this.embedder(), {
+    const LLMConnector = getLLMProvider();
+    const queryVector = await LLMConnector.embedTextInput(input);
+    const { contextTexts, sourceDocuments } = await this.similarityResponse(
       pineconeIndex,
       namespace,
-    });
+      queryVector
+    );
+    const prompt = {
+      role: "system",
+      content: `${chatPrompt(workspace)}
+     Context:
+     ${contextTexts
+       .map((text, i) => {
+         return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+       })
+       .join("")}`,
+    };
 
-    const model = this.llm({
+    const memory = [prompt, { role: "user", content: input }];
+    const responseText = await LLMConnector.getChatCompletion(memory, {
       temperature: workspace?.openAiTemp ?? 0.7,
     });
-    const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
-      k: 5,
-      returnSourceDocuments: true,
-    });
-    const response = await chain.call({ query: input });
+
     return {
-      response: response.text,
-      sources: this.curateSources(response.sourceDocuments),
+      response: responseText,
+      sources: this.curateSources(sourceDocuments),
       message: false,
     };
   },
@@ -284,8 +278,8 @@ const Pinecone = {
         "Invalid namespace - has it been collected and seeded yet?"
       );
 
-    const openAiConnector = new OpenAi();
-    const queryVector = await openAiConnector.embedTextInput(input);
+    const LLMConnector = getLLMProvider();
+    const queryVector = await LLMConnector.embedTextInput(input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       pineconeIndex,
       namespace,
@@ -303,7 +297,7 @@ const Pinecone = {
     };
 
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
-    const responseText = await openAiConnector.getChatCompletion(memory, {
+    const responseText = await LLMConnector.getChatCompletion(memory, {
       temperature: workspace?.openAiTemp ?? 0.7,
     });
 

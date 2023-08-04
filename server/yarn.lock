@@ -26,6 +26,93 @@
     pad-left "^2.1.0"
     tslib "^2.5.0"
 
+"@azure-rest/core-client@^1.1.3":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@azure-rest/core-client/-/core-client-1.1.4.tgz#628381c3653f6dbae584ca6f2ae5f74a5c015526"
+  integrity sha512-RUIQOA8T0WcbNlddr8hjl2MuC5GVRqmMwPXqBVsgvdKesLy+eg3y/6nf3qe2fvcJMI1gF6VtgU5U4hRaR4w4ag==
+  dependencies:
+    "@azure/abort-controller" "^1.1.0"
+    "@azure/core-auth" "^1.3.0"
+    "@azure/core-rest-pipeline" "^1.5.0"
+    "@azure/core-tracing" "^1.0.1"
+    "@azure/core-util" "^1.0.0"
+    tslib "^2.2.0"
+
+"@azure/abort-controller@^1.0.0", "@azure/abort-controller@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@azure/abort-controller/-/abort-controller-1.1.0.tgz#788ee78457a55af8a1ad342acb182383d2119249"
+  integrity sha512-TrRLIoSQVzfAJX9H1JeFjzAoDGcoK1IYX1UImfceTZpsyYfWr09Ss1aHW1y5TrrR3iq6RZLBwJ3E24uwPhwahw==
+  dependencies:
+    tslib "^2.2.0"
+
+"@azure/core-auth@^1.3.0", "@azure/core-auth@^1.4.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@azure/core-auth/-/core-auth-1.5.0.tgz#a41848c5c31cb3b7c84c409885267d55a2c92e44"
+  integrity sha512-udzoBuYG1VBoHVohDTrvKjyzel34zt77Bhp7dQntVGGD0ehVq48owENbBG8fIgkHRNUBQH5k1r0hpoMu5L8+kw==
+  dependencies:
+    "@azure/abort-controller" "^1.0.0"
+    "@azure/core-util" "^1.1.0"
+    tslib "^2.2.0"
+
+"@azure/core-lro@^2.5.3":
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/@azure/core-lro/-/core-lro-2.5.4.tgz#b21e2bcb8bd9a8a652ff85b61adeea51a8055f90"
+  integrity sha512-3GJiMVH7/10bulzOKGrrLeG/uCBH/9VtxqaMcB9lIqAeamI/xYQSHJL/KcsLDuH+yTjYpro/u6D/MuRe4dN70Q==
+  dependencies:
+    "@azure/abort-controller" "^1.0.0"
+    "@azure/core-util" "^1.2.0"
+    "@azure/logger" "^1.0.0"
+    tslib "^2.2.0"
+
+"@azure/core-rest-pipeline@^1.10.2", "@azure/core-rest-pipeline@^1.5.0":
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/@azure/core-rest-pipeline/-/core-rest-pipeline-1.12.0.tgz#a36dd361807494845522824532c076daa27c2786"
+  integrity sha512-+MnSB0vGZjszSzr5AW8z93/9fkDu2RLtWmAN8gskURq7EW2sSwqy8jZa0V26rjuBVkwhdA3Hw8z3VWoeBUOw+A==
+  dependencies:
+    "@azure/abort-controller" "^1.0.0"
+    "@azure/core-auth" "^1.4.0"
+    "@azure/core-tracing" "^1.0.1"
+    "@azure/core-util" "^1.3.0"
+    "@azure/logger" "^1.0.0"
+    form-data "^4.0.0"
+    http-proxy-agent "^5.0.0"
+    https-proxy-agent "^5.0.0"
+    tslib "^2.2.0"
+
+"@azure/core-tracing@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@azure/core-tracing/-/core-tracing-1.0.1.tgz#352a38cbea438c4a83c86b314f48017d70ba9503"
+  integrity sha512-I5CGMoLtX+pI17ZdiFJZgxMJApsK6jjfm85hpgp3oazCdq5Wxgh4wMr7ge/TTWW1B5WBuvIOI1fMU/FrOAMKrw==
+  dependencies:
+    tslib "^2.2.0"
+
+"@azure/core-util@^1.0.0", "@azure/core-util@^1.1.0", "@azure/core-util@^1.2.0", "@azure/core-util@^1.3.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@azure/core-util/-/core-util-1.4.0.tgz#c120a56b3e48a9e4d20619a0b00268ae9de891c7"
+  integrity sha512-eGAyJpm3skVQoLiRqm/xPa+SXi/NPDdSHMxbRAz2lSprd+Zs+qrpQGQQ2VQ3Nttu+nSZR4XoYQC71LbEI7jsig==
+  dependencies:
+    "@azure/abort-controller" "^1.0.0"
+    tslib "^2.2.0"
+
+"@azure/logger@^1.0.0", "@azure/logger@^1.0.3":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@azure/logger/-/logger-1.0.4.tgz#28bc6d0e5b3c38ef29296b32d35da4e483593fa1"
+  integrity sha512-ustrPY8MryhloQj7OWGe+HrYx+aoiOxzbXTtgblbV3xwCqpzUK36phH3XNHQKj3EPonyFUuDTfR3qFhTEAuZEg==
+  dependencies:
+    tslib "^2.2.0"
+
+"@azure/openai@^1.0.0-beta.3":
+  version "1.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@azure/openai/-/openai-1.0.0-beta.3.tgz#bf4f5ec0a5644b3a9ce4372620856a65e7721e24"
+  integrity sha512-gW4odbuy/X/W34SdvXomj/JzR09MyMHCY5Kd2ZxJkQo3IUGqJXz1rEv6QER7IAGgBFgNawE97K6UuJfMmoT0rw==
+  dependencies:
+    "@azure-rest/core-client" "^1.1.3"
+    "@azure/core-auth" "^1.4.0"
+    "@azure/core-lro" "^2.5.3"
+    "@azure/core-rest-pipeline" "^1.10.2"
+    "@azure/logger" "^1.0.3"
+    tslib "^2.4.0"
+
 "@fortaine/fetch-event-source@^3.0.6":
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/@fortaine/fetch-event-source/-/fetch-event-source-3.0.6.tgz#b8552a2ca2c5202f5699b93a92be0188d422b06e"
@@ -85,6 +172,11 @@
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
+
+"@tootallnate/once@2":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"
+  integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
 "@types/command-line-args@5.2.0":
   version "5.2.0"
@@ -1125,6 +1217,15 @@ http-proxy-agent@^4.0.1:
   integrity sha512-k0zdNgqWTGA6aeIRVpvfVob4fL52dTfaehylg0Y4UvSySvOq/Y+BOyPrgpUrA7HylqvU8vIZGsRuXmspskV0Tg==
   dependencies:
     "@tootallnate/once" "1"
+    agent-base "6"
+    debug "4"
+
+http-proxy-agent@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/http-proxy-agent/-/http-proxy-agent-5.0.0.tgz#5129800203520d434f142bc78ff3c170800f2b43"
+  integrity sha512-n2hY8YdoRE1i7r6M0w9DIw5GgZN0G25P8zLCRQ8rjXtTU3vsNFBI/vWK/UIeE6g5MUUz6avwAPXmL6Fy9D/90w==
+  dependencies:
+    "@tootallnate/once" "2"
     agent-base "6"
     debug "4"
 
@@ -2300,6 +2401,11 @@ tr46@~0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
   integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
+
+tslib@^2.2.0, tslib@^2.4.0:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.1.tgz#fd8c9a0ff42590b25703c0acb3de3d3f4ede0410"
+  integrity sha512-t0hLfiEKfMUoqhG+U1oid7Pva4bbDPHYfJNiB7BiIjRkj1pyC++4N3huJfqY6aRH6VTB0rvtzQwjM4K6qpfOig==
 
 tslib@^2.5.0:
   version "2.6.0"
