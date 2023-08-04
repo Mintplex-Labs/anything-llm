@@ -20,8 +20,7 @@ const noop = () => false;
 export default function SystemSettingsModal({ hideModal = noop }) {
   const { user } = useUser();
   const [loading, setLoading] = useState(true);
-  // const [selectedTab, setSelectedTab] = useState("keys");
-  const [selectedTab, setSelectedTab] = useState("vectordb");
+  const [selectedTab, setSelectedTab] = useState("keys");
   const [settings, setSettings] = useState(null);
   const Component = TABS[selectedTab || "keys"];
 

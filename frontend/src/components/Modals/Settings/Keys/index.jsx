@@ -15,8 +15,8 @@ export default function SystemKeys({ hideModal = noop, user, settings = {} }) {
       (settings?.VectorDB === "chroma" ? !!settings?.ChromaEndpoint : true) &&
       (settings?.VectorDB === "pinecone"
         ? !!settings?.PineConeKey &&
-          !!settings?.PineConeEnvironment &&
-          !!settings?.PineConeIndex
+        !!settings?.PineConeEnvironment &&
+        !!settings?.PineConeIndex
         : true)
     );
   }
@@ -56,50 +56,6 @@ export default function SystemKeys({ hideModal = noop, user, settings = {} }) {
               valid={!!settings?.OpenAiModelPref}
               allowDebug={canDebug}
             />
-            <div className="h-[2px] w-full bg-gray-200 dark:bg-stone-600" />
-            <ShowKey
-              name="Vector DB Choice"
-              env="VectorDB"
-              value={settings?.VectorDB}
-              valid={!!settings?.VectorDB}
-              allowDebug={canDebug}
-            />
-            {settings?.VectorDB === "pinecone" && (
-              <>
-                <ShowKey
-                  name="Pinecone DB API Key"
-                  env="PineConeKey"
-                  value={settings?.PineConeKey ? "*".repeat(20) : ""}
-                  valid={!!settings?.PineConeKey}
-                  allowDebug={canDebug}
-                />
-                <ShowKey
-                  name="Pinecone DB Environment"
-                  env="PineConeEnvironment"
-                  value={settings?.PineConeEnvironment}
-                  valid={!!settings?.PineConeEnvironment}
-                  allowDebug={canDebug}
-                />
-                <ShowKey
-                  name="Pinecone DB Index"
-                  env="PineConeIndex"
-                  value={settings?.PineConeIndex}
-                  valid={!!settings?.PineConeIndex}
-                  allowDebug={canDebug}
-                />
-              </>
-            )}
-            {settings?.VectorDB === "chroma" && (
-              <>
-                <ShowKey
-                  name="Chroma Endpoint"
-                  env="ChromaEndpoint"
-                  value={settings?.ChromaEndpoint}
-                  valid={!!settings?.ChromaEndpoint}
-                  allowDebug={canDebug}
-                />
-              </>
-            )}
           </div>
         </div>
         <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
