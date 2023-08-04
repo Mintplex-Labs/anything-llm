@@ -38,17 +38,16 @@ function systemEndpoints(app) {
 
   app.get("/setup-complete", async (_, response) => {
     try {
+      const llmProvider = process.env.LLM_PROVIDER || "openai";
       const vectorDB = process.env.VECTOR_DB || "pinecone";
       const results = {
         CanDebug: !!!process.env.NO_DEBUG,
         RequiresAuth: !!process.env.AUTH_TOKEN,
-        VectorDB: vectorDB,
-        OpenAiKey: !!process.env.OPEN_AI_KEY,
-        OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
         AuthToken: !!process.env.AUTH_TOKEN,
         JWTSecret: !!process.env.JWT_SECRET,
         StorageDir: process.env.STORAGE_DIR,
         MultiUserMode: await SystemSettings.isMultiUserMode(),
+        VectorDB: vectorDB,
         ...(vectorDB === "pinecone"
           ? {
               PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
@@ -59,6 +58,22 @@ function systemEndpoints(app) {
         ...(vectorDB === "chroma"
           ? {
               ChromaEndpoint: process.env.CHROMA_ENDPOINT,
+            }
+          : {}),
+        LLMProvider: llmProvider,
+        ...(llmProvider === "openai"
+          ? {
+              OpenAiKey: !!process.env.OPEN_AI_KEY,
+              OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
+            }
+          : {}),
+
+        ...(llmProvider === "azure"
+          ? {
+              AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+              AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+              AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
+              AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
             }
           : {}),
       };

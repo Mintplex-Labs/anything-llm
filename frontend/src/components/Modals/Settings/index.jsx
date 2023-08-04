@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Archive, Lock, Key, X, Users, Database } from "react-feather";
-import SystemKeys from "./Keys";
+import {
+  Archive,
+  Lock,
+  X,
+  Users,
+  Database,
+  MessageSquare,
+} from "react-feather";
 import ExportOrImportData from "./ExportImport";
 import PasswordProtection from "./PasswordProtection";
 import System from "../../../models/system";
 import MultiUserMode from "./MultiUserMode";
 import useUser from "../../../hooks/useUser";
 import VectorDBSelection from "./VectorDbs";
+import LLMSelection from "./LLMSelection";
 
 const TABS = {
-  keys: SystemKeys,
+  llm: LLMSelection,
   exportimport: ExportOrImportData,
   password: PasswordProtection,
   multiuser: MultiUserMode,
@@ -20,9 +27,9 @@ const noop = () => false;
 export default function SystemSettingsModal({ hideModal = noop }) {
   const { user } = useUser();
   const [loading, setLoading] = useState(true);
-  const [selectedTab, setSelectedTab] = useState("keys");
+  const [selectedTab, setSelectedTab] = useState("llm");
   const [settings, setSettings] = useState(null);
-  const Component = TABS[selectedTab || "keys"];
+  const Component = TABS[selectedTab || "llm"];
 
   useEffect(() => {
     async function fetchKeys() {
@@ -87,10 +94,10 @@ function SettingTabs({ selectedTab, changeTab, settings, user }) {
   return (
     <ul className="flex overflow-x-scroll no-scroll -mb-px text-sm gap-x-2 font-medium text-center text-gray-500 dark:text-gray-400">
       <SettingTab
-        active={selectedTab === "keys"}
-        displayName="Keys"
-        tabName="keys"
-        icon={<Key className="h-4 w-4 flex-shrink-0" />}
+        active={selectedTab === "llm"}
+        displayName="LLM Choice"
+        tabName="llm"
+        icon={<MessageSquare className="h-4 w-4 flex-shrink-0" />}
         onClick={changeTab}
       />
       <SettingTab
