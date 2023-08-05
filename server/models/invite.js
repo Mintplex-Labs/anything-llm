@@ -167,7 +167,6 @@ const Invite = {
     const { User } = require("./user");
     const results = await this.where(clause, limit);
     for (const invite of results) {
-      console.log(invite);
       if (!!invite.claimedBy) {
         const acceptedUser = await User.get(`id = ${invite.claimedBy}`);
         invite.claimedBy = {
