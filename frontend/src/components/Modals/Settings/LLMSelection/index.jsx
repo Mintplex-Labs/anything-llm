@@ -37,7 +37,7 @@ export default function LLMSelection({
     setHasChanges(!!error ? true : false);
   };
   return (
-    <div className="relative w-full max-w-2xl max-h-full">
+    <div className="relative w-full w-full max-h-full">
       <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
         <div className="flex items-start justify-between px-6 py-4">
           <p className="text-gray-800 dark:text-stone-200 text-base ">
@@ -59,7 +59,7 @@ export default function LLMSelection({
               <p className="block text-sm font-medium text-gray-800 dark:text-slate-200">
                 LLM providers
               </p>
-              <div className="w-full flex overflow-x-scroll gap-x-4 no-scroll">
+              <div className="w-full flex overflow-x-scroll gap-x-4">
                 <input hidden={true} name="LLMProvider" value={llmChoice} />
                 <LLMProviderOption
                   name="OpenAI"

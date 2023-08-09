@@ -10,6 +10,9 @@ function getVectorDbClass() {
     case "lancedb":
       const { LanceDb } = require("../vectorDbProviders/lance");
       return LanceDb;
+    case "weaviate":
+      const { Weaviate } = require("../vectorDbProviders/weaviate");
+      return Weaviate;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
   }
