@@ -46,7 +46,7 @@ export default function SystemSettingsModal({ hideModal = noop }) {
         className="flex fixed top-0 left-0 right-0 w-full h-full"
         onClick={hideModal}
       />
-      <div className="relative w-full max-w-2xl max-h-full">
+      <div className="relative w-full w-full md:w-1/2 max-h-full">
         <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
           <div className="flex flex-col gap-y-1 border-b dark:border-gray-600 px-4 pt-4 ">
             <div className="flex items-start justify-between rounded-t ">

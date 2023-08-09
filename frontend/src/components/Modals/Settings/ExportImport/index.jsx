@@ -7,7 +7,7 @@ import paths from "../../../../utils/paths";
 const noop = () => false;
 export default function ExportOrImportData({ hideModal = noop }) {
   return (
-    <div className="relative w-full max-w-2xl max-h-full">
+    <div className="relative w-full w-full max-h-full">
       <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
         <div className="flex flex-col items-start justify-between px-6 py-4">
           <p className="text-gray-800 dark:text-stone-200 text-base ">
