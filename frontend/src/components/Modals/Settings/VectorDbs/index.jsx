@@ -3,6 +3,7 @@ import System from "../../../../models/system";
 import ChromaLogo from "../../../../media/vectordbs/chroma.png";
 import PineconeLogo from "../../../../media/vectordbs/pinecone.png";
 import LanceDbLogo from "../../../../media/vectordbs/lancedb.png";
+import WeaviateLogo from "../../../../media/vectordbs/weaviate.png";
 
 const noop = () => false;
 export default function VectorDBSelection({
@@ -37,7 +38,7 @@ export default function VectorDBSelection({
     setHasChanges(!!error ? true : false);
   };
   return (
-    <div className="relative w-full max-w-2xl max-h-full">
+    <div className="relative w-full w-full max-h-full">
       <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
         <div className="flex items-start justify-between px-6 py-4">
           <p className="text-gray-800 dark:text-stone-200 text-base ">
@@ -59,7 +60,7 @@ export default function VectorDBSelection({
               <p className="block text-sm font-medium text-gray-800 dark:text-slate-200">
                 Vector database providers
               </p>
-              <div className="w-full flex overflow-x-scroll gap-x-4 no-scroll">
+              <div className="w-full flex overflow-x-scroll gap-x-4">
                 <input hidden={true} name="VectorDB" value={vectorDB} />
                 <VectorDBOption
                   name="Chroma"
@@ -77,6 +78,15 @@ export default function VectorDBSelection({
                   description="100% cloud-based vector database for enterprise use cases."
                   checked={vectorDB === "pinecone"}
                   image={PineconeLogo}
+                  onClick={updateVectorChoice}
+                />
+                <VectorDBOption
+                  name="Weaviate"
+                  value="weaviate"
+                  link="weaviate.io"
+                  description="Open source local and cloud hosted multi-modal vector database."
+                  checked={vectorDB === "weaviate"}
+                  image={WeaviateLogo}
                   onClick={updateVectorChoice}
                 />
                 <VectorDBOption
@@ -170,6 +180,41 @@ export default function VectorDBSelection({
                     There is no configuration needed for LanceDB.
                   </p>
                 </div>
+              )}
+              {vectorDB === "weaviate" && (
+                <>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200">
+                      Weaviate Endpoint
+                    </label>
+                    <input
+                      type="url"
+                      name="WeaviateEndpoint"
+                      disabled={!canDebug}
+                      className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
+                      placeholder="http://localhost:8080"
+                      defaultValue={settings?.WeaviateEndpoint}
+                      required={true}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200">
+                      Api Key
+                    </label>
+                    <input
+                      type="password"
+                      name="WeaviateApiKey"
+                      disabled={!canDebug}
+                      className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
+                      placeholder="sk-123Abcweaviate"
+                      defaultValue={settings?.WeaviateApiKey}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+                </>
               )}
             </div>
           </div>
