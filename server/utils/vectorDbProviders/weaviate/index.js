@@ -357,10 +357,10 @@ const Weaviate = {
       content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
-          .map((text, i) => {
-            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-          })
-          .join("")}`,
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
     };
     const memory = [prompt, { role: "user", content: input }];
     const responseText = await LLMConnector.getChatCompletion(memory, {
@@ -407,10 +407,10 @@ const Weaviate = {
       content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
-          .map((text, i) => {
-            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-          })
-          .join("")}`,
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
     };
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
     const responseText = await LLMConnector.getChatCompletion(memory, {
@@ -438,8 +438,9 @@ const Weaviate = {
     const details = await this.namespace(client, namespace);
     await this.deleteVectorsInNamespace(client, namespace);
     return {
-      message: `Namespace ${camelCase(namespace)} was deleted along with ${details?.vectorCount
-        } vectors.`,
+      message: `Namespace ${camelCase(namespace)} was deleted along with ${
+        details?.vectorCount
+      } vectors.`,
     };
   },
   reset: async function () {
