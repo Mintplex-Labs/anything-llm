@@ -24,7 +24,7 @@ Deprecated==1.2.14
 docx2txt==0.8
 et-xmlfile==1.1.0
 exceptiongroup==1.1.1
-fake-useragent==1.1.3
+fake-useragent==1.2.1
 Flask==2.3.2
 frozenlist==1.3.3
 grapheme==0.6.0
