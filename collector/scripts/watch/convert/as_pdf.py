@@ -1,8 +1,11 @@
-import os, time
-from langchain.document_loaders import PyPDFLoader
+import os, time, fitz
+from langchain.document_loaders import PyMuPDFLoader # better UTF support and metadata
+from langchain.text_splitter import RecursiveCharacterTextSplitter, TextSplitter
 from slugify import slugify
 from ..utils import guid, file_creation_time, write_to_server_documents, move_source
 from ...utils import tokenize
+
+
 
 # Process all text-related documents.
 def as_pdf(**kwargs):
@@ -13,8 +16,26 @@ def as_pdf(**kwargs):
   fullpath = f"{parent_dir}/{filename}{ext}"
   destination = f"../server/storage/documents/{slugify(filename)}-{int(time.time())}"
 
-  loader = PyPDFLoader(fullpath)
-  pages = loader.load_and_split()
+  loader = PyMuPDFLoader(fullpath)
+
+  # Custom flags for PyMuPDFLoader. https://pymupdf.readthedocs.io/en/latest/app1.html#text-extraction-flags-defaults
+  mu_flags = (fitz.TEXT_PRESERVE_WHITESPACE
+              | fitz.TEXT_PRESERVE_LIGATURES
+              | fitz.TEXT_MEDIABOX_CLIP
+              | fitz.TEXT_DEHYPHENATE) & ~fitz.TEXT_PRESERVE_SPANS & ~fitz.TEXT_PRESERVE_IMAGES
+
+  pages = loader.load(flags=mu_flags)
+
+  # The only thing PyMuPDFLoader does not have a flag it for removing all line breaks.
+  # comparing with PyPDF, to acchieve the same result, we need to do add space where there is '\n\s' and remove double spaces
+
+  # Best so fot, replace didn't understood '\n\s' so we need to do it in two steps
+  for page in pages:
+    page.page_content = page.page_content.replace("\n ", " ").replace("  ", " ")
+
+  text_splitter: TextSplitter = RecursiveCharacterTextSplitter()
+  pages = text_splitter.split_documents(pages)
+
 
   print(f"-- Working {fullpath} --")
   for page in pages:
@@ -22,11 +43,18 @@ def as_pdf(**kwargs):
     print(f"-- Working page {pg_num} --")
 
     content = page.page_content
+    title = page.metadata.get('title')
+    author = page.metadata.get('author')
+    subject = page.metadata.get('subject')
+
     data = {
-      'id': guid(), 
+      'id': guid(),
       'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{filename}{ext}"),
-      'title': f"{filename}_pg{pg_num}{ext}",
-      'description': "a custom file uploaded by the user.",
+      'title': title if title else 'Untitled',
+      'author': author if author else 'Unknown',
+      'description': subject if subject else 'Unknown',
+      'document_source': 'pdf file uploaded by the user.',
+      'chunk_source': f"{filename}_pg{pg_num}{ext}",
       'published': file_creation_time(fullpath),
       'wordCount': len(content),
       'pageContent': content,
