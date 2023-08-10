@@ -60,6 +60,12 @@ function systemEndpoints(app) {
               ChromaEndpoint: process.env.CHROMA_ENDPOINT,
             }
           : {}),
+        ...(vectorDB === "weaviate"
+          ? {
+              WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
+              WeaviateApiKey: process.env.WEAVIATE_API_KEY,
+            }
+          : {}),
         LLMProvider: llmProvider,
         ...(llmProvider === "openai"
           ? {
