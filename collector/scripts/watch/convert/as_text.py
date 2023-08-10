@@ -16,8 +16,10 @@ def as_text(**kwargs):
   data = {
     'id': guid(),
     'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{filename}{ext}"),
-    'title': f"{filename}{ext}",
-    'description': "a custom file uploaded by the user.",
+    'title': slugify(filename), # TODO: Find a better title
+    'docAuthor': 'Unknown', # TODO: Find a better author
+    'description': 'Unknown', # TODO: Find a better description
+    'chunkSource': f"{filename}{ext}",
     'published': file_creation_time(fullpath),
     'wordCount': len(content),
     'pageContent': content,
@@ -27,9 +29,10 @@ def as_text(**kwargs):
     'id': guid(),
     'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{slugify(filename)}-{guid()}{ext}"),
     'title': slugify(filename), # TODO: Find a better title
-    'author': 'Unknown', # TODO: Find a better author
+    'docAuthor': 'Unknown', # TODO: Find a better author
     'description': 'Unknown', # TODO: Find a better description
-    'document_source': "plain text file uploaded by the user.",
+    'docSource': "plain text file uploaded by the user.",
+    'chunkSource': f"{filename}{ext}",
     'published': file_creation_time(fullpath),
     'wordCount': len(content),
     'pageContent': content,

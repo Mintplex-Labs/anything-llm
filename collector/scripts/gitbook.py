@@ -29,10 +29,10 @@ def gitbook():
     data = {
       'id': str(uuid4()),
       'url': metadata.get('source'),
-      "title": metadata.get('title'),
-      "description": metadata.get('title'),
-      "published": datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
-      "wordCount": len(content),
+      'title': metadata.get('title'),
+      'description': metadata.get('title'),
+      'published': datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
+      'wordCount': len(content),
       'pageContent': content,
       'token_count_estimate': len(tokenize(content))
     }

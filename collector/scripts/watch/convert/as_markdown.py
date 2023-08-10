@@ -21,10 +21,10 @@ def as_markdown(**kwargs):
     'id': guid(),
     'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{filename}{ext}"),
     'title':  f"{filename}", # TODO: find a better metadata
-    'author': "Unknown", # TODO: find a better metadata
-    'description': "Unknown", # TODO: find a better metadata
-    'document_source': "markdown file uploaded by the user.",
-    'chuck_source': f"{filename}{ext}",
+    'docAuthor': 'Unknown', # TODO: find a better metadata
+    'description': 'Unknown', # TODO: find a better metadata
+    'docSource': 'markdown file uploaded by the user.',
+    'chunkSource': f"{filename}{ext}",
     'published': file_creation_time(fullpath),
     'wordCount': len(content),
     'pageContent': content,
