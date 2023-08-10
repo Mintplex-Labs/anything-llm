@@ -14,7 +14,7 @@ function byteToGigaByte(n) {
 async function getDiskStorage() {
   try {
     const checkDiskSpace = require("check-disk-space").default;
-    const { free, size } = await checkDiskSpace("/dev/sda1");
+    const { free, size } = await checkDiskSpace("/dev/xvda");
     return {
       current: Math.floor(byteToGigaByte(free)),
       capacity: Math.floor(byteToGigaByte(size)),
