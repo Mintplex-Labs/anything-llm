@@ -169,16 +169,19 @@ const System = {
       throw err;
     }
   },
-  fetchLogo: async function () {
+  fetchLogo: async function (light = false) {
     try {
-      const response = await fetch(`${API_BASE}/system/logo`);
-      const blob = await response.blob();
-      return URL.createObjectURL(blob);
+        const lightParam = light ? "/light" : "";
+        console.log(`${API_BASE}/system/logo${lightParam}`);
+        const response = await fetch(`${API_BASE}/system/logo${lightParam}`);
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
     } catch (err) {
-      console.error("Failed to fetch logo:", err);
-      throw err;
+        console.error("Failed to fetch logo:", err);
+        throw err;
     }
-  },
+},
+
   removeCustomLogo: async function () {
     try {
       const response = await fetch(`${API_BASE}/system/remove-logo`);

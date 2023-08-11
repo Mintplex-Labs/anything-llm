@@ -26,6 +26,8 @@ import { userFromStorage } from "../../utils/request";
 import { AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
 import System from "../../models/system";
 import defaultLogo from "../../../public/assets/ALLM-Default.png";
+import defaultLogoLight from "../../../public/assets/ALLM-Default-Light.png";
+import usePrefersDarkMode from "../../hooks/usePrefersDarkMode";
 
 export default function Sidebar() {
   const sidebarRef = useRef(null);
@@ -41,11 +43,12 @@ export default function Sidebar() {
   } = useNewWorkspaceModal();
 
   const [logo, setLogo] = useState("");
+  const prefersDarkMode = usePrefersDarkMode();
 
   useEffect(() => {
     async function initialFetch() {
       try {
-        const logoURL = await System.fetchLogo();
+        const logoURL = prefersDarkMode ? await System.fetchLogo(false) : await System.fetchLogo(true);
         setLogo(logoURL);
       } catch (err) {
         setLogo(defaultLogo);
@@ -54,7 +57,7 @@ export default function Sidebar() {
     }
 
     initialFetch();
-  }, []);
+  }, [prefersDarkMode]);
 
   return (
     <>
