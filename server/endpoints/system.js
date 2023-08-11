@@ -362,43 +362,45 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/logo", async function (_, response) {
+  app.get("/system/logo/:mode?", async function (request, response) {
     try {
-      const logoFilename = await SystemSettings.currentLogoFilename();
-      const basePath = path.join(__dirname, "../storage/assets");
+        const mode = request.params.mode || "dark";
+        const defaultFilename = mode === "light" ? "ALLM-Default-Light.png" : "ALLM-Default.png";
 
-      let logoPath;
-      if (logoFilename && logoFilename !== "ALLM-Default.png") {
-        logoPath = path.join(basePath, logoFilename);
-        if (!fs.existsSync(logoPath)) {
-          logoPath = path.join(basePath, "ALLM-Default.png");
-        }
-      } else {
-        logoPath = path.join(basePath, "ALLM-Default.png");
-      }
+        const logoFilename = await SystemSettings.currentLogoFilename();
+        const basePath = path.join(__dirname, "../storage/assets");
+        let logoPath;
 
-      fs.readFile(logoPath, (err, data) => {
-        if (err) {
-          return response.status(500).json({ message: "Error loading logo" });
+        if (logoFilename && logoFilename !== "ALLM-Default.png" && logoFilename !== "ALLM-Default-Light.png") {
+            logoPath = path.join(basePath, logoFilename);
+            if (!fs.existsSync(logoPath)) {
+                logoPath = path.join(basePath, defaultFilename);
+            }
+        } else {
+            logoPath = path.join(basePath, defaultFilename);
         }
 
-        response.writeHead(200, {
-          "Content-Type": "image/png",
-          "Content-Disposition": `attachment; filename=${path.basename(
-            logoPath
-          )}`,
-          "Content-Length": data.length,
+        fs.readFile(logoPath, (err, data) => {
+            if (err) {
+                return response.status(500).json({ message: "Error loading logo" });
+            }
+
+            response.writeHead(200, {
+                "Content-Type": "image/png",
+                "Content-Disposition": `attachment; filename=${path.basename(logoPath)}`,
+                "Content-Length": data.length,
+            });
+            response.end(data);
         });
-        response.end(data);
-      });
     } catch (error) {
-      console.error("Error processing the logo request:", error);
-      response.status(500).json({ message: "Internal server error" });
+        console.error("Error processing the logo request:", error);
+        response.status(500).json({ message: "Internal server error" });
     }
-  });
+});
 
   app.post(
     "/system/upload-logo",
+    [validatedRequest],
     handleLogoUploads.single("logo"),
     async (request, response) => {
       if (!request.file || !request.file.originalname) {
@@ -454,7 +456,7 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/remove-logo", async (_, response) => {
+  app.get("/system/remove-logo", [validatedRequest], async (_, response) => {
     try {
       const currentLogoFilename = await SystemSettings.currentLogoFilename();
 
