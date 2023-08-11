@@ -11,6 +11,7 @@ const AdminInvites = lazy(() => import("./pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("./pages/Admin/Workspaces"));
 const AdminChats = lazy(() => import("./pages/Admin/Chats"));
 const AdminSystem = lazy(() => import("./pages/Admin/System"));
+const AdminAppearance = lazy(() => import("./pages/Admin/Appearance"));
 const Appearance = lazy(() => import("./pages/System/Appearance"));
 
 export default function App() {
@@ -46,6 +47,10 @@ export default function App() {
           <Route
             path="/admin/workspace-chats"
             element={<AdminRoute Component={AdminChats} />}
+          />
+          <Route
+            path="/admin/appearance"
+            element={<AdminRoute Component={AdminAppearance} />}
           />
         </Routes>
       </ContextWrapper>

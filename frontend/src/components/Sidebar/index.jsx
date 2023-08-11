@@ -48,10 +48,12 @@ export default function Sidebar() {
   useEffect(() => {
     async function initialFetch() {
       try {
-        const logoURL = prefersDarkMode ? await System.fetchLogo(false) : await System.fetchLogo(true);
+        const logoURL = prefersDarkMode
+          ? await System.fetchLogo(false)
+          : await System.fetchLogo(true);
         setLogo(logoURL);
       } catch (err) {
-        setLogo(prefersDarkMode ?  defaultLogo : defaultLogoLight );
+        setLogo(prefersDarkMode ? defaultLogo : defaultLogoLight);
         console.error("Failed to fetch logo:", err);
       }
     }

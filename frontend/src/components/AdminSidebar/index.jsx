@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   BookOpen,
   Database,
+  Eye,
   GitHub,
   Mail,
   Menu,
@@ -14,9 +15,32 @@ import IndexCount from "../Sidebar/IndexCount";
 import LLMStatus from "../Sidebar/LLMStatus";
 import paths from "../../utils/paths";
 import Discord from "../Icons/Discord";
+import usePrefersDarkMode from "../../hooks/usePrefersDarkMode";
+import defaultLogo from "../../../public/assets/ALLM-Default.png";
+import defaultLogoLight from "../../../public/assets/ALLM-Default-Light.png";
+import System from "../../models/system";
 
 export default function AdminSidebar() {
   const sidebarRef = useRef(null);
+  const [logo, setLogo] = useState("");
+  const prefersDarkMode = usePrefersDarkMode();
+
+  useEffect(() => {
+    async function initialFetch() {
+      try {
+        const logoURL = prefersDarkMode
+          ? await System.fetchLogo(false)
+          : await System.fetchLogo(true);
+        setLogo(logoURL);
+      } catch (err) {
+        setLogo(prefersDarkMode ? defaultLogo : defaultLogoLight);
+        console.error("Failed to fetch logo:", err);
+      }
+    }
+
+    initialFetch();
+  }, [prefersDarkMode]);
+
   return (
     <>
       <div
@@ -27,9 +51,15 @@ export default function AdminSidebar() {
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
           {/* Header Information */}
           <div className="flex w-full items-center justify-between">
-            <p className="text-xl font-base text-slate-600 dark:text-slate-200">
-              AnythingLLM Admin
-            </p>
+            <div className="flex-grow relative">
+              {" "}
+              <img
+                src={logo}
+                alt="Logo"
+                className="rounded max-w-full max-h-[40px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                style={{ objectFit: "contain" }}
+              />
+            </div>
             <div className="flex gap-x-2 items-center text-slate-500">
               <a
                 href={paths.home()}
@@ -68,6 +98,11 @@ export default function AdminSidebar() {
                   href={paths.admin.chats()}
                   btnText="Workspace Chat Management"
                   icon={<MessageSquare className="h-4 w-4 flex-shrink-0" />}
+                />
+                <Option
+                  href={paths.admin.appearance()}
+                  btnText="Appearance"
+                  icon={<Eye className="h-4 w-4 flex-shrink-0" />}
                 />
               </div>
             </div>

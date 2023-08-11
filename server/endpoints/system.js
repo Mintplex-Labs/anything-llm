@@ -364,39 +364,46 @@ function systemEndpoints(app) {
 
   app.get("/system/logo/:mode?", async function (request, response) {
     try {
-        const mode = request.params.mode || "dark";
-        const defaultFilename = mode === "light" ? "ALLM-Default-Light.png" : "ALLM-Default.png";
+      const mode = request.params.mode || "dark";
+      const defaultFilename =
+        mode === "light" ? "ALLM-Default-Light.png" : "ALLM-Default.png";
 
-        const logoFilename = await SystemSettings.currentLogoFilename();
-        const basePath = path.join(__dirname, "../storage/assets");
-        let logoPath;
+      const logoFilename = await SystemSettings.currentLogoFilename();
+      const basePath = path.join(__dirname, "../storage/assets");
+      let logoPath;
 
-        if (logoFilename && logoFilename !== "ALLM-Default.png" && logoFilename !== "ALLM-Default-Light.png") {
-            logoPath = path.join(basePath, logoFilename);
-            if (!fs.existsSync(logoPath)) {
-                logoPath = path.join(basePath, defaultFilename);
-            }
-        } else {
-            logoPath = path.join(basePath, defaultFilename);
+      if (
+        logoFilename &&
+        logoFilename !== "ALLM-Default.png" &&
+        logoFilename !== "ALLM-Default-Light.png"
+      ) {
+        logoPath = path.join(basePath, logoFilename);
+        if (!fs.existsSync(logoPath)) {
+          logoPath = path.join(basePath, defaultFilename);
+        }
+      } else {
+        logoPath = path.join(basePath, defaultFilename);
+      }
+
+      fs.readFile(logoPath, (err, data) => {
+        if (err) {
+          return response.status(500).json({ message: "Error loading logo" });
         }
 
-        fs.readFile(logoPath, (err, data) => {
-            if (err) {
-                return response.status(500).json({ message: "Error loading logo" });
-            }
-
-            response.writeHead(200, {
-                "Content-Type": "image/png",
-                "Content-Disposition": `attachment; filename=${path.basename(logoPath)}`,
-                "Content-Length": data.length,
-            });
-            response.end(data);
+        response.writeHead(200, {
+          "Content-Type": "image/png",
+          "Content-Disposition": `attachment; filename=${path.basename(
+            logoPath
+          )}`,
+          "Content-Length": data.length,
         });
+        response.end(data);
+      });
     } catch (error) {
-        console.error("Error processing the logo request:", error);
-        response.status(500).json({ message: "Internal server error" });
+      console.error("Error processing the logo request:", error);
+      response.status(500).json({ message: "Internal server error" });
     }
-});
+  });
 
   app.post(
     "/system/upload-logo",
@@ -407,13 +414,24 @@ function systemEndpoints(app) {
         return response.status(400).json({ message: "No logo file provided." });
       }
 
-      if (request.file.originalname === "ALLM-Default.png") {
+      if (
+        request.file.originalname === "ALLM-Default.png" ||
+        request.file.originalname === "ALLM-Default-Light.png"
+      ) {
         return response.status(400).json({
           message: "Invalid file name. Please choose a different file.",
         });
       }
 
       try {
+        if (await SystemSettings.isMultiUserMode()) {
+          const user = await userFromSession(request, response);
+          if (!user || user?.role !== "admin") {
+            response.sendStatus(401).end();
+            return;
+          }
+        }
+
         const extname = path.extname(request.file.originalname);
 
         const newFilename = `${v4()}${extname}`;
@@ -456,40 +474,56 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/remove-logo", [validatedRequest], async (_, response) => {
-    try {
-      const currentLogoFilename = await SystemSettings.currentLogoFilename();
-
-      if (currentLogoFilename && currentLogoFilename !== "ALLM-Default.png") {
-        const logoPath = path.join(
-          __dirname,
-          `../storage/assets/${currentLogoFilename}`
-        );
-        if (fs.existsSync(logoPath)) {
-          fs.unlinkSync(logoPath);
+  app.get(
+    "/system/remove-logo",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (await SystemSettings.isMultiUserMode()) {
+          const user = await userFromSession(request, response);
+          if (!user || user?.role !== "admin") {
+            response.sendStatus(401).end();
+            return;
+          }
         }
-      }
 
-      const updateResponse = await SystemSettings.updateSettings({
-        logo_filename: "ALLM-Default.png",
-      });
+        const currentLogoFilename = await SystemSettings.currentLogoFilename();
 
-      if (!updateResponse || !updateResponse.success) {
-        return response.status(500).json({
-          message:
-            updateResponse.error ||
-            "Failed to update database with default logo filename.",
+        if (
+          currentLogoFilename &&
+          currentLogoFilename !== "ALLM-Default.png" &&
+          currentLogoFilename !== "ALLM-Default-Light.png"
+        ) {
+          const logoPath = path.join(
+            __dirname,
+            `../storage/assets/${currentLogoFilename}`
+          );
+          if (fs.existsSync(logoPath)) {
+            fs.unlinkSync(logoPath);
+          }
+        }
+
+        const updateResponse = await SystemSettings.updateSettings({
+          logo_filename: "ALLM-Default.png",
         });
-      }
 
-      response
-        .status(200)
-        .json({ message: "Successfully reverted to default logo." });
-    } catch (error) {
-      console.error("Error processing the logo removal:", error);
-      response.status(500).json({ message: "Error removing the logo." });
+        if (!updateResponse || !updateResponse.success) {
+          return response.status(500).json({
+            message:
+              updateResponse.error ||
+              "Failed to update database with default logo filename.",
+          });
+        }
+
+        response
+          .status(200)
+          .json({ message: "Successfully reverted to default logo." });
+      } catch (error) {
+        console.error("Error processing the logo removal:", error);
+        response.status(500).json({ message: "Error removing the logo." });
+      }
     }
-  });
+  );
 }
 
 module.exports = { systemEndpoints };

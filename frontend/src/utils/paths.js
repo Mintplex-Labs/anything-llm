@@ -43,5 +43,8 @@ export default {
     chats: () => {
       return "/admin/workspace-chats";
     },
+    appearance: () => {
+      return "/admin/appearance";
+    },
   },
 };
