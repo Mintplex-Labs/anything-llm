@@ -14,7 +14,7 @@ def as_text(**kwargs):
 
   print(f"-- Working {fullpath} --")
   data = {
-    'id': guid(), 
+    'id': guid(),
     'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{filename}{ext}"),
     'title': f"{filename}{ext}",
     'description': "a custom file uploaded by the user.",
@@ -23,7 +23,7 @@ def as_text(**kwargs):
     'pageContent': content,
     'token_count_estimate': len(tokenize(content))
   }
-  
+
   write_to_server_documents(data, f"{slugify(filename)}-{data.get('id')}")
   move_source(parent_dir, f"{filename}{ext}", remove=remove)
   print(f"[SUCCESS]: {filename}{ext} converted & ready for embedding.\n")

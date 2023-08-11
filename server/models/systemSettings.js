@@ -4,6 +4,7 @@ const SystemSettings = {
     "users_can_delete_workspaces",
     "limit_user_messages",
     "message_limit",
+    "logo_filename",
   ],
   privateField: [],
   tablename: "system_settings",
@@ -116,6 +117,10 @@ const SystemSettings = {
   },
   isMultiUserMode: async function () {
     return (await this.get(`label = 'multi_user_mode'`))?.value === "true";
+  },
+  currentLogoFilename: async function () {
+    const result = await this.get(`label = 'logo_filename'`);
+    return result ? result.value : null;
   },
 };
 

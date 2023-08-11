@@ -24,6 +24,8 @@ import Discord from "../Icons/Discord";
 import useUser from "../../hooks/useUser";
 import { userFromStorage } from "../../utils/request";
 import { AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
+import System from "../../models/system";
+import defaultLogo from "../../../public/assets/ALLM-Default.png";
 
 export default function Sidebar() {
   const sidebarRef = useRef(null);
@@ -38,6 +40,22 @@ export default function Sidebar() {
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
 
+  const [logo, setLogo] = useState("");
+
+  useEffect(() => {
+    async function initialFetch() {
+      try {
+        const logoURL = await System.fetchLogo();
+        setLogo(logoURL);
+      } catch (err) {
+        setLogo(defaultLogo);
+        console.error("Failed to fetch logo:", err);
+      }
+    }
+
+    initialFetch();
+  }, []);
+
   return (
     <>
       <div
@@ -48,9 +66,16 @@ export default function Sidebar() {
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
           {/* Header Information */}
           <div className="flex w-full items-center justify-between">
-            <p className="text-xl font-base text-slate-600 dark:text-slate-200">
-              AnythingLLM
-            </p>
+            <div className="flex-grow relative">
+              {" "}
+              {/* This div will take up the remaining space next to the settings */}
+              <img
+                src={logo}
+                alt="Logo"
+                className="rounded max-w-full max-h-[40px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                style={{ objectFit: "contain" }}
+              />
+            </div>
             <div className="flex gap-x-2 items-center text-slate-500">
               <AdminHome />
               <button
