@@ -68,7 +68,6 @@ export default function Sidebar() {
           <div className="flex w-full items-center justify-between">
             <div className="flex-grow relative">
               {" "}
-              {/* This div will take up the remaining space next to the settings */}
               <img
                 src={logo}
                 alt="Logo"

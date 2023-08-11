@@ -365,8 +365,6 @@ function systemEndpoints(app) {
   app.get("/system/logo", async function (_, response) {
     try {
       const logoFilename = await SystemSettings.currentLogoFilename();
-
-      // Base path for logos
       const basePath = path.join(__dirname, "../storage/assets");
 
       let logoPath;
