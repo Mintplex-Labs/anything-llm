@@ -172,7 +172,6 @@ const System = {
   fetchLogo: async function (light = false) {
     try {
         const lightParam = light ? "/light" : "";
-        console.log(`${API_BASE}/system/logo${lightParam}`);
         const response = await fetch(`${API_BASE}/system/logo${lightParam}`);
         const blob = await response.blob();
         return URL.createObjectURL(blob);
