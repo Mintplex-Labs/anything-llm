@@ -51,7 +51,7 @@ export default function Sidebar() {
         const logoURL = prefersDarkMode ? await System.fetchLogo(false) : await System.fetchLogo(true);
         setLogo(logoURL);
       } catch (err) {
-        setLogo(defaultLogo);
+        setLogo(prefersDarkMode ?  defaultLogo : defaultLogoLight );
         console.error("Failed to fetch logo:", err);
       }
     }
