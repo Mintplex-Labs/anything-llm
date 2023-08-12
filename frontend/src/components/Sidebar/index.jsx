@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  AtSign,
   BookOpen,
   Briefcase,
   Cpu,
   GitHub,
   LogOut,
   Menu,
+  Package,
   Plus,
   Shield,
   Tool,
@@ -87,25 +89,26 @@ export default function Sidebar() {
                   <IndexCount />
                 </div>
                 <a
-                  href={paths.hosting()}
+                  href={paths.feedback()}
                   target="_blank"
                   className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
                 >
-                  <Cpu className="h-4 w-4" />
+                  <AtSign className="h-4 w-4" />
                   <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                    Managed cloud hosting
+                    Feedback form
                   </p>
                 </a>
                 <a
                   href={paths.hosting()}
                   target="_blank"
-                  className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100  dark:bg-stone-800 dark:hover:bg-stone-900"
+                  className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
                 >
-                  <Briefcase className="h-4 w-4" />
+                  <Package className="h-4 w-4" />
                   <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                    Enterprise Installation
+                    Managed cloud hosting
                   </p>
                 </a>
+
                 <LogoutButton />
               </div>
 
@@ -198,11 +201,10 @@ export function SidebarMobileHeader() {
         className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
       >
         <div
-          className={`${
-            showBgOverlay
-              ? "transition-all opacity-1"
-              : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 bg-black-900 bg-opacity-75 w-screen h-screen`}
+          className={`${showBgOverlay
+            ? "transition-all opacity-1"
+            : "transition-none opacity-0"
+            }  duration-500 fixed top-0 left-0 bg-black-900 bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div
@@ -254,23 +256,23 @@ export function SidebarMobileHeader() {
                     <IndexCount />
                   </div>
                   <a
-                    href={paths.hosting()}
+                    href={paths.feedback()}
                     target="_blank"
                     className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
                   >
-                    <Cpu className="h-4 w-4" />
+                    <AtSign className="h-4 w-4" />
                     <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                      Managed cloud hosting
+                      Feedback form
                     </p>
                   </a>
                   <a
                     href={paths.hosting()}
                     target="_blank"
-                    className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100  dark:bg-stone-800 dark:hover:bg-stone-900"
+                    className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
                   >
-                    <Briefcase className="h-4 w-4" />
+                    <Package className="h-4 w-4" />
                     <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                      Enterprise Installation
+                      Managed cloud hosting
                     </p>
                   </a>
                   <LogoutButton />

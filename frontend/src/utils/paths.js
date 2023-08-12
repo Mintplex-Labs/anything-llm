@@ -11,13 +11,16 @@ export default {
     return "https://discord.com/invite/6UyHPeGZAC";
   },
   docs: () => {
-    return "https://docs.mintplex.xyz/anythingllm-by-mintplex-labs/";
+    return "https://docs.useanything.com";
   },
   mailToMintplex: () => {
-    return "mailto:team@mintplex.xyz";
+    return "mailto:team@mintplexlabs.com";
   },
   hosting: () => {
-    return "https://form.typeform.com/to/KdSCdSvq";
+    return "https://my.mintplexlabs.com/aio-checkout?product=anythingllm";
+  },
+  feedback: () => {
+    return "https://form.typeform.com/to/i0KE3aEW";
   },
   workspace: {
     chat: (slug) => {
