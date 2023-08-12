@@ -147,55 +147,45 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  uploadLogo: async function (file) {
-    const formData = new FormData();
-    formData.append("logo", file);
-
-    try {
-      const response = await fetch(`${API_BASE}/system/upload-logo`, {
-        method: "POST",
-        body: formData,
+  uploadLogo: async function (formData) {
+    return await fetch(`${API_BASE}/system/upload-logo`, {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error uploading logo.");
+        return { success: true, error: null };
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
       });
-
-      const result = await response.json();
-
-      if (response.status === 200) {
-        return { success: true };
-      } else {
-        throw new Error(result.message || "Error uploading logo.");
-      }
-    } catch (err) {
-      console.error("Failed to upload logo:", err);
-      throw err;
-    }
   },
   fetchLogo: async function (light = false) {
-    try {
-      const lightParam = light ? "/light" : "";
-      const response = await fetch(`${API_BASE}/system/logo${lightParam}`);
-      const blob = await response.blob();
-      return URL.createObjectURL(blob);
-    } catch (err) {
-      console.error("Failed to fetch logo:", err);
-      throw err;
-    }
+    return await fetch(`${API_BASE}/system/logo${light ? "/light" : ""}`, {
+      method: "GET",
+      cache: "no-cache",
+    })
+      .then((res) => {
+        if (res.ok) return res.blob();
+        throw new Error("Failed to fetch logo!");
+      })
+      .then((blob) => URL.createObjectURL(blob))
+      .catch((e) => {
+        console.log(e);
+        return null;
+      });
   },
-
   removeCustomLogo: async function () {
-    try {
-      const response = await fetch(`${API_BASE}/system/remove-logo`);
-
-      const result = await response.json();
-
-      if (response.status === 200) {
-        return { success: true };
-      } else {
-        throw new Error(result.message || "Error removing logo.");
-      }
-    } catch (err) {
-      console.error("Failed to remove logo:", err);
-      throw err;
-    }
+    return await fetch(`${API_BASE}/system/remove-logo`)
+      .then((res) => {
+        if (res.ok) return { success: true, error: null };
+        throw new Error("Error removing logo!");
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
   },
 };
 

@@ -2,54 +2,63 @@ import React, { useState, useEffect } from "react";
 import Sidebar, { SidebarMobileHeader } from "../../../components/AdminSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "../../../models/admin";
-import defaultLogo from "../../../../public/assets/ALLM-Default.png";
+import AnythingLLMLight from "../../../media/logo/anything-llm-light.png";
+import AnythingLLMDark from "../../../media/logo/anything-llm-dark.png";
+import usePrefersDarkMode from "../../../hooks/usePrefersDarkMode";
+import useLogo from "../../../hooks/useLogo";
 
 export default function Appearance() {
+  const { logo: _initLogo } = useLogo();
   const [logo, setLogo] = useState("");
+  const prefersDarkMode = usePrefersDarkMode();
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
-    async function initialFetch() {
-      try {
-        const logoURL = await Admin.fetchLogo();
-        setLogo(logoURL);
-      } catch (err) {
-        console.error("Failed to fetch logo:", err);
-      }
+    async function setInitLogo() {
+      setLogo(_initLogo || '');
     }
+    setInitLogo();
+  }, [_initLogo]);
 
-    initialFetch();
-  }, []);
+  useEffect(() => {
+    if (!!errorMsg) {
+      setTimeout(() => {
+        setErrorMsg('')
+      }, 3_500)
+    }
+  }, [errorMsg])
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
-    if (file) {
-      try {
-        await Admin.uploadLogo(file);
-        const logoURL = await Admin.fetchLogo();
-        setLogo(logoURL);
-        setErrorMsg("");
+    if (!file) return false;
 
-        window.location.reload();
-      } catch (err) {
-        console.error("Failed to upload logo:", err);
-        setErrorMsg("Failed to upload logo.");
-      }
+    const formData = new FormData();
+    formData.append("logo", file);
+    const { success, error } = await Admin.uploadLogo(formData);
+    if (!success) {
+      setErrorMsg(error);
+      return;
     }
+
+    const logoURL = await Admin.fetchLogo();
+    setLogo(logoURL);
+    setErrorMsg("");
+    window.location.reload();
   };
 
   const handleRemoveLogo = async () => {
-    try {
-      await Admin.removeCustomLogo();
-      const logoURL = await Admin.fetchLogo();
-      setLogo(logoURL);
-      setErrorMsg("");
-
-      window.location.reload();
-    } catch (err) {
-      console.error("Failed to remove logo:", err);
-      setErrorMsg("Failed to remove logo.");
+    const { success, error } = await Admin.removeCustomLogo();
+    if (!success) {
+      console.error("Failed to remove logo:", error);
+      setErrorMsg(error);
+      return;
     }
+
+    const logoURL = await Admin.fetchLogo();
+    setLogo(logoURL);
+    setErrorMsg("");
+
+    window.location.reload();
   };
 
   return (
@@ -75,7 +84,11 @@ export default function Appearance() {
               src={logo}
               alt="Uploaded Logo"
               className="w-48 h-48 object-contain mr-6"
-              onError={(e) => (e.target.src = defaultLogo)}
+              onError={(e) =>
+              (e.target.src = prefersDarkMode
+                ? AnythingLLMLight
+                : AnythingLLMDark)
+              }
             />
 
             <div className="flex flex-col">

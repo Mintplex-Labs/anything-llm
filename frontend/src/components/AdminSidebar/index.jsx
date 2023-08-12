@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   BookOpen,
-  Database,
   Eye,
   GitHub,
   Mail,
@@ -15,31 +14,11 @@ import IndexCount from "../Sidebar/IndexCount";
 import LLMStatus from "../Sidebar/LLMStatus";
 import paths from "../../utils/paths";
 import Discord from "../Icons/Discord";
-import usePrefersDarkMode from "../../hooks/usePrefersDarkMode";
-import defaultLogo from "../../../public/assets/ALLM-Default.png";
-import defaultLogoLight from "../../../public/assets/ALLM-Default-Light.png";
-import System from "../../models/system";
+import useLogo from "../../hooks/useLogo";
 
 export default function AdminSidebar() {
+  const { logo } = useLogo();
   const sidebarRef = useRef(null);
-  const [logo, setLogo] = useState("");
-  const prefersDarkMode = usePrefersDarkMode();
-
-  useEffect(() => {
-    async function initialFetch() {
-      try {
-        const logoURL = prefersDarkMode
-          ? await System.fetchLogo(false)
-          : await System.fetchLogo(true);
-        setLogo(logoURL);
-      } catch (err) {
-        setLogo(prefersDarkMode ? defaultLogo : defaultLogoLight);
-        console.error("Failed to fetch logo:", err);
-      }
-    }
-
-    initialFetch();
-  }, [prefersDarkMode]);
 
   return (
     <>
@@ -51,12 +30,11 @@ export default function AdminSidebar() {
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
           {/* Header Information */}
           <div className="flex w-full items-center justify-between">
-            <div className="flex-grow relative">
-              {" "}
+            <div className="flex shrink-0 max-w-[50%] items-center justify-start">
               <img
                 src={logo}
                 alt="Logo"
-                className="rounded max-w-full max-h-[40px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                className="rounded max-h-[40px]"
                 style={{ objectFit: "contain" }}
               />
             </div>
@@ -152,6 +130,7 @@ export default function AdminSidebar() {
 }
 
 export function SidebarMobileHeader() {
+  const { logo } = useLogo();
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
@@ -178,9 +157,14 @@ export function SidebarMobileHeader() {
         >
           <Menu className="h-6 w-6" />
         </button>
-        <p className="text-xl font-base text-slate-600 dark:text-slate-200">
-          AnythingLLM
-        </p>
+        <div className="flex shrink-0 w-fit items-center justify-start">
+          <img
+            src={logo}
+            alt="Logo"
+            className="rounded w-full max-h-[40px]"
+            style={{ objectFit: "contain" }}
+          />
+        </div>
       </div>
       <div
         style={{
@@ -203,9 +187,14 @@ export function SidebarMobileHeader() {
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             {/* Header Information */}
             <div className="flex w-full items-center justify-between">
-              <p className="text-xl font-base text-slate-600 dark:text-slate-200">
-                AnythingLLM Admin
-              </p>
+              <div className="flex shrink-0 w-fit items-center justify-start">
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className="rounded w-full max-h-[40px]"
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
               <div className="flex gap-x-2 items-center text-slate-500">
                 <a
                   href={paths.home()}
@@ -224,9 +213,34 @@ export function SidebarMobileHeader() {
                   className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
                 >
                   <Option
+                    href={paths.admin.system()}
+                    btnText="System Preferences"
+                    icon={<Settings className="h-4 w-4 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.admin.invites()}
+                    btnText="Invitation Management"
+                    icon={<Mail className="h-4 w-4 flex-shrink-0" />}
+                  />
+                  <Option
                     href={paths.admin.users()}
                     btnText="User Management"
                     icon={<Users className="h-4 w-4 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.admin.workspaces()}
+                    btnText="Workspace Management"
+                    icon={<BookOpen className="h-4 w-4 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.admin.chats()}
+                    btnText="Workspace Chat Management"
+                    icon={<MessageSquare className="h-4 w-4 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.admin.appearance()}
+                    btnText="Appearance"
+                    icon={<Eye className="h-4 w-4 flex-shrink-0" />}
                   />
                 </div>
               </div>
