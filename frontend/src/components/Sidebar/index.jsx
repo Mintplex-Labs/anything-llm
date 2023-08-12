@@ -98,17 +98,7 @@ export default function Sidebar() {
                     Feedback form
                   </p>
                 </a>
-                <a
-                  href={paths.hosting()}
-                  target="_blank"
-                  className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
-                >
-                  <Package className="h-4 w-4" />
-                  <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                    Managed cloud hosting
-                  </p>
-                </a>
-
+                <ManagedHosting />
                 <LogoutButton />
               </div>
 
@@ -201,10 +191,11 @@ export function SidebarMobileHeader() {
         className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
       >
         <div
-          className={`${showBgOverlay
-            ? "transition-all opacity-1"
-            : "transition-none opacity-0"
-            }  duration-500 fixed top-0 left-0 bg-black-900 bg-opacity-75 w-screen h-screen`}
+          className={`${
+            showBgOverlay
+              ? "transition-all opacity-1"
+              : "transition-none opacity-0"
+          }  duration-500 fixed top-0 left-0 bg-black-900 bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div
@@ -265,16 +256,7 @@ export function SidebarMobileHeader() {
                       Feedback form
                     </p>
                   </a>
-                  <a
-                    href={paths.hosting()}
-                    target="_blank"
-                    className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
-                  >
-                    <Package className="h-4 w-4" />
-                    <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                      Managed cloud hosting
-                    </p>
-                  </a>
+                  <ManagedHosting />
                   <LogoutButton />
                 </div>
 
@@ -352,5 +334,21 @@ function LogoutButton() {
         Log out of {user.username}
       </p>
     </button>
+  );
+}
+
+function ManagedHosting() {
+  if (window.location.origin.includes(".useanything.com")) return null;
+  return (
+    <a
+      href={paths.hosting()}
+      target="_blank"
+      className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
+    >
+      <Package className="h-4 w-4" />
+      <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
+        Managed cloud hosting
+      </p>
+    </a>
   );
 }
