@@ -147,6 +147,46 @@ const System = {
         return { success: false, error: e.message };
       });
   },
+  uploadLogo: async function (formData) {
+    return await fetch(`${API_BASE}/system/upload-logo`, {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error uploading logo.");
+        return { success: true, error: null };
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
+  fetchLogo: async function (light = false) {
+    return await fetch(`${API_BASE}/system/logo${light ? "/light" : ""}`, {
+      method: "GET",
+      cache: "no-cache",
+    })
+      .then((res) => {
+        if (res.ok) return res.blob();
+        throw new Error("Failed to fetch logo!");
+      })
+      .then((blob) => URL.createObjectURL(blob))
+      .catch((e) => {
+        console.log(e);
+        return null;
+      });
+  },
+  removeCustomLogo: async function () {
+    return await fetch(`${API_BASE}/system/remove-logo`)
+      .then((res) => {
+        if (res.ok) return { success: true, error: null };
+        throw new Error("Error removing logo!");
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
 };
 
 export default System;

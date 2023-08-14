@@ -72,13 +72,13 @@ WORKDIR /app
 
 # Setup the server
 FROM server-deps as production-stage
-COPY ./server/ ./server/
+COPY --chown=anythingllm:anythingllm ./server/ ./server/
 
 # Copy built static frontend files to the server public directory
 COPY --from=build-stage /app/frontend/dist ./server/public
 
 # Copy the collector
-COPY ./collector/ ./collector/
+COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
 
 # Install collector dependencies
 WORKDIR /app/collector

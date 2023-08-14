@@ -1,20 +1,24 @@
 <p align="center">
-    <b>🤖 AnythingLLM: A full-stack personalized AI assistant</b>. <br />
-    A hyper-efficient and open-source document chatbot solution for all.
+  <a href="https://useanything.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
 
 <p align="center">
- <a href="https://twitter.com/tcarambat" target="_blank">
-      <img src="https://img.shields.io/twitter/url/https/twitter.com/tim.svg?style=social&label=Follow%20%40Timothy%20Carambat" alt="Twitter">
-  </a> |
+    <b>AnythingLLM: A business-compliant document chatbot</b>. <br />
+    A hyper-efficient and open-source enterprise-ready document chatbot solution for all.
+</p>
+
+<p align="center">
   <a href="https://discord.gg/6UyHPeGZAC" target="_blank">
       <img src="https://dcbadge.vercel.app/api/server/6UyHPeGZAC?compact=true&style=flat" alt="Discord">
   </a> |
   <a href="https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="License">
   </a> |
-  <a href="https://docs.mintplex.xyz/anythingllm-by-mintplex-labs/" target="_blank">
+  <a href="https://docs.useanything.com" target="_blank">
     Docs
+  </a> |
+   <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
+    Hosted Instance
   </a>
 </p>
 

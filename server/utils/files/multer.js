@@ -1,9 +1,11 @@
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+
 function setupMulter() {
-  const multer = require("multer");
   // Handle File uploads for auto-uploading.
   const storage = multer.diskStorage({
     destination: function (_, _, cb) {
-      const path = require("path");
       const uploadOutput =
         process.env.NODE_ENV === "development"
           ? path.resolve(__dirname, `../../../collector/hotdir`)
@@ -14,19 +16,14 @@ function setupMulter() {
       cb(null, file.originalname);
     },
   });
-  const upload = multer({
-    storage,
-  });
-  return { handleUploads: upload };
+
+  return { handleUploads: multer({ storage }) };
 }
 
 function setupDataImports() {
-  const multer = require("multer");
   // Handle File uploads for auto-uploading.
   const storage = multer.diskStorage({
     destination: function (_, _, cb) {
-      const path = require("path");
-      const fs = require("fs");
       const uploadOutput = path.resolve(__dirname, `../../storage/imports`);
       fs.mkdirSync(uploadOutput, { recursive: true });
       return cb(null, uploadOutput);
@@ -35,13 +32,28 @@ function setupDataImports() {
       cb(null, file.originalname);
     },
   });
-  const upload = multer({
-    storage,
+
+  return { handleImports: multer({ storage }) };
+}
+
+function setupLogoUploads() {
+  // Handle Logo uploads.
+  const storage = multer.diskStorage({
+    destination: function (_, _, cb) {
+      const uploadOutput = path.resolve(__dirname, `../../storage/assets`);
+      fs.mkdirSync(uploadOutput, { recursive: true });
+      return cb(null, uploadOutput);
+    },
+    filename: function (_, file, cb) {
+      cb(null, file.originalname);
+    },
   });
-  return { handleImports: upload };
+
+  return { handleLogoUploads: multer({ storage }) };
 }
 
 module.exports = {
   setupMulter,
   setupDataImports,
+  setupLogoUploads,
 };
