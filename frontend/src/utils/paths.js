@@ -22,6 +22,9 @@ export default {
   feedback: () => {
     return "https://mintplexlabs.typeform.com/to/i0KE3aEW";
   },
+  appearance: () => {
+    return "/system/appearance";
+  },
   workspace: {
     chat: (slug) => {
       return `/workspace/${slug}`;
@@ -45,6 +48,9 @@ export default {
     },
     chats: () => {
       return "/admin/workspace-chats";
+    },
+    appearance: () => {
+      return "/admin/appearance";
     },
   },
 };

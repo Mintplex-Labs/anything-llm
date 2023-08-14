@@ -8,6 +8,8 @@ const { WorkspaceChats } = require("../models/workspaceChats");
 const { getVectorDbClass } = require("../utils/helpers");
 const { userFromSession, reqBody } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const { setupLogoUploads } = require("../utils/files/multer");
+const { handleLogoUploads } = setupLogoUploads();
 
 function adminEndpoints(app) {
   if (!app) return;

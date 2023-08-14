@@ -188,6 +188,34 @@ const Admin = {
         return { success: false, error: e.message };
       });
   },
+  uploadLogo: async function (formData) {
+    return await fetch(`${API_BASE}/system/upload-logo`, {
+      method: "POST",
+      body: formData,
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error uploading logo.");
+        return { success: true, error: null };
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
+  removeCustomLogo: async function () {
+    return await fetch(`${API_BASE}/system/remove-logo`, {
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (res.ok) return { success: true, error: null };
+        throw new Error("Error removing logo!");
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
 };
 
 export default Admin;

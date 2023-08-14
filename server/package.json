@@ -30,6 +30,7 @@
     "graphql": "^16.7.1",
     "jsonwebtoken": "^8.5.1",
     "langchain": "^0.0.90",
+    "mime": "^3.0.0",
     "moment": "^2.29.4",
     "multer": "^1.4.5-lts.1",
     "openai": "^3.2.1",

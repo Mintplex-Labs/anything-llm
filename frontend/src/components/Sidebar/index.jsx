@@ -26,8 +26,10 @@ import Discord from "../Icons/Discord";
 import useUser from "../../hooks/useUser";
 import { userFromStorage } from "../../utils/request";
 import { AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
+import useLogo from "../../hooks/useLogo";
 
 export default function Sidebar() {
+  const { logo } = useLogo();
   const sidebarRef = useRef(null);
   const {
     showing: showingSystemSettingsModal,
@@ -50,9 +52,14 @@ export default function Sidebar() {
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
           {/* Header Information */}
           <div className="flex w-full items-center justify-between">
-            <p className="text-xl font-base text-slate-600 dark:text-slate-200">
-              AnythingLLM
-            </p>
+            <div className="flex shrink-0 max-w-[50%] items-center justify-start">
+              <img
+                src={logo}
+                alt="Logo"
+                className="rounded max-h-[40px]"
+                style={{ objectFit: "contain" }}
+              />
+            </div>
             <div className="flex gap-x-2 items-center text-slate-500">
               <AdminHome />
               <button
@@ -144,6 +151,7 @@ export default function Sidebar() {
 }
 
 export function SidebarMobileHeader() {
+  const { logo } = useLogo();
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
@@ -180,9 +188,14 @@ export function SidebarMobileHeader() {
         >
           <Menu className="h-6 w-6" />
         </button>
-        <p className="text-xl font-base text-slate-600 dark:text-slate-200">
-          AnythingLLM
-        </p>
+        <div className="flex shrink-0 w-fit items-center justify-start">
+          <img
+            src={logo}
+            alt="Logo"
+            className="rounded w-full max-h-[40px]"
+            style={{ objectFit: "contain" }}
+          />
+        </div>
       </div>
       <div
         style={{
@@ -205,9 +218,14 @@ export function SidebarMobileHeader() {
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             {/* Header Information */}
             <div className="flex w-full items-center justify-between">
-              <p className="text-xl font-base text-slate-600 dark:text-slate-200">
-                AnythingLLM
-              </p>
+              <div className="flex shrink-0 w-fit items-center justify-start">
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className="rounded w-full max-h-[40px]"
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
               <div className="flex gap-x-2 items-center text-slate-500">
                 <AdminHome />
                 <button
