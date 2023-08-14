@@ -203,20 +203,6 @@ const Admin = {
         return { success: false, error: e.message };
       });
   },
-  fetchLogo: async function (light = false) {
-    return await fetch(`${API_BASE}/system/logo${light ? "/light" : ""}`, {
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (res.ok) return res.blob();
-        throw new Error("Failed to fetch logo!");
-      })
-      .then((blob) => URL.createObjectURL(blob))
-      .catch((e) => {
-        console.log(e);
-        return null;
-      });
-  },
   removeCustomLogo: async function () {
     return await fetch(`${API_BASE}/system/remove-logo`, {
       headers: baseHeaders(),

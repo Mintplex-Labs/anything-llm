@@ -6,6 +6,7 @@ import AnythingLLMLight from "../../../media/logo/anything-llm-light.png";
 import AnythingLLMDark from "../../../media/logo/anything-llm-dark.png";
 import usePrefersDarkMode from "../../../hooks/usePrefersDarkMode";
 import useLogo from "../../../hooks/useLogo";
+import System from "../../../models/system";
 
 export default function Appearance() {
   const { logo: _initLogo } = useLogo();
@@ -15,7 +16,7 @@ export default function Appearance() {
 
   useEffect(() => {
     async function setInitLogo() {
-      setLogo(_initLogo || '');
+      setLogo(_initLogo || "");
     }
     setInitLogo();
   }, [_initLogo]);
@@ -23,10 +24,10 @@ export default function Appearance() {
   useEffect(() => {
     if (!!errorMsg) {
       setTimeout(() => {
-        setErrorMsg('')
-      }, 3_500)
+        setErrorMsg("");
+      }, 3_500);
     }
-  }, [errorMsg])
+  }, [errorMsg]);
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -40,7 +41,7 @@ export default function Appearance() {
       return;
     }
 
-    const logoURL = await Admin.fetchLogo();
+    const logoURL = await System.fetchLogo();
     setLogo(logoURL);
     setErrorMsg("");
     window.location.reload();
@@ -54,7 +55,7 @@ export default function Appearance() {
       return;
     }
 
-    const logoURL = await Admin.fetchLogo();
+    const logoURL = await System.fetchLogo();
     setLogo(logoURL);
     setErrorMsg("");
 
@@ -85,9 +86,9 @@ export default function Appearance() {
               alt="Uploaded Logo"
               className="w-48 h-48 object-contain mr-6"
               onError={(e) =>
-              (e.target.src = prefersDarkMode
-                ? AnythingLLMLight
-                : AnythingLLMDark)
+                (e.target.src = prefersDarkMode
+                  ? AnythingLLMLight
+                  : AnythingLLMDark)
               }
             />
 

@@ -14,7 +14,7 @@ export default function Appearance() {
 
   useEffect(() => {
     async function setInitLogo() {
-      setLogo(_initLogo || '');
+      setLogo(_initLogo || "");
     }
     setInitLogo();
   }, [_initLogo]);
@@ -22,16 +22,16 @@ export default function Appearance() {
   useEffect(() => {
     if (!!successMsg) {
       setTimeout(() => {
-        setSuccessMsg('')
-      }, 3_500)
+        setSuccessMsg("");
+      }, 3_500);
     }
 
     if (!!errorMsg) {
       setTimeout(() => {
-        setErrorMsg('')
-      }, 3_500)
+        setErrorMsg("");
+      }, 3_500);
     }
-  }, [successMsg, errorMsg])
+  }, [successMsg, errorMsg]);
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -84,9 +84,9 @@ export default function Appearance() {
             alt="Uploaded Logo"
             className="w-48 h-48 object-contain"
             onError={(e) =>
-            (e.target.src = prefersDarkMode
-              ? AnythingLLMLight
-              : AnythingLLMDark)
+              (e.target.src = prefersDarkMode
+                ? AnythingLLMLight
+                : AnythingLLMDark)
             }
           />
           <div className="flex gap-2 p-2 flex-col items-center">
