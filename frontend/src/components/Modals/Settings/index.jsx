@@ -6,6 +6,7 @@ import {
   Users,
   Database,
   MessageSquare,
+  Eye,
 } from "react-feather";
 import ExportOrImportData from "./ExportImport";
 import PasswordProtection from "./PasswordProtection";
@@ -14,6 +15,7 @@ import MultiUserMode from "./MultiUserMode";
 import useUser from "../../../hooks/useUser";
 import VectorDBSelection from "./VectorDbs";
 import LLMSelection from "./LLMSelection";
+import paths from "../../../utils/paths";
 
 const TABS = {
   llm: LLMSelection,
@@ -132,6 +134,12 @@ function SettingTabs({ selectedTab, changeTab, settings, user }) {
           />
         </>
       )}
+      <SettingTab
+        displayName="Appearance"
+        tabName="appearance"
+        icon={<Eye className="h-4 w-4 flex-shrink-0" />}
+        onClick={() => window.open(paths.appearance())}
+      />
     </ul>
   );
 }

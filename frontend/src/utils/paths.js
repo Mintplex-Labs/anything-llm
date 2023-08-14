@@ -19,6 +19,9 @@ export default {
   hosting: () => {
     return "https://form.typeform.com/to/KdSCdSvq";
   },
+  appearance: () => {
+    return "/system/appearance";
+  },
   workspace: {
     chat: (slug) => {
       return `/workspace/${slug}`;
