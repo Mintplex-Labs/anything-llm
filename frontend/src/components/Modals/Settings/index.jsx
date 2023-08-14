@@ -132,14 +132,14 @@ function SettingTabs({ selectedTab, changeTab, settings, user }) {
             icon={<Lock className="h-4 w-4 flex-shrink-0" />}
             onClick={changeTab}
           />
+          <SettingTab
+            displayName="Appearance"
+            tabName="appearance"
+            icon={<Eye className="h-4 w-4 flex-shrink-0" />}
+            onClick={() => window.open(paths.appearance())}
+          />
         </>
       )}
-      <SettingTab
-        displayName="Appearance"
-        tabName="appearance"
-        icon={<Eye className="h-4 w-4 flex-shrink-0" />}
-        onClick={() => window.open(paths.appearance())}
-      />
     </ul>
   );
 }
