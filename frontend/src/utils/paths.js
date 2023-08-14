@@ -20,7 +20,7 @@ export default {
     return "https://my.mintplexlabs.com/aio-checkout?product=anythingllm";
   },
   feedback: () => {
-    return "https://form.typeform.com/to/i0KE3aEW";
+    return "https://mintplexlabs.typeform.com/to/i0KE3aEW";
   },
   workspace: {
     chat: (slug) => {
