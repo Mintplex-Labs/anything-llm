@@ -15,6 +15,7 @@ const {
 } = require("../utils/files/documentProcessor");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { SystemSettings } = require("../models/systemSettings");
+const { Telemetry } = require("../models/telemetry");
 const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
@@ -25,6 +26,11 @@ function workspaceEndpoints(app) {
       const user = await userFromSession(request, response);
       const { name = null } = reqBody(request);
       const { workspace, message } = await Workspace.new(name, user?.id);
+      await Telemetry.sendTelemetry("workspace_created", {
+        multiUserMode: multiUserMode(response),
+        LLMSelection: process.env.LLM_PROVIDER || "openai",
+        VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+      });
       response.status(200).json({ workspace, message });
     } catch (e) {
       console.log(e.message, e);
@@ -87,6 +93,7 @@ function workspaceEndpoints(app) {
       console.log(
         `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
       );
+      await Telemetry.sendTelemetry("document_uploaded");
       return;
     }
   );

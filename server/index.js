@@ -12,10 +12,11 @@ const { systemEndpoints } = require("./endpoints/system");
 const { workspaceEndpoints } = require("./endpoints/workspaces");
 const { chatEndpoints } = require("./endpoints/chat");
 const { getVectorDbClass } = require("./utils/helpers");
-const { validateTablePragmas } = require("./utils/database");
+const { validateTablePragmas, setupTelemetry } = require("./utils/database");
 const { adminEndpoints } = require("./endpoints/admin");
 const { inviteEndpoints } = require("./endpoints/invite");
 const { utilEndpoints } = require("./endpoints/utils");
+const { Telemetry } = require("./models/telemetry");
 const app = express();
 const apiRouter = express.Router();
 
@@ -86,15 +87,18 @@ app.all("*", function (_, response) {
 app
   .listen(process.env.SERVER_PORT || 3001, async () => {
     await validateTablePragmas();
+    await setupTelemetry();
     console.log(
       `Example app listening on port ${process.env.SERVER_PORT || 3001}`
     );
   })
   .on("error", function (err) {
     process.once("SIGUSR2", function () {
+      Telemetry.flush();
       process.kill(process.pid, "SIGUSR2");
     });
     process.on("SIGINT", function () {
+      Telemetry.flush();
       process.kill(process.pid, "SIGINT");
     });
   });

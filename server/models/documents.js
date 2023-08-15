@@ -2,6 +2,7 @@ const { fileData } = require("../utils/files");
 const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass } = require("../utils/helpers");
 const { checkForMigrations } = require("../utils/database");
+const { Telemetry } = require("./telemetry");
 
 const Document = {
   tablename: "workspace_documents",
@@ -120,6 +121,10 @@ const Document = {
 
     stmt.finalize();
     db.close();
+    await Telemetry.sendTelemetry("documents_embedded_in_workspace", {
+      LLMSelection: process.env.LLM_PROVIDER || "openai",
+      VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+    });
     return;
   },
   removeDocuments: async function (workspace, removals = []) {
@@ -156,6 +161,10 @@ const Document = {
 
     stmt.finalize();
     db.close();
+    await Telemetry.sendTelemetry("documents_removed_in_workspace", {
+      LLMSelection: process.env.LLM_PROVIDER || "openai",
+      VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+    });
     return true;
   },
 };
