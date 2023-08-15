@@ -81,18 +81,18 @@ Next, you will need some content to embed. This could be a Youtube Channel, Medi
 
 [Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
 
-### Contributing
+## Contributing
 - create issue
 - create PR with branch name format of `<issue number>-<short name>`
 - yee haw let's merge
 
-### Telemetry
+## Telemetry
 AnythingLLM by Mintplex Labs Inc contains a telemetry feature that collects anonymous usage information.
 
-## Why?
+### Why?
 We use this information to help us understand how AnythingLLM is used, to help us prioritize work on new features and bug fixes, and to help us improve AnythingLLM's performance and stability.
 
-## Opting out
+### Opting out
 Set `DISABLE_TELEMETRY` in your server or docker .env settings to "true" to opt out of telemetry.
 
 ```
