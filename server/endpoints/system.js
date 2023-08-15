@@ -488,11 +488,9 @@ function systemEndpoints(app) {
           return response.sendStatus(401).end();
         }
         if (!request.body || !Array.isArray(request.body.messages)) {
-          return response
-            .status(400)
-            .json({
-              message: "Invalid message format. Expected an array of messages.",
-            });
+          return response.status(400).json({
+            message: "Invalid message format. Expected an array of messages.",
+          });
         }
         await WelcomeMessages.saveAll(request.body.messages);
         return response

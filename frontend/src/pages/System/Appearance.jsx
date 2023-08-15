@@ -15,11 +15,11 @@ export default function Appearance() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-      async function fetchMessages() {
-        const messages = await System.getWelcomeMessages();
-        setMessages(messages);
-      }
-      fetchMessages();
+    async function fetchMessages() {
+      const messages = await System.getWelcomeMessages();
+      setMessages(messages);
+    }
+    fetchMessages();
   }, []);
 
   useEffect(() => {
@@ -161,61 +161,60 @@ export default function Appearance() {
 
         <div className="mb-6 mt-8">
           <div className="flex flex-col gap-y-2">
-              <h2 className="leading-tight font-medium text-black dark:text-white">
-                  Custom Messages
-              </h2>
-              <p className="leading-tight text-sm text-gray-500 dark:text-slate-400">
-                  Change the default messages that are displayed to the users.
-              </p>
+            <h2 className="leading-tight font-medium text-black dark:text-white">
+              Custom Messages
+            </h2>
+            <p className="leading-tight text-sm text-gray-500 dark:text-slate-400">
+              Change the default messages that are displayed to the users.
+            </p>
           </div>
           <div className="mt-6 flex flex-col gap-y-6">
-              {messages.map((message, index) => (
-                  <div key={index} className="flex flex-col gap-y-2">
-                      {message.user && (
-                          <EditingChatBubble
-                              message={message}
-                              index={index}
-                              type="user"
-                              handleMessageChange={handleMessageChange}
-                              removeMessage={removeMessage}
-                          />
-                      )}
-                      {message.response && (
-                          <EditingChatBubble
-                              message={message}
-                              index={index}
-                              type="response"
-                              handleMessageChange={handleMessageChange}
-                              removeMessage={removeMessage}
-                          />
-                      )}
-                  </div>
-              ))}
-              <div className="flex gap-4 mt-4 justify-between">
-                  <button
-                      className="self-end text-orange-500 hover:text-orange-700 transition"
-                      onClick={() => addMessage("response")}
-                  >
-                      + System Message
-                  </button>
-                  <button
-                      className="self-end text-orange-500 hover:text-orange-700 transition"
-                      onClick={() => addMessage("user")}
-                  >
-                      + User Message
-                  </button>
+            {messages.map((message, index) => (
+              <div key={index} className="flex flex-col gap-y-2">
+                {message.user && (
+                  <EditingChatBubble
+                    message={message}
+                    index={index}
+                    type="user"
+                    handleMessageChange={handleMessageChange}
+                    removeMessage={removeMessage}
+                  />
+                )}
+                {message.response && (
+                  <EditingChatBubble
+                    message={message}
+                    index={index}
+                    type="response"
+                    handleMessageChange={handleMessageChange}
+                    removeMessage={removeMessage}
+                  />
+                )}
               </div>
+            ))}
+            <div className="flex gap-4 mt-4 justify-between">
+              <button
+                className="self-end text-orange-500 hover:text-orange-700 transition"
+                onClick={() => addMessage("response")}
+              >
+                + System Message
+              </button>
+              <button
+                className="self-end text-orange-500 hover:text-orange-700 transition"
+                onClick={() => addMessage("user")}
+              >
+                + User Message
+              </button>
+            </div>
           </div>
           <div className="flex justify-center py-6">
-              <button
-                  className="ml-4 cursor-pointer text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-                  onClick={handleMessageSave}
-              >
-                  Save Messages
-              </button>
+            <button
+              className="ml-4 cursor-pointer text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+              onClick={handleMessageSave}
+            >
+              Save Messages
+            </button>
           </div>
-      </div>
-
+        </div>
 
         {errorMsg && (
           <div className="text-sm text-red-600 dark:text-red-400 text-center">

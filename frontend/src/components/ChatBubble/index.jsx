@@ -7,9 +7,7 @@ export default function ChatBubble({ message, type, popMsg }) {
     <div
       className={`flex w-full mt-2 items-center ${
         popMsg ? "chat__message" : ""
-      } ${
-        isUser ? "justify-end" : "justify-start"
-      }`}
+      } ${isUser ? "justify-end" : "justify-start"}`}
     >
       <div
         className={`p-4 max-w-full md:max-w-[75%] ${
