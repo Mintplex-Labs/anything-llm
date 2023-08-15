@@ -10,7 +10,7 @@ const {
 } = require("../utils/files/documentProcessor");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
-const { updateENV } = require("../utils/helpers/updateENV");
+const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
 const {
   reqBody,
   makeJWT,
@@ -46,6 +46,13 @@ function systemEndpoints(app) {
   app.get("/migrate", async (_, response) => {
     await validateTablePragmas(true);
     response.sendStatus(200);
+  });
+
+  app.get("/env-dump", async (_, response) => {
+    if (process.env.NODE_ENV !== "production")
+      return response.sendStatus(200).end();
+    await dumpENV();
+    response.sendStatus(200).end();
   });
 
   app.get("/setup-complete", async (_, response) => {
