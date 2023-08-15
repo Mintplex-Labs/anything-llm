@@ -49,6 +49,18 @@ CHROMA_ENDPOINT='http://host.docker.internal:8000' # Allow docker to look on hos
 
 ```
 
+### Common questions and fixes
+
+# API is not working, cannot login, LLM is "offline"?
+You are likely running the docker container on a remote machine like EC2 or some other instance where the reachable URL
+is not `http://localhost:3001` and instead is something like `http://193.xx.xx.xx:3001` - in this case all you need to do is add the following to your `frontend/.env.production` before running `docker-compose up -d --build`
+```
+# frontend/.env.production
+GENERATE_SOURCEMAP=false
+VITE_API_BASE="http://<YOUR_REACHABLE_IP_ADDRESS>:3001/api"
+```
+For example, if the docker instance is available on `192.186.1.222` your `VITE_API_BASE` would look like `VITE_API_BASE="http://192.186.1.222:3001/api"` in `frontend/.env.production`.
+
 ## Still not working?
 [Ask for help on Discord](https://discord.gg/6UyHPeGZAC)
 
