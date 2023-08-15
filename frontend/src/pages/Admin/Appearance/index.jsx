@@ -7,7 +7,7 @@ import AnythingLLMDark from "../../../media/logo/anything-llm-dark.png";
 import usePrefersDarkMode from "../../../hooks/usePrefersDarkMode";
 import useLogo from "../../../hooks/useLogo";
 import System from "../../../models/system";
-import EditingChatBubble from "./components/EditingChatBubble";
+import EditingChatBubble from "../../../components/EditingChatBubble";
 
 export default function Appearance() {
   const { logo: _initLogo } = useLogo();
@@ -102,8 +102,6 @@ export default function Appearance() {
       setErrorMsg(error);
       return;
     }
-
-    console.log(await System.getWelcomeMessages());
   };
 
   return (

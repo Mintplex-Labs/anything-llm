@@ -4,6 +4,7 @@ import AnythingLLMDark from "../../media/logo/anything-llm-dark.png";
 import System from "../../models/system";
 import usePrefersDarkMode from "../../hooks/usePrefersDarkMode";
 import useLogo from "../../hooks/useLogo";
+import EditingChatBubble from "../../components/EditingChatBubble";
 
 export default function Appearance() {
   const { logo: _initLogo } = useLogo();
@@ -11,6 +12,15 @@ export default function Appearance() {
   const [logo, setLogo] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+      async function fetchMessages() {
+        const messages = await System.getWelcomeMessages();
+        setMessages(messages);
+      }
+      fetchMessages();
+  }, []);
 
   useEffect(() => {
     async function setInitLogo() {
@@ -68,9 +78,41 @@ export default function Appearance() {
     setErrorMsg("");
   };
 
+  const addMessage = (type) => {
+    if (type === "user") {
+      setMessages([
+        ...messages,
+        { user: "Double click to edit...", response: "" },
+      ]);
+    } else {
+      setMessages([
+        ...messages,
+        { user: "", response: "Double click to edit..." },
+      ]);
+    }
+  };
+
+  const removeMessage = (index) => {
+    setMessages(messages.filter((_, i) => i !== index));
+  };
+
+  const handleMessageChange = (index, type, value) => {
+    const newMessages = [...messages];
+    newMessages[index][type] = value;
+    setMessages(newMessages);
+  };
+
+  const handleMessageSave = async () => {
+    const { success, error } = await System.setWelcomeMessages(messages);
+    if (!success) {
+      setErrorMsg(error);
+      return;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-orange-100 dark:bg-black-900">
-      <div className="p-6 w-full max-w-xl bg-white dark:bg-stone-600 rounded-xl shadow-md space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-stone-600">
+      <div className="p-6 w-full max-w-xl bg-orange-100 dark:bg-black-900 rounded-xl shadow-md space-y-4 my-8">
         <h2 className="text-2xl font-bold text-center text-black dark:text-white">
           Customize Appearance
         </h2>
@@ -116,6 +158,64 @@ export default function Appearance() {
             Remove Custom Logo
           </button>
         </div>
+
+        <div className="mb-6 mt-8">
+          <div className="flex flex-col gap-y-2">
+              <h2 className="leading-tight font-medium text-black dark:text-white">
+                  Custom Messages
+              </h2>
+              <p className="leading-tight text-sm text-gray-500 dark:text-slate-400">
+                  Change the default messages that are displayed to the users.
+              </p>
+          </div>
+          <div className="mt-6 flex flex-col gap-y-6">
+              {messages.map((message, index) => (
+                  <div key={index} className="flex flex-col gap-y-2">
+                      {message.user && (
+                          <EditingChatBubble
+                              message={message}
+                              index={index}
+                              type="user"
+                              handleMessageChange={handleMessageChange}
+                              removeMessage={removeMessage}
+                          />
+                      )}
+                      {message.response && (
+                          <EditingChatBubble
+                              message={message}
+                              index={index}
+                              type="response"
+                              handleMessageChange={handleMessageChange}
+                              removeMessage={removeMessage}
+                          />
+                      )}
+                  </div>
+              ))}
+              <div className="flex gap-4 mt-4 justify-between">
+                  <button
+                      className="self-end text-orange-500 hover:text-orange-700 transition"
+                      onClick={() => addMessage("response")}
+                  >
+                      + System Message
+                  </button>
+                  <button
+                      className="self-end text-orange-500 hover:text-orange-700 transition"
+                      onClick={() => addMessage("user")}
+                  >
+                      + User Message
+                  </button>
+              </div>
+          </div>
+          <div className="flex justify-center py-6">
+              <button
+                  className="ml-4 cursor-pointer text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                  onClick={handleMessageSave}
+              >
+                  Save Messages
+              </button>
+          </div>
+      </div>
+
 
         {errorMsg && (
           <div className="text-sm text-red-600 dark:text-red-400 text-center">
