@@ -7,7 +7,7 @@ import AnythingLLMDark from "../../../media/logo/anything-llm-dark.png";
 import usePrefersDarkMode from "../../../hooks/usePrefersDarkMode";
 import useLogo from "../../../hooks/useLogo";
 import System from "../../../models/system";
-import ChatBubble from "./components/ChatBubble";
+import EditingChatBubble from "./components/EditingChatBubble";
 
 export default function Appearance() {
   const { logo: _initLogo } = useLogo();
@@ -180,7 +180,7 @@ export default function Appearance() {
               {messages.map((message, index) => (
                 <div key={index} className="flex flex-col gap-y-2">
                   {message.user && (
-                    <ChatBubble
+                    <EditingChatBubble
                       message={message}
                       index={index}
                       type="user"
@@ -189,7 +189,7 @@ export default function Appearance() {
                     />
                   )}
                   {message.response && (
-                    <ChatBubble
+                    <EditingChatBubble
                       message={message}
                       index={index}
                       type="response"

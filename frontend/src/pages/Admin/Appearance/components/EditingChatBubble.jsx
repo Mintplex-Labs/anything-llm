@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { X } from "react-feather";
 
-export default function ChatBubble({
+export default function EditingChatBubble({
   message,
   index,
   type,
