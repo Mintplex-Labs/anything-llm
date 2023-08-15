@@ -138,7 +138,7 @@ const QDrant = {
             payloads: [],
           };
 
-          // Before sending to Chroma and saving the records to our db
+          // Before sending to Qdrant and saving the records to our db
           // we need to assign the id of each chunk that is stored in the cached file.
           chunk.forEach((chunk) => {
             const id = uuidv4();
@@ -162,7 +162,7 @@ const QDrant = {
       }
 
       // If we are here then we are going to embed and store a novel document.
-      // We have to do this manually as opposed to using LangChains `Chroma.fromDocuments`
+      // We have to do this manually as opposed to using LangChains `Qdrant.fromDocuments`
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
       const textSplitter = new RecursiveCharacterTextSplitter({
