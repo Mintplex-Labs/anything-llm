@@ -14,22 +14,7 @@ export default function Appearance() {
   const [logo, setLogo] = useState("");
   const prefersDarkMode = usePrefersDarkMode();
   const [errorMsg, setErrorMsg] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      user: "",
-      response:
-        "Welcome to AnythingLLM, AnythingLLM is an open-source AI tool by Mintplex Labs that turns anything into a trained chatbot you can query and chat with. AnythingLLM is a BYOK (bring-your-own-keys) software so there is no subscription, fee, or charges for this software outside of the services you want to use with it.",
-    },
-    {
-      user: "",
-      response:
-        "AnythingLLM is the easiest way to put powerful AI products like OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services together in a neat package with no fuss to increase your productivity by 100x.",
-    },
-    {
-      user: "How do I get started?!",
-      response: "",
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     async function setInitLogo() {
@@ -45,6 +30,14 @@ export default function Appearance() {
       }, 3_500);
     }
   }, [errorMsg]);
+
+  useEffect(() => {
+    async function fetchMessages() {
+      const messages = await System.getWelcomeMessages();
+      setMessages(messages);
+    }
+    fetchMessages();
+  }, []);
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -103,8 +96,14 @@ export default function Appearance() {
     setMessages(newMessages);
   };
 
-  const handleMessageSave = () => {
-    console.log(messages);
+  const handleMessageSave = async () => {
+    const { success, error } = await Admin.setWelcomeMessages(messages);
+    if (!success) {
+      setErrorMsg(error);
+      return;
+    }
+
+    console.log(await System.getWelcomeMessages());
   };
 
   return (
