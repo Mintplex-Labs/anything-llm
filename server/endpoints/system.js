@@ -34,6 +34,7 @@ const {
   removeCustomLogo,
   DARK_LOGO_FILENAME,
 } = require("../utils/files/logo");
+const { Telemetry } = require("../models/telemetry");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -325,6 +326,7 @@ function systemEndpoints(app) {
         });
         process.env.AUTH_TOKEN = null;
         process.env.JWT_SECRET = process.env.JWT_SECRET ?? v4(); // Make sure JWT_SECRET is set for JWT issuance.
+        await Telemetry.sendTelemetry("enabled_multi_user_mode");
         response.status(200).json({ success: !!user, error });
       } catch (e) {
         console.log(e.message, e);

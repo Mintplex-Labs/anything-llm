@@ -49,4 +49,4 @@ function utilEndpoints(app) {
   });
 }
 
-module.exports = { utilEndpoints };
+module.exports = { utilEndpoints, getGitVersion };
