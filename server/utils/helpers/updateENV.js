@@ -47,6 +47,14 @@ const KEY_MAPPING = {
     envKey: "WEAVIATE_API_KEY",
     checks: [],
   },
+  QdrantEndpoint: {
+    envKey: "QDRANT_ENDPOINT",
+    checks: [isValidURL],
+  },
+  QdrantApiKey: {
+    envKey: "QDRANT_API_KEY",
+    checks: [],
+  },
 
   PineConeEnvironment: {
     envKey: "PINECONE_ENVIRONMENT",
@@ -112,7 +120,7 @@ function validOpenAIModel(input = "") {
 }
 
 function supportedVectorDB(input = "") {
-  const supported = ["chroma", "pinecone", "lancedb", "weaviate"];
+  const supported = ["chroma", "pinecone", "lancedb", "weaviate", "qdrant"];
   return supported.includes(input)
     ? null
     : `Invalid VectorDB type. Must be one of ${supported.join(", ")}.`;
