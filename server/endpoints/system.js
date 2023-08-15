@@ -78,6 +78,12 @@ function systemEndpoints(app) {
               WeaviateApiKey: process.env.WEAVIATE_API_KEY,
             }
           : {}),
+        ...(vectorDB === "qdrant"
+          ? {
+              QdrantEndpoint: process.env.QDRANT_ENDPOINT,
+              QdrantApiKey: process.env.QDRANT_API_KEY,
+            }
+          : {}),
         LLMProvider: llmProvider,
         ...(llmProvider === "openai"
           ? {

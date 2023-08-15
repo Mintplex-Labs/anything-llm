@@ -18,6 +18,7 @@
     "@azure/openai": "^1.0.0-beta.3",
     "@googleapis/youtube": "^9.0.0",
     "@pinecone-database/pinecone": "^0.1.6",
+    "@qdrant/js-client-rest": "^1.4.0",
     "archiver": "^5.3.1",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",

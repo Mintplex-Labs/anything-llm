@@ -13,6 +13,9 @@ function getVectorDbClass() {
     case "weaviate":
       const { Weaviate } = require("../vectorDbProviders/weaviate");
       return Weaviate;
+    case "qdrant":
+      const { QDrant } = require("../vectorDbProviders/qdrant");
+      return QDrant;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
   }
