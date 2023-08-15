@@ -7,12 +7,27 @@ import AnythingLLMDark from "../../../media/logo/anything-llm-dark.png";
 import usePrefersDarkMode from "../../../hooks/usePrefersDarkMode";
 import useLogo from "../../../hooks/useLogo";
 import System from "../../../models/system";
+import { X } from "react-feather";
 
 export default function Appearance() {
   const { logo: _initLogo } = useLogo();
   const [logo, setLogo] = useState("");
   const prefersDarkMode = usePrefersDarkMode();
   const [errorMsg, setErrorMsg] = useState("");
+  const [messages, setMessages] = useState([
+    {
+      user: "",
+      response: "Welcome to AnythingLLM, AnythingLLM is an open-source AI tool by Mintplex Labs that turns anything into a trained chatbot you can query and chat with. AnythingLLM is a BYOK (bring-your-own-keys) software so there is no subscription, fee, or charges for this software outside of the services you want to use with it.",
+    },
+    {
+      user: "",
+      response: "AnythingLLM is the easiest way to put powerful AI products like OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services together in a neat package with no fuss to increase your productivity by 100x.",
+    },
+    {
+      user: "How do I get started?!",
+      response: "",
+    },
+  ]);
 
   useEffect(() => {
     async function setInitLogo() {
@@ -62,6 +77,77 @@ export default function Appearance() {
     window.location.reload();
   };
 
+  const addMessage = (type) => {
+    if (type === "user") {
+      setMessages([...messages, { user: "Double click to edit...", response: "" }]);
+    } else {
+      setMessages([...messages, { user: "", response: "Double click to edit..." }]);
+    }
+  };
+
+  const removeMessage = (index) => {
+    setMessages(messages.filter((_, i) => i !== index));
+  };
+
+  const handleMessageChange = (index, type, value) => {
+    const newMessages = [...messages];
+    newMessages[index][type] = value;
+    setMessages(newMessages);
+  };
+
+  const handleMessageSave = () => {
+    console.log(messages);
+  };
+
+  const ChatBubble = ({ message, index, type }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [tempMessage, setTempMessage] = useState(message[type]);
+    const isUser = type === 'user';
+
+    return (
+      <div className={`flex w-full mt-2 items-center ${isUser ? 'justify-end' : 'justify-start'}`}>
+        {isUser && (
+          <button
+            className="flex items-center text-red-500 hover:text-red-700 transition mr-2"
+            onClick={() => removeMessage(index)}
+          >
+            <X className="mr-2" size={20} />
+          </button>
+        )}
+        <div
+          className={`p-4 max-w-full md:max-w-[75%] ${isUser ? 'bg-slate-200 dark:bg-amber-800' : 'bg-orange-100 dark:bg-stone-700'} rounded-b-2xl ${isUser ? 'rounded-tl-2xl' : 'rounded-tr-2xl'} ${isUser ? 'rounded-tr-sm' : 'rounded-tl-sm'}`}
+          onDoubleClick={() => setIsEditing(true)}
+        >
+          {isEditing ? (
+            <input
+              value={tempMessage}
+              onChange={(e) => setTempMessage(e.target.value)}
+              onBlur={() => {
+                handleMessageChange(index, type, tempMessage);
+                setIsEditing(false);
+              }}
+              autoFocus
+            />
+          ) : (
+            tempMessage && <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
+              {tempMessage}
+            </p>
+          )}
+        </div>
+        {!isUser && (
+          <button
+            className="flex items-center text-red-500 hover:text-red-700 transition ml-2"
+            onClick={() => removeMessage(index)}
+          >
+            <X className="mr-2" size={20} />
+          </button>
+        )}
+      </div>
+    );
+  };
+
+
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-orange-100 dark:bg-stone-700 flex">
       {!isMobile && <Sidebar />}
@@ -79,18 +165,22 @@ export default function Appearance() {
               Customize the appearance settings of your platform.
             </p>
           </div>
-
-          <div className="flex items-center">
-            <img
-              src={logo}
-              alt="Uploaded Logo"
-              className="w-48 h-48 object-contain mr-6"
-              onError={(e) =>
-                (e.target.src = prefersDarkMode
-                  ? AnythingLLMLight
-                  : AnythingLLMDark)
-              }
-            />
+          <div className="mb-6">
+            <div className="flex flex-col gap-y-2">
+              <h2 className="leading-tight font-medium text-black dark:text-white">
+                Custom Logo
+              </h2>
+              <p className="leading-tight text-sm text-gray-500 dark:text-slate-400">
+                Change the logo that appears in the sidebar.
+              </p>
+            </div>
+            <div className="flex items-center">
+              <img
+                src={logo}
+                alt="Uploaded Logo"
+                className="w-48 h-48 object-contain mr-6"
+                onError={(e) => (e.target.src = defaultLogo)}
+              />
 
             <div className="flex flex-col">
               <div className="mb-4">
@@ -115,7 +205,47 @@ export default function Appearance() {
               </div>
             </div>
           </div>
-
+        </div>
+          <div className="mb-6">
+            <div className="flex flex-col gap-y-2">
+              <h2 className="leading-tight font-medium text-black dark:text-white">
+                Custom Messages
+              </h2>
+              <p className="leading-tight text-sm text-gray-500 dark:text-slate-400">
+                Change the default messages that are displayed to the users.
+              </p>
+            </div>
+            <div className="mt-6 flex flex-col gap-y-6">
+              {messages.map((message, index) => (
+                <div key={index} className="flex flex-col gap-y-2">
+                  {message.user && <ChatBubble message={message} index={index} type="user" />}
+                  {message.response && <ChatBubble message={message} index={index} type="response" />}
+                </div>
+              ))}
+              <div className="flex gap-4 mt-4 justify-between">
+                <button
+                  className="self-end text-orange-500 hover:text-orange-700 transition"
+                  onClick={() => addMessage("response")}
+                >
+                  + System Message
+                </button>
+                <button
+                  className="self-end text-orange-500 hover:text-orange-700 transition"
+                  onClick={() => addMessage("user")}
+                >
+                  + User Message
+                </button>
+              </div>
+            </div>
+            <div className="flex justify-center py-6">
+              <button
+                className="ml-4 cursor-pointer text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                onClick={handleMessageSave}
+              >
+                Save Messages
+              </button>
+            </div>
+          </div>
           {errorMsg && (
             <div className="mt-4 text-sm text-red-600 dark:text-red-400 text-center">
               {errorMsg}
