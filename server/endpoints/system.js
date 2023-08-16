@@ -10,7 +10,7 @@ const {
 } = require("../utils/files/documentProcessor");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
-const { updateENV } = require("../utils/helpers/updateENV");
+const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
 const {
   reqBody,
   makeJWT,
@@ -34,6 +34,7 @@ const {
   removeCustomLogo,
   DARK_LOGO_FILENAME,
 } = require("../utils/files/logo");
+const { Telemetry } = require("../models/telemetry");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -45,6 +46,13 @@ function systemEndpoints(app) {
   app.get("/migrate", async (_, response) => {
     await validateTablePragmas(true);
     response.sendStatus(200);
+  });
+
+  app.get("/env-dump", async (_, response) => {
+    if (process.env.NODE_ENV !== "production")
+      return response.sendStatus(200).end();
+    await dumpENV();
+    response.sendStatus(200).end();
   });
 
   app.get("/setup-complete", async (_, response) => {
@@ -75,6 +83,12 @@ function systemEndpoints(app) {
           ? {
               WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
               WeaviateApiKey: process.env.WEAVIATE_API_KEY,
+            }
+          : {}),
+        ...(vectorDB === "qdrant"
+          ? {
+              QdrantEndpoint: process.env.QDRANT_ENDPOINT,
+              QdrantApiKey: process.env.QDRANT_API_KEY,
             }
           : {}),
         LLMProvider: llmProvider,
@@ -325,6 +339,7 @@ function systemEndpoints(app) {
         });
         process.env.AUTH_TOKEN = null;
         process.env.JWT_SECRET = process.env.JWT_SECRET ?? v4(); // Make sure JWT_SECRET is set for JWT issuance.
+        await Telemetry.sendTelemetry("enabled_multi_user_mode");
         response.status(200).json({ success: !!user, error });
       } catch (e) {
         console.log(e.message, e);

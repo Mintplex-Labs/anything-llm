@@ -4,6 +4,7 @@ import ChromaLogo from "../../../../media/vectordbs/chroma.png";
 import PineconeLogo from "../../../../media/vectordbs/pinecone.png";
 import LanceDbLogo from "../../../../media/vectordbs/lancedb.png";
 import WeaviateLogo from "../../../../media/vectordbs/weaviate.png";
+import QDrantLogo from "../../../../media/vectordbs/qdrant.png";
 
 const noop = () => false;
 export default function VectorDBSelection({
@@ -78,6 +79,15 @@ export default function VectorDBSelection({
                   description="100% cloud-based vector database for enterprise use cases."
                   checked={vectorDB === "pinecone"}
                   image={PineconeLogo}
+                  onClick={updateVectorChoice}
+                />
+                <VectorDBOption
+                  name="QDrant"
+                  value="qdrant"
+                  link="qdrant.tech"
+                  description="Open source local and distributed cloud vector database."
+                  checked={vectorDB === "qdrant"}
+                  image={QDrantLogo}
                   onClick={updateVectorChoice}
                 />
                 <VectorDBOption
@@ -180,6 +190,41 @@ export default function VectorDBSelection({
                     There is no configuration needed for LanceDB.
                   </p>
                 </div>
+              )}
+              {vectorDB === "qdrant" && (
+                <>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200">
+                      QDrant API Endpoint
+                    </label>
+                    <input
+                      type="url"
+                      name="QdrantEndpoint"
+                      disabled={!canDebug}
+                      className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
+                      placeholder="http://localhost:6633"
+                      defaultValue={settings?.QdrantEndpoint}
+                      required={true}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-800 dark:text-slate-200">
+                      Api Key
+                    </label>
+                    <input
+                      type="password"
+                      name="QdrantApiKey"
+                      disabled={!canDebug}
+                      className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
+                      placeholder="wOeqxsYP4....1244sba"
+                      defaultValue={settings?.QdrantApiKey}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+                </>
               )}
               {vectorDB === "weaviate" && (
                 <>

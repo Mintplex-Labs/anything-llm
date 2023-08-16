@@ -12,7 +12,9 @@ export default function useLogo() {
     async function fetchInstanceLogo() {
       try {
         const logoURL = await System.fetchLogo(!prefersDarkMode);
-        setLogo(logoURL);
+        logoURL
+          ? setLogo(logoURL)
+          : setLogo(prefersDarkMode ? AnythingLLMLight : AnythingLLMDark);
       } catch (err) {
         setLogo(prefersDarkMode ? AnythingLLMLight : AnythingLLMDark);
         console.error("Failed to fetch logo:", err);

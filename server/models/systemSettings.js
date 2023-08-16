@@ -5,6 +5,7 @@ const SystemSettings = {
     "limit_user_messages",
     "message_limit",
     "logo_filename",
+    "telemetry_id",
   ],
   privateField: [],
   tablename: "system_settings",

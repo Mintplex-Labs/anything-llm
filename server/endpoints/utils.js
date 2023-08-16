@@ -1,10 +1,15 @@
 const { SystemSettings } = require("../models/systemSettings");
 
 function getGitVersion() {
-  return require("child_process")
-    .execSync("git rev-parse HEAD")
-    .toString()
-    .trim();
+  try {
+    return require("child_process")
+      .execSync("git rev-parse HEAD")
+      .toString()
+      .trim();
+  } catch (e) {
+    console.error("getGitVersion", e.message);
+    return "--";
+  }
 }
 
 function byteToGigaByte(n) {
@@ -49,4 +54,4 @@ function utilEndpoints(app) {
   });
 }
 
-module.exports = { utilEndpoints };
+module.exports = { utilEndpoints, getGitVersion };
