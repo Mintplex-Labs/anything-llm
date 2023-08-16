@@ -4,7 +4,8 @@ import { baseHeaders } from "../utils/request";
 const System = {
   ping: async function () {
     return await fetch(`${API_BASE}/ping`)
-      .then((res) => res.ok)
+      .then((res) => res.json())
+      .then((res) => res?.online || false)
       .catch(() => false);
   },
   totalIndexes: async function () {

@@ -40,7 +40,7 @@ function systemEndpoints(app) {
   if (!app) return;
 
   app.get("/ping", (_, response) => {
-    response.sendStatus(200);
+    response.status(200).json({ online: true });
   });
 
   app.get("/migrate", async (_, response) => {
