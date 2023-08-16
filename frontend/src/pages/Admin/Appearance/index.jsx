@@ -14,6 +14,8 @@ export default function Appearance() {
   const [logo, setLogo] = useState("");
   const prefersDarkMode = usePrefersDarkMode();
   const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [hasChanges, setHasChanges] = useState(false);
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
@@ -29,7 +31,13 @@ export default function Appearance() {
         setErrorMsg("");
       }, 3_500);
     }
-  }, [errorMsg]);
+
+    if (!!successMsg) {
+      setTimeout(() => {
+        setSuccessMsg("");
+      }, 3_500);
+    }
+  }, [errorMsg, successMsg]);
 
   useEffect(() => {
     async function fetchMessages() {
@@ -87,10 +95,12 @@ export default function Appearance() {
   };
 
   const removeMessage = (index) => {
+    setHasChanges(true);
     setMessages(messages.filter((_, i) => i !== index));
   };
 
   const handleMessageChange = (index, type, value) => {
+    setHasChanges(true);
     const newMessages = [...messages];
     newMessages[index][type] = value;
     setMessages(newMessages);
@@ -102,6 +112,8 @@ export default function Appearance() {
       setErrorMsg(error);
       return;
     }
+    setSuccessMsg("Successfully updated welcome messages.");
+    setHasChanges(false);
   };
 
   return (
@@ -212,18 +224,25 @@ export default function Appearance() {
                 </button>
               </div>
             </div>
-            <div className="flex justify-center py-6">
-              <button
-                className="ml-4 cursor-pointer text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-                onClick={handleMessageSave}
-              >
-                Save Messages
-              </button>
-            </div>
+            {hasChanges && (
+              <div className="flex justify-center py-6">
+                <button
+                  className="ml-4 cursor-pointer text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                  onClick={handleMessageSave}
+                >
+                  Save Messages
+                </button>
+              </div>
+            )}
           </div>
           {errorMsg && (
             <div className="mt-4 text-sm text-red-600 dark:text-red-400 text-center">
               {errorMsg}
+            </div>
+          )}
+          {successMsg && (
+            <div className="mt-4 text-sm text-green-600 dark:text-green-400 text-center">
+              {successMsg}
             </div>
           )}
         </div>
