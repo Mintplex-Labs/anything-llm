@@ -10,7 +10,7 @@ const {
 } = require("../utils/files/documentProcessor");
 const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
-const { updateENV } = require("../utils/helpers/updateENV");
+const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
 const {
   reqBody,
   makeJWT,
@@ -49,6 +49,13 @@ function systemEndpoints(app) {
     response.sendStatus(200);
   });
 
+  app.get("/env-dump", async (_, response) => {
+    if (process.env.NODE_ENV !== "production")
+      return response.sendStatus(200).end();
+    await dumpENV();
+    response.sendStatus(200).end();
+  });
+
   app.get("/setup-complete", async (_, response) => {
     try {
       const llmProvider = process.env.LLM_PROVIDER || "openai";
@@ -77,6 +84,12 @@ function systemEndpoints(app) {
           ? {
               WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
               WeaviateApiKey: process.env.WEAVIATE_API_KEY,
+            }
+          : {}),
+        ...(vectorDB === "qdrant"
+          ? {
+              QdrantEndpoint: process.env.QDRANT_ENDPOINT,
+              QdrantApiKey: process.env.QDRANT_API_KEY,
             }
           : {}),
         LLMProvider: llmProvider,
