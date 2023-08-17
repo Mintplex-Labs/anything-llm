@@ -7,6 +7,7 @@ import useLogo from "../../hooks/useLogo";
 import EditingChatBubble from "../../components/EditingChatBubble";
 import { isMobile } from "react-device-detect";
 import { ArrowLeft } from "react-feather";
+import paths from "../../utils/paths";
 
 export default function Appearance() {
   const { logo: _initLogo } = useLogo();
@@ -118,7 +119,7 @@ export default function Appearance() {
   };
 
   const handleBackNavigation = () => {
-    window.location.href = "/";
+    window.location = paths.home();
   };
 
   return (

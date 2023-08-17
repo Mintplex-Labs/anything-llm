@@ -205,9 +205,7 @@ const System = {
   setWelcomeMessages: async function (messages) {
     return fetch(`${API_BASE}/system/set-welcome-messages`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: baseHeaders(),
       body: JSON.stringify({ messages }),
     })
       .then((res) => {

@@ -219,17 +219,13 @@ const Admin = {
   setWelcomeMessages: async function (messages) {
     return fetch(`${API_BASE}/system/set-welcome-messages`, {
       method: "POST",
-      headers: {
-        ...baseHeaders(),
-        "Content-Type": "application/json",
-      },
+      headers: baseHeaders(),
       body: JSON.stringify({ messages }),
     })
       .then((res) => {
-        if (!res.ok) {
+        if (!res.ok)
           throw new Error(res.statusText || "Error setting welcome messages.");
-        }
-        return { success: true, ...res.json() };
+        return res.json();
       })
       .catch((e) => {
         console.error(e);

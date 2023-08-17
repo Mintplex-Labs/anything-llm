@@ -482,10 +482,12 @@ function systemEndpoints(app) {
   app.get("/system/welcome-messages", async function (request, response) {
     try {
       const welcomeMessages = await WelcomeMessages.getMessages();
-      response.status(200).json({ welcomeMessages });
+      response.status(200).json({ success: true, welcomeMessages });
     } catch (error) {
       console.error("Error fetching welcome messages:", error);
-      response.status(500).json({ message: "Internal server error" });
+      response
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
     }
   });
 
@@ -500,20 +502,26 @@ function systemEndpoints(app) {
         ) {
           return response.sendStatus(401).end();
         }
-        if (!request.body || !Array.isArray(request.body.messages)) {
+
+        const { messages = [] } = reqBody(request);
+        if (!Array.isArray(messages)) {
           return response.status(400).json({
+            success: false,
             message: "Invalid message format. Expected an array of messages.",
           });
         }
-        await WelcomeMessages.saveAll(request.body.messages);
-        return response
-          .status(200)
-          .json({ message: "Welcome messages saved successfully." });
+
+        await WelcomeMessages.saveAll(messages);
+        return response.status(200).json({
+          success: true,
+          message: "Welcome messages saved successfully.",
+        });
       } catch (error) {
         console.error("Error processing the welcome messages:", error);
-        response
-          .status(500)
-          .json({ message: "Error saving the welcome messages." });
+        response.status(500).json({
+          success: true,
+          message: "Error saving the welcome messages.",
+        });
       }
     }
   );
