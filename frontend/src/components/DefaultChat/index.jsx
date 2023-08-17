@@ -6,15 +6,26 @@ import NewWorkspaceModal, {
 import paths from "../../utils/paths";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../Sidebar";
+import ChatBubble from "../ChatBubble";
+import System from "../../models/system";
 
 export default function DefaultChatContainer() {
   const [mockMsgs, setMockMessages] = useState([]);
+  const [fetchedMessages, setFetchedMessages] = useState([]);
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
   const popMsg = !window.localStorage.getItem("anythingllm_intro");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchedMessages = await System.getWelcomeMessages();
+      setFetchedMessages(fetchedMessages);
+    };
+    fetchData();
+  }, []);
 
   const MESSAGES = [
     <React.Fragment>
@@ -251,9 +262,25 @@ export default function DefaultChatContainer() {
       className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-white dark:bg-black-900 md:min-w-[82%] p-[18px] h-full overflow-y-scroll"
     >
       {isMobile && <SidebarMobileHeader />}
-      {mockMsgs.map((content, i) => {
-        return <React.Fragment key={i}>{content}</React.Fragment>;
-      })}
+      {fetchedMessages.length === 0
+        ? mockMsgs.map((content, i) => {
+            return <React.Fragment key={i}>{content}</React.Fragment>;
+          })
+        : fetchedMessages.map((fetchedMessage, i) => {
+            return (
+              <React.Fragment key={i}>
+                <ChatBubble
+                  message={
+                    fetchedMessage.user === ""
+                      ? fetchedMessage.response
+                      : fetchedMessage.user
+                  }
+                  type={fetchedMessage.user === "" ? "response" : "user"}
+                  popMsg={popMsg}
+                />
+              </React.Fragment>
+            );
+          })}
       {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
     </div>
   );
