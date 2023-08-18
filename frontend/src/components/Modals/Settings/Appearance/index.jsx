@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
-import AnythingLLMLight from "../../media/logo/anything-llm-light.png";
-import AnythingLLMDark from "../../media/logo/anything-llm-dark.png";
-import System from "../../models/system";
-import usePrefersDarkMode from "../../hooks/usePrefersDarkMode";
-import useLogo from "../../hooks/useLogo";
-import EditingChatBubble from "../../components/EditingChatBubble";
-import { isMobile } from "react-device-detect";
-import { ArrowLeft } from "react-feather";
-import paths from "../../utils/paths";
+import { useEffect, useState } from "react";
+import useLogo from "../../../../hooks/useLogo";
+import usePrefersDarkMode from "../../../../hooks/usePrefersDarkMode";
+import System from "../../../../models/system";
+import EditingChatBubble from "../../../EditingChatBubble";
+import AnythingLLMLight from "../../../../media/logo/anything-llm-light.png";
+import AnythingLLMDark from "../../../../media/logo/anything-llm-dark.png";
 
 export default function Appearance() {
   const { logo: _initLogo } = useLogo();
@@ -118,32 +115,16 @@ export default function Appearance() {
     setHasChanges(false);
   };
 
-  const handleBackNavigation = () => {
-    window.location = paths.home();
-  };
-
   return (
-    <div className="w-screen h-screen overflow-hidden bg-orange-100 dark:bg-stone-700 flex justify-center py-6">
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-white dark:bg-black-900 md:min-w-[82%] p-[18px] h-full overflow-y-scroll"
-      >
-        <div className="px-1 md:px-8">
-          <div className="mb-6">
-            <div
-              className="cursor-pointer inline-flex items-center gap-3 mb-5 py-2 pl-2 pr-4 text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-800 transition-all"
-              onClick={handleBackNavigation}
-            >
-              <ArrowLeft />
-              <span>Back</span>
-            </div>
-            <p className="text-3xl font-semibold text-slate-600 dark:text-slate-200">
-              Appearance Settings
-            </p>
-            <p className="mt-2 text-sm font-base text-slate-600 dark:text-slate-200">
-              Customize the appearance settings of your platform.
-            </p>
-          </div>
+    <div className="relative w-full w-full max-h-full">
+      <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
+        <div className="flex items-start justify-between px-6 py-4">
+          <p className="text-gray-800 dark:text-stone-200 text-base ">
+            Customize the appearance settings of AnythingLLM instance.
+          </p>
+        </div>
+
+        <div className="px-1 md:px-8 pb-10">
           <div className="mb-6">
             <div className="flex flex-col gap-y-2">
               <h2 className="leading-tight font-medium text-black dark:text-white">
@@ -153,7 +134,7 @@ export default function Appearance() {
                 Change the logo that appears in the sidebar.
               </p>
             </div>
-            <div className="flex items-center">
+            <div className="flex flex-col md:flex-row items-center">
               <img
                 src={logo}
                 alt="Uploaded Logo"
@@ -197,7 +178,7 @@ export default function Appearance() {
                 Change the default messages that are displayed to the users.
               </p>
             </div>
-            <div className="mt-6 flex flex-col gap-y-6">
+            <div className="mt-6 flex flex-col gap-y-6 bg-white dark:bg-black-900 p-4 rounded-lg">
               {messages.map((message, index) => (
                 <div key={index} className="flex flex-col gap-y-2">
                   {message.user && (

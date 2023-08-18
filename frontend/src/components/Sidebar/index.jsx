@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   AtSign,
   BookOpen,
-  Briefcase,
-  Cpu,
   GitHub,
   LogOut,
   Menu,
@@ -11,12 +9,10 @@ import {
   Plus,
   Shield,
   Tool,
+  X,
 } from "react-feather";
 import IndexCount from "./IndexCount";
 import LLMStatus from "./LLMStatus";
-import SystemSettingsModal, {
-  useSystemSettingsModal,
-} from "../Modals/Settings";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
@@ -27,15 +23,12 @@ import useUser from "../../hooks/useUser";
 import { userFromStorage } from "../../utils/request";
 import { AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
 import useLogo from "../../hooks/useLogo";
+import SettingsOverlay, { useSystemSettingsOverlay } from "./SettingsOverlay";
 
 export default function Sidebar() {
   const { logo } = useLogo();
   const sidebarRef = useRef(null);
-  const {
-    showing: showingSystemSettingsModal,
-    showModal: showSystemSettingsModal,
-    hideModal: hideSystemSettingsModal,
-  } = useSystemSettingsModal();
+  const { showOverlay } = useSystemSettingsOverlay();
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
@@ -47,8 +40,9 @@ export default function Sidebar() {
       <div
         ref={sidebarRef}
         style={{ height: "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-white dark:bg-black-900 min-w-[15.5%] p-[18px] "
+        className="relative transition-all duration-500 relative m-[16px] rounded-[26px] bg-white dark:bg-black-900 min-w-[15.5%] p-[18px] "
       >
+        <SettingsOverlay />
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
           {/* Header Information */}
           <div className="flex w-full items-center justify-between">
@@ -62,12 +56,7 @@ export default function Sidebar() {
             </div>
             <div className="flex gap-x-2 items-center text-slate-500">
               <AdminHome />
-              <button
-                onClick={showSystemSettingsModal}
-                className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
-              >
-                <Tool className="h-4 w-4 " />
-              </button>
+              <SettingsButton onClick={showOverlay} />
             </div>
           </div>
 
@@ -142,9 +131,6 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-      {showingSystemSettingsModal && (
-        <SystemSettingsModal hideModal={hideSystemSettingsModal} />
-      )}
       {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
     </>
   );
@@ -155,11 +141,7 @@ export function SidebarMobileHeader() {
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
-  const {
-    showing: showingSystemSettingsModal,
-    showModal: showSystemSettingsModal,
-    hideModal: hideSystemSettingsModal,
-  } = useSystemSettingsModal();
+  const { showOverlay } = useSystemSettingsOverlay();
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
@@ -167,6 +149,8 @@ export function SidebarMobileHeader() {
   } = useNewWorkspaceModal();
 
   useEffect(() => {
+    // Darkens the rest of the screen
+    // when sidebar is open.
     function handleBg() {
       if (showSidebar) {
         setTimeout(() => {
@@ -213,12 +197,13 @@ export function SidebarMobileHeader() {
         />
         <div
           ref={sidebarRef}
-          className="h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-white dark:bg-black-900 w-[70%] p-[18px] "
+          className="relative h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-white dark:bg-black-900 w-[80%] p-[18px] "
         >
+          <SettingsOverlay />
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             {/* Header Information */}
-            <div className="flex w-full items-center justify-between">
-              <div className="flex shrink-0 w-fit items-center justify-start">
+            <div className="flex w-full items-center justify-between gap-x-4">
+              <div className="flex shrink-1 w-fit items-center justify-start">
                 <img
                   src={logo}
                   alt="Logo"
@@ -226,14 +211,9 @@ export function SidebarMobileHeader() {
                   style={{ objectFit: "contain" }}
                 />
               </div>
-              <div className="flex gap-x-2 items-center text-slate-500">
+              <div className="flex gap-x-2 items-center text-slate-500 shink-0">
                 <AdminHome />
-                <button
-                  onClick={showSystemSettingsModal}
-                  className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
-                >
-                  <Tool className="h-4 w-4 " />
-                </button>
+                <SettingsButton onClick={showOverlay} />
               </div>
             </div>
 
@@ -311,9 +291,6 @@ export function SidebarMobileHeader() {
             </div>
           </div>
         </div>
-        {showingSystemSettingsModal && (
-          <SystemSettingsModal hideModal={hideSystemSettingsModal} />
-        )}
         {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
       </div>
     </>
@@ -351,6 +328,19 @@ function LogoutButton() {
       <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
         Log out of {user.username}
       </p>
+    </button>
+  );
+}
+
+function SettingsButton({ onClick }) {
+  const { user } = useUser();
+  if (!!user) return null;
+  return (
+    <button
+      onClick={onClick}
+      className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+    >
+      <Tool className="h-4 w-4 " />
     </button>
   );
 }
