@@ -13,9 +13,6 @@ import {
 } from "react-feather";
 import IndexCount from "./IndexCount";
 import LLMStatus from "./LLMStatus";
-import SystemSettingsModal, {
-  useSystemSettingsModal,
-} from "../Modals/Settings";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
@@ -134,9 +131,6 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-      {/* {showingSystemSettingsModal && (
-        <SystemSettingsModal hideModal={hideSystemSettingsModal} />
-      )} */}
       {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
     </>
   );
