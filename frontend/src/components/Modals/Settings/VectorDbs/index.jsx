@@ -61,7 +61,7 @@ export default function VectorDBSelection({
               <p className="block text-sm font-medium text-gray-800 dark:text-slate-200">
                 Vector database providers
               </p>
-              <div className="w-full flex overflow-x-scroll gap-x-4">
+              <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4">
                 <input hidden={true} name="VectorDB" value={vectorDB} />
                 <VectorDBOption
                   name="Chroma"

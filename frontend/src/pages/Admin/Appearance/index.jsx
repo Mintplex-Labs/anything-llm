@@ -142,7 +142,7 @@ export default function Appearance() {
                 Change the logo that appears in the sidebar.
               </p>
             </div>
-            <div className="flex items-center">
+            <div className="flex md:flex-row flex-col items-center">
               <img
                 src={logo}
                 alt="Uploaded Logo"
