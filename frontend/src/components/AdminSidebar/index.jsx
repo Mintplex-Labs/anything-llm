@@ -182,12 +182,12 @@ export function SidebarMobileHeader() {
         />
         <div
           ref={sidebarRef}
-          className="h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-white dark:bg-black-900 w-[70%] p-[18px] "
+          className="h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-white dark:bg-black-900 w-[80%] p-[18px] "
         >
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             {/* Header Information */}
-            <div className="flex w-full items-center justify-between">
-              <div className="flex shrink-0 w-fit items-center justify-start">
+            <div className="flex w-full items-center justify-between gap-x-4">
+              <div className="flex shrink-1 w-fit items-center justify-start">
                 <img
                   src={logo}
                   alt="Logo"
@@ -195,7 +195,7 @@ export function SidebarMobileHeader() {
                   style={{ objectFit: "contain" }}
                 />
               </div>
-              <div className="flex gap-x-2 items-center text-slate-500">
+              <div className="flex gap-x-2 items-center text-slate-500 shrink-0">
                 <a
                   href={paths.home()}
                   className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"

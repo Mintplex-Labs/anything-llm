@@ -19,12 +19,14 @@ const { utilEndpoints } = require("./endpoints/utils");
 const { Telemetry } = require("./models/telemetry");
 const app = express();
 const apiRouter = express.Router();
+const FILE_LIMIT = "3GB";
 
 app.use(cors({ origin: true }));
-app.use(bodyParser.text());
-app.use(bodyParser.json());
+app.use(bodyParser.text({ limit: FILE_LIMIT }));
+app.use(bodyParser.json({ limit: FILE_LIMIT }));
 app.use(
   bodyParser.urlencoded({
+    limit: FILE_LIMIT,
     extended: true,
   })
 );

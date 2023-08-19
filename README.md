@@ -71,7 +71,15 @@ This monorepo consists of three main sections:
 - `yarn setup` from the project root directory.
   - This will fill in the required `.env` files you'll need in each of the application sections. Go fill those out before proceeding or else things won't work right.
 - `cd frontend && yarn install && cd ../server && yarn install` from the project root directory.
+
+To boot the server locally (run commands from root of repo):
+- ensure `server/.env.development` is set and filled out.
+`yarn dev:server`
  
+To boot the frontend locally (run commands from root of repo):
+- ensure `frontend/.env` is set and filled out.
+- ensure `VITE_API_BASE="http://localhost:3001/api"`
+`yarn dev:frontend`
 
 Next, you will need some content to embed. This could be a Youtube Channel, Medium articles, local text files, word documents, and the list goes on. This is where you will use the `collector/` part of the repo.
 

@@ -4,7 +4,8 @@ import { baseHeaders } from "../utils/request";
 const System = {
   ping: async function () {
     return await fetch(`${API_BASE}/ping`)
-      .then((res) => res.ok)
+      .then((res) => res.json())
+      .then((res) => res?.online || false)
       .catch(() => false);
   },
   totalIndexes: async function () {
@@ -184,6 +185,38 @@ const System = {
       })
       .catch((e) => {
         console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
+  getWelcomeMessages: async function () {
+    return await fetch(`${API_BASE}/system/welcome-messages`, {
+      method: "GET",
+      cache: "no-cache",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not fetch welcome messages.");
+        return res.json();
+      })
+      .then((res) => res.welcomeMessages)
+      .catch((e) => {
+        console.error(e);
+        return null;
+      });
+  },
+  setWelcomeMessages: async function (messages) {
+    return fetch(`${API_BASE}/system/set-welcome-messages`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ messages }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText || "Error setting welcome messages.");
+        }
+        return { success: true, ...res.json() };
+      })
+      .catch((e) => {
+        console.error(e);
         return { success: false, error: e.message };
       });
   },
