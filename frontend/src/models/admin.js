@@ -216,6 +216,22 @@ const Admin = {
         return { success: false, error: e.message };
       });
   },
+  setWelcomeMessages: async function (messages) {
+    return fetch(`${API_BASE}/system/set-welcome-messages`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ messages }),
+    })
+      .then((res) => {
+        if (!res.ok)
+          throw new Error(res.statusText || "Error setting welcome messages.");
+        return res.json();
+      })
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
 };
 
 export default Admin;
