@@ -286,6 +286,7 @@ function systemEndpoints(app) {
       try {
         const body = reqBody(request);
         const { newValues, error } = updateENV(body);
+        if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
         console.log(e.message, e);
