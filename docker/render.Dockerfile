@@ -43,8 +43,8 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
 USER anythingllm
 
 RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env cat /etc/secrets/.env
-COPY /etc/secrets/.env /app/server/.env
-RUN cat /app/server/.env
+# COPY /etc/secrets/.env /app/server/.env
+# RUN cat /app/server/.env
 
 WORKDIR /app
 
