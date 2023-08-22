@@ -51,6 +51,9 @@ async function validateTablePragmas(force = false) {
       console.log(
         `\x1b[34m[MIGRATIONS STUBBED]\x1b[0m Please ping /migrate once server starts to run migrations`
       );
+      console.log(
+        `\x1b[34m[ENV]\x1b[0m Expected storage directory is ${process.env.STORAGE_DIR}. Database should exist at ${process.env.STORAGE_DIR}/anythingllm.db`
+      );
       return;
     }
     const { SystemSettings } = require("../../models/systemSettings");

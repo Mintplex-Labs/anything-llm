@@ -40,8 +40,8 @@ COPY ./docker/docker-healthcheck.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-healthcheck.sh
 
+# Copy Render.com ENV file named .env into the server ENV so it can be used at runtime.
 RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env cat /etc/secrets/.env > /app/server/.env
-RUN cat /app/server/.env
 RUN chown -R anythingllm:anythingllm /app/server/.env
 
 USER anythingllm
