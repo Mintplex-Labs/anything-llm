@@ -172,6 +172,7 @@ const Pinecone = {
       await DocumentVectors.bulkInsert(documentVectors);
       return true;
     } catch (e) {
+      console.error(e);
       console.error("addDocumentToNamespace", e.message);
       return false;
     }
@@ -185,10 +186,12 @@ const Pinecone = {
     if (knownDocuments.length === 0) return;
 
     const vectorIds = knownDocuments.map((doc) => doc.vectorId);
-    await pineconeIndex.delete1({
-      ids: vectorIds,
-      namespace,
-    });
+    for (const batchOfVectorIds of toChunks(vectorIds, 1000)) {
+      await pineconeIndex.delete1({
+        ids: batchOfVectorIds,
+        namespace,
+      });
+    }
 
     const indexes = knownDocuments.map((doc) => doc.id);
     await DocumentVectors.deleteIds(indexes);
