@@ -40,11 +40,11 @@ COPY ./docker/docker-healthcheck.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-healthcheck.sh
 
-USER anythingllm
+RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env cat /etc/secrets/.env > /app/server/.env
+RUN cat /app/server/.env
+RUN chown -R anythingllm:anythingllm /app/server/.env
 
-RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env cat /etc/secrets/.env
-# COPY /etc/secrets/.env /app/server/.env
-# RUN cat /app/server/.env
+USER anythingllm
 
 WORKDIR /app
 
