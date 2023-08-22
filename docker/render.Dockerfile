@@ -3,6 +3,7 @@
 
 # Setup base image
 FROM ubuntu:jammy-20230522 AS base
+ARG STORAGE_DIR
 
 # Install system dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -51,9 +52,7 @@ RUN cd ./frontend/ && yarn install && yarn cache clean
 # Install server dependencies
 FROM base as server-deps
 COPY ./server/package.json ./server/yarn.lock ./server/
-COPY .env ./server/.env
-RUN echo "FOUND ENV FILE .env\n"
-RUN cat .env
+RUN echo $STORAGE_DIR
 RUN cd ./server/ && yarn install --production && yarn cache clean && \
     rm /app/server/node_modules/vectordb/x86_64-apple-darwin.node && \
     rm /app/server/node_modules/vectordb/aarch64-apple-darwin.node
