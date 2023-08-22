@@ -42,9 +42,11 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
 
 USER anythingllm
 
-WORKDIR /app
-
 RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env cat /etc/secrets/.env
+COPY /etc/secrets/.env /app/server/.env
+RUN cat /app/server/.env
+
+WORKDIR /app
 
 # Install frontend dependencies
 FROM base as frontend-deps
@@ -55,9 +57,7 @@ RUN cd ./frontend/ && yarn install && yarn cache clean
 # Install server dependencies
 FROM base as server-deps
 COPY ./server/package.json ./server/yarn.lock ./server/
-COPY /etc/secrets/.env ./server/.env
 RUN cat ./server/.env
-RUN echo $STORAGE_DIR
 RUN cd ./server/ && yarn install --production && yarn cache clean && \
     rm /app/server/node_modules/vectordb/x86_64-apple-darwin.node && \
     rm /app/server/node_modules/vectordb/aarch64-apple-darwin.node
