@@ -174,10 +174,16 @@ function updateENV(newENVs = {}) {
   return { newValues, error: error?.length > 0 ? error : false };
 }
 
+async function envDumpLocation() {
+  const path = require("path");
+  if (!!process.env.STORAGE_DIR) {
+    return path.resolve(process.env.STORAGE_DIR, ".env");
+  }
+  return path.join(__dirname, "../../.env")
+}
+
 async function dumpENV() {
   const fs = require("fs");
-  const path = require("path");
-
   const frozenEnvs = {};
   const protectedKeys = [
     ...Object.values(KEY_MAPPING).map((values) => values.envKey),
@@ -199,7 +205,8 @@ async function dumpENV() {
     })
     .join("\n");
 
-  const envPath = path.join(__dirname, "../../.env");
+  const envPath = envDumpLocation();
+  console.log(`Saving ENV Dump to ${envPath}`);
   fs.writeFileSync(envPath, envResult, { encoding: "utf8", flag: "w" });
   return true;
 }

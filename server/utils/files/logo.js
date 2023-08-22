@@ -6,6 +6,14 @@ const { SystemSettings } = require("../../models/systemSettings");
 const LIGHT_LOGO_FILENAME = "anything-llm-light.png";
 const DARK_LOGO_FILENAME = "anything-llm-dark.png";
 
+function logoStorageLocation() {
+  if (!!process.env.STORAGE_DIR) {
+    return path.resolve(process.env.STORAGE_DIR, 'assets')
+  }
+
+  return path.join(__dirname, "../../storage/assets")
+}
+
 function validFilename(newFilename = "") {
   return ![DARK_LOGO_FILENAME, LIGHT_LOGO_FILENAME].includes(newFilename);
 }
@@ -16,7 +24,7 @@ function getDefaultFilename(mode = "dark") {
 
 async function determineLogoFilepath(defaultFilename = DARK_LOGO_FILENAME) {
   const currentLogoFilename = await SystemSettings.currentLogoFilename();
-  const basePath = path.join(__dirname, "../../storage/assets");
+  const basePath = logoStorageLocation();
   const defaultFilepath = path.join(basePath, defaultFilename);
 
   if (currentLogoFilename && validFilename(currentLogoFilename)) {
@@ -41,12 +49,12 @@ async function renameLogoFile(originalFilename = null) {
   const extname = path.extname(originalFilename) || ".png";
   const newFilename = `${v4()}${extname}`;
   const originalFilepath = path.join(
-    __dirname,
-    `../../storage/assets/${originalFilename}`
+    logoStorageLocation(),
+    originalFilename
   );
   const outputFilepath = path.join(
-    __dirname,
-    `../../storage/assets/${newFilename}`
+    logoStorageLocation(),
+    newFilename
   );
 
   fs.renameSync(originalFilepath, outputFilepath);
@@ -55,7 +63,7 @@ async function renameLogoFile(originalFilename = null) {
 
 async function removeCustomLogo(logoFilename = DARK_LOGO_FILENAME) {
   if (!logoFilename || !validFilename(logoFilename)) return false;
-  const logoPath = path.join(__dirname, `../../storage/assets/${logoFilename}`);
+  const logoPath = path.join(logoStorageLocation(), logoFilename);
   if (fs.existsSync(logoPath)) fs.unlinkSync(logoPath);
   return true;
 }

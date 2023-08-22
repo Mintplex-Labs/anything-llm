@@ -90,4 +90,4 @@ HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
   CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
 
 # Run the server
-ENTRYPOINT ["/bin/bash", "/usr/local/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/usr/local/bin/render-docker-entrypoint.sh"]
