@@ -27,10 +27,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     dpkg-reconfigure -f noninteractive tzdata && \
     python3 -m pip install --no-cache-dir virtualenv
 
-# Create a group and user with specific UID and GID
-RUN groupadd -g 1000 anythingllm && \
-    useradd -u 1000 -m -d /app -s /bin/bash -g anythingllm anythingllm && \
-    mkdir -p /app/frontend/ /app/server/ /app/collector/ && chown -R anythingllm:anythingllm /app
+RUN mkdir -p /app/frontend/ /app/server/ /app/collector/
 
 # Copy docker helper scripts
 COPY ./docker/docker-entrypoint.sh /usr/local/bin/
@@ -42,9 +39,6 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
 
 # Copy Render.com ENV file named .env into the server ENV so it can be used at runtime.
 RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env cat /etc/secrets/.env > /app/server/.env
-RUN chown -R anythingllm:anythingllm /app/server/.env
-
-USER anythingllm
 
 WORKDIR /app
 
@@ -69,13 +63,13 @@ RUN cd ./frontend/ && yarn build && yarn cache clean
 
 # Setup the server
 FROM server-deps as production-stage
-COPY --chown=anythingllm:anythingllm ./server/ ./server/
+COPY ./server/ ./server/
 
 # Copy built static frontend files to the server public directory
 COPY --from=build-stage /app/frontend/dist ./server/public
 
 # Copy the collector
-COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
+COPY ./collector/ ./collector/
 
 # Install collector dependencies
 RUN cd /app/collector && \
