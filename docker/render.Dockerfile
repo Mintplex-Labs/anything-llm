@@ -31,11 +31,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 RUN mkdir -p /app/frontend/ /app/server/ /app/collector/
 
 # Copy docker helper scripts
-COPY ./docker/docker-entrypoint.sh /usr/local/bin/
+COPY ./docker/render-docker-entrypoint.sh /usr/local/bin/
 COPY ./docker/docker-healthcheck.sh /usr/local/bin/
 
 # Ensure the scripts are executable
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
+RUN chmod +x /usr/local/bin/render-docker-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-healthcheck.sh
 
 WORKDIR /app
