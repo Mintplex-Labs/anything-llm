@@ -9,6 +9,4 @@ collector/outputs/**
 **/dist/
 **/v-env/
 **/__pycache__/
-**/.env
-**/.env.*
 !frontend/.env.production
