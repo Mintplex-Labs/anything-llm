@@ -69,46 +69,31 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/upload",
-    fileUploadProgress,
     handleUploads.single("file"),
     async function (request, response) {
-      try {
-        const { originalname } = request.file;
+      const { originalname } = request.file;
+      const processingOnline = await checkPythonAppAlive();
 
-        const processingOnline = await checkPythonAppAlive();
-        if (!processingOnline) {
-          console.log(
-            `Python processing API is not online. Document ${originalname} will not be processed automatically.`
-          );
-          return response
-            .status(500)
-            .json({ message: "Python processing API is not online." });
-        }
-
-        const { success, reason } = await processDocument(originalname);
-        if (!success) {
-          console.log(
-            `Python processing API was not able to process document ${originalname}. Reason: ${reason}`
-          );
-          return response
-            .status(400)
-            .json({ message: `Document processing failed. Reason: ${reason}` });
-        }
-
-        await Telemetry.sendTelemetry("document_uploaded");
-        return response
-          .status(200)
-          .json({
-            message: `Document ${originalname} uploaded and processed successfully.`,
-          });
-      } catch (error) {
-        console.log(
-          `Unexpected error while uploading document: ${error.message}`
-        );
-        return response
+      if (!processingOnline) {
+        response
           .status(500)
-          .json({ message: "Unexpected server error. Please try again." });
+          .json({
+            success: false,
+            error: `Python processing API is not online. Document ${originalname} will not be processed automatically.`,
+          })
+          .end();
       }
+
+      const { success, reason } = await processDocument(originalname);
+      if (!success) {
+        response.status(500).json({ success: false, error: reason }).end();
+      }
+
+      console.log(
+        `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
+      );
+      await Telemetry.sendTelemetry("document_uploaded");
+      response.status(200).json({ success: true, error: null });
     }
   );
 
