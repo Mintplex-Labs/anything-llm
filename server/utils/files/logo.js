@@ -75,6 +75,7 @@ module.exports = {
   validFilename,
   getDefaultFilename,
   determineLogoFilepath,
+  logoStorageLocation,
   LIGHT_LOGO_FILENAME,
   DARK_LOGO_FILENAME,
 };
