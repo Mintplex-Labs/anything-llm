@@ -3,6 +3,7 @@ if test -f "$STORAGE_DIR/.env"; then
     export $(xargs < "$STORAGE_DIR/.env")
     echo $STORAGE_DIR
     echo $VECTOR_DB
+    cp -r /app/server/assets "$STORAGE_DIR/assets"
 fi
 
 node /app/server/index.js &

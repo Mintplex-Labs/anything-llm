@@ -174,7 +174,7 @@ function updateENV(newENVs = {}) {
   return { newValues, error: error?.length > 0 ? error : false };
 }
 
-async function envDumpLocation() {
+function envDumpLocation() {
   const path = require("path");
   if (!!process.env.STORAGE_DIR) {
     return path.resolve(process.env.STORAGE_DIR, ".env");
