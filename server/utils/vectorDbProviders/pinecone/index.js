@@ -185,10 +185,12 @@ const Pinecone = {
     if (knownDocuments.length === 0) return;
 
     const vectorIds = knownDocuments.map((doc) => doc.vectorId);
-    await pineconeIndex.delete1({
-      ids: vectorIds,
-      namespace,
-    });
+    for (const batchOfVectorIds of toChunks(vectorIds, 1000)) {
+      await pineconeIndex.delete1({
+        ids: batchOfVectorIds,
+        namespace,
+      });
+    }
 
     const indexes = knownDocuments.map((doc) => doc.id);
     await DocumentVectors.deleteIds(indexes);
@@ -242,10 +244,10 @@ const Pinecone = {
       content: `${chatPrompt(workspace)}
      Context:
      ${contextTexts
-       .map((text, i) => {
-         return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-       })
-       .join("")}`,
+          .map((text, i) => {
+            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+          })
+          .join("")}`,
     };
 
     const memory = [prompt, { role: "user", content: input }];
@@ -290,10 +292,10 @@ const Pinecone = {
       content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+          .map((text, i) => {
+            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+          })
+          .join("")}`,
     };
 
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
