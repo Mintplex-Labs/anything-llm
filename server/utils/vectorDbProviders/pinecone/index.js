@@ -244,10 +244,10 @@ const Pinecone = {
       content: `${chatPrompt(workspace)}
      Context:
      ${contextTexts
-          .map((text, i) => {
-            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-          })
-          .join("")}`,
+       .map((text, i) => {
+         return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+       })
+       .join("")}`,
     };
 
     const memory = [prompt, { role: "user", content: input }];
@@ -292,10 +292,10 @@ const Pinecone = {
       content: `${chatPrompt(workspace)}
     Context:
     ${contextTexts
-          .map((text, i) => {
-            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-          })
-          .join("")}`,
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
     };
 
     const memory = [prompt, ...chatHistory, { role: "user", content: input }];
