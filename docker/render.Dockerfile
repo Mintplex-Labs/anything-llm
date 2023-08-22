@@ -79,6 +79,7 @@ ENV NODE_ENV=production
 ENV STORAGE_DIR=$STORAGE_DIR
 ENV SERVER_PORT=3001
 ENV CACHE_VECTORS="true"
+ENV VECTOR_DB="lancedb"
 ENV PATH=/app/collector/v-env/bin:$PATH
 
 # Expose the server port
