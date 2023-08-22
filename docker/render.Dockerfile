@@ -1,10 +1,11 @@
-# syntax = docker/dockerfile:1.2
 # This is the dockerfile spefically to be used with Render.com docker deployments. Do not use
 # locally or in other environments as it will not be supported.
 
 # Setup base image
 FROM ubuntu:jammy-20230522 AS base
 ARG STORAGE_DIR
+
+RUN echo $STORAGE_DIR
 
 # Install system dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -37,9 +38,6 @@ COPY ./docker/docker-healthcheck.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-healthcheck.sh
 
-# Copy Render.com ENV file named .env into the server ENV so it can be used at runtime.
-RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env cat /etc/secrets/.env > /app/server/.env
-
 WORKDIR /app
 
 # Install frontend dependencies
@@ -51,7 +49,6 @@ RUN cd ./frontend/ && yarn install && yarn cache clean
 # Install server dependencies
 FROM base as server-deps
 COPY ./server/package.json ./server/yarn.lock ./server/
-RUN cat ./server/.env
 RUN cd ./server/ && yarn install --production && yarn cache clean && \
     rm /app/server/node_modules/vectordb/x86_64-apple-darwin.node && \
     rm /app/server/node_modules/vectordb/aarch64-apple-darwin.node
@@ -79,6 +76,9 @@ RUN cd /app/collector && \
 
 # Setup the environment
 ENV NODE_ENV=production
+ENV STORAGE_DIR=$STORAGE_DIR
+ENV SERVER_PORT=3001
+ENV CACHE_VECTORS="true"
 ENV PATH=/app/collector/v-env/bin:$PATH
 
 # Expose the server port
