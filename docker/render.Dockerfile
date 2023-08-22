@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:1.2
 # This is the dockerfile spefically to be used with Render.com docker deployments. Do not use
 # locally or in other environments as it will not be supported.
 
@@ -43,6 +44,8 @@ USER anythingllm
 
 WORKDIR /app
 
+RUN --mount=type=secret,id=_env,dst=/etc/secrets/.env cat /etc/secrets/.env
+
 # Install frontend dependencies
 FROM base as frontend-deps
 
@@ -52,6 +55,8 @@ RUN cd ./frontend/ && yarn install && yarn cache clean
 # Install server dependencies
 FROM base as server-deps
 COPY ./server/package.json ./server/yarn.lock ./server/
+COPY /etc/secrets/.env ./server/.env
+RUN cat ./server/.env
 RUN echo $STORAGE_DIR
 RUN cd ./server/ && yarn install --production && yarn cache clean && \
     rm /app/server/node_modules/vectordb/x86_64-apple-darwin.node && \
