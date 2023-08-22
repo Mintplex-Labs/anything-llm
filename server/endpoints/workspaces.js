@@ -71,30 +71,44 @@ function workspaceEndpoints(app) {
     "/workspace/:slug/upload",
     fileUploadProgress,
     handleUploads.single("file"),
-    async function (request, _) {
-      const { originalname } = request.file;
-      const processingOnline = await checkPythonAppAlive();
+    async function (request, response) {
+      try {
+        const { originalname } = request.file;
 
-      if (!processingOnline) {
+        const processingOnline = await checkPythonAppAlive();
+        if (!processingOnline) {
+          console.log(
+            `Python processing API is not online. Document ${originalname} will not be processed automatically.`
+          );
+          return response
+            .status(500)
+            .json({ message: "Python processing API is not online." });
+        }
+
+        const { success, reason } = await processDocument(originalname);
+        if (!success) {
+          console.log(
+            `Python processing API was not able to process document ${originalname}. Reason: ${reason}`
+          );
+          return response
+            .status(400)
+            .json({ message: `Document processing failed. Reason: ${reason}` });
+        }
+
+        await Telemetry.sendTelemetry("document_uploaded");
+        return response
+          .status(200)
+          .json({
+            message: `Document ${originalname} uploaded and processed successfully.`,
+          });
+      } catch (error) {
         console.log(
-          `Python processing API is not online. Document ${originalname} will not be processed automatically.`
+          `Unexpected error while uploading document: ${error.message}`
         );
-        return;
+        return response
+          .status(500)
+          .json({ message: "Unexpected server error. Please try again." });
       }
-
-      const { success, reason } = await processDocument(originalname);
-      if (!success) {
-        console.log(
-          `Python processing API was not able to process document ${originalname}. Reason: ${reason}`
-        );
-        return false;
-      }
-
-      console.log(
-        `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
-      );
-      await Telemetry.sendTelemetry("document_uploaded");
-      return;
     }
   );
 

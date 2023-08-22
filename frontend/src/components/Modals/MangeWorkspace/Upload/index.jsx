@@ -10,6 +10,10 @@ import { Frown } from "react-feather";
 export default function UploadToWorkspace({ workspace, fileTypes }) {
   const [ready, setReady] = useState(null);
   const [files, setFiles] = useState([]);
+  const [successMsg, setSuccessMsg] = useState("Success");
+  const [errorMsg, setErrorMsg] = useState("Fail");
+
+
   const onDrop = useCallback(async (acceptedFiles, rejections) => {
     const newAccepted = acceptedFiles.map((file) => {
       return {
@@ -144,6 +148,12 @@ export default function UploadToWorkspace({ workspace, fileTypes }) {
           {Object.values(fileTypes).flat().join(" ")}
         </code>
       </p>
+      {successMsg && (
+        <p className="text-green-600 dark:text-green-400 text-sm text-center pt-2">{'Success'}</p>)
+        }
+      {errorMsg && (
+        <p className="text-red-600 dark:text-red-400 text-sm text-center pt-2">{'Fail'}</p>
+      )}
     </ModalWrapper>
   );
 }
