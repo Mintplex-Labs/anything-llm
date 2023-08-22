@@ -172,6 +172,7 @@ const Pinecone = {
       await DocumentVectors.bulkInsert(documentVectors);
       return true;
     } catch (e) {
+      console.error(e);
       console.error("addDocumentToNamespace", e.message);
       return false;
     }
