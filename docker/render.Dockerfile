@@ -5,7 +5,7 @@
 FROM ubuntu:jammy-20230522 AS base
 ARG STORAGE_DIR
 
-RUN echo $STORAGE_DIR
+RUN if [ -z "$STORAGE_DIR" ]; then echo 'Environment variable STORAGE_DIR must be specified. Exiting.'; exit 1; fi
 
 # Install system dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
