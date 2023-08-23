@@ -30,4 +30,4 @@ STORAGE_DIR=/storage
 **BEFORE DEPLOYING**
 Ensure you have create a `Disk` and have it set to at least 1GB. The mount location **must be** `/storage`. You can increase storage at any time but you cannot decrease it.
 
-Launch! You service should boot with 5-10 minutes and be fully available and all changes and data will persist from restart to restart!
+Launch! Your service should boot with 5-10 minutes and be fully available and all changes and data will persist from restart to restart!
