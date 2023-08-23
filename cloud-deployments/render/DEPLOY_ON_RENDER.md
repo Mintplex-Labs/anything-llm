@@ -8,12 +8,19 @@ You can run the full stack version of AnythingLLM on a single Render.com Web Ser
 
 ### Creating the Render service
 **Repository:** https://github.com/Mintplex-Labs/anything-llm
+
 **Branch:** `render-deployment`
+
 **Instance Type:** Standard
+
 **Root Directory:** _empty_
+
 **Dockerfile Path:** `./docker/render.Dockerfile`
+
 **Docker Build Context Directory:** `.`
+
 _automatic deployment is not recommended to save on build minutes - use at your discretion._
+
 **Environment Variables:**
 ```
 PORT=3001
