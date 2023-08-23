@@ -8,7 +8,10 @@ async function exportData() {
     .toJSON()
     .slice(0, 10)}-${new Date().toJSON().slice(11, 19)}`;
   const folder = path.resolve(__dirname, `../../storage/exports/${uid}`);
-  const storageBase = path.resolve(__dirname, `../../storage`);
+  const storageBase =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, `../../storage`)
+      : path.resolve(process.env.STORAGE_DIR);
 
   try {
     fs.mkdirSync(folder, { recursive: true });
