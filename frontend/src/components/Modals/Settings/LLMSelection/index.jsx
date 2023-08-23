@@ -3,6 +3,7 @@ import System from "../../../../models/system";
 import OpenAiLogo from "../../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../../media/llmprovider/azure.png";
 import AnthropicLogo from "../../../../media/llmprovider/anthropic.png";
+import showToast from "../../../../utils/toast";
 
 const noop = () => false;
 export default function LLMSelection({
@@ -13,7 +14,6 @@ export default function LLMSelection({
   const [hasChanges, setHasChanges] = useState(false);
   const [llmChoice, setLLMChoice] = useState(settings?.LLMProvider || "openai");
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
   const canDebug = settings.MultiUserMode
     ? settings?.CanDebug && user?.role === "admin"
     : settings?.CanDebug;
@@ -27,12 +27,15 @@ export default function LLMSelection({
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setError(null);
     const data = {};
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
-    setError(error);
+    if (error) {
+      showToast(`Failed to save LLM settings: ${error}`, "error");
+    } else {
+      showToast("LLM settings saved successfully.", "success");
+    }
     setSaving(false);
     setHasChanges(!!error ? true : false);
   };
@@ -46,12 +49,6 @@ export default function LLMSelection({
             or else AnythingLLM will not function properly.
           </p>
         </div>
-
-        {!!error && (
-          <div className="mb-8 bg-red-700 dark:bg-orange-800 bg-opacity-30 border border-red-800 dark:border-orange-600 p-4 rounded-lg w-[90%] flex mx-auto">
-            <p className="text-red-800 dark:text-orange-300 text-sm">{error}</p>
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} onChange={() => setHasChanges(true)}>
           <div className="px-6 space-y-6 flex h-full w-full">
