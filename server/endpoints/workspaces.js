@@ -7,9 +7,6 @@ const { convertToChatHistory } = require("../utils/chats");
 const { getVectorDbClass } = require("../utils/helpers");
 const { setupMulter } = require("../utils/files/multer");
 const {
-  fileUploadProgress,
-} = require("../utils/middleware/fileUploadProgress");
-const {
   checkPythonAppAlive,
   processDocument,
 } = require("../utils/files/documentProcessor");

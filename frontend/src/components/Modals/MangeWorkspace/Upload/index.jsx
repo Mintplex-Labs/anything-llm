@@ -47,7 +47,6 @@ export default function UploadToWorkspace({ workspace, fileTypes }) {
     checkProcessorOnline();
   }, []);
 
-
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
@@ -157,6 +156,16 @@ export default function UploadToWorkspace({ workspace, fileTypes }) {
           {Object.values(fileTypes).flat().join(" ")}
         </code>
       </p>
+      {successMsg && (
+        <p className="text-green-600 dark:text-green-400 text-sm text-center pt-2">
+          {successMsg}
+        </p>
+      )}
+      {errorMsg && (
+        <p className="text-red-600 dark:text-red-400 text-sm text-center pt-2">
+          {errorMsg}
+        </p>
+      )}
     </ModalWrapper>
   );
 }
