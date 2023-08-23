@@ -3,12 +3,14 @@ const path = require("path");
 const { v4 } = require("uuid");
 
 function storageFolder() {
+  const path = require("path");
   return process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage`)
     : path.resolve(process.env.STORAGE_DIR);
 }
 
 function importExportLocation(path = 'exports') {
+  const path = require("path");
   const storageLocation = storageFolder();
   return path.join(storageLocation, path)
 }
