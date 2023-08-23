@@ -2,18 +2,26 @@ const fs = require("fs");
 const path = require("path");
 const { v4 } = require("uuid");
 
+function storageFolder() {
+  return process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../storage`)
+    : path.resolve(process.env.STORAGE_DIR);
+}
+
+function importExportLocation(path = 'exports') {
+  const storageLocation = storageFolder();
+  return path.join(storageLocation, path)
+}
+
 async function exportData() {
   const uid = `anythingllm-export-${new Date()
     .toJSON()
     .slice(0, 10)}-${new Date().toJSON().slice(11, 19)}`;
-  const folder =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../storage/exports/${uid}`)
-      : path.resolve(process.env.STORAGE_DIR, `exports/${uid}`);
-  const storageBase =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../storage`)
-      : path.resolve(process.env.STORAGE_DIR);
+  const folder = path.resolve(
+    importExportLocation('exports'),
+    uid,
+  )
+  const storageBase = storageFolder();
 
   try {
     fs.mkdirSync(folder, { recursive: true });
@@ -67,23 +75,19 @@ async function exportData() {
 }
 
 async function unpackAndOverwriteImport(importFilename) {
-  const importFilepath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../storage/imports/${importFilename}`)
-      : path.resolve(process.env.STORAGE_DIR, `imports/${importFilename}`);
+  const importFilepath = path.resolve(
+    importExportLocation('imports'),
+    importFilename,
+  )
   if (!fs.existsSync(importFilepath))
     return { success: false, error: "Import file does not exist." };
 
   const uid = v4();
-  const outDir =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../storage/imports/${uid}`)
-      : path.resolve(process.env.STORAGE_DIR, `imports/${uid}`);
-
-  const storageBase =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../storage`)
-      : path.resolve(process.env.STORAGE_DIR);
+  const outDir = path.resolve(
+    importExportLocation('imports'),
+    uid,
+  )
+  const storageBase = storageFolder();
 
   try {
     console.log(
@@ -194,4 +198,5 @@ async function unzipDirectory(sourcePath, outDir) {
 module.exports = {
   exportData,
   unpackAndOverwriteImport,
+  importExportLocation,
 };

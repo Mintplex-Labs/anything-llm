@@ -2,6 +2,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { logoStorageLocation } = require("./logo");
+const { importExportLocation } = require("./data");
 
 function setupMulter() {
   // Handle File uploads for auto-uploading.
@@ -25,7 +26,7 @@ function setupDataImports() {
   // Handle File uploads for auto-uploading.
   const storage = multer.diskStorage({
     destination: function (_, _, cb) {
-      const uploadOutput = path.resolve(__dirname, `../../storage/imports`);
+      const uploadOutput = importExportLocation('imports');
       fs.mkdirSync(uploadOutput, { recursive: true });
       return cb(null, uploadOutput);
     },
