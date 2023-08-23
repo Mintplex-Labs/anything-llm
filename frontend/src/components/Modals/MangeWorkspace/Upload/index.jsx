@@ -6,21 +6,18 @@ import { useDropzone } from "react-dropzone";
 import { v4 } from "uuid";
 import System from "../../../../models/system";
 import { Frown } from "react-feather";
+import showToast from "../../../../utils/toast";
 
 export default function UploadToWorkspace({ workspace, fileTypes }) {
   const [ready, setReady] = useState(null);
   const [files, setFiles] = useState([]);
-  const [successMsg, setSuccessMsg] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
 
   const handleUploadSuccess = () => {
-    setSuccessMsg("File uploaded successfully");
-    setErrorMsg(null);
+    showToast("File uploaded successfully", "success");
   };
 
   const handleUploadError = (message) => {
-    setErrorMsg(`Upload failed: ${message}`);
-    setSuccessMsg(null);
+    showToast(`Error uploading file: ${message}`, "error");
   };
 
   const onDrop = useCallback(async (acceptedFiles, rejections) => {
@@ -49,20 +46,6 @@ export default function UploadToWorkspace({ workspace, fileTypes }) {
     }
     checkProcessorOnline();
   }, []);
-
-  useEffect(() => {
-    if (!!successMsg) {
-      setTimeout(() => {
-        setSuccessMsg("");
-      }, 3_500);
-    }
-
-    if (!!errorMsg) {
-      setTimeout(() => {
-        setErrorMsg("");
-      }, 3_500);
-    }
-  }, [successMsg, errorMsg]);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -173,16 +156,6 @@ export default function UploadToWorkspace({ workspace, fileTypes }) {
           {Object.values(fileTypes).flat().join(" ")}
         </code>
       </p>
-      {successMsg && (
-        <p className="text-green-600 dark:text-green-400 text-sm text-center pt-2">
-          {successMsg}
-        </p>
-      )}
-      {errorMsg && (
-        <p className="text-red-600 dark:text-red-400 text-sm text-center pt-2">
-          {errorMsg}
-        </p>
-      )}
     </ModalWrapper>
   );
 }

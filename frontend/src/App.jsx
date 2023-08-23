@@ -2,6 +2,8 @@ import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ContextWrapper } from "./AuthContext";
 import PrivateRoute, { AdminRoute } from "./components/PrivateRoute";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Main = lazy(() => import("./pages/Main"));
 const InvitePage = lazy(() => import("./pages/Invite"));
@@ -51,6 +53,7 @@ export default function App() {
             element={<AdminRoute Component={AdminAppearance} />}
           />
         </Routes>
+        <ToastContainer />
       </ContextWrapper>
     </Suspense>
   );
