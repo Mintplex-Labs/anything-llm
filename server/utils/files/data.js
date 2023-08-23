@@ -2,26 +2,13 @@ const fs = require("fs");
 const path = require("path");
 const { v4 } = require("uuid");
 
-function storageFolder() {
-  return process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../storage`)
-    : path.resolve(process.env.STORAGE_DIR);
-}
-
-function importExportLocation(subDir = 'exports') {
-  const storageLocation = storageFolder();
-  return path.join(storageLocation, subDir)
-}
-
+// always export to repo storage - even if it is ephemeral.
 async function exportData() {
   const uid = `anythingllm-export-${new Date()
     .toJSON()
     .slice(0, 10)}-${new Date().toJSON().slice(11, 19)}`;
-  const folder = path.resolve(
-    importExportLocation('exports'),
-    uid,
-  )
-  const storageBase = storageFolder();
+  const folder = path.resolve(__dirname, `../../storage/exports/${uid}`);
+  const storageBase = path.resolve(__dirname, `../../storage`);
 
   try {
     fs.mkdirSync(folder, { recursive: true });
@@ -74,20 +61,19 @@ async function exportData() {
   }
 }
 
+// Import would be saved to application/ephemeral filesystem, but we need to write
+// the results to the real storage of the system if required.
 async function unpackAndOverwriteImport(importFilename) {
-  const importFilepath = path.resolve(
-    importExportLocation('imports'),
-    importFilename,
-  )
+  const importFilepath = path.resolve(__dirname, `../../storage/imports/${importFilename}`)
   if (!fs.existsSync(importFilepath))
     return { success: false, error: "Import file does not exist." };
 
   const uid = v4();
-  const outDir = path.resolve(
-    importExportLocation('imports'),
-    uid,
-  )
-  const storageBase = storageFolder();
+  const outDir = path.resolve(__dirname, `../../storage/imports/${uid}`)
+  const storageBase =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, `../../storage`)
+      : path.resolve(process.env.STORAGE_DIR);
 
   try {
     console.log(
@@ -198,5 +184,4 @@ async function unzipDirectory(sourcePath, outDir) {
 module.exports = {
   exportData,
   unpackAndOverwriteImport,
-  importExportLocation,
 };

@@ -17,7 +17,6 @@ const { adminEndpoints } = require("./endpoints/admin");
 const { inviteEndpoints } = require("./endpoints/invite");
 const { utilEndpoints } = require("./endpoints/utils");
 const { Telemetry } = require("./models/telemetry");
-const { importExportLocation } = require("./utils/files/data");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -80,7 +79,7 @@ if (process.env.NODE_ENV !== "development") {
 
 app.use(
   "/system/data-exports",
-  serveIndex(importExportLocation('exports'), { icons: true })
+  serveIndex(__dirname + "/storage/exports", { icons: true })
 );
 
 app.all("*", function (_, response) {
