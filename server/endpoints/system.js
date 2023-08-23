@@ -36,6 +36,7 @@ const {
 } = require("../utils/files/logo");
 const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
+const { ApiKey } = require("../models/apiKeys");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -58,57 +59,7 @@ function systemEndpoints(app) {
 
   app.get("/setup-complete", async (_, response) => {
     try {
-      const llmProvider = process.env.LLM_PROVIDER || "openai";
-      const vectorDB = process.env.VECTOR_DB || "pinecone";
-      const results = {
-        CanDebug: !!!process.env.NO_DEBUG,
-        RequiresAuth: !!process.env.AUTH_TOKEN,
-        AuthToken: !!process.env.AUTH_TOKEN,
-        JWTSecret: !!process.env.JWT_SECRET,
-        StorageDir: process.env.STORAGE_DIR,
-        MultiUserMode: await SystemSettings.isMultiUserMode(),
-        VectorDB: vectorDB,
-        ...(vectorDB === "pinecone"
-          ? {
-              PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
-              PineConeKey: !!process.env.PINECONE_API_KEY,
-              PineConeIndex: process.env.PINECONE_INDEX,
-            }
-          : {}),
-        ...(vectorDB === "chroma"
-          ? {
-              ChromaEndpoint: process.env.CHROMA_ENDPOINT,
-            }
-          : {}),
-        ...(vectorDB === "weaviate"
-          ? {
-              WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
-              WeaviateApiKey: process.env.WEAVIATE_API_KEY,
-            }
-          : {}),
-        ...(vectorDB === "qdrant"
-          ? {
-              QdrantEndpoint: process.env.QDRANT_ENDPOINT,
-              QdrantApiKey: process.env.QDRANT_API_KEY,
-            }
-          : {}),
-        LLMProvider: llmProvider,
-        ...(llmProvider === "openai"
-          ? {
-              OpenAiKey: !!process.env.OPEN_AI_KEY,
-              OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
-            }
-          : {}),
-
-        ...(llmProvider === "azure"
-          ? {
-              AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-              AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-              AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
-              AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-            }
-          : {}),
-      };
+      const results = await SystemSettings.currentSettings();
       response.status(200).json({ results });
     } catch (e) {
       console.log(e.message, e);
@@ -526,6 +477,65 @@ function systemEndpoints(app) {
       }
     }
   );
+
+  app.get("/system/api-key", [validatedRequest], async (_, response) => {
+    try {
+      if (response.locals.multiUserMode) {
+        return response.sendStatus(401).end();
+      }
+
+      const apiKey = await ApiKey.get("id IS NOT NULL");
+      return response.status(200).json({
+        apiKey,
+        error: null,
+      });
+    } catch (error) {
+      console.error(error);
+      response.status(500).json({
+        apiKey: null,
+        error: "Could not find an API Key.",
+      });
+    }
+  });
+
+  app.post(
+    "/system/generate-api-key",
+    [validatedRequest],
+    async (_, response) => {
+      try {
+        if (response.locals.multiUserMode) {
+          return response.sendStatus(401).end();
+        }
+
+        await ApiKey.delete();
+        const { apiKey, error } = await ApiKey.create();
+        return response.status(200).json({
+          apiKey,
+          error,
+        });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({
+          apiKey: null,
+          error: "Error generating api key.",
+        });
+      }
+    }
+  );
+
+  app.delete("/system/api-key", [validatedRequest], async (_, response) => {
+    try {
+      if (response.locals.multiUserMode) {
+        return response.sendStatus(401).end();
+      }
+
+      await ApiKey.delete();
+      return response.status(200).end();
+    } catch (error) {
+      console.error(error);
+      response.status(500).end();
+    }
+  });
 }
 
 module.exports = { systemEndpoints };
