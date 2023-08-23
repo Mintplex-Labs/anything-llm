@@ -345,7 +345,7 @@ function adminEndpoints(app) {
     }
   );
 
-  app.get("/admin/api-keys", [validatedRequest], async (_, response) => {
+  app.get("/admin/api-keys", [validatedRequest], async (request, response) => {
     try {
       const user = await userFromSession(request, response);
       if (!user || user?.role !== "admin") {
@@ -353,7 +353,7 @@ function adminEndpoints(app) {
         return;
       }
 
-      const apiKeys = await ApiKey.where("id IS NOT NULL");
+      const apiKeys = await ApiKey.whereWithUser("id IS NOT NULL");
       return response.status(200).json({
         apiKeys,
         error: null,

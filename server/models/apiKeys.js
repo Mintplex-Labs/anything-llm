@@ -108,6 +108,24 @@ const ApiKey = {
 
     return results;
   },
+  whereWithUser: async function (clause = "", limit = null) {
+    const { User } = require("./user");
+    const apiKeys = await this.where(clause, limit);
+
+    for (const apiKey of apiKeys) {
+      if (!apiKey.createdBy) continue;
+      const user = await User.get(`id = ${apiKey.createdBy}`);
+      if (!user) continue;
+
+      apiKey.createdBy = {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+      };
+    }
+
+    return apiKeys;
+  },
 };
 
 module.exports = { ApiKey };

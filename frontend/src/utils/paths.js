@@ -52,5 +52,8 @@ export default {
     appearance: () => {
       return "/admin/appearance";
     },
+    apiKeys: () => {
+      return "/admin/api-keys";
+    },
   },
 };

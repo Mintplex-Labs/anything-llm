@@ -14,6 +14,7 @@ const AdminWorkspaces = lazy(() => import("./pages/Admin/Workspaces"));
 const AdminChats = lazy(() => import("./pages/Admin/Chats"));
 const AdminSystem = lazy(() => import("./pages/Admin/System"));
 const AdminAppearance = lazy(() => import("./pages/Admin/Appearance"));
+const AdminApiKeys = lazy(() => import("./pages/Admin/ApiKeys"));
 
 export default function App() {
   return (
@@ -51,6 +52,10 @@ export default function App() {
           <Route
             path="/admin/appearance"
             element={<AdminRoute Component={AdminAppearance} />}
+          />
+          <Route
+            path="/admin/api-keys"
+            element={<AdminRoute Component={AdminApiKeys} />}
           />
         </Routes>
         <ToastContainer />
