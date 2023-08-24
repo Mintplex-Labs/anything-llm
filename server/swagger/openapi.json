@@ -824,6 +824,208 @@
         }
       }
     },
+    "/v1/document/upload": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Upload a new file to AnythingLLM to be parsed and prepared for embedding.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "File to be uploaded.",
+          "required": true,
+          "type": "file",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/documents": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "List of all locally-stored documents in instance",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "localFiles": {
+                      "name": "documents",
+                      "type": "folder",
+                      "items": [
+                        {
+                          "name": "my-stored-document.json",
+                          "type": "file",
+                          "id": "bb07c334-4dab-4419-9462-9d00065a49a1",
+                          "url": "file://my-stored-document.txt",
+                          "title": "my-stored-document.txt",
+                          "cached": false
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/document/accepted-file-types": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Check available filetypes and MIMEs that can be uploaded.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "types": {
+                      "application/mbox": [
+                        ".mbox"
+                      ],
+                      "application/pdf": [
+                        ".pdf"
+                      ],
+                      "application/vnd.oasis.opendocument.text": [
+                        ".odt"
+                      ],
+                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+                        ".docx"
+                      ],
+                      "text/plain": [
+                        ".txt",
+                        ".md"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/v1/workspace/new": {
       "post": {
         "tags": [
@@ -851,7 +1053,6 @@
                       "id": 79,
                       "name": "Sample workspace",
                       "slug": "sample-workspace",
-                      "vectorTag": null,
                       "createdAt": "2023-08-17 00:45:03",
                       "openAiTemp": null,
                       "lastUpdatedAt": "2023-08-17 00:45:03",
@@ -925,7 +1126,6 @@
                         "id": 79,
                         "name": "Sample workspace",
                         "slug": "sample-workspace",
-                        "vectorTag": null,
                         "createdAt": "2023-08-17 00:45:03",
                         "openAiTemp": null,
                         "lastUpdatedAt": "2023-08-17 00:45:03",
@@ -995,7 +1195,6 @@
                       "id": 79,
                       "name": "My workspace",
                       "slug": "my-workspace-123",
-                      "vectorTag": null,
                       "createdAt": "2023-08-17 00:45:03",
                       "openAiTemp": null,
                       "lastUpdatedAt": "2023-08-17 00:45:03",
@@ -1081,7 +1280,10 @@
     },
     "/v1/workspace/{slug}/update": {
       "post": {
-        "description": "",
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Update workspace settings by its unique slug.",
         "parameters": [
           {
             "name": "slug",
@@ -1089,7 +1291,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Unique slug of workspace to find"
           },
           {
             "name": "Authorization",
@@ -1100,15 +1303,75 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "workspace": {
+                      "id": 79,
+                      "name": "My workspace",
+                      "slug": "my-workspace-123",
+                      "createdAt": "2023-08-17 00:45:03",
+                      "openAiTemp": null,
+                      "lastUpdatedAt": "2023-08-17 00:45:03",
+                      "openAiHistory": 20,
+                      "openAiPrompt": null,
+                      "documents": []
+                    },
+                    "message": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object containing new settings to update a workspace. All keys are optional and will not update unless provided",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "Updated Workspace Name",
+                "openAiTemp": 0.2,
+                "openAiHistory": 20,
+                "openAiPrompt": "Respond to all inquires and questions in binary - do not respond in any other format."
+              }
+            }
           }
         }
       }
     },
     "/v1/workspace/{slug}/chats": {
       "get": {
-        "description": "",
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Get a workspaces chats regardless of user by its unique slug.",
         "parameters": [
           {
             "name": "slug",
@@ -1116,7 +1379,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Unique slug of workspace to find"
           },
           {
             "name": "Authorization",
@@ -1127,15 +1391,64 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "history": [
+                      {
+                        "role": "user",
+                        "content": "What is AnythingLLM?",
+                        "sentAt": 1692851630
+                      },
+                      {
+                        "role": "assistant",
+                        "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                        "sources": [
+                          {
+                            "source": "object about source document and snippets used"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
     "/v1/workspace/{slug}/update-embeddings": {
       "post": {
-        "description": "",
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Add or remove documents from a workspace by its unique slug.",
         "parameters": [
           {
             "name": "slug",
@@ -1143,7 +1456,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Unique slug of workspace to find"
           },
           {
             "name": "Authorization",
@@ -1154,35 +1468,65 @@
           }
         ],
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          }
-        }
-      }
-    },
-    "/v1/workspace/{slug}/upload": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "slug",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "workspace": {
+                      "id": 79,
+                      "name": "My workspace",
+                      "slug": "my-workspace-123",
+                      "createdAt": "2023-08-17 00:45:03",
+                      "openAiTemp": null,
+                      "lastUpdatedAt": "2023-08-17 00:45:03",
+                      "openAiHistory": 20,
+                      "openAiPrompt": null,
+                      "documents": []
+                    },
+                    "message": null
+                  }
+                }
+              }
             }
           },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
+          "400": {
+            "description": "Bad Request"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object of additions and removals of documents to add to update a workspace. The value should be the folder + filename with the exclusions of the top-level documents path.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "adds": [],
+                "deletes": [
+                  "custom-documents/anythingllm-hash.json"
+                ]
+              }
+            }
           }
         }
       }
@@ -1299,69 +1643,6 @@
                   "type": "object",
                   "example": {
                     "vectorCount": 5450
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidAPIKey"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidAPIKey"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/v1/system/local-files": {
-      "get": {
-        "tags": [
-          "System Settings"
-        ],
-        "description": "List of all locally-stored documents in instance",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "example": {
-                    "localFiles": {
-                      "name": "documents",
-                      "type": "folder",
-                      "items": [
-                        {
-                          "name": "my-stored-document.json",
-                          "type": "file",
-                          "id": "bb07c334-4dab-4419-9462-9d00065a49a1",
-                          "url": "file://my-stored-document.txt",
-                          "title": "my-stored-document.txt",
-                          "cached": false
-                        }
-                      ]
-                    }
                   }
                 }
               }

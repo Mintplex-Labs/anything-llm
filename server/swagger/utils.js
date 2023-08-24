@@ -11,7 +11,10 @@ function faviconUrl() {
 function useSwagger(app) {
   app.use('/api/docs', swaggerUi.serve);
   const options = {
-    customCss: fs.readFileSync(path.resolve(__dirname, 'index.css')),
+    customCss: [
+      fs.readFileSync(path.resolve(__dirname, 'index.css')),
+      fs.readFileSync(path.resolve(__dirname, 'dark-swagger.css'))
+    ].join('\n\n\n'),
     customSiteTitle: 'AnythingLLM Developer API Documentation',
     customJsStr: fs.readFileSync(path.resolve(__dirname, 'index.js'), 'utf8'),
     customfavIcon: faviconUrl(),
@@ -21,7 +24,8 @@ function useSwagger(app) {
     const swaggerDocument = require('./openapi.json');
     app.get('/api/docs', swaggerUi.setup(
       swaggerDocument,
-      options,
+      // options,
+      { c }
     ));
   } else {
     // we regenerate the html page only in development mode to ensure it is up-to-date when the code is hot-reloaded.

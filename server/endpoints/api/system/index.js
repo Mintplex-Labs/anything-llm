@@ -1,5 +1,4 @@
 const { SystemSettings } = require("../../../models/systemSettings");
-const { viewLocalFiles } = require("../../../utils/files");
 const { getVectorDbClass } = require("../../../utils/helpers");
 const { dumpENV, updateENV } = require("../../../utils/helpers/updateENV");
 const { reqBody } = require("../../../utils/http");
@@ -93,50 +92,6 @@ function apiSystemEndpoints(app) {
       const VectorDb = getVectorDbClass();
       const vectorCount = await VectorDb.totalIndicies();
       response.status(200).json({ vectorCount });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
-    }
-  });
-
-  app.get("/v1/system/local-files", [validApiKey], async (_, response) => {
-    /* 
-    #swagger.tags = ['System Settings']
-    #swagger.description = 'List of all locally-stored documents in instance'
-    #swagger.responses[200] = {
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
-            example: {
-             "localFiles": {
-              "name": "documents",
-              "type": "folder",
-              items: [
-                {
-                  "name": "my-stored-document.json",
-                  "type": "file",
-                  "id": "bb07c334-4dab-4419-9462-9d00065a49a1",
-                  "url": "file://my-stored-document.txt",
-                  "title": "my-stored-document.txt",
-                  "cached": false
-                },
-              ]
-             }
-            }
-          }
-        }           
-      }
-    }  
-    #swagger.responses[403] = {
-      schema: {
-        "$ref": "#/definitions/InvalidAPIKey"
-      }
-    }
-    */
-    try {
-      const localFiles = await viewLocalFiles();
-      response.status(200).json({ localFiles });
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();
