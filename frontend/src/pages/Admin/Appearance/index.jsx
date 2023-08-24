@@ -8,13 +8,12 @@ import usePrefersDarkMode from "../../../hooks/usePrefersDarkMode";
 import useLogo from "../../../hooks/useLogo";
 import System from "../../../models/system";
 import EditingChatBubble from "../../../components/EditingChatBubble";
+import showToast from "../../../utils/toast";
 
 export default function Appearance() {
   const { logo: _initLogo } = useLogo();
   const [logo, setLogo] = useState("");
   const prefersDarkMode = usePrefersDarkMode();
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
   const [hasChanges, setHasChanges] = useState(false);
   const [messages, setMessages] = useState([]);
 
@@ -24,20 +23,6 @@ export default function Appearance() {
     }
     setInitLogo();
   }, [_initLogo]);
-
-  useEffect(() => {
-    if (!!errorMsg) {
-      setTimeout(() => {
-        setErrorMsg("");
-      }, 3_500);
-    }
-
-    if (!!successMsg) {
-      setTimeout(() => {
-        setSuccessMsg("");
-      }, 3_500);
-    }
-  }, [errorMsg, successMsg]);
 
   useEffect(() => {
     async function fetchMessages() {
@@ -55,29 +40,26 @@ export default function Appearance() {
     formData.append("logo", file);
     const { success, error } = await Admin.uploadLogo(formData);
     if (!success) {
-      setErrorMsg(error);
+      showToast(`Failed to upload logo: ${error}`, "error");
       return;
     }
 
     const logoURL = await System.fetchLogo();
     setLogo(logoURL);
-    setErrorMsg("");
-    window.location.reload();
+    showToast("Image uploaded successfully.", "success");
   };
 
   const handleRemoveLogo = async () => {
     const { success, error } = await Admin.removeCustomLogo();
     if (!success) {
       console.error("Failed to remove logo:", error);
-      setErrorMsg(error);
+      showToast(`Failed to remove logo: ${error}`, "error");
       return;
     }
 
     const logoURL = await System.fetchLogo();
     setLogo(logoURL);
-    setErrorMsg("");
-
-    window.location.reload();
+    showToast("Image successfully removed.", "success");
   };
 
   const addMessage = (type) => {
@@ -109,10 +91,10 @@ export default function Appearance() {
   const handleMessageSave = async () => {
     const { success, error } = await Admin.setWelcomeMessages(messages);
     if (!success) {
-      setErrorMsg(error);
+      showToast(`Failed to update welcome messages: ${error}`, "error");
       return;
     }
-    setSuccessMsg("Successfully updated welcome messages.");
+    showToast("Successfully updated welcome messages.", "success");
     setHasChanges(false);
   };
 
@@ -235,16 +217,6 @@ export default function Appearance() {
               </div>
             )}
           </div>
-          {errorMsg && (
-            <div className="mt-4 text-sm text-red-600 dark:text-red-400 text-center">
-              {errorMsg}
-            </div>
-          )}
-          {successMsg && (
-            <div className="mt-4 text-sm text-green-600 dark:text-green-400 text-center">
-              {successMsg}
-            </div>
-          )}
         </div>
       </div>
     </div>

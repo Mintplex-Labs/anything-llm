@@ -5,13 +5,12 @@ import System from "../../../../models/system";
 import EditingChatBubble from "../../../EditingChatBubble";
 import AnythingLLMLight from "../../../../media/logo/anything-llm-light.png";
 import AnythingLLMDark from "../../../../media/logo/anything-llm-dark.png";
+import showToast from "../../../../utils/toast";
 
 export default function Appearance() {
   const { logo: _initLogo } = useLogo();
   const prefersDarkMode = usePrefersDarkMode();
   const [logo, setLogo] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
   const [hasChanges, setHasChanges] = useState(false);
   const [messages, setMessages] = useState([]);
 
@@ -30,20 +29,6 @@ export default function Appearance() {
     setInitLogo();
   }, [_initLogo]);
 
-  useEffect(() => {
-    if (!!successMsg) {
-      setTimeout(() => {
-        setSuccessMsg("");
-      }, 3_500);
-    }
-
-    if (!!errorMsg) {
-      setTimeout(() => {
-        setErrorMsg("");
-      }, 3_500);
-    }
-  }, [successMsg, errorMsg]);
-
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return false;
@@ -53,30 +38,26 @@ export default function Appearance() {
     const { success, error } = await System.uploadLogo(formData);
     if (!success) {
       console.error("Failed to upload logo:", error);
-      setErrorMsg(error);
-      setSuccessMsg("");
+      showToast(`Failed to upload logo: ${error}`, "error");
       return;
     }
 
     const logoURL = await System.fetchLogo();
     setLogo(logoURL);
-    setSuccessMsg("Image uploaded successfully");
-    setErrorMsg("");
+    showToast("Image uploaded successfully.", "success");
   };
 
   const handleRemoveLogo = async () => {
     const { success, error } = await System.removeCustomLogo();
     if (!success) {
       console.error("Failed to remove logo:", error);
-      setErrorMsg(error);
-      setSuccessMsg("");
+      showToast(`Failed to remove logo: ${error}`, "error");
       return;
     }
 
     const logoURL = await System.fetchLogo();
     setLogo(logoURL);
-    setSuccessMsg("Image successfully removed");
-    setErrorMsg("");
+    showToast("Image successfully removed.", "success");
   };
 
   const addMessage = (type) => {
@@ -108,10 +89,10 @@ export default function Appearance() {
   const handleMessageSave = async () => {
     const { success, error } = await System.setWelcomeMessages(messages);
     if (!success) {
-      setErrorMsg(error);
+      showToast(`Failed to update welcome messages: ${error}`, "error");
       return;
     }
-    setSuccessMsg("Successfully updated welcome messages.");
+    showToast("Successfully updated welcome messages.", "success");
     setHasChanges(false);
   };
 
@@ -227,16 +208,6 @@ export default function Appearance() {
               </div>
             )}
           </div>
-          {errorMsg && (
-            <div className="mt-4 text-sm text-red-600 dark:text-red-400 text-center">
-              {errorMsg}
-            </div>
-          )}
-          {successMsg && (
-            <div className="mt-4 text-sm text-green-600 dark:text-green-400 text-center">
-              {successMsg}
-            </div>
-          )}
         </div>
       </div>
     </div>
