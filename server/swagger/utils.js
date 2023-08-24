@@ -16,7 +16,6 @@ function useSwagger(app) {
       fs.readFileSync(path.resolve(__dirname, 'dark-swagger.css'))
     ].join('\n\n\n'),
     customSiteTitle: 'AnythingLLM Developer API Documentation',
-    customJsStr: fs.readFileSync(path.resolve(__dirname, 'index.js'), 'utf8'),
     customfavIcon: faviconUrl(),
   }
 
@@ -24,7 +23,10 @@ function useSwagger(app) {
     const swaggerDocument = require('./openapi.json');
     app.get('/api/docs', swaggerUi.setup(
       swaggerDocument,
-      options,
+      {
+        ...options,
+        customJsStr: 'window.SWAGGER_DOCS_ENV = "production";\n\n' + fs.readFileSync(path.resolve(__dirname, 'index.js'), 'utf8'),
+      },
     ));
   } else {
     // we regenerate the html page only in development mode to ensure it is up-to-date when the code is hot-reloaded.
@@ -36,7 +38,10 @@ function useSwagger(app) {
         return response.send(
           swaggerUi.generateHTML(
             swaggerDocument,
-            options
+            {
+              ...options,
+              customJsStr: 'window.SWAGGER_DOCS_ENV = "development";\n\n' + fs.readFileSync(path.resolve(__dirname, 'index.js'), 'utf8'),
+            }
           )
         );
       }
