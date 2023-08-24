@@ -17,6 +17,7 @@ const { adminEndpoints } = require("./endpoints/admin");
 const { inviteEndpoints } = require("./endpoints/invite");
 const { utilEndpoints } = require("./endpoints/utils");
 const { Telemetry } = require("./models/telemetry");
+const { developerEndpoints } = require("./endpoints/api");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -38,6 +39,7 @@ chatEndpoints(apiRouter);
 adminEndpoints(apiRouter);
 inviteEndpoints(apiRouter);
 utilEndpoints(apiRouter);
+developerEndpoints(app, apiRouter);
 
 apiRouter.post("/v/:command", async (request, response) => {
   try {

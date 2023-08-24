@@ -220,6 +220,49 @@ const System = {
         return { success: false, error: e.message };
       });
   },
+  getApiKey: async function () {
+    return fetch(`${API_BASE}/system/api-key`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText || "Error fetching api key.");
+        }
+        return res.json();
+      })
+      .catch((e) => {
+        console.error(e);
+        return { apiKey: null, error: e.message };
+      });
+  },
+  generateApiKey: async function () {
+    return fetch(`${API_BASE}/system/generate-api-key`, {
+      method: "POST",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText || "Error generating api key.");
+        }
+        return res.json();
+      })
+      .catch((e) => {
+        console.error(e);
+        return { apiKey: null, error: e.message };
+      });
+  },
+  deleteApiKey: async function () {
+    return fetch(`${API_BASE}/system/api-key`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.ok)
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
 };
 
 export default System;

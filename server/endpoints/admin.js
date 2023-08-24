@@ -1,3 +1,4 @@
+const { ApiKey } = require("../models/apiKeys");
 const { Document } = require("../models/documents");
 const { Invite } = require("../models/invite");
 const { SystemSettings } = require("../models/systemSettings");
@@ -8,8 +9,6 @@ const { WorkspaceChats } = require("../models/workspaceChats");
 const { getVectorDbClass } = require("../utils/helpers");
 const { userFromSession, reqBody } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { setupLogoUploads } = require("../utils/files/multer");
-const { handleLogoUploads } = setupLogoUploads();
 
 function adminEndpoints(app) {
   if (!app) return;
@@ -339,6 +338,72 @@ function adminEndpoints(app) {
         const updates = reqBody(request);
         await SystemSettings.updateSettings(updates);
         response.status(200).json({ success: true, error: null });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get("/admin/api-keys", [validatedRequest], async (request, response) => {
+    try {
+      const user = await userFromSession(request, response);
+      if (!user || user?.role !== "admin") {
+        response.sendStatus(401).end();
+        return;
+      }
+
+      const apiKeys = await ApiKey.whereWithUser("id IS NOT NULL");
+      return response.status(200).json({
+        apiKeys,
+        error: null,
+      });
+    } catch (error) {
+      console.error(error);
+      response.status(500).json({
+        apiKey: null,
+        error: "Could not find an API Keys.",
+      });
+    }
+  });
+
+  app.post(
+    "/admin/generate-api-key",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        if (!user || user?.role !== "admin") {
+          response.sendStatus(401).end();
+          return;
+        }
+
+        const { apiKey, error } = await ApiKey.create(user.id);
+        return response.status(200).json({
+          apiKey,
+          error,
+        });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/admin/delete-api-key/:id",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const user = await userFromSession(request, response);
+        if (!user || user?.role !== "admin") {
+          response.sendStatus(401).end();
+          return;
+        }
+
+        await ApiKey.delete(`id = ${id}`);
+        return response.status(200).end();
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

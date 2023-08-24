@@ -1,3 +1,7 @@
+process.env.NODE_ENV === "development"
+  ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
+  : require("dotenv").config();
+
 const SystemSettings = {
   supportedFields: [
     "multi_user_mode",
@@ -44,6 +48,59 @@ const SystemSettings = {
 
     if (tracing) db.on("trace", (sql) => console.log(sql));
     return db;
+  },
+  currentSettings: async function () {
+    const llmProvider = process.env.LLM_PROVIDER || "openai";
+    const vectorDB = process.env.VECTOR_DB || "pinecone";
+    return {
+      CanDebug: !!!process.env.NO_DEBUG,
+      RequiresAuth: !!process.env.AUTH_TOKEN,
+      AuthToken: !!process.env.AUTH_TOKEN,
+      JWTSecret: !!process.env.JWT_SECRET,
+      StorageDir: process.env.STORAGE_DIR,
+      MultiUserMode: await this.isMultiUserMode(),
+      VectorDB: vectorDB,
+      ...(vectorDB === "pinecone"
+        ? {
+            PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
+            PineConeKey: !!process.env.PINECONE_API_KEY,
+            PineConeIndex: process.env.PINECONE_INDEX,
+          }
+        : {}),
+      ...(vectorDB === "chroma"
+        ? {
+            ChromaEndpoint: process.env.CHROMA_ENDPOINT,
+          }
+        : {}),
+      ...(vectorDB === "weaviate"
+        ? {
+            WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
+            WeaviateApiKey: process.env.WEAVIATE_API_KEY,
+          }
+        : {}),
+      ...(vectorDB === "qdrant"
+        ? {
+            QdrantEndpoint: process.env.QDRANT_ENDPOINT,
+            QdrantApiKey: process.env.QDRANT_API_KEY,
+          }
+        : {}),
+      LLMProvider: llmProvider,
+      ...(llmProvider === "openai"
+        ? {
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
+          }
+        : {}),
+
+      ...(llmProvider === "azure"
+        ? {
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
+    };
   },
   get: async function (clause = "") {
     const db = await this.db();
