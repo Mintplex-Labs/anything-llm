@@ -1,3 +1,5 @@
+const { Telemetry } = require("./telemetry");
+
 const ApiKey = {
   tablename: "api_keys",
   writable: [],
@@ -63,7 +65,7 @@ const ApiKey = {
       `SELECT * FROM ${this.tablename} WHERE id = ${id} `
     );
     db.close();
-
+    await Telemetry.sendTelemetry("api_key_created");
     return { apiKey, error: null };
   },
   get: async function (clause = "") {
