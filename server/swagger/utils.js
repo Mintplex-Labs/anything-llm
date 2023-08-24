@@ -24,8 +24,7 @@ function useSwagger(app) {
     const swaggerDocument = require('./openapi.json');
     app.get('/api/docs', swaggerUi.setup(
       swaggerDocument,
-      // options,
-      { c }
+      options,
     ));
   } else {
     // we regenerate the html page only in development mode to ensure it is up-to-date when the code is hot-reloaded.
