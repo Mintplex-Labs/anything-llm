@@ -164,8 +164,11 @@
       }
     },
     "/v1/admin/users/new": {
-      "get": {
-        "description": "",
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "Create a new user with username and password. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
             "name": "Authorization",
@@ -176,15 +179,68 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "user": {
+                      "id": 1,
+                      "username": "sample-sam",
+                      "role": "default"
+                    },
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Key pair object that will define the new user to add to the system.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "username": "sample-sam",
+                "password": "hunter2",
+                "role": "default | admin"
+              }
+            }
           }
         }
       }
     },
     "/v1/admin/users/{id}": {
       "post": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Update existing user settings. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
             "name": "id",
@@ -192,7 +248,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "id of the user in the database."
           },
           {
             "name": "Authorization",
@@ -203,13 +260,63 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Key pair object that will update the found user. All fields are optional and will not update unless specified.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "username": "sample-sam",
+                "password": "hunter2",
+                "role": "default | admin",
+                "suspended": 0
+              }
+            }
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Delete existing user by id. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
             "name": "id",
@@ -217,7 +324,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "id of the user in the database."
           },
           {
             "name": "Authorization",
@@ -228,15 +336,50 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
     "/v1/admin/invites": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "List all existing invitations to instance regardless of status. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
             "name": "Authorization",
@@ -247,15 +390,56 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "invites": [
+                      {
+                        "id": 1,
+                        "status": "pending",
+                        "code": "abc-123",
+                        "claimedBy": null
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
     "/v1/admin/invite/new": {
       "post": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Create a new invite code for someone to use to register with instance. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
             "name": "Authorization",
@@ -266,15 +450,54 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "invite": {
+                      "id": 1,
+                      "status": "pending",
+                      "code": "abc-123"
+                    },
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
     "/v1/admin/invite/{id}": {
       "delete": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Deactivates (soft-delete) invite by id. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
             "name": "id",
@@ -282,7 +505,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "id of the invite in the database."
           },
           {
             "name": "Authorization",
@@ -293,15 +517,50 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
     "/v1/admin/workspaces/{workspaceId}/update-users": {
       "post": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Overwrite workspace permissions to only be accessible by the given user ids and admins. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
             "name": "workspaceId",
@@ -309,7 +568,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "id of the workspace in the database."
           },
           {
             "name": "Authorization",
@@ -320,24 +580,68 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Entire array of user ids who can access the workspace. All fields are optional and will not update unless specified.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "userIds": [
+                  1,
+                  2,
+                  4,
+                  12
+                ]
+              }
+            }
           }
         }
       }
     },
-    "/v1/admin/workspace-chats/{id}": {
-      "delete": {
-        "description": "",
+    "/v1/admin/workspace-chats": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "All chats in the system ordered by most recent. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "Authorization",
             "in": "header",
@@ -347,15 +651,62 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Page offset to show of workspace chats. All fields are optional and will not update unless specified.",
+          "required": false,
+          "type": "integer",
+          "content": {
+            "application/json": {
+              "example": {
+                "offset": 2
+              }
+            }
           }
         }
       }
     },
     "/v1/admin/preferences": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Show all multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
             "name": "Authorization",
@@ -366,13 +717,51 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "settings": {
+                      "users_can_delete_workspaces": true,
+                      "limit_user_messages": false,
+                      "message_limit": 10
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
       "post": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Update multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
             "name": "Authorization",
@@ -383,8 +772,54 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Object with setting key and new value to set. All keys are optional and will not update unless specified.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "users_can_delete_workspaces": false,
+                "limit_user_messages": true,
+                "message_limit": 5
+              }
+            }
           }
         }
       }
