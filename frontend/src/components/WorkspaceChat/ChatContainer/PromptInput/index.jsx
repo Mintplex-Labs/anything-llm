@@ -50,7 +50,7 @@ export default function PromptInput({
   };
 
   return (
-    <div className="w-full fixed md:absolute bottom-0 left-0 z-10">
+    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0">
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-y-1 bg-white dark:bg-black-900 md:bg-transparent rounded-t-lg md:w-3/4 w-full mx-auto"
