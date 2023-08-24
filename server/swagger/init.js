@@ -4,7 +4,7 @@ const doc = {
   info: {
     version: '1.0.0',
     title: 'AnythingLLM Developer API',
-    description: 'API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance.',
+    description: 'API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io.',
   },
   host: '/api',
   schemes: ['http'],
