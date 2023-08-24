@@ -6,10 +6,20 @@ import { useDropzone } from "react-dropzone";
 import { v4 } from "uuid";
 import System from "../../../../models/system";
 import { Frown } from "react-feather";
+import showToast from "../../../../utils/toast";
 
 export default function UploadToWorkspace({ workspace, fileTypes }) {
   const [ready, setReady] = useState(null);
   const [files, setFiles] = useState([]);
+
+  const handleUploadSuccess = () => {
+    showToast("File uploaded successfully", "success");
+  };
+
+  const handleUploadError = (message) => {
+    showToast(`Error uploading file: ${message}`, "error");
+  };
+
   const onDrop = useCallback(async (acceptedFiles, rejections) => {
     const newAccepted = acceptedFiles.map((file) => {
       return {
@@ -133,6 +143,8 @@ export default function UploadToWorkspace({ workspace, fileTypes }) {
                 slug={workspace.slug}
                 rejected={file?.rejected}
                 reason={file?.reason}
+                onUploadSuccess={handleUploadSuccess}
+                onUploadError={handleUploadError}
               />
             ))}
           </div>

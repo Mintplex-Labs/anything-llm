@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import System from "../../../../models/system";
 import { AUTH_TOKEN, AUTH_USER } from "../../../../utils/constants";
+import showToast from "../../../../utils/toast";
 
 const noop = () => false;
 export default function PasswordProtection({
@@ -8,15 +9,11 @@ export default function PasswordProtection({
   settings = {},
 }) {
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(null);
   const [usePassword, setUsePassword] = useState(settings?.RequiresAuth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setSuccess(false);
-    setError(null);
 
     const form = new FormData(e.target);
     const data = {
@@ -26,17 +23,18 @@ export default function PasswordProtection({
 
     const { success, error } = await System.updateSystemPassword(data);
     if (success) {
-      setSuccess(true);
+      showToast("Your page will refresh in a few seconds.", "success");
       setSaving(false);
       setTimeout(() => {
         window.localStorage.removeItem(AUTH_USER);
         window.localStorage.removeItem(AUTH_TOKEN);
         window.location.reload();
-      }, 2_000);
+      }, 3_000);
       return;
+    } else {
+      showToast(`Failed to update password: ${error}`, "error");
     }
 
-    setError(error);
     setSaving(false);
   };
 
@@ -49,20 +47,6 @@ export default function PasswordProtection({
             this there is no recovery method so ensure you save this password.
           </p>
         </div>
-        {(error || success) && (
-          <div className="w-full flex px-6">
-            {error && (
-              <div className="w-full bg-red-300 text-red-800 font-semibold px-4 py-2 rounded-lg">
-                {error}
-              </div>
-            )}
-            {success && (
-              <div className="w-full bg-green-300 text-green-800 font-semibold px-4 py-2 rounded-lg">
-                Your page will refresh in a few seconds.
-              </div>
-            )}
-          </div>
-        )}
         <div className="p-6 space-y-6 flex h-full w-full">
           <div className="w-full flex flex-col gap-y-4">
             <form onSubmit={handleSubmit}>

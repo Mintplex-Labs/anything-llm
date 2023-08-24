@@ -10,6 +10,8 @@ function FileUploadProgressComponent({
   file,
   rejected = false,
   reason = null,
+  onUploadSuccess,
+  onUploadError,
 }) {
   const [timerMs, setTimerMs] = useState(10);
   const [status, setStatus] = useState(file?.rejected ? "uploading" : "failed");
@@ -24,9 +26,16 @@ function FileUploadProgressComponent({
       }, 100);
 
       // Chunk streaming not working in production so we just sit and wait
-      await Workspace.uploadFile(slug, formData);
-      setStatus("complete");
-      clearInterval(timer);
+      const { response, data } = await Workspace.uploadFile(slug, formData);
+      if (!response.ok) {
+        setStatus("failed");
+        clearInterval(timer);
+        onUploadError(data.error);
+      } else {
+        setStatus("complete");
+        clearInterval(timer);
+        onUploadSuccess();
+      }
     }
     !!file && !rejected && uploadFile();
   }, []);

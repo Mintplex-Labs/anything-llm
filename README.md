@@ -49,6 +49,7 @@ Some cool features of AnythingLLM
 - 100% Cloud deployment ready.
 - "Bring your own LLM" model. _still in progress - openai support only currently_
 - Extremely efficient cost-saving measures for managing very large documents. You'll never pay to embed a massive document or transcript more than once. 90% more cost effective than other document chatbot solutions.
+- Full Developer API for custom integrations!
 
 ### Technical Overview
 This monorepo consists of three main sections:

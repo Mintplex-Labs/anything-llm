@@ -10,9 +10,10 @@
     "node": ">=18.12.1"
   },
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --ignore documents --ignore vector-cache --ignore storage --trace-warnings index.js",
+    "dev": "NODE_ENV=development nodemon --ignore documents --ignore vector-cache --ignore storage --ignore swagger --trace-warnings index.js",
     "start": "NODE_ENV=production node index.js",
-    "lint": "yarn prettier --write ./endpoints ./models ./utils index.js"
+    "lint": "yarn prettier --write ./endpoints ./models ./utils index.js",
+    "swagger": "node ./swagger/init.js"
   },
   "dependencies": {
     "@azure/openai": "^1.0.0-beta.3",
@@ -41,6 +42,8 @@
     "slugify": "^1.6.6",
     "sqlite": "^4.2.1",
     "sqlite3": "^5.1.6",
+    "swagger-autogen": "^2.23.5",
+    "swagger-ui-express": "^5.0.0",
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",
     "vectordb": "0.1.12",
