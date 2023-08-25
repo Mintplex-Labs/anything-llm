@@ -67,12 +67,15 @@ async function exportData() {
 // Import would be saved to application/ephemeral filesystem, but we need to write
 // the results to the real storage of the system if required.
 async function unpackAndOverwriteImport(importFilename) {
-  const importFilepath = path.resolve(__dirname, `../../storage/imports/${importFilename}`)
+  const importFilepath = path.resolve(
+    __dirname,
+    `../../storage/imports/${importFilename}`
+  );
   if (!fs.existsSync(importFilepath))
     return { success: false, error: "Import file does not exist." };
 
   const uid = v4();
-  const outDir = path.resolve(__dirname, `../../storage/imports/${uid}`)
+  const outDir = path.resolve(__dirname, `../../storage/imports/${uid}`);
   const storageBase =
     process.env.NODE_ENV === "development"
       ? path.resolve(__dirname, `../../storage`)

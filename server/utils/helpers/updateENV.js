@@ -179,7 +179,7 @@ function envDumpLocation() {
   if (!!process.env.STORAGE_DIR) {
     return path.resolve(process.env.STORAGE_DIR, ".env");
   }
-  return path.join(__dirname, "../../.env")
+  return path.join(__dirname, "../../.env");
 }
 
 async function dumpENV() {
