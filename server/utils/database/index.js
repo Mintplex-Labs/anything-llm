@@ -112,8 +112,38 @@ async function setupTelemetry() {
   return;
 }
 
+// When working in a mounted disk mode (such as with Render) we will need to ensure that some "sticky" assets are mounted into
+// the file storage so that when we reference them later in the code - they exist.
+async function copyAssetsToStorage() {
+  const fs = require("fs");
+  const path = require("path");
+
+  const localStorage = path.resolve(__dirname, "../../storage");
+  const mountedStorage = process.env.STORAGE_DIR;
+
+  const items = [
+    ["assets", "anything-llm-light.png"],
+    ["assets", "anything-llm-dark.png"],
+  ];
+
+  for (const pathItems of items) {
+    const src = path.resolve(localStorage, ...pathItems);
+    const dest = path.resolve(mountedStorage, ...pathItems);
+
+    if (fs.existsSync(dest)) continue;
+
+    const destDirname = path.dirname(dest);
+    fs.mkdirSync(destDirname, { recursive: true });
+    console.log(`Copying ${src} to ${dest}!`);
+    fs.copyFileSync(src, dest);
+  }
+
+  return;
+}
+
 module.exports = {
   checkForMigrations,
   validateTablePragmas,
   setupTelemetry,
+  copyAssetsToStorage,
 };
