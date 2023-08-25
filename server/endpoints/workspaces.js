@@ -79,11 +79,13 @@ function workspaceEndpoints(app) {
             error: `Python processing API is not online. Document ${originalname} will not be processed automatically.`,
           })
           .end();
+        return;
       }
 
       const { success, reason } = await processDocument(originalname);
       if (!success) {
         response.status(500).json({ success: false, error: reason }).end();
+        return;
       }
 
       console.log(
