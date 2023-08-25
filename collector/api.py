@@ -5,9 +5,7 @@ from scripts.watch.filetypes import ACCEPTED_MIMES
 api = Flask(__name__)
 
 STORAGE_DIR = os.getenv('STORAGE_DIR', '/storage')
-print(f"ENV: STORAGE_DIR resolved to {STORAGE_DIR}")
 WATCH_DIRECTORY = os.path.join(STORAGE_DIR, 'collector', "hotdir") if os.getenv('STORAGE_DIR') is not None else 'hotdir'
-print(f"WATCH_DIRECTORY resolved to {WATCH_DIRECTORY}")
 
 @api.route('/process', methods=['POST'])
 def process_file():
