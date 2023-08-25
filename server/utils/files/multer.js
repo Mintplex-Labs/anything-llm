@@ -43,7 +43,7 @@ function setupLogoUploads() {
   // Handle Logo uploads.
   const storage = multer.diskStorage({
     destination: function (_, _, cb) {
-      const uploadOutput = logoStorageLocation()
+      const uploadOutput = logoStorageLocation();
       fs.mkdirSync(uploadOutput, { recursive: true });
       return cb(null, uploadOutput);
     },

@@ -8,10 +8,10 @@ const DARK_LOGO_FILENAME = "anything-llm-dark.png";
 
 function logoStorageLocation() {
   if (!!process.env.STORAGE_DIR) {
-    return path.resolve(process.env.STORAGE_DIR, 'assets')
+    return path.resolve(process.env.STORAGE_DIR, "assets");
   }
 
-  return path.join(__dirname, "../../storage/assets")
+  return path.join(__dirname, "../../storage/assets");
 }
 
 function validFilename(newFilename = "") {
@@ -48,14 +48,8 @@ function fetchLogo(logoPath) {
 async function renameLogoFile(originalFilename = null) {
   const extname = path.extname(originalFilename) || ".png";
   const newFilename = `${v4()}${extname}`;
-  const originalFilepath = path.join(
-    logoStorageLocation(),
-    originalFilename
-  );
-  const outputFilepath = path.join(
-    logoStorageLocation(),
-    newFilename
-  );
+  const originalFilepath = path.join(logoStorageLocation(), originalFilename);
+  const outputFilepath = path.join(logoStorageLocation(), newFilename);
 
   fs.renameSync(originalFilepath, outputFilepath);
   return newFilename;
