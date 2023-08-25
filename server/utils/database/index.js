@@ -118,7 +118,7 @@ async function copyAssetsToStorage() {
   const fs = require("fs");
   const path = require("path");
 
-  const localStorage = fs.resolve(__dirname, "../../storage");
+  const localStorage = path.resolve(__dirname, "../../storage");
   const mountedStorage = process.env.STORAGE_DIR;
 
   const items = [
