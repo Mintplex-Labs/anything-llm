@@ -1,9 +1,12 @@
+import os
 from flask import Flask, json, request
 from scripts.watch.process_single import process_single
 from scripts.watch.filetypes import ACCEPTED_MIMES
 api = Flask(__name__)
 
-WATCH_DIRECTORY = "hotdir"
+STORAGE_DIR = os.getenv('STORAGE_DIR', '/storage')
+WATCH_DIRECTORY = os.path.join(STORAGE_DIR, 'collector', "hotdir") if os.getenv('STORAGE_DIR') is not None else 'hotdir'
+
 @api.route('/process', methods=['POST'])
 def process_file():
   content = request.json

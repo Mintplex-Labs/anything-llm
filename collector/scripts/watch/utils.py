@@ -2,6 +2,8 @@ import os, json
 from datetime import datetime
 from uuid import uuid4
 
+STORAGE_DIR = os.getenv('STORAGE_DIR')
+
 def guid():
   return str(uuid4())
 
@@ -29,7 +31,11 @@ def move_source(working_dir='hotdir', new_destination_filename='', failed=False,
   return
 
 def write_to_server_documents(data, filename, override_destination = None):
-  destination = f"../server/storage/documents/custom-documents" if override_destination == None else override_destination
+  if(STORAGE_DIR is not None):
+    destination = f"{STORAGE_DIR}/documents/custom-documents" if override_destination == None else override_destination
+  else:
+    destination = f"../server/storage/documents/custom-documents" if override_destination == None else override_destination
+  
   if os.path.exists(destination) == False: os.makedirs(destination)
   with open(f"{destination}/{filename}.json", 'w', encoding='utf-8') as file:
     json.dump(data, file, ensure_ascii=True, indent=4)
