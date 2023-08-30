@@ -6,11 +6,9 @@ import { useParams } from "react-router-dom";
 import Directory from "./Directory";
 import ConfirmationModal from "./ConfirmationModal";
 import { AlertTriangle } from "react-feather";
-import useUser from "../../../../hooks/useUser";
 
 export default function DocumentSettings({ workspace }) {
   const { slug } = useParams();
-  const { user } = useUser();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -179,9 +177,8 @@ export default function DocumentSettings({ workspace }) {
         </div>
       </div>
       <div
-        className={`flex items-center ${
-          canDelete ? "justify-between" : "justify-end"
-        } p-4 md:p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600`}
+        className={`flex items-center ${canDelete ? "justify-between" : "justify-end"
+          } p-4 md:p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600`}
       >
         <button
           hidden={!canDelete}
