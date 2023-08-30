@@ -180,12 +180,6 @@ const SystemSettings = {
     const result = await this.get(`label = 'logo_filename'`);
     return result ? result.value : null;
   },
-  canDeleteWorkspaces: async function () {
-    return (
-      (await this.get(`label = 'users_can_delete_workspaces'`))?.value ===
-      "true"
-    );
-  },
 };
 
 module.exports.SystemSettings = SystemSettings;

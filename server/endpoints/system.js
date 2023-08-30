@@ -431,18 +431,6 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/can-delete-workspaces", async function (request, response) {
-    try {
-      const canDelete = await SystemSettings.canDeleteWorkspaces();
-      response.status(200).json({ canDelete });
-    } catch (error) {
-      console.error("Error fetching can delete workspaces:", error);
-      response
-        .status(500)
-        .json({ success: false, message: "Internal server error" });
-    }
-  });
-
   app.get("/system/welcome-messages", async function (request, response) {
     try {
       const welcomeMessages = await WelcomeMessages.getMessages();
