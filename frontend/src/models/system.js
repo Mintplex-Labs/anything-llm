@@ -192,15 +192,16 @@ const System = {
     return await fetch(`${API_BASE}/system/can-delete-workspaces`, {
       method: "GET",
       cache: "no-cache",
+      headers: baseHeaders(),
     })
       .then((res) => {
         if (!res.ok) throw new Error("Could not fetch can delete workspaces.");
         return res.json();
       })
-      .then((res) => res.canDelete)
+      .then((res) => res?.canDelete)
       .catch((e) => {
         console.error(e);
-        return null;
+        return false;
       });
   },
   getWelcomeMessages: async function () {

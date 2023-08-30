@@ -27,6 +27,7 @@ export default function DocumentSettings({ workspace }) {
       const hasAnyFiles = localFiles.items.some(
         (folder) => folder?.items?.length > 0
       );
+
       const canDelete = await System.getCanDeleteWorkspaces();
       setCanDelete(canDelete);
       setDirectories(localFiles);
@@ -95,13 +96,6 @@ export default function DocumentSettings({ workspace }) {
     return isFolder
       ? selectedFiles.some((doc) => doc.includes(filepath.split("/")[0]))
       : selectedFiles.some((doc) => doc.includes(filepath));
-  };
-
-  const isOriginalDoc = (filepath) => {
-    const isFolder = !filepath.includes("/");
-    return isFolder
-      ? originalDocuments.some((doc) => doc.includes(filepath.split("/")[0]))
-      : originalDocuments.some((doc) => doc.includes(filepath));
   };
 
   const toggleSelection = (filepath) => {
@@ -189,15 +183,14 @@ export default function DocumentSettings({ workspace }) {
           canDelete ? "justify-between" : "justify-end"
         } p-4 md:p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600`}
       >
-        {user && user?.role !== "admin" && canDelete && (
-          <button
-            onClick={deleteWorkspace}
-            type="button"
-            className="border border-transparent text-gray-500 bg-white hover:bg-red-100 rounded-lg whitespace-nowrap text-sm font-medium px-5 py-2.5 hover:text-red-900 focus:z-10 dark:bg-transparent dark:text-gray-300 dark:hover:text-white dark:hover:bg-red-600"
-          >
-            Delete Workspace
-          </button>
-        )}
+        <button
+          hidden={!canDelete}
+          onClick={deleteWorkspace}
+          type="button"
+          className="border border-transparent text-gray-500 bg-white hover:bg-red-100 rounded-lg whitespace-nowrap text-sm font-medium px-5 py-2.5 hover:text-red-900 focus:z-10 dark:bg-transparent dark:text-gray-300 dark:hover:text-white dark:hover:bg-red-600"
+        >
+          Delete Workspace
+        </button>
 
         <div className="flex items-center">
           <button
