@@ -431,6 +431,34 @@ function systemEndpoints(app) {
     }
   );
 
+  app.get(
+    "/system/can-delete-workspaces",
+    [validatedRequest],
+    async function (request, response) {
+      try {
+        if (!response.locals.multiUserMode) {
+          return response.status(200).json({ canDelete: true });
+        }
+
+        if (response.locals.user?.role === "admin") {
+          return response.status(200).json({ canDelete: true });
+        }
+
+        const canDelete = await SystemSettings.canDeleteWorkspaces();
+        response.status(200).json({ canDelete });
+      } catch (error) {
+        console.error("Error fetching can delete workspaces:", error);
+        response
+          .status(500)
+          .json({
+            success: false,
+            message: "Internal server error",
+            canDelete: false,
+          });
+      }
+    }
+  );
+
   app.get("/system/welcome-messages", async function (request, response) {
     try {
       const welcomeMessages = await WelcomeMessages.getMessages();
