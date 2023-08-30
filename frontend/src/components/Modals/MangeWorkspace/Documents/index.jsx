@@ -6,9 +6,11 @@ import { useParams } from "react-router-dom";
 import Directory from "./Directory";
 import ConfirmationModal from "./ConfirmationModal";
 import { AlertTriangle } from "react-feather";
+import useUser from "../../../../hooks/useUser";
 
 export default function DocumentSettings({ workspace }) {
   const { slug } = useParams();
+  const { user } = useUser();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -16,6 +18,7 @@ export default function DocumentSettings({ workspace }) {
   const [originalDocuments, setOriginalDocuments] = useState([]);
   const [selectedFiles, setSelectFiles] = useState([]);
   const [hasFiles, setHasFiles] = useState(true);
+  const [canDelete, setCanDelete] = useState(false);
 
   useEffect(() => {
     async function fetchKeys() {
@@ -24,6 +27,8 @@ export default function DocumentSettings({ workspace }) {
       const hasAnyFiles = localFiles.items.some(
         (folder) => folder?.items?.length > 0
       );
+      const canDelete = await System.getCanDeleteWorkspaces();
+      setCanDelete(canDelete);
       setDirectories(localFiles);
       setOriginalDocuments([...originalDocs]);
       setSelectFiles([...originalDocs]);
@@ -179,14 +184,21 @@ export default function DocumentSettings({ workspace }) {
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-between p-4 md:p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
-        <button
-          onClick={deleteWorkspace}
-          type="button"
-          className="border border-transparent text-gray-500 bg-white hover:bg-red-100 rounded-lg whitespace-nowrap text-sm font-medium px-5 py-2.5 hover:text-red-900 focus:z-10 dark:bg-transparent dark:text-gray-300 dark:hover:text-white dark:hover:bg-red-600"
-        >
-          Delete Workspace
-        </button>
+      <div
+        className={`flex items-center ${
+          canDelete ? "justify-between" : "justify-end"
+        } p-4 md:p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600`}
+      >
+        {user && user?.role !== "admin" && canDelete && (
+          <button
+            onClick={deleteWorkspace}
+            type="button"
+            className="border border-transparent text-gray-500 bg-white hover:bg-red-100 rounded-lg whitespace-nowrap text-sm font-medium px-5 py-2.5 hover:text-red-900 focus:z-10 dark:bg-transparent dark:text-gray-300 dark:hover:text-white dark:hover:bg-red-600"
+          >
+            Delete Workspace
+          </button>
+        )}
+
         <div className="flex items-center">
           <button
             disabled={saving}
