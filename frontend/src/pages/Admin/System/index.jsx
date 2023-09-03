@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Sidebar, { SidebarMobileHeader } from "../../../components/AdminSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "../../../models/admin";
+import showToast from "../../../utils/toast";
 
 export default function AdminSystem() {
   const [saving, setSaving] = useState(false);
@@ -21,6 +22,7 @@ export default function AdminSystem() {
     });
     setSaving(false);
     setHasChanges(false);
+    showToast("System preferences updated successfully.", "success");
   };
 
   useEffect(() => {

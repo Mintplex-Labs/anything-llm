@@ -8,6 +8,7 @@ import useUser from "../../../hooks/useUser";
 import VectorDBSelection from "./VectorDbs";
 import LLMSelection from "./LLMSelection";
 import Appearance from "./Appearance";
+import ApiKey from "./ApiKey";
 
 export const TABS = {
   llm: LLMSelection,
@@ -16,6 +17,7 @@ export const TABS = {
   multiuser: MultiUserMode,
   vectordb: VectorDBSelection,
   appearance: Appearance,
+  apikey: ApiKey,
 };
 
 const noop = () => false;

@@ -334,7 +334,8 @@ function LogoutButton() {
 
 function SettingsButton({ onClick }) {
   const { user } = useUser();
-  if (!!user) return null;
+
+  if (!!user && user?.role !== "admin") return null;
   return (
     <button
       onClick={onClick}

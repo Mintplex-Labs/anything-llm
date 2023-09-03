@@ -30,6 +30,9 @@ export default {
   exports: () => {
     return `${API_BASE.replace("/api", "")}/system/data-exports`;
   },
+  apiDocs: () => {
+    return `${API_BASE}/docs`;
+  },
   admin: {
     system: () => {
       return `/admin/system-preferences`;
@@ -48,6 +51,9 @@ export default {
     },
     appearance: () => {
       return "/admin/appearance";
+    },
+    apiKeys: () => {
+      return "/admin/api-keys";
     },
   },
 };

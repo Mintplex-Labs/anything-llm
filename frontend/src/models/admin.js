@@ -232,6 +232,51 @@ const Admin = {
         return { success: false, error: e.message };
       });
   },
+
+  // API Keys
+  getApiKeys: async function () {
+    return fetch(`${API_BASE}/admin/api-keys`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText || "Error fetching api keys.");
+        }
+        return res.json();
+      })
+      .catch((e) => {
+        console.error(e);
+        return { apiKeys: [], error: e.message };
+      });
+  },
+  generateApiKey: async function () {
+    return fetch(`${API_BASE}/admin/generate-api-key`, {
+      method: "POST",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText || "Error generating api key.");
+        }
+        return res.json();
+      })
+      .catch((e) => {
+        console.error(e);
+        return { apiKey: null, error: e.message };
+      });
+  },
+  deleteApiKey: async function (apiKeyId = "") {
+    return fetch(`${API_BASE}/admin/delete-api-key/${apiKeyId}`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.ok)
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
 };
 
 export default Admin;

@@ -3,6 +3,7 @@ import {
   BookOpen,
   Eye,
   GitHub,
+  Key,
   Mail,
   Menu,
   MessageSquare,
@@ -81,6 +82,11 @@ export default function AdminSidebar() {
                   href={paths.admin.appearance()}
                   btnText="Appearance"
                   icon={<Eye className="h-4 w-4 flex-shrink-0" />}
+                />
+                <Option
+                  href={paths.admin.apiKeys()}
+                  btnText="API Keys"
+                  icon={<Key className="h-4 w-4 flex-shrink-0" />}
                 />
               </div>
             </div>
@@ -241,6 +247,11 @@ export function SidebarMobileHeader() {
                     href={paths.admin.appearance()}
                     btnText="Appearance"
                     icon={<Eye className="h-4 w-4 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.admin.apiKeys()}
+                    btnText="API Keys"
+                    icon={<Key className="h-4 w-4 flex-shrink-0" />}
                   />
                 </div>
               </div>

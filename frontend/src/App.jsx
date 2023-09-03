@@ -2,6 +2,8 @@ import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ContextWrapper } from "./AuthContext";
 import PrivateRoute, { AdminRoute } from "./components/PrivateRoute";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Main = lazy(() => import("./pages/Main"));
 const InvitePage = lazy(() => import("./pages/Invite"));
@@ -12,6 +14,7 @@ const AdminWorkspaces = lazy(() => import("./pages/Admin/Workspaces"));
 const AdminChats = lazy(() => import("./pages/Admin/Chats"));
 const AdminSystem = lazy(() => import("./pages/Admin/System"));
 const AdminAppearance = lazy(() => import("./pages/Admin/Appearance"));
+const AdminApiKeys = lazy(() => import("./pages/Admin/ApiKeys"));
 
 export default function App() {
   return (
@@ -50,7 +53,12 @@ export default function App() {
             path="/admin/appearance"
             element={<AdminRoute Component={AdminAppearance} />}
           />
+          <Route
+            path="/admin/api-keys"
+            element={<AdminRoute Component={AdminApiKeys} />}
+          />
         </Routes>
+        <ToastContainer />
       </ContextWrapper>
     </Suspense>
   );

@@ -7,6 +7,7 @@ import {
   Database,
   MessageSquare,
   Eye,
+  Key,
 } from "react-feather";
 import SystemSettingsModal, {
   useSystemSettingsModal,
@@ -126,6 +127,12 @@ export default function SettingsOverlay() {
                     icon={<Users className="h-4 w-4 flex-shrink-0" />}
                     isActive={tab === "multiuser"}
                     onClick={() => selectTab("multiuser")}
+                  />
+                  <Option
+                    btnText="API Key"
+                    icon={<Key className="h-4 w-4 flex-shrink-0" />}
+                    isActive={tab === "apikey"}
+                    onClick={() => selectTab("apikey")}
                   />
                 </>
               )}

@@ -107,7 +107,9 @@ const Workspace = {
       body: formData,
       headers: baseHeaders(),
     });
-    return response;
+
+    const data = await response.json();
+    return { response, data };
   },
 };
 
