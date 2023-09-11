@@ -204,7 +204,7 @@ function adminEndpoints(app) {
         const { workspaceId } = request.params;
         const { userIds } = reqBody(request);
         const { success, error } = await Workspace.updateUsers(
-          escape(Number(workspaceId)),
+          escape(workspaceId),
           userIds
         );
         response.status(200).json({ success, error });
