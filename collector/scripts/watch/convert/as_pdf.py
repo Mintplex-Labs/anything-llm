@@ -31,7 +31,7 @@ def as_pdf(**kwargs):
 
   # Best so fot, replace didn't understood '\n\s' so we need to do it in two steps
   for page in pages:
-    page.page_content = page.page_content.replace("\n ", " ").replace("  ", " ")
+    page.page_content = page.page_content.replace("\n ", " ").replace("\uFFFD", " ").replace("  ", " ")
 
   text_splitter: TextSplitter = RecursiveCharacterTextSplitter()
   pages = text_splitter.split_documents(pages)
