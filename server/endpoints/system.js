@@ -24,6 +24,7 @@ const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { handleImports } = setupDataImports();
 const { handleLogoUploads } = setupLogoUploads();
+const fs = require("fs");
 const path = require("path");
 const {
   getDefaultFilename,
@@ -37,6 +38,7 @@ const {
 const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
 const { ApiKey } = require("../models/apiKeys");
+const { escape } = require("sqlstring-sqlite");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -95,7 +97,7 @@ function systemEndpoints(app) {
     try {
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-        const existingUser = await User.get(`username = '${username}'`);
+        const existingUser = await User.get(`username = ${escape(username)}`);
 
         if (!existingUser) {
           response.status(200).json({
@@ -315,9 +317,21 @@ function systemEndpoints(app) {
     "/system/data-exports/:filename",
     [validatedRequest],
     (request, response) => {
-      const filePath =
-        __dirname + "/../storage/exports/" + request.params.filename;
-      response.download(filePath, request.params.filename, (err) => {
+      const exportLocation = __dirname + "/../storage/exports/";
+      const sanitized = path
+        .normalize(request.params.filename)
+        .replace(/^(\.\.(\/|\\|$))+/, "");
+      const finalDestination = path.join(exportLocation, sanitized);
+
+      if (!fs.existsSync(finalDestination)) {
+        response.status(404).json({
+          error: 404,
+          msg: `File ${request.params.filename} does not exist in exports.`,
+        });
+        return;
+      }
+
+      response.download(finalDestination, request.params.filename, (err) => {
         if (err) {
           response.send({
             error: err,
@@ -448,13 +462,11 @@ function systemEndpoints(app) {
         response.status(200).json({ canDelete });
       } catch (error) {
         console.error("Error fetching can delete workspaces:", error);
-        response
-          .status(500)
-          .json({
-            success: false,
-            message: "Internal server error",
-            canDelete: false,
-          });
+        response.status(500).json({
+          success: false,
+          message: "Internal server error",
+          canDelete: false,
+        });
       }
     }
   );

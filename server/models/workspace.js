@@ -2,6 +2,7 @@ const slugify = require("slugify");
 const { Document } = require("./documents");
 const { checkForMigrations } = require("../utils/database");
 const { WorkspaceUser } = require("./workspaceUsers");
+const { escape } = require("sqlstring-sqlite");
 
 const Workspace = {
   tablename: "workspaces",
@@ -81,7 +82,7 @@ const Workspace = {
     if (!name) return { result: null, message: "name cannot be null" };
     var slug = slugify(name, { lower: true });
 
-    const existingBySlug = await this.get(`slug = '${slug}'`);
+    const existingBySlug = await this.get(`slug = ${escape(slug)}`);
     if (existingBySlug !== null) {
       const slugSeed = Math.floor(10000000 + Math.random() * 90000000);
       slug = slugify(`${name}-${slugSeed}`, { lower: true });

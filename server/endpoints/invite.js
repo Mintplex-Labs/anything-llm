@@ -1,3 +1,4 @@
+const { escape } = require("sqlstring-sqlite");
 const { Invite } = require("../models/invite");
 const { User } = require("../models/user");
 const { reqBody } = require("../utils/http");
@@ -8,7 +9,7 @@ function inviteEndpoints(app) {
   app.get("/invite/:code", async (request, response) => {
     try {
       const { code } = request.params;
-      const invite = await Invite.get(`code = '${code}'`);
+      const invite = await Invite.get(`code = ${escape(code)}`);
       if (!invite) {
         response.status(200).json({ invite: null, error: "Invite not found." });
         return;
@@ -34,7 +35,7 @@ function inviteEndpoints(app) {
     try {
       const { code } = request.params;
       const userParams = reqBody(request);
-      const invite = await Invite.get(`code = '${code}'`);
+      const invite = await Invite.get(`code = ${escape(code)}`);
       if (!invite || invite.status !== "pending") {
         response
           .status(200)
