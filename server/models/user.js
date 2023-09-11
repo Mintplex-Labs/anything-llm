@@ -1,3 +1,5 @@
+const { escape } = require("sqlstring-sqlite");
+
 const User = {
   tablename: "users",
   writable: [],
@@ -66,13 +68,13 @@ const User = {
     return { user, error: null };
   },
   update: async function (userId, updates = {}) {
-    const user = await this.get(`id = ${userId}`);
+    const user = await this.get(`id = ${escape(userId)}`);
     if (!user) return { success: false, error: "User does not exist." };
     const { username, password, role, suspended = 0 } = updates;
     const toUpdate = { suspended };
 
     if (user.username !== username && username?.length > 0) {
-      const usedUsername = !!(await this.get(`username = '${username}'`));
+      const usedUsername = !!(await this.get(`username = ${escape(username)}`));
       if (usedUsername)
         return { success: false, error: `${username} is already in use.` };
       toUpdate.username = username;

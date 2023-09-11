@@ -1,3 +1,4 @@
+const { escape } = require("sqlstring-sqlite");
 const { ApiKey } = require("../models/apiKeys");
 const { Document } = require("../models/documents");
 const { Invite } = require("../models/invite");
@@ -203,7 +204,7 @@ function adminEndpoints(app) {
         const { workspaceId } = request.params;
         const { userIds } = reqBody(request);
         const { success, error } = await Workspace.updateUsers(
-          workspaceId,
+          escape(Number(workspaceId)),
           userIds
         );
         response.status(200).json({ success, error });
@@ -227,16 +228,16 @@ function adminEndpoints(app) {
 
         const { id } = request.params;
         const VectorDb = getVectorDbClass();
-        const workspace = Workspace.get(`id = ${id}`);
+        const workspace = Workspace.get(`id = ${escape(id)}`);
         if (!workspace) {
           response.sendStatus(404).end();
           return;
         }
 
-        await Workspace.delete(`id = ${id}`);
-        await DocumentVectors.deleteForWorkspace(id);
-        await Document.delete(`workspaceId = ${Number(id)}`);
-        await WorkspaceChats.delete(`workspaceId = ${Number(id)}`);
+        await Workspace.delete(`id = ${workspace.id}`);
+        await DocumentVectors.deleteForWorkspace(workspace.id);
+        await Document.delete(`workspaceId = ${Number(workspace.id)}`);
+        await WorkspaceChats.delete(`workspaceId = ${Number(workspace.id)}`);
         try {
           await VectorDb["delete-namespace"]({ namespace: workspace.slug });
         } catch (e) {
@@ -262,7 +263,10 @@ function adminEndpoints(app) {
           return;
         }
         const { offset = 0 } = reqBody(request);
-        const chats = await WorkspaceChats.whereWithData(`id >= ${offset}`, 20);
+        const chats = await WorkspaceChats.whereWithData(
+          `id >= ${escape(offset)}`,
+          20
+        );
         const hasPages = (await WorkspaceChats.count()) > 20;
         response.status(200).json({ chats: chats.reverse(), hasPages });
       } catch (e) {

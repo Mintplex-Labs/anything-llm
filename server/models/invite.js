@@ -1,3 +1,5 @@
+const { escape } = require("sqlstring-sqlite");
+
 const Invite = {
   tablename: "invites",
   writable: [],
@@ -69,7 +71,7 @@ const Invite = {
     return { invite, error: null };
   },
   deactivate: async function (inviteId = null) {
-    const invite = await this.get(`id = ${inviteId}`);
+    const invite = await this.get(`id = ${escape(inviteId)}`);
     if (!invite) return { success: false, error: "Invite does not exist." };
     if (invite.status !== "pending")
       return { success: false, error: "Invite is not in pending status." };
@@ -96,7 +98,7 @@ const Invite = {
     return { success: true, error: null };
   },
   markClaimed: async function (inviteId = null, user) {
-    const invite = await this.get(`id = ${inviteId}`);
+    const invite = await this.get(`id = ${escape(inviteId)}`);
     if (!invite) return { success: false, error: "Invite does not exist." };
     if (invite.status !== "pending")
       return { success: false, error: "Invite is not in pending status." };
