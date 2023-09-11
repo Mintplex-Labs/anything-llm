@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import Directory from "./Directory";
 import ConfirmationModal from "./ConfirmationModal";
 import { AlertTriangle } from "react-feather";
+import showToast from "../../../../utils/toast";
 
 export default function DocumentSettings({ workspace }) {
   const { slug } = useParams();
@@ -18,22 +19,27 @@ export default function DocumentSettings({ workspace }) {
   const [hasFiles, setHasFiles] = useState(true);
   const [canDelete, setCanDelete] = useState(false);
 
-  useEffect(() => {
-    async function fetchKeys() {
-      const localFiles = await System.localFiles();
-      const originalDocs = workspace.documents.map((doc) => doc.docpath) || [];
-      const hasAnyFiles = localFiles.items.some(
-        (folder) => folder?.items?.length > 0
-      );
+  async function fetchKeys(refetchWorkspace = false) {
+    const localFiles = await System.localFiles();
+    const currentWorkspace = refetchWorkspace
+      ? await Workspace.bySlug(slug)
+      : workspace;
+    const originalDocs =
+      currentWorkspace.documents.map((doc) => doc.docpath) || [];
+    const hasAnyFiles = localFiles.items.some(
+      (folder) => folder?.items?.length > 0
+    );
 
-      const canDelete = await System.getCanDeleteWorkspaces();
-      setCanDelete(canDelete);
-      setDirectories(localFiles);
-      setOriginalDocuments([...originalDocs]);
-      setSelectFiles([...originalDocs]);
-      setHasFiles(hasAnyFiles);
-      setLoading(false);
-    }
+    const canDelete = await System.getCanDeleteWorkspaces();
+    setCanDelete(canDelete);
+    setDirectories(localFiles);
+    setOriginalDocuments([...originalDocs]);
+    setSelectFiles([...originalDocs]);
+    setHasFiles(hasAnyFiles);
+    setLoading(false);
+  }
+
+  useEffect(() => {
     fetchKeys();
   }, []);
 
@@ -82,11 +88,28 @@ export default function DocumentSettings({ workspace }) {
   const updateWorkspace = async (e) => {
     e.preventDefault();
     setSaving(true);
+    showToast("Updating workspace...", "info", { autoClose: false });
     setShowConfirmation(false);
+
     const changes = docChanges();
-    await Workspace.modifyEmbeddings(workspace.slug, changes);
+    await Workspace.modifyEmbeddings(workspace.slug, changes)
+      .then((res) => {
+        if (res && res.workspace) {
+          showToast("Workspace updated successfully.", "success", {
+            clear: true,
+          });
+        } else {
+          showToast("Workspace update failed.", "error", { clear: true });
+        }
+      })
+      .catch((error) => {
+        showToast(`Workspace update failed: ${error}`, "error", {
+          clear: true,
+        });
+      });
+
     setSaving(false);
-    window.location.reload();
+    await fetchKeys(true);
   };
 
   const isSelected = (filepath) => {

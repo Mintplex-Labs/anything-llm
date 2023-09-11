@@ -1,7 +1,10 @@
 import { toast } from "react-toastify";
 import usePrefersDarkMode from "../hooks/usePrefersDarkMode";
 
-const showToast = (message, type = "default") => {
+// Additional Configs (opts)
+// You can also pass valid ReactToast params to override the defaults.
+// clear: false, // Will dismiss all visible toasts before rendering next toast
+const showToast = (message, type = "default", opts = {}) => {
   const prefersDarkMode = usePrefersDarkMode();
   const options = {
     position: "bottom-center",
@@ -11,7 +14,10 @@ const showToast = (message, type = "default") => {
     pauseOnHover: true,
     draggable: true,
     theme: prefersDarkMode ? "dark" : "light",
+    ...opts,
   };
+
+  if (opts?.clear === true) toast.dismiss();
 
   switch (type) {
     case "success":
