@@ -1,3 +1,4 @@
+const { escape } = require("sqlstring-sqlite");
 const { Invite } = require("../../../models/invite");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { User } = require("../../../models/user");
@@ -456,7 +457,7 @@ function apiAdminEndpoints(app) {
         const { workspaceId } = request.params;
         const { userIds } = reqBody(request);
         const { success, error } = await Workspace.updateUsers(
-          workspaceId,
+          escape(Number(workspaceId)),
           userIds
         );
         response.status(200).json({ success, error });
@@ -515,7 +516,10 @@ function apiAdminEndpoints(app) {
         }
 
         const { offset = 0 } = reqBody(request);
-        const chats = await WorkspaceChats.whereWithData(`id >= ${offset}`, 20);
+        const chats = await WorkspaceChats.whereWithData(
+          `id >= ${escape(offset)}`,
+          20
+        );
         const hasPages = (await WorkspaceChats.count()) > 20;
         response.status(200).json({ chats: chats.reverse(), hasPages });
       } catch (e) {

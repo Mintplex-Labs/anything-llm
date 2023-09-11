@@ -38,6 +38,7 @@ const {
 const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
 const { ApiKey } = require("../models/apiKeys");
+const { escape } = require("sqlstring-sqlite");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -96,7 +97,7 @@ function systemEndpoints(app) {
     try {
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-        const existingUser = await User.get(`username = '${username}'`);
+        const existingUser = await User.get(`username = ${escape(username)}`);
 
         if (!existingUser) {
           response.status(200).json({

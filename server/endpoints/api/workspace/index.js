@@ -1,3 +1,4 @@
+const { escape } = require("sqlstring-sqlite");
 const { Document } = require("../../../models/documents");
 const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
@@ -153,7 +154,7 @@ function apiWorkspaceEndpoints(app) {
     */
     try {
       const { slug } = request.params;
-      const workspace = await Workspace.get(`slug = '${slug}'`);
+      const workspace = await Workspace.get(`slug = ${escape(slug)}`);
       response.status(200).json({ workspace });
     } catch (e) {
       console.log(e.message, e);
@@ -184,14 +185,14 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = "" } = request.params;
         const VectorDb = getVectorDbClass();
-        const workspace = await Workspace.get(`slug = '${slug}'`);
+        const workspace = await Workspace.get(`slug = ${escape(slug)}`);
 
         if (!workspace) {
           response.sendStatus(400).end();
           return;
         }
 
-        await Workspace.delete(`slug = '${slug.toLowerCase()}'`);
+        await Workspace.delete(`id = ${Number(workspace.id)}`);
         await DocumentVectors.deleteForWorkspace(workspace.id);
         await Document.delete(`workspaceId = ${Number(workspace.id)}`);
         await WorkspaceChats.delete(`workspaceId = ${Number(workspace.id)}`);
@@ -269,7 +270,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const data = reqBody(request);
-        const currWorkspace = await Workspace.get(`slug = '${slug}'`);
+        const currWorkspace = await Workspace.get(`slug = ${escape(slug)}`);
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -333,7 +334,7 @@ function apiWorkspaceEndpoints(app) {
     */
       try {
         const { slug } = request.params;
-        const workspace = await Workspace.get(`slug = '${slug}'`);
+        const workspace = await Workspace.get(`slug = ${escape(slug)}`);
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -408,7 +409,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const { adds = [], deletes = [] } = reqBody(request);
-        const currWorkspace = await Workspace.get(`slug = '${slug}'`);
+        const currWorkspace = await Workspace.get(`slug = ${escape(slug)}`);
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -417,7 +418,9 @@ function apiWorkspaceEndpoints(app) {
 
         await Document.removeDocuments(currWorkspace, deletes);
         await Document.addDocuments(currWorkspace, adds);
-        const updatedWorkspace = await Workspace.get(`slug = '${slug}'`);
+        const updatedWorkspace = await Workspace.get(
+          `id = ${Number(currWorkspace.id)}`
+        );
         response.status(200).json({ workspace: updatedWorkspace });
       } catch (e) {
         console.log(e.message, e);
