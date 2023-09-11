@@ -19,9 +19,13 @@ export default function DocumentSettings({ workspace }) {
   const [hasFiles, setHasFiles] = useState(true);
   const [canDelete, setCanDelete] = useState(false);
 
-  async function fetchKeys() {
+  async function fetchKeys(refetchWorkspace = false) {
     const localFiles = await System.localFiles();
-    const originalDocs = workspace.documents.map((doc) => doc.docpath) || [];
+    const currentWorkspace = refetchWorkspace
+      ? await Workspace.bySlug(slug)
+      : workspace;
+    const originalDocs =
+      currentWorkspace.documents.map((doc) => doc.docpath) || [];
     const hasAnyFiles = localFiles.items.some(
       (folder) => folder?.items?.length > 0
     );
@@ -84,19 +88,28 @@ export default function DocumentSettings({ workspace }) {
   const updateWorkspace = async (e) => {
     e.preventDefault();
     setSaving(true);
-    showToast("Updating workspace...", "info");
+    showToast("Updating workspace...", "info", { autoClose: false });
     setShowConfirmation(false);
+
     const changes = docChanges();
-    await Workspace.modifyEmbeddings(workspace.slug, changes).then((res) => {
-      if (res && res.workspace) {
-        showToast("Workspace updated successfully.", "success");
-      } else {
-        showToast("Workspace update failed.", "error");
-      }}).catch((error) => {
-        showToast(`Workspace update failed: ${error}`, "error");
+    await Workspace.modifyEmbeddings(workspace.slug, changes)
+      .then((res) => {
+        if (res && res.workspace) {
+          showToast("Workspace updated successfully.", "success", {
+            clear: true,
+          });
+        } else {
+          showToast("Workspace update failed.", "error", { clear: true });
+        }
+      })
+      .catch((error) => {
+        showToast(`Workspace update failed: ${error}`, "error", {
+          clear: true,
+        });
       });
+
     setSaving(false);
-    fetchKeys(); // TODO: this does not fully update the embedding document picker
+    await fetchKeys(true);
   };
 
   const isSelected = (filepath) => {
