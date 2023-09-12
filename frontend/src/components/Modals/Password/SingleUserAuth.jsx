@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import System from "../../../models/system";
 import { AUTH_TOKEN } from "../../../utils/constants";
+import useLogo from "../../../hooks/useLogo";
 
 export default function SingleUserAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { logo: _initLogo } = useLogo();
   const handleLogin = async (e) => {
     setError(null);
     setLoading(true);
@@ -28,9 +30,12 @@ export default function SingleUserAuth() {
     <form onSubmit={handleLogin}>
       <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
         <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
-          <h3 className="text-md md:text-xl font-semibold text-gray-900 dark:text-white">
-            This workspace is password protected.
-          </h3>
+          <div className="flex items-center flex-col">
+            <img src={_initLogo} alt="Logo" className="w-1/2" />
+            <h3 className="text-md md:text-xl font-semibold text-gray-900 dark:text-white">
+              This instance is password protected.
+            </h3>
+          </div>
         </div>
         <div className="p-6 space-y-6 flex h-full w-full">
           <div className="w-full flex flex-col gap-y-4">

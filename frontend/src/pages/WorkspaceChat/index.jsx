@@ -3,18 +3,16 @@ import { default as WorkspaceChatContainer } from "../../components/WorkspaceCha
 import Sidebar from "../../components/Sidebar";
 import { useParams } from "react-router-dom";
 import Workspace from "../../models/workspace";
-import PasswordModal, { usePasswordModal } from "../../components/Modals/Password";
+import PasswordModal, {
+  usePasswordModal,
+} from "../../components/Modals/Password";
 import { isMobile } from "react-device-detect";
 
 export default function WorkspaceChat() {
   const { requiresAuth, mode } = usePasswordModal();
 
   if (requiresAuth !== false) {
-    return (
-      <>
-        {requiresAuth !== null && <PasswordModal mode={mode} />}
-      </>
-    );
+    return <>{requiresAuth !== null && <PasswordModal mode={mode} />}</>;
   }
 
   return <ShowWorkspaceChat />;

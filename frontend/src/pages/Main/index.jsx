@@ -1,18 +1,16 @@
 import React from "react";
 import DefaultChatContainer from "../../components/DefaultChat";
 import Sidebar from "../../components/Sidebar";
-import PasswordModal, { usePasswordModal } from "../../components/Modals/Password";
+import PasswordModal, {
+  usePasswordModal,
+} from "../../components/Modals/Password";
 import { isMobile } from "react-device-detect";
 
 export default function Main() {
   const { requiresAuth, mode } = usePasswordModal();
 
   if (requiresAuth !== false) {
-    return (
-      <>
-        {requiresAuth !== null && <PasswordModal mode={mode} />}
-      </>
-    );
+    return <>{requiresAuth !== null && <PasswordModal mode={mode} />}</>;
   }
 
   return (
