@@ -61,8 +61,8 @@ This monorepo consists of three main sections:
 - `yarn` and `node` on your machine
 - `python` 3.9+ for running scripts in `collector/`.
 - access to an LLM like `GPT-3.5`, `GPT-4`.
-- a [Pinecone.io](https://pinecone.io) free account*.
-*you can use drop in replacements for these. This is just the easiest to get up and running fast. We support multiple vector database providers.
+- (optional) a vector database like Pinecone, qDrant, Weaviate, or Chroma*.
+*AnythingLLM by default uses a built-in vector db called LanceDB.
 
 ## How to get started (Docker - simple setup)
 [Get up and running in minutes with Docker](./docker/HOW_TO_USE_DOCKER.md)
