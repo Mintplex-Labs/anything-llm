@@ -6,26 +6,28 @@ const Telemetry = {
   pubkey: "phc_9qu7QLpV8L84P3vFmEiZxL020t2EqIubP7HHHxrSsqS",
   stubDevelopmentEvents: true, // [DO NOT TOUCH] Core team only.
   label: "telemetry_id",
+
   id: async function () {
-    const result = await SystemSettings.get(`label = '${this.label}'`);
-    if (!!result?.value) return result.value;
-    return result?.value;
+    const result = await SystemSettings.get({ label: this.label });
+    return result?.value || null;
   },
+
   connect: async function () {
     const client = this.client();
     const distinctId = await this.findOrCreateId();
     return { client, distinctId };
   },
+
   isDev: function () {
-    if (process.env.NODE_ENV === "development")
-      return this.stubDevelopmentEvents;
-    return false;
+    return process.env.NODE_ENV === "development" && this.stubDevelopmentEvents;
   },
+
   client: function () {
     if (process.env.DISABLE_TELEMETRY === "true" || this.isDev()) return null;
     const { PostHog } = require("posthog-node");
     return new PostHog(this.pubkey);
   },
+
   sendTelemetry: async function (event, properties = {}) {
     try {
       const { client, distinctId } = await this.connect();
@@ -43,22 +45,25 @@ const Telemetry = {
       return;
     }
   },
+
   flush: async function () {
-    const { client } = this.client();
+    const client = this.client();
     if (!client) return;
     await client.shutdownAsync();
-    return;
   },
+
   setUid: async function () {
     const newId = v4();
     await SystemSettings.updateSettings({ [this.label]: newId });
     return newId;
   },
+
   findOrCreateId: async function () {
-    const currentId = await this.id();
-    if (!!currentId) return currentId;
-    const newId = await this.setUid();
-    return newId;
+    let currentId = await this.id();
+    if (currentId) return currentId;
+
+    currentId = await this.setUid();
+    return currentId;
   },
 };
 

@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:storage/anythingllm.db"
+}
+
+model api_keys {
+  id            Int     @id @default(autoincrement())
+  secret        String? @unique(map: "sqlite_autoindex_api_keys_1")
+  createdBy     Int?
+  createdAt     String? @default("CURRENT_TIMESTAMP")
+  lastUpdatedAt String? @default("CURRENT_TIMESTAMP")
+}
+
+model document_vectors {
+  id            Int     @id @default(autoincrement())
+  docId         String
+  vectorId      String
+  createdAt     String? @default("CURRENT_TIMESTAMP")
+  lastUpdatedAt String? @default("CURRENT_TIMESTAMP")
+}
+
+model invites {
+  id            Int     @id @default(autoincrement())
+  code          String  @unique(map: "sqlite_autoindex_invites_1")
+  status        String  @default("pending")
+  claimedBy     Int?
+  createdAt     String? @default("CURRENT_TIMESTAMP")
+  createdBy     Int
+  lastUpdatedAt String? @default("CURRENT_TIMESTAMP")
+}
+
+model system_settings {
+  id            Int     @id @default(autoincrement())
+  label         String  @unique(map: "sqlite_autoindex_system_settings_1")
+  value         String?
+  createdAt     String? @default("CURRENT_TIMESTAMP")
+  lastUpdatedAt String? @default("CURRENT_TIMESTAMP")
+}
+
+model users {
+  id              Int               @id @default(autoincrement())
+  username        String?           @unique(map: "sqlite_autoindex_users_1")
+  password        String
+  role            String            @default("default")
+  suspended       Int               @default(0)
+  createdAt       String?           @default("CURRENT_TIMESTAMP")
+  lastUpdatedAt   String?           @default("CURRENT_TIMESTAMP")
+  workspace_chats workspace_chats[]
+  workspace_users workspace_users[]
+}
+
+model welcome_messages {
+  id         Int     @id @default(autoincrement())
+  user       String
+  response   String
+  orderIndex Int?
+  createdAt  String? @default("CURRENT_TIMESTAMP")
+}
+
+model workspace_chats {
+  id            Int                  @id @default(autoincrement())
+  workspaceId   Int
+  prompt        String
+  response      String
+  include       Unsupported("bool")? @default(dbgenerated("true"))
+  user_id       Int?
+  createdAt     String?              @default("CURRENT_TIMESTAMP")
+  lastUpdatedAt String?              @default("CURRENT_TIMESTAMP")
+  users         users?               @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model workspace_documents {
+  id            Int     @id @default(autoincrement())
+  docId         String  @unique(map: "sqlite_autoindex_workspace_documents_1")
+  filename      String
+  docpath       String
+  workspaceId   Int
+  metadata      String?
+  createdAt     String? @default("CURRENT_TIMESTAMP")
+  lastUpdatedAt String? @default("CURRENT_TIMESTAMP")
+}
+
+model workspace_users {
+  id            Int        @id @default(autoincrement())
+  user_id       Int
+  workspace_id  Int
+  createdAt     String?    @default("CURRENT_TIMESTAMP")
+  lastUpdatedAt String?    @default("CURRENT_TIMESTAMP")
+  workspaces    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users         users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model workspaces {
+  id              Int               @id @default(autoincrement())
+  name            String
+  slug            String            @unique(map: "sqlite_autoindex_workspaces_1")
+  vectorTag       String?
+  createdAt       String?           @default("CURRENT_TIMESTAMP")
+  openAiTemp      Float?
+  openAiHistory   Int?              @default(20)
+  lastUpdatedAt   String?           @default("CURRENT_TIMESTAMP")
+  openAiPrompt    String?
+  workspace_users workspace_users[]
+}
