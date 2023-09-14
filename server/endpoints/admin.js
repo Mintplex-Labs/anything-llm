@@ -21,7 +21,7 @@ function adminEndpoints(app) {
         response.sendStatus(401).end();
         return;
       }
-      const users = (await User.where()).map((user) => {
+      const users = (await User.where({})).map((user) => {
         const { password, ...rest } = user;
         return rest;
       });
@@ -357,7 +357,7 @@ function adminEndpoints(app) {
         return;
       }
 
-      const apiKeys = await ApiKey.whereWithUser("id IS NOT NULL");
+      const apiKeys = await ApiKey.whereWithUser({ NOT: { id: null } });
       return response.status(200).json({
         apiKeys,
         error: null,
@@ -405,8 +405,7 @@ function adminEndpoints(app) {
           response.sendStatus(401).end();
           return;
         }
-
-        await ApiKey.delete(`id = ${id}`);
+        await ApiKey.delete({ id: Number(id) });
         return response.status(200).end();
       } catch (e) {
         console.error(e);

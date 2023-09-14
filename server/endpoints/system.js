@@ -1,7 +1,6 @@
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
-const { validateTablePragmas } = require("../utils/database");
 const { viewLocalFiles } = require("../utils/files");
 const { exportData, unpackAndOverwriteImport } = require("../utils/files/data");
 const {
@@ -48,7 +47,7 @@ function systemEndpoints(app) {
   });
 
   app.get("/migrate", async (_, response) => {
-    await validateTablePragmas(true);
+    // await validateTablePragmas(true);
     response.sendStatus(200);
   });
 
