@@ -3,24 +3,22 @@ import { API_BASE } from "./constants";
 export default {
   home: () => {
     return "/";
-  },
-  github: () => {
-    return "https://github.com/Mintplex-Labs/anything-llm";
+  
   },
   discord: () => {
     return "https://discord.com/invite/6UyHPeGZAC";
   },
   docs: () => {
-    return "https://docs.useanything.com";
+    return "https://docs.pullmai.space";
   },
   mailToMintplex: () => {
-    return "mailto:team@mintplexlabs.com";
+    return "mailto:contacto@meiklabs.com";
   },
   hosting: () => {
     return "https://my.mintplexlabs.com/aio-checkout?product=anythingllm";
   },
   feedback: () => {
-    return "https://mintplexlabs.typeform.com/to/i0KE3aEW";
+    return "https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAN__iN86xdUNkVSU0gxVFk5TlZGODJEREJMQTIyTkJZNy4u";
   },
   workspace: {
     chat: (slug) => {

@@ -124,7 +124,7 @@ export default function Sidebar() {
                   href={paths.mailToMintplex()}
                   className="transition-all duration-300 text-xs text-slate-500 dark:text-slate-600 hover:text-blue-600 dark:hover:text-blue-400"
                 >
-                  @MintplexLabs
+                  @MEIK LABS
                 </a>
               </div>
             </div>
