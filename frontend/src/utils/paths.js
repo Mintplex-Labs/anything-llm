@@ -11,16 +11,16 @@ export default {
     return "https://discord.com/invite/6UyHPeGZAC";
   },
   docs: () => {
-    return "https://docs.useanything.com";
+    return "https://docs.pullmai.space";
   },
   mailToMintplex: () => {
     return "mailto:contacto@meiklabs.com";
   },
   hosting: () => {
-    return "https://my.mintplexlabs.com/aio-checkout?product=anythingllm";
+    return "https://www.pullmai.space";
   },
   feedback: () => {
-    return "https://mintplexlabs.typeform.com/to/i0KE3aEW";
+    return "https://forms.office.com/r/LNGFFk3FpE";
   },
   workspace: {
     chat: (slug) => {
