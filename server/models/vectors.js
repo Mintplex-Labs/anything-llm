@@ -34,10 +34,10 @@ const DocumentVectors = {
     }
   },
 
-  where: async function (params = {}, limit = null) {
+  where: async function (clause = {}, limit = null) {
     try {
       const results = await prisma.document_vectors.findMany({
-        where: params,
+        where: clause,
         take: limit || undefined,
       });
       return results;

@@ -32,9 +32,9 @@ const User = {
     }
   },
 
-  get: async function (params) {
+  get: async function (clause = {}) {
     try {
-      const user = await prisma.users.findFirst({ where: params });
+      const user = await prisma.users.findFirst({ where: clause });
       return user ? { ...user } : null;
     } catch (error) {
       console.error(error.message);
@@ -42,9 +42,9 @@ const User = {
     }
   },
 
-  count: async function (params = {}) {
+  count: async function (clause = {}) {
     try {
-      const count = await prisma.users.count({ where: params });
+      const count = await prisma.users.count({ where: clause });
       return count;
     } catch (error) {
       console.error(error.message);
@@ -52,9 +52,9 @@ const User = {
     }
   },
 
-  delete: async function (params) {
+  delete: async function (clause = {}) {
     try {
-      await prisma.users.delete({ where: params });
+      await prisma.users.delete({ where: clause });
       return true;
     } catch (error) {
       console.error(error.message);
@@ -62,10 +62,10 @@ const User = {
     }
   },
 
-  where: async function (params = {}, limit = null) {
+  where: async function (clause = {}, limit = null) {
     try {
       const users = await prisma.users.findMany({
-        where: params,
+        where: clause,
         ...(limit && { take: limit }),
       });
       return users;

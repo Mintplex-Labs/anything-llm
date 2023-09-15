@@ -81,10 +81,10 @@ const WorkspaceChats = {
     }
   },
 
-  get: async function (params, limit = null, order = null) {
+  get: async function (clause = {}, limit = null, order = null) {
     try {
       const chat = await prisma.workspaceChats.findFirst({
-        where: params,
+        where: clause,
         take: limit,
         orderBy: order,
       });
@@ -95,10 +95,10 @@ const WorkspaceChats = {
     }
   },
 
-  delete: async function (params) {
+  delete: async function (clause = {}) {
     try {
       await prisma.workspaceChats.deleteMany({
-        where: params,
+        where: clause,
       });
       return true;
     } catch (error) {
@@ -107,10 +107,10 @@ const WorkspaceChats = {
     }
   },
 
-  where: async function (params, limit = null, order = null) {
+  where: async function (clause = {}, limit = null, order = null) {
     try {
       const chats = await prisma.workspaceChats.findMany({
-        where: params,
+        where: clause,
         take: limit,
         orderBy: order,
       });
@@ -121,10 +121,10 @@ const WorkspaceChats = {
     }
   },
 
-  count: async function (params) {
+  count: async function (clause = {}) {
     try {
       const count = await prisma.workspaceChats.count({
-        where: params,
+        where: clause,
       });
       return count;
     } catch (error) {
@@ -133,12 +133,12 @@ const WorkspaceChats = {
     }
   },
 
-  whereWithData: async function (params, limit = null, order = null) {
+  whereWithData: async function (clause = {}, limit = null, order = null) {
     const { Workspace } = require("./workspace");
     const { User } = require("./user");
 
     try {
-      const results = await this.where(params, limit, order);
+      const results = await this.where(clause, limit, order);
 
       for (const res of results) {
         const workspace = await Workspace.get({ id: res.workspaceId });

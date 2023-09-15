@@ -66,9 +66,10 @@ const SystemSettings = {
         : {}),
     };
   },
-  get: async function (params) {
+
+  get: async function (clause = {}) {
     try {
-      const setting = await prisma.system_settings.findFirst({ where: params });
+      const setting = await prisma.system_settings.findFirst({ where: clause });
       return setting || null;
     } catch (error) {
       console.error(error.message);
@@ -76,10 +77,10 @@ const SystemSettings = {
     }
   },
 
-  where: async function (params = {}, limit = null) {
+  where: async function (clause = {}, limit = null) {
     try {
       const settings = await prisma.system_settings.findMany({
-        where: params,
+        where: clause,
         take: limit || undefined,
       });
       return settings;

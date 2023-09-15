@@ -1,10 +1,10 @@
 const prisma = require("../utils/prisma");
 
 const WelcomeMessages = {
-  get: async function (params) {
+  get: async function (clause = {}) {
     try {
       const message = await prisma.welcome_messages.findFirst({
-        where: params,
+        where: clause,
       });
       return message || null;
     } catch (error) {
@@ -13,10 +13,10 @@ const WelcomeMessages = {
     }
   },
 
-  where: async function (params = {}, limit = null) {
+  where: async function (clause = {}, limit = null) {
     try {
       const messages = await prisma.welcome_messages.findMany({
-        where: params,
+        where: clause,
         take: limit || undefined,
       });
       return messages;

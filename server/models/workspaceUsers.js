@@ -48,9 +48,9 @@ const WorkspaceUser = {
     }
   },
 
-  get: async function (params) {
+  get: async function (clause = {}) {
     try {
-      const result = await prisma.workspace_users.findFirst({ where: params });
+      const result = await prisma.workspace_users.findFirst({ where: clause });
       return result || null;
     } catch (error) {
       console.error(error.message);
@@ -58,10 +58,10 @@ const WorkspaceUser = {
     }
   },
 
-  where: async function (params, limit = null) {
+  where: async function (clause = {}, limit = null) {
     try {
       const results = await prisma.workspace_users.findMany({
-        where: params,
+        where: clause,
         take: limit,
       });
       return results;
@@ -71,9 +71,9 @@ const WorkspaceUser = {
     }
   },
 
-  count: async function (params) {
+  count: async function (clause = {}) {
     try {
-      const count = await prisma.workspace_users.count({ where: params });
+      const count = await prisma.workspace_users.count({ where: clause });
       return count;
     } catch (error) {
       console.error(error.message);
@@ -81,9 +81,9 @@ const WorkspaceUser = {
     }
   },
 
-  delete: async function (params) {
+  delete: async function (clause = {}) {
     try {
-      await prisma.workspace_users.deleteMany({ where: params });
+      await prisma.workspace_users.deleteMany({ where: clause });
     } catch (error) {
       console.error(error.message);
     }

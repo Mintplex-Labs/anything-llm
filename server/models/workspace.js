@@ -62,13 +62,13 @@ const Workspace = {
     }
   },
 
-  getWithUser: async function (user = null, params) {
-    if (user.role === "admin") return this.get(params);
+  getWithUser: async function (user = null, clause = {}) {
+    if (user.role === "admin") return this.get(clause);
 
     try {
       const workspace = await prisma.workspaces.findFirst({
         where: {
-          ...params,
+          ...clause,
           workspace_users: {
             some: {
               user_id: user?.id,
@@ -93,10 +93,10 @@ const Workspace = {
     }
   },
 
-  get: async function (params) {
+  get: async function (clause = {}) {
     try {
       const workspace = await prisma.workspaces.findFirst({
-        where: params,
+        where: clause,
         include: {
           documents: true,
         },
@@ -109,10 +109,11 @@ const Workspace = {
     }
   },
 
-  delete: async function (params) {
+
+  delete: async function (clause = {}) {
     try {
       await prisma.workspaces.delete({
-        where: params,
+        where: clause,
       });
       return true;
     } catch (error) {
@@ -121,10 +122,10 @@ const Workspace = {
     }
   },
 
-  where: async function (params, limit = null, orderBy = null) {
+  where: async function (clause = {}, limit = null, orderBy = null) {
     try {
       const results = await prisma.workspaces.findMany({
-        where: params,
+        where: clause,
         take: limit,
         orderBy,
       });
@@ -137,16 +138,16 @@ const Workspace = {
 
   whereWithUser: async function (
     user,
-    params = {},
+    clause = {},
     limit = null,
     orderBy = null
   ) {
-    if (user.role === "admin") return await this.where(params, limit, orderBy);
+    if (user.role === "admin") return await this.where(clause, limit, orderBy);
 
     try {
       const workspaces = await prisma.workspaces.findMany({
         where: {
-          ...params,
+          ...clause,
           workspace_users: {
             some: {
               user_id: user.id,
@@ -163,9 +164,9 @@ const Workspace = {
     }
   },
 
-  whereWithUsers: async function (params = {}, limit = null, orderBy = null) {
+  whereWithUsers: async function (clause = {}, limit = null, orderBy = null) {
     try {
-      const workspaces = await this.where(params, limit, orderBy);
+      const workspaces = await this.where(clause, limit, orderBy);
       for (const workspace of workspaces) {
         const userIds = (
           await WorkspaceUser.where({ workspace_id: workspace.id })

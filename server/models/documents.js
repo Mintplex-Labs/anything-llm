@@ -12,9 +12,9 @@ const Document = {
     });
   },
 
-  delete: async function (params) {
+  delete: async function (clause = {}) {
     try {
-      await prisma.workspace_documents.delete({ where: params });
+      await prisma.workspace_documents.deleteMany({ where: clause });
       return true;
     } catch (error) {
       console.error(error.message);
@@ -22,11 +22,9 @@ const Document = {
     }
   },
 
-  firstWhere: async function (params) {
+  firstWhere: async function (clause = {}) {
     try {
-      const document = await prisma.workspace_documents.findFirst({
-        where: params,
-      });
+      const document = await prisma.workspace_documents.findFirst({ where: clause });
       return document || null;
     } catch (error) {
       console.error(error.message);

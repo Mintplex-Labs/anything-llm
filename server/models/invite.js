@@ -47,9 +47,9 @@ const Invite = {
     }
   },
 
-  get: async function (params) {
+  get: async function (clause = {}) {
     try {
-      const invite = await prisma.invites.findFirst({ where: params });
+      const invite = await prisma.invites.findFirst({ where: clause });
       return invite || null;
     } catch (error) {
       console.error(error.message);
@@ -57,9 +57,9 @@ const Invite = {
     }
   },
 
-  count: async function (params = {}) {
+  count: async function (clause = {}) {
     try {
-      const count = await prisma.invites.count({ where: params });
+      const count = await prisma.invites.count({ where: clause });
       return count;
     } catch (error) {
       console.error(error.message);
@@ -67,9 +67,9 @@ const Invite = {
     }
   },
 
-  delete: async function (params) {
+  delete: async function (clause = {}) {
     try {
-      await prisma.invites.delete({ where: params });
+      await prisma.invites.deleteMany({ where: clause });
       return true;
     } catch (error) {
       console.error(error.message);
@@ -77,10 +77,10 @@ const Invite = {
     }
   },
 
-  where: async function (params = {}, limit = null) {
+  where: async function (clause = {}, limit = null) {
     try {
       const invites = await prisma.invites.findMany({
-        where: params,
+        where: clause,
         take: limit || undefined,
       });
       return invites;
@@ -90,10 +90,10 @@ const Invite = {
     }
   },
 
-  whereWithUsers: async function (params = {}, limit = null) {
+  whereWithUsers: async function (clause = {}, limit = null) {
     const { User } = require("./user");
     try {
-      const invites = await this.where(params, limit);
+      const invites = await this.where(clause, limit);
       for (const invite of invites) {
         if (invite.claimedBy) {
           const acceptedUser = await User.get({ id: invite.claimedBy });
