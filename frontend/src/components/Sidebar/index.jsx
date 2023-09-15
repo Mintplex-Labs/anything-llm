@@ -71,7 +71,7 @@ export default function Sidebar() {
                   >
                     <Plus className="h-4 w-4" />
                     <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                      New workspace
+                      Nuevo Repositorio
                     </p>
                   </button>
                 </div>
