@@ -19,9 +19,10 @@ function chatEndpoints(app) {
         const user = await userFromSession(request, response);
         const { slug } = request.params;
         const { message, mode = "query" } = reqBody(request);
+
         const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, `slug = ${escape(slug)}`)
-          : await Workspace.get(`slug = ${escape(slug)}`);
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -29,18 +30,25 @@ function chatEndpoints(app) {
         }
 
         if (multiUserMode(response) && user.role !== "admin") {
-          const limitMessages =
-            (await SystemSettings.get(`label = 'limit_user_messages'`))
-              ?.value === "true";
+          const limitMessagesSetting = await SystemSettings.get({
+            label: "limit_user_messages",
+          });
+          const limitMessages = limitMessagesSetting?.value === "true";
 
           if (limitMessages) {
-            const systemLimit = Number(
-              (await SystemSettings.get(`label = 'message_limit'`))?.value
-            );
+            const messageLimitSetting = await SystemSettings.get({
+              label: "message_limit",
+            });
+            const systemLimit = Number(messageLimitSetting?.value);
+
             if (!!systemLimit) {
-              const currentChatCount = await WorkspaceChats.count(
-                `user_id = ${user.id} AND createdAt > datetime(CURRENT_TIMESTAMP, '-1 days')`
-              );
+              const currentChatCount = await WorkspaceChats.count({
+                user_id: user.id,
+                createdAt: {
+                  gte: new Date(new Date() - 24 * 60 * 60 * 1000),
+                },
+              });
+
               if (currentChatCount >= systemLimit) {
                 response.status(500).json({
                   id: uuidv4(),

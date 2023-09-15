@@ -109,7 +109,6 @@ const Workspace = {
     }
   },
 
-
   delete: async function (clause = {}) {
     try {
       await prisma.workspaces.delete({

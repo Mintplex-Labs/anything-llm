@@ -236,8 +236,8 @@ function adminEndpoints(app) {
 
         await Workspace.delete({ id: Number(id) });
         await DocumentVectors.deleteForWorkspace(workspace.id);
-        await Document.delete({ workspaceId : Number(workspace.id)});
-        await WorkspaceChats.delete({ workspaceId : Number(workspace.id)});
+        await Document.delete({ workspaceId: Number(workspace.id) });
+        await WorkspaceChats.delete({ workspaceId: Number(workspace.id) });
         try {
           await VectorDb["delete-namespace"]({ namespace: workspace.slug });
         } catch (e) {
@@ -271,7 +271,9 @@ function adminEndpoints(app) {
         const totalChats = await WorkspaceChats.count();
         const hasPages = totalChats > offset + limit;
 
-        response.status(200).json({ chats: chats.reverse(), hasPages, totalChats });
+        response
+          .status(200)
+          .json({ chats: chats.reverse(), hasPages, totalChats });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
@@ -313,14 +315,14 @@ function adminEndpoints(app) {
 
         const settings = {
           users_can_delete_workspaces:
-            (await SystemSettings.get({ label: 'users_can_delete_workspaces' }))
+            (await SystemSettings.get({ label: "users_can_delete_workspaces" }))
               ?.value === "true",
           limit_user_messages:
-            (await SystemSettings.get({ label: 'limit_user_messages' }))
+            (await SystemSettings.get({ label: "limit_user_messages" }))
               ?.value === "true",
           message_limit:
             Number(
-              (await SystemSettings.get({ label: 'message_limit' }))?.value
+              (await SystemSettings.get({ label: "message_limit" }))?.value
             ) || 10,
         };
         response.status(200).json({ settings });

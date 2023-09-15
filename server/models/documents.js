@@ -24,7 +24,9 @@ const Document = {
 
   firstWhere: async function (clause = {}) {
     try {
-      const document = await prisma.workspace_documents.findFirst({ where: clause });
+      const document = await prisma.workspace_documents.findFirst({
+        where: clause,
+      });
       return document || null;
     } catch (error) {
       console.error(error.message);
