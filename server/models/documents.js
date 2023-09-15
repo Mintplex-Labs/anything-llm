@@ -115,7 +115,8 @@ const Document = {
         await stmt.run(params);
       }
       await db.exec("COMMIT");
-    } catch {
+    } catch (error) {
+      console.error("Error during document addition transaction:", error);
       await db.exec("ROLLBACK");
     }
 
@@ -127,6 +128,7 @@ const Document = {
     });
     return;
   },
+
   removeDocuments: async function (workspace, removals = []) {
     const VectorDb = getVectorDbClass();
     const deleteParams = [];
@@ -155,7 +157,8 @@ const Document = {
         await stmt.run(params);
       }
       await db.exec("COMMIT");
-    } catch {
+    } catch (error) {
+      console.error("Error during document removal transaction:", error);
       await db.exec("ROLLBACK");
     }
 
