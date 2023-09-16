@@ -246,7 +246,7 @@ const QDrant = {
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) return;
 
-    const knownDocuments = await DocumentVectors.where(`docId = '${docId}'`);
+    const knownDocuments = await DocumentVectors.where({ docId });
     if (knownDocuments.length === 0) return;
 
     const vectorIds = knownDocuments.map((doc) => doc.vectorId);

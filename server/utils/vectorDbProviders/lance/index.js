@@ -118,7 +118,7 @@ const LanceDb = {
 
     const { DocumentVectors } = require("../../../models/vectors");
     const table = await client.openTable(namespace);
-    const vectorIds = (await DocumentVectors.where(`docId = '${docId}'`)).map(
+    const vectorIds = (await DocumentVectors.where({ docId })).map(
       (record) => record.vectorId
     );
 

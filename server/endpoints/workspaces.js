@@ -115,9 +115,7 @@ function workspaceEndpoints(app) {
 
         await Document.removeDocuments(currWorkspace, deletes);
         await Document.addDocuments(currWorkspace, adds);
-        const updatedWorkspace = await Workspace.get(
-          { id: currWorkspace.id}
-        );
+        const updatedWorkspace = await Workspace.get({ id: currWorkspace.id });
         response.status(200).json({ workspace: updatedWorkspace });
       } catch (e) {
         console.log(e.message, e);
@@ -145,7 +143,7 @@ function workspaceEndpoints(app) {
 
         if (multiUserMode(response) && user.role !== "admin") {
           const canDelete =
-            (await SystemSettings.get(`label = 'users_can_delete_workspaces'`))
+            (await SystemSettings.get({ label: "users_can_delete_workspaces" }))
               ?.value === "true";
           if (!canDelete) {
             response.sendStatus(500).end();
@@ -153,10 +151,10 @@ function workspaceEndpoints(app) {
           }
         }
 
-        await Workspace.delete({id: Number(workspace.id)});
+        await Workspace.delete({ id: Number(workspace.id) });
         await DocumentVectors.deleteForWorkspace(workspace.id);
-        await Document.delete({ workspaceId: Number(workspace.id)});
-        await WorkspaceChats.delete({ workspaceId: Number(workspace.id)});
+        await Document.delete({ workspaceId: Number(workspace.id) });
+        await WorkspaceChats.delete({ workspaceId: Number(workspace.id) });
         try {
           await VectorDb["delete-namespace"]({ namespace: slug });
         } catch (e) {

@@ -1,4 +1,3 @@
-const { escape } = require("sqlstring-sqlite");
 const { ApiKey } = require("../models/apiKeys");
 const { Document } = require("../models/documents");
 const { Invite } = require("../models/invite");

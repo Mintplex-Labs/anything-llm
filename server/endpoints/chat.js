@@ -6,7 +6,6 @@ const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { SystemSettings } = require("../models/systemSettings");
 const { Telemetry } = require("../models/telemetry");
-const { escape } = require("sqlstring-sqlite");
 
 function chatEndpoints(app) {
   if (!app) return;
