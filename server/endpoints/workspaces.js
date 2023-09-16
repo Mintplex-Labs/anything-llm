@@ -13,7 +13,6 @@ const {
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { SystemSettings } = require("../models/systemSettings");
 const { Telemetry } = require("../models/telemetry");
-const { escape } = require("sqlstring-sqlite");
 const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
@@ -45,8 +44,8 @@ function workspaceEndpoints(app) {
         const { slug = null } = request.params;
         const data = reqBody(request);
         const currWorkspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, `slug = ${escape(slug)}`)
-          : await Workspace.get(`slug = ${escape(slug)}`);
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -106,8 +105,8 @@ function workspaceEndpoints(app) {
         const { slug = null } = request.params;
         const { adds = [], deletes = [] } = reqBody(request);
         const currWorkspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, `slug = ${escape(slug)}`)
-          : await Workspace.get(`slug = ${escape(slug)}`);
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -117,7 +116,7 @@ function workspaceEndpoints(app) {
         await Document.removeDocuments(currWorkspace, deletes);
         await Document.addDocuments(currWorkspace, adds);
         const updatedWorkspace = await Workspace.get(
-          `id = ${currWorkspace.id}`
+          { id: currWorkspace.id}
         );
         response.status(200).json({ workspace: updatedWorkspace });
       } catch (e) {
@@ -136,8 +135,8 @@ function workspaceEndpoints(app) {
         const user = await userFromSession(request, response);
         const VectorDb = getVectorDbClass();
         const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, `slug = ${escape(slug)}`)
-          : await Workspace.get(`slug = ${escape(slug)}`);
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -154,10 +153,10 @@ function workspaceEndpoints(app) {
           }
         }
 
-        await Workspace.delete(`id = ${Number(workspace.id)}`);
+        await Workspace.delete({id: Number(workspace.id)});
         await DocumentVectors.deleteForWorkspace(workspace.id);
-        await Document.delete(`workspaceId = ${Number(workspace.id)}`);
-        await WorkspaceChats.delete(`workspaceId = ${Number(workspace.id)}`);
+        await Document.delete({ workspaceId: Number(workspace.id)});
+        await WorkspaceChats.delete({ workspaceId: Number(workspace.id)});
         try {
           await VectorDb["delete-namespace"]({ namespace: slug });
         } catch (e) {
@@ -190,8 +189,8 @@ function workspaceEndpoints(app) {
       const { slug } = request.params;
       const user = await userFromSession(request, response);
       const workspace = multiUserMode(response)
-        ? await Workspace.getWithUser(user, `slug = ${escape(slug)}`)
-        : await Workspace.get(`slug = ${escape(slug)}`);
+        ? await Workspace.getWithUser(user, { slug })
+        : await Workspace.get({ slug });
 
       response.status(200).json({ workspace });
     } catch (e) {
@@ -208,8 +207,8 @@ function workspaceEndpoints(app) {
         const { slug } = request.params;
         const user = await userFromSession(request, response);
         const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, `slug = ${escape(slug)}`)
-          : await Workspace.get(`slug = ${escape(slug)}`);
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
 
         if (!workspace) {
           response.sendStatus(400).end();
