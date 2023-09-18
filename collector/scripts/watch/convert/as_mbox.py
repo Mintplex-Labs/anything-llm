@@ -1,5 +1,5 @@
 import os
-import datetime  
+import datetime
 import email.utils
 from mailbox import mbox
 from slugify import slugify
@@ -36,12 +36,14 @@ def as_mbox(**kwargs):
             date_sent = local_date.strftime("%a, %d %b %Y %H:%M:%S")
         else:
             date_sent = None
-            
+
         data = {
-            'id': guid(), 
+            'id': guid(),
             'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{slugify(filename)}-{guid()}{ext}"),
-            'title': f"{filename}{ext}",
-            'description': "a custom file uploaded by the user.",
+            'title': message['Subject'],
+            'docAuthor': message['From'],
+            'description': f"email {message['From']} to {message['To']}",
+            'docSource': "mbox file uploaded by the user.",
             'published': file_creation_time(fullpath),
             'sender': message['From'],
             'recipient': message['To'],
