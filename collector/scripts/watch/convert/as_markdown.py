@@ -16,6 +16,10 @@ def as_markdown(**kwargs):
   data = loader.load()[0]
   content = data.page_content
 
+  if len(content) == 0:
+    print(f"Resulting page content was empty - no text could be extracted from {filename}{ext}.")
+    return(False, f"No text could be extracted from {filename}{ext}.")
+
   print(f"-- Working {fullpath} --")
   data = {
     'id': guid(),
@@ -33,4 +37,6 @@ def as_markdown(**kwargs):
 
   write_to_server_documents(data, f"{slugify(filename)}-{data.get('id')}")
   move_source(parent_dir, f"{filename}{ext}", remove=remove)
+
   print(f"[SUCCESS]: {filename}{ext} converted & ready for embedding.\n")
+  return(True, None)
