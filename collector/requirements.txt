@@ -100,6 +100,7 @@ tweepy==4.14.0
 typer==0.9.0
 typing-inspect==0.9.0
 typing_extensions==4.6.3
+Unidecode==1.3.6
 unstructured==0.7.1
 urllib3==1.26.16
 uuid==1.30

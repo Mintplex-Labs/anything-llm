@@ -1,66 +1,53 @@
-import os, time, fitz
+import os, fitz
 from langchain.document_loaders import PyMuPDFLoader # better UTF support and metadata
-from langchain.text_splitter import RecursiveCharacterTextSplitter, TextSplitter
 from slugify import slugify
 from ..utils import guid, file_creation_time, write_to_server_documents, move_source
 from ...utils import tokenize
+from unidecode import unidecode
 
-
-
-# Process all text-related documents.
+# Process all PDF-related documents.
 def as_pdf(**kwargs):
   parent_dir = kwargs.get('directory', 'hotdir')
   filename = kwargs.get('filename')
   ext = kwargs.get('ext', '.txt')
   remove = kwargs.get('remove_on_complete', False)
   fullpath = f"{parent_dir}/{filename}{ext}"
-  destination = f"../server/storage/documents/{slugify(filename)}-{int(time.time())}"
-
-  loader = PyMuPDFLoader(fullpath)
-
-  # Custom flags for PyMuPDFLoader. https://pymupdf.readthedocs.io/en/latest/app1.html#text-extraction-flags-defaults
-  mu_flags = (fitz.TEXT_PRESERVE_WHITESPACE
-              | fitz.TEXT_PRESERVE_LIGATURES
-              | fitz.TEXT_MEDIABOX_CLIP
-              | fitz.TEXT_DEHYPHENATE) & ~fitz.TEXT_PRESERVE_SPANS & ~fitz.TEXT_PRESERVE_IMAGES
-
-  pages = loader.load(flags=mu_flags)
-
-  # The only thing PyMuPDFLoader does not have a flag it for removing all line breaks.
-  # comparing with PyPDF, to acchieve the same result, we need to do add space where there is '\n\s' and remove double spaces
-
-  # Best so fot, replace didn't understood '\n\s' so we need to do it in two steps
-  for page in pages:
-    page.page_content = page.page_content.replace("\n ", " ").replace("\uFFFD", " ").replace("  ", " ")
-
-  text_splitter: TextSplitter = RecursiveCharacterTextSplitter()
-  pages = text_splitter.split_documents(pages)
-
 
   print(f"-- Working {fullpath} --")
-  for page in pages:
-    pg_num = page.metadata.get('page')
-    print(f"-- Working page {pg_num} --")
+  loader = PyMuPDFLoader(fullpath)
+  pages = loader.load()
 
-    content = page.page_content
-    title = page.metadata.get('title')
-    author = page.metadata.get('author')
-    subject = page.metadata.get('subject')
+  if len(pages) == 0:
+    print(f"{fullpath} parsing resulted in no pages - nothing to do.")
+    return False
+  
+  # Set doc to the first page so we can still get the metadata from PyMuPDF but without all the unicode issues.
+  doc = pages[0]
+  del loader
+  del pages
 
-    data = {
-      'id': guid(),
-      'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{filename}{ext}"),
-      'title': title if title else 'Untitled',
-      'docAuthor': author if author else 'Unknown',
-      'description': subject if subject else 'Unknown',
-      'docSource': 'pdf file uploaded by the user.',
-      'chunkSource': f"{filename}_pg{pg_num}{ext}",
-      'published': file_creation_time(fullpath),
-      'wordCount': len(content),
-      'pageContent': content,
-      'token_count_estimate': len(tokenize(content))
-    }
-    write_to_server_documents(data, f"{slugify(filename)}-pg{pg_num}-{data.get('id')}", destination)
+  page_content = ''
+  for page in fitz.open(fullpath):
+    print(f"-- Parsing content from pg {page.number} --")
+    page_content += unidecode(page.get_text('text'))
 
+  title = doc.metadata.get('title')
+  author = doc.metadata.get('author')
+  subject = doc.metadata.get('subject')
+  data = {
+    'id': guid(),
+    'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{filename}{ext}"),
+    'title': title if title else f"{filename}{ext}",
+    'docAuthor': author if author else 'No author found',
+    'description': subject if subject else 'No description found.',
+    'docSource': 'pdf file uploaded by the user.',
+    'chunkSource': f"{filename}{ext}",
+    'published': file_creation_time(fullpath),
+    'wordCount': len(page_content), # Technically a letter count :p
+    'pageContent': page_content,
+    'token_count_estimate': len(tokenize(page_content))
+  }
+
+  write_to_server_documents(data, f"{slugify(filename)}-{data.get('id')}")
   move_source(parent_dir, f"{filename}{ext}", remove=remove)
   print(f"[SUCCESS]: {filename}{ext} converted & ready for embedding.\n")

@@ -16,7 +16,7 @@ def as_text(**kwargs):
   data = {
     'id': guid(),
     'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{filename}{ext}"),
-    'title': slugify(filename), # TODO: Find a better title
+    'title': f"{filename}{ext}",
     'docAuthor': 'Unknown', # TODO: Find a better author
     'description': 'Unknown', # TODO: Find a better description
     'chunkSource': f"{filename}{ext}",
@@ -25,20 +25,6 @@ def as_text(**kwargs):
     'pageContent': content,
     'token_count_estimate': len(tokenize(content))
   }
-  data = {
-    'id': guid(),
-    'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{slugify(filename)}-{guid()}{ext}"),
-    'title': slugify(filename), # TODO: Find a better title
-    'docAuthor': 'Unknown', # TODO: Find a better author
-    'description': 'Unknown', # TODO: Find a better description
-    'docSource': "plain text file uploaded by the user.",
-    'chunkSource': f"{filename}{ext}",
-    'published': file_creation_time(fullpath),
-    'wordCount': len(content),
-    'pageContent': content,
-    'token_count_estimate': len(tokenize(content))
-  }
-
 
   write_to_server_documents(data, f"{slugify(filename)}-{data.get('id')}")
   move_source(parent_dir, f"{filename}{ext}", remove=remove)

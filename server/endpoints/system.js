@@ -448,13 +448,11 @@ function systemEndpoints(app) {
         response.status(200).json({ canDelete });
       } catch (error) {
         console.error("Error fetching can delete workspaces:", error);
-        response
-          .status(500)
-          .json({
-            success: false,
-            message: "Internal server error",
-            canDelete: false,
-          });
+        response.status(500).json({
+          success: false,
+          message: "Internal server error",
+          canDelete: false,
+        });
       }
     }
   );
