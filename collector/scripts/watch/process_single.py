@@ -25,11 +25,11 @@ def process_single(directory, target_doc):
     move_source(new_destination_filename=target_doc, failed=True, remove=True)
     return (False, f"{fileext} not a supported file type for conversion. It will not be processed.")
 
-  FILETYPES[fileext](
+  # Returns Tuple of (Boolean, String|None) of success status and possible error message.
+  # Error message will display to user.
+  return FILETYPES[fileext](
     directory=directory,
     filename=filename,
     ext=fileext,
     remove_on_complete=True # remove source document to save disk space.
   )
-
-  return (True, None)
