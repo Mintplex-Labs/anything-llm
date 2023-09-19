@@ -121,7 +121,7 @@ const Workspace = {
     }
   },
 
-  where: async function (clause = {}, limit = null, orderBy = null) {
+  where: async function (clause = {}, limit, orderBy) {
     try {
       const results = await prisma.workspaces.findMany({
         where: clause,
@@ -138,8 +138,8 @@ const Workspace = {
   whereWithUser: async function (
     user,
     clause = {},
-    limit = null,
-    orderBy = null
+    limit,
+    orderBy
   ) {
     if (user.role === "admin") return await this.where(clause, limit, orderBy);
 
@@ -163,7 +163,7 @@ const Workspace = {
     }
   },
 
-  whereWithUsers: async function (clause = {}, limit = null, orderBy = null) {
+  whereWithUsers: async function (clause = {}, limit, orderBy) {
     try {
       const workspaces = await this.where(clause, limit, orderBy);
       for (const workspace of workspaces) {

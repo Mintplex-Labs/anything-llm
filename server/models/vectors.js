@@ -34,7 +34,7 @@ const DocumentVectors = {
     }
   },
 
-  where: async function (clause = {}, limit = null) {
+  where: async function (clause = {}, limit) {
     try {
       const results = await prisma.document_vectors.findMany({
         where: clause,

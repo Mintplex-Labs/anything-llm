@@ -57,7 +57,7 @@ const ApiKey = {
     }
   },
 
-  where: async function (clause = {}, limit = null) {
+  where: async function (clause = {}, limit) {
     try {
       const apiKeys = await prisma.api_keys.findMany({
         where: clause,
@@ -70,7 +70,7 @@ const ApiKey = {
     }
   },
 
-  whereWithUser: async function (clause = {}, limit = null) {
+  whereWithUser: async function (clause = {}, limit) {
     try {
       const { User } = require("./user");
       const apiKeys = await this.where(clause, limit);

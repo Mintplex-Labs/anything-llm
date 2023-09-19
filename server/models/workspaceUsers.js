@@ -58,7 +58,7 @@ const WorkspaceUser = {
     }
   },
 
-  where: async function (clause = {}, limit = null) {
+  where: async function (clause = {}, limit) {
     try {
       const results = await prisma.workspace_users.findMany({
         where: clause,

@@ -13,7 +13,7 @@ const WelcomeMessages = {
     }
   },
 
-  where: async function (clause = {}, limit = null) {
+  where: async function (clause = {}, limit) {
     try {
       const messages = await prisma.welcome_messages.findMany({
         where: clause,

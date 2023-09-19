@@ -77,7 +77,7 @@ const SystemSettings = {
     }
   },
 
-  where: async function (clause = {}, limit = null) {
+  where: async function (clause = {}, limit) {
     try {
       const settings = await prisma.system_settings.findMany({
         where: clause,

@@ -77,7 +77,7 @@ const Invite = {
     }
   },
 
-  where: async function (clause = {}, limit = null) {
+  where: async function (clause = {}, limit) {
     try {
       const invites = await prisma.invites.findMany({
         where: clause,
@@ -90,7 +90,7 @@ const Invite = {
     }
   },
 
-  whereWithUsers: async function (clause = {}, limit = null) {
+  whereWithUsers: async function (clause = {}, limit) {
     const { User } = require("./user");
     try {
       const invites = await this.where(clause, limit);

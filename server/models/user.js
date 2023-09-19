@@ -62,7 +62,7 @@ const User = {
     }
   },
 
-  where: async function (clause = {}, limit = null) {
+  where: async function (clause = {}, limit) {
     try {
       const users = await prisma.users.findMany({
         where: clause,

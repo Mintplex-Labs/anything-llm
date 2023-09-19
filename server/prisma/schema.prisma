@@ -8,101 +8,103 @@ datasource db {
 }
 
 model api_keys {
-  id            Int     @id @default(autoincrement())
-  secret        String? @unique(map: "sqlite_autoindex_api_keys_1")
+  id            Int      @id @default(autoincrement())
+  secret        String?  @unique
   createdBy     Int?
-  createdAt     String? @default("CURRENT_TIMESTAMP")
-  lastUpdatedAt String? @default("CURRENT_TIMESTAMP")
-}
-
-model document_vectors {
-  id            Int     @id @default(autoincrement())
-  docId         String
-  vectorId      String
-  createdAt     String? @default("CURRENT_TIMESTAMP")
-  lastUpdatedAt String? @default("CURRENT_TIMESTAMP")
-}
-
-model invites {
-  id            Int     @id @default(autoincrement())
-  code          String  @unique(map: "sqlite_autoindex_invites_1")
-  status        String  @default("pending")
-  claimedBy     Int?
-  createdAt     String? @default("CURRENT_TIMESTAMP")
-  createdBy     Int
-  lastUpdatedAt String? @default("CURRENT_TIMESTAMP")
-}
-
-model system_settings {
-  id            Int     @id @default(autoincrement())
-  label         String  @unique(map: "sqlite_autoindex_system_settings_1")
-  value         String?
-  createdAt     String? @default("CURRENT_TIMESTAMP")
-  lastUpdatedAt String? @default("CURRENT_TIMESTAMP")
-}
-
-model users {
-  id              Int               @id @default(autoincrement())
-  username        String?           @unique(map: "sqlite_autoindex_users_1")
-  password        String
-  role            String            @default("default")
-  suspended       Int               @default(0)
-  createdAt       String?           @default("CURRENT_TIMESTAMP")
-  lastUpdatedAt   String?           @default("CURRENT_TIMESTAMP")
-  workspace_chats workspace_chats[]
-  workspace_users workspace_users[]
-}
-
-model welcome_messages {
-  id         Int     @id @default(autoincrement())
-  user       String
-  response   String
-  orderIndex Int?
-  createdAt  String? @default("CURRENT_TIMESTAMP")
-}
-
-model workspace_chats {
-  id            Int                  @id @default(autoincrement())
-  workspaceId   Int
-  prompt        String
-  response      String
-  include       Unsupported("bool")? @default(dbgenerated("true"))
-  user_id       Int?
-  createdAt     String?              @default("CURRENT_TIMESTAMP")
-  lastUpdatedAt String?              @default("CURRENT_TIMESTAMP")
-  users         users?               @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
 }
 
 model workspace_documents {
-  id            Int     @id @default(autoincrement())
-  docId         String  @unique(map: "sqlite_autoindex_workspace_documents_1")
+  id            Int        @id @default(autoincrement())
+  docId         String     @unique
   filename      String
   docpath       String
   workspaceId   Int
   metadata      String?
-  createdAt     String? @default("CURRENT_TIMESTAMP")
-  lastUpdatedAt String? @default("CURRENT_TIMESTAMP")
+  createdAt     DateTime   @default(now())
+  lastUpdatedAt DateTime   @default(now())
+  workspace     workspaces @relation(fields: [workspaceId], references: [id])
+}
+
+model invites {
+  id            Int      @id @default(autoincrement())
+  code          String   @unique
+  status        String   @default("pending")
+  claimedBy     Int?
+  createdAt     DateTime @default(now())
+  createdBy     Int
+  lastUpdatedAt DateTime @default(now())
+}
+
+model system_settings {
+  id            Int      @id @default(autoincrement())
+  label         String   @unique
+  value         String?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+}
+
+model users {
+  id              Int               @id @default(autoincrement())
+  username        String?           @unique
+  password        String
+  role            String            @default("default")
+  suspended       Int               @default(0)
+  createdAt       DateTime          @default(now())
+  lastUpdatedAt   DateTime          @default(now())
+  workspace_chats workspace_chats[]
+  workspace_users workspace_users[]
+}
+
+model document_vectors {
+  id            Int      @id @default(autoincrement())
+  docId         String
+  vectorId      String
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+}
+
+model welcome_messages {
+  id         Int      @id @default(autoincrement())
+  user       String
+  response   String
+  orderIndex Int?
+  createdAt  DateTime @default(now())
+}
+
+model workspaces {
+  id              Int                   @id @default(autoincrement())
+  name            String
+  slug            String                @unique
+  vectorTag       String?
+  createdAt       DateTime              @default(now())
+  openAiTemp      Float?
+  openAiHistory   Int                   @default(20)
+  lastUpdatedAt   DateTime              @default(now())
+  openAiPrompt    String?
+  workspace_users workspace_users[]
+  documents       workspace_documents[]
+}
+
+model workspace_chats {
+  id            Int      @id @default(autoincrement())
+  workspaceId   Int
+  prompt        String
+  response      String
+  include       Boolean  @default(true)
+  user_id       Int?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+  users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model workspace_users {
   id            Int        @id @default(autoincrement())
   user_id       Int
   workspace_id  Int
-  createdAt     String?    @default("CURRENT_TIMESTAMP")
-  lastUpdatedAt String?    @default("CURRENT_TIMESTAMP")
-  workspaces    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  users         users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-}
-
-model workspaces {
-  id              Int               @id @default(autoincrement())
-  name            String
-  slug            String            @unique(map: "sqlite_autoindex_workspaces_1")
-  vectorTag       String?
-  createdAt       String?           @default("CURRENT_TIMESTAMP")
-  openAiTemp      Float?
-  openAiHistory   Int?              @default(20)
-  lastUpdatedAt   String?           @default("CURRENT_TIMESTAMP")
-  openAiPrompt    String?
-  workspace_users workspace_users[]
+  createdAt     DateTime   @default(now())
+  lastUpdatedAt DateTime   @default(now())
+  workspaces    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users         users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
