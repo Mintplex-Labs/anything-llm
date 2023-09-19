@@ -3,7 +3,7 @@ const prisma = require("../utils/prisma");
 const WorkspaceChats = {
   new: async function ({ workspaceId, prompt, response = {}, user = null }) {
     try {
-      const chat = await prisma.workspaceChats.create({
+      const chat = await prisma.workspace_chats.create({
         data: {
           workspaceId,
           prompt,
@@ -25,10 +25,9 @@ const WorkspaceChats = {
   ) {
     if (!workspaceId || !userId) return [];
     try {
-      const chats = await prisma.workspaceChats.findMany({
+      const chats = await prisma.workspace_chats.findMany({
         where: {
           workspaceId,
-          include: true,
           user_id: userId,
         },
         take: limit,
@@ -46,10 +45,9 @@ const WorkspaceChats = {
   forWorkspace: async function (workspaceId = null, limit) {
     if (!workspaceId) return [];
     try {
-      const chats = await prisma.workspaceChats.findMany({
+      const chats = await prisma.workspace_chats.findMany({
         where: {
           workspaceId,
-          include: true,
         },
         take: limit,
         orderBy: {
@@ -66,7 +64,7 @@ const WorkspaceChats = {
   markHistoryInvalid: async function (workspaceId = null, user = null) {
     if (!workspaceId) return;
     try {
-      await prisma.workspaceChats.updateMany({
+      await prisma.workspace_chats.updateMany({
         where: {
           workspaceId,
           user_id: user?.id,
@@ -83,7 +81,7 @@ const WorkspaceChats = {
 
   get: async function (clause = {}, limit, orderBy) {
     try {
-      const chat = await prisma.workspaceChats.findFirst({
+      const chat = await prisma.workspace_chats.findFirst({
         where: clause,
         take: limit,
         orderBy: orderBy,
@@ -97,7 +95,7 @@ const WorkspaceChats = {
 
   delete: async function (clause = {}) {
     try {
-      await prisma.workspaceChats.deleteMany({
+      await prisma.workspace_chats.deleteMany({
         where: clause,
       });
       return true;
@@ -109,7 +107,7 @@ const WorkspaceChats = {
 
   where: async function (clause = {}, limit, orderBy) {
     try {
-      const chats = await prisma.workspaceChats.findMany({
+      const chats = await prisma.workspace_chats.findMany({
         where: clause,
         take: limit,
         orderBy: orderBy,
@@ -123,7 +121,7 @@ const WorkspaceChats = {
 
   count: async function (clause = {}) {
     try {
-      const count = await prisma.workspaceChats.count({
+      const count = await prisma.workspace_chats.count({
         where: clause,
       });
       return count;
