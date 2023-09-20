@@ -1,8 +1,8 @@
 const prisma = require("../utils/prisma");
-const { uuidAPIKey } = require("uuid-apikey");
 
 const Invite = {
   makeCode: () => {
+    const uuidAPIKey = require("uuid-apikey");
     return uuidAPIKey.create().apiKey;
   },
 
@@ -24,7 +24,7 @@ const Invite = {
   deactivate: async function (inviteId = null) {
     try {
       const invite = await prisma.invites.update({
-        where: { id: inviteId },
+        where: { id: Number(inviteId) },
         data: { status: "disabled" },
       });
       return { success: true, error: null };
@@ -37,7 +37,7 @@ const Invite = {
   markClaimed: async function (inviteId = null, user) {
     try {
       const invite = await prisma.invites.update({
-        where: { id: inviteId },
+        where: { id: Number(inviteId) },
         data: { status: "claimed", claimedBy: user.id },
       });
       return { success: true, error: null };
