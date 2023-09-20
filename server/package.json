@@ -15,6 +15,9 @@
     "lint": "yarn prettier --write ./endpoints ./models ./utils index.js",
     "swagger": "node ./swagger/init.js"
   },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "dependencies": {
     "@azure/openai": "^1.0.0-beta.3",
     "@googleapis/youtube": "^9.0.0",
