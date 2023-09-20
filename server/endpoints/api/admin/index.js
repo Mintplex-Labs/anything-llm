@@ -456,7 +456,7 @@ function apiAdminEndpoints(app) {
         const { workspaceId } = request.params;
         const { userIds } = reqBody(request);
         const { success, error } = await Workspace.updateUsers(
-          escape(workspaceId),
+          workspaceId,
           userIds
         );
         response.status(200).json({ success, error });
