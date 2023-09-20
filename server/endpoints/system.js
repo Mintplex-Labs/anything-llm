@@ -522,7 +522,7 @@ function systemEndpoints(app) {
         return response.sendStatus(401).end();
       }
 
-      const apiKey = await ApiKey.get({ id: { not: null } });
+      const apiKey = await ApiKey.get({  });
       return response.status(200).json({
         apiKey,
         error: null,

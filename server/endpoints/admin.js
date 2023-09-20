@@ -361,7 +361,7 @@ function adminEndpoints(app) {
         return;
       }
 
-      const apiKeys = await ApiKey.whereWithUser({ NOT: { id: null } });
+      const apiKeys = await ApiKey.whereWithUser({  });
       return response.status(200).json({
         apiKeys,
         error: null,
