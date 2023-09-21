@@ -31,7 +31,7 @@ yarn prisma:setup
 
 While the scripts should cover most of your needs, you may sometimes want to run Prisma commands manually. Here are some commands you might find useful, along with their descriptions:
 
-- `npx prisma introspect`: Introspects the database to update the Prisma schema.
+- `npx prisma introspect`: Introspects the database to update the Prisma schema by reading the schema of the existing database.
 - `npx prisma generate`: Generates the Prisma client.
 - `npx prisma migrate dev --name init`: Ensures the database is in sync with the schema, naming the migration 'init'.
 - `npx prisma migrate reset`: Resets the database, deleting all data and recreating the schema.

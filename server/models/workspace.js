@@ -135,12 +135,7 @@ const Workspace = {
     }
   },
 
-  whereWithUser: async function (
-    user,
-    clause = {},
-    limit,
-    orderBy
-  ) {
+  whereWithUser: async function (user, clause = {}, limit, orderBy) {
     if (user.role === "admin") return await this.where(clause, limit, orderBy);
 
     try {

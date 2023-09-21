@@ -58,7 +58,6 @@ const ApiKey = {
   },
 
   where: async function (clause = {}, limit) {
-
     try {
       const apiKeys = await prisma.api_keys.findMany({
         where: clause,
