@@ -32,7 +32,7 @@ const Weaviate = {
     await this.connect();
     return { heartbeat: Number(new Date()) };
   },
-  totalIndicies: async function () {
+  totalVectors: async function () {
     const { client } = await this.connect();
     const collectionNames = await this.allNamespaces(client);
     var totalVectors = 0;

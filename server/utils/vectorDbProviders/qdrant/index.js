@@ -30,7 +30,7 @@ const QDrant = {
     await this.connect();
     return { heartbeat: Number(new Date()) };
   },
-  totalIndicies: async function () {
+  totalVectors: async function () {
     const { client } = await this.connect();
     const { collections } = await client.getCollections();
     var totalVectors = 0;

@@ -14,7 +14,8 @@ function FileUploadProgressComponent({
   onUploadError,
 }) {
   const [timerMs, setTimerMs] = useState(10);
-  const [status, setStatus] = useState(file?.rejected ? "uploading" : "failed");
+  const [status, setStatus] = useState("pending");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function uploadFile() {
@@ -31,6 +32,7 @@ function FileUploadProgressComponent({
         setStatus("failed");
         clearInterval(timer);
         onUploadError(data.error);
+        setError(data.error);
       } else {
         setStatus("complete");
         clearInterval(timer);
@@ -58,6 +60,24 @@ function FileUploadProgressComponent({
     );
   }
 
+  if (status === "failed") {
+    return (
+      <div className="w-fit px-2 py-2 flex items-center gap-x-4 rounded-lg bg-blue-100 border-blue-600 dark:bg-stone-800 bg-opacity-50 border dark:border-stone-600">
+        <div className="w-6 h-6">
+          <XCircle className="w-6 h-6 stroke-white bg-red-500 rounded-full p-1 w-full h-full" />
+        </div>
+        <div className="flex flex-col">
+          <p className="text-black dark:text-stone-200 text-sm font-mono overflow-x-scroll">
+            {truncate(file.name, 30)}
+          </p>
+          <p className="text-red-700 dark:text-red-400 text-xs font-mono">
+            {error}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-fit px-2 py-2 flex items-center gap-x-4 rounded-lg bg-blue-100 border-blue-600 dark:bg-stone-800 bg-opacity-50 border dark:border-stone-600">
       <div className="w-6 h-6">
@@ -77,6 +97,8 @@ function FileUploadProgressComponent({
       </div>
     </div>
   );
+
+  return null;
 }
 
 export default memo(FileUploadProgressComponent);
