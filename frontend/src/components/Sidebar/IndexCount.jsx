@@ -26,7 +26,7 @@ export default function IndexCount() {
     <div className="flex w-full items-center justify-end gap-x-2">
       <div className="flex items-center gap-x-1  px-2 rounded-full">
         <p className="text-slate-400 leading-tight text-sm">
-          {numberWithCommas(indexes)} {pluralize("index", indexes)}
+          {numberWithCommas(indexes)} {pluralize("vector", indexes)}
         </p>
       </div>
     </div>
