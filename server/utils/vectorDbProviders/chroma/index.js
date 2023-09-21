@@ -26,7 +26,7 @@ const Chroma = {
     const { client } = await this.connect();
     return { heartbeat: await client.heartbeat() };
   },
-  totalIndicies: async function () {
+  totalVectors: async function () {
     const { client } = await this.connect();
     const collections = await client.listCollections();
     var totalVectors = 0;

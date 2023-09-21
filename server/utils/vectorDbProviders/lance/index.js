@@ -28,7 +28,7 @@ const LanceDb = {
     const dirs = fs.readdirSync(client.uri);
     return dirs.map((folder) => folder.replace(".lance", ""));
   },
-  totalIndicies: async function () {
+  totalVectors: async function () {
     const { client } = await this.connect();
     const tables = await this.tables();
     let count = 0;

@@ -24,7 +24,7 @@ const Pinecone = {
     if (!status.ready) throw new Error("Pinecode::Index not ready.");
     return { client, pineconeIndex, indexName: process.env.PINECONE_INDEX };
   },
-  totalIndicies: async function () {
+  totalVectors: async function () {
     const { pineconeIndex } = await this.connect();
     const { namespaces } = await pineconeIndex.describeIndexStats1();
     return Object.values(namespaces).reduce(
