@@ -199,7 +199,7 @@ async function migrateData() {
           );
       });
 
-      // After all promises have been pushed, use Prisma's transaction feature
+      // Run all the transactions
       await prisma.$transaction(transactionPromises);
 
       console.log("Data migration completed successfully");
