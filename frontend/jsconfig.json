@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "esnext",
+    "target": "ES2020",
     "jsx": "react"
-  }
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

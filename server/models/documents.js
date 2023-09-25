@@ -8,7 +8,7 @@ const Document = {
   tablename: "workspace_documents",
   colsInit: `
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  docId TEXT NOT NULL UNIQUE,  
+  docId TEXT NOT NULL UNIQUE,
   filename TEXT NOT NULL,
   docpath TEXT NOT NULL,
   workspaceId INTEGER NOT NULL,

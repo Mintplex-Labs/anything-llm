@@ -1,0 +1,9 @@
+# defaults
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+
+#frontend
+frontend/bundleinspector.html
+**/dist

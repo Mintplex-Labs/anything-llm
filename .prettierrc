@@ -1,0 +1,34 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "endOfLine": "lf",
+  "semi": true,
+  "singleQuote": false,
+  "printWidth": 80,
+  "trailingComma": "es5",
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "overrides": [
+    {
+      "files": ["*.js", "*.mjs", "*.jsx"],
+      "options": {
+        "parser": "babel",
+        "arrowParens": "always"
+      }
+    },
+    {
+      "files": "*.config.js",
+      "options": {
+        "semi": false,
+        "parser": "babel",
+        "trailingComma": "none"
+      }
+    },
+    {
+      "files": "*.html",
+      "options": {
+        "bracketSameLine": true
+      }
+    }
+  ]
+}

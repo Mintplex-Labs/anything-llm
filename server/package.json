@@ -5,6 +5,7 @@
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
+  "type": "module",
   "private": false,
   "engines": {
     "node": ">=18.12.1"
@@ -51,7 +52,17 @@
     "weaviate-ts-client": "^1.4.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.22.20",
+    "@babel/eslint-parser": "^7.22.15",
+    "@babel/preset-env": "^7.22.20",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "globals": "^13.21.0",
     "nodemon": "^2.0.22",
-    "prettier": "^2.4.1"
+    "prettier": "^3.0.3"
   }
 }

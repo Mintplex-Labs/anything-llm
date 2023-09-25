@@ -3,35 +3,26 @@
 {
   "name": "Node.js",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm",
-  // Features to add to the dev container. More info: https://containers.dev/features.
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm",
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
       "installTools": true,
-      "version": "3.11"
+      "version": "os-provided"
     }
-  },
-  "portsAttributes": {
-    "3001": {
-      "label": "Backend",
-      "onAutoForward": "ignore"
-    },
-    "3000": {
-      "label": "Frontend",
-      "onAutoForward": "openPreview"
-    }
-  },
-  "remoteEnv": {
-    "NODE_ENV": "development",
-    "ESLINT_USE_FLAT_CONFIG": "true"
   },
 
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  // "features": {},
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
-
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "yarn run setup",
-
+  "postCreateCommand": "yarn setup",
+  // "postCreateCommand": [
+  //   "DEBIAN_FRONTEND=noninteractive apt-get update &&",
+  //   "DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends",
+  //   "libgfortran5 netcat &&",
+  //   "rm -rf /var/lib/apt/lists/* /usr/share/icons &&",
+  //   "yarn setup"],
   // Configure tool-specific properties.
   "customizations": {
     "vscode": {
@@ -48,7 +39,6 @@
       ]
     }
   }
-
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   // "remoteUser": "root"
 }

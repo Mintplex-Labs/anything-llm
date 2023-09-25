@@ -13,9 +13,7 @@
   "paths": {
     "/v1/auth": {
       "get": {
-        "tags": [
-          "Authentication"
-        ],
+        "tags": ["Authentication"],
         "description": "Verify the attached Authentication header contains a valid API token.",
         "parameters": [
           {
@@ -60,9 +58,7 @@
     },
     "/v1/admin/is-multi-user-mode": {
       "get": {
-        "tags": [
-          "Admin"
-        ],
+        "tags": ["Admin"],
         "description": "Check to see if the instance is in multi-user-mode first. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
@@ -107,9 +103,7 @@
     },
     "/v1/admin/users": {
       "get": {
-        "tags": [
-          "Admin"
-        ],
+        "tags": ["Admin"],
         "description": "Check to see if the instance is in multi-user-mode first. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
@@ -165,9 +159,7 @@
     },
     "/v1/admin/users/new": {
       "post": {
-        "tags": [
-          "Admin"
-        ],
+        "tags": ["Admin"],
         "description": "Create a new user with username and password. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
@@ -237,9 +229,7 @@
     },
     "/v1/admin/users/{id}": {
       "post": {
-        "tags": [
-          "Admin"
-        ],
+        "tags": ["Admin"],
         "description": "Update existing user settings. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
@@ -313,9 +303,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Admin"
-        ],
+        "tags": ["Admin"],
         "description": "Delete existing user by id. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
@@ -376,9 +364,7 @@
     },
     "/v1/admin/invites": {
       "get": {
-        "tags": [
-          "Admin"
-        ],
+        "tags": ["Admin"],
         "description": "List all existing invitations to instance regardless of status. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
@@ -436,9 +422,7 @@
     },
     "/v1/admin/invite/new": {
       "post": {
-        "tags": [
-          "Admin"
-        ],
+        "tags": ["Admin"],
         "description": "Create a new invite code for someone to use to register with instance. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
@@ -494,9 +478,7 @@
     },
     "/v1/admin/invite/{id}": {
       "delete": {
-        "tags": [
-          "Admin"
-        ],
+        "tags": ["Admin"],
         "description": "Deactivates (soft-delete) invite by id. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
@@ -557,9 +539,7 @@
     },
     "/v1/admin/workspaces/{workspaceId}/update-users": {
       "post": {
-        "tags": [
-          "Admin"
-        ],
+        "tags": ["Admin"],
         "description": "Overwrite workspace permissions to only be accessible by the given user ids and admins. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
@@ -623,12 +603,7 @@
           "content": {
             "application/json": {
               "example": {
-                "userIds": [
-                  1,
-                  2,
-                  4,
-                  12
-                ]
+                "userIds": [1, 2, 4, 12]
               }
             }
           }
@@ -637,9 +612,7 @@
     },
     "/v1/admin/workspace-chats": {
       "post": {
-        "tags": [
-          "Admin"
-        ],
+        "tags": ["Admin"],
         "description": "All chats in the system ordered by most recent. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
@@ -703,9 +676,7 @@
     },
     "/v1/admin/preferences": {
       "get": {
-        "tags": [
-          "Admin"
-        ],
+        "tags": ["Admin"],
         "description": "Show all multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
@@ -758,9 +729,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Admin"
-        ],
+        "tags": ["Admin"],
         "description": "Update multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.",
         "parameters": [
           {
@@ -826,9 +795,7 @@
     },
     "/v1/document/upload": {
       "post": {
-        "tags": [
-          "Documents"
-        ],
+        "tags": ["Documents"],
         "description": "Upload a new file to AnythingLLM to be parsed and prepared for embedding.",
         "parameters": [
           {
@@ -895,9 +862,7 @@
     },
     "/v1/documents": {
       "get": {
-        "tags": [
-          "Documents"
-        ],
+        "tags": ["Documents"],
         "description": "List of all locally-stored documents in instance",
         "parameters": [
           {
@@ -958,9 +923,7 @@
     },
     "/v1/document/accepted-file-types": {
       "get": {
-        "tags": [
-          "Documents"
-        ],
+        "tags": ["Documents"],
         "description": "Check available filetypes and MIMEs that can be uploaded.",
         "parameters": [
           {
@@ -980,22 +943,13 @@
                   "type": "object",
                   "example": {
                     "types": {
-                      "application/mbox": [
-                        ".mbox"
-                      ],
-                      "application/pdf": [
-                        ".pdf"
-                      ],
-                      "application/vnd.oasis.opendocument.text": [
-                        ".odt"
-                      ],
+                      "application/mbox": [".mbox"],
+                      "application/pdf": [".pdf"],
+                      "application/vnd.oasis.opendocument.text": [".odt"],
                       "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
                         ".docx"
                       ],
-                      "text/plain": [
-                        ".txt",
-                        ".md"
-                      ]
+                      "text/plain": [".txt", ".md"]
                     }
                   }
                 }
@@ -1028,9 +982,7 @@
     },
     "/v1/workspace/new": {
       "post": {
-        "tags": [
-          "Workspaces"
-        ],
+        "tags": ["Workspaces"],
         "description": "Create a new workspace",
         "parameters": [
           {
@@ -1100,9 +1052,7 @@
     },
     "/v1/workspaces": {
       "get": {
-        "tags": [
-          "Workspaces"
-        ],
+        "tags": ["Workspaces"],
         "description": "List all current workspaces",
         "parameters": [
           {
@@ -1161,9 +1111,7 @@
     },
     "/v1/workspace/{slug}": {
       "get": {
-        "tags": [
-          "Workspaces"
-        ],
+        "tags": ["Workspaces"],
         "description": "Get a workspace by its unique slug.",
         "parameters": [
           {
@@ -1228,9 +1176,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Workspaces"
-        ],
+        "tags": ["Workspaces"],
         "description": "Deletes a workspace by its slug.",
         "parameters": [
           {
@@ -1280,9 +1226,7 @@
     },
     "/v1/workspace/{slug}/update": {
       "post": {
-        "tags": [
-          "Workspaces"
-        ],
+        "tags": ["Workspaces"],
         "description": "Update workspace settings by its unique slug.",
         "parameters": [
           {
@@ -1368,9 +1312,7 @@
     },
     "/v1/workspace/{slug}/chats": {
       "get": {
-        "tags": [
-          "Workspaces"
-        ],
+        "tags": ["Workspaces"],
         "description": "Get a workspaces chats regardless of user by its unique slug.",
         "parameters": [
           {
@@ -1445,9 +1387,7 @@
     },
     "/v1/workspace/{slug}/update-embeddings": {
       "post": {
-        "tags": [
-          "Workspaces"
-        ],
+        "tags": ["Workspaces"],
         "description": "Add or remove documents from a workspace by its unique slug.",
         "parameters": [
           {
@@ -1522,9 +1462,7 @@
             "application/json": {
               "example": {
                 "adds": [],
-                "deletes": [
-                  "custom-documents/anythingllm-hash.json"
-                ]
+                "deletes": ["custom-documents/anythingllm-hash.json"]
               }
             }
           }
@@ -1533,9 +1471,7 @@
     },
     "/v1/system/env-dump": {
       "get": {
-        "tags": [
-          "System Settings"
-        ],
+        "tags": ["System Settings"],
         "description": "Dump all settings to file storage",
         "responses": {
           "200": {
@@ -1564,9 +1500,7 @@
     },
     "/v1/system": {
       "get": {
-        "tags": [
-          "System Settings"
-        ],
+        "tags": ["System Settings"],
         "description": "Get all current system settings that are defined.",
         "parameters": [
           {
@@ -1621,9 +1555,7 @@
     },
     "/v1/system/vector-count": {
       "get": {
-        "tags": [
-          "System Settings"
-        ],
+        "tags": ["System Settings"],
         "description": "Number of all vectors in connected vector database",
         "parameters": [
           {
@@ -1671,9 +1603,7 @@
     },
     "/v1/system/update-env": {
       "post": {
-        "tags": [
-          "System Settings"
-        ],
+        "tags": ["System Settings"],
         "description": "Update a system setting or preference.",
         "parameters": [
           {

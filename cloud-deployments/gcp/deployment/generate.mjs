@@ -29,10 +29,10 @@ if (!envFileExists) {
   exit(1);
 }
 
-// Remove comments  
-// Remove UID,GID,etc  
-// Remove empty strings  
-// Split into array  
+// Remove comments
+// Remove UID,GID,etc
+// Remove empty strings
+// Split into array
 const settings = fs.readFileSync(envPath, "utf8")
   .replace(/^#.*\n?/gm, '')
   .replace(/^UID.*\n?/gm, '')
@@ -43,14 +43,14 @@ const settings = fs.readFileSync(envPath, "utf8")
   .filter((i) => !!i);
 const formattedSettings = settings.map((i, index) => index === 0 ? i + '\n' : '              ' + i).join('\n');
 
-// Read the existing GCP Deployment Manager template  
+// Read the existing GCP Deployment Manager template
 const templatePath = path.resolve(__dirname, `gcp_deploy_anything_llm.yaml`);
 const templateString = fs.readFileSync(templatePath, "utf8");
 
-// Update the metadata section with the UserData content  
+// Update the metadata section with the UserData content
 const updatedTemplateString = templateString.replace(REPLACEMENT_KEY, formattedSettings);
 
-// Save the updated GCP Deployment Manager template  
+// Save the updated GCP Deployment Manager template
 const output = path.resolve(__dirname, `gcp_deploy_anything_llm_with_env.yaml`);
 fs.writeFileSync(output, updatedTemplateString, "utf8");
 
@@ -58,4 +58,4 @@ console.log(chalk.greenBright('[SUCCESS]'), 'Deploy AnythingLLM on GCP Deploymen
 console.log(chalk.greenBright('File Created:'), 'gcp_deploy_anything_llm_with_env.yaml in the output directory.');
 console.log(chalk.blueBright('[INFO]'), 'Refer to the GCP Deployment Manager documentation for how to use this file.');
 
-exit();  
+exit();

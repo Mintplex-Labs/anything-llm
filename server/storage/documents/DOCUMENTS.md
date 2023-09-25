@@ -7,4 +7,3 @@ You can manage these files from the frontend application.
 All files should be JSON files and in general there is only one main required key: `pageContent` all other keys will be inserted as metadata for each document inserted into the vector DB.
 
 There is also a special reserved key called `published` that should be reserved for timestamps.
-
