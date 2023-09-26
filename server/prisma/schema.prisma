@@ -12,7 +12,7 @@ generator client {
 // }
 datasource db {
   provider = "sqlite"
-  url      = "file:storage/anythingllm.db"
+  url      = "file:../storage/anythingllm.db"
 }
 
 model api_keys {

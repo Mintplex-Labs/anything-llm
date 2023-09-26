@@ -92,7 +92,7 @@ const Document = {
 
       try {
         await prisma.workspace_documents.delete({
-          where: { docpath: path, workspaceId: workspace.id },
+          where: { id: document.id, workspaceId: workspace.id },
         });
       } catch (error) {
         console.error(error.message);

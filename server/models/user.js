@@ -62,11 +62,11 @@ const User = {
     }
   },
 
-  where: async function (clause = {}, limit) {
+  where: async function (clause = {}, limit = null) {
     try {
       const users = await prisma.users.findMany({
         where: clause,
-        ...(limit && { take: limit }),
+        ...(limit !== null ? { take: limit } : {}),
       });
       return users;
     } catch (error) {

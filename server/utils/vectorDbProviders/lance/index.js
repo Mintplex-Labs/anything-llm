@@ -122,6 +122,7 @@ const LanceDb = {
       (record) => record.vectorId
     );
 
+    if (vectorIds.length === 0) return;
     await table.delete(`id IN (${vectorIds.map((v) => `'${v}'`).join(",")})`);
     return true;
   },

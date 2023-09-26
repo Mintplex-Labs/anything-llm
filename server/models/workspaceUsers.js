@@ -23,7 +23,10 @@ const WorkspaceUser = {
       await prisma.$transaction(
         userIds.map((userId) =>
           prisma.workspace_users.create({
-            data: { user_id: userId, workspace_id: workspaceId },
+            data: {
+              user_id: Number(userId),
+              workspace_id: Number(workspaceId),
+            },
           })
         )
       );
@@ -36,7 +39,7 @@ const WorkspaceUser = {
   create: async function (userId = 0, workspaceId = 0) {
     try {
       await prisma.workspace_users.create({
-        data: { user_id: userId, workspace_id: workspaceId },
+        data: { user_id: Number(userId), workspace_id: Number(workspaceId) },
       });
       return true;
     } catch (error) {
@@ -58,11 +61,11 @@ const WorkspaceUser = {
     }
   },
 
-  where: async function (clause = {}, limit) {
+  where: async function (clause = {}, limit = null) {
     try {
       const results = await prisma.workspace_users.findMany({
         where: clause,
-        take: limit,
+        ...(limit !== null ? { take: limit } : {}),
       });
       return results;
     } catch (error) {

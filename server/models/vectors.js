@@ -6,13 +6,19 @@ const DocumentVectors = {
     if (vectorRecords.length === 0) return;
 
     try {
-      await prisma.document_vectors.createMany({
-        data: vectorRecords.map((record) => ({
-          docId: record.docId,
-          vectorId: record.vectorId,
-        })),
+      const inserts = [];
+      vectorRecords.forEach((record) => {
+        inserts.push(
+          prisma.document_vectors.create({
+            data: {
+              docId: record.docId,
+              vectorId: record.vectorId,
+            },
+          })
+        );
       });
-      return { documentsInserted: vectorRecords.length };
+      await prisma.$transaction(inserts);
+      return { documentsInserted: inserts.length };
     } catch (error) {
       console.error("Bulk insert failed", error);
       return { documentsInserted: 0 };

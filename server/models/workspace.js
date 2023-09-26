@@ -121,12 +121,12 @@ const Workspace = {
     }
   },
 
-  where: async function (clause = {}, limit, orderBy) {
+  where: async function (clause = {}, limit = null, orderBy = null) {
     try {
       const results = await prisma.workspaces.findMany({
         where: clause,
-        take: limit,
-        orderBy,
+        ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
       });
       return results;
     } catch (error) {
@@ -135,7 +135,12 @@ const Workspace = {
     }
   },
 
-  whereWithUser: async function (user, clause = {}, limit, orderBy) {
+  whereWithUser: async function (
+    user,
+    clause = {},
+    limit = null,
+    orderBy = null
+  ) {
     if (user.role === "admin") return await this.where(clause, limit, orderBy);
 
     try {
@@ -148,8 +153,8 @@ const Workspace = {
             },
           },
         },
-        take: limit,
-        orderBy,
+        ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
       });
       return workspaces;
     } catch (error) {
@@ -158,12 +163,12 @@ const Workspace = {
     }
   },
 
-  whereWithUsers: async function (clause = {}, limit, orderBy) {
+  whereWithUsers: async function (clause = {}, limit = null, orderBy = null) {
     try {
       const workspaces = await this.where(clause, limit, orderBy);
       for (const workspace of workspaces) {
         const userIds = (
-          await WorkspaceUser.where({ workspace_id: workspace.id })
+          await WorkspaceUser.where({ workspace_id: Number(workspace.id) })
         ).map((rel) => rel.user_id);
         workspace.userIds = userIds;
       }
@@ -176,7 +181,7 @@ const Workspace = {
 
   updateUsers: async function (workspaceId, userIds = []) {
     try {
-      await WorkspaceUser.delete({ workspace_id: workspaceId });
+      await WorkspaceUser.delete({ workspace_id: Number(workspaceId) });
       await WorkspaceUser.createManyUsers(userIds, workspaceId);
       return { success: true, error: null };
     } catch (error) {

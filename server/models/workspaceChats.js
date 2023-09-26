@@ -21,7 +21,7 @@ const WorkspaceChats = {
   forWorkspaceByUser: async function (
     workspaceId = null,
     userId = null,
-    limit
+    limit = null
   ) {
     if (!workspaceId || !userId) return [];
     try {
@@ -30,7 +30,7 @@ const WorkspaceChats = {
           workspaceId,
           user_id: userId,
         },
-        take: limit,
+        ...(limit !== null ? { take: limit } : {}),
         orderBy: {
           id: "asc",
         },
@@ -42,14 +42,14 @@ const WorkspaceChats = {
     }
   },
 
-  forWorkspace: async function (workspaceId = null, limit) {
+  forWorkspace: async function (workspaceId = null, limit = null) {
     if (!workspaceId) return [];
     try {
       const chats = await prisma.workspace_chats.findMany({
         where: {
           workspaceId,
         },
-        take: limit,
+        ...(limit !== null ? { take: limit } : {}),
         orderBy: {
           id: "asc",
         },
@@ -79,12 +79,12 @@ const WorkspaceChats = {
     }
   },
 
-  get: async function (clause = {}, limit, orderBy) {
+  get: async function (clause = {}, limit = null, orderBy = null) {
     try {
       const chat = await prisma.workspace_chats.findFirst({
         where: clause,
-        take: limit,
-        orderBy: orderBy,
+        ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
       });
       return chat || null;
     } catch (error) {
@@ -105,12 +105,12 @@ const WorkspaceChats = {
     }
   },
 
-  where: async function (clause = {}, limit, orderBy) {
+  where: async function (clause = {}, limit = null, orderBy = null) {
     try {
       const chats = await prisma.workspace_chats.findMany({
         where: clause,
-        take: limit,
-        orderBy: orderBy,
+        ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
       });
       return chats;
     } catch (error) {
@@ -131,7 +131,7 @@ const WorkspaceChats = {
     }
   },
 
-  whereWithData: async function (clause = {}, limit, orderBy) {
+  whereWithData: async function (clause = {}, limit = null, orderBy = null) {
     const { Workspace } = require("./workspace");
     const { User } = require("./user");
 

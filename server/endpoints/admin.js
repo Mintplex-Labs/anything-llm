@@ -233,17 +233,17 @@ function adminEndpoints(app) {
           return;
         }
 
-        await Workspace.delete({ id: Number(id) });
-        await DocumentVectors.deleteForWorkspace(workspace.id);
-        await Document.delete({ workspaceId: Number(workspace.id) });
         await WorkspaceChats.delete({ workspaceId: Number(workspace.id) });
+        await DocumentVectors.deleteForWorkspace(Number(workspace.id));
+        await Document.delete({ workspaceId: Number(workspace.id) });
+        await Workspace.delete({ id: Number(workspace.id) });
         try {
           await VectorDb["delete-namespace"]({ namespace: workspace.slug });
         } catch (e) {
           console.error(e.message);
         }
 
-        response.status(200).json({ success, error });
+        response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
