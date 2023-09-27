@@ -46,7 +46,10 @@ function systemEndpoints(app) {
   });
 
   app.get("/migrate", async (_, response) => {
-    // await validateTablePragmas(true);
+    const execSync = require("child_process").execSync;
+    execSync("npx prisma migrate dev --name init", {
+      stdio: "inherit",
+    });
     response.sendStatus(200);
   });
 
