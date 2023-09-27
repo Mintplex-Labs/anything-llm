@@ -1,5 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-const sqlite3 = require("sqlite3").verbose();
 const execSync = require("child_process").execSync;
 const fs = require("fs");
 const path = require("path");
@@ -24,7 +23,6 @@ function backupDatabase() {
 backupDatabase();
 
 const prisma = new PrismaClient();
-const db = new sqlite3.Database(DATABASE_PATH);
 
 // Reset the prisma database and prepare it for migration of data from sqlite
 function resetAndMigrateDatabase() {
@@ -46,195 +44,226 @@ resetAndMigrateDatabase();
 
 // Migrate data from sqlite to prisma
 async function migrateData() {
-  let transactionPromises = [];
-
   try {
     console.log("Starting data migration...");
+    var legacyMap = {
+      users: {
+        count: 0,
+      },
+      workspaces: {
+        count: 0,
+      },
+    };
 
     // Step 1: Migrate system_settings table
     await migrateTable("system_settings", (row) => {
-      transactionPromises.push(
-        prisma.system_settings.create({
-          data: {
-            label: row.label,
-            value: row.value,
-            createdAt: new Date(row.createdAt),
-            lastUpdatedAt: new Date(row.lastUpdatedAt),
-          },
-        })
-      );
+      return prisma.system_settings.create({
+        data: {
+          label: row.label,
+          value: row.value,
+          createdAt: new Date(row.createdAt),
+          lastUpdatedAt: new Date(row.lastUpdatedAt),
+        },
+      });
     });
 
     // Step 2: Migrate users table
     await migrateTable("users", (row) => {
-      transactionPromises.push(
-        prisma.users.create({
-          data: {
-            username: row.username,
-            password: row.password,
-            role: row.role,
-            suspended: row.suspended,
-            createdAt: new Date(row.createdAt),
-            lastUpdatedAt: new Date(row.lastUpdatedAt),
-          },
-        })
-      );
+      legacyMap.users[`user_${row.id}`] = legacyMap.users.count + 1;
+      legacyMap.users.count++;
+
+      return prisma.users.create({
+        data: {
+          username: row.username,
+          password: row.password,
+          role: row.role,
+          suspended: row.suspended,
+          createdAt: new Date(row.createdAt),
+          lastUpdatedAt: new Date(row.lastUpdatedAt),
+        },
+      });
     });
 
     // Step 3: Migrate workspaces table
     await migrateTable("workspaces", (row) => {
-      transactionPromises.push(
-        prisma.workspaces.create({
-          data: {
-            name: row.name,
-            slug: row.slug,
-            vectorTag: row.vectorTag,
-            openAiTemp: row.openAiTemp,
-            openAiHistory: row.openAiHistory,
-            openAiPrompt: row.openAiPrompt,
-            createdAt: new Date(row.createdAt),
-            lastUpdatedAt: new Date(row.lastUpdatedAt),
-          },
-        })
-      );
+      legacyMap.workspaces[`workspace_${row.id}`] =
+        legacyMap.workspaces.count + 1;
+      legacyMap.workspaces.count++;
+
+      return prisma.workspaces.create({
+        data: {
+          name: row.name,
+          slug: row.slug,
+          vectorTag: row.vectorTag,
+          openAiTemp: Number(row.openAiTemp) || 0.7,
+          openAiHistory: Number(row.openAiHistory) || 20,
+          openAiPrompt: row.openAiPrompt,
+          createdAt: new Date(row.createdAt),
+          lastUpdatedAt: new Date(row.lastUpdatedAt),
+        },
+      });
     });
 
     // Step 4: Migrate api_keys table
-    await migrateTable("api_keys", (row) => {
-      transactionPromises.push(
-        prisma.api_keys.create({
-          data: {
-            secret: row.secret,
-            createdBy: row.createdBy,
-            createdAt: new Date(row.createdAt),
-            lastUpdatedAt: new Date(row.lastUpdatedAt),
-          },
-        })
-      );
+    await migrateTable("api_keys", async (row) => {
+      const legacyUserId = row.createdBy
+        ? legacyMap.users?.[`user_${row.createdBy}`]
+        : null;
+      return prisma.api_keys.create({
+        data: {
+          secret: row.secret,
+          ...(legacyUserId
+            ? { createdBy: Number(legacyUserId) }
+            : { createdBy: Number(row.createdBy) }),
+          createdAt: new Date(row.createdAt),
+          lastUpdatedAt: new Date(row.lastUpdatedAt),
+        },
+      });
     });
 
     // Step 5: Migrate invites table
-    await migrateTable("invites", (row) => {
-      transactionPromises.push(
-        prisma.invites.create({
-          data: {
-            code: row.code,
-            status: row.status,
-            claimedBy: row.claimedBy,
-            createdBy: row.createdBy,
-            createdAt: new Date(row.createdAt),
-            lastUpdatedAt: new Date(row.lastUpdatedAt),
-          },
-        })
-      );
+    await migrateTable("invites", async (row) => {
+      const legacyCreatedUserId = row.createdBy
+        ? legacyMap.users?.[`user_${row.createdBy}`]
+        : null;
+      const legacyClaimedUserId = row.claimedBy
+        ? legacyMap.users?.[`user_${row.claimedBy}`]
+        : null;
+
+      return prisma.invites.create({
+        data: {
+          code: row.code,
+          status: row.status,
+          ...(legacyClaimedUserId
+            ? { claimedBy: Number(legacyClaimedUserId) }
+            : { claimedBy: Number(row.claimedBy) }),
+          ...(legacyCreatedUserId
+            ? { createdBy: Number(legacyCreatedUserId) }
+            : { createdBy: Number(row.createdBy) }),
+          createdAt: new Date(row.createdAt),
+          lastUpdatedAt: new Date(row.lastUpdatedAt),
+        },
+      });
     });
 
     // Step 6: Migrate workspace_documents table
-    await migrateTable("workspace_documents", (row) => {
-      transactionPromises.push(
-        prisma.workspace_documents.create({
-          data: {
-            docId: row.docId,
-            filename: row.filename,
-            docpath: row.docpath,
-            workspaceId: row.workspaceId,
-            metadata: row.metadata,
-            createdAt: new Date(row.createdAt),
-            lastUpdatedAt: new Date(row.lastUpdatedAt),
-          },
-        })
-      );
+    await migrateTable("workspace_documents", async (row) => {
+      const legacyWorkspaceId = row.workspaceId
+        ? legacyMap.workspaces?.[`workspace_${row.workspaceId}`]
+        : null;
+
+      return prisma.workspace_documents.create({
+        data: {
+          docId: row.docId,
+          filename: row.filename,
+          docpath: row.docpath,
+          ...(legacyWorkspaceId
+            ? { workspaceId: Number(legacyWorkspaceId) }
+            : {}),
+          metadata: row.metadata,
+          createdAt: new Date(row.createdAt),
+          lastUpdatedAt: new Date(row.lastUpdatedAt),
+        },
+      });
     });
 
     // Step 7: Migrate document_vectors table
     await migrateTable("document_vectors", (row) => {
-      transactionPromises.push(
-        prisma.document_vectors.create({
-          data: {
-            docId: row.docId,
-            vectorId: row.vectorId,
-            createdAt: new Date(row.createdAt),
-            lastUpdatedAt: new Date(row.lastUpdatedAt),
-          },
-        })
-      );
+      return prisma.document_vectors.create({
+        data: {
+          docId: row.docId,
+          vectorId: row.vectorId,
+          createdAt: new Date(row.createdAt),
+          lastUpdatedAt: new Date(row.lastUpdatedAt),
+        },
+      });
     });
 
     // Step 8: Migrate welcome_messages table
     await migrateTable("welcome_messages", (row) => {
-      transactionPromises.push(
-        prisma.welcome_messages.create({
-          data: {
-            user: row.user,
-            response: row.response,
-            orderIndex: row.orderIndex,
-            createdAt: new Date(row.createdAt),
-          },
-        })
-      );
+      return prisma.welcome_messages.create({
+        data: {
+          user: row.user,
+          response: row.response,
+          orderIndex: row.orderIndex,
+          createdAt: new Date(row.createdAt),
+        },
+      });
     });
 
     // Step 9: Migrate workspace_users table
-    await migrateTable("workspace_users", (row) => {
-      transactionPromises.push(
-        prisma.workspace_users.create({
-          data: {
-            user_id: row.user_id,
-            workspace_id: row.workspace_id,
-            createdAt: new Date(row.createdAt),
-            lastUpdatedAt: new Date(row.lastUpdatedAt),
-          },
-        })
-      );
+    await migrateTable("workspace_users", async (row) => {
+      const legacyUserId = row.user_id
+        ? legacyMap.users?.[`user_${row.user_id}`]
+        : null;
+      const legacyWorkspaceId = row.workspace_id
+        ? legacyMap.workspaces?.[`workspace_${row.workspace_id}`]
+        : null;
+
+      if (!legacyUserId || !legacyWorkspaceId) return;
+
+      return prisma.workspace_users.create({
+        data: {
+          user_id: Number(legacyUserId),
+          workspace_id: Number(legacyWorkspaceId),
+          createdAt: new Date(row.createdAt),
+          lastUpdatedAt: new Date(row.lastUpdatedAt),
+        },
+      });
     });
 
     // Step 10: Migrate workspace_chats table
-    await migrateTable("workspace_chats", (row) => {
-      transactionPromises.push(
-        prisma.workspace_chats.create({
-          data: {
-            workspaceId: row.workspaceId,
-            prompt: row.prompt,
-            response: row.response,
-            include: row.include === 1,
-            user_id: row.user_id,
-            createdAt: new Date(row.createdAt),
-            lastUpdatedAt: new Date(row.lastUpdatedAt),
-          },
-        })
-      );
-    });
+    await migrateTable("workspace_chats", async (row) => {
+      const legacyUserId = row.user_id
+        ? legacyMap.users?.[`user_${row.user_id}`]
+        : null;
+      const legacyWorkspaceId = row.workspaceId
+        ? legacyMap.workspaces?.[`workspace_${row.workspaceId}`]
+        : null;
 
-    // Run all the transactions
-    await prisma.$transaction(transactionPromises);
+      return prisma.workspace_chats.create({
+        data: {
+          workspaceId: Number(legacyWorkspaceId),
+          prompt: row.prompt,
+          response: row.response,
+          include: row.include === 1,
+          ...(legacyUserId ? { user_id: Number(legacyUserId) } : {}),
+          createdAt: new Date(row.createdAt),
+          lastUpdatedAt: new Date(row.lastUpdatedAt),
+        },
+      });
+    });
 
     console.log("Data migration completed successfully");
   } catch (error) {
     console.error("Data migration failed:", error);
   } finally {
     await prisma.$disconnect();
-    db.close();
   }
 }
 
 async function migrateTable(tableName, migrateRowFunc) {
-  return new Promise((resolve, reject) => {
-    db.all(`SELECT * FROM ${tableName}`, [], async (err, rows) => {
-      if (err) {
-        return reject(err);
-      }
-
-      for (let row of rows) {
-        try {
-          await migrateRowFunc(row);
-        } catch (error) {
-          console.warn(`Failed to migrate row in table "${tableName}":`, error);
-        }
-      }
-
-      resolve();
-    });
+  const sqlite3 = require("sqlite3").verbose();
+  const { open } = require("sqlite");
+  const db = await open({
+    filename: BACKUP_PATH,
+    driver: sqlite3.Database,
   });
+  const upserts = [];
+  const rows = await db.all(`SELECT * FROM ${tableName}`);
+
+  try {
+    for (const row of rows) {
+      await migrateRowFunc(row);
+      upserts.push(row);
+    }
+  } catch (e) {
+    console.error(e);
+    console.log({ tableName, upserts });
+  } finally {
+    await db.close();
+  }
+  return;
 }
 
 migrateData();
