@@ -6,9 +6,22 @@ import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
 
 export default function PasswordModal({ mode = "single" }) {
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-gray-600 dark:bg-stone-800 flex items-center justify-center">
+    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-gray-600 dark:bg-zinc-800 flex items-center justify-center">
       <div className="flex fixed top-0 left-0 right-0 w-full h-full" />
-      <div className="relative w-full max-w-2xl max-h-full">
+
+      <div
+        className="fixed top-0 left-0 right-0 bottom-0"
+        style={{
+          background: `
+            radial-gradient(circle at center, transparent 40%, black 100%),
+            linear-gradient(180deg, #FF8585 0%, #D4A447 100%)
+          `,
+          boxShadow: "400px 400px 400px",
+          filter: "blur(400px)",
+        }}
+      />
+
+      <div className="flex justify-center items-center h-full w-full">
         {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth />}
       </div>
     </div>
