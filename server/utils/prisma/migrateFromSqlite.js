@@ -249,6 +249,20 @@ async function migrateTable(tableName, migrateRowFunc) {
     filename: BACKUP_PATH,
     driver: sqlite3.Database,
   });
+
+  // Check table exists
+  const exists =
+    (await db.get(
+      `SELECT COUNT(*) FROM sqlite_master WHERE name='${tableName}'`
+    )) > 0;
+  if (!exists) {
+    console.log(
+      `${tableName} does not exist in legacy DB - nothing to migrate - skipping.`
+    );
+    return;
+  }
+
+
   const upserts = [];
   const rows = await db.all(`SELECT * FROM ${tableName}`);
 
