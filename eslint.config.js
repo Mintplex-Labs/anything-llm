@@ -1,11 +1,11 @@
-import globals from "globals"
-import eslintRecommended from "@eslint/js"
-import eslintConfigPrettier from "eslint-config-prettier"
-import prettier from "eslint-plugin-prettier"
-import react from "eslint-plugin-react"
-import reactRefresh from "eslint-plugin-react-refresh"
-import reactHooks from "eslint-plugin-react-hooks"
-import babelParser from "@babel/eslint-parser"
+import globals from "./server/node_modules/globals/index.js"
+import eslintRecommended from "./server/node_modules/@eslint/js/src/index.js"
+import eslintConfigPrettier from "./server/node_modules/eslint-config-prettier/index.js"
+import prettier from "./server/node_modules/eslint-plugin-prettier/eslint-plugin-prettier.js"
+import react from "./server/node_modules/eslint-plugin-react/index.js"
+import reactRefresh from "./server/node_modules/eslint-plugin-react-refresh/index.js"
+import reactHooks from "./server/node_modules/eslint-plugin-react-hooks/index.js"
+import babelParser from "./server/node_modules/@babel/eslint-parser/lib/index.cjs"
 
 const reactRecommended = react.configs.recommended
 const jsxRuntime = react.configs["jsx-runtime"]
@@ -21,8 +21,8 @@ export default [
         requireConfigFile: false,
         babelOptions: {
           babelrc: false,
-          configFile: false,
-          presets: ["@babel/preset-env"]
+          configFile: false
+          // presets: ["./server/node_modules/@babel/preset-env/lib/index.js"]
         },
         ecmaFeatures: { jsx: true }
       },
@@ -45,8 +45,8 @@ export default [
       "no-unused-vars": "warn",
       "no-undef": "warn",
       "no-empty": "warn",
-      "no-extra-boolean-cast": "warn"
-      // "prettier/prettier": "warn",
+      "no-extra-boolean-cast": "warn",
+      "prettier/prettier": "warn"
     }
   },
   {

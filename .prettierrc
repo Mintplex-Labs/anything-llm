@@ -6,6 +6,7 @@
   "singleQuote": false,
   "printWidth": 80,
   "trailingComma": "es5",
+  "pluginSearchDirs": ["./server/node_modules"],
   "bracketSpacing": true,
   "bracketSameLine": false,
   "overrides": [

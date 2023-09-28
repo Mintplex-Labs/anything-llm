@@ -1,8 +1,8 @@
 {
   "name": "anything-llm-frontend",
   "private": false,
-  "type": "module",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "start": "vite --debug --host=0.0.0.0",
     "build": "vite build",

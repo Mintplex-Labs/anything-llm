@@ -4,76 +4,16 @@
     "Qdrant",
     "Weaviate"
   ],
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[css]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[postcss]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[dockercompose]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "eslint.experimental.useFlatConfig": true,
-  "eslint.run": "onSave",
-  "npm.packageManager": "yarn",
   "eslint.workingDirectories": [
     "./server",
     "./frontend"
   ],
-  // "eslint.execArgv": [
-  //   "--config=./server/eslint.config.js"
-  // ],
   "eslint.enable": true,
   "eslint.debug": true,
+  "eslint.run": "onSave",
+        // "eslint.execArgv": [
+        //   "--config=./server/eslint.config.js"
+        // ],
 
-  "files.associations": {
-    "*.css": "tailwindcss"
-  },
-  "tailwindCSS.files.exclude": [
-    "**/.git/**",
-    "**/node_modules/**",
-    "**/.hg/**",
-    "**/.svn/**",
-    "**/dist/**"
-  ],
-  "stylelint.snippet": [
-    "css",
-    "less",
-    "postcss",
-    "tailwindcss"
-  ],
-  "stylelint.validate": [
-    "css",
-    "less",
-    "postcss",
-    "tailwindcss"
-  ],
-  "stylelint.enable": false,
-  "stylelint.packageManager": "yarn",
-  "prettier.useEditorConfig": false,
-  // "tailwindCSS.experimental.configFile": {
-  //   "./frontend/postcss.config.js": "./frontend/src/**/*"
-  //   // "./frontend/tailwind.config.js": "./frontend/src/**/*"
-  // },
-  // "tailwindCSS.experimental.configFile": "./frontend/tailwind.config.js",
-  // "eslint.nodePath": "./server/node_modules"
+
 }
