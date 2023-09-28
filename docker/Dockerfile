@@ -77,6 +77,10 @@ RUN cd /app/collector && \
     . v-env/bin/activate && \
     pip install --no-cache-dir -r requirements.txt
 
+# Migrate and Run Prisma against known schema
+RUN cd ./server && npx prisma generate --schema=./prisma/schema.prisma
+RUN cd ./server && npx prisma migrate deploy --schema=./prisma/schema.prisma
+
 # Setup the environment
 ENV NODE_ENV=production
 ENV PATH=/app/collector/v-env/bin:$PATH

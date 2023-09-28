@@ -37,7 +37,7 @@ async function userFromSession(request, response = null) {
     return null;
   }
 
-  const user = await User.get(`id = ${valid.id}`);
+  const user = await User.get({ id: valid.id });
   return user;
 }
 

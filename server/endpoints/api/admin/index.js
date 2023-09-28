@@ -1,4 +1,3 @@
-const { escape } = require("sqlstring-sqlite");
 const { Invite } = require("../../../models/invite");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { User } = require("../../../models/user");
@@ -11,7 +10,7 @@ function apiAdminEndpoints(app) {
   if (!app) return;
 
   app.get("/v1/admin/is-multi-user-mode", [validApiKey], (_, response) => {
-    /* 
+    /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Check to see if the instance is in multi-user-mode first. Methods are disabled until multi user mode is enabled via the UI.'
     #swagger.responses[200] = {
@@ -23,9 +22,9 @@ function apiAdminEndpoints(app) {
              "isMultiUser": true
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -37,7 +36,7 @@ function apiAdminEndpoints(app) {
   });
 
   app.get("/v1/admin/users", [validApiKey], async (request, response) => {
-    /* 
+    /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Check to see if the instance is in multi-user-mode first. Methods are disabled until multi user mode is enabled via the UI.'
     #swagger.responses[200] = {
@@ -54,9 +53,9 @@ function apiAdminEndpoints(app) {
              ]
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -84,7 +83,7 @@ function apiAdminEndpoints(app) {
   });
 
   app.post("/v1/admin/users/new", [validApiKey], async (request, response) => {
-    /* 
+    /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Create a new user with username and password. Methods are disabled until multi user mode is enabled via the UI.'
     #swagger.requestBody = {
@@ -115,9 +114,9 @@ function apiAdminEndpoints(app) {
               error: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -143,7 +142,7 @@ function apiAdminEndpoints(app) {
   });
 
   app.post("/v1/admin/users/:id", [validApiKey], async (request, response) => {
-    /* 
+    /*
     #swagger.tags = ['Admin']
     #swagger.path = '/v1/admin/users/{id}'
     #swagger.parameters['id'] = {
@@ -178,9 +177,9 @@ function apiAdminEndpoints(app) {
               error: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -210,7 +209,7 @@ function apiAdminEndpoints(app) {
     "/v1/admin/users/:id",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Delete existing user by id. Methods are disabled until multi user mode is enabled via the UI.'
     #swagger.path = '/v1/admin/users/{id}'
@@ -230,9 +229,9 @@ function apiAdminEndpoints(app) {
               error: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -249,7 +248,7 @@ function apiAdminEndpoints(app) {
         }
 
         const { id } = request.params;
-        await User.delete(`id = ${id}`);
+        await User.delete({ id });
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);
@@ -259,7 +258,7 @@ function apiAdminEndpoints(app) {
   );
 
   app.get("/v1/admin/invites", [validApiKey], async (request, response) => {
-    /* 
+    /*
     #swagger.tags = ['Admin']
     #swagger.description = 'List all existing invitations to instance regardless of status. Methods are disabled until multi user mode is enabled via the UI.'
     #swagger.responses[200] = {
@@ -278,9 +277,9 @@ function apiAdminEndpoints(app) {
              ]
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -305,7 +304,7 @@ function apiAdminEndpoints(app) {
   });
 
   app.post("/v1/admin/invite/new", [validApiKey], async (request, response) => {
-    /* 
+    /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Create a new invite code for someone to use to register with instance. Methods are disabled until multi user mode is enabled via the UI.'
     #swagger.responses[200] = {
@@ -322,9 +321,9 @@ function apiAdminEndpoints(app) {
               error: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -352,7 +351,7 @@ function apiAdminEndpoints(app) {
     "/v1/admin/invite/:id",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Deactivates (soft-delete) invite by id. Methods are disabled until multi user mode is enabled via the UI.'
     #swagger.path = '/v1/admin/invite/{id}'
@@ -372,9 +371,9 @@ function apiAdminEndpoints(app) {
               error: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -404,7 +403,7 @@ function apiAdminEndpoints(app) {
     "/v1/admin/workspaces/:workspaceId/update-users",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Admin']
     #swagger.path = '/v1/admin/workspaces/{workspaceId}/update-users'
     #swagger.parameters['workspaceId'] = {
@@ -436,9 +435,9 @@ function apiAdminEndpoints(app) {
               error: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -457,7 +456,7 @@ function apiAdminEndpoints(app) {
         const { workspaceId } = request.params;
         const { userIds } = reqBody(request);
         const { success, error } = await Workspace.updateUsers(
-          escape(workspaceId),
+          workspaceId,
           userIds
         );
         response.status(200).json({ success, error });
@@ -472,7 +471,7 @@ function apiAdminEndpoints(app) {
     "/v1/admin/workspace-chats",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Admin']
     #swagger.description = 'All chats in the system ordered by most recent. Methods are disabled until multi user mode is enabled via the UI.'
     #swagger.requestBody = {
@@ -497,9 +496,9 @@ function apiAdminEndpoints(app) {
               error: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -517,7 +516,7 @@ function apiAdminEndpoints(app) {
 
         const { offset = 0 } = reqBody(request);
         const chats = await WorkspaceChats.whereWithData(
-          `id >= ${escape(offset)}`,
+          { id: { gte: offset } },
           20
         );
         const hasPages = (await WorkspaceChats.count()) > 20;
@@ -530,7 +529,7 @@ function apiAdminEndpoints(app) {
   );
 
   app.get("/v1/admin/preferences", [validApiKey], async (request, response) => {
-    /* 
+    /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Show all multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.'
     #swagger.responses[200] = {
@@ -546,9 +545,9 @@ function apiAdminEndpoints(app) {
               }
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -566,14 +565,14 @@ function apiAdminEndpoints(app) {
 
       const settings = {
         users_can_delete_workspaces:
-          (await SystemSettings.get(`label = 'users_can_delete_workspaces'`))
+          (await SystemSettings.get({ label: "users_can_delete_workspaces" }))
             ?.value === "true",
         limit_user_messages:
-          (await SystemSettings.get(`label = 'limit_user_messages'`))?.value ===
-          "true",
+          (await SystemSettings.get({ label: "limit_user_messages" }))
+            ?.value === "true",
         message_limit:
           Number(
-            (await SystemSettings.get(`label = 'message_limit'`))?.value
+            (await SystemSettings.get({ label: "message_limit" }))?.value
           ) || 10,
       };
       response.status(200).json({ settings });
@@ -587,7 +586,7 @@ function apiAdminEndpoints(app) {
     "/v1/admin/preferences",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Update multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.'
     #swagger.requestBody = {
@@ -614,9 +613,9 @@ function apiAdminEndpoints(app) {
               error: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"

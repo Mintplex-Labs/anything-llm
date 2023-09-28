@@ -118,10 +118,11 @@ const LanceDb = {
 
     const { DocumentVectors } = require("../../../models/vectors");
     const table = await client.openTable(namespace);
-    const vectorIds = (await DocumentVectors.where(`docId = '${docId}'`)).map(
+    const vectorIds = (await DocumentVectors.where({ docId })).map(
       (record) => record.vectorId
     );
 
+    if (vectorIds.length === 0) return;
     await table.delete(`id IN (${vectorIds.map((v) => `'${v}'`).join(",")})`);
     return true;
   },
