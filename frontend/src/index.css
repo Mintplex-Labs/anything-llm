@@ -6,8 +6,9 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: "plus-jakarta-sans", -apple-system, BlinkMacSystemFont, Segoe UI,
+    Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
+    sans-serif;
   background-color: white;
 }
 
@@ -27,6 +28,12 @@ a {
 @font-face {
   font-family: "AvenirNextW10-Bold";
   src: url("../public/fonts/AvenirNext.ttf");
+}
+
+@font-face {
+  font-family: "plus-jakarta-sans";
+  src: url("../public/fonts/PlusJakartaSans.ttf");
+  font-display: swap;
 }
 
 .Avenir {
