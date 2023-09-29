@@ -253,7 +253,7 @@ async function migrateTable(tableName, migrateRowFunc) {
   // Check table exists
   const { count } = await db.get(
     `SELECT COUNT(*) as count FROM sqlite_master WHERE name='${tableName}'`
-  )
+  );
   if (count === 0) {
     console.log(
       `${tableName} does not exist in legacy DB - nothing to migrate - skipping.`
