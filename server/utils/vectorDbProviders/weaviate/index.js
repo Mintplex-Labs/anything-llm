@@ -316,7 +316,7 @@ const Weaviate = {
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) return;
 
-    const knownDocuments = await DocumentVectors.where(`docId = '${docId}'`);
+    const knownDocuments = await DocumentVectors.where({ docId });
     if (knownDocuments.length === 0) return;
 
     for (const doc of knownDocuments) {

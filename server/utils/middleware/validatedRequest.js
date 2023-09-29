@@ -66,7 +66,7 @@ async function validateMultiUserRequest(request, response, next) {
     return;
   }
 
-  const user = await User.get(`id = ${valid.id}`);
+  const user = await User.get({ id: valid.id });
   if (!user) {
     response.status(403).json({
       error: "Invalid auth for user.",

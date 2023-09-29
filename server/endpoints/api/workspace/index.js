@@ -1,4 +1,3 @@
-const { escape } = require("sqlstring-sqlite");
 const { Document } = require("../../../models/documents");
 const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
@@ -13,7 +12,7 @@ function apiWorkspaceEndpoints(app) {
   if (!app) return;
 
   app.post("/v1/workspace/new", [validApiKey], async (request, response) => {
-    /* 
+    /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Create a new workspace'
     #swagger.requestBody = {
@@ -47,9 +46,9 @@ function apiWorkspaceEndpoints(app) {
               message: 'Workspace created'
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -72,7 +71,7 @@ function apiWorkspaceEndpoints(app) {
   });
 
   app.get("/v1/workspaces", [validApiKey], async (request, response) => {
-    /* 
+    /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'List all current workspaces'
     #swagger.responses[200] = {
@@ -95,9 +94,9 @@ function apiWorkspaceEndpoints(app) {
               ],
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -114,7 +113,7 @@ function apiWorkspaceEndpoints(app) {
   });
 
   app.get("/v1/workspace/:slug", [validApiKey], async (request, response) => {
-    /* 
+    /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Get a workspace by its unique slug.'
     #swagger.path = '/v1/workspace/{slug}'
@@ -143,9 +142,9 @@ function apiWorkspaceEndpoints(app) {
               }
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -154,7 +153,7 @@ function apiWorkspaceEndpoints(app) {
     */
     try {
       const { slug } = request.params;
-      const workspace = await Workspace.get(`slug = ${escape(slug)}`);
+      const workspace = await Workspace.get({ slug });
       response.status(200).json({ workspace });
     } catch (e) {
       console.log(e.message, e);
@@ -166,7 +165,7 @@ function apiWorkspaceEndpoints(app) {
     "/v1/workspace/:slug",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Deletes a workspace by its slug.'
     #swagger.path = '/v1/workspace/{slug}'
@@ -185,17 +184,17 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = "" } = request.params;
         const VectorDb = getVectorDbClass();
-        const workspace = await Workspace.get(`slug = ${escape(slug)}`);
+        const workspace = await Workspace.get({ slug });
 
         if (!workspace) {
           response.sendStatus(400).end();
           return;
         }
 
-        await Workspace.delete(`id = ${Number(workspace.id)}`);
-        await DocumentVectors.deleteForWorkspace(workspace.id);
-        await Document.delete(`workspaceId = ${Number(workspace.id)}`);
-        await WorkspaceChats.delete(`workspaceId = ${Number(workspace.id)}`);
+        await WorkspaceChats.delete({ workspaceId: Number(workspace.id) });
+        await DocumentVectors.deleteForWorkspace(Number(workspace.id));
+        await Document.delete({ workspaceId: Number(workspace.id) });
+        await Workspace.delete({ id: Number(workspace.id) });
         try {
           await VectorDb["delete-namespace"]({ namespace: slug });
         } catch (e) {
@@ -213,7 +212,7 @@ function apiWorkspaceEndpoints(app) {
     "/v1/workspace/:slug/update",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Update workspace settings by its unique slug.'
     #swagger.path = '/v1/workspace/{slug}/update'
@@ -258,9 +257,9 @@ function apiWorkspaceEndpoints(app) {
               message: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -270,7 +269,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const data = reqBody(request);
-        const currWorkspace = await Workspace.get(`slug = ${escape(slug)}`);
+        const currWorkspace = await Workspace.get({ slug });
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -293,7 +292,7 @@ function apiWorkspaceEndpoints(app) {
     "/v1/workspace/:slug/chats",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Get a workspaces chats regardless of user by its unique slug.'
     #swagger.path = '/v1/workspace/{slug}/chats'
@@ -323,9 +322,9 @@ function apiWorkspaceEndpoints(app) {
               ]
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -334,7 +333,7 @@ function apiWorkspaceEndpoints(app) {
     */
       try {
         const { slug } = request.params;
-        const workspace = await Workspace.get(`slug = ${escape(slug)}`);
+        const workspace = await Workspace.get({ slug });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -354,7 +353,7 @@ function apiWorkspaceEndpoints(app) {
     "/v1/workspace/:slug/update-embeddings",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Add or remove documents from a workspace by its unique slug.'
     #swagger.path = '/v1/workspace/{slug}/update-embeddings'
@@ -397,9 +396,9 @@ function apiWorkspaceEndpoints(app) {
               message: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -409,7 +408,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const { adds = [], deletes = [] } = reqBody(request);
-        const currWorkspace = await Workspace.get(`slug = ${escape(slug)}`);
+        const currWorkspace = await Workspace.get({ slug });
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
