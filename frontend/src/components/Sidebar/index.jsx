@@ -67,10 +67,10 @@ export default function Sidebar() {
                 <div className="flex gap-x-2 items-center justify-between">
                   <button
                     onClick={showNewWsModal}
-                    className="flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-200 justify-start items-center hover:bg-stone-900"
+                    className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80"
                   >
                     <Plus className="h-4 w-4" />
-                    <p className="text-slate-200 text-xs leading-loose font-semibold">
+                    <p className="text-sidebar text-sm font-medium">
                       New workspace
                     </p>
                   </button>
