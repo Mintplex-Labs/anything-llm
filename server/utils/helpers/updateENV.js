@@ -72,11 +72,11 @@ const KEY_MAPPING = {
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
-    checks: [],
+    checks: [requiresForceMode],
   },
   JWTSecret: {
     envKey: "JWT_SECRET",
-    checks: [],
+    checks: [requiresForceMode],
   },
   // Not supported yet.
   // 'StorageDir': 'STORAGE_DIR',
@@ -143,11 +143,15 @@ function validAzureURL(input = "") {
   }
 }
 
+function requiresForceMode(_, forceModeEnabled = false) {
+  return forceModeEnabled === true ? null : "Cannot set this setting.";
+}
+
 // This will force update .env variables which for any which reason were not able to be parsed or
 // read from an ENV file as this seems to be a complicating step for many so allowing people to write
 // to the process will at least alleviate that issue. It does not perform comprehensive validity checks or sanity checks
 // and is simply for debugging when the .env not found issue many come across.
-function updateENV(newENVs = {}) {
+function updateENV(newENVs = {}, force = false) {
   let error = "";
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
@@ -159,7 +163,7 @@ function updateENV(newENVs = {}) {
     const { envKey, checks } = KEY_MAPPING[key];
     const value = newENVs[key];
     const errors = checks
-      .map((validityCheck) => validityCheck(value))
+      .map((validityCheck) => validityCheck(value, force))
       .filter((err) => typeof err === "string");
 
     if (errors.length > 0) {

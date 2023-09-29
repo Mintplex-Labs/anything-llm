@@ -239,6 +239,16 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const body = reqBody(request);
+
+        // Only admins can update the ENV settings.
+        if (multiUserMode(response)) {
+          const user = await userFromSession(request, response);
+          if (!user || user?.role !== "admin") {
+            response.sendStatus(401).end();
+            return;
+          }
+        }
+
         const { newValues, error } = updateENV(body);
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
@@ -254,11 +264,21 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
+        // Cannot update password in multi - user mode.
+        if (multiUserMode(response)) {
+          response.sendStatus(401).end();
+          return;
+        }
+
         const { usePassword, newPassword } = reqBody(request);
-        const { error } = updateENV({
-          AuthToken: usePassword ? newPassword : "",
-          JWTSecret: usePassword ? v4() : "",
-        });
+        const { error } = updateENV(
+          {
+            AuthToken: usePassword ? newPassword : "",
+            JWTSecret: usePassword ? v4() : "",
+          },
+          true
+        );
+        if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ success: !error, error });
       } catch (e) {
         console.log(e.message, e);
@@ -293,8 +313,15 @@ function systemEndpoints(app) {
           limit_user_messages: false,
           message_limit: 25,
         });
-        process.env.AUTH_TOKEN = null;
-        process.env.JWT_SECRET = process.env.JWT_SECRET ?? v4(); // Make sure JWT_SECRET is set for JWT issuance.
+
+        updateENV(
+          {
+            AuthToken: null,
+            JWTSecret: process.env.JWT_SECRET ?? v4(),
+          },
+          true
+        );
+        if (process.env.NODE_ENV === "production") await dumpENV();
         await Telemetry.sendTelemetry("enabled_multi_user_mode");
         response.status(200).json({ success: !!user, error });
       } catch (e) {
