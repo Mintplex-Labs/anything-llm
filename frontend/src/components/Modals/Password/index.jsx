@@ -16,18 +16,14 @@ export default function PasswordModal({ mode = "single" }) {
             radial-gradient(circle at center, transparent 40%, black 100%),
             linear-gradient(180deg, #FF8585 0%, #D4A447 100%)
           `,
-          width: '575px',
-          filter: 'blur(200px)',
-          margin: 'auto',
+          width: "575px",
+          filter: "blur(200px)",
+          margin: "auto",
         }}
       />
 
       <div className="flex flex-col items-center justify-center h-full w-full z-50">
-        <img
-          src={_initLogo}
-          className="mb-20 w-80 opacity-80"
-          alt="logo"
-        />
+        <img src={_initLogo} className="mb-20 w-80 opacity-80" alt="logo" />
         {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth />}
       </div>
     </div>
