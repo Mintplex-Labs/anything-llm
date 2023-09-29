@@ -29,14 +29,7 @@ export default function MultiUserAuth() {
 
   return (
     <form onSubmit={handleLogin}>
-      <div
-        className="flex flex-col justify-center items-center relative bg-white rounded-2xl shadow dark:bg-stone-700 border-2 border-slate-300 border-opacity-20 w-[400px]"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(61, 65, 71, 0.30) 0%, rgba(44, 47, 53, 0.30) 100%)",
-          boxShadow: "0px 4px 30px rgba(0, 0, 0, 0.25)",
-        }}
-      >
+      <div className="flex flex-col justify-center items-center relative rounded-2xl shadow border-2 border-slate-300 border-opacity-20 w-[400px] login-input-gradient">
         <div className="flex items-start justify-between pt-11 pb-9 rounded-t dark:border-gray-600">
           <div className="flex items-center flex-col">
             <h3 className="text-md md:text-2xl font-bold text-gray-900 dark:text-white text-center">
