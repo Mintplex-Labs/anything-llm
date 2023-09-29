@@ -48,7 +48,7 @@ export default function SettingsOverlay() {
   return (
     <div
       id={OVERLAY_ID}
-      className="absolute left-0 rounded-[26px] top-0 w-full h-full opacity-0 -z-10 p-[18px] transition-all duration-300 bg-white dark:bg-black-900 flex flex-col overflow-x-hidden items-between"
+      className="absolute left-0 rounded-[26px] top-0 w-full h-full opacity-0 -z-10 p-[18px] transition-all duration-300 flex flex-col overflow-x-hidden items-between"
     >
       <div className="flex w-full items-center justify-between">
         <div className="flex shrink-0 max-w-[50%] items-center justify-start">
@@ -65,7 +65,7 @@ export default function SettingsOverlay() {
               setTab(null);
               hideOverlay();
             }}
-            className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+            className="transition-all duration-300 p-2 rounded-full text-slate-400 bg-stone-800 hover:bg-slate-800 hover:text-slate-200"
           >
             <X className="h-4 w-4 " />
           </button>
@@ -73,8 +73,8 @@ export default function SettingsOverlay() {
       </div>
 
       <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
-        <div className="h-auto sidebar-items dark:sidebar-items">
-          <p className="text-sm leading-loose my-2 text-slate-800 dark:text-slate-200 ">
+        <div className="h-auto sidebar-items">
+          <p className="text-sm leading-loose my-2 text-slate-200 ">
             Select a setting to configure
           </p>
           {loading ? (
@@ -152,14 +152,12 @@ const Option = ({ btnText, icon, isActive, onClick }) => {
     <div className="flex gap-x-2 items-center justify-between">
       <button
         onClick={onClick}
-        className={`flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center ${
-          isActive
-            ? "bg-gray-100 dark:bg-stone-600"
-            : "hover:bg-slate-100 dark:hover:bg-stone-900 "
+        className={`flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-200 justify-start items-center ${
+          isActive ? "bg-stone-600" : "hover:bg-stone-900 "
         }`}
       >
         {icon}
-        <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold whitespace-nowrap overflow-hidden ">
+        <p className="text-slate-200 text-xs leading-loose font-semibold whitespace-nowrap overflow-hidden ">
           {btnText}
         </p>
       </button>
