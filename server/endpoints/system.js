@@ -1,7 +1,6 @@
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
-const { validateTablePragmas } = require("../utils/database");
 const { viewLocalFiles } = require("../utils/files");
 const { exportData, unpackAndOverwriteImport } = require("../utils/files/data");
 const {
@@ -38,7 +37,6 @@ const {
 const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
 const { ApiKey } = require("../models/apiKeys");
-const { escape } = require("sqlstring-sqlite");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -48,7 +46,10 @@ function systemEndpoints(app) {
   });
 
   app.get("/migrate", async (_, response) => {
-    await validateTablePragmas(true);
+    const execSync = require("child_process").execSync;
+    execSync("npx prisma migrate deploy --schema=./prisma/schema.prisma", {
+      stdio: "inherit",
+    });
     response.sendStatus(200);
   });
 
@@ -97,7 +98,7 @@ function systemEndpoints(app) {
     try {
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-        const existingUser = await User.get(`username = ${escape(username)}`);
+        const existingUser = await User.get({ username });
 
         if (!existingUser) {
           response.status(200).json({
@@ -524,7 +525,7 @@ function systemEndpoints(app) {
         return response.sendStatus(401).end();
       }
 
-      const apiKey = await ApiKey.get("id IS NOT NULL");
+      const apiKey = await ApiKey.get({});
       return response.status(200).json({
         apiKey,
         error: null,

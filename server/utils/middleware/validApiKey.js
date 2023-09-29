@@ -1,4 +1,3 @@
-const { escape } = require("sqlstring-sqlite");
 const { ApiKey } = require("../../models/apiKeys");
 const { SystemSettings } = require("../../models/systemSettings");
 
@@ -15,7 +14,7 @@ async function validApiKey(request, response, next) {
     return;
   }
 
-  if (!(await ApiKey.get(`secret = ${escape(bearerKey)}`))) {
+  if (!(await ApiKey.get({ secret: bearerKey }))) {
     response.status(403).json({
       error: "No valid api key found.",
     });

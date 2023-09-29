@@ -1,6 +1,6 @@
 {
   "name": "anything-llm-server",
-  "version": "0.0.1-beta",
+  "version": "0.2.0",
   "description": "Server endpoints to process or create content for chatting",
   "main": "index.js",
   "author": "Timothy Carambat (Mintplex Labs)",
@@ -13,12 +13,17 @@
     "dev": "NODE_ENV=development nodemon --ignore documents --ignore vector-cache --ignore storage --ignore swagger --trace-warnings index.js",
     "start": "NODE_ENV=production node index.js",
     "lint": "yarn prettier --write ./endpoints ./models ./utils index.js",
-    "swagger": "node ./swagger/init.js"
+    "swagger": "node ./swagger/init.js",
+    "sqlite:migrate": "cd ./utils/prisma && node migrateFromSqlite.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@azure/openai": "^1.0.0-beta.3",
     "@googleapis/youtube": "^9.0.0",
     "@pinecone-database/pinecone": "^0.1.6",
+    "@prisma/client": "5.3.0",
     "@qdrant/js-client-rest": "^1.4.0",
     "archiver": "^5.3.1",
     "bcrypt": "^5.1.0",
@@ -38,11 +43,11 @@
     "openai": "^3.2.1",
     "pinecone-client": "^1.1.0",
     "posthog-node": "^3.1.1",
+    "prisma": "^5.3.1",
     "serve-index": "^1.9.1",
     "slugify": "^1.6.6",
     "sqlite": "^4.2.1",
     "sqlite3": "^5.1.6",
-    "sqlstring-sqlite": "^0.1.1",
     "swagger-autogen": "^2.23.5",
     "swagger-ui-express": "^5.0.0",
     "uuid": "^9.0.0",

@@ -1,170 +1,160 @@
-const { checkForMigrations } = require("../utils/database");
+const prisma = require("../utils/prisma");
 
 const WorkspaceChats = {
-  tablename: "workspace_chats",
-  colsInit: `
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  workspaceId INTEGER NOT NULL,
-  prompt TEXT NOT NULL,
-  response TEXT NOT NULL,
-  include BOOL DEFAULT true,
-  user_id INTEGER DEFAULT NULL,
-  createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-  lastUpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
-
-  FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-  `,
-  migrateTable: async function () {
-    console.log(
-      `\x1b[34m[MIGRATING]\x1b[0m Checking for WorkspaceChats migrations`
-    );
-    const db = await this.db(false);
-    await checkForMigrations(this, db);
-  },
-  migrations: function () {
-    return [
-      {
-        colName: "user_id",
-        execCmd: `ALTER TABLE ${this.tablename} ADD COLUMN user_id INTEGER DEFAULT NULL`,
-        doif: false,
-      },
-    ];
-  },
-  db: async function (tracing = true) {
-    const sqlite3 = require("sqlite3").verbose();
-    const { open } = require("sqlite");
-
-    const db = await open({
-      filename: `${
-        !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "storage/"
-      }anythingllm.db`,
-      driver: sqlite3.Database,
-    });
-
-    await db.exec(
-      `PRAGMA foreign_keys = ON;CREATE TABLE IF NOT EXISTS ${this.tablename} (${this.colsInit})`
-    );
-
-    if (tracing) db.on("trace", (sql) => console.log(sql));
-    return db;
-  },
   new: async function ({ workspaceId, prompt, response = {}, user = null }) {
-    const db = await this.db();
-    const { id, success, message } = await db
-      .run(
-        `INSERT INTO ${this.tablename} (workspaceId, prompt, response, user_id) VALUES (?, ?, ?, ?)`,
-        [workspaceId, prompt, JSON.stringify(response), user?.id || null]
-      )
-      .then((res) => {
-        return { id: res.lastID, success: true, message: null };
-      })
-      .catch((error) => {
-        return { id: null, success: false, message: error.message };
+    try {
+      const chat = await prisma.workspace_chats.create({
+        data: {
+          workspaceId,
+          prompt,
+          response: JSON.stringify(response),
+          user_id: user?.id || null,
+        },
       });
-    if (!success) {
-      db.close();
-      return { chat: null, message };
+      return { chat, message: null };
+    } catch (error) {
+      console.error(error.message);
+      return { chat: null, message: error.message };
     }
-
-    const chat = await db.get(
-      `SELECT * FROM ${this.tablename} WHERE id = ${id}`
-    );
-    db.close();
-
-    return { chat, message: null };
   },
+
   forWorkspaceByUser: async function (
     workspaceId = null,
     userId = null,
     limit = null
   ) {
     if (!workspaceId || !userId) return [];
-    return await this.where(
-      `workspaceId = ${workspaceId} AND include = true AND user_id = ${userId}`,
-      limit,
-      "ORDER BY id ASC"
-    );
+    try {
+      const chats = await prisma.workspace_chats.findMany({
+        where: {
+          workspaceId,
+          user_id: userId,
+        },
+        ...(limit !== null ? { take: limit } : {}),
+        orderBy: {
+          id: "asc",
+        },
+      });
+      return chats;
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
   },
+
   forWorkspace: async function (workspaceId = null, limit = null) {
     if (!workspaceId) return [];
-    return await this.where(
-      `workspaceId = ${workspaceId} AND include = true`,
-      limit,
-      "ORDER BY id ASC"
-    );
+    try {
+      const chats = await prisma.workspace_chats.findMany({
+        where: {
+          workspaceId,
+        },
+        ...(limit !== null ? { take: limit } : {}),
+        orderBy: {
+          id: "asc",
+        },
+      });
+      return chats;
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
   },
+
   markHistoryInvalid: async function (workspaceId = null, user = null) {
     if (!workspaceId) return;
-    const db = await this.db();
-    await db.run(
-      `UPDATE ${this.tablename} SET include = false WHERE workspaceId = ? ${
-        user ? `AND user_id = ${user.id}` : ""
-      }`,
-      [workspaceId]
-    );
-    db.close();
-
-    return;
+    try {
+      await prisma.workspace_chats.updateMany({
+        where: {
+          workspaceId,
+          user_id: user?.id,
+        },
+        data: {
+          include: false,
+        },
+      });
+      return;
+    } catch (error) {
+      console.error(error.message);
+    }
   },
-  get: async function (clause = "", limit = null, order = null) {
-    const db = await this.db();
-    const result = await db
-      .get(
-        `SELECT * FROM ${this.tablename} WHERE ${clause} ${
-          !!order ? order : ""
-        } ${!!limit ? `LIMIT ${limit}` : ""}`
-      )
-      .then((res) => res || null);
-    db.close();
 
-    if (!result) return null;
-    return result;
+  get: async function (clause = {}, limit = null, orderBy = null) {
+    try {
+      const chat = await prisma.workspace_chats.findFirst({
+        where: clause,
+        ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
+      });
+      return chat || null;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
   },
-  delete: async function (clause = "") {
-    const db = await this.db();
-    await db.get(`DELETE FROM ${this.tablename} WHERE ${clause}`);
-    db.close();
 
-    return true;
+  delete: async function (clause = {}) {
+    try {
+      await prisma.workspace_chats.deleteMany({
+        where: clause,
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
   },
-  where: async function (clause = "", limit = null, order = null) {
-    const db = await this.db();
-    const results = await db.all(
-      `SELECT * FROM ${this.tablename} ${clause ? `WHERE ${clause}` : ""} ${
-        !!order ? order : ""
-      } ${!!limit ? `LIMIT ${limit}` : ""}`
-    );
-    db.close();
 
-    return results;
+  where: async function (clause = {}, limit = null, orderBy = null) {
+    try {
+      const chats = await prisma.workspace_chats.findMany({
+        where: clause,
+        ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
+      });
+      return chats;
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
   },
-  count: async function (clause = null) {
-    const db = await this.db();
-    const { count } = await db.get(
-      `SELECT COUNT(*) as count FROM ${this.tablename} ${
-        clause ? `WHERE ${clause}` : ""
-      } `
-    );
-    db.close();
 
-    return count;
+  count: async function (clause = {}) {
+    try {
+      const count = await prisma.workspace_chats.count({
+        where: clause,
+      });
+      return count;
+    } catch (error) {
+      console.error(error.message);
+      return 0;
+    }
   },
-  whereWithData: async function (clause = "", limit = null, order = null) {
+
+  whereWithData: async function (clause = {}, limit = null, orderBy = null) {
     const { Workspace } = require("./workspace");
     const { User } = require("./user");
-    const results = await this.where(clause, limit, order);
-    for (const res of results) {
-      const workspace = await Workspace.get(`id = ${res.workspaceId}`);
-      res.workspace = workspace
-        ? { name: workspace.name, slug: workspace.slug }
-        : { name: "deleted workspace", slug: null };
 
-      const user = await User.get(`id = ${res.user_id}`);
-      res.user = user
-        ? { username: user.username }
-        : { username: "deleted user" };
+    try {
+      const results = await this.where(clause, limit, orderBy);
+
+      for (const res of results) {
+        const workspace = await Workspace.get({ id: res.workspaceId });
+        res.workspace = workspace
+          ? { name: workspace.name, slug: workspace.slug }
+          : { name: "deleted workspace", slug: null };
+
+        const user = await User.get({ id: res.user_id });
+        res.user = user
+          ? { username: user.username }
+          : { username: "deleted user" };
+      }
+
+      return results;
+    } catch (error) {
+      console.error(error.message);
+      return [];
     }
-    return results;
   },
 };
 

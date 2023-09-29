@@ -1,4 +1,3 @@
-const { escape } = require("sqlstring-sqlite");
 const { ApiKey } = require("../models/apiKeys");
 const { Document } = require("../models/documents");
 const { Invite } = require("../models/invite");
@@ -82,7 +81,7 @@ function adminEndpoints(app) {
           return;
         }
         const { id } = request.params;
-        await User.delete(`id = ${id}`);
+        await User.delete({ id: Number(id) });
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);
@@ -204,7 +203,7 @@ function adminEndpoints(app) {
         const { workspaceId } = request.params;
         const { userIds } = reqBody(request);
         const { success, error } = await Workspace.updateUsers(
-          escape(workspaceId),
+          workspaceId,
           userIds
         );
         response.status(200).json({ success, error });
@@ -228,23 +227,23 @@ function adminEndpoints(app) {
 
         const { id } = request.params;
         const VectorDb = getVectorDbClass();
-        const workspace = Workspace.get(`id = ${escape(id)}`);
+        const workspace = await Workspace.get({ id: Number(id) });
         if (!workspace) {
           response.sendStatus(404).end();
           return;
         }
 
-        await Workspace.delete(`id = ${workspace.id}`);
-        await DocumentVectors.deleteForWorkspace(workspace.id);
-        await Document.delete(`workspaceId = ${Number(workspace.id)}`);
-        await WorkspaceChats.delete(`workspaceId = ${Number(workspace.id)}`);
+        await WorkspaceChats.delete({ workspaceId: Number(workspace.id) });
+        await DocumentVectors.deleteForWorkspace(Number(workspace.id));
+        await Document.delete({ workspaceId: Number(workspace.id) });
+        await Workspace.delete({ id: Number(workspace.id) });
         try {
           await VectorDb["delete-namespace"]({ namespace: workspace.slug });
         } catch (e) {
           console.error(e.message);
         }
 
-        response.status(200).json({ success, error });
+        response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
@@ -262,13 +261,18 @@ function adminEndpoints(app) {
           response.sendStatus(401).end();
           return;
         }
-        const { offset = 0 } = reqBody(request);
+
+        const { offset = 0, limit = 20 } = reqBody(request);
         const chats = await WorkspaceChats.whereWithData(
-          `id >= ${escape(offset)}`,
-          20
+          { id: { gte: offset } },
+          limit
         );
-        const hasPages = (await WorkspaceChats.count()) > 20;
-        response.status(200).json({ chats: chats.reverse(), hasPages });
+        const totalChats = await WorkspaceChats.count();
+        const hasPages = totalChats > offset + limit;
+
+        response
+          .status(200)
+          .json({ chats: chats.reverse(), hasPages, totalChats });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
@@ -288,7 +292,7 @@ function adminEndpoints(app) {
         }
 
         const { id } = request.params;
-        await WorkspaceChats.delete(`id = ${id}`);
+        await WorkspaceChats.delete({ id: Number(id) });
         response.status(200).json({ success, error });
       } catch (e) {
         console.error(e);
@@ -310,14 +314,14 @@ function adminEndpoints(app) {
 
         const settings = {
           users_can_delete_workspaces:
-            (await SystemSettings.get(`label = 'users_can_delete_workspaces'`))
+            (await SystemSettings.get({ label: "users_can_delete_workspaces" }))
               ?.value === "true",
           limit_user_messages:
-            (await SystemSettings.get(`label = 'limit_user_messages'`))
+            (await SystemSettings.get({ label: "limit_user_messages" }))
               ?.value === "true",
           message_limit:
             Number(
-              (await SystemSettings.get(`label = 'message_limit'`))?.value
+              (await SystemSettings.get({ label: "message_limit" }))?.value
             ) || 10,
         };
         response.status(200).json({ settings });
@@ -357,7 +361,7 @@ function adminEndpoints(app) {
         return;
       }
 
-      const apiKeys = await ApiKey.whereWithUser("id IS NOT NULL");
+      const apiKeys = await ApiKey.whereWithUser({});
       return response.status(200).json({
         apiKeys,
         error: null,
@@ -405,8 +409,7 @@ function adminEndpoints(app) {
           response.sendStatus(401).end();
           return;
         }
-
-        await ApiKey.delete(`id = ${id}`);
+        await ApiKey.delete({ id: Number(id) });
         return response.status(200).end();
       } catch (e) {
         console.error(e);
