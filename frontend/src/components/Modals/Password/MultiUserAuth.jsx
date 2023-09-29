@@ -51,7 +51,7 @@ export default function MultiUserAuth() {
                 name="username"
                 type="text"
                 placeholder="Username"
-                className="bg-neutral-800 bg-opacity-40 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-neutral-800 bg-opacity-40 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-[#222628] dark:bg-opacity-40 dark:placeholder-[#FFFFFF99] dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required={true}
                 autoComplete="off"
               />
@@ -62,7 +62,7 @@ export default function MultiUserAuth() {
                 name="password"
                 type="password"
                 placeholder="Password"
-                className="bg-neutral-800 bg-opacity-40 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-neutral-800 bg-opacity-40 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-[#222628] dark:bg-opacity-40 dark:placeholder-[#FFFFFF99] dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required={true}
                 autoComplete="off"
               />

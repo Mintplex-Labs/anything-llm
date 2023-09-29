@@ -305,3 +305,16 @@ dialog::backdrop {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
 }
+
+@keyframes subtlePulse {
+  0% { background-size: 100% 100%; }
+  50% { background-size: 110% 110%; }
+  100% { background-size: 100% 100%; }
+}
+
+@keyframes subtleShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
