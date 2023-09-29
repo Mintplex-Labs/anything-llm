@@ -35,10 +35,22 @@ const KEY_MAPPING = {
     envKey: "VECTOR_DB",
     checks: [isNotEmpty, supportedVectorDB],
   },
+
+  // Chroma Options
   ChromaEndpoint: {
     envKey: "CHROMA_ENDPOINT",
     checks: [isValidURL, validChromaURL],
   },
+  ChromaApiHeader: {
+    envKey: "CHROMA_API_HEADER",
+    checks: [],
+  },
+  ChromaApiKey: {
+    envKey: "CHROMA_API_KEY",
+    checks: [],
+  },
+
+  // Weaviate Options
   WeaviateEndpoint: {
     envKey: "WEAVIATE_ENDPOINT",
     checks: [isValidURL],
@@ -47,6 +59,8 @@ const KEY_MAPPING = {
     envKey: "WEAVIATE_API_KEY",
     checks: [],
   },
+
+  // QDrant Options
   QdrantEndpoint: {
     envKey: "QDRANT_ENDPOINT",
     checks: [isValidURL],

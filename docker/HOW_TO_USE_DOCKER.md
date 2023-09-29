@@ -44,6 +44,8 @@ Out of the box, all vector databases are supported. Any vector databases requiri
 
 VECTOR_DB="chroma"
 CHROMA_ENDPOINT='http://host.docker.internal:8000' # Allow docker to look on host port, not container.
+# CHROMA_API_HEADER="X-Api-Key" // If you have an Auth middleware on your instance.
+# CHROMA_API_KEY="sk-123abc"
 
 ...other configs
 

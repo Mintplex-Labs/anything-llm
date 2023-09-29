@@ -182,6 +182,41 @@ export default function VectorDBSelection({
                       spellCheck={false}
                     />
                   </div>
+
+                  <div className="">
+                    <div className="mb-2 flex flex-col gap-y-1">
+                      <label
+                        htmlFor="ChromaAuthTokenHeader"
+                        className="block text-sm font-medium text-gray-800 dark:text-slate-200"
+                      >
+                        API Header & Key
+                      </label>
+                      <p className="text-xs text-gray-800 dark:text-slate-200">
+                        If your hosted Chroma instance is protected by an API
+                        key - enter the header and api key here.
+                      </p>
+                    </div>
+                    <div className="flex w-full items-center gap-x-4">
+                      <input
+                        name="ChromaApiHeader"
+                        autoComplete="off"
+                        type="text"
+                        defaultValue={settings?.ChromaApiHeader}
+                        className="w-[20%] bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
+                        placeholder="X-Api-Key"
+                      />
+                      <input
+                        name="ChromaApiKey"
+                        autoComplete="off"
+                        type="password"
+                        defaultValue={
+                          settings?.ChromaApiKey ? "*".repeat(20) : ""
+                        }
+                        className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-500 text-sm rounded-lg dark:bg-stone-700 focus:border-stone-500 block w-full p-2.5 dark:text-slate-200 dark:placeholder-stone-500 dark:border-slate-200"
+                        placeholder="sk-myApiKeyToAccessMyChromaInstance"
+                      />
+                    </div>
+                  </div>
                 </>
               )}
               {vectorDB === "lancedb" && (
