@@ -40,7 +40,7 @@ export default function Sidebar() {
       <div
         ref={sidebarRef}
         style={{ height: "calc(100% - 32px)" }}
-        className="relative transition-all duration-500 relative m-[16px] rounded-[26px] bg-white dark:bg-black-900 min-w-[15.5%] p-[18px] "
+        className="relative transition-all duration-500 m-[16px] rounded-[26px] bg-white dark:bg-sidebar dark:border-4 dark:border-accent min-w-[15.5%] p-[18px] "
       >
         <SettingsOverlay />
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
