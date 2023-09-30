@@ -7,8 +7,8 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 
 ## How to install
 - `git clone` this repo and `cd anything-llm` to get to the root directory.
+- `yarn setup`
 - `cd docker/`
-- `cp .env.example .env` to create the `.env` file.
 - Edit `.env` file and update the variables
 - `docker-compose up -d --build` to build the image - this will take a few moments.
 
