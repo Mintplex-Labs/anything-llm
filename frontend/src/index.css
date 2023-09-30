@@ -112,11 +112,6 @@ a {
     right: 0px;
     height: 4em;
     top: 69vh;
-    background: linear-gradient(
-      to bottom,
-      rgba(173, 3, 3, 0),
-      rgb(255 255 255) 50%
-    );
     z-index: 1;
     pointer-events: none;
   }
@@ -130,11 +125,6 @@ a {
     right: 0px;
     height: 4em;
     top: 69vh;
-    background: linear-gradient(
-      to bottom,
-      rgba(173, 3, 3, 0),
-      rgb(20 20 20) 50%
-    );
     z-index: 1;
     pointer-events: none;
   }
@@ -337,4 +327,8 @@ dialog::backdrop {
     rgba(44, 47, 53, 0.3) 100%
   ) !important;
   box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.25);
+}
+
+.white-fill {
+  fill: white;
 }
