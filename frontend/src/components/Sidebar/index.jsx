@@ -61,7 +61,7 @@ export default function Sidebar() {
               />
             </div>
             <div className="flex gap-x-2 items-center text-slate-200">
-              {/* <AdminHome /> */}
+              <AdminHome />
               <SettingsButton onClick={showOverlay} />
             </div>
           </div>

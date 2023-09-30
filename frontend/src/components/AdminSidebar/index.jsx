@@ -26,7 +26,7 @@ export default function AdminSidebar() {
       <div
         ref={sidebarRef}
         style={{ height: "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-white dark:bg-black-900 min-w-[15.5%] p-[18px] "
+        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[15.5%] p-[18px] "
       >
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
           {/* Header Information */}
@@ -48,10 +48,10 @@ export default function AdminSidebar() {
               </a>
             </div>
           </div>
-
+          <div className="text-white text-opacity-60 text-xs font-semibold uppercase mt-3 mb-1">Settings</div>
           {/* Primary Body */}
           <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
-            <div className="h-auto sidebar-items dark:sidebar-items">
+            <div className="h-auto sidebar-items">
               <div className="flex flex-col gap-y-4 h-[65vh] pb-8 overflow-y-scroll no-scroll">
                 <Option
                   href={paths.admin.system()}
@@ -307,9 +307,9 @@ const Option = ({ btnText, icon, href }) => {
     <div className="flex gap-x-2 items-center justify-between">
       <a
         href={href}
-        className={`flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center ${
+        className={`flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 rounded text-slate-800 dark:text-slate-200 justify-start items-center ${
           isActive
-            ? "bg-gray-100 dark:bg-stone-600"
+            ? " bg-menu-item-selected-gradient"
             : "hover:bg-slate-100 dark:hover:bg-stone-900 "
         }`}
       >

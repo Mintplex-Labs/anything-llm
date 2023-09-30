@@ -55,8 +55,8 @@ export default function ActiveWorkspaces() {
               href={isActive ? null : paths.workspace.chat(workspace.slug)}
               className={`flex flex-grow w-[75%] gap-x-2 py-[9px] px-[12px] rounded-lg text-slate-200 justify-start items-center ${
                 isActive
-                  ? "bg-workspace-item-selected-gradient border border-slate-100 border-opacity-50"
-                  : "bg-workspace-item-gradient bg-opacity-60"
+                  ? "bg-menu-item-selected-gradient border border-slate-100 border-opacity-50"
+                  : "bg-menu-item-gradient bg-opacity-60"
               }`}
             >
               <div className="flex flex-row justify-between w-full">
