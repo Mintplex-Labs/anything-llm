@@ -48,10 +48,10 @@ export default function SettingsOverlay() {
   return (
     <div
       id={OVERLAY_ID}
-      className="absolute left-0 rounded-[26px] top-0 w-full h-full opacity-0 -z-10 p-[18px] transition-all duration-300 flex flex-col overflow-x-hidden items-between"
+      className="absolute left-0 bg-sidebar rounded-[26px] top-0 w-full h-full opacity-0 -z-10 p-[18px] transition-all duration-300 flex flex-col overflow-x-hidden items-between"
     >
-      <div className="flex w-full items-center justify-between">
-        <div className="flex shrink-0 max-w-[50%] items-center justify-start">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex shrink-0 max-w-[65%] items-center justify-start">
           <img
             src={logo}
             alt="Logo"
@@ -59,13 +59,13 @@ export default function SettingsOverlay() {
             style={{ objectFit: "contain" }}
           />
         </div>
-        <div className="flex gap-x-2 items-center text-slate-500">
+        <div className="flex gap-x-2 items-center text-slate-200">
           <button
             onClick={() => {
               setTab(null);
               hideOverlay();
             }}
-            className="transition-all duration-300 p-2 rounded-full text-slate-400 bg-stone-800 hover:bg-slate-800 hover:text-slate-200"
+            className="transition-all duration-300 p-2 rounded-full hover:bg-slate-400 hover:text-slate-200"
           >
             <X className="h-4 w-4 " />
           </button>
