@@ -1,22 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  AtSign,
-  GitHub,
-  LogOut,
-  Menu,
-  Package,
-  Plus,
-  Shield,
-  Tool,
-} from "react-feather";
+import { AtSign, LogOut, Menu, Package, Plus, Shield } from "react-feather";
 import {
   Wrench,
   GithubLogo,
   BookOpen,
   DiscordLogo,
-  DotsThreeVertical,
   DotsThree,
-} from "phosphor-react";
+} from "@phosphor-icons/react";
 import IndexCount from "./IndexCount";
 import LLMStatus from "./LLMStatus";
 import NewWorkspaceModal, {
@@ -24,7 +14,6 @@ import NewWorkspaceModal, {
 } from "../Modals/NewWorkspace";
 import ActiveWorkspaces from "./ActiveWorkspaces";
 import paths from "../../utils/paths";
-import Discord from "../Icons/Discord";
 import useUser from "../../hooks/useUser";
 import { userFromStorage } from "../../utils/request";
 import { AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
@@ -109,26 +98,26 @@ export default function Sidebar() {
                     href={paths.github()}
                     className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:opacity-80"
                   >
-                    <GitHub className="h-5 w-5 " />
+                    <GithubLogo weight="fill" className="h-5 w-5 " />
                   </a>
                   <a
                     href={paths.docs()}
                     className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:opacity-80"
                   >
-                    <BookOpen className="h-5 w-5 " />
+                    <BookOpen weight="fill" className="h-5 w-5 " />
                   </a>
                   <a
                     href={paths.discord()}
                     className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:opacity-80"
                   >
-                    <Discord className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200" />
+                    <DiscordLogo
+                      weight="fill"
+                      className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
+                    />
                   </a>
-                  <a
-                    href={paths.discord()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:opacity-80"
-                  >
+                  <button className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:opacity-80">
                     <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -269,19 +258,22 @@ export function SidebarMobileHeader() {
                       href={paths.github()}
                       className="transition-all duration-300 p-2 rounded-full text-slate-400 bg-slate-800 hover:bg-slate-800 hover:text-slate-200"
                     >
-                      <GitHub className="h-4 w-4 " />
+                      <GithubLogo weight="fill" className="h-5 w-5 " />
                     </a>
                     <a
                       href={paths.docs()}
                       className="transition-all duration-300 p-2 rounded-full text-slate-400 bg-slate-800 hover:bg-slate-800 hover:text-slate-200"
                     >
-                      <BookOpen className="h-4 w-4 " />
+                      <BookOpen weight="fill" className="h-4 w-4 " />
                     </a>
                     <a
                       href={paths.discord()}
                       className="transition-all duration-300 p-2 rounded-full bg-slate-800 hover:bg-slate-800 group"
                     >
-                      <Discord className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200" />
+                      <DiscordLogo
+                        weight="fill"
+                        className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200"
+                      />
                     </a>
                   </div>
                   <a
