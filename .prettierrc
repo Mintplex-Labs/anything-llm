@@ -6,14 +6,13 @@
   "singleQuote": false,
   "printWidth": 80,
   "trailingComma": "es5",
-  "pluginSearchDirs": ["./server/node_modules"],
   "bracketSpacing": true,
   "bracketSameLine": false,
   "overrides": [
     {
       "files": ["*.js", "*.mjs", "*.jsx"],
       "options": {
-        "parser": "babel",
+        "parser": "flow",
         "arrowParens": "always"
       }
     },
@@ -21,7 +20,7 @@
       "files": "*.config.js",
       "options": {
         "semi": false,
-        "parser": "babel",
+        "parser": "flow",
         "trailingComma": "none"
       }
     },
@@ -30,6 +29,10 @@
       "options": {
         "bracketSameLine": true
       }
+    },
+    {
+      "files": ".prettierrc",
+      "options": { "parser": "json" }
     }
   ]
 }

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "The best solution for turning private documents into a chat bot using off-the-shelf tools and commercially viable AI technologies.",
   "main": "index.js",
+  "type": "module",
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
   "engines": {

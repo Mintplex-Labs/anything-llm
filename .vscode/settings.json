@@ -1,19 +1,7 @@
 {
-  "cSpell.words": [
-    "openai",
-    "Qdrant",
-    "Weaviate"
-  ],
-  "eslint.workingDirectories": [
-    "./server",
-    "./frontend"
-  ],
+  "cSpell.words": ["openai", "Qdrant", "Weaviate"],
   "eslint.enable": true,
   "eslint.debug": true,
   "eslint.run": "onSave",
-        // "eslint.execArgv": [
-        //   "--config=./server/eslint.config.js"
-        // ],
-
-
+  "dotenv.enableAutocloaking": false
 }

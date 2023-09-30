@@ -35,8 +35,6 @@
     "NODE_ENV": "development",
     "ESLINT_USE_FLAT_CONFIG": "true"
   },
-  // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // "forwardPorts": [],
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "yarn run setup",
   // Configure tool-specific properties.
@@ -51,7 +49,14 @@
         "streetsidesoftware.code-spell-checker",
         "mariusschulz.yarn-lock-syntax",
         "bradlc.vscode-tailwindcss",
-        "gamunu.vscode-yarn"
+        "gamunu.vscode-yarn",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "flowtype.flow-for-vscode",
+        "exiasr.hadolint",
+        "bierner.github-markdown-preview",
+        "socheatsok78-lab.dotenv-vscode-stripped",
+        "ms-azuretools.vscode-docker"
       ],
       "settings": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -83,9 +88,9 @@
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
         "eslint.experimental.useFlatConfig": true,
-        "npm.packageManager": "yarn",
         "files.associations": {
-          "*.css": "tailwindcss"
+          "*.css": "tailwindcss",
+          "Dockerfile*": "dockerfile"
         },
         "tailwindCSS.files.exclude": [
           "**/.git/**",
@@ -94,7 +99,17 @@
           "**/.svn/**",
           "**/dist/**"
         ],
-        "prettier.useEditorConfig": false
+        "prettier.useEditorConfig": false,
+        "json.format.enable": false,
+        "npm.autoDetect": "on",
+        "npm.packageManager": "yarn",
+        "js/ts.implicitProjectConfig.module": "CommonJS",
+        "typescript.validate.enable": false,
+        "javascript.format.enable": false,
+        "javascript.inlayHints.enumMemberValues.enabled": true,
+        "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
+        "javascript.inlayHints.parameterTypes.enabled": true,
+        "javascript.inlayHints.variableTypes.enabled": true
       }
     }
   }

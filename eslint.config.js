@@ -5,7 +5,8 @@ import prettier from "./server/node_modules/eslint-plugin-prettier/eslint-plugin
 import react from "./server/node_modules/eslint-plugin-react/index.js"
 import reactRefresh from "./server/node_modules/eslint-plugin-react-refresh/index.js"
 import reactHooks from "./server/node_modules/eslint-plugin-react-hooks/index.js"
-import babelParser from "./server/node_modules/@babel/eslint-parser/lib/index.cjs"
+import ftFlow from "./server/node_modules/eslint-plugin-ft-flow/dist/index.js"
+import hermesParser from "./server/node_modules/hermes-eslint/dist/index.js"
 
 const reactRecommended = react.configs.recommended
 const jsxRuntime = react.configs["jsx-runtime"]
@@ -16,23 +17,22 @@ export default [
   {
     ignores: ["**/*.test.js"],
     languageOptions: {
-      parser: babelParser,
+      parser: hermesParser,
       parserOptions: {
-        requireConfigFile: false,
-        babelOptions: {
-          babelrc: false,
-          configFile: false
-          // presets: ["./server/node_modules/@babel/preset-env/lib/index.js"]
-        },
         ecmaFeatures: { jsx: true }
       },
       ecmaVersion: 2020,
       sourceType: "module",
-      globals: { ...globals.browser, ...globals.es2020 }
+      globals: {
+        ...globals.browser,
+        ...globals.es2020,
+        ...globals.node
+      }
     },
     linterOptions: { reportUnusedDisableDirectives: true },
     settings: { react: { version: "18.2" } },
     plugins: {
+      ftFlow,
       react,
       "jsx-runtime": jsxRuntime,
       "react-hooks": reactHooks,
@@ -40,8 +40,8 @@ export default [
     },
     rules: {
       ...reactRecommended.rules,
-      ...jsxRuntime.rules,
       ...reactHooks.configs.recommended.rules,
+      ...ftFlow.recommended,
       "no-unused-vars": "warn",
       "no-undef": "warn",
       "no-empty": "warn",
@@ -52,19 +52,11 @@ export default [
   {
     files: ["frontend/src/**/*.js"],
     plugins: {
+      ftFlow,
       prettier
     },
     rules: {
       "prettier/prettier": "warn"
-    }
-  },
-  {
-    files: ["frontend/src/**/*.jsx"],
-    plugins: {
-      "react-refresh": reactRefresh
-    },
-    rules: {
-      "react-refresh/only-export-components": "warn"
     }
   },
   {
@@ -77,6 +69,22 @@ export default [
     ],
     rules: {
       "no-undef": "warn"
+    }
+  },
+  {
+    files: ["frontend/src/**/*.jsx"],
+    plugins: {
+      ftFlow,
+      react,
+      "jsx-runtime": jsxRuntime,
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
+      prettier
+    },
+    rules: {
+      ...jsxRuntime.rules,
+      "react/prop-types": "off", // FIXME
+      "react-refresh/only-export-components": "warn"
     }
   }
 ]
