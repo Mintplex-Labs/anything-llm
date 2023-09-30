@@ -14,8 +14,8 @@ import {
 import IndexCount from "../Sidebar/IndexCount";
 import LLMStatus from "../Sidebar/LLMStatus";
 import paths from "../../utils/paths";
-import Discord from "../Icons/Discord";
 import useLogo from "../../hooks/useLogo";
+import { DiscordLogo } from "@phosphor-icons/react";
 
 export default function AdminSidebar() {
   const { logo } = useLogo();
@@ -117,7 +117,7 @@ export default function AdminSidebar() {
                     href={paths.discord()}
                     className="transition-all duration-300 p-2 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-800 group"
                   >
-                    <Discord className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
+                    <DiscordLogo weight="fill" className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
                   </a>
                 </div>
                 <a
