@@ -1,7 +1,6 @@
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
-const { validateTablePragmas } = require("../utils/database");
 const { viewLocalFiles } = require("../utils/files");
 const { exportData, unpackAndOverwriteImport } = require("../utils/files/data");
 const {
@@ -38,7 +37,6 @@ const {
 const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
 const { ApiKey } = require("../models/apiKeys");
-const { escape } = require("sqlstring-sqlite");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -48,7 +46,10 @@ function systemEndpoints(app) {
   });
 
   app.get("/migrate", async (_, response) => {
-    await validateTablePragmas(true);
+    const execSync = require("child_process").execSync;
+    execSync("npx prisma migrate deploy --schema=./prisma/schema.prisma", {
+      stdio: "inherit",
+    });
     response.sendStatus(200);
   });
 
@@ -97,7 +98,7 @@ function systemEndpoints(app) {
     try {
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-        const existingUser = await User.get(`username = ${escape(username)}`);
+        const existingUser = await User.get({ username });
 
         if (!existingUser) {
           response.status(200).json({
@@ -166,7 +167,7 @@ function systemEndpoints(app) {
   app.get("/system/system-vectors", [validatedRequest], async (_, response) => {
     try {
       const VectorDb = getVectorDbClass();
-      const vectorCount = await VectorDb.totalIndicies();
+      const vectorCount = await VectorDb.totalVectors();
       response.status(200).json({ vectorCount });
     } catch (e) {
       console.log(e.message, e);
@@ -238,6 +239,16 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const body = reqBody(request);
+
+        // Only admins can update the ENV settings.
+        if (multiUserMode(response)) {
+          const user = await userFromSession(request, response);
+          if (!user || user?.role !== "admin") {
+            response.sendStatus(401).end();
+            return;
+          }
+        }
+
         const { newValues, error } = updateENV(body);
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
@@ -253,11 +264,21 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
+        // Cannot update password in multi - user mode.
+        if (multiUserMode(response)) {
+          response.sendStatus(401).end();
+          return;
+        }
+
         const { usePassword, newPassword } = reqBody(request);
-        const { error } = updateENV({
-          AuthToken: usePassword ? newPassword : "",
-          JWTSecret: usePassword ? v4() : "",
-        });
+        const { error } = updateENV(
+          {
+            AuthToken: usePassword ? newPassword : "",
+            JWTSecret: usePassword ? v4() : "",
+          },
+          true
+        );
+        if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ success: !error, error });
       } catch (e) {
         console.log(e.message, e);
@@ -292,8 +313,15 @@ function systemEndpoints(app) {
           limit_user_messages: false,
           message_limit: 25,
         });
-        process.env.AUTH_TOKEN = null;
-        process.env.JWT_SECRET = process.env.JWT_SECRET ?? v4(); // Make sure JWT_SECRET is set for JWT issuance.
+
+        updateENV(
+          {
+            AuthToken: null,
+            JWTSecret: process.env.JWT_SECRET ?? v4(),
+          },
+          true
+        );
+        if (process.env.NODE_ENV === "production") await dumpENV();
         await Telemetry.sendTelemetry("enabled_multi_user_mode");
         response.status(200).json({ success: !!user, error });
       } catch (e) {
@@ -524,7 +552,7 @@ function systemEndpoints(app) {
         return response.sendStatus(401).end();
       }
 
-      const apiKey = await ApiKey.get("id IS NOT NULL");
+      const apiKey = await ApiKey.get({});
       return response.status(200).json({
         apiKey,
         error: null,

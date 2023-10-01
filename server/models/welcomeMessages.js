@@ -1,88 +1,61 @@
+const prisma = require("../utils/prisma");
+
 const WelcomeMessages = {
-  tablename: "welcome_messages",
-  colsInit: `
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user TEXT NOT NULL,
-  response TEXT NOT NULL,
-  orderIndex INTEGER,
-  createdAt TEXT DEFAULT CURRENT_TIMESTAMP
-  `,
-
-  migrateTable: async function () {
-    const { checkForMigrations } = require("../utils/database");
-    console.log(
-      `\x1b[34m[MIGRATING]\x1b[0m Checking for Welcome Messages migrations`
-    );
-    const db = await this.db(false);
-    await checkForMigrations(this, db);
-    db.close();
-  },
-
-  migrations: function () {
-    return [];
-  },
-
-  db: async function (tracing = true) {
-    const sqlite3 = require("sqlite3").verbose();
-    const { open } = require("sqlite");
-
-    const db = await open({
-      filename: `${
-        !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "storage/"
-      }anythingllm.db`,
-      driver: sqlite3.Database,
-    });
-
-    await db.exec(
-      `PRAGMA foreign_keys = ON;CREATE TABLE IF NOT EXISTS ${this.tablename} (${this.colsInit})`
-    );
-
-    if (tracing) {
-      db.on("trace", (sql) => console.log(sql));
+  get: async function (clause = {}) {
+    try {
+      const message = await prisma.welcome_messages.findFirst({
+        where: clause,
+      });
+      return message || null;
+    } catch (error) {
+      console.error(error.message);
+      return null;
     }
-
-    return db;
   },
 
-  get: async function (clause = "") {
-    const db = await this.db();
-    const result = await db
-      .get(`SELECT * FROM ${this.tablename} WHERE ${clause}`)
-      .then((res) => res || null);
-    db.close();
-    return result;
-  },
-
-  where: async function (clause = null, limit = null) {
-    const db = await this.db();
-    const results = await db.all(
-      `SELECT * FROM ${this.tablename} ${clause ? `WHERE ${clause}` : ""} ${
-        !!limit ? `LIMIT ${limit}` : ""
-      }`
-    );
-    db.close();
-    return results;
+  where: async function (clause = {}, limit) {
+    try {
+      const messages = await prisma.welcome_messages.findMany({
+        where: clause,
+        take: limit || undefined,
+      });
+      return messages;
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
   },
 
   saveAll: async function (messages) {
-    const db = await this.db();
-    await db.run(`DELETE FROM ${this.tablename}`);
-    for (const [index, message] of messages.entries()) {
-      await db.run(
-        `INSERT INTO ${this.tablename} (user, response, orderIndex) VALUES (?, ?, ?)`,
-        [message.user, message.response, index]
-      );
+    try {
+      await prisma.welcome_messages.deleteMany({}); // Delete all existing messages
+
+      // Create new messages
+      for (const [index, message] of messages.entries()) {
+        await prisma.welcome_messages.create({
+          data: {
+            user: message.user,
+            response: message.response,
+            orderIndex: index,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Failed to save all messages", error.message);
     }
-    db.close();
   },
 
   getMessages: async function () {
-    const db = await this.db();
-    const results = await db.all(
-      `SELECT user, response FROM ${this.tablename} ORDER BY orderIndex ASC`
-    );
-    db.close();
-    return results;
+    try {
+      const messages = await prisma.welcome_messages.findMany({
+        orderBy: { orderIndex: "asc" },
+        select: { user: true, response: true },
+      });
+      return messages;
+    } catch (error) {
+      console.error("Failed to get all messages", error.message);
+      return [];
+    }
   },
 };
 

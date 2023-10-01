@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Uncomment the following lines and comment out the SQLite datasource block above to use PostgreSQL
+// Make sure to set the correct DATABASE_URL in your .env file
+// After swapping run `yarn prisma:setup` from the root directory to migrate the database
+//
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+datasource db {
+  provider = "sqlite"
+  url      = "file:../storage/anythingllm.db"
+}
+
+model api_keys {
+  id            Int      @id @default(autoincrement())
+  secret        String?  @unique
+  createdBy     Int?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+}
+
+model workspace_documents {
+  id            Int        @id @default(autoincrement())
+  docId         String     @unique
+  filename      String
+  docpath       String
+  workspaceId   Int
+  metadata      String?
+  createdAt     DateTime   @default(now())
+  lastUpdatedAt DateTime   @default(now())
+  workspace     workspaces @relation(fields: [workspaceId], references: [id])
+}
+
+model invites {
+  id            Int      @id @default(autoincrement())
+  code          String   @unique
+  status        String   @default("pending")
+  claimedBy     Int?
+  createdAt     DateTime @default(now())
+  createdBy     Int
+  lastUpdatedAt DateTime @default(now())
+}
+
+model system_settings {
+  id            Int      @id @default(autoincrement())
+  label         String   @unique
+  value         String?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+}
+
+model users {
+  id              Int               @id @default(autoincrement())
+  username        String?           @unique
+  password        String
+  role            String            @default("default")
+  suspended       Int               @default(0)
+  createdAt       DateTime          @default(now())
+  lastUpdatedAt   DateTime          @default(now())
+  workspace_chats workspace_chats[]
+  workspace_users workspace_users[]
+}
+
+model document_vectors {
+  id            Int      @id @default(autoincrement())
+  docId         String
+  vectorId      String
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+}
+
+model welcome_messages {
+  id         Int      @id @default(autoincrement())
+  user       String
+  response   String
+  orderIndex Int?
+  createdAt  DateTime @default(now())
+}
+
+model workspaces {
+  id              Int                   @id @default(autoincrement())
+  name            String
+  slug            String                @unique
+  vectorTag       String?
+  createdAt       DateTime              @default(now())
+  openAiTemp      Float?
+  openAiHistory   Int                   @default(20)
+  lastUpdatedAt   DateTime              @default(now())
+  openAiPrompt    String?
+  workspace_users workspace_users[]
+  documents       workspace_documents[]
+}
+
+model workspace_chats {
+  id            Int      @id @default(autoincrement())
+  workspaceId   Int
+  prompt        String
+  response      String
+  include       Boolean  @default(true)
+  user_id       Int?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+  users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model workspace_users {
+  id            Int        @id @default(autoincrement())
+  user_id       Int
+  workspace_id  Int
+  createdAt     DateTime   @default(now())
+  lastUpdatedAt DateTime   @default(now())
+  workspaces    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users         users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}

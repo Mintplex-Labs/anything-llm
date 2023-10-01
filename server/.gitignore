@@ -16,3 +16,4 @@ public/
 # For legacy copies of repo
 documents
 vector-cache
+yarn-error.log

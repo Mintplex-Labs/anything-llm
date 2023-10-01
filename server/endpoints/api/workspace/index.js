@@ -1,10 +1,12 @@
-const { escape } = require("sqlstring-sqlite");
 const { Document } = require("../../../models/documents");
 const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
-const { convertToChatHistory } = require("../../../utils/chats");
+const {
+  convertToChatHistory,
+  chatWithWorkspace,
+} = require("../../../utils/chats");
 const { getVectorDbClass } = require("../../../utils/helpers");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
@@ -13,7 +15,7 @@ function apiWorkspaceEndpoints(app) {
   if (!app) return;
 
   app.post("/v1/workspace/new", [validApiKey], async (request, response) => {
-    /* 
+    /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Create a new workspace'
     #swagger.requestBody = {
@@ -47,9 +49,9 @@ function apiWorkspaceEndpoints(app) {
               message: 'Workspace created'
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -72,7 +74,7 @@ function apiWorkspaceEndpoints(app) {
   });
 
   app.get("/v1/workspaces", [validApiKey], async (request, response) => {
-    /* 
+    /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'List all current workspaces'
     #swagger.responses[200] = {
@@ -95,9 +97,9 @@ function apiWorkspaceEndpoints(app) {
               ],
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -114,7 +116,7 @@ function apiWorkspaceEndpoints(app) {
   });
 
   app.get("/v1/workspace/:slug", [validApiKey], async (request, response) => {
-    /* 
+    /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Get a workspace by its unique slug.'
     #swagger.path = '/v1/workspace/{slug}'
@@ -143,9 +145,9 @@ function apiWorkspaceEndpoints(app) {
               }
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -154,7 +156,7 @@ function apiWorkspaceEndpoints(app) {
     */
     try {
       const { slug } = request.params;
-      const workspace = await Workspace.get(`slug = ${escape(slug)}`);
+      const workspace = await Workspace.get({ slug });
       response.status(200).json({ workspace });
     } catch (e) {
       console.log(e.message, e);
@@ -166,7 +168,7 @@ function apiWorkspaceEndpoints(app) {
     "/v1/workspace/:slug",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Deletes a workspace by its slug.'
     #swagger.path = '/v1/workspace/{slug}'
@@ -185,17 +187,17 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = "" } = request.params;
         const VectorDb = getVectorDbClass();
-        const workspace = await Workspace.get(`slug = ${escape(slug)}`);
+        const workspace = await Workspace.get({ slug });
 
         if (!workspace) {
           response.sendStatus(400).end();
           return;
         }
 
-        await Workspace.delete(`id = ${Number(workspace.id)}`);
-        await DocumentVectors.deleteForWorkspace(workspace.id);
-        await Document.delete(`workspaceId = ${Number(workspace.id)}`);
-        await WorkspaceChats.delete(`workspaceId = ${Number(workspace.id)}`);
+        await WorkspaceChats.delete({ workspaceId: Number(workspace.id) });
+        await DocumentVectors.deleteForWorkspace(Number(workspace.id));
+        await Document.delete({ workspaceId: Number(workspace.id) });
+        await Workspace.delete({ id: Number(workspace.id) });
         try {
           await VectorDb["delete-namespace"]({ namespace: slug });
         } catch (e) {
@@ -213,7 +215,7 @@ function apiWorkspaceEndpoints(app) {
     "/v1/workspace/:slug/update",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Update workspace settings by its unique slug.'
     #swagger.path = '/v1/workspace/{slug}/update'
@@ -258,9 +260,9 @@ function apiWorkspaceEndpoints(app) {
               message: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -270,7 +272,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const data = reqBody(request);
-        const currWorkspace = await Workspace.get(`slug = ${escape(slug)}`);
+        const currWorkspace = await Workspace.get({ slug });
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -293,7 +295,7 @@ function apiWorkspaceEndpoints(app) {
     "/v1/workspace/:slug/chats",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Get a workspaces chats regardless of user by its unique slug.'
     #swagger.path = '/v1/workspace/{slug}/chats'
@@ -323,9 +325,9 @@ function apiWorkspaceEndpoints(app) {
               ]
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -334,7 +336,7 @@ function apiWorkspaceEndpoints(app) {
     */
       try {
         const { slug } = request.params;
-        const workspace = await Workspace.get(`slug = ${escape(slug)}`);
+        const workspace = await Workspace.get({ slug });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -354,7 +356,7 @@ function apiWorkspaceEndpoints(app) {
     "/v1/workspace/:slug/update-embeddings",
     [validApiKey],
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Add or remove documents from a workspace by its unique slug.'
     #swagger.path = '/v1/workspace/{slug}/update-embeddings'
@@ -397,9 +399,9 @@ function apiWorkspaceEndpoints(app) {
               message: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -409,7 +411,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const { adds = [], deletes = [] } = reqBody(request);
-        const currWorkspace = await Workspace.get(`slug = ${escape(slug)}`);
+        const currWorkspace = await Workspace.get({ slug });
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -425,6 +427,78 @@ function apiWorkspaceEndpoints(app) {
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/v1/workspace/:slug/chat",
+    [validApiKey],
+    async (request, response) => {
+      /*
+   #swagger.tags = ['Workspaces']
+   #swagger.description = 'Execute a chat with a workspace'
+   #swagger.requestBody = {
+       description: 'prompt to send to the workspace and the type of conversation (query or chat).',
+       required: true,
+       type: 'object',
+       content: {
+         "application/json": {
+           example: {
+             message: "What is AnythingLLM?",
+             mode: "query | chat"
+           }
+         }
+       }
+     }
+   #swagger.responses[200] = {
+     content: {
+       "application/json": {
+         schema: {
+           type: 'object',
+           example: {
+              id: 'chat-uuid',
+              type: "abort | textResponse",
+              textResponse: "Response to your query",
+              sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM,"}],
+              close: true,
+              error: "null | text string of the failure mode."
+           }
+         }
+       }
+     }
+   }
+   #swagger.responses[403] = {
+     schema: {
+       "$ref": "#/definitions/InvalidAPIKey"
+     }
+   }
+   */
+      try {
+        const { slug } = request.params;
+        const { message, mode = "query" } = reqBody(request);
+        const workspace = await Workspace.get({ slug });
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const result = await chatWithWorkspace(workspace, message, mode);
+        await Telemetry.sendTelemetry("sent_chat", {
+          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        });
+        response.status(200).json({ ...result });
+      } catch (e) {
+        response.status(500).json({
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: e.message,
+        });
       }
     }
   );

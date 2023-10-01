@@ -24,7 +24,7 @@ const Pinecone = {
     if (!status.ready) throw new Error("Pinecode::Index not ready.");
     return { client, pineconeIndex, indexName: process.env.PINECONE_INDEX };
   },
-  totalIndicies: async function () {
+  totalVectors: async function () {
     const { pineconeIndex } = await this.connect();
     const { namespaces } = await pineconeIndex.describeIndexStats1();
     return Object.values(namespaces).reduce(
@@ -182,7 +182,7 @@ const Pinecone = {
     const { pineconeIndex } = await this.connect();
     if (!(await this.namespaceExists(pineconeIndex, namespace))) return;
 
-    const knownDocuments = await DocumentVectors.where(`docId = '${docId}'`);
+    const knownDocuments = await DocumentVectors.where({ docId });
     if (knownDocuments.length === 0) return;
 
     const vectorIds = knownDocuments.map((doc) => doc.vectorId);

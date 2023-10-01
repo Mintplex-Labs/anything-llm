@@ -30,7 +30,7 @@ const QDrant = {
     await this.connect();
     return { heartbeat: Number(new Date()) };
   },
-  totalIndicies: async function () {
+  totalVectors: async function () {
     const { client } = await this.connect();
     const { collections } = await client.getCollections();
     var totalVectors = 0;
@@ -246,7 +246,7 @@ const QDrant = {
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) return;
 
-    const knownDocuments = await DocumentVectors.where(`docId = '${docId}'`);
+    const knownDocuments = await DocumentVectors.where({ docId });
     if (knownDocuments.length === 0) return;
 
     const vectorIds = knownDocuments.map((doc) => doc.vectorId);

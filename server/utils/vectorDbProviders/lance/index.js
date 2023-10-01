@@ -28,7 +28,7 @@ const LanceDb = {
     const dirs = fs.readdirSync(client.uri);
     return dirs.map((folder) => folder.replace(".lance", ""));
   },
-  totalIndicies: async function () {
+  totalVectors: async function () {
     const { client } = await this.connect();
     const tables = await this.tables();
     let count = 0;
@@ -118,10 +118,11 @@ const LanceDb = {
 
     const { DocumentVectors } = require("../../../models/vectors");
     const table = await client.openTable(namespace);
-    const vectorIds = (await DocumentVectors.where(`docId = '${docId}'`)).map(
+    const vectorIds = (await DocumentVectors.where({ docId })).map(
       (record) => record.vectorId
     );
 
+    if (vectorIds.length === 0) return;
     await table.delete(`id IN (${vectorIds.map((v) => `'${v}'`).join(",")})`);
     return true;
   },

@@ -9,8 +9,8 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 ## How to install
 
 - `git clone` this repo and `cd anything-llm` to get to the root directory.
+- `yarn setup`
 - `cd docker/`
-- `cp .env.example .env` to create the `.env` file.
 - Edit `.env` file and update the variables
 - `docker-compose up -d --build` to build the image - this will take a few moments.
 
@@ -54,6 +54,8 @@ Out of the box, all vector databases are supported. Any vector databases requiri
 
 VECTOR_DB="chroma"
 CHROMA_ENDPOINT='http://host.docker.internal:8000' # Allow docker to look on host port, not container.
+# CHROMA_API_HEADER="X-Api-Key" // If you have an Auth middleware on your instance.
+# CHROMA_API_KEY="sk-123abc"
 
 ...other configs
 

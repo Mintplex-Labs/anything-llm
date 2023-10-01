@@ -3,6 +3,22 @@ import Workspace from "../../../../models/workspace";
 import paths from "../../../../utils/paths";
 import { chatPrompt } from "../../../../utils/chat";
 
+// Ensure that a type is correct before sending the body
+// to the backend.
+function castToType(key, value) {
+  const definitions = {
+    openAiTemp: {
+      cast: (value) => Number(value),
+    },
+    openAiHistory: {
+      cast: (value) => Number(value),
+    },
+  };
+
+  if (!definitions.hasOwnProperty(key)) return value;
+  return definitions[key].cast(value);
+}
+
 export default function WorkspaceSettings({ workspace }) {
   const formEl = useRef(null);
   const [saving, setSaving] = useState(false);
@@ -34,7 +50,7 @@ export default function WorkspaceSettings({ workspace }) {
     e.preventDefault();
     const data = {};
     const form = new FormData(formEl.current);
-    for (var [key, value] of form.entries()) data[key] = value;
+    for (var [key, value] of form.entries()) data[key] = castToType(key, value);
     const { workspace: updatedWorkspace, message } = await Workspace.update(
       workspace.slug,
       data

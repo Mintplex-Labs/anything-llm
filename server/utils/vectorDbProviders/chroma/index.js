@@ -13,6 +13,16 @@ const Chroma = {
 
     const client = new ChromaClient({
       path: process.env.CHROMA_ENDPOINT, // if not set will fallback to localhost:8000
+      ...(!!process.env.CHROMA_API_HEADER && !!process.env.CHROMA_API_KEY
+        ? {
+            fetchOptions: {
+              headers: {
+                [process.env.CHROMA_API_HEADER || "X-Api-Key"]:
+                  process.env.CHROMA_API_KEY,
+              },
+            },
+          }
+        : {}),
     });
 
     const isAlive = await client.heartbeat();
@@ -26,7 +36,7 @@ const Chroma = {
     const { client } = await this.connect();
     return { heartbeat: await client.heartbeat() };
   },
-  totalIndicies: async function () {
+  totalVectors: async function () {
     const { client } = await this.connect();
     const collections = await client.listCollections();
     var totalVectors = 0;
@@ -225,7 +235,7 @@ const Chroma = {
       name: namespace,
     });
 
-    const knownDocuments = await DocumentVectors.where(`docId = '${docId}'`);
+    const knownDocuments = await DocumentVectors.where({ docId });
     if (knownDocuments.length === 0) return;
 
     const vectorIds = knownDocuments.map((doc) => doc.vectorId);
