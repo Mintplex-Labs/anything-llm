@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "vite --open",
-    "dev": "vite --debug --host=0.0.0.0",
+    "dev": "NODE_ENV=development vite --debug --host=0.0.0.0",
     "build": "vite build",
     "lint": "yarn prettier --write ./src",
     "preview": "vite preview"
