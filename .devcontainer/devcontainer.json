@@ -41,35 +41,38 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "bierner.github-markdown-preview",
+        "bradlc.vscode-tailwindcss",
         "dbaeumer.vscode-eslint",
         "editorconfig.editorconfig",
-        "tombonnike.vscode-status-bar-format-toggle",
-        "exiasr.hadolint",
         "esbenp.prettier-vscode",
-        "streetsidesoftware.code-spell-checker",
-        "mariusschulz.yarn-lock-syntax",
-        "bradlc.vscode-tailwindcss",
-        "gamunu.vscode-yarn",
-        "ms-python.vscode-pylance",
-        "ms-python.python",
-        "flowtype.flow-for-vscode",
         "exiasr.hadolint",
-        "bierner.github-markdown-preview",
-        "socheatsok78-lab.dotenv-vscode-stripped",
-        "ms-azuretools.vscode-docker"
+        "flowtype.flow-for-vscode",
+        "gamunu.vscode-yarn",
+        "mariusschulz.yarn-lock-syntax",
+        "ms-azuretools.vscode-docker",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "streetsidesoftware.code-spell-checker",
+        "tombonnike.vscode-status-bar-format-toggle"
       ],
       "settings": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "[javascript]": {
+        "[css]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
-        "[javascriptreact]": {
+        "[dockercompose]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[dockerfile]": {
+          "editor.defaultFormatter": "ms-azuretools.vscode-docker"
         },
         "[html]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
-        "[css]": {
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascriptreact]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
         "[json]": {
@@ -78,20 +81,40 @@
         "[jsonc]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
-        "[postcss]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
         "[markdown]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
-        "[dockercompose]": {
+        "[postcss]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "eslint.debug": true,
+        "eslint.enable": true,
         "eslint.experimental.useFlatConfig": true,
+        "eslint.run": "onSave",
         "files.associations": {
+          ".*ignore": "ignore",
+          ".editorconfig": "editorconfig",
+          ".env*": "properties",
+          ".flowconfig": "ini",
+          ".prettierrc": "json",
           "*.css": "tailwindcss",
-          "Dockerfile*": "dockerfile"
+          "*.md": "markdown",
+          "*.sh": "shellscript",
+          "docker-compose.*": "dockercompose",
+          "Dockerfile*": "dockerfile",
+          "yarn.lock": "yarnlock"
         },
+        "javascript.format.enable": false,
+        "javascript.inlayHints.enumMemberValues.enabled": true,
+        "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
+        "javascript.inlayHints.parameterTypes.enabled": true,
+        "javascript.inlayHints.variableTypes.enabled": true,
+        "js/ts.implicitProjectConfig.module": "CommonJS",
+        "json.format.enable": false,
+        "npm.autoDetect": "on",
+        "npm.packageManager": "yarn",
+        "prettier.useEditorConfig": false,
         "tailwindCSS.files.exclude": [
           "**/.git/**",
           "**/node_modules/**",
@@ -99,17 +122,7 @@
           "**/.svn/**",
           "**/dist/**"
         ],
-        "prettier.useEditorConfig": false,
-        "json.format.enable": false,
-        "npm.autoDetect": "on",
-        "npm.packageManager": "yarn",
-        "js/ts.implicitProjectConfig.module": "CommonJS",
-        "typescript.validate.enable": false,
-        "javascript.format.enable": false,
-        "javascript.inlayHints.enumMemberValues.enabled": true,
-        "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
-        "javascript.inlayHints.parameterTypes.enabled": true,
-        "javascript.inlayHints.variableTypes.enabled": true
+        "typescript.validate.enable": false
       }
     }
   }

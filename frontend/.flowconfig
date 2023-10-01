@@ -1,14 +1,5 @@
-[ignore]
-.*/node_modules/resolve/test/.*
-
-
-[declarations]
-
-
-[libs]
-
-[lints]
-all=warn
+# How to config: https://flow.org/en/docs/config/
+[version]
 
 [options]
 all=false
@@ -16,8 +7,20 @@ emoji=false
 include_warnings=false
 lazy_mode=false
 
+[include]
+
+[ignore]
+.*/node_modules/resolve/test/.*
+
 [untyped]
-<PROJECT_ROOT>/src/models/.*
+# <PROJECT_ROOT>/src/models/.*
+
+[declarations]
+
+[libs]
+
+[lints]
+all=warn
 
 [strict]
 nonstrict-import

@@ -1,7 +1,3 @@
 {
-  "cSpell.words": ["openai", "Qdrant", "Weaviate"],
-  "eslint.enable": true,
-  "eslint.debug": true,
-  "eslint.run": "onSave",
-  "dotenv.enableAutocloaking": false
+  "cSpell.words": ["openai", "Qdrant", "Weaviate"]
 }
