@@ -4,11 +4,11 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "vite --debug --host=0.0.0.0",
+    "start": "vite --open",
+    "dev": "vite --debug --host=0.0.0.0",
     "build": "vite build",
     "lint": "yarn prettier --write ./src",
-    "preview": "vite preview",
-    "flow": "flow"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
@@ -46,7 +46,7 @@
     "flow-bin": "^0.217.0",
     "flow-remove-types": "^2.217.1",
     "globals": "^13.21.0",
-    "hermes-eslint": "^0.16.0",
+    "hermes-eslint": "^0.15.0",
     "postcss": "^8.4.23",
     "prettier": "^3.0.3",
     "rollup-plugin-visualizer": "^5.9.0",

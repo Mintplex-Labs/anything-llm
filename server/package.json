@@ -24,7 +24,7 @@
     "@googleapis/youtube": "^9.0.0",
     "@pinecone-database/pinecone": "^0.1.6",
     "@prisma/client": "5.3.0",
-    "@qdrant/js-client-rest": "^1.4.0",
+    "@qdrant/js-client-rest": "^1.5.0",
     "archiver": "^5.3.1",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
@@ -64,8 +64,9 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "flow-bin": "^0.217.0",
+    "flow-remove-types": "^2.217.1",
     "globals": "^13.21.0",
-    "hermes-eslint": "^0.16.0",
+    "hermes-eslint": "^0.15.0",
     "nodemon": "^2.0.22",
     "prettier": "^3.0.3"
   }
