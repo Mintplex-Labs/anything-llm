@@ -1,5 +1,7 @@
 version: '3.9'
 
+name: anythingllm
+
 networks:
   anything-llm:
     driver: bridge

@@ -1,3 +1,4 @@
+import os
 from flask import Flask, json, request
 from scripts.watch.process_single import process_single
 from scripts.watch.filetypes import ACCEPTED_MIMES
@@ -7,7 +8,7 @@ WATCH_DIRECTORY = "hotdir"
 @api.route('/process', methods=['POST'])
 def process_file():
   content = request.json
-  target_filename = content.get('filename')
+  target_filename = os.path.normpath(content.get('filename')).lstrip(os.pardir + os.sep)
   print(f"Processing {target_filename}")
   success, reason = process_single(WATCH_DIRECTORY, target_filename)
   return json.dumps({'filename': target_filename, 'success': success, 'reason': reason})

@@ -13,6 +13,16 @@ const Chroma = {
 
     const client = new ChromaClient({
       path: process.env.CHROMA_ENDPOINT, // if not set will fallback to localhost:8000
+      ...(!!process.env.CHROMA_API_HEADER && !!process.env.CHROMA_API_KEY
+        ? {
+            fetchOptions: {
+              headers: {
+                [process.env.CHROMA_API_HEADER || "X-Api-Key"]:
+                  process.env.CHROMA_API_KEY,
+              },
+            },
+          }
+        : {}),
     });
 
     const isAlive = await client.heartbeat();
