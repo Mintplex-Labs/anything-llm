@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Admin from "../../../../models/admin";
 import showToast from "../../../../utils/toast";
+import { Trash } from "@phosphor-icons/react";
 
 export default function ApiKeyRow({ apiKey }) {
   const rowRef = useRef(null);
@@ -37,10 +38,13 @@ export default function ApiKeyRow({ apiKey }) {
 
   return (
     <>
-      <tr ref={rowRef} className="bg-transparent">
+      <tr
+        ref={rowRef}
+        className="bg-transparent text-white text-opacity-80 text-sm font-medium"
+      >
         <td
           scope="row"
-          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white font-mono"
+          className="px-6 py-4 whitespace-nowrap"
         >
           {apiKey.secret}
         </td>
@@ -52,15 +56,15 @@ export default function ApiKeyRow({ apiKey }) {
           <button
             onClick={copyApiKey}
             disabled={copied}
-            className="font-medium text-blue-600 dark:text-blue-300 px-2 py-1 rounded-lg hover:bg-blue-50 hover:dark:bg-blue-800 hover:dark:bg-opacity-20"
+            className="font-medium text-blue-300 rounded-lg hover:text-white hover:text-opacity-60 hover:underline"
           >
             {copied ? "Copied" : "Copy API Key"}
           </button>
           <button
             onClick={handleDelete}
-            className="font-medium text-red-600 dark:text-red-300 px-2 py-1 rounded-lg hover:bg-red-50 hover:dark:bg-red-800 hover:dark:bg-opacity-20"
+            className="font-medium text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
           >
-            Deactivate API Key
+            <Trash className="h-5 w-5" />
           </button>
         </td>
       </tr>

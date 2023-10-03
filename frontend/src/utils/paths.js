@@ -33,6 +33,20 @@ export default {
   apiDocs: () => {
     return `${API_BASE}/docs`;
   },
+  general: {
+    llmPreference: () => {
+      return "/general/llm-preference";
+    },
+    vectorDatabase: () => {
+      return "/general/vector-database";
+    },
+    exportImport: () => {
+      return "/general/export-import";
+    },
+    security: () => {
+      return "/general/security";
+    },
+  },
   admin: {
     system: () => {
       return `/admin/system-preferences`;

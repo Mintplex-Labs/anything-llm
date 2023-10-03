@@ -51,35 +51,35 @@ export default function AdminSystem() {
           onChange={() => setHasChanges(true)}
           className="flex w-full"
         >
-          <div className="flex flex-col w-full px-1 md:px-8">
-            <div className="w-full flex flex-col gap-y-1">
+          <div className="flex flex-col w-full px-1 md:px-20 py-12">
+            <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
               <div className="items-center flex gap-x-4">
-                <p className="text-3xl font-semibold text-slate-600 dark:text-slate-200">
+                <p className="text-2xl font-semibold text-white">
                   System Preferences
                 </p>
                 {hasChanges && (
                   <button
                     type="submit"
                     disabled={saving}
-                    className="border border-slate-800 dark:border-slate-200 px-4 py-1 rounded-lg text-slate-800 dark:text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-800 hover:text-slate-100 dark:hover:bg-slate-200 dark:hover:text-slate-800"
+                    className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
                   >
                     {saving ? "Saving..." : "Save changes"}
                   </button>
                 )}
               </div>
-              <p className="text-sm font-base text-slate-600 dark:text-slate-200">
+              <p className="text-sm font-base text-white text-opacity-60">
                 These are the overall settings and configurations of your
                 instance.
               </p>
             </div>
 
-            <div className="my-4">
+            <div className="my-5">
               <div className="flex flex-col gap-y-2 mb-2.5">
-                <label className="leading-tight font-medium text-black dark:text-white">
+                <label className="leading-tight font-semibold text-white">
                   Users can delete workspaces
                 </label>
-                <p className="leading-tight text-sm text-gray-500 dark:text-slate-400">
-                  allow non-admin users to delete workspaces that they are a
+                <p className="leading-tight text-sm text-white text-opacity-60 w-96">
+                  Allow non-admin users to delete workspaces that they are a
                   part of. This would delete the workspace for everyone.
                 </p>
               </div>
@@ -91,7 +91,7 @@ export default function AdminSystem() {
                   onChange={(e) => setCanDelete(e.target.checked)}
                   className="peer sr-only"
                 />
-                <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"></div>
+                <div className="pointer-events-none peer h-6 w-11 rounded-full after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-300 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 border-gray-600 bg-white bg-opacity-40 peer-focus:ring-blue-800"></div>
                 <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
               </label>
             </div>
@@ -101,7 +101,7 @@ export default function AdminSystem() {
                 <label className="leading-tight font-medium text-black dark:text-white">
                   Limit messages per user per day
                 </label>
-                <p className="leading-tight text-sm text-gray-500 dark:text-slate-400">
+                <p className="leading-tight text-sm text-white text-opacity-60 w-96">
                   Restrict non-admin users to a number of successful queries or
                   chats within a 24 hour window. Enable this to prevent users
                   from running up OpenAI costs.
@@ -121,7 +121,7 @@ export default function AdminSystem() {
                   }}
                   className="peer sr-only"
                 />
-                <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"></div>
+                <div className="pointer-events-none peer h-6 w-11 rounded-full after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-300 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 border-gray-600 bg-white bg-opacity-40 peer-focus:ring-blue-800"></div>
                 <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
               </label>
             </div>

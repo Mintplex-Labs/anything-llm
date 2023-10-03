@@ -35,7 +35,7 @@ export default function Sidebar() {
       <div
         ref={sidebarRef}
         style={{ height: "calc(100% - 32px)" }}
-        className="relative transition-all duration-500 m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[15.5%] p-[18px] flex flex-col"
+        className="relative transition-all duration-500 m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px] flex flex-col"
       >
         <SettingsOverlay />
         <div className="flex flex-col h-full overflow-x-hidden">
@@ -96,26 +96,26 @@ export default function Sidebar() {
                 <div className="flex space-x-4">
                   <a
                     href={paths.github()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:opacity-80"
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                   >
                     <GithubLogo weight="fill" className="h-5 w-5 " />
                   </a>
                   <a
                     href={paths.docs()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:opacity-80"
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                   >
                     <BookOpen weight="fill" className="h-5 w-5 " />
                   </a>
                   <a
                     href={paths.discord()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:opacity-80"
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                   >
                     <DiscordLogo
                       weight="fill"
                       className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
                     />
                   </a>
-                  <button className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:opacity-80">
+                  <button className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
                     <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
                   </button>
                 </div>
@@ -329,16 +329,25 @@ function LogoutButton() {
 }
 
 function SettingsButton({ onClick }) {
-  const { user } = useUser();
+  // const { user } = useUser();
 
-  if (!!user && user?.role !== "admin") return null;
+  // if (!!user && user?.role !== "admin") return null;
+  // return (
+  //   <button
+  //     onClick={onClick}
+  //     className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+  //   >
+  //     <Wrench className="h-4 w-4" weight="fill" />
+  //   </button>
+  // );
+
   return (
-    <button
-      onClick={onClick}
-      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:opacity-80"
+    <a
+      href={paths.admin.system()}
+      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
     >
-      <Wrench className="h-5 w-5 white-fill" />
-    </button>
+      <Wrench className="h-4 w-4" />
+    </a>
   );
 }
 

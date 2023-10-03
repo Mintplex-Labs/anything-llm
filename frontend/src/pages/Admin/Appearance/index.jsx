@@ -106,21 +106,23 @@ export default function Appearance() {
         className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient md:min-w-[82%] p-[18px] h-full overflow-y-scroll"
       >
         {isMobile && <SidebarMobileHeader />}
-        <div className="px-1 md:px-8">
-          <div className="mb-6">
-            <p className="text-3xl font-semibold text-slate-600 dark:text-slate-200">
-              Appearance Settings
-            </p>
-            <p className="mt-2 text-sm font-base text-slate-600 dark:text-slate-200">
+        <div className="flex flex-col w-full px-1 md:px-20 py-12">
+          <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+            <div className="items-center flex gap-x-4">
+              <p className="text-2xl font-semibold text-white">
+                Appearance Settings
+              </p>
+            </div>
+            <p className="text-sm font-base text-white text-opacity-60">
               Customize the appearance settings of your platform.
             </p>
           </div>
-          <div className="mb-6">
+          <div className="my-6">
             <div className="flex flex-col gap-y-2">
-              <h2 className="leading-tight font-medium text-black dark:text-white">
+              <h2 className="leading-tight font-medium text-white">
                 Custom Logo
               </h2>
-              <p className="leading-tight text-sm text-gray-500 dark:text-slate-400">
+              <p className="text-sm font-base text-white text-opacity-60">
                 Change the logo that appears in the sidebar.
               </p>
             </div>
