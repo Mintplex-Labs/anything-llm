@@ -3,6 +3,7 @@ import Sidebar, { SidebarMobileHeader } from "../../../components/AdminSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "../../../models/admin";
 import showToast from "../../../utils/toast";
+import { CloudArrowUp } from "@phosphor-icons/react";
 
 export default function GeneralExportImport() {
   const [saving, setSaving] = useState(false);
@@ -68,9 +69,23 @@ export default function GeneralExportImport() {
                 )}
               </div>
               <p className="text-sm font-base text-white text-opacity-60">
-              Have multiple AnythingLLM instances or simply want to backup or re-import data from another instance? You can do so here.</p>
+                Have multiple AnythingLLM instances or simply want to backup or
+                re-import data from another instance? You can do so here.
+              </p>
             </div>
-            <p>EXPORT IMPORT</p>
+            <div className="text-white text-sm font-medium py-4">
+              This will not automatically sync your vector database embeddings.
+            </div>
+
+            <div className="max-w-[600px] py-4 bg-zinc-900 bg-opacity-50 rounded-2xl border-2 border-white border-opacity-60 justify-center items-center inline-flex">
+              <div className="flex flex-col items-center justify-center">
+                <CloudArrowUp className="w-8 h-8 text-white/80" />
+                <div className="text-white text-opacity-80 text-sm font-semibold py-1">Import AnythingLLM Data</div>
+                <div className="text-white text-opacity-60 text-xs font-medium py-1">This must be an export from an AnythingLLM instance.</div>
+              </div>
+            </div>
+
+
           </div>
         </form>
       </div>

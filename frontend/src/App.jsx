@@ -16,9 +16,15 @@ const AdminSystem = lazy(() => import("./pages/Admin/System"));
 const AdminAppearance = lazy(() => import("./pages/Admin/Appearance"));
 const AdminApiKeys = lazy(() => import("./pages/Admin/ApiKeys"));
 
-const GeneralLLMPreference = lazy(() => import("./pages/GeneralSettings/LLMPreference"));
-const GeneralVectorDatabase = lazy(() => import("./pages/GeneralSettings/VectorDatabase"));
-const GeneralExportImport = lazy(() => import("./pages/GeneralSettings/ExportImport"));
+const GeneralLLMPreference = lazy(() =>
+  import("./pages/GeneralSettings/LLMPreference")
+);
+const GeneralVectorDatabase = lazy(() =>
+  import("./pages/GeneralSettings/VectorDatabase")
+);
+const GeneralExportImport = lazy(() =>
+  import("./pages/GeneralSettings/ExportImport")
+);
 const GeneralSecurity = lazy(() => import("./pages/GeneralSettings/Security"));
 
 export default function App() {
@@ -32,7 +38,6 @@ export default function App() {
             element={<PrivateRoute Component={WorkspaceChat} />}
           />
           <Route path="/accept-invite/:code" element={<InvitePage />} />
-
 
           {/* General Routes */}
           <Route

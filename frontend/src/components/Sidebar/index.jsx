@@ -35,7 +35,7 @@ export default function Sidebar() {
       <div
         ref={sidebarRef}
         style={{ height: "calc(100% - 32px)" }}
-        className="relative transition-all duration-500 m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px] flex flex-col"
+        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px]"
       >
         <SettingsOverlay />
         <div className="flex flex-col h-full overflow-x-hidden">
@@ -329,24 +329,24 @@ function LogoutButton() {
 }
 
 function SettingsButton({ onClick }) {
-  // const { user } = useUser();
+  const { user } = useUser();
 
-  // if (!!user && user?.role !== "admin") return null;
-  // return (
-  //   <button
-  //     onClick={onClick}
-  //     className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-  //   >
-  //     <Wrench className="h-4 w-4" weight="fill" />
-  //   </button>
-  // );
+  if (!!user && user?.role !== "admin") return null;
+  return (
+    <button
+      onClick={onClick}
+      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+    >
+      <Wrench className="h-4 w-4" weight="fill" />
+    </button>
+  );
 
   return (
     <a
       href={paths.admin.system()}
       className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
     >
-      <Wrench className="h-4 w-4" />
+      <Wrench className="h-4 w-4" weight="fill" />
     </a>
   );
 }

@@ -1,41 +1,52 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar, { SidebarMobileHeader } from "../../../components/AdminSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "../../../models/admin";
+import System from "../../../models/system";
 import showToast from "../../../utils/toast";
+import OpenAiLogo from "../../../media/llmprovider/openai.png";
+import AzureOpenAiLogo from "../../../media/llmprovider/azure.png";
+import AnthropicLogo from "../../../media/llmprovider/anthropic.png";
+import useUser from "../../../hooks/useUser";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [canDelete, setCanDelete] = useState(false);
-  const [messageLimit, setMessageLimit] = useState({
-    enabled: false,
-    limit: 10,
-  });
+  const [llmChoice, setLLMChoice] = useState("openai");
+  const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [canDebug, setCanDebug] = useState(true);
+
+  const { user } = useUser();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    await Admin.updateSystemPreferences({
-      users_can_delete_workspaces: canDelete,
-      limit_user_messages: messageLimit.enabled,
-      message_limit: messageLimit.limit,
-    });
+    const data = {};
+    const form = new FormData(e.target);
+    for (var [key, value] of form.entries()) data[key] = value;
+    const { error } = await System.updateSystem(data);
+    if (error) {
+      showToast(`Failed to save LLM settings: ${error}`, "error");
+    } else {
+      showToast("LLM preferences saved successfully.", "success");
+    }
     setSaving(false);
-    setHasChanges(false);
-    showToast("System preferences updated successfully.", "success");
+    setHasChanges(!!error ? true : false);
+  };
+
+  const updateLLMChoice = (selection) => {
+    setLLMChoice(selection);
+    setHasChanges(true);
   };
 
   useEffect(() => {
-    async function fetchSettings() {
-      const { settings } = await Admin.systemPreferences();
-      if (!settings) return;
-      setCanDelete(settings?.users_can_delete_workspaces);
-      setMessageLimit({
-        enabled: settings.limit_user_messages,
-        limit: settings.message_limit,
-      });
+    async function fetchKeys() {
+      const _settings = await System.keys();
+      setSettings(_settings);
+      setLoading(false);
     }
-    fetchSettings();
+    fetchKeys();
   }, []);
 
   return (
@@ -68,13 +79,218 @@ export default function GeneralLLMPreference() {
                 )}
               </div>
               <p className="text-sm font-base text-white text-opacity-60">
-              These are the credentials and settings for your preferred LLM chat & embedding provider. Its important these keys are current and correct or else AnythingLLM will not function properly.
+                These are the credentials and settings for your preferred LLM
+                chat & embedding provider. Its important these keys are current
+                and correct or else AnythingLLM will not function properly.
               </p>
             </div>
-            <p>LLM PREFERENCE</p>
+            <div className="text-white text-sm font-medium py-4">
+              LLM Providers
+            </div>
+            <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
+              <input hidden={true} name="LLMProvider" value={llmChoice} />
+              <LLMProviderOption
+                name="OpenAI"
+                value="openai"
+                link="openai.com"
+                description="The standard option for most non-commercial use. Provides both chat and embedding."
+                checked={llmChoice === "openai"}
+                image={OpenAiLogo}
+                onClick={updateLLMChoice}
+              />
+              <LLMProviderOption
+                name="Azure OpenAI"
+                value="azure"
+                link="azure.microsoft.com"
+                description="The enterprise option of OpenAI hosted on Azure services. Provides both chat and embedding."
+                checked={llmChoice === "azure"}
+                image={AzureOpenAiLogo}
+                onClick={updateLLMChoice}
+              />
+              <LLMProviderOption
+                name="Anthropic Claude 2"
+                value="anthropic-claude-2"
+                link="anthropic.com"
+                description="[COMING SOON] A friendly AI Assistant hosted by Anthropic. Provides chat services only!"
+                checked={llmChoice === "anthropic-claude-2"}
+                image={AnthropicLogo}
+              />
+            </div>
+            <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
+              {llmChoice === "openai" && (
+                <>
+                  <div className="flex flex-col w-60">
+                    <label className="text-white text-sm font-semibold block mb-4">
+                      API Key
+                    </label>
+                    <input
+                      type="text"
+                      name="OpenAiKey"
+                      disabled={!canDebug}
+                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      placeholder="OpenAI API Key"
+                      defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
+                      required={true}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+
+                  <div className="flex flex-col w-60">
+                    <label className="text-white text-sm font-semibold block mb-4">
+                      Chat Model Selection
+                    </label>
+                    <select
+                      disabled={!canDebug}
+                      name="OpenAiModelPref"
+                      defaultValue={settings?.OpenAiModelPref}
+                      required={true}
+                      className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+                    >
+                      {[
+                        "gpt-3.5-turbo",
+                        "gpt-3.5-turbo-0613",
+                        "gpt-3.5-turbo-16k",
+                        "gpt-4",
+                        "gpt-4-0613",
+                        "gpt-4-32k",
+                        "gpt-4-32k-0613",
+                      ].map((model) => {
+                        return (
+                          <option key={model} value={model}>
+                            {model}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                </>
+              )}
+
+              {llmChoice === "azure" && (
+                <>
+                  <div className="flex flex-col w-60">
+                    <label className="text-white text-sm font-semibold block mb-4">
+                      Azure Service Endpoint
+                    </label>
+                    <input
+                      type="url"
+                      name="AzureOpenAiEndpoint"
+                      disabled={!canDebug}
+                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      placeholder="https://my-azure.openai.azure.com"
+                      defaultValue={settings?.AzureOpenAiEndpoint}
+                      required={true}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+
+                  <div className="flex flex-col w-60">
+                    <label className="text-white text-sm font-semibold block mb-4">
+                      API Key
+                    </label>
+                    <input
+                      type="password"
+                      name="AzureOpenAiKey"
+                      disabled={!canDebug}
+                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      placeholder="Azure OpenAI API Key"
+                      defaultValue={
+                        settings?.AzureOpenAiKey ? "*".repeat(20) : ""
+                      }
+                      required={true}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+
+                  <div className="flex flex-col w-60">
+                    <label className="text-white text-sm font-semibold block mb-4">
+                      Chat Model Deployment Name
+                    </label>
+                    <input
+                      type="text"
+                      name="AzureOpenAiModelPref"
+                      disabled={!canDebug}
+                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      placeholder="Azure OpenAI chat model deployment name"
+                      defaultValue={settings?.AzureOpenAiModelPref}
+                      required={true}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+
+                  <div className="flex flex-col w-60">
+                    <label className="text-white text-sm font-semibold block mb-4">
+                      Embedding Model Deployment Name
+                    </label>
+                    <input
+                      type="text"
+                      name="AzureOpenAiEmbeddingModelPref"
+                      disabled={!canDebug}
+                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      placeholder="Azure OpenAI embedding model deployment name"
+                      defaultValue={settings?.AzureOpenAiEmbeddingModelPref}
+                      required={true}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                  </div>
+                </>
+              )}
+
+              {llmChoice === "anthropic-claude-2" && (
+                <div className="w-full h-40 items-center justify-center flex">
+                  <p className="text-gray-800 dark:text-slate-400">
+                    This provider is unavailable and cannot be used in
+                    AnythingLLM currently.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </form>
       </div>
     </div>
   );
 }
+
+const LLMProviderOption = ({
+  name,
+  link,
+  description,
+  value,
+  image,
+  checked = false,
+  onClick,
+}) => {
+  return (
+    <div onClick={() => onClick(value)}>
+      <input
+        type="checkbox"
+        value={value}
+        className="peer hidden"
+        checked={checked}
+        readOnly={true}
+        formNoValidate={true}
+      />
+      <label className="transition-all duration-300 inline-flex flex-col h-full w-60 cursor-pointer items-start justify-between rounded-2xl bg-preference-gradient border-2 border-transparent shadow-md px-5 py-4 text-white hover:bg-selected-preference-gradient hover:text-opacity-50 hover:border-white/60 peer-checked:border-white peer-checked:border-opacity-90 peer-checked:bg-selected-preference-gradient">
+        <div className="flex items-center">
+          <img src={image} alt={name} className="h-10 w-10 rounded" />
+          <div className="ml-4 text-sm font-semibold">{name}</div>
+        </div>
+        <div className="mt-2 text-xs font-base text-white tracking-wide">
+          {description}
+        </div>
+        <a
+          href={`https://${link}`}
+          className="mt-2 text-xs text-white font-medium underline"
+        >
+          {link}
+        </a>
+      </label>
+    </div>
+  );
+};

@@ -68,7 +68,8 @@ export default function GeneralSecurity() {
                 )}
               </div>
               <p className="text-sm font-base text-white text-opacity-60">
-              Set up your instance to support your team by activating Multi-User Mode.
+                Set up your instance to support your team by activating
+                Multi-User Mode.
               </p>
             </div>
             <p>SECURITY</p>

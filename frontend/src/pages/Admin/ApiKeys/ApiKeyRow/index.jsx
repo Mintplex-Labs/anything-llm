@@ -42,10 +42,7 @@ export default function ApiKeyRow({ apiKey }) {
         ref={rowRef}
         className="bg-transparent text-white text-opacity-80 text-sm font-medium"
       >
-        <td
-          scope="row"
-          className="px-6 py-4 whitespace-nowrap"
-        >
+        <td scope="row" className="px-6 py-4 whitespace-nowrap">
           {apiKey.secret}
         </td>
         <td className="px-6 py-4">

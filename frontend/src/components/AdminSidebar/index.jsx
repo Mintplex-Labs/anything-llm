@@ -31,7 +31,7 @@ export default function AdminSidebar() {
       <div
         ref={sidebarRef}
         style={{ height: "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px] "
+        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px]"
       >
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
           {/* Header Information */}

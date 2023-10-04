@@ -33,7 +33,8 @@ export default function AdminApiKeys() {
               </button>
             </div>
             <p className="text-sm font-base text-white text-opacity-60">
-              API keys allow the holder to programmatically access and manage this AnythingLLM instance.
+              API keys allow the holder to programmatically access and manage
+              this AnythingLLM instance.
             </p>
             <a
               href={paths.apiDocs()}
