@@ -235,7 +235,9 @@ export default function GeneralVectorDatabase() {
                       name="ChromaApiKey"
                       autoComplete="off"
                       type="password"
-                      defaultValue={settings?.ChromaApiKey ? "*".repeat(20) : ""}
+                      defaultValue={
+                        settings?.ChromaApiKey ? "*".repeat(20) : ""
+                      }
                       className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                       placeholder="sk-myApiKeyToAccessMyChromaInstance"
                     />
@@ -324,7 +326,7 @@ export default function GeneralVectorDatabase() {
                   </div>
                 </>
               )}
-              </div>
+            </div>
           </div>
         </form>
       </div>

@@ -77,15 +77,23 @@ export default function GeneralExportImport() {
               This will not automatically sync your vector database embeddings.
             </div>
 
-            <div className="max-w-[600px] py-4 bg-zinc-900 bg-opacity-50 rounded-2xl border-2 border-white border-opacity-60 justify-center items-center inline-flex">
+            <div className="max-w-[600px] py-4 bg-zinc-900/50 rounded-2xl border-2 border-dashed border-white border-opacity-60 justify-center items-center inline-flex">
               <div className="flex flex-col items-center justify-center">
                 <CloudArrowUp className="w-8 h-8 text-white/80" />
-                <div className="text-white text-opacity-80 text-sm font-semibold py-1">Import AnythingLLM Data</div>
-                <div className="text-white text-opacity-60 text-xs font-medium py-1">This must be an export from an AnythingLLM instance.</div>
+                <div className="text-white text-opacity-80 text-sm font-semibold py-1">
+                  Import AnythingLLM Data
+                </div>
+                <div className="text-white text-opacity-60 text-xs font-medium py-1">
+                  This must be an export from an AnythingLLM instance.
+                </div>
               </div>
             </div>
 
-
+            <div className="transition-all max-w-[600px] bg-white rounded-lg justify-center items-center my-8 cursor-pointer text-zinc-900 border-transparent border-2 hover:bg-zinc-900/50 hover:text-white hover:border-white">
+              <div className="duration-300 text-center text-sm font-bold py-3">
+                Export AnythingLLM Data
+              </div>
+            </div>
           </div>
         </form>
       </div>

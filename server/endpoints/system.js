@@ -32,7 +32,7 @@ const {
   validFilename,
   renameLogoFile,
   removeCustomLogo,
-  DARK_LOGO_FILENAME,
+  LOGO_FILENAME,
 } = require("../utils/files/logo");
 const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
@@ -380,9 +380,9 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/logo/:mode?", async function (request, response) {
+  app.get("/system/logo", async function (request, response) {
     try {
-      const defaultFilename = getDefaultFilename(request.params.mode);
+      const defaultFilename = getDefaultFilename();
       const logoPath = await determineLogoFilepath(defaultFilename);
       const { buffer, size, mime } = fetchLogo(logoPath);
       response.writeHead(200, {
@@ -444,6 +444,20 @@ function systemEndpoints(app) {
   );
 
   app.get(
+    "/system/is-default-logo",
+    async (request, response) => {
+      try {
+        const currentLogoFilename = await SystemSettings.currentLogoFilename();
+        const isDefaultLogo = currentLogoFilename === LOGO_FILENAME;
+        response.status(200).json({ isDefaultLogo });
+      } catch (error) {
+        console.error("Error processing the logo request:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  )
+
+  app.get(
     "/system/remove-logo",
     [validatedRequest],
     async (request, response) => {
@@ -458,7 +472,7 @@ function systemEndpoints(app) {
         const currentLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(currentLogoFilename);
         const { success, error } = await SystemSettings.updateSettings({
-          logo_filename: DARK_LOGO_FILENAME,
+          logo_filename: LOGO_FILENAME,
         });
 
         return response.status(success ? 200 : 500).json({

@@ -3,8 +3,7 @@ import useLogo from "../../../../hooks/useLogo";
 import usePrefersDarkMode from "../../../../hooks/usePrefersDarkMode";
 import System from "../../../../models/system";
 import EditingChatBubble from "../../../EditingChatBubble";
-import AnythingLLMLight from "../../../../media/logo/anything-llm-light.png";
-import AnythingLLMDark from "../../../../media/logo/anything-llm-dark.png";
+import AnythingLLM from "../../../../media/logo/anything-llm.png";
 import showToast from "../../../../utils/toast";
 
 export default function Appearance() {
@@ -121,9 +120,7 @@ export default function Appearance() {
                 alt="Uploaded Logo"
                 className="w-48 h-48 object-contain mr-6"
                 onError={(e) =>
-                  (e.target.src = prefersDarkMode
-                    ? AnythingLLMLight
-                    : AnythingLLMDark)
+                  (e.target.src = AnythingLLM)
                 }
               />
               <div className="flex flex-col">

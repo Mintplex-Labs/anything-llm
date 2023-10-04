@@ -162,8 +162,8 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  fetchLogo: async function (light = false) {
-    return await fetch(`${API_BASE}/system/logo${light ? "/light" : ""}`, {
+  fetchLogo: async function () {
+    return await fetch(`${API_BASE}/system/logo`, {
       method: "GET",
       cache: "no-cache",
     })
@@ -172,6 +172,21 @@ const System = {
         throw new Error("Failed to fetch logo!");
       })
       .then((blob) => URL.createObjectURL(blob))
+      .catch((e) => {
+        console.log(e);
+        return null;
+      });
+  },
+  isDefaultLogo: async function () {
+    return await fetch(`${API_BASE}/system/is-default-logo`, {
+      method: "GET",
+      cache: "no-cache",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to get is default logo!");
+        return res.json();
+      })
+      .then((res) => res?.isDefaultLogo)
       .catch((e) => {
         console.log(e);
         return null;
