@@ -284,12 +284,12 @@ export function SidebarMobileHeader() {
                     icon={<MessageSquare className="h-4 w-4 flex-shrink-0" />}
                   />
                   <Option
-                    href={paths.admin.appearance()}
+                    href={paths.general.appearance()}
                     btnText="Appearance"
                     icon={<Eye className="h-4 w-4 flex-shrink-0" />}
                   />
                   <Option
-                    href={paths.admin.apiKeys()}
+                    href={paths.general.apiKeys()}
                     btnText="API Keys"
                     icon={<Key className="h-4 w-4 flex-shrink-0" />}
                   />
