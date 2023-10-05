@@ -356,34 +356,32 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get(
-    "/system/data-exports/:filename",
-    [validatedRequest],
-    (request, response) => {
-      const exportLocation = __dirname + "/../storage/exports/";
-      const sanitized = path
-        .normalize(request.params.filename)
-        .replace(/^(\.\.(\/|\\|$))+/, "");
-      const finalDestination = path.join(exportLocation, sanitized);
+  app.get("/system/data-exports/:filename", (request, response) => {
+    const exportLocation = __dirname + "/../storage/exports/";
+    const sanitized = path
+      .normalize(request.params.filename)
+      .replace(/^(\.\.(\/|\\|$))+/, "");
+    const finalDestination = path.join(exportLocation, sanitized);
 
-      if (!fs.existsSync(finalDestination)) {
-        response.status(404).json({
-          error: 404,
-          msg: `File ${request.params.filename} does not exist in exports.`,
-        });
-        return;
-      }
-
-      response.download(finalDestination, request.params.filename, (err) => {
-        if (err) {
-          response.send({
-            error: err,
-            msg: "Problem downloading the file",
-          });
-        }
+    if (!fs.existsSync(finalDestination)) {
+      response.status(404).json({
+        error: 404,
+        msg: `File ${request.params.filename} does not exist in exports.`,
       });
+      return;
     }
-  );
+
+    response.download(finalDestination, request.params.filename, (err) => {
+      if (err) {
+        response.send({
+          error: err,
+          msg: "Problem downloading the file",
+        });
+      }
+      // delete on download because endpoint is not authenticated.
+      fs.rmSync(finalDestination);
+    });
+  });
 
   app.post(
     "/system/data-import",

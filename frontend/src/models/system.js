@@ -164,6 +164,7 @@ const System = {
     return await fetch(`${API_BASE}/system/upload-logo`, {
       method: "POST",
       body: formData,
+      headers: baseHeaders(),
     })
       .then((res) => {
         if (!res.ok) throw new Error("Error uploading logo.");
@@ -205,7 +206,9 @@ const System = {
       });
   },
   removeCustomLogo: async function () {
-    return await fetch(`${API_BASE}/system/remove-logo`)
+    return await fetch(`${API_BASE}/system/remove-logo`, {
+      headers: baseHeaders(),
+    })
       .then((res) => {
         if (res.ok) return { success: true, error: null };
         throw new Error("Error removing logo!");
