@@ -23,7 +23,7 @@ import {
 } from "@phosphor-icons/react";
 import useUser from "../../hooks/useUser";
 
-export default function AdminSidebar() {
+export default function SettingsSidebar() {
   const { logo } = useLogo();
   const sidebarRef = useRef(null);
   const { user } = useUser();

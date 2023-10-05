@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "../../../components/AdminSidebar";
+import Sidebar, {
+  SidebarMobileHeader,
+} from "../../../components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";

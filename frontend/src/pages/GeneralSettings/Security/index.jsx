@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "../../../components/AdminSidebar";
+import Sidebar, {
+  SidebarMobileHeader,
+} from "../../../components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import showToast from "../../../utils/toast";
 import System from "../../../models/system";
