@@ -316,7 +316,7 @@ function systemEndpoints(app) {
 
         updateENV(
           {
-            AuthToken: '',
+            AuthToken: "",
             JWTSecret: process.env.JWT_SECRET ?? v4(),
           },
           true

@@ -1,4 +1,4 @@
-import { API_BASE } from "../utils/constants";
+import { API_BASE, AUTH_TIMESTAMP } from "../utils/constants";
 import { baseHeaders } from "../utils/request";
 
 const System = {
@@ -39,12 +39,22 @@ const System = {
       .then((res) => res.localFiles)
       .catch(() => null);
   },
+  needsAuthCheck: function () {
+    const lastAuthCheck = window.localStorage.getItem(AUTH_TIMESTAMP);
+    if (!lastAuthCheck) return true;
+    const expiresAtMs = Number(lastAuthCheck) + 60 * 5 * 1000; // expires in 5 minutes in ms
+    return Number(new Date()) > expiresAtMs;
+  },
+
   checkAuth: async function (currentToken = null) {
-    return await fetch(`${API_BASE}/system/check-token`, {
+    const valid = await fetch(`${API_BASE}/system/check-token`, {
       headers: baseHeaders(currentToken),
     })
       .then((res) => res.ok)
       .catch(() => false);
+
+    window.localStorage.setItem(AUTH_TIMESTAMP, Number(new Date()));
+    return valid;
   },
   requestToken: async function (body) {
     return await fetch(`${API_BASE}/request-token`, {
