@@ -1,4 +1,3 @@
-import { Frown } from "react-feather";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import { useEffect, useRef } from "react";
@@ -16,16 +15,24 @@ export default function ChatHistory({ history = [], workspace }) {
 
   if (history.length === 0) {
     return (
-      <div className="flex flex-col h-[89%] md:mt-0 pb-5 w-full justify-center items-center">
-        <div className="w-fit flex items-center gap-x-2">
-          <Frown className="h-4 w-4 text-slate-400" />
-          <p className="text-slate-400">No chat history found.</p>
-        </div>
-        <p className="text-slate-400 text-xs">
-          Send your first message to get started.
-        </p>
+      <div className="flex flex-col h-full md:mt-0 pb-48 w-full justify-end items-center">
+          <div className="flex flex-col items-start">
+              <p className="text-white/60 text-lg font-base -ml-6 py-4">
+                  Welcome to your new workspace.
+              </p>
+              <div className="w-full text-center">
+                  <p className="text-white/60 text-lg font-base inline-flex items-center gap-x-2">
+                      To get started either{" "}
+                      <span className="underline font-medium cursor-pointer">
+                          upload a document{" "}
+                      </span>
+                      or <b className="font-medium">send a chat.</b>
+                  </p>
+              </div>
+          </div>
       </div>
-    );
+  );
+
   }
 
   return (
