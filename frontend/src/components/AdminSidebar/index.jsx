@@ -21,10 +21,13 @@ import {
   DotsThree,
   X,
 } from "@phosphor-icons/react";
+import useUser from "../../hooks/useUser";
 
 export default function AdminSidebar() {
   const { logo } = useLogo();
   const sidebarRef = useRef(null);
+  const { user } = useUser();
+
 
   return (
     <>

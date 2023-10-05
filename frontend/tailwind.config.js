@@ -29,7 +29,14 @@ export default {
       animation: {
         'slow-pulse': 'subtlePulse 20s infinite',
         'slow-shift': 'subtleShift 20s infinite',
+        sweep: 'sweep 0.5s ease-in-out',
       },
+      keyframes: {
+        sweep: {
+          '0%': { transform: 'scaleX(0)', transformOrigin: 'bottom left' },
+          '100%': { transform: 'scaleX(1)', transformOrigin: 'bottom left' },
+        },
+      }
     },
   },
   plugins: [],

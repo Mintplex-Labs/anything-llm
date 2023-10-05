@@ -331,6 +331,16 @@ function systemEndpoints(app) {
     }
   );
 
+  app.get("/system/multi-user-mode", async (request, response) => {
+    try {
+      const multiUserMode = await SystemSettings.isMultiUserMode();
+      response.status(200).json({ multiUserMode });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
   app.get("/system/data-export", [validatedRequest], async (_, response) => {
     try {
       const { filename, error } = await exportData();
@@ -443,19 +453,16 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get(
-    "/system/is-default-logo",
-    async (request, response) => {
-      try {
-        const currentLogoFilename = await SystemSettings.currentLogoFilename();
-        const isDefaultLogo = currentLogoFilename === LOGO_FILENAME;
-        response.status(200).json({ isDefaultLogo });
-      } catch (error) {
-        console.error("Error processing the logo request:", error);
-        response.status(500).json({ message: "Internal server error" });
-      }
+  app.get("/system/is-default-logo", async (request, response) => {
+    try {
+      const currentLogoFilename = await SystemSettings.currentLogoFilename();
+      const isDefaultLogo = currentLogoFilename === LOGO_FILENAME;
+      response.status(200).json({ isDefaultLogo });
+    } catch (error) {
+      console.error("Error processing the logo request:", error);
+      response.status(500).json({ message: "Internal server error" });
     }
-  )
+  });
 
   app.get(
     "/system/remove-logo",

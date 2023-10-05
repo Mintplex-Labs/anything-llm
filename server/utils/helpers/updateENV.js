@@ -169,7 +169,7 @@ function updateENV(newENVs = {}, force = false) {
   let error = "";
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
-    (key) => validKeys.includes(key) && !newENVs[key].includes("******") // strip out answers where the value is all asterisks
+    (key) => validKeys.includes(key) && newENVs[key] && !newENVs[key].includes("******") // strip out answers where the value is all asterisks
   );
   const newValues = {};
 

@@ -44,32 +44,31 @@ export default function Appearance() {
     formData.append("logo", file);
     const { success, error } = await Admin.uploadLogo(formData);
     if (!success) {
-        showToast(`Failed to upload logo: ${error}`, "error");
-        setLogo(_initLogo);
-        return;
+      showToast(`Failed to upload logo: ${error}`, "error");
+      setLogo(_initLogo);
+      return;
     }
 
     showToast("Image uploaded successfully.", "success");
     setIsDefaultLogo(false);
-};
+  };
 
-const handleRemoveLogo = async () => {
+  const handleRemoveLogo = async () => {
     setLogo("");
     setIsDefaultLogo(true);
 
     const { success, error } = await Admin.removeCustomLogo();
     if (!success) {
-        console.error("Failed to remove logo:", error);
-        showToast(`Failed to remove logo: ${error}`, "error");
-        const logoURL = await System.fetchLogo();
-        setLogo(logoURL);
-        setIsDefaultLogo(false);
-        return;
+      console.error("Failed to remove logo:", error);
+      showToast(`Failed to remove logo: ${error}`, "error");
+      const logoURL = await System.fetchLogo();
+      setLogo(logoURL);
+      setIsDefaultLogo(false);
+      return;
     }
 
     showToast("Image successfully removed.", "success");
-};
-
+  };
 
   const addMessage = (type) => {
     if (type === "user") {
@@ -136,17 +135,18 @@ const handleRemoveLogo = async () => {
               </p>
             </div>
             <div className="flex md:flex-row flex-col items-center">
-                <img
-                  src={logo}
-                  alt="Uploaded Logo"
-                  className="w-48 h-48 object-contain mr-6"
-                  hidden={isDefaultLogo}
-                  onError={(e) =>
-                    (e.target.src = AnythingLLM)
-                  }
-                />
+              <img
+                src={logo}
+                alt="Uploaded Logo"
+                className="w-48 h-48 object-contain mr-6"
+                hidden={isDefaultLogo}
+                onError={(e) => (e.target.src = AnythingLLM)}
+              />
               <div className="flex flex-row gap-x-8">
-                <label className="mt-5 hover:opacity-60" hidden={!isDefaultLogo}>
+                <label
+                  className="mt-5 transition-all duration-300 hover:opacity-60"
+                  hidden={!isDefaultLogo}
+                >
                   <input
                     id="logo-upload"
                     type="file"

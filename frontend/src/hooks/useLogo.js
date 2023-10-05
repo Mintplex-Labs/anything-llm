@@ -9,9 +9,7 @@ export default function useLogo() {
     async function fetchInstanceLogo() {
       try {
         const logoURL = await System.fetchLogo();
-        logoURL
-          ? setLogo(logoURL)
-          : setLogo(AnythingLLM);
+        logoURL ? setLogo(logoURL) : setLogo(AnythingLLM);
       } catch (err) {
         setLogo(AnythingLLM);
         console.error("Failed to fetch logo:", err);

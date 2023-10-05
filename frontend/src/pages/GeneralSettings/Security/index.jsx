@@ -1,53 +1,71 @@
 import { useEffect, useState } from "react";
 import Sidebar, { SidebarMobileHeader } from "../../../components/AdminSidebar";
 import { isMobile } from "react-device-detect";
-import Admin from "../../../models/admin";
 import showToast from "../../../utils/toast";
 import System from "../../../models/system";
 import paths from "../../../utils/paths";
 import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
+import PreLoader from "../../../components/Preloader";
 
 export default function GeneralSecurity() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [canDelete, setCanDelete] = useState(false);
-  const [messageLimit, setMessageLimit] = useState({
-    enabled: false,
-    limit: 10,
-  });
   const [useMultiUserMode, setUseMultiUserMode] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [multiUserModeEnabled, setMultiUserModeEnabled] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    await Admin.updateSystemPreferences({
-      users_can_delete_workspaces: canDelete,
-      limit_user_messages: messageLimit.enabled,
-      message_limit: messageLimit.limit,
-    });
-    setSaving(false);
-    setHasChanges(false);
-    showToast("System preferences updated successfully.", "success");
+
+    if (useMultiUserMode) {
+      const form = new FormData(e.target);
+      const data = {
+        username: form.get("username"),
+        password: form.get("password"),
+      };
+
+      const { success, error } = await System.setupMultiUser(data);
+      if (success) {
+        showToast("Multi-User mode enabled successfully.", "success");
+        setSaving(false);
+        setTimeout(() => {
+          window.localStorage.removeItem(AUTH_USER);
+          window.localStorage.removeItem(AUTH_TOKEN);
+          window.location = paths.admin.users();
+        }, 2_000);
+        return;
+      }
+
+      showToast(`Failed to enable Multi-User mode: ${error}`, "error");
+      setSaving(false);
+      return;
+    }
   };
 
   useEffect(() => {
-    async function fetchSettings() {
-      const { settings } = await Admin.systemPreferences();
-      if (!settings) return;
-      setCanDelete(settings?.users_can_delete_workspaces);
-      setMessageLimit({
-        enabled: settings.limit_user_messages,
-        limit: settings.message_limit,
-      });
+    async function fetchIsMultiUserMode() {
+      setLoading(true);
+      const multiUserModeEnabled = await System.isMultiUserMode();
+      setMultiUserModeEnabled(multiUserModeEnabled);
+      setLoading(false);
     }
-    fetchSettings();
+    fetchIsMultiUserMode();
   }, []);
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       {!isMobile && <Sidebar />}
+      {loading ? (
+        <div
+          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+          className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient md:min-w-[82%] p-[18px] h-full overflow-y-scroll animate-pulse"
+        >
+          <div className="w-full h-full flex justify-center items-center">
+            <PreLoader />
+          </div>
+        </div>
+      ) : (
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient md:min-w-[82%] p-[18px] h-full overflow-y-scroll"
@@ -82,90 +100,68 @@ export default function GeneralSecurity() {
             <div className="relative w-full max-h-full">
               <div className="relative rounded-lg">
                 <div className="flex items-start justify-between px-6 py-4"></div>
-                {(error || success) && (
-                  <div className="w-full flex px-6">
-                    {error && (
-                      <div className="w-full bg-red-300 text-red-800 font-semibold px-4 py-2 rounded-lg">
-                        {error}
-                      </div>
-                    )}
-                    {success && (
-                      <div className="w-full bg-green-300 text-green-800 font-semibold px-4 py-2 rounded-lg">
-                        Your page will refresh in a few seconds.
-                      </div>
-                    )}
-                  </div>
-                )}
                 <div className="space-y-6 flex h-full w-full">
                   <div className="w-full flex flex-col gap-y-4">
-                    <form onSubmit={handleSubmit}>
-                      <div className="">
-                        <label className="mb-2.5 block font-medium text-white">
-                          Enable Multi-User Mode
-                        </label>
+                    <div className="">
+                      <label className="mb-2.5 block font-medium text-white">
+                        {multiUserModeEnabled ? "Multi-User Mode is Enabled" : "Enable Multi-User Mode" }
+                      </label>
 
-                        <label className="relative inline-flex cursor-pointer items-center">
-                          <input
-                            type="checkbox"
-                            onClick={() =>
-                              setUseMultiUserMode(!useMultiUserMode)
-                            }
-                            checked={useMultiUserMode}
-                            className="peer sr-only pointer-events-none"
-                          />
-                          <div className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"></div>
-                        </label>
-                      </div>
-                      <div className="w-full flex flex-col gap-y-2 my-5">
-                        {useMultiUserMode && (
-                          <>
-                            <div className="w-80">
-                              <label
-                                htmlFor="username"
-                                className="block mb-3 font-medium text-white"
-                              >
-                                Admin account username
-                              </label>
-                              <input
-                                name="username"
-                                type="text"
-                                className="bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
-                                placeholder="Your admin username"
-                                minLength={2}
-                                required={true}
-                                autoComplete="off"
-                              />
-                            </div>
-                            <div className="mt-4 w-80">
-                              <label
-                                htmlFor="password"
-                                className="block mb-3 font-medium text-white"
-                              >
-                                Admin account password
-                              </label>
-                              <input
-                                name="password"
-                                type="text"
-                                className="bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
-                                placeholder="Your admin password"
-                                minLength={8}
-                                required={true}
-                                autoComplete="off"
-                              />
-                            </div>
-                            {/* <button
-                              disabled={saving}
-                              type="submit"
-                              className="text-gray-300 bg-gray-700 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-600 rounded-lg border border-gray-500 text-sm font-medium px-5 py-2.5 hover:text-white focus:z-10"
+                      <label className="relative inline-flex cursor-pointer items-center">
+                        <input
+                          type="checkbox"
+                          onClick={() => setUseMultiUserMode(!useMultiUserMode)}
+                          checked={useMultiUserMode}
+                          className="peer sr-only pointer-events-none"
+
+                        />
+                        <div hidden={multiUserModeEnabled} className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"></div>
+                      </label>
+                    </div>
+                    <div className="w-full flex flex-col gap-y-2 my-5">
+                      {useMultiUserMode && (
+                        <>
+                          <div className="w-80">
+                            <label
+                              htmlFor="username"
+                              className="block mb-3 font-medium text-white"
                             >
-                              {saving
-                                ? "Enabling..."
-                                : "Enable Multi-User mode"}
-                            </button> */}
-                          </>
-                        )}
-                      </div>
-                    </form>
+                              Admin account username
+                            </label>
+                            <input
+                              name="username"
+                              type="text"
+                              className="bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
+                              placeholder="Your admin username"
+                              minLength={2}
+                              required={true}
+                              autoComplete="off"
+                              disabled={multiUserModeEnabled}
+                              defaultValue={multiUserModeEnabled ? "********" : ""}
+                            />
+                          </div>
+                          <div className="mt-4 w-80">
+                            <label
+                              htmlFor="password"
+                              className="block mb-3 font-medium text-white"
+                            >
+                              Admin account password
+                            </label>
+                            <input
+                              name="password"
+                              type="text"
+                              className="bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
+                              placeholder="Your admin password"
+                              minLength={8}
+                              required={true}
+                              autoComplete="off"
+                              disabled={multiUserModeEnabled}
+                              defaultValue={multiUserModeEnabled ? "********" : ""}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between space-x-14">
@@ -175,19 +171,13 @@ export default function GeneralSecurity() {
                     lose your password as only an Admin user can reset
                     passwords.
                   </p>
-                  {/* <button
-                    onClick={handleSubmit}
-                    type="button"
-                    className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:white dark:text-neutral-700 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-                  >
-                    Continue
-                  </button> */}
                 </div>
               </div>
             </div>
           </div>
         </form>
       </div>
+      )}
     </div>
   );
 }

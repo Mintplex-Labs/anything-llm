@@ -4,7 +4,6 @@ import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { UserPlus } from "react-feather";
-import usePrefersDarkMode from "../../../hooks/usePrefersDarkMode";
 import Admin from "../../../models/admin";
 import UserRow from "./UserRow";
 import useUser from "../../../hooks/useUser";
@@ -48,7 +47,6 @@ export default function AdminUsers() {
 
 function UsersContainer() {
   const { user: currUser } = useUser();
-  const darkMode = usePrefersDarkMode();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   useEffect(() => {

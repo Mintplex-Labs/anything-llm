@@ -111,6 +111,18 @@ const System = {
         return { success: false, error: e.message };
       });
   },
+  isMultiUserMode: async () => {
+    return await fetch(`${API_BASE}/system/multi-user-mode`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.multiUserMode)
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
   deleteDocument: async (name, meta) => {
     return await fetch(`${API_BASE}/system/remove-document`, {
       method: "DELETE",

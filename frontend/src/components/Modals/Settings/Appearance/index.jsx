@@ -119,9 +119,7 @@ export default function Appearance() {
                 src={logo}
                 alt="Uploaded Logo"
                 className="w-48 h-48 object-contain mr-6"
-                onError={(e) =>
-                  (e.target.src = AnythingLLM)
-                }
+                onError={(e) => (e.target.src = AnythingLLM)}
               />
               <div className="flex flex-col">
                 <div className="mb-4">
