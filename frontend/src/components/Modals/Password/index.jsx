@@ -32,6 +32,7 @@ export default function PasswordModal({ mode = "single" }) {
 
 export function usePasswordModal() {
   const [auth, setAuth] = useState({
+    loading: true,
     required: false,
     mode: "single",
   });
@@ -39,14 +40,26 @@ export function usePasswordModal() {
   useEffect(() => {
     async function checkAuthReq() {
       if (!window) return;
-      const settings = await System.keys();
 
+      // If the last validity check is still valid
+      // we can skip the loading.
+      if (!System.needsAuthCheck()) {
+        setAuth({
+          loading: false,
+          requiresAuth: false,
+          mode: "multi",
+        });
+        return;
+      }
+
+      const settings = await System.keys();
       if (settings?.MultiUserMode) {
         const currentToken = window.localStorage.getItem(AUTH_TOKEN);
         if (!!currentToken) {
           const valid = await System.checkAuth(currentToken);
           if (!valid) {
             setAuth({
+              loading: false,
               requiresAuth: true,
               mode: "multi",
             });
@@ -55,6 +68,7 @@ export function usePasswordModal() {
             return;
           } else {
             setAuth({
+              loading: false,
               requiresAuth: false,
               mode: "multi",
             });
@@ -62,6 +76,7 @@ export function usePasswordModal() {
           }
         } else {
           setAuth({
+            loading: false,
             requiresAuth: true,
             mode: "multi",
           });
@@ -73,6 +88,7 @@ export function usePasswordModal() {
         const requiresAuth = settings?.RequiresAuth || false;
         if (!requiresAuth) {
           setAuth({
+            loading: false,
             requiresAuth: false,
             mode: "single",
           });
@@ -84,6 +100,7 @@ export function usePasswordModal() {
           const valid = await System.checkAuth(currentToken);
           if (!valid) {
             setAuth({
+              loading: false,
               requiresAuth: true,
               mode: "single",
             });
@@ -91,6 +108,7 @@ export function usePasswordModal() {
             return;
           } else {
             setAuth({
+              loading: false,
               requiresAuth: false,
               mode: "single",
             });
@@ -98,6 +116,7 @@ export function usePasswordModal() {
           }
         } else {
           setAuth({
+            loading: false,
             requiresAuth: true,
             mode: "single",
           });
