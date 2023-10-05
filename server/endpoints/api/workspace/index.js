@@ -3,7 +3,10 @@ const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
-const { convertToChatHistory } = require("../../../utils/chats");
+const {
+  convertToChatHistory,
+  chatWithWorkspace,
+} = require("../../../utils/chats");
 const { getVectorDbClass } = require("../../../utils/helpers");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
@@ -424,6 +427,78 @@ function apiWorkspaceEndpoints(app) {
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/v1/workspace/:slug/chat",
+    [validApiKey],
+    async (request, response) => {
+      /*
+   #swagger.tags = ['Workspaces']
+   #swagger.description = 'Execute a chat with a workspace'
+   #swagger.requestBody = {
+       description: 'prompt to send to the workspace and the type of conversation (query or chat).',
+       required: true,
+       type: 'object',
+       content: {
+         "application/json": {
+           example: {
+             message: "What is AnythingLLM?",
+             mode: "query | chat"
+           }
+         }
+       }
+     }
+   #swagger.responses[200] = {
+     content: {
+       "application/json": {
+         schema: {
+           type: 'object',
+           example: {
+              id: 'chat-uuid',
+              type: "abort | textResponse",
+              textResponse: "Response to your query",
+              sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM,"}],
+              close: true,
+              error: "null | text string of the failure mode."
+           }
+         }
+       }
+     }
+   }
+   #swagger.responses[403] = {
+     schema: {
+       "$ref": "#/definitions/InvalidAPIKey"
+     }
+   }
+   */
+      try {
+        const { slug } = request.params;
+        const { message, mode = "query" } = reqBody(request);
+        const workspace = await Workspace.get({ slug });
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const result = await chatWithWorkspace(workspace, message, mode);
+        await Telemetry.sendTelemetry("sent_chat", {
+          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        });
+        response.status(200).json({ ...result });
+      } catch (e) {
+        response.status(500).json({
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: e.message,
+        });
       }
     }
   );

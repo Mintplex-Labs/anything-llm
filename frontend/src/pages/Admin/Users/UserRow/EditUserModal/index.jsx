@@ -89,7 +89,7 @@ export default function EditUserModal({ user }) {
                     defaultValue={user.role}
                     className="rounded-lg bg-gray-50 px-4 py-2 text-sm text-gray-800 outline-none dark:text-slate-200 dark:bg-stone-600"
                   >
-                    <option value="default">Member</option>
+                    <option value="default">Default</option>
                     <option value="admin">Administrator</option>
                   </select>
                 </div>

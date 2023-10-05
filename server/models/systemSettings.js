@@ -34,6 +34,8 @@ const SystemSettings = {
       ...(vectorDB === "chroma"
         ? {
             ChromaEndpoint: process.env.CHROMA_ENDPOINT,
+            ChromaApiHeader: process.env.CHROMA_API_HEADER,
+            ChromaApiKey: !!process.env.CHROMA_API_KEY,
           }
         : {}),
       ...(vectorDB === "weaviate"

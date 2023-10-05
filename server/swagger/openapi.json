@@ -1531,6 +1531,90 @@
         }
       }
     },
+    "/v1/workspace/{slug}/chat": {
+      "post": {
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Execute a chat with a workspace",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "id": "chat-uuid",
+                    "type": "abort | textResponse",
+                    "textResponse": "Response to your query",
+                    "sources": [
+                      {
+                        "title": "anythingllm.txt",
+                        "chunk": "This is a context chunk used in the answer of the prompt by the LLM,"
+                      }
+                    ],
+                    "close": true,
+                    "error": "null | text string of the failure mode."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "prompt to send to the workspace and the type of conversation (query or chat).",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "message": "What is AnythingLLM?",
+                "mode": "query | chat"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/system/env-dump": {
       "get": {
         "tags": [
