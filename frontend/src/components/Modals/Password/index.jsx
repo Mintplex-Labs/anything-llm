@@ -3,9 +3,9 @@ import System from "../../../models/system";
 import SingleUserAuth from "./SingleUserAuth";
 import MultiUserAuth from "./MultiUserAuth";
 import {
-  AUTH_TIMESTAMP,
   AUTH_TOKEN,
   AUTH_USER,
+  AUTH_TIMESTAMP,
 } from "../../../utils/constants";
 import useLogo from "../../../hooks/useLogo";
 
