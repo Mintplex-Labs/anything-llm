@@ -3,18 +3,17 @@ const fs = require("fs");
 const { getType } = require("mime");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../../models/systemSettings");
-const LIGHT_LOGO_FILENAME = "anything-llm-light.png";
-const DARK_LOGO_FILENAME = "anything-llm-dark.png";
+const LOGO_FILENAME = "anything-llm.png";
 
 function validFilename(newFilename = "") {
-  return ![DARK_LOGO_FILENAME, LIGHT_LOGO_FILENAME].includes(newFilename);
+  return ![LOGO_FILENAME].includes(newFilename);
 }
 
-function getDefaultFilename(mode = "dark") {
-  return mode === "light" ? DARK_LOGO_FILENAME : LIGHT_LOGO_FILENAME;
+function getDefaultFilename() {
+  return LOGO_FILENAME;
 }
 
-async function determineLogoFilepath(defaultFilename = DARK_LOGO_FILENAME) {
+async function determineLogoFilepath(defaultFilename = LOGO_FILENAME) {
   const currentLogoFilename = await SystemSettings.currentLogoFilename();
   const basePath = path.join(__dirname, "../../storage/assets");
   const defaultFilepath = path.join(basePath, defaultFilename);
@@ -53,7 +52,7 @@ async function renameLogoFile(originalFilename = null) {
   return newFilename;
 }
 
-async function removeCustomLogo(logoFilename = DARK_LOGO_FILENAME) {
+async function removeCustomLogo(logoFilename = LOGO_FILENAME) {
   if (!logoFilename || !validFilename(logoFilename)) return false;
   const logoPath = path.join(__dirname, `../../storage/assets/${logoFilename}`);
   if (fs.existsSync(logoPath)) fs.unlinkSync(logoPath);
@@ -67,6 +66,5 @@ module.exports = {
   validFilename,
   getDefaultFilename,
   determineLogoFilepath,
-  LIGHT_LOGO_FILENAME,
-  DARK_LOGO_FILENAME,
+  LOGO_FILENAME,
 };

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { X } from "react-feather";
 import Admin from "../../../../models/admin";
 import paths from "../../../../utils/paths";
+import { userFromStorage } from "../../../../utils/request";
+import System from "../../../../models/system";
 const DIALOG_ID = `new-api-key-modal`;
 
 function hideModal() {
@@ -17,7 +19,10 @@ export default function NewApiKeyModal() {
   const handleCreate = async (e) => {
     setError(null);
     e.preventDefault();
-    const { apiKey: newApiKey, error } = await Admin.generateApiKey();
+    const user = userFromStorage();
+    const Model = !!user ? Admin : System;
+
+    const { apiKey: newApiKey, error } = await Model.generateApiKey();
     if (!!newApiKey) setApiKey(newApiKey);
     setError(error);
   };

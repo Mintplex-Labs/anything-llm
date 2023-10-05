@@ -54,7 +54,7 @@ const User = {
 
   delete: async function (clause = {}) {
     try {
-      await prisma.users.delete({ where: clause });
+      await prisma.users.deleteMany({ where: clause });
       return true;
     } catch (error) {
       console.error(error.message);

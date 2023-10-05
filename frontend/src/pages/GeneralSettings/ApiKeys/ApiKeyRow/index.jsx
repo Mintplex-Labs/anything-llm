@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import Admin from "../../../../models/admin";
 import showToast from "../../../../utils/toast";
+import { Trash } from "@phosphor-icons/react";
+import { userFromStorage } from "../../../../utils/request";
+import System from "../../../../models/system";
 
 export default function ApiKeyRow({ apiKey }) {
   const rowRef = useRef(null);
@@ -15,9 +18,13 @@ export default function ApiKeyRow({ apiKey }) {
     if (rowRef?.current) {
       rowRef.current.remove();
     }
-    await Admin.deleteApiKey(apiKey.id);
+
+    const user = userFromStorage();
+    const Model = !!user ? Admin : System;
+    await Model.deleteApiKey(apiKey.id);
     showToast("API Key permanently deleted", "info");
   };
+
   const copyApiKey = () => {
     if (!apiKey) return false;
     window.navigator.clipboard.writeText(apiKey.secret);
@@ -37,30 +44,30 @@ export default function ApiKeyRow({ apiKey }) {
 
   return (
     <>
-      <tr ref={rowRef} className="bg-transparent">
-        <td
-          scope="row"
-          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white font-mono"
-        >
+      <tr
+        ref={rowRef}
+        className="bg-transparent text-white text-opacity-80 text-sm font-medium"
+      >
+        <td scope="row" className="px-6 py-4 whitespace-nowrap">
           {apiKey.secret}
         </td>
-        <td className="px-6 py-4">
-          {apiKey.createdBy?.username || "unknown user"}
+        <td className="px-6 py-4 text-center">
+          {apiKey.createdBy?.username || "--"}
         </td>
         <td className="px-6 py-4">{apiKey.createdAt}</td>
         <td className="px-6 py-4 flex items-center gap-x-6">
           <button
             onClick={copyApiKey}
             disabled={copied}
-            className="font-medium text-blue-600 dark:text-blue-300 px-2 py-1 rounded-lg hover:bg-blue-50 hover:dark:bg-blue-800 hover:dark:bg-opacity-20"
+            className="font-medium text-blue-300 rounded-lg hover:text-white hover:text-opacity-60 hover:underline"
           >
             {copied ? "Copied" : "Copy API Key"}
           </button>
           <button
             onClick={handleDelete}
-            className="font-medium text-red-600 dark:text-red-300 px-2 py-1 rounded-lg hover:bg-red-50 hover:dark:bg-red-800 hover:dark:bg-opacity-20"
+            className="font-medium text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
           >
-            Deactivate API Key
+            <Trash className="h-5 w-5" />
           </button>
         </td>
       </tr>

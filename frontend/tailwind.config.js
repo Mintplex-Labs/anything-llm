@@ -8,11 +8,18 @@ export default {
         'sidebar': '#25272C',
         'accent': '#3D4147',
         'sidebar-button': '#31353A',
+        'sidebar': '#25272C',
+        'accent': '#3D4147',
+        'sidebar-button': '#31353A',
       },
       backgroundImage: {
+        'preference-gradient': 'linear-gradient(180deg, #5A5C63 0%, rgba(90, 92, 99, 0.28) 100%);',
+        'selected-preference-gradient': 'linear-gradient(180deg, #313236 0%, rgba(63.40, 64.90, 70.13, 0) 100%);',
         'main-gradient': 'linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)',
         'modal-gradient': 'linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)',
         'sidebar-gradient': 'linear-gradient(90deg, #5B616A 0%, #3F434B 100%)',
+        'menu-item-gradient': 'linear-gradient(90deg, #3D4147 0%, #2C2F35 100%)',
+        'menu-item-selected-gradient': 'linear-gradient(90deg, #5B616A 0%, #3F434B 100%)',
         'workspace-item-gradient': 'linear-gradient(90deg, #3D4147 0%, #2C2F35 100%)',
         'workspace-item-selected-gradient': 'linear-gradient(90deg, #5B616A 0%, #3F434B 100%)',
       },
@@ -22,7 +29,14 @@ export default {
       animation: {
         'slow-pulse': 'subtlePulse 20s infinite',
         'slow-shift': 'subtleShift 20s infinite',
+        sweep: 'sweep 0.5s ease-in-out',
       },
+      keyframes: {
+        sweep: {
+          '0%': { transform: 'scaleX(0)', transformOrigin: 'bottom left' },
+          '100%': { transform: 'scaleX(1)', transformOrigin: 'bottom left' },
+        },
+      }
     },
   },
   plugins: [],

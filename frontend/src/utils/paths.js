@@ -33,6 +33,26 @@ export default {
   apiDocs: () => {
     return `${API_BASE}/docs`;
   },
+  general: {
+    llmPreference: () => {
+      return "/general/llm-preference";
+    },
+    vectorDatabase: () => {
+      return "/general/vector-database";
+    },
+    exportImport: () => {
+      return "/general/export-import";
+    },
+    security: () => {
+      return "/general/security";
+    },
+    appearance: () => {
+      return "/general/appearance";
+    },
+    apiKeys: () => {
+      return "/general/api-keys";
+    },
+  },
   admin: {
     system: () => {
       return `/admin/system-preferences`;
@@ -48,12 +68,6 @@ export default {
     },
     chats: () => {
       return "/admin/workspace-chats";
-    },
-    appearance: () => {
-      return "/admin/appearance";
-    },
-    apiKeys: () => {
-      return "/admin/api-keys";
     },
   },
 };

@@ -1,37 +1,44 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  BookOpen,
-  Eye,
-  GitHub,
-  Key,
-  Mail,
-  Menu,
-  MessageSquare,
-  Settings,
-  Users,
-  X,
-} from "react-feather";
+import { GitHub, Mail, Menu, MessageSquare, Settings } from "react-feather";
 import IndexCount from "../Sidebar/IndexCount";
 import LLMStatus from "../Sidebar/LLMStatus";
 import paths from "../../utils/paths";
-import Discord from "../Icons/Discord";
 import useLogo from "../../hooks/useLogo";
+import {
+  DiscordLogo,
+  EnvelopeSimple,
+  SquaresFour,
+  Users,
+  BookOpen,
+  ChatCenteredText,
+  Eye,
+  Key,
+  ChatText,
+  Database,
+  DownloadSimple,
+  Lock,
+  GithubLogo,
+  DotsThree,
+  X,
+} from "@phosphor-icons/react";
+import useUser from "../../hooks/useUser";
 
-export default function AdminSidebar() {
+export default function SettingsSidebar() {
   const { logo } = useLogo();
   const sidebarRef = useRef(null);
+  const { user } = useUser();
 
   return (
     <>
       <div
         ref={sidebarRef}
         style={{ height: "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-white dark:bg-black-900 min-w-[15.5%] p-[18px] "
+        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px]"
       >
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
           {/* Header Information */}
           <div className="flex w-full items-center justify-between">
-            <div className="flex shrink-0 max-w-[50%] items-center justify-start">
+            <div className="flex shrink-0 max-w-[65%] items-center justify-start ml-2">
               <img
                 src={logo}
                 alt="Logo"
@@ -42,90 +49,123 @@ export default function AdminSidebar() {
             <div className="flex gap-x-2 items-center text-slate-500">
               <a
                 href={paths.home()}
-                className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+                className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
               >
                 <X className="h-4 w-4" />
               </a>
             </div>
           </div>
-
+          <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-4 mb-0 ml-2">
+            Settings
+          </div>
           {/* Primary Body */}
           <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
-            <div className="h-auto sidebar-items dark:sidebar-items">
-              <div className="flex flex-col gap-y-4 h-[65vh] pb-8 overflow-y-scroll no-scroll">
+            <div className="h-auto sidebar-items">
+              <div className="flex flex-col gap-y-2 h-[65vh] pb-8 overflow-y-scroll no-scroll">
+                {/* Admin Settings */}
+                {user?.role === "admin" && (
+                  <>
+                    <Option
+                      href={paths.admin.system()}
+                      btnText="System Preferences"
+                      icon={<SquaresFour className="h-5 w-5 flex-shrink-0" />}
+                    />
+                    <Option
+                      href={paths.admin.invites()}
+                      btnText="Invitation"
+                      icon={
+                        <EnvelopeSimple className="h-5 w-5 flex-shrink-0" />
+                      }
+                    />
+                    <Option
+                      href={paths.admin.users()}
+                      btnText="Users"
+                      icon={<Users className="h-5 w-5 flex-shrink-0" />}
+                    />
+                    <Option
+                      href={paths.admin.workspaces()}
+                      btnText="Workspaces"
+                      icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
+                    />
+                    <Option
+                      href={paths.admin.chats()}
+                      btnText="Workspace Chat"
+                      icon={
+                        <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
+                      }
+                    />
+                  </>
+                )}
+
+                {/* General Settings */}
                 <Option
-                  href={paths.admin.system()}
-                  btnText="System Preferences"
-                  icon={<Settings className="h-4 w-4 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.admin.invites()}
-                  btnText="Invitation Management"
-                  icon={<Mail className="h-4 w-4 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.admin.users()}
-                  btnText="User Management"
-                  icon={<Users className="h-4 w-4 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.admin.workspaces()}
-                  btnText="Workspace Management"
-                  icon={<BookOpen className="h-4 w-4 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.admin.chats()}
-                  btnText="Workspace Chat Management"
-                  icon={<MessageSquare className="h-4 w-4 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.admin.appearance()}
+                  href={paths.general.appearance()}
                   btnText="Appearance"
-                  icon={<Eye className="h-4 w-4 flex-shrink-0" />}
+                  icon={<Eye className="h-5 w-5 flex-shrink-0" />}
                 />
                 <Option
-                  href={paths.admin.apiKeys()}
+                  href={paths.general.apiKeys()}
                   btnText="API Keys"
-                  icon={<Key className="h-4 w-4 flex-shrink-0" />}
+                  icon={<Key className="h-5 w-5 flex-shrink-0" />}
+                />
+                <Option
+                  href={paths.general.llmPreference()}
+                  btnText="LLM Preference"
+                  icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
+                />
+                <Option
+                  href={paths.general.vectorDatabase()}
+                  btnText="Vector Database"
+                  icon={<Database className="h-5 w-5 flex-shrink-0" />}
+                />
+                <Option
+                  href={paths.general.exportImport()}
+                  btnText="Export or Import"
+                  icon={<DownloadSimple className="h-5 w-5 flex-shrink-0" />}
+                />
+                <Option
+                  href={paths.general.security()}
+                  btnText="Security"
+                  icon={<Lock className="h-5 w-5 flex-shrink-0" />}
                 />
               </div>
             </div>
             <div>
-              <div className="flex flex-col gap-y-2">
+              {/* <div className="flex flex-col gap-y-2">
                 <div className="w-full flex items-center justify-between">
                   <LLMStatus />
                   <IndexCount />
                 </div>
-              </div>
+              </div> */}
 
               {/* Footer */}
-              <div className="flex items-end justify-between mt-2">
-                <div className="flex gap-x-1 items-center">
+              <div className="flex justify-center mt-2">
+                <div className="flex space-x-4">
                   <a
                     href={paths.github()}
-                    className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-slate-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                   >
-                    <GitHub className="h-4 w-4 " />
+                    <GithubLogo weight="fill" className="h-5 w-5 " />
                   </a>
                   <a
                     href={paths.docs()}
-                    className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-slate-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                   >
-                    <BookOpen className="h-4 w-4 " />
+                    <BookOpen weight="fill" className="h-5 w-5 " />
                   </a>
                   <a
                     href={paths.discord()}
-                    className="transition-all duration-300 p-2 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-800 group"
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                   >
-                    <Discord className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
+                    <DiscordLogo
+                      weight="fill"
+                      className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
+                    />
                   </a>
+                  <button className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
+                    <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
+                  </button>
                 </div>
-                <a
-                  href={paths.mailToMintplex()}
-                  className="transition-all duration-300 text-xs text-slate-200 dark:text-slate-600 hover:text-blue-600 dark:hover:text-blue-400"
-                >
-                  @MintplexLabs
-                </a>
               </div>
             </div>
           </div>
@@ -244,12 +284,12 @@ export function SidebarMobileHeader() {
                     icon={<MessageSquare className="h-4 w-4 flex-shrink-0" />}
                   />
                   <Option
-                    href={paths.admin.appearance()}
+                    href={paths.general.appearance()}
                     btnText="Appearance"
                     icon={<Eye className="h-4 w-4 flex-shrink-0" />}
                   />
                   <Option
-                    href={paths.admin.apiKeys()}
+                    href={paths.general.apiKeys()}
                     btnText="API Keys"
                     icon={<Key className="h-4 w-4 flex-shrink-0" />}
                   />
@@ -270,7 +310,7 @@ export function SidebarMobileHeader() {
                       href={paths.github()}
                       className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-slate-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
                     >
-                      <GitHub className="h-4 w-4 " />
+                      <GithubLogo className="h-4 w-4 " />
                     </a>
                     <a
                       href={paths.docs()}
@@ -282,7 +322,7 @@ export function SidebarMobileHeader() {
                       href={paths.discord()}
                       className="transition-all duration-300 p-2 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-800 group"
                     >
-                      <Discord className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
+                      <DiscordLogo className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
                     </a>
                   </div>
                   <a
@@ -304,17 +344,21 @@ export function SidebarMobileHeader() {
 const Option = ({ btnText, icon, href }) => {
   const isActive = window.location.pathname === href;
   return (
-    <div className="flex gap-x-2 items-center justify-between">
+    <div className="flex gap-x-2 items-center justify-between text-white">
       <a
         href={href}
-        className={`flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center ${
-          isActive
-            ? "bg-gray-100 dark:bg-stone-600"
-            : "hover:bg-slate-100 dark:hover:bg-stone-900 "
-        }`}
+        className={`
+          transition-all duration-[200ms]
+          flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 rounded justify-start items-center border
+          ${
+            isActive
+              ? "bg-menu-item-selected-gradient border-slate-100 border-opacity-50 font-medium"
+              : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
+          }
+        `}
       >
-        {icon}
-        <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold whitespace-nowrap overflow-hidden ">
+        {React.cloneElement(icon, { weight: isActive ? "fill" : "regular" })}
+        <p className="text-sm leading-loose text-opacity-60 whitespace-nowrap overflow-hidden ">
           {btnText}
         </p>
       </a>
