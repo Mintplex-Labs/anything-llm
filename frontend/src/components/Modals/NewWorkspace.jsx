@@ -24,18 +24,18 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
         onClick={hideModal}
       />
       <div className="relative w-full max-w-2xl max-h-full">
-        <div className="relative bg-white rounded-lg shadow dark:bg-stone-700">
-          <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+        <div className="relative bg-modal-gradient rounded-lg shadow-md border-2 border-accent">
+          <div className="flex items-start justify-between p-4 border-b rounded-t border-white/10">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Create a New Workspace
+              New Workspace
             </h3>
             <button
               onClick={hideModal}
               type="button"
-              className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+              className="text-white bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
               data-modal-hide="staticModal"
             >
-              <X className="text-gray-300 text-lg" />
+              <X className="text-lg" />
             </button>
           </div>
           <form ref={formEl} onSubmit={handleCreate}>
@@ -52,7 +52,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                     name="name"
                     type="text"
                     id="name"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-zinc-900 w-full md:w-1/2 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                     placeholder="My Workspace"
                     required={true}
                     autoComplete="off"
@@ -63,25 +63,14 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                     Error: {error}
                   </p>
                 )}
-                <p className="text-gray-800 dark:text-slate-200 text-xs md:text-sm">
-                  After creating a workspace you will be able to add and remove
-                  documents from it.
-                </p>
               </div>
             </div>
-            <div className="flex w-full justify-between items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
-              <button
-                onClick={hideModal}
-                type="button"
-                className="text-gray-800 hover:bg-gray-100 px-4 py-1 rounded-lg dark:text-slate-200 dark:hover:bg-stone-900"
-              >
-                Cancel
-              </button>
+            <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-white/10 rounded-b">
               <button
                 type="submit"
-                className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-black dark:text-slate-200 dark:border-transparent dark:hover:text-slate-200 dark:hover:bg-gray-900 dark:focus:ring-gray-800"
+                className="flex w-fit font-semibold h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
               >
-                Create Workspace
+                Save
               </button>
             </div>
           </form>

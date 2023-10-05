@@ -5,12 +5,9 @@ export default {
     extend: {
       colors: {
         'black-900': '#141414',
-        'sidebar': '#25272C',
         'accent': '#3D4147',
         'sidebar-button': '#31353A',
         'sidebar': '#25272C',
-        'accent': '#3D4147',
-        'sidebar-button': '#31353A',
       },
       backgroundImage: {
         'preference-gradient': 'linear-gradient(180deg, #5A5C63 0%, rgba(90, 92, 99, 0.28) 100%);',
