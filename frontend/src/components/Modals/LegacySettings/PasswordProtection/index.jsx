@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import System from "../../../../models/system";
-import { AUTH_TOKEN, AUTH_USER } from "../../../../utils/constants";
+import {
+  AUTH_TIMESTAMP,
+  AUTH_TOKEN,
+  AUTH_USER,
+} from "../../../../utils/constants";
 import showToast from "../../../../utils/toast";
 
 const noop = () => false;
@@ -28,6 +32,7 @@ export default function PasswordProtection({
       setTimeout(() => {
         window.localStorage.removeItem(AUTH_USER);
         window.localStorage.removeItem(AUTH_TOKEN);
+        window.localStorage.removeItem(AUTH_TIMESTAMP);
         window.location.reload();
       }, 3_000);
       return;

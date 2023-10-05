@@ -6,7 +6,11 @@ import { isMobile } from "react-device-detect";
 import showToast from "../../../utils/toast";
 import System from "../../../models/system";
 import paths from "../../../utils/paths";
-import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
+import {
+  AUTH_TIMESTAMP,
+  AUTH_TOKEN,
+  AUTH_USER,
+} from "../../../utils/constants";
 import PreLoader from "../../../components/Preloader";
 
 export default function GeneralSecurity() {
@@ -50,6 +54,7 @@ function MultiUserMode() {
         setTimeout(() => {
           window.localStorage.removeItem(AUTH_USER);
           window.localStorage.removeItem(AUTH_TOKEN);
+          window.localStorage.removeItem(AUTH_TIMESTAMP);
           window.location = paths.admin.users();
         }, 2_000);
         return;
@@ -213,6 +218,7 @@ function PasswordProtection() {
       setTimeout(() => {
         window.localStorage.removeItem(AUTH_USER);
         window.localStorage.removeItem(AUTH_TOKEN);
+        window.localStorage.removeItem(AUTH_TIMESTAMP);
         window.location.reload();
       }, 3_000);
       return;

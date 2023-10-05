@@ -6,6 +6,7 @@ import paths from "../../utils/paths";
 import { AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
 import { userFromStorage } from "../../utils/request";
 import System from "../../models/system";
+import UserMenu from "../UserMenu";
 
 // Used only for Multi-user mode only as we permission specific pages based on auth role.
 // When in single user mode we just bypass any authchecks.
@@ -72,5 +73,11 @@ export default function PrivateRoute({ Component }) {
   const authed = useIsAuthenticated();
   if (authed === null) return <FullScreenLoader />;
 
-  return authed ? <Component /> : <Navigate to={paths.home()} />;
+  return authed ? (
+    <UserMenu>
+      <Component />
+    </UserMenu>
+  ) : (
+    <Navigate to={paths.home()} />
+  );
 }
