@@ -59,7 +59,7 @@ function ApiKeysContainer() {
   useEffect(() => {
     async function fetchExistingKeys() {
       const user = userFromStorage();
-      const Model = !!user ? Admin : System
+      const Model = !!user ? Admin : System;
 
       const { apiKeys: foundKeys } = await Model.getApiKeys();
       setApiKeys(foundKeys);

@@ -14,11 +14,26 @@ function useIsAuthenticated() {
 
   useEffect(() => {
     const validateSession = async () => {
-      const multiUserMode = (await System.keys()).MultiUserMode;
-      if (!multiUserMode) {
+      const { MultiUserMode, RequiresAuth } = await System.keys();
+      if (!MultiUserMode && !RequiresAuth) {
         setIsAuthed(true);
         return;
       }
+
+      // Single User password mode check
+      if (!MultiUserMode && RequiresAuth) {
+        const localAuthToken = localStorage.getItem(AUTH_TOKEN);
+        if (!localAuthToken) {
+          setIsAuthed(false);
+          return;
+        }
+
+        const isValid = await validateSessionTokenForUser();
+        setIsAuthed(isValid);
+        return;
+      }
+
+      debugger;
 
       const localUser = localStorage.getItem(AUTH_USER);
       const localAuthToken = localStorage.getItem(AUTH_TOKEN);
