@@ -16,7 +16,7 @@ import ActiveWorkspaces from "./ActiveWorkspaces";
 import paths from "../../utils/paths";
 import useUser from "../../hooks/useUser";
 import { userFromStorage } from "../../utils/request";
-import { AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
 import useLogo from "../../hooks/useLogo";
 
 export default function Sidebar() {
@@ -112,14 +112,7 @@ export default function Sidebar() {
                       className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
                     />
                   </a>
-                  <button
-                    onClick={() => {
-                      window.localStorage.removeItem(AUTH_USER);
-                      window.localStorage.removeItem(AUTH_TOKEN);
-                      window.location.replace(paths.home());
-                    }}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                  >
+                  <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
                     <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
                   </button>
                 </div>
@@ -318,6 +311,7 @@ function LogoutButton() {
       onClick={() => {
         window.localStorage.removeItem(AUTH_USER);
         window.localStorage.removeItem(AUTH_TOKEN);
+        window.localStorage.removeItem(AUTH_TIMESTAMP);
         window.location.replace(paths.home());
       }}
       className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-transparent rounded-lg text-slate-200 justify-center items-center bg-stone-800 hover:bg-stone-900"
