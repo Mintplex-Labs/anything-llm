@@ -112,14 +112,7 @@ export default function Sidebar() {
                       className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
                     />
                   </a>
-                  <button
-                    onClick={() => {
-                      window.localStorage.removeItem(AUTH_USER);
-                      window.localStorage.removeItem(AUTH_TOKEN);
-                      window.location.replace(paths.home());
-                    }}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                  >
+                  <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
                     <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
                   </button>
                 </div>
