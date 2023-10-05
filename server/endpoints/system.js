@@ -316,7 +316,7 @@ function systemEndpoints(app) {
 
         updateENV(
           {
-            AuthToken: null,
+            AuthToken: "",
             JWTSecret: process.env.JWT_SECRET ?? v4(),
           },
           true
@@ -325,6 +325,11 @@ function systemEndpoints(app) {
         await Telemetry.sendTelemetry("enabled_multi_user_mode");
         response.status(200).json({ success: !!user, error });
       } catch (e) {
+        await User.delete({});
+        await SystemSettings.updateSettings({
+          multi_user_mode: false,
+        });
+
         console.log(e.message, e);
         response.sendStatus(500).end();
       }

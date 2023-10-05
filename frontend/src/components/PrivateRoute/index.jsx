@@ -33,8 +33,6 @@ function useIsAuthenticated() {
         return;
       }
 
-      debugger;
-
       const localUser = localStorage.getItem(AUTH_USER);
       const localAuthToken = localStorage.getItem(AUTH_TOKEN);
       if (!localUser || !localAuthToken) {
