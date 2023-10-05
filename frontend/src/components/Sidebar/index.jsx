@@ -18,12 +18,10 @@ import useUser from "../../hooks/useUser";
 import { userFromStorage } from "../../utils/request";
 import { AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
 import useLogo from "../../hooks/useLogo";
-import SettingsOverlay, { useSystemSettingsOverlay } from "./SettingsOverlay";
 
 export default function Sidebar() {
   const { logo } = useLogo();
   const sidebarRef = useRef(null);
-  const { showOverlay } = useSystemSettingsOverlay();
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
@@ -37,7 +35,6 @@ export default function Sidebar() {
         style={{ height: "calc(100% - 32px)" }}
         className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px]"
       >
-        <SettingsOverlay />
         <div className="flex flex-col h-full overflow-x-hidden">
           {/* Header Information */}
           <div className="flex items-center justify-between mb-4">
@@ -51,7 +48,7 @@ export default function Sidebar() {
             </div>
             <div className="flex gap-x-2 items-center text-slate-200">
               {/* <AdminHome /> */}
-              <SettingsButton onClick={showOverlay} />
+              <SettingsButton />
             </div>
           </div>
 
@@ -141,7 +138,6 @@ export function SidebarMobileHeader() {
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
-  const { showOverlay } = useSystemSettingsOverlay();
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
@@ -199,7 +195,6 @@ export function SidebarMobileHeader() {
           ref={sidebarRef}
           className="relative h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-stone-800 w-[80%] p-[18px] "
         >
-          <SettingsOverlay />
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             {/* Header Information */}
             <div className="flex w-full items-center justify-between gap-x-4">
@@ -213,7 +208,7 @@ export function SidebarMobileHeader() {
               </div>
               <div className="flex gap-x-2 items-center text-slate-500 shink-0">
                 <AdminHome />
-                <SettingsButton onClick={showOverlay} />
+                <SettingsButton />
               </div>
             </div>
 
@@ -335,10 +330,10 @@ function LogoutButton() {
   );
 }
 
-function SettingsButton({ onClick }) {
+function SettingsButton() {
   return (
     <a
-      href={paths.admin.system()}
+      href={paths.general.llmPreference()}
       className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
     >
       <Wrench className="h-4 w-4" weight="fill" />

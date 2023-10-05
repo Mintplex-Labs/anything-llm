@@ -46,6 +46,12 @@ export default {
     security: () => {
       return "/general/security";
     },
+    appearance: () => {
+      return "/general/appearance";
+    },
+    apiKeys: () => {
+      return "/general/api-keys";
+    },
   },
   admin: {
     system: () => {
@@ -62,12 +68,6 @@ export default {
     },
     chats: () => {
       return "/admin/workspace-chats";
-    },
-    appearance: () => {
-      return "/admin/appearance";
-    },
-    apiKeys: () => {
-      return "/admin/api-keys";
     },
   },
 };

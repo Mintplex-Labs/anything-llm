@@ -22,6 +22,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 import useUser from "../../hooks/useUser";
+import { userFromStorage } from "../../utils/request";
 
 export default function AdminSidebar() {
   const { logo } = useLogo();
@@ -63,43 +64,51 @@ export default function AdminSidebar() {
             <div className="h-auto sidebar-items">
               <div className="flex flex-col gap-y-2 h-[65vh] pb-8 overflow-y-scroll no-scroll">
                 {/* Admin Settings */}
+                {user?.role === "admin" && (
+                  <>
+                    <Option
+                      href={paths.admin.system()}
+                      btnText="System Preferences"
+                      icon={<SquaresFour className="h-5 w-5 flex-shrink-0" />}
+                    />
+                    <Option
+                      href={paths.admin.invites()}
+                      btnText="Invitation"
+                      icon={
+                        <EnvelopeSimple className="h-5 w-5 flex-shrink-0" />
+                      }
+                    />
+                    <Option
+                      href={paths.admin.users()}
+                      btnText="Users"
+                      icon={<Users className="h-5 w-5 flex-shrink-0" />}
+                    />
+                    <Option
+                      href={paths.admin.workspaces()}
+                      btnText="Workspaces"
+                      icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
+                    />
+                    <Option
+                      href={paths.admin.chats()}
+                      btnText="Workspace Chat"
+                      icon={
+                        <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
+                      }
+                    />
+                  </>
+                )}
+
+                {/* General Settings */}
                 <Option
-                  href={paths.admin.system()}
-                  btnText="System Preferences"
-                  icon={<SquaresFour className="h-5 w-5 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.admin.invites()}
-                  btnText="Invitation"
-                  icon={<EnvelopeSimple className="h-5 w-5 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.admin.users()}
-                  btnText="Users"
-                  icon={<Users className="h-5 w-5 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.admin.workspaces()}
-                  btnText="Workspaces"
-                  icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.admin.chats()}
-                  btnText="Workspace Chat"
-                  icon={<ChatCenteredText className="h-5 w-5 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.admin.appearance()}
+                  href={paths.general.appearance()}
                   btnText="Appearance"
                   icon={<Eye className="h-5 w-5 flex-shrink-0" />}
                 />
                 <Option
-                  href={paths.admin.apiKeys()}
+                  href={paths.general.apiKeys()}
                   btnText="API Keys"
                   icon={<Key className="h-5 w-5 flex-shrink-0" />}
                 />
-
-                {/* General Settings */}
                 <Option
                   href={paths.general.llmPreference()}
                   btnText="LLM Preference"
@@ -302,7 +311,7 @@ export function SidebarMobileHeader() {
                       href={paths.github()}
                       className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-slate-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
                     >
-                      <GitHub className="h-4 w-4 " />
+                      <GithubLogo className="h-4 w-4 " />
                     </a>
                     <a
                       href={paths.docs()}
@@ -314,7 +323,7 @@ export function SidebarMobileHeader() {
                       href={paths.discord()}
                       className="transition-all duration-300 p-2 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-800 group"
                     >
-                      <Discord className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
+                      <DiscordLogo className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
                     </a>
                   </div>
                   <a
