@@ -64,7 +64,9 @@ export function AdminRoute({ Component }) {
 
   const user = userFromStorage();
   return authed && user?.role === "admin" ? (
-    <Component />
+    <UserMenu>
+      <Component />
+    </UserMenu>
   ) : (
     <Navigate to={paths.home()} />
   );
