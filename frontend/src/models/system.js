@@ -263,8 +263,8 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  getApiKey: async function () {
-    return fetch(`${API_BASE}/system/api-key`, {
+  getApiKeys: async function () {
+    return fetch(`${API_BASE}/system/api-keys`, {
       method: "GET",
       headers: baseHeaders(),
     })

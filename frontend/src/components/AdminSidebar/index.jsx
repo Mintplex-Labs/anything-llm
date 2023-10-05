@@ -22,7 +22,6 @@ import {
   X,
 } from "@phosphor-icons/react";
 import useUser from "../../hooks/useUser";
-import { userFromStorage } from "../../utils/request";
 
 export default function AdminSidebar() {
   const { logo } = useLogo();
@@ -220,11 +219,10 @@ export function SidebarMobileHeader() {
         className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
       >
         <div
-          className={`${
-            showBgOverlay
+          className={`${showBgOverlay
               ? "transition-all opacity-1"
               : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 bg-black-900 bg-opacity-75 w-screen h-screen`}
+            }  duration-500 fixed top-0 left-0 bg-black-900 bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div
@@ -351,10 +349,9 @@ const Option = ({ btnText, icon, href }) => {
         className={`
           transition-all duration-[200ms]
           flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 rounded justify-start items-center border
-          ${
-            isActive
-              ? "bg-menu-item-selected-gradient border-slate-100 border-opacity-50 font-medium"
-              : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
+          ${isActive
+            ? "bg-menu-item-selected-gradient border-slate-100 border-opacity-50 font-medium"
+            : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
           }
         `}
       >

@@ -567,15 +567,15 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/api-key", [validatedRequest], async (_, response) => {
+  app.get("/system/api-keys", [validatedRequest], async (_, response) => {
     try {
       if (response.locals.multiUserMode) {
         return response.sendStatus(401).end();
       }
 
-      const apiKey = await ApiKey.get({});
+      const apiKeys = await ApiKey.where({});
       return response.status(200).json({
-        apiKey,
+        apiKeys,
         error: null,
       });
     } catch (error) {
@@ -596,7 +596,6 @@ function systemEndpoints(app) {
           return response.sendStatus(401).end();
         }
 
-        await ApiKey.delete();
         const { apiKey, error } = await ApiKey.create();
         return response.status(200).json({
           apiKey,
