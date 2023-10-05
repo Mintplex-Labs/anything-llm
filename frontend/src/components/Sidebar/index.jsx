@@ -21,7 +21,7 @@ import paths from "../../utils/paths";
 import Discord from "../Icons/Discord";
 import useUser from "../../hooks/useUser";
 import { userFromStorage } from "../../utils/request";
-import { AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
 import useLogo from "../../hooks/useLogo";
 import SettingsOverlay, { useSystemSettingsOverlay } from "./SettingsOverlay";
 
@@ -320,6 +320,7 @@ function LogoutButton() {
       onClick={() => {
         window.localStorage.removeItem(AUTH_USER);
         window.localStorage.removeItem(AUTH_TOKEN);
+        window.localStorage.removeItem(AUTH_TIMESTAMP);
         window.location.replace(paths.home());
       }}
       className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"

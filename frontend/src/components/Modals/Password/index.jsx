@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import System from "../../../models/system";
 import SingleUserAuth from "./SingleUserAuth";
 import MultiUserAuth from "./MultiUserAuth";
-import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
+import {
+  AUTH_TIMESTAMP,
+  AUTH_TOKEN,
+  AUTH_USER,
+} from "../../../utils/constants";
 
 export default function PasswordModal({ mode = "single" }) {
   return (
@@ -50,6 +54,7 @@ export function usePasswordModal() {
             });
             window.localStorage.removeItem(AUTH_USER);
             window.localStorage.removeItem(AUTH_TOKEN);
+            window.localStorage.removeItem(AUTH_TIMESTAMP);
             return;
           } else {
             setAuth({
