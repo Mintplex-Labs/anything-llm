@@ -1,9 +1,12 @@
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import { useEffect, useRef } from "react";
+import { useManageWorkspaceModal } from "../../../Modals/MangeWorkspace";
+import ManageWorkspace from "../../../Modals/MangeWorkspace"; // Add this import if not already added.
 
 export default function ChatHistory({ history = [], workspace }) {
   const replyRef = useRef(null);
+  const { showModal, hideModal, showing } = useManageWorkspaceModal(); // Destructure the necessary properties.
 
   useEffect(() => {
     if (replyRef.current) {
@@ -23,13 +26,16 @@ export default function ChatHistory({ history = [], workspace }) {
           <div className="w-full text-center">
             <p className="text-white/60 text-lg font-base inline-flex items-center gap-x-2">
               To get started either{" "}
-              <span className="underline font-medium cursor-pointer">
-                upload a document{" "}
+              <span className="underline font-medium cursor-pointer" onClick={showModal}>
+                upload a document
               </span>
-              or <b className="font-medium">send a chat.</b>
+              or <b className="font-medium italic">send a chat.</b>
             </p>
           </div>
         </div>
+        {showing && (
+          <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
+        )}
       </div>
     );
   }
@@ -70,6 +76,9 @@ export default function ChatHistory({ history = [], workspace }) {
           />
         );
       })}
+      {showing && (
+        <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
+      )}
     </div>
   );
 }
