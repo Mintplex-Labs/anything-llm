@@ -10,8 +10,6 @@ const HistoricalMessage = forwardRef(
     const userBackgroundColor = "bg-historical-msg-user";
     const aiBackgroundColor = "bg-historical-msg-system";
 
-    console.log(sources, role);
-
     return (
       <div ref={ref} className={`flex justify-center items-end w-full ${role === "user" ? userBackgroundColor : aiBackgroundColor}`}>
         <div className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}>

@@ -23,7 +23,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
         className="flex fixed top-0 left-0 right-0 w-full h-full"
         onClick={hideModal}
       />
-      <div className="relative w-full max-w-2xl max-h-full">
+      <div className="relative w-[500px] max-h-full">
         <div className="relative bg-modal-gradient rounded-lg shadow-md border-2 border-accent">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-white/10">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -32,10 +32,9 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
             <button
               onClick={hideModal}
               type="button"
-              className="text-white bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-              data-modal-hide="staticModal"
+              className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
             >
-              <X className="text-lg" />
+              <X className="text-gray-300 text-lg" />
             </button>
           </div>
           <form ref={formEl} onSubmit={handleCreate}>
@@ -66,9 +65,9 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
               </div>
             </div>
             <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-white/10 rounded-b">
-              <button
+            <button
                 type="submit"
-                className="flex w-fit font-semibold h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
               >
                 Save
               </button>
