@@ -8,6 +8,8 @@ export default {
         'accent': '#3D4147',
         'sidebar-button': '#31353A',
         'sidebar': '#25272C',
+        'historical-msg-system': 'rgba(255, 255, 255, 0.05);',
+        'historical-msg-user': '#2C2F35',
       },
       backgroundImage: {
         'preference-gradient': 'linear-gradient(180deg, #5A5C63 0%, rgba(90, 92, 99, 0.28) 100%);',

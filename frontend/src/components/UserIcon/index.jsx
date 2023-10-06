@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import JAZZ from "@metamask/jazzicon";
 
-export default function Jazzicon({ size = 10, user }) {
+export default function Jazzicon({ size = 10, user, role }) {
+  console.log(role);
   const divRef = useRef(null);
   const seed = user?.uid
     ? toPseudoRandomInteger(user.uid)
@@ -14,7 +15,7 @@ export default function Jazzicon({ size = 10, user }) {
     divRef.current.appendChild(result);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return <div className="flex" ref={divRef} />;
+  return <div className={`flex ${role === "user" ? "border-2 rounded-full" : ""}`} ref={divRef} />;
 }
 
 function toPseudoRandomInteger(uidString = "") {

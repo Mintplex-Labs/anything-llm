@@ -36,7 +36,7 @@ export default function ChatHistory({ history = [], workspace }) {
 
   return (
     <div
-      className="h-[89%] pb-[100px] md:pt-[50px] md:pt-0 md:pb-5 mx-2 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
+      className="h-[89%] pb-[100px] md:pt-[50px] md:pt-0 md:pb-5 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
       id="chat-history"
     >
       {history.map((props, index) => {
