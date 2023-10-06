@@ -50,10 +50,10 @@ export default function PromptInput({
     <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-y-1 bg-black-900 md:bg-transparent rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl"
+        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl"
       >
-        <div className="flex items-center py-2 px-4 rounded-lg mb-4">
-          <div className="w-[600px] shadow border border-white rounded-2xl flex flex-col px-4 overflow-hidden">
+        <div className="flex items-center rounded-lg mb-4">
+          <div className="w-[600px] bg-main-gradient shadow-2xl border border-white rounded-2xl flex flex-col px-4 overflow-hidden">
             <div className="flex items-center w-full border-b-2 border-gray-500/50">
               <textarea
                 onKeyUp={adjustTextArea}
