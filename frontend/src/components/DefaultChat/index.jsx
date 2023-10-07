@@ -8,6 +8,8 @@ import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../Sidebar";
 import ChatBubble from "../ChatBubble";
 import System from "../../models/system";
+import Jazzicon from "../UserIcon";
+import { userFromStorage } from "../../utils/request";
 
 export default function DefaultChatContainer() {
   const [mockMsgs, setMockMessages] = useState([]);
@@ -19,6 +21,10 @@ export default function DefaultChatContainer() {
   } = useNewWorkspaceModal();
   const popMsg = !window.localStorage.getItem("anythingllm_intro");
 
+  const userBackgroundColor = "bg-historical-msg-user";
+  const aiBackgroundColor = "bg-historical-msg-system";
+
+
   useEffect(() => {
     const fetchData = async () => {
       const fetchedMessages = await System.getWelcomeMessages();
@@ -29,136 +35,194 @@ export default function DefaultChatContainer() {
 
   const MESSAGES = [
     <React.Fragment>
-      <div
-        className={`flex w-full mt-2 justify-start ${
-          popMsg ? "chat__message" : ""
-        }`}
-      >
-        <div className="p-4 max-w-full md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
+    <div
+      className={`flex justify-center items-end w-full ${aiBackgroundColor}`}
+    >
+      <div className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}>
+        <div className="flex gap-x-5">
+          <Jazzicon
+            size={36}
+            user={{ uid: 'system' }}
+            role={'assistant'}
+          />
+
+          <span
+            className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+          >
             Welcome to AnythingLLM, AnythingLLM is an open-source AI tool by
-            Mintplex Labs that turns <i>anything</i> into a trained chatbot you
+            Mintplex Labs that turns anything into a trained chatbot you
             can query and chat with. AnythingLLM is a BYOK (bring-your-own-keys)
             software so there is no subscription, fee, or charges for this
             software outside of the services you want to use with it.
-          </p>
+          </span>
         </div>
       </div>
+    </div>
     </React.Fragment>,
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${
-          popMsg ? "chat__message" : ""
-        }`}
-      >
-        <div className="p-4 max-w-full md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
+      className={`flex justify-center items-end w-full ${aiBackgroundColor}`}
+    >
+      <div className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}>
+        <div className="flex gap-x-5">
+          <Jazzicon
+            size={36}
+            user={{ uid: 'system' }}
+            role={'assistant'}
+          />
+
+          <span
+            className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+          >
             AnythingLLM is the easiest way to put powerful AI products like
             OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services
             together in a neat package with no fuss to increase your
             productivity by 100x.
-          </p>
+          </span>
         </div>
       </div>
+    </div>
     </React.Fragment>,
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${
-          popMsg ? "chat__message" : ""
-        }`}
-      >
-        <div className="p-4 max-w-full md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
+      className={`flex justify-center items-end w-full ${aiBackgroundColor}`}
+    >
+      <div className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}>
+        <div className="flex gap-x-5">
+          <Jazzicon
+            size={36}
+            user={{ uid: 'system' }}
+            role={'assistant'}
+          />
+          <div>
+          <span
+            className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+          >
             AnythingLLM can run totally locally on your machine with little
             overhead you wont even notice it's there! No GPU needed. Cloud and
             on-premises installation is available as well.
             <br />
             The AI tooling ecosystem gets more powerful everyday. AnythingLLM
             makes it easy to use.
-          </p>
+          </span>
           <a
             href={paths.github()}
             target="_blank"
-            className="mt-4 w-fit flex flex-grow gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900 dark:bg-stone-900"
+            className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
           >
             <GitMerge className="h-4 w-4" />
-            <p className="text-slate-800 dark:text-slate-200 text-sm md:text-lg leading-loose">
+            <p>
               Create an issue on Github
             </p>
           </a>
+          </div>
         </div>
       </div>
+    </div>
     </React.Fragment>,
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-end ${
-          popMsg ? "chat__message" : ""
-        }`}
-      >
-        <div className="p-4 max-w-full md:max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
+      className={`flex justify-center items-end w-full ${userBackgroundColor}`}
+    >
+      <div className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}>
+        <div className="flex gap-x-5">
+          <Jazzicon
+            size={36}
+            user={{ uid: userFromStorage()?.username }}
+            role={'user'}
+          />
+
+          <span
+            className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+          >
             How do I get started?!
-          </p>
+          </span>
         </div>
       </div>
+    </div>
     </React.Fragment>,
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${
-          popMsg ? "chat__message" : ""
-        }`}
-      >
-        <div className="p-4 max-w-full md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
+      className={`flex justify-center items-end w-full ${aiBackgroundColor}`}
+    >
+      <div className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}>
+        <div className="flex gap-x-5">
+          <Jazzicon
+            size={36}
+            user={{ uid: 'system' }}
+            role={'assistant'}
+          />
+          <div>
+          <span
+            className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+          >
             It's simple. All collections are organized into buckets we call{" "}
-            <b>"Workspaces"</b>. Workspaces are buckets of files, documents,
+            "Workspaces". Workspaces are buckets of files, documents,
             images, PDFs, and other files which will be transformed into
             something LLM's can understand and use in conversation.
             <br />
             <br />
             You can add and remove files at anytime.
-          </p>
+          </span>
+
           <button
             onClick={showNewWsModal}
-            className="mt-4 w-fit flex flex-grow gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900 dark:bg-stone-900"
+            className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
           >
             <Plus className="h-4 w-4" />
-            <p className="text-slate-800 dark:text-slate-200 text-sm md:text-lg leading-loose">
+            <p>
               Create your first workspace
             </p>
           </button>
+          </div>
         </div>
       </div>
+    </div>
     </React.Fragment>,
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-end ${
-          popMsg ? "chat__message" : ""
-        }`}
-      >
-        <div className="p-4 max-w-full md:max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
+      className={`flex justify-center items-end w-full ${userBackgroundColor}`}
+    >
+      <div className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}>
+        <div className="flex gap-x-5">
+          <Jazzicon
+            size={36}
+            user={{ uid: userFromStorage()?.username }}
+            role={'user'}
+          />
+
+          <span
+            className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+          >
             Is this like an AI dropbox or something? What about chatting? It is
             a chatbot isn't it?
-          </p>
+          </span>
         </div>
       </div>
+    </div>
     </React.Fragment>,
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${
-          popMsg ? "chat__message" : ""
-        }`}
-      >
-        <div className="p-4 max-w-full md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
-            AnythingLLM is more than a smarter Dropbox.
+      className={`flex justify-center items-end w-full ${aiBackgroundColor}`}
+    >
+      <div className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}>
+        <div className="flex gap-x-5">
+          <Jazzicon
+            size={36}
+            user={{ uid: 'system' }}
+            role={'assistant'}
+          />
+
+          <span
+            className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+          >
+AnythingLLM is more than a smarter Dropbox.
             <br />
             <br />
             AnythingLLM offers two ways of talking with your data:
@@ -176,58 +240,77 @@ export default function DefaultChatContainer() {
             <br />
             <br />
             You can toggle between either mode <i>in the middle of chatting!</i>
-          </p>
+          </span>
         </div>
       </div>
+    </div>
     </React.Fragment>,
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-end ${
-          popMsg ? "chat__message" : ""
-        }`}
-      >
-        <div className="p-4 max-w-full md:max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
-            Wow, this sounds amazing, let me try it out already!
-          </p>
+      className={`flex justify-center items-end w-full ${userBackgroundColor}`}
+    >
+      <div className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}>
+        <div className="flex gap-x-5">
+          <Jazzicon
+            size={36}
+            user={{ uid: userFromStorage()?.username }}
+            role={'user'}
+          />
+
+          <span
+            className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+          >
+Wow, this sounds amazing, let me try it out already!
+          </span>
         </div>
       </div>
+    </div>
     </React.Fragment>,
 
     <React.Fragment>
       <div
-        className={`flex w-full mt-2 justify-start ${
-          popMsg ? "chat__message" : ""
-        }`}
-      >
-        <div className="p-4 max-w-full md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-b-2xl rounded-tr-2xl rounded-tl-sm">
-          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
+      className={`flex justify-center items-end w-full ${aiBackgroundColor}`}
+    >
+      <div className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}>
+        <div className="flex gap-x-5">
+          <Jazzicon
+            size={36}
+            user={{ uid: 'system' }}
+            role={'assistant'}
+          />
+          <div>
+          <span
+            className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+          >
             Have Fun!
-          </p>
+          </span>
+
           <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
             <a
               href={paths.github()}
               target="_blank"
-              className="mt-4 w-fit flex flex-grow gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900 dark:bg-stone-900"
+              className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
               <GitHub className="h-4 w-4" />
-              <p className="text-slate-800 dark:text-slate-200 text-sm md:text-lg leading-loose">
+              <p>
                 Star on GitHub
               </p>
             </a>
             <a
               href={paths.mailToMintplex()}
-              className="mt-4 w-fit flex flex-grow gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900 dark:bg-stone-900"
+              className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
               <Mail className="h-4 w-4" />
-              <p className="text-slate-800 dark:text-slate-200 text-sm md:text-lg leading-loose">
+              <p>
                 Contact Mintplex Labs
               </p>
             </a>
           </div>
+          </div>
         </div>
       </div>
+    </div>
     </React.Fragment>,
   ];
 
@@ -259,7 +342,7 @@ export default function DefaultChatContainer() {
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-white dark:bg-black-900 md:min-w-[82%] p-[18px] h-full overflow-y-scroll"
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full md:min-w-[82%] h-full overflow-y-scroll"
     >
       {isMobile && <SidebarMobileHeader />}
       {fetchedMessages.length === 0
