@@ -14,7 +14,12 @@ export default function Jazzicon({ size = 10, user, role }) {
     divRef.current.appendChild(result);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return <div className={`flex ${role === "user" ? "border-2 rounded-full" : ""}`} ref={divRef} />;
+  return (
+    <div
+      className={`flex ${role === "user" ? "border-2 rounded-full" : ""}`}
+      ref={divRef}
+    />
+  );
 }
 
 function toPseudoRandomInteger(uidString = "") {

@@ -26,7 +26,10 @@ export default function ChatHistory({ history = [], workspace }) {
           <div className="w-full text-center">
             <p className="text-white/60 text-lg font-base inline-flex items-center gap-x-2">
               To get started either{" "}
-              <span className="underline font-medium cursor-pointer" onClick={showModal}>
+              <span
+                className="underline font-medium cursor-pointer"
+                onClick={showModal}
+              >
                 upload a document
               </span>
               or <b className="font-medium italic">send a chat.</b>
@@ -34,7 +37,10 @@ export default function ChatHistory({ history = [], workspace }) {
           </div>
         </div>
         {showing && (
-          <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
+          <ManageWorkspace
+            hideModal={hideModal}
+            providedSlug={workspace.slug}
+          />
         )}
       </div>
     );

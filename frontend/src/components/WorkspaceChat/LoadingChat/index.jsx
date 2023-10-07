@@ -4,7 +4,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 export default function LoadingChat() {
   const highlightColor = "#3D4147";
-  const baseColor = "#2C2F35"
+  const baseColor = "#2C2F35";
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}

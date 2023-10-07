@@ -65,7 +65,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
               </div>
             </div>
             <div className="flex w-full justify-end items-center p-6 space-x-2 border-t border-white/10 rounded-b">
-            <button
+              <button
                 type="submit"
                 className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
               >
