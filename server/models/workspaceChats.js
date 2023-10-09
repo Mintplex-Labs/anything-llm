@@ -29,6 +29,7 @@ const WorkspaceChats = {
         where: {
           workspaceId,
           user_id: userId,
+          include: true,
         },
         ...(limit !== null ? { take: limit } : {}),
         orderBy: {
@@ -48,6 +49,7 @@ const WorkspaceChats = {
       const chats = await prisma.workspace_chats.findMany({
         where: {
           workspaceId,
+          include: true,
         },
         ...(limit !== null ? { take: limit } : {}),
         orderBy: {

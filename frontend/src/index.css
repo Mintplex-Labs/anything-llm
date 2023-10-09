@@ -161,9 +161,9 @@ a {
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #5fa4fa;
+  background-color: #eeeeee;
   color: #5fa4fa;
-  box-shadow: 9999px 0 0 0 #5fa4fa;
+  box-shadow: 9999px 0 0 0 #eeeeee;
   animation: dot-falling 1.5s infinite linear;
   animation-delay: 0.1s;
 }
@@ -180,8 +180,8 @@ a {
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #5fa4fa;
-  color: #5fa4fa;
+  background-color: #eeeeee;
+  color: #eeeeee;
   animation: dot-falling-before 1.5s infinite linear;
   animation-delay: 0s;
 }
@@ -190,8 +190,8 @@ a {
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #5fa4fa;
-  color: #5fa4fa;
+  background-color: #eeeeee;
+  color: #eeeeee;
   animation: dot-falling-after 1.5s infinite linear;
   animation-delay: 0.2s;
 }
@@ -204,7 +204,7 @@ a {
   25%,
   50%,
   75% {
-    box-shadow: 9999px 0 0 0 #5fa4fa;
+    box-shadow: 9999px 0 0 0 #eeeeee;
   }
 
   100% {
@@ -220,7 +220,7 @@ a {
   25%,
   50%,
   75% {
-    box-shadow: 9984px 0 0 0 #5fa4fa;
+    box-shadow: 9984px 0 0 0 #eeeeee;
   }
 
   100% {
@@ -236,7 +236,7 @@ a {
   25%,
   50%,
   75% {
-    box-shadow: 10014px 0 0 0 #5fa4fa;
+    box-shadow: 10014px 0 0 0 #eeeeee;
   }
 
   100% {

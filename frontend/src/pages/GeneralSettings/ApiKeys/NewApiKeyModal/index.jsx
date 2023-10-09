@@ -63,9 +63,7 @@ export default function NewApiKeyModal() {
             <div className="p-6 space-y-6 flex h-full w-full">
               <div className="w-full flex flex-col gap-y-4">
                 {error && (
-                  <p className="text-red-400 text-sm">
-                    Error: {error}
-                  </p>
+                  <p className="text-red-400 text-sm">Error: {error}</p>
                 )}
                 {apiKey && (
                   <input

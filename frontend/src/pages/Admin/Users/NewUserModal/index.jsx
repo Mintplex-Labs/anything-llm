@@ -94,9 +94,7 @@ export default function NewUserModal() {
                   </select>
                 </div>
                 {error && (
-                  <p className="text-red-400 text-sm">
-                    Error: {error}
-                  </p>
+                  <p className="text-red-400 text-sm">Error: {error}</p>
                 )}
                 <p className="text-white text-xs md:text-sm">
                   After creating a user they will need to login with their

@@ -129,9 +129,7 @@ export default function EditWorkspaceUsersModal({ workspace, users }) {
                   </button>
                 </div>
                 {error && (
-                  <p className="text-red-400 text-sm">
-                    Error: {error}
-                  </p>
+                  <p className="text-red-400 text-sm">Error: {error}</p>
                 )}
               </div>
             </div>

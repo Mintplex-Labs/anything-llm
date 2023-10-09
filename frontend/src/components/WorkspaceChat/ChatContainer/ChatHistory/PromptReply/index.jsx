@@ -9,18 +9,25 @@ const PromptReply = forwardRef(
     { uuid, reply, pending, error, workspace, sources = [], closed = true },
     ref
   ) => {
-    if (!reply && !sources.length === 0 && !pending && !error) return null;
+    const assistantBackgroundColor = "bg-historical-msg-system";
+
+    if (!reply && sources.length === 0 && !pending && !error) return null;
+
     if (pending) {
       return (
         <div
           ref={ref}
-          className="chat__message flex justify-start mb-4 items-end"
+          className={`flex justify-center items-end w-full ${assistantBackgroundColor}`}
         >
-          <Jazzicon size={30} user={{ uid: workspace.slug }} />
-          <div className="ml-2 pt-2 px-6 w-fit md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
-            <span className={`inline-block p-2`}>
-              <div className="dot-falling"></div>
-            </span>
+          <div className="py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
+            <div className="flex gap-x-5">
+              <Jazzicon
+                size={36}
+                user={{ uid: workspace.slug }}
+                role="assistant"
+              />
+              <div className="mt-3 ml-5 dot-falling"></div>
+            </div>
           </div>
         </div>
       );
@@ -28,15 +35,23 @@ const PromptReply = forwardRef(
 
     if (error) {
       return (
-        <div className="chat__message flex justify-start mb-4 items-center">
-          <Jazzicon size={30} user={{ uid: workspace.slug }} />
-          <div className="ml-2 py-3 px-4 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-slate-100 ">
-            <div className="bg-red-50 text-red-500 rounded-lg w-fit flex flex-col p-2">
-              <span className={`inline-block`}>
+        <div
+          className={`flex justify-center items-end w-full ${assistantBackgroundColor}`}
+        >
+          <div className="py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
+            <div className="flex gap-x-5">
+              <Jazzicon
+                size={36}
+                user={{ uid: workspace.slug }}
+                role="assistant"
+              />
+              <span
+                className={`inline-block p-2 rounded-lg bg-red-50 text-red-500`}
+              >
                 <AlertTriangle className="h-4 w-4 mb-1 inline-block" /> Could
                 not respond to message.
+                <span className="text-xs">Reason: {error || "unknown"}</span>
               </span>
-              <span className="text-xs">Reason: {error || "unknown"}</span>
             </div>
           </div>
         </div>
@@ -44,13 +59,23 @@ const PromptReply = forwardRef(
     }
 
     return (
-      <div key={uuid} ref={ref} className="mb-4 flex justify-start items-end">
-        <Jazzicon size={30} user={{ uid: workspace.slug }} />
-        <div className="ml-2 py-3 px-4 overflow-x-scroll w-fit md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
-          <span
-            className="whitespace-pre-line text-slate-800 dark:text-slate-200 flex flex-col gap-y-1 font-[500] md:font-semibold text-sm md:text-base"
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
-          />
+      <div
+        key={uuid}
+        ref={ref}
+        className={`flex justify-center items-end w-full ${assistantBackgroundColor}`}
+      >
+        <div className="py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
+          <div className="flex gap-x-5">
+            <Jazzicon
+              size={36}
+              user={{ uid: workspace.slug }}
+              role="assistant"
+            />
+            <span
+              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
+            />
+          </div>
           <Citations sources={sources} />
         </div>
       </div>
