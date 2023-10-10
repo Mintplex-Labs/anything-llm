@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 
 // How many people will be using your instance step
-export default function StepFour({ goToStep, prevStep }) {
+export default function UserModeSelection({ goToStep, prevStep }) {
   const justMeClicked = () => {
     goToStep(5);
   };

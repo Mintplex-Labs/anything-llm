@@ -4,6 +4,9 @@ export default {
   home: () => {
     return "/";
   },
+  login: () => {
+    return "/login";
+  },
   onboarding: () => {
     return "/onboarding";
   },

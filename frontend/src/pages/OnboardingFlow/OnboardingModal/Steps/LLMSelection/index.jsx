@@ -7,8 +7,7 @@ import System from "../../../../../models/system";
 import PreLoader from "../../../../../components/Preloader";
 import LLMProviderOption from "../../../../../components/LLMProviderOption";
 
-// LLM Preference Step
-export default function StepOne({ nextStep, prevStep, currentStep }) {
+export default function LLMSelection({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,26 +31,19 @@ export default function StepOne({ nextStep, prevStep, currentStep }) {
     }
   }, [currentStep]);
 
-  const handleSubmit = async (e, formElement) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const form = formElement || e.target;
+    const form = e.target;
     const data = {};
     const formData = new FormData(form);
     for (var [key, value] of formData.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
     if (error) {
       alert(`Failed to save LLM settings: ${error}`, "error");
+      return;
     }
-    return error;
-  };
-
-  const handleContinue = async () => {
-    if (formRef.current) {
-      const error = await handleSubmit(new Event("submit"), formRef.current);
-      if (!error) {
-        nextStep();
-      }
-    }
+    nextStep();
+    return;
   };
 
   if (loading)
@@ -63,7 +55,11 @@ export default function StepOne({ nextStep, prevStep, currentStep }) {
 
   return (
     <div>
-      <form ref={formRef} onSubmit={handleSubmit} className="flex w-full">
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit}
+        className="flex flex-col w-full"
+      >
         <div className="flex flex-col w-full px-1 md:px-8 py-12">
           <div className="text-white text-sm font-medium pb-4">
             LLM Providers
@@ -105,7 +101,7 @@ export default function StepOne({ nextStep, prevStep, currentStep }) {
                     API Key
                   </label>
                   <input
-                    type="text"
+                    type="password"
                     name="OpenAiKey"
                     className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                     placeholder="OpenAI API Key"
@@ -226,23 +222,22 @@ export default function StepOne({ nextStep, prevStep, currentStep }) {
             )}
           </div>
         </div>
+        <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+          <button
+            onClick={prevStep}
+            type="button"
+            className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
+          >
+            Back
+          </button>
+          <button
+            type="submit"
+            className="transition-all duration-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
+          >
+            Continue
+          </button>
+        </div>
       </form>
-      <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
-        <button
-          onClick={prevStep}
-          type="button"
-          className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
-        >
-          Back
-        </button>
-        <button
-          onClick={handleContinue}
-          type="button"
-          className="transition-all duration-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
-        >
-          Continue
-        </button>
-      </div>
     </div>
   );
 }

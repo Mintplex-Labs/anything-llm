@@ -5,8 +5,7 @@ import useLogo from "../../../../../hooks/useLogo";
 import { Plus } from "@phosphor-icons/react";
 import showToast from "../../../../../utils/toast";
 
-// Appearance Step
-export default function StepThree({ nextStep }) {
+export default function AppearanceSetup({ nextStep }) {
   const { logo: _initLogo } = useLogo();
   const [logo, setLogo] = useState("");
   const [isDefaultLogo, setIsDefaultLogo] = useState(true);

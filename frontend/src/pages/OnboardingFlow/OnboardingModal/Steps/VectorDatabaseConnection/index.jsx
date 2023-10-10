@@ -9,8 +9,11 @@ import QDrantLogo from "../../../../../media/vectordbs/qdrant.png";
 import System from "../../../../../models/system";
 import PreLoader from "../../../../../components/Preloader";
 
-// Vector Database Step
-export default function StepTwo({ nextStep, prevStep, currentStep }) {
+export default function VectorDatabaseConnection({
+  nextStep,
+  prevStep,
+  currentStep,
+}) {
   const [vectorDB, setVectorDB] = useState("lancedb");
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
@@ -42,17 +45,10 @@ export default function StepTwo({ nextStep, prevStep, currentStep }) {
     const { error } = await System.updateSystem(data);
     if (error) {
       alert(`Failed to save settings: ${error}`, "error");
+      return;
     }
-    return error;
-  };
-
-  const handleContinue = async () => {
-    if (formRef.current) {
-      const error = await handleSubmit(new Event("submit"), formRef.current);
-      if (!error) {
-        nextStep();
-      }
-    }
+    nextStep();
+    return;
   };
 
   if (loading)
@@ -64,7 +60,11 @@ export default function StepTwo({ nextStep, prevStep, currentStep }) {
 
   return (
     <div>
-      <form ref={formRef} onSubmit={handleSubmit} className="flex w-full">
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit}
+        className="flex flex-col w-full"
+      >
         <div className="flex flex-col w-full px-1 md:px-8 py-12">
           <div className="text-white text-sm font-medium pb-4">
             Select your preferred vector database provider
@@ -297,23 +297,22 @@ export default function StepTwo({ nextStep, prevStep, currentStep }) {
             )}
           </div>
         </div>
+        <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+          <button
+            onClick={prevStep}
+            type="button"
+            className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
+          >
+            Back
+          </button>
+          <button
+            type="submit"
+            className="transition-all duration-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
+          >
+            Continue
+          </button>
+        </div>
       </form>
-      <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
-        <button
-          onClick={prevStep}
-          type="button"
-          className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
-        >
-          Back
-        </button>
-        <button
-          onClick={handleContinue}
-          type="button"
-          className="transition-all duration-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
-        >
-          Continue
-        </button>
-      </div>
     </div>
   );
 }

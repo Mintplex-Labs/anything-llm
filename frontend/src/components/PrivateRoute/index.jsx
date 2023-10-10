@@ -12,19 +12,27 @@ import UserMenu from "../UserMenu";
 // When in single user mode we just bypass any authchecks.
 function useIsAuthenticated() {
   const [isAuthd, setIsAuthed] = useState(null);
-  const [shouldRedirectToOnboarding, setShouldRedirectToOnboarding] = useState(false);
+  const [shouldRedirectToOnboarding, setShouldRedirectToOnboarding] =
+    useState(false);
 
   useEffect(() => {
     const validateSession = async () => {
       const {
         MultiUserMode,
         RequiresAuth,
-        OpenAiKey
+        OpenAiKey = false,
+        AzureOpenAiKey = false,
       } = await System.keys();
 
       // Check for the onboarding redirect condition
-      if ((!MultiUserMode || !RequiresAuth) && !OpenAiKey) {
+      if (
+        !MultiUserMode &&
+        !RequiresAuth && // Not in Multi-user AND no password set.
+        !OpenAiKey &&
+        !AzureOpenAiKey // AND no LLM API Key set at all.
+      ) {
         setShouldRedirectToOnboarding(true);
+        setIsAuthed(true);
         return;
       }
 
@@ -101,6 +109,6 @@ export default function PrivateRoute({ Component }) {
       <Component />
     </UserMenu>
   ) : (
-    <Navigate to={paths.home()} />
+    <Navigate to={paths.login()} />
   );
 }

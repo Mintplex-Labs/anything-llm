@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { X } from "react-feather";
-import StepOne from "./Steps/StepOne";
-import StepTwo from "./Steps/StepTwo";
-import StepThree from "./Steps/StepThree";
-import StepFour from "./Steps/StepFour";
-import StepFive from "./Steps/StepFive";
-import StepSix from "./Steps/StepSix";
-import StepSeven from "./Steps/StepSeven";
+import LLMSelection from "./Steps/LLMSelection";
+import VectorDatabaseConnection from "./Steps/VectorDatabaseConnection";
+import AppearanceSetup from "./Steps/AppearanceSetup";
+import UserModeSelection from "./Steps/UserModeSelection";
+import PasswordProtection from "./Steps/PasswordProtection";
+import MultiUserSetup from "./Steps/MultiUserSetup";
+import CreateFirstWorkspace from "./Steps/CreateFirstWorkspace";
 
 const DIALOG_ID = "onboarding-modal";
 
@@ -53,7 +53,7 @@ export default function OnboardingModal({
       description:
         "These are the credentials and settings for your preferred LLM chat & embedding provider.",
       component: (
-        <StepOne
+        <LLMSelection
           nextStep={nextStep}
           prevStep={prevStep}
           currentStep={currentStep}
@@ -65,7 +65,7 @@ export default function OnboardingModal({
       description:
         "These are the credentials and settings for how your AnythingLLM instance will function.",
       component: (
-        <StepTwo
+        <VectorDatabaseConnection
           nextStep={nextStep}
           prevStep={prevStep}
           currentStep={currentStep}
@@ -76,7 +76,7 @@ export default function OnboardingModal({
       title: "Appearance",
       description: "Customize the appearance of your AnythingLLM instance.",
       component: (
-        <StepThree
+        <AppearanceSetup
           nextStep={nextStep}
           prevStep={prevStep}
           currentStep={currentStep}
@@ -86,24 +86,26 @@ export default function OnboardingModal({
     4: {
       title: "User Mode Setup",
       description: "Choose how many people will be using your instance.",
-      component: <StepFour goToStep={goToStep} prevStep={prevStep} />,
+      component: <UserModeSelection goToStep={goToStep} prevStep={prevStep} />,
     },
     5: {
       title: "Password Protect",
       description:
         "Protect your instance with a password. It is important to save this password as it cannot be recovered.",
-      component: <StepFive prevStep={prevStep} goToStep={goToStep} />,
+      component: <PasswordProtection prevStep={prevStep} goToStep={goToStep} />,
     },
     6: {
       title: "Multi-User Mode",
       description:
         "Setup your instance to support your team by activating multi-user mode.",
-      component: <StepSix nextStep={nextStep} />,
+      component: (
+        <MultiUserSetup prevStep={() => goToStep(4)} nextStep={nextStep} />
+      ),
     },
     7: {
       title: "Create Workspace",
       description: "To get started, create a new workspace.",
-      component: <StepSeven />,
+      component: <CreateFirstWorkspace />,
     },
   };
 
