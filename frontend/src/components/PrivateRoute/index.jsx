@@ -75,7 +75,7 @@ export function AdminRoute({ Component }) {
   if (isAuthd === null) return <FullScreenLoader />;
 
   if (shouldRedirectToOnboarding) {
-    return <Navigate to="/onboarding" />;
+    return <Navigate to={paths.onboarding()} />;
   }
 
   const user = userFromStorage();
