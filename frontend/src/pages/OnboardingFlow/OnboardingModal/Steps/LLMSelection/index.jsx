@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 
 import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
@@ -11,8 +11,6 @@ export default function LLMSelection({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const formRef = useRef(null);
 
   const updateLLMChoice = (selection) => {
     setLLMChoice(selection);
@@ -55,11 +53,7 @@ export default function LLMSelection({ nextStep, prevStep, currentStep }) {
 
   return (
     <div>
-      <form
-        ref={formRef}
-        onSubmit={handleSubmit}
-        className="flex flex-col w-full"
-      >
+      <form onSubmit={handleSubmit} className="flex flex-col w-full">
         <div className="flex flex-col w-full px-1 md:px-8 py-12">
           <div className="text-white text-sm font-medium pb-4">
             LLM Providers
