@@ -1,19 +1,20 @@
 import React, { useRef, useState } from "react";
 import Admin from "../../../../../models/admin";
+import { useNavigate } from "react-router-dom";
+import paths from "../../../../../utils/paths";
 
 // Create workspace step
 export default function StepSeven() {
   const formRef = useRef(null);
-  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleCreate = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
     const { workspace, error } = await Admin.newWorkspace(form.get("name"));
     if (!!workspace) {
-      window.location.reload();
+      navigate(paths.home());
     } else {
-      setError(error);
       alert(error);
     }
   };
