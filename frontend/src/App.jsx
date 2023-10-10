@@ -4,6 +4,7 @@ import { ContextWrapper } from "./AuthContext";
 import PrivateRoute, { AdminRoute } from "./components/PrivateRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Login from "./pages/Login";
 
 const Main = lazy(() => import("./pages/Main"));
 const InvitePage = lazy(() => import("./pages/Invite"));
@@ -29,12 +30,15 @@ const GeneralExportImport = lazy(() =>
 );
 const GeneralSecurity = lazy(() => import("./pages/GeneralSettings/Security"));
 
+const OnboardingFlow = lazy(() => import("./pages/OnboardingFlow"));
+
 export default function App() {
   return (
     <Suspense fallback={<div />}>
       <ContextWrapper>
         <Routes>
-          <Route path="/" element={<Main />} />
+          <Route path="/" element={<PrivateRoute Component={Main} />} />
+          <Route path="/login" element={<Login />} />
           <Route
             path="/workspace/:slug"
             element={<PrivateRoute Component={WorkspaceChat} />}
@@ -88,6 +92,9 @@ export default function App() {
             path="/admin/workspace-chats"
             element={<AdminRoute Component={AdminChats} />}
           />
+
+          {/* Onboarding Flow */}
+          <Route path="/onboarding" element={<OnboardingFlow />} />
         </Routes>
         <ToastContainer />
       </ContextWrapper>

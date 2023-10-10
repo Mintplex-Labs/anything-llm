@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import System from "../../../models/system";
 import { AUTH_TOKEN } from "../../../utils/constants";
 import useLogo from "../../../hooks/useLogo";
+import paths from "../../../utils/paths";
 
 export default function SingleUserAuth() {
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ export default function SingleUserAuth() {
     const { valid, token, message } = await System.requestToken(data);
     if (valid && !!token) {
       window.localStorage.setItem(AUTH_TOKEN, token);
-      window.location.reload();
+      window.location = paths.home();
     } else {
       setError(message);
       setLoading(false);

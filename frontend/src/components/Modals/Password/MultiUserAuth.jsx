@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import System from "../../../models/system";
 import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
 import useLogo from "../../../hooks/useLogo";
+import paths from "../../../utils/paths";
 
 export default function MultiUserAuth() {
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ export default function MultiUserAuth() {
     if (valid && !!token && !!user) {
       window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
       window.localStorage.setItem(AUTH_TOKEN, token);
-      window.location.reload();
+      window.location = paths.home();
     } else {
       setError(message);
       setLoading(false);
