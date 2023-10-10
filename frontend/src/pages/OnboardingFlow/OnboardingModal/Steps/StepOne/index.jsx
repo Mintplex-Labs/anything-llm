@@ -1,51 +1,57 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
 import AnthropicLogo from "../../../../../media/llmprovider/anthropic.png";
 import System from "../../../../../models/system";
-import showToast from "../../../../../utils/toast";
 import PreLoader from "../../../../../components/Preloader";
 import LLMProviderOption from "../../../../../components/LLMProviderOption";
 
 // LLM Preference Step
-export default function StepOne() {
-  const [saving, setSaving] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
+export default function StepOne({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const formRef = useRef(null);
+
   const updateLLMChoice = (selection) => {
     setLLMChoice(selection);
-    setHasChanges(true);
   };
 
   useEffect(() => {
     async function fetchKeys() {
-      console.log("fetching keys");
       const _settings = await System.keys();
       setSettings(_settings);
       setLLMChoice(_settings?.LLMProvider);
       setLoading(false);
     }
-    fetchKeys();
-  }, []);
 
-  const handleSubmit = async (e) => {
+    if (currentStep === 1) {
+      fetchKeys();
+    }
+  }, [currentStep]);
+
+  const handleSubmit = async (e, formElement) => {
     e.preventDefault();
-    setSaving(true);
+    const form = formElement || e.target;
     const data = {};
-    const form = new FormData(e.target);
-    for (var [key, value] of form.entries()) data[key] = value;
+    const formData = new FormData(form);
+    for (var [key, value] of formData.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
     if (error) {
-      showToast(`Failed to save LLM settings: ${error}`, "error");
-    } else {
-      showToast("LLM preferences saved successfully.", "success");
+      alert(`Failed to save LLM settings: ${error}`, "error");
     }
-    setSaving(false);
-    setHasChanges(!!error ? true : false);
+    return error;
+  };
+
+  const handleContinue = async () => {
+    if (formRef.current) {
+      const error = await handleSubmit(new Event("submit"), formRef.current);
+      if (!error) {
+        nextStep();
+      }
+    }
   };
 
   if (loading)
@@ -56,12 +62,8 @@ export default function StepOne() {
     );
 
   return (
-    <>
-      <form
-        onSubmit={handleSubmit}
-        onChange={() => setHasChanges(true)}
-        className="flex w-full"
-      >
+    <div>
+      <form ref={formRef} onSubmit={handleSubmit} className="flex w-full">
         <div className="flex flex-col w-full px-1 md:px-8 py-12">
           <div className="text-white text-sm font-medium pb-4">
             LLM Providers
@@ -225,6 +227,22 @@ export default function StepOne() {
           </div>
         </div>
       </form>
-    </>
+      <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+        <button
+          onClick={prevStep}
+          type="button"
+          className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
+        >
+          Back
+        </button>
+        <button
+          onClick={handleContinue}
+          type="button"
+          className="transition-all duration-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
   );
 }

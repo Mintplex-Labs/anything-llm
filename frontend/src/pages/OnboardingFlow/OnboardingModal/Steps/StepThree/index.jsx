@@ -6,10 +6,9 @@ import { Plus } from "@phosphor-icons/react";
 import showToast from "../../../../../utils/toast";
 
 // Appearance Step
-export default function StepThree() {
+export default function StepThree({ nextStep }) {
   const { logo: _initLogo } = useLogo();
   const [logo, setLogo] = useState("");
-  const [hasChanges, setHasChanges] = useState(false);
   const [isDefaultLogo, setIsDefaultLogo] = useState(true);
 
   useEffect(() => {
@@ -59,8 +58,8 @@ export default function StepThree() {
   };
 
   return (
-    <>
-      <div className="flex flex-col w-full md:px-8 py-12">
+    <div>
+      <div className="flex flex-col w-full px-10 py-12">
         <div className="flex flex-col gap-y-2">
           <h2 className="text-white text-sm font-medium">Custom Logo</h2>
           <p className="text-sm font-base text-white/60">
@@ -113,6 +112,28 @@ export default function StepThree() {
           </div>
         </div>
       </div>
-    </>
+      <div className="flex w-full justify-between items-center p-6 space-x-6 border-t rounded-b border-gray-500/50">
+        <div className="w-96 text-white text-opacity-80 text-xs font-base">
+          Want to customize the automatic messages in your chat? Find more
+          customization options on the appearance settings page.
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={nextStep}
+            type="button"
+            className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
+          >
+            Skip
+          </button>
+          <button
+            onClick={nextStep}
+            type="button"
+            className="transition-all duration-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

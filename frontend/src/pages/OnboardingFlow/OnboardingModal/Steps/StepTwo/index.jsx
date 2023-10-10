@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import VectorDBOption from "../../../../../components/VectorDBOption";
 import ChromaLogo from "../../../../../media/vectordbs/chroma.png";
@@ -7,15 +7,15 @@ import LanceDbLogo from "../../../../../media/vectordbs/lancedb.png";
 import WeaviateLogo from "../../../../../media/vectordbs/weaviate.png";
 import QDrantLogo from "../../../../../media/vectordbs/qdrant.png";
 import System from "../../../../../models/system";
-import showToast from "../../../../../utils/toast";
+import PreLoader from "../../../../../components/Preloader";
 
 // Vector Database Step
-export default function StepTwo() {
-  const [saving, setSaving] = useState(false);
-  const [hasChanges, setHasChanges] = useState(false);
+export default function StepTwo({ nextStep, prevStep, currentStep }) {
   const [vectorDB, setVectorDB] = useState("lancedb");
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
+
+  const formRef = useRef(null);
 
   useEffect(() => {
     async function fetchKeys() {
@@ -24,37 +24,47 @@ export default function StepTwo() {
       setVectorDB(_settings?.VectorDB || "lancedb");
       setLoading(false);
     }
-    fetchKeys();
-  }, []);
+    if (currentStep === 2) {
+      fetchKeys();
+    }
+  }, [currentStep]);
 
   const updateVectorChoice = (selection) => {
-    setHasChanges(true);
     setVectorDB(selection);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, formElement) => {
     e.preventDefault();
-    setSaving(true);
+    const form = formElement || e.target;
     const data = {};
-    const form = new FormData(e.target);
-    for (var [key, value] of form.entries()) data[key] = value;
+    const formData = new FormData(form);
+    for (var [key, value] of formData.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
     if (error) {
-      showToast(`Failed to save settings: ${error}`, "error");
-    } else {
-      showToast("Settings saved successfully.", "success");
+      alert(`Failed to save settings: ${error}`, "error");
     }
-    setSaving(false);
-    setHasChanges(!!error ? true : false);
+    return error;
   };
 
+  const handleContinue = async () => {
+    if (formRef.current) {
+      const error = await handleSubmit(new Event("submit"), formRef.current);
+      if (!error) {
+        nextStep();
+      }
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="w-full h-full flex justify-center items-center p-20">
+        <PreLoader />
+      </div>
+    );
+
   return (
-    <>
-      <form
-        onSubmit={handleSubmit}
-        onChange={() => setHasChanges(true)}
-        className="flex w-full"
-      >
+    <div>
+      <form ref={formRef} onSubmit={handleSubmit} className="flex w-full">
         <div className="flex flex-col w-full px-1 md:px-8 py-12">
           <div className="text-white text-sm font-medium pb-4">
             Select your preferred vector database provider
@@ -288,6 +298,22 @@ export default function StepTwo() {
           </div>
         </div>
       </form>
-    </>
+      <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+        <button
+          onClick={prevStep}
+          type="button"
+          className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
+        >
+          Back
+        </button>
+        <button
+          onClick={handleContinue}
+          type="button"
+          className="transition-all duration-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
   );
 }

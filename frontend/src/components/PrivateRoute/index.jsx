@@ -12,10 +12,22 @@ import UserMenu from "../UserMenu";
 // When in single user mode we just bypass any authchecks.
 function useIsAuthenticated() {
   const [isAuthd, setIsAuthed] = useState(null);
+  const [shouldRedirectToOnboarding, setShouldRedirectToOnboarding] = useState(false);
 
   useEffect(() => {
     const validateSession = async () => {
-      const { MultiUserMode, RequiresAuth } = await System.keys();
+      const {
+        MultiUserMode,
+        RequiresAuth,
+        OpenAiKey
+      } = await System.keys();
+
+      // Check for the onboarding redirect condition
+      if ((!MultiUserMode || !RequiresAuth) && !OpenAiKey) {
+        setShouldRedirectToOnboarding(true);
+        return;
+      }
+
       if (!MultiUserMode && !RequiresAuth) {
         setIsAuthed(true);
         return;
@@ -55,15 +67,19 @@ function useIsAuthenticated() {
     validateSession();
   }, []);
 
-  return isAuthd;
+  return { isAuthd, shouldRedirectToOnboarding };
 }
 
 export function AdminRoute({ Component }) {
-  const authed = useIsAuthenticated();
-  if (authed === null) return <FullScreenLoader />;
+  const { isAuthd, shouldRedirectToOnboarding } = useIsAuthenticated();
+  if (isAuthd === null) return <FullScreenLoader />;
+
+  if (shouldRedirectToOnboarding) {
+    return <Navigate to="/onboarding" />;
+  }
 
   const user = userFromStorage();
-  return authed && user?.role === "admin" ? (
+  return isAuthd && user?.role === "admin" ? (
     <UserMenu>
       <Component />
     </UserMenu>
@@ -73,10 +89,14 @@ export function AdminRoute({ Component }) {
 }
 
 export default function PrivateRoute({ Component }) {
-  const authed = useIsAuthenticated();
-  if (authed === null) return <FullScreenLoader />;
+  const { isAuthd, shouldRedirectToOnboarding } = useIsAuthenticated();
+  if (isAuthd === null) return <FullScreenLoader />;
 
-  return authed ? (
+  if (shouldRedirectToOnboarding) {
+    return <Navigate to="/onboarding" />;
+  }
+
+  return isAuthd ? (
     <UserMenu>
       <Component />
     </UserMenu>

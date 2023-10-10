@@ -4,6 +4,9 @@ export default {
   home: () => {
     return "/";
   },
+  onboarding: () => {
+    return "/onboarding";
+  },
   github: () => {
     return "https://github.com/Mintplex-Labs/anything-llm";
   },
