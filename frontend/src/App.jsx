@@ -29,6 +29,8 @@ const GeneralExportImport = lazy(() =>
 );
 const GeneralSecurity = lazy(() => import("./pages/GeneralSettings/Security"));
 
+const OnboardingFlow = lazy(() => import("./pages/OnboardingFlow"));
+
 export default function App() {
   return (
     <Suspense fallback={<div />}>
@@ -87,6 +89,12 @@ export default function App() {
           <Route
             path="/admin/workspace-chats"
             element={<AdminRoute Component={AdminChats} />}
+          />
+
+          {/* Onboarding Flow */}
+          <Route
+            path="/onboarding"
+            element={<PrivateRoute Component={OnboardingFlow} />}
           />
         </Routes>
         <ToastContainer />
