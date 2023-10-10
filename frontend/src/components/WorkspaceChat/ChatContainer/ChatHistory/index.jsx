@@ -2,11 +2,11 @@ import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import { useEffect, useRef } from "react";
 import { useManageWorkspaceModal } from "../../../Modals/MangeWorkspace";
-import ManageWorkspace from "../../../Modals/MangeWorkspace"; // Add this import if not already added.
+import ManageWorkspace from "../../../Modals/MangeWorkspace";
 
 export default function ChatHistory({ history = [], workspace }) {
   const replyRef = useRef(null);
-  const { showModal, hideModal, showing } = useManageWorkspaceModal(); // Destructure the necessary properties.
+  const { showModal, hideModal, showing } = useManageWorkspaceModal();
 
   useEffect(() => {
     if (replyRef.current) {
