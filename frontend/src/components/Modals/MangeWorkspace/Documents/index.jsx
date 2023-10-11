@@ -1,229 +1,95 @@
+import { ArrowsDownUp, CloudArrowUp, Plus } from "@phosphor-icons/react";
 import React, { useState, useEffect } from "react";
-import System from "../../../../models/system";
-import Workspace from "../../../../models/workspace";
-import paths from "../../../../utils/paths";
-import { useParams } from "react-router-dom";
-import Directory from "./Directory";
-import ConfirmationModal from "./ConfirmationModal";
-import { AlertTriangle } from "react-feather";
-import showToast from "../../../../utils/toast";
 
 export default function DocumentSettings({ workspace }) {
-  const { slug } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [directories, setDirectories] = useState(null);
-  const [originalDocuments, setOriginalDocuments] = useState([]);
-  const [selectedFiles, setSelectFiles] = useState([]);
-  const [hasFiles, setHasFiles] = useState(true);
-  const [canDelete, setCanDelete] = useState(false);
-
-  async function fetchKeys(refetchWorkspace = false) {
-    const localFiles = await System.localFiles();
-    const currentWorkspace = refetchWorkspace
-      ? await Workspace.bySlug(slug ?? workspace.slug)
-      : workspace;
-    const originalDocs =
-      currentWorkspace.documents.map((doc) => doc.docpath) || [];
-    const hasAnyFiles = localFiles.items.some(
-      (folder) => folder?.items?.length > 0
-    );
-
-    const canDelete = await System.getCanDeleteWorkspaces();
-    setCanDelete(canDelete);
-    setDirectories(localFiles);
-    setOriginalDocuments([...originalDocs]);
-    setSelectFiles([...originalDocs]);
-    setHasFiles(hasAnyFiles);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    fetchKeys();
-  }, []);
-
-  const deleteWorkspace = async () => {
-    if (
-      !window.confirm(
-        `You are about to delete your entire ${workspace.name} workspace. This will remove all vector embeddings on your vector database.\n\nThe original source files will remain untouched. This action is irreversible.`
-      )
-    )
-      return false;
-    await Workspace.delete(workspace.slug);
-    workspace.slug === slug
-      ? (window.location = paths.home())
-      : window.location.reload();
-  };
-
-  const docChanges = () => {
-    const changes = {
-      adds: [],
-      deletes: [],
-    };
-
-    selectedFiles.map((doc) => {
-      const inOriginal = !!originalDocuments.find((oDoc) => oDoc === doc);
-      if (!inOriginal) {
-        changes.adds.push(doc);
-      }
-    });
-
-    originalDocuments.map((doc) => {
-      const selected = !!selectedFiles.find((oDoc) => oDoc === doc);
-      if (!selected) {
-        changes.deletes.push(doc);
-      }
-    });
-
-    return changes;
-  };
-
-  const confirmChanges = (e) => {
-    e.preventDefault();
-    const changes = docChanges();
-    changes.adds.length > 0 ? setShowConfirmation(true) : updateWorkspace(e);
-  };
-
-  const updateWorkspace = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    showToast("Updating workspace...", "info", { autoClose: false });
-    setShowConfirmation(false);
-
-    const changes = docChanges();
-    await Workspace.modifyEmbeddings(workspace.slug, changes)
-      .then((res) => {
-        if (res && res.workspace) {
-          showToast("Workspace updated successfully.", "success", {
-            clear: true,
-          });
-        } else {
-          showToast("Workspace update failed.", "error", { clear: true });
-        }
-      })
-      .catch((error) => {
-        showToast(`Workspace update failed: ${error}`, "error", {
-          clear: true,
-        });
-      });
-
-    setSaving(false);
-    await fetchKeys(true);
-  };
-
-  const isSelected = (filepath) => {
-    const isFolder = !filepath.includes("/");
-    return isFolder
-      ? selectedFiles.some((doc) => doc.includes(filepath.split("/")[0]))
-      : selectedFiles.some((doc) => doc.includes(filepath));
-  };
-
-  const toggleSelection = (filepath) => {
-    const isFolder = !filepath.includes("/");
-    const parent = isFolder ? filepath : filepath.split("/")[0];
-
-    if (isSelected(filepath)) {
-      const updatedDocs = isFolder
-        ? selectedFiles.filter((doc) => !doc.includes(parent))
-        : selectedFiles.filter((doc) => !doc.includes(filepath));
-      setSelectFiles([...new Set(updatedDocs)]);
-    } else {
-      var newDocs = [];
-      var parentDirs = directories.items.find((item) => item.name === parent);
-      if (isFolder && parentDirs) {
-        const folderItems = parentDirs.items;
-        newDocs = folderItems.map((item) => parent + "/" + item.name);
-      } else {
-        newDocs = [filepath];
-      }
-
-      const combined = [...selectedFiles, ...newDocs];
-      setSelectFiles([...new Set(combined)]);
-    }
-  };
-
-  if (loading) {
-    return (
-      <>
-        <div className="p-6 flex h-full w-full max-h-[80vh] overflow-y-scroll">
-          <div className="flex flex-col gap-y-1 w-full">
-            <p className="text-slate-200 dark:text-stone-300 text-center">
-              loading workspace files
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600"></div>
-      </>
-    );
-  }
-
   return (
-    <>
-      {showConfirmation && (
-        <ConfirmationModal
-          directories={directories}
-          hideConfirm={() => setShowConfirmation(false)}
-          additions={docChanges().adds}
-          updateWorkspace={updateWorkspace}
-        />
-      )}
-      <div className="p-6 flex h-full w-full max-h-[80vh] overflow-y-scroll">
-        <div className="flex flex-col gap-y-1 w-full">
-          {!hasFiles && (
-            <div className="mb-4 w-full gap-x-2 rounded-lg h-10 border bg-orange-200 border-orange-800 dark:bg-orange-300 text-orange-800 flex  items-center justify-center">
-              <AlertTriangle className="h-6 w-6" />
-              <p className="text-sm">
-                You don't have any files uploaded. Upload a file via the "Upload
-                Docs" tab.
+    <div className="flex gap-x-6 justify-center">
+      {/* My Document */}
+      <div className="px-8 pb-8">
+        <div className="flex flex-col gap-y-6">
+          <div className="flex items-center justify-between w-[560px] px-5">
+            <h3 className="text-white text-base font-bold">My Documents</h3>
+            <div className="flex items-center text-white/80 gap-x-1">
+              <Plus className="text-base font-bold w-4 h-4" />
+              <p>New Folder</p>
+            </div>
+          </div>
+
+          <div className="w-[560px] h-[310px] bg-zinc-900 rounded-2xl">
+            <div className="text-white/80 text-xs grid grid-cols-12 py-1.5 px-8 border-b border-white/20">
+              <p className="col-span-4">Name</p>
+              <p className="col-span-2">Date</p>
+              <p className="col-span-2">Size</p>
+              <p className="col-span-2">Kind</p>
+              <p className="col-span-2">Cached</p>
+            </div>
+            {/* Document rows placeholder */}
+
+            {/* Show if no documents */}
+            <div className="w-full h-full flex items-center justify-center">
+              <p className="text-white text-opacity-40 text-sm font-medium">
+                No Documents
               </p>
             </div>
-          )}
-
-          <div className="flex flex-col mb-2">
-            <p className="text-gray-800 dark:text-stone-200 text-base ">
-              Select folders to add or remove from workspace.
-            </p>
-            <p className="text-gray-800 dark:text-stone-400 text-xs italic">
-              {selectedFiles.length} documents in workspace selected.
-            </p>
           </div>
-          <div className="w-full h-auto border border-slate-200 dark:border-stone-600 rounded-lg px-4 py-2">
-            {!!directories && (
-              <Directory
-                files={directories}
-                toggleSelection={toggleSelection}
-                isSelected={isSelected}
-              />
-            )}
+
+          {/* Upload file */}
+          <div className="w-[560px] border-2 border-dashed rounded-2xl bg-zinc-900/50 p-3">
+            <input
+              name="import"
+              type="file"
+              multiple="false"
+              accept=".mbox,.pdf,.odt,.docx,.txt,.md" // TODO: Get dynamically from system
+              hidden={true}
+            />
+            <div className="flex flex-col items-center justify-center">
+              <CloudArrowUp className="w-8 h-8 text-white/80" />
+              <div className="text-white text-opacity-80 text-sm font-semibold py-1">
+                Click to upload or drag and drop
+              </div>
+              <div className="text-white text-opacity-60 text-xs font-medium py-1">
+                Supported file extensions are .mbox .pdf .odt .docx .txt .md
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="text-center text-white text-opacity-80 text-xs font-medium w-[560px]">
+              These files will be uploaded to the document processor running on
+              this AnythingLLM instance. These files are not sent or shared with
+              a third party.
+            </div>
           </div>
         </div>
       </div>
-      <div
-        className={`flex items-center ${
-          canDelete ? "justify-between" : "justify-end"
-        } p-4 md:p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600`}
-      >
-        <button
-          hidden={!canDelete}
-          onClick={deleteWorkspace}
-          type="button"
-          className="border border-transparent text-gray-500 bg-white hover:bg-red-100 rounded-lg whitespace-nowrap text-sm font-medium px-5 py-2.5 hover:text-red-900 focus:z-10 dark:bg-transparent dark:text-gray-300 dark:hover:text-white dark:hover:bg-red-600"
-        >
-          Delete Workspace
-        </button>
 
-        <div className="flex items-center">
-          <button
-            disabled={saving}
-            onClick={confirmChanges}
-            type="submit"
-            className="text-slate-200 bg-black-900 px-4 py-2 rounded-lg hover:bg-gray-900 whitespace-nowrap text-sm"
-          >
-            {saving ? "Saving..." : "Confirm Changes"}
-          </button>
+      <div className="flex items-center">
+        <ArrowsDownUp className="text-white text-base font-bold rotate-90 w-11 h-11" />
+      </div>
+
+      {/* Current Workspace */}
+      <div className="px-8">
+        <div className="flex items-center justify-start w-[560px]">
+          <h3 className="text-white text-base font-bold ml-5">
+            {workspace.name}
+          </h3>
+        </div>
+        <div className="w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5">
+          <div className="text-white/80 text-xs grid grid-cols-12 py-1.5 px-8 border-b border-white/20">
+            <p className="col-span-4">Name</p>
+            <p className="col-span-2">Date</p>
+            <p className="col-span-2">Size</p>
+            <p className="col-span-2">Kind</p>
+            <p className="col-span-2">Cached</p>
+          </div>
+          {/* Workspace document rows placeholder */}
+          {/* Show if no documents in workspace */}
+          <div className="w-full h-full flex items-center justify-center">
+            <p className="text-white text-opacity-40 text-sm font-medium">
+              No Documents
+            </p>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

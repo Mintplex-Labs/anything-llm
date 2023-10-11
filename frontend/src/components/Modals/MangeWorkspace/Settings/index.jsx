@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Workspace from "../../../../models/workspace";
 import paths from "../../../../utils/paths";
 import { chatPrompt } from "../../../../utils/chat";
+import System from "../../../../models/system";
 
 // Ensure that a type is correct before sending the body
 // to the backend.
@@ -25,6 +26,7 @@ export default function WorkspaceSettings({ workspace }) {
   const [hasChanges, setHasChanges] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [totalVectors, setTotalVectors] = useState("...");
 
   useEffect(() => {
     function setTimer() {
@@ -42,6 +44,13 @@ export default function WorkspaceSettings({ workspace }) {
     }
     setTimer();
   }, [success, error]);
+
+  useEffect(() => {
+    async function vectorCount() {
+      setTotalVectors(await System.totalIndexes());
+    }
+    vectorCount();
+  }, []);
 
   const handleUpdate = async (e) => {
     setError(null);
@@ -78,35 +87,46 @@ export default function WorkspaceSettings({ workspace }) {
 
   return (
     <form ref={formEl} onSubmit={handleUpdate}>
-      <div className="p-6 flex h-full w-full max-h-[80vh] overflow-y-scroll">
-        <div className="flex flex-col gap-y-1 w-full">
-          <div className="flex flex-col mb-2">
-            <p className="text-gray-800 dark:text-stone-200 text-base ">
-              Edit your workspace's settings
-            </p>
+      <div className="p-6 flex flex-col h-full w-full max-h-[80vh] overflow-y-scroll">
+        <div className="flex flex-col gap-y-1 min-w-[900px]">
+          <div className="text-white text-opacity-60 text-sm font-bold uppercase py-6 border-b-2 border-white/10">
+            Workspace Settings
           </div>
-
-          <div className="w-full flex flex-col gap-y-4">
-            <div>
-              <input
-                type="text"
-                disabled={true}
-                defaultValue={workspace?.slug}
-                className="bg-gray-50 border disabled:bg-gray-400 disabled:text-gray-700 disabled:border-gray-400 disabled:dark:bg-stone-800 disabled:dark:border-stone-900 disabled:dark:text-stone-600 disabled:cursor-not-allowed border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required={true}
-                autoComplete="off"
-              />
+          <div className="flex flex-row w-full py-6 border-b-2 border-white/10">
+            <div className="w-1/2">
+              <h3 className="text-white text-sm font-semibold">
+                Vector database identifier
+              </h3>
+              <p className="text-white text-opacity-60 text-sm font-medium">{workspace?.slug}</p>
             </div>
+
+            <div className="w-1/2">
+              <h3 className="text-white text-sm font-semibold">
+                Number of vectors
+              </h3>
+              <p className="text-white text-opacity-60 text-xs font-medium my-[2px]">
+                  Total number of vectors in your vector database.
+                </p>
+              <p className={`text-white text-opacity-60 text-sm font-medium ${totalVectors === "..." ? "animate-pulse" : "" }`}>{totalVectors}</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col gap-y-1 w-full mt-7">
+
+          <div className="flex">
+
+            <div className="flex flex-col gap-y-4 w-1/2">
+              <div className="w-3/4">
 
             <div>
               <div className="flex flex-col gap-y-1 mb-4">
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-gray-900 dark:text-white"
+                  className="block mb-2 text-sm font-medium text-white"
                 >
                   Workspace Name
                 </label>
-                <p className="text-xs text-gray-600 dark:text-stone-400">
+                <p className="text-white text-opacity-60 text-xs font-medium">
                   This will only change the display name of your workspace.
                 </p>
               </div>
@@ -116,7 +136,7 @@ export default function WorkspaceSettings({ workspace }) {
                 minLength={2}
                 maxLength={80}
                 defaultValue={workspace?.name}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 placeholder="My Workspace"
                 required={true}
                 autoComplete="off"
@@ -128,11 +148,11 @@ export default function WorkspaceSettings({ workspace }) {
               <div className="flex flex-col gap-y-1 mb-4">
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-gray-900 dark:text-white"
+                  className="block mb-2 text-sm font-medium text-white"
                 >
                   LLM Temperature
                 </label>
-                <p className="text-xs text-gray-600 dark:text-stone-400">
+                <p className="text-white text-opacity-60 text-xs font-medium">
                   This setting controls how "random" or dynamic your chat
                   responses will be.
                   <br />
@@ -150,7 +170,7 @@ export default function WorkspaceSettings({ workspace }) {
                 step={0.1}
                 onWheel={(e) => e.target.blur()}
                 defaultValue={workspace?.openAiTemp ?? 0.7}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 placeholder="0.7"
                 required={true}
                 autoComplete="off"
@@ -162,40 +182,11 @@ export default function WorkspaceSettings({ workspace }) {
               <div className="flex flex-col gap-y-1 mb-4">
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Prompt
-                </label>
-                <p className="text-xs text-gray-600 dark:text-stone-400">
-                  The prompt that will be used on this workspace. Define the
-                  context and instructions for the AI to generate a response.
-                  You should to provide a carefully crafted prompt so the AI can
-                  generate a relevant and accurate response.
-                </p>
-              </div>
-              <textarea
-                name="openAiPrompt"
-                maxLength={500}
-                rows={5}
-                defaultValue={chatPrompt(workspace)}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
-                required={true}
-                wrap="soft"
-                autoComplete="off"
-                onChange={() => setHasChanges(true)}
-              />
-            </div>
-
-            <div>
-              <div className="flex flex-col gap-y-1 mb-4">
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-900 dark:text-white"
+                  className="block mb-2 text-sm font-medium text-white"
                 >
                   Chat History
                 </label>
-                <p className="text-xs text-gray-600 dark:text-stone-400">
+                <p className="text-white text-opacity-60 text-xs font-medium">
                   The number of previous chats that will be included in the
                   response's short-term memory.
                   <br />
@@ -211,13 +202,49 @@ export default function WorkspaceSettings({ workspace }) {
                 step={1}
                 onWheel={(e) => e.target.blur()}
                 defaultValue={workspace?.openAiHistory ?? 20}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-stone-600 dark:border-stone-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 placeholder="20"
                 required={true}
                 autoComplete="off"
                 onChange={() => setHasChanges(true)}
               />
             </div>
+
+            </div>
+
+            </div>
+
+            <div className="w-1/2">
+              <div className="w-3/4">
+              <div className="flex flex-col gap-y-1 mb-4">
+                <label
+                  htmlFor="name"
+                  className="block mb-2 text-sm font-medium text-white"
+                >
+                  Prompt
+                </label>
+                <p className="text-white text-opacity-60 text-xs font-medium">
+                  The prompt that will be used on this workspace. Define the
+                  context and instructions for the AI to generate a response.
+                  You should to provide a carefully crafted prompt so the AI can
+                  generate a relevant and accurate response.
+                </p>
+              </div>
+              <textarea
+                name="openAiPrompt"
+                maxLength={500}
+                rows={5}
+                defaultValue={chatPrompt(workspace)}
+                className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                placeholder="Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
+                required={true}
+                wrap="soft"
+                autoComplete="off"
+                onChange={() => setHasChanges(true)}
+              />
+              </div>
+            </div>
+
           </div>
 
           {error && (
