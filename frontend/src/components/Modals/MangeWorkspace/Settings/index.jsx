@@ -97,7 +97,9 @@ export default function WorkspaceSettings({ workspace }) {
               <h3 className="text-white text-sm font-semibold">
                 Vector database identifier
               </h3>
-              <p className="text-white text-opacity-60 text-sm font-medium">{workspace?.slug}</p>
+              <p className="text-white text-opacity-60 text-sm font-medium">
+                {workspace?.slug}
+              </p>
             </div>
 
             <div className="w-1/2">
@@ -105,146 +107,146 @@ export default function WorkspaceSettings({ workspace }) {
                 Number of vectors
               </h3>
               <p className="text-white text-opacity-60 text-xs font-medium my-[2px]">
-                  Total number of vectors in your vector database.
-                </p>
-              <p className={`text-white text-opacity-60 text-sm font-medium ${totalVectors === "..." ? "animate-pulse" : "" }`}>{totalVectors}</p>
+                Total number of vectors in your vector database.
+              </p>
+              <p
+                className={`text-white text-opacity-60 text-sm font-medium ${
+                  totalVectors === "..." ? "animate-pulse" : ""
+                }`}
+              >
+                {totalVectors}
+              </p>
             </div>
           </div>
         </div>
         <div className="flex flex-col gap-y-1 w-full mt-7">
-
           <div className="flex">
-
             <div className="flex flex-col gap-y-4 w-1/2">
               <div className="w-3/4">
+                <div>
+                  <div className="flex flex-col gap-y-1 mb-4">
+                    <label
+                      htmlFor="name"
+                      className="block mb-2 text-sm font-medium text-white"
+                    >
+                      Workspace Name
+                    </label>
+                    <p className="text-white text-opacity-60 text-xs font-medium">
+                      This will only change the display name of your workspace.
+                    </p>
+                  </div>
+                  <input
+                    name="name"
+                    type="text"
+                    minLength={2}
+                    maxLength={80}
+                    defaultValue={workspace?.name}
+                    className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder="My Workspace"
+                    required={true}
+                    autoComplete="off"
+                    onChange={() => setHasChanges(true)}
+                  />
+                </div>
 
-            <div>
-              <div className="flex flex-col gap-y-1 mb-4">
-                <label
-                  htmlFor="name"
-                  className="block mb-2 text-sm font-medium text-white"
-                >
-                  Workspace Name
-                </label>
-                <p className="text-white text-opacity-60 text-xs font-medium">
-                  This will only change the display name of your workspace.
-                </p>
+                <div>
+                  <div className="flex flex-col gap-y-1 mb-4">
+                    <label
+                      htmlFor="name"
+                      className="block mb-2 text-sm font-medium text-white"
+                    >
+                      LLM Temperature
+                    </label>
+                    <p className="text-white text-opacity-60 text-xs font-medium">
+                      This setting controls how "random" or dynamic your chat
+                      responses will be.
+                      <br />
+                      The higher the number (2.0 maximum) the more random and
+                      incoherent.
+                      <br />
+                      Recommended: 0.7
+                    </p>
+                  </div>
+                  <input
+                    name="openAiTemp"
+                    type="number"
+                    min={0.0}
+                    max={2.0}
+                    step={0.1}
+                    onWheel={(e) => e.target.blur()}
+                    defaultValue={workspace?.openAiTemp ?? 0.7}
+                    className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder="0.7"
+                    required={true}
+                    autoComplete="off"
+                    onChange={() => setHasChanges(true)}
+                  />
+                </div>
+
+                <div>
+                  <div className="flex flex-col gap-y-1 mb-4">
+                    <label
+                      htmlFor="name"
+                      className="block mb-2 text-sm font-medium text-white"
+                    >
+                      Chat History
+                    </label>
+                    <p className="text-white text-opacity-60 text-xs font-medium">
+                      The number of previous chats that will be included in the
+                      response's short-term memory.
+                      <br />
+                      Recommend 20. Anything more than 45 is likely to lead to
+                      continuous chat failures depending on message size.
+                    </p>
+                  </div>
+                  <input
+                    name="openAiHistory"
+                    type="number"
+                    min={1}
+                    max={45}
+                    step={1}
+                    onWheel={(e) => e.target.blur()}
+                    defaultValue={workspace?.openAiHistory ?? 20}
+                    className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder="20"
+                    required={true}
+                    autoComplete="off"
+                    onChange={() => setHasChanges(true)}
+                  />
+                </div>
               </div>
-              <input
-                name="name"
-                type="text"
-                minLength={2}
-                maxLength={80}
-                defaultValue={workspace?.name}
-                className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder="My Workspace"
-                required={true}
-                autoComplete="off"
-                onChange={() => setHasChanges(true)}
-              />
-            </div>
-
-            <div>
-              <div className="flex flex-col gap-y-1 mb-4">
-                <label
-                  htmlFor="name"
-                  className="block mb-2 text-sm font-medium text-white"
-                >
-                  LLM Temperature
-                </label>
-                <p className="text-white text-opacity-60 text-xs font-medium">
-                  This setting controls how "random" or dynamic your chat
-                  responses will be.
-                  <br />
-                  The higher the number (2.0 maximum) the more random and
-                  incoherent.
-                  <br />
-                  Recommended: 0.7
-                </p>
-              </div>
-              <input
-                name="openAiTemp"
-                type="number"
-                min={0.0}
-                max={2.0}
-                step={0.1}
-                onWheel={(e) => e.target.blur()}
-                defaultValue={workspace?.openAiTemp ?? 0.7}
-                className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder="0.7"
-                required={true}
-                autoComplete="off"
-                onChange={() => setHasChanges(true)}
-              />
-            </div>
-
-            <div>
-              <div className="flex flex-col gap-y-1 mb-4">
-                <label
-                  htmlFor="name"
-                  className="block mb-2 text-sm font-medium text-white"
-                >
-                  Chat History
-                </label>
-                <p className="text-white text-opacity-60 text-xs font-medium">
-                  The number of previous chats that will be included in the
-                  response's short-term memory.
-                  <br />
-                  Recommend 20. Anything more than 45 is likely to lead to
-                  continuous chat failures depending on message size.
-                </p>
-              </div>
-              <input
-                name="openAiHistory"
-                type="number"
-                min={1}
-                max={45}
-                step={1}
-                onWheel={(e) => e.target.blur()}
-                defaultValue={workspace?.openAiHistory ?? 20}
-                className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder="20"
-                required={true}
-                autoComplete="off"
-                onChange={() => setHasChanges(true)}
-              />
-            </div>
-
-            </div>
-
             </div>
 
             <div className="w-1/2">
               <div className="w-3/4">
-              <div className="flex flex-col gap-y-1 mb-4">
-                <label
-                  htmlFor="name"
-                  className="block mb-2 text-sm font-medium text-white"
-                >
-                  Prompt
-                </label>
-                <p className="text-white text-opacity-60 text-xs font-medium">
-                  The prompt that will be used on this workspace. Define the
-                  context and instructions for the AI to generate a response.
-                  You should to provide a carefully crafted prompt so the AI can
-                  generate a relevant and accurate response.
-                </p>
-              </div>
-              <textarea
-                name="openAiPrompt"
-                maxLength={500}
-                rows={5}
-                defaultValue={chatPrompt(workspace)}
-                className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder="Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
-                required={true}
-                wrap="soft"
-                autoComplete="off"
-                onChange={() => setHasChanges(true)}
-              />
+                <div className="flex flex-col gap-y-1 mb-4">
+                  <label
+                    htmlFor="name"
+                    className="block mb-2 text-sm font-medium text-white"
+                  >
+                    Prompt
+                  </label>
+                  <p className="text-white text-opacity-60 text-xs font-medium">
+                    The prompt that will be used on this workspace. Define the
+                    context and instructions for the AI to generate a response.
+                    You should to provide a carefully crafted prompt so the AI
+                    can generate a relevant and accurate response.
+                  </p>
+                </div>
+                <textarea
+                  name="openAiPrompt"
+                  maxLength={500}
+                  rows={5}
+                  defaultValue={chatPrompt(workspace)}
+                  className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  placeholder="Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
+                  required={true}
+                  wrap="soft"
+                  autoComplete="off"
+                  onChange={() => setHasChanges(true)}
+                />
               </div>
             </div>
-
           </div>
 
           {error && (
