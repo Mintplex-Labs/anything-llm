@@ -1,7 +1,69 @@
 import { ArrowsDownUp, CloudArrowUp, Plus } from "@phosphor-icons/react";
-import React, { useState, useEffect } from "react";
+import DocumentRow from "./DocumentRow";
 
 export default function DocumentSettings({ workspace }) {
+  const documents = [
+    {
+      name: "Document 2.pdf",
+      date: "Sep 19",
+      size: "12 MB",
+      kind: "PDF",
+      cached: true,
+    },
+    {
+      name: "very long file name 12jfidjsfdsijfiodsjoi.pdf",
+      date: "Sep 12",
+      size: "39 MB",
+      kind: "PDF",
+      cached: true,
+    },
+    {
+      name: "Sample Folder",
+      date: "Sep 12",
+      size: "39 MB",
+      kind: "Folder",
+      cached: false,
+    },
+    {
+      name: "document jdisfjf.pdf",
+      date: "Sep 12",
+      size: "39 MB",
+      kind: "PDF",
+      cached: "No",
+    },
+  ];
+
+  const workspaceDocuments = [
+    {
+      name: "test book.pdf",
+      date: "Sep 19",
+      size: "12 MB",
+      kind: "PDF",
+      cached: true,
+    },
+    {
+      name: "Testing Workspace folder",
+      date: "Sep 12",
+      size: "39 MB",
+      kind: "Folder",
+      cached: false,
+    },
+    {
+      name: "document jdisfjf.pdf",
+      date: "Sep 12",
+      size: "39 MB",
+      kind: "PDF",
+      cached: false,
+    },
+    {
+      name: "webster dictionary edition 394.pdf",
+      date: "Sep 19",
+      size: "12 MB",
+      kind: "PDF",
+      cached: true,
+    },
+  ];
+
   return (
     <div className="flex gap-x-6 justify-center">
       {/* My Document */}
@@ -16,21 +78,22 @@ export default function DocumentSettings({ workspace }) {
           </div>
 
           <div className="w-[560px] h-[310px] bg-zinc-900 rounded-2xl">
-            <div className="text-white/80 text-xs grid grid-cols-12 py-1.5 px-8 border-b border-white/20">
+            <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20">
               <p className="col-span-4">Name</p>
               <p className="col-span-2">Date</p>
               <p className="col-span-2">Size</p>
               <p className="col-span-2">Kind</p>
               <p className="col-span-2">Cached</p>
             </div>
-            {/* Document rows placeholder */}
-
-            {/* Show if no documents */}
-            <div className="w-full h-full flex items-center justify-center">
-              <p className="text-white text-opacity-40 text-sm font-medium">
-                No Documents
-              </p>
-            </div>
+            {documents.length > 0 ? (
+              documents.map((document) => <DocumentRow document={document} />)
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-white text-opacity-40 text-sm font-medium">
+                  No Documents
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Upload file */}
@@ -81,13 +144,15 @@ export default function DocumentSettings({ workspace }) {
             <p className="col-span-2">Kind</p>
             <p className="col-span-2">Cached</p>
           </div>
-          {/* Workspace document rows placeholder */}
-          {/* Show if no documents in workspace */}
-          <div className="w-full h-full flex items-center justify-center">
-            <p className="text-white text-opacity-40 text-sm font-medium">
-              No Documents
-            </p>
-          </div>
+          {workspaceDocuments.length > 0 ? (
+              workspaceDocuments.map((document) => <DocumentRow document={document} />)
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-white text-opacity-40 text-sm font-medium">
+                  No Documents
+                </p>
+              </div>
+            )}
         </div>
       </div>
     </div>

@@ -37,6 +37,14 @@ export default {
           '0%': { transform: 'scaleX(0)', transformOrigin: 'bottom left' },
           '100%': { transform: 'scaleX(1)', transformOrigin: 'bottom left' },
         },
+        fadeIn: {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
+        },
+        fadeOut: {
+          '0%': { opacity: 1 },
+          '100%': { opacity: 0 },
+        },
       }
     },
   },
