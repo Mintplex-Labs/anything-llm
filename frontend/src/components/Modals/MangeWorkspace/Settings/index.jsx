@@ -27,6 +27,7 @@ export default function WorkspaceSettings({ workspace }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [totalVectors, setTotalVectors] = useState("...");
+  const [canDelete, setCanDelete] = useState(false);
 
   useEffect(() => {
     function setTimer() {
@@ -46,10 +47,14 @@ export default function WorkspaceSettings({ workspace }) {
   }, [success, error]);
 
   useEffect(() => {
-    async function vectorCount() {
-      setTotalVectors(await System.totalIndexes());
+    async function fetchKeys() {
+      const canDelete = await System.getCanDeleteWorkspaces();
+      setCanDelete(canDelete);
+
+      const totalVectors = await System.totalIndexes();
+      setTotalVectors(totalVectors);
     }
-    vectorCount();
+    fetchKeys();
   }, []);
 
   const handleUpdate = async (e) => {
@@ -259,13 +264,14 @@ export default function WorkspaceSettings({ workspace }) {
         </div>
       </div>
       <div className="flex items-center justify-between p-2 md:p-6 space-x-2 border-t rounded-b border-gray-600">
-        <button
+        {canDelete && (<button
           onClick={deleteWorkspace}
           type="button"
           className="transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-transparent text-white hover:text-white hover:bg-red-600"
         >
           Delete Workspace
         </button>
+        )}
         {hasChanges && (
           <button
             type="submit"
