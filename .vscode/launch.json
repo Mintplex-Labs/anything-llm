@@ -5,6 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Python Debugger: Current File",
+      "type": "debugpy",
+      "cwd": "${workspaceFolder}/collector",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    },
+    {
       "name": "Launch Program",
       "program": "${workspaceFolder}/frontend/node_modules/.bin/vite",
       "args": ["--debug", "--host=0.0.0.0"],

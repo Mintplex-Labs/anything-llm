@@ -1,0 +1,32 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "dependsOn": "create env",
+      "type": "process",
+      "options": {
+        "cwd": "${workspaceFolder}/collector/v-env"
+      },
+      "command": "${workspaceFolder}/collector/v-env/bin/pip",
+      "args": [
+        "install",
+        "--no-cache-dir",
+        "-r",
+        "${workspaceFolder}/collector/requirements.txt"
+      ],
+      "label": "install deps"
+    },
+    {
+      "type": "process",
+      "hide": true,
+      "command": "virtualenv",
+      "args": ["v-env"],
+      "options": {
+        "cwd": "${workspaceFolder}/collector"
+      },
+      "label": "create env"
+    }
+  ]
+}

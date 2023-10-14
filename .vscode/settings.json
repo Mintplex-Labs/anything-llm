@@ -1,8 +1,4 @@
 {
-  "cSpell.words": [
-    "openai",
-    "Qdrant",
-    "Weaviate"
-  ],
+  "cSpell.words": ["openai", "Qdrant", "Weaviate"],
   "eslint.experimental.useFlatConfig": true
 }
