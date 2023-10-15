@@ -1,5 +1,6 @@
 import os, json
 from urllib.parse import urlparse
+from alive_progress import alive_it
 from .utils import tokenize, ada_v2_cost
 from .substack_utils import (
     fetch_all_publications,
@@ -7,7 +8,6 @@ from .substack_utils import (
     get_content,
     append_meta,
 )
-from alive_progress import alive_it
 
 
 # Example substack URL: https://swyx.substack.com/
@@ -33,17 +33,18 @@ def substack():
         exit(1)
 
     print(
-        f"{len(valid_publications)} of {len(publications)} publications are readable publically text posts - collecting those."
+        f"{len(valid_publications)} of {len(publications)} publications are readable publically "
+        f"text posts - collecting those."
     )
 
-    totalTokenCount = 0
+    total_token_count = 0
     transaction_output_dir = f"../server/storage/documents/substack-{subdomain}"
-    if os.path.isdir(transaction_output_dir) == False:
+    if os.path.isdir(transaction_output_dir) is False:
         os.makedirs(transaction_output_dir)
 
     for publication in alive_it(valid_publications):
         pub_file_path = transaction_output_dir + f"/publication-{publication.get('id')}.json"
-        if os.path.exists(pub_file_path) == True:
+        if os.path.exists(pub_file_path):
             continue
 
         full_text = get_content(publication.get("canonical_url"))
@@ -63,17 +64,19 @@ def substack():
             "pageContent": full_text,
         }
 
-        tokenCount = len(tokenize(full_text))
-        item["token_count_estimate"] = tokenCount
+        token_count = len(tokenize(full_text))
+        item["token_count_estimate"] = token_count
 
-        totalTokenCount += tokenCount
+        total_token_count += token_count
         with open(pub_file_path, "w", encoding="utf-8") as file:
             json.dump(item, file, ensure_ascii=True, indent=4)
 
     print(f"[Success]: {len(valid_publications)} scraped and fetched!")
-    print(f"\n\n////////////////////////////")
+    print("\n\n////////////////////////////")
     print(
-        f"Your estimated cost to embed all of this data using OpenAI's text-embedding-ada-002 model at $0.0004 / 1K tokens will cost {ada_v2_cost(totalTokenCount)} using {totalTokenCount} tokens."
+        f"Your estimated cost to embed all of this data using OpenAI's text-embedding-ada-002 "
+        f"model at $0.0004 / 1K tokens will cost {ada_v2_cost(total_token_count)} "
+        f"using {total_token_count} tokens."
     )
-    print(f"////////////////////////////\n\n")
+    print("////////////////////////////\n\n")
     exit(0)

@@ -1,9 +1,9 @@
 import os, fitz
 from langchain.document_loaders import PyMuPDFLoader  # better UTF support and metadata
 from slugify import slugify
-from ..utils import guid, file_creation_time, write_to_server_documents, move_source
-from ...utils import tokenize
 from unidecode import unidecode
+from scripts.watch.utils import guid, file_creation_time, write_to_server_documents, move_source
+from scripts.utils import tokenize
 
 
 # Process all PDF-related documents.
@@ -22,7 +22,8 @@ def as_pdf(**kwargs):
         print(f"{fullpath} parsing resulted in no pages - nothing to do.")
         return (False, f"No pages found for {filename}{ext}!")
 
-    # Set doc to the first page so we can still get the metadata from PyMuPDF but without all the unicode issues.
+    # Set doc to the first page so we can still get the metadata from PyMuPDF but without all the
+    # unicode issues.
     doc = pages[0]
     del loader
     del pages
@@ -33,7 +34,7 @@ def as_pdf(**kwargs):
         page_content += unidecode(page.get_text("text"))
 
     if len(page_content) == 0:
-        print(f"Resulting page content was empty - no text could be extracted from the document.")
+        print("Resulting page content was empty - no text could be extracted from the document.")
         return (False, f"No text content could be extracted from {filename}{ext}!")
 
     title = doc.metadata.get("title")

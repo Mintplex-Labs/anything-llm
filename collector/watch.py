@@ -13,8 +13,8 @@ def input_thread(the_list):
 def main():
     _thread.start_new_thread(input_thread, (a_list,))
     print(
-        # pylint: disable=line-too-long
-        f"Watching '{WATCH_DIRECTORY}/' for new files.\n\nUpload files into this directory while this script is running to convert them.\nPress enter or crtl+c to exit script."
+        f"Watching '{WATCH_DIRECTORY}/' for new files.\n\nUpload files into this directory "
+        f"while this script is running to convert them.\nPress enter or crtl+c to exit script."
     )
     while not a_list:
         watch_for_changes(WATCH_DIRECTORY)

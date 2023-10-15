@@ -1,7 +1,7 @@
 import os
 from slugify import slugify
-from ..utils import guid, file_creation_time, write_to_server_documents, move_source
-from ...utils import tokenize
+from scripts.watch.utils import guid, file_creation_time, write_to_server_documents, move_source
+from scripts.utils import tokenize
 
 
 # Process all text-related documents.
@@ -11,7 +11,9 @@ def as_text(**kwargs):
     ext = kwargs.get("ext", ".txt")
     remove = kwargs.get("remove_on_complete", False)
     fullpath = f"{parent_dir}/{filename}{ext}"
-    content = open(fullpath).read()
+
+    with open(fullpath, "r", encoding="utf8") as file:
+        content = file.read()
 
     if len(content) == 0:
         print(f"Resulting text content was empty for {filename}{ext}.")

@@ -1,4 +1,4 @@
-import os, json, requests, re
+import os, json, re, requests
 from bs4 import BeautifulSoup
 
 
@@ -22,9 +22,9 @@ def get_docid(medium_docpath):
 
 def fetch_recent_publications(handle):
     rss_link = f"https://medium.com/feed/@{handle}"
-    response = requests.get(rss_link)
-    if response.ok == False:
-        print(f"Could not fetch RSS results for author.")
+    response = requests.get(rss_link, timeout=20)
+    if response.ok is False:
+        print("Could not fetch RSS results for author.")
         return []
 
     xml = response.content
@@ -32,15 +32,16 @@ def fetch_recent_publications(handle):
     items = soup.find_all("item")
     publications = []
 
-    if os.path.isdir("./outputs/medium-logs") == False:
+    if os.path.isdir("./outputs/medium-logs") is False:
         os.makedirs("./outputs/medium-logs")
 
     file_path = f"./outputs/medium-logs/medium-{handle}.json"
 
     if os.path.exists(file_path):
-        with open(file_path, "r") as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             print(
-                f"Returning cached data for Author {handle}. If you do not wish to use stored data then delete the file for this author to allow refetching."
+                f"Returning cached data for Author {handle}. If you do not wish to use stored "
+                f"data then delete the file for this author to allow refetching."
             )
             return json.load(file)
 
@@ -62,7 +63,8 @@ def fetch_recent_publications(handle):
     with open(file_path, "w+", encoding="utf-8") as json_file:
         json.dump(publications, json_file, ensure_ascii=True, indent=2)
         print(
-            f"{len(publications)} articles found for author medium.com/@{handle}. Saved to medium-logs/medium-{handle}.json"
+            f"{len(publications)} articles found for author medium.com/@{handle}. "
+            f"Saved to medium-logs/medium-{handle}.json"
         )
 
     return publications

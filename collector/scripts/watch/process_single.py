@@ -6,8 +6,8 @@ RESERVED = ["__HOTDIR__.md"]
 
 
 # This script will do a one-off processing of a specific document that exists in hotdir.
-# For this function we remove the original source document since there is no need to keep it and it will
-# only occupy additional disk space.
+# For this function we remove the original source document since there is no need to keep
+# it and it will only occupy additional disk space.
 def process_single(directory, target_doc):
     if os.path.isdir(f"{directory}/{target_doc}") or target_doc in RESERVED:
         return (False, "Not a file")
@@ -23,7 +23,7 @@ def process_single(directory, target_doc):
         print(f"{filename} is locked - skipping until unlocked")
         return (False, f"{filename} is locked - skipping until unlocked")
 
-    if fileext not in FILETYPES.keys():
+    if fileext not in FILETYPES:
         print(f"{fileext} not a supported file type for conversion. It will not be processed.")
         move_source(new_destination_filename=target_doc, failed=True, remove=True)
         return (

@@ -11,6 +11,10 @@ WATCH_DIRECTORY = "hotdir"
 @api.route("/process", methods=["POST"])
 def process_file():
     content = request.json
+    if content is None:
+        return json.dumps(
+            {"filename": "None", "success": "False", "reason": "No JSON body provided!"}
+        )
     target_filename = os.path.normpath(content.get("filename")).lstrip(os.pardir + os.sep)
     print(f"Processing {target_filename}")
     success, reason = process_single(WATCH_DIRECTORY, target_filename)
@@ -24,4 +28,7 @@ def get_accepted_filetypes():
 
 @api.route("/", methods=["GET"])
 def root():
-    return "<p>Use POST /process with filename key in JSON body in order to process a file. File by that name must exist in hotdir already.</p>"
+    return (
+        "<p>Use POST /process with filename key in JSON body in order to "
+        "process a file. File by that name must exist in hotdir already.</p>"
+    )

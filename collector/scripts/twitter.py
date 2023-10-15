@@ -2,18 +2,18 @@
 Tweepy implementation of twitter reader. Requires the 4 twitter keys to operate.
 """
 
-import tweepy
+import json
 import os, time
 import pandas as pd
-import json
-from .utils import tokenize, ada_v2_cost
+import tweepy
+from .utils import tokenize
 
 
 def twitter():
     # get user and number of tweets to read
     username = input("user timeline to read from (blank to ignore): ")
-    searchQuery = input("Search term, or leave blank to get user tweets (blank to ignore): ")
-    tweetCount = input("Gather the last number of tweets: ")
+    search_query = input("Search term, or leave blank to get user tweets (blank to ignore): ")
+    tweet_count = input("Gather the last number of tweets: ")
 
     # Read your API keys to call the API.
     consumer_key = os.environ.get("TW_CONSUMER_KEY")
@@ -33,13 +33,14 @@ def twitter():
     # Instantiate the tweepy API
     api = tweepy.API(auth, wait_on_rate_limit=True)
 
+    # pylint: disable=broad-exception-caught
     try:
-        if searchQuery == "":
+        if search_query == "":
             tweets = api.user_timeline(
-                screen_name=username, tweet_mode="extended", count=tweetCount
+                screen_name=username, tweet_mode="extended", count=tweet_count
             )
         else:
-            tweets = api.search_tweets(q=searchQuery, tweet_mode="extended", count=tweetCount)
+            tweets = api.search_tweets(q=search_query, tweet_mode="extended", count=tweet_count)
 
         # Pulling Some attributes from the tweet
         attributes_container = [
@@ -67,11 +68,11 @@ def twitter():
         # Creation of Dataframe
         tweets_df = pd.DataFrame(attributes_container, columns=columns)
 
-        totalTokens = 0
-        for index, row in tweets_df.iterrows():
+        total_tokens = 0
+        for _, row in tweets_df.iterrows():
             meta_link = twitter_meta(row, True)
             output_filename = f"twitter-{username}-{row['Date Created']}.json"
-            output_path = f"./outputs/twitter-logs"
+            output_path = "./outputs/twitter-logs"
 
             transaction_output_filename = f"tweet-{username}-{row['id']}.json"
             transaction_output_dir = f"../server/storage/documents/twitter-{username}"
@@ -83,10 +84,10 @@ def twitter():
                 os.makedirs(transaction_output_dir)
 
             full_text = twitter_meta(row)
-            tokenCount = len(tokenize(full_text))
+            token_count = len(tokenize(full_text))
             meta_link["pageContent"] = full_text
-            meta_link["token_count_estimate"] = tokenCount
-            totalTokens += tokenCount
+            meta_link["token_count_estimate"] = token_count
+            total_tokens += token_count
 
             with open(f"{output_path}/{output_filename}", "w", encoding="utf-8") as file:
                 json.dump(meta_link, file, ensure_ascii=True, indent=4)
@@ -95,11 +96,8 @@ def twitter():
                 f"{transaction_output_dir}/{transaction_output_filename}", "w", encoding="utf-8"
             ) as file:
                 json.dump(meta_link, file, ensure_ascii=True, indent=4)
-
             # print(f"{transaction_output_dir}/{transaction_output_filename}")
-
-        print(f"{tokenCount} tokens written over {tweets_df.shape[0]} records.")
-
+        print(f"{total_tokens} tokens written over {tweets_df.shape[0]} records.")
     except BaseException as e:
         print("Status Failed: ", str(e))
         time.sleep(3)
@@ -119,6 +117,6 @@ def twitter_meta(row, metadata_only=False):
     }
     return (
         "Tweet JSON Metadata:\n" + json.dumps(meta) + "\n\n\nText Content:\n" + row["Tweet"]
-        if metadata_only == False
+        if metadata_only is False
         else meta
     )

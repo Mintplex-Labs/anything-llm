@@ -1,8 +1,8 @@
 import os
 from langchain.document_loaders import UnstructuredMarkdownLoader
 from slugify import slugify
-from ..utils import guid, file_creation_time, write_to_server_documents, move_source
-from ...utils import tokenize
+from scripts.watch.utils import guid, file_creation_time, write_to_server_documents, move_source
+from scripts.utils import tokenize
 
 
 # Process all text-related documents.

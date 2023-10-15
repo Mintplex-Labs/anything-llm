@@ -10,7 +10,7 @@ from scripts.twitter import twitter
 
 
 def main():
-    if os.name == "nt":
+    if os.name == "nt":  # Windows
         methods = {
             "1": "YouTube Channel",
             "2": "Article or Blog Link",
@@ -21,14 +21,16 @@ def main():
             "7": "Sitemap",
         }
         print(
-            "There are options for data collection to make this easier for you.\nType the number of the method you wish to execute."
+            "There are options for data collection to make this easier for you.\n"
+            "Type the number of the method you wish to execute."
         )
         print(
-            "1. YouTube Channel\n2. Article or Blog Link (Single)\n3. Substack\n4. Medium\n\n[In development]:\nTwitter\n\n"
+            "1. YouTube Channel\n2. Article or Blog Link (Single)\n3. Substack\n"
+            "4. Medium\n\n[In development]:\nTwitter\n\n"
         )
         selection = input("Your selection: ")
         method = methods.get(str(selection))
-    else:
+    else:  # Posix
         method = inquirer.select(
             message="What kind of data would you like to add to convert into long-term memory?",
             choices=[

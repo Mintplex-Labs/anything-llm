@@ -1,11 +1,11 @@
-import requests
 import xml.etree.ElementTree as ET
-from scripts.link import parse_links
 import re
+import requests
+from scripts.link import parse_links
 
 
 def parse_sitemap(url):
-    response = requests.get(url)
+    response = requests.get(url, timeout=20)
     root = ET.fromstring(response.content)
 
     urls = []

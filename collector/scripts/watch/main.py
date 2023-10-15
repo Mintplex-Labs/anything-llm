@@ -14,7 +14,7 @@ def watch_for_changes(directory):
         if filename in [".DS_Store"] or fileext == "":
             continue
 
-        if fileext not in FILETYPES.keys():
+        if fileext not in FILETYPES:
             print(
                 f"{fileext} not a supported file type for conversion. Removing from hot directory."
             )

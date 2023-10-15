@@ -1,12 +1,13 @@
 import os
 import datetime
 import email.utils
+import quopri
 from mailbox import mbox
 from slugify import slugify
-from ..utils import guid, file_creation_time, write_to_server_documents, move_source
-from ...utils import tokenize
+from unidecode import unidecode
 from bs4 import BeautifulSoup
-import quopri
+from scripts.watch.utils import guid, file_creation_time, write_to_server_documents, move_source
+from scripts.utils import tokenize
 
 
 # Process all mbox-related documents.
@@ -25,13 +26,29 @@ def as_mbox(**kwargs):
         if message.is_multipart():
             for part in message.get_payload():
                 if part.get_content_type() == "text/plain":
-                    content = part.get_payload()
+                    if part.get("Content-Transfer-Encoding") == "quoted-printable":
+                        payload = unidecode(part.get_payload())  # quopri requires all ascii
+                        dequo = quopri.decodestring(payload)
+                        content = dequo.decode().strip()
+                    else:
+                        content = part.get_payload().strip()
+                    break
                 elif part.get_content_type() == "text/html":
-                    dequo = quopri.decodestring(part.get_payload())
-                    soup = BeautifulSoup(dequo, "html.parser")
-                    content = soup.get_text().strip()
+                    if part.get("Content-Transfer-Encoding") == "quoted-printable":
+                        payload = unidecode(part.get_payload())  # quopri requires all ascii
+                        dequo = quopri.decodestring(payload)
+                        soup = BeautifulSoup(dequo, "html.parser")
+                        content = soup.get_text().strip()
+                    else:
+                        soup = BeautifulSoup(part.get_payload(), "html.parser")
+                        content = soup.get_text().strip()
         else:
-            content = message.get_payload()
+            if message.get("Content-Transfer-Encoding") == "quoted-printable":
+                payload = unidecode(message.get_payload())
+                dequo = quopri.decodestring(payload)
+                content = dequo.decode().strip()
+            else:
+                content = message.get_payload().strip()
 
         date_tuple = email.utils.parsedate_tz(message["Date"])
         if date_tuple:

@@ -6,7 +6,7 @@
   "configurations": [
     {
       "name": "Python Debugger: Current File",
-      "type": "debugpy",
+      "type": "python",
       "cwd": "${workspaceFolder}/collector",
       "request": "launch",
       "program": "${file}",

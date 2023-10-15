@@ -1,10 +1,10 @@
 import os, json
-from langchain.document_loaders import GitbookLoader
+from uuid import uuid4
 from urllib.parse import urlparse
 from datetime import datetime
+from langchain.document_loaders import GitbookLoader
 from alive_progress import alive_it
 from .utils import tokenize
-from uuid import uuid4
 
 
 def gitbook():
@@ -17,9 +17,9 @@ def gitbook():
     output_path = f"./outputs/gitbook-logs/{primary_source.netloc}"
     transaction_output_dir = f"../server/storage/documents/gitbook-{primary_source.netloc}"
 
-    if os.path.exists(output_path) == False:
+    if os.path.exists(output_path) is False:
         os.makedirs(output_path)
-    if os.path.exists(transaction_output_dir) == False:
+    if os.path.exists(transaction_output_dir) is False:
         os.makedirs(transaction_output_dir)
     loader = GitbookLoader(url, load_all_paths=primary_source.path in ["", "/"])
     for doc in alive_it(loader.load()):

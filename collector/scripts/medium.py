@@ -1,8 +1,7 @@
 import os, json
-from urllib.parse import urlparse
+from alive_progress import alive_it
 from .utils import tokenize, ada_v2_cost
 from .medium_utils import get_username, fetch_recent_publications, append_meta
-from alive_progress import alive_it
 
 
 # Example medium URL: https://medium.com/@yujiangtham or https://davidall.medium.com
@@ -23,14 +22,14 @@ def medium():
         print("There are no public or free publications by this creator - nothing to collect.")
         exit(1)
 
-    totalTokenCount = 0
+    total_token_count = 0
     transaction_output_dir = f"../server/storage/documents/medium-{handle}"
-    if os.path.isdir(transaction_output_dir) == False:
+    if os.path.isdir(transaction_output_dir) is False:
         os.makedirs(transaction_output_dir)
 
     for publication in alive_it(publications):
         pub_file_path = transaction_output_dir + f"/publication-{publication.get('id')}.json"
-        if os.path.exists(pub_file_path) == True:
+        if os.path.exists(pub_file_path):
             continue
 
         full_text = publication.get("pageContent")
@@ -47,17 +46,19 @@ def medium():
             "pageContent": full_text,
         }
 
-        tokenCount = len(tokenize(full_text))
-        item["token_count_estimate"] = tokenCount
+        token_count = len(tokenize(full_text))
+        item["token_count_estimate"] = token_count
 
-        totalTokenCount += tokenCount
+        total_token_count += token_count
         with open(pub_file_path, "w", encoding="utf-8") as file:
             json.dump(item, file, ensure_ascii=True, indent=4)
 
     print(f"[Success]: {len(publications)} scraped and fetched!")
-    print(f"\n\n////////////////////////////")
+    print("\n\n////////////////////////////")
     print(
-        f"Your estimated cost to embed all of this data using OpenAI's text-embedding-ada-002 model at $0.0004 / 1K tokens will cost {ada_v2_cost(totalTokenCount)} using {totalTokenCount} tokens."
+        f"Your estimated cost to embed all of this data using OpenAI's text-embedding-ada-002 "
+        f"model at $0.0004 / 1K tokens will cost {ada_v2_cost(total_token_count)} using "
+        f"{total_token_count} tokens."
     )
-    print(f"////////////////////////////\n\n")
+    print("////////////////////////////\n\n")
     exit(0)
