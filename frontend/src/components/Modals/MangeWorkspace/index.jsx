@@ -7,8 +7,8 @@ import Workspace from "../../../models/workspace";
 import System from "../../../models/system";
 
 const TABS = {
-  documents: DocumentSettings,
-  settings: WorkspaceSettings,
+  "documents": DocumentSettings,
+  "settings": WorkspaceSettings,
 };
 
 const DIALOG_ID = "manage-workspace-modal";
@@ -22,6 +22,8 @@ export default function ManageWorkspace({
   const [selectedTab, setSelectedTab] = useState("documents");
   const [workspace, setWorkspace] = useState(null);
   const [fileTypes, setFileTypes] = useState(null);
+
+  const CurrentTab = TABS[selectedTab || "documents"];
 
   useEffect(() => {
     async function checkSupportedFiletypes() {
@@ -80,11 +82,7 @@ export default function ManageWorkspace({
               <X className="text-gray-300 text-lg" />
             </button>
           </div>
-          {selectedTab === "documents" ? (
-            <DocumentSettings workspace={workspace} />
-          ) : (
-            <WorkspaceSettings workspace={workspace} />
-          )}
+          <CurrentTab workspace={workspace} fileTypes={fileTypes} />
         </div>
       </div>
     </dialog>
@@ -92,7 +90,7 @@ export default function ManageWorkspace({
 }
 
 export function useManageWorkspaceModal() {
-  const [showing, setShowing] = useState(false);
+  const [showing, setShowing] = useState(true);
 
   const showModal = () => {
     document.getElementById(DIALOG_ID)?.showModal();

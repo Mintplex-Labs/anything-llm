@@ -19,10 +19,10 @@ export default function DocumentSettings({ workspace }) {
         id: localFileItem.id,
         name: localFileItem.title,
         date: localFileItem.published,
-        size: 'Unknown', // size is not provided in the given data structure
+        size: 'Unknown',
         kind: localFileItem.docSource,
         cached: localFileItem.cached,
-        location: 0, // assuming all local files are in 'My Documents'
+        location: 0,
         path: localFileItem.url,
     };
 }

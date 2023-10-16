@@ -3,6 +3,7 @@ import Workspace from "../../../../models/workspace";
 import paths from "../../../../utils/paths";
 import { chatPrompt } from "../../../../utils/chat";
 import System from "../../../../models/system";
+import PreLoader from "../../../Preloader";
 
 // Ensure that a type is correct before sending the body
 // to the backend.
@@ -26,7 +27,7 @@ export default function WorkspaceSettings({ workspace }) {
   const [hasChanges, setHasChanges] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [totalVectors, setTotalVectors] = useState("...");
+  const [totalVectors, setTotalVectors] = useState(null);
   const [canDelete, setCanDelete] = useState(false);
 
   useEffect(() => {
@@ -115,13 +116,13 @@ export default function WorkspaceSettings({ workspace }) {
               <p className="text-white text-opacity-60 text-xs font-medium my-[2px]">
                 Total number of vectors in your vector database.
               </p>
-              <p
-                className={`text-white text-opacity-60 text-sm font-medium ${
-                  totalVectors === "..." ? "animate-pulse" : ""
-                }`}
-              >
-                {totalVectors}
-              </p>
+              {totalVectors !== null ? (
+                <p className="text-white text-opacity-60 text-sm font-medium">
+                  {totalVectors}
+                </p>
+              ) : (
+                <PreLoader size="4" />
+              )}
             </div>
           </div>
         </div>
