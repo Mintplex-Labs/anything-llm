@@ -3,6 +3,10 @@ export default {
   content: ["./src/**/*.{js,jsx}"],
   theme: {
     extend: {
+      rotate: {
+        '270': '270deg',
+        '360': '360deg',
+      },
       colors: {
         'black-900': '#141414',
         'accent': '#3D4147',

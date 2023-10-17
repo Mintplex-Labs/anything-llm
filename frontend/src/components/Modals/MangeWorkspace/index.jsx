@@ -7,8 +7,8 @@ import Workspace from "../../../models/workspace";
 import System from "../../../models/system";
 
 const TABS = {
-  "documents": DocumentSettings,
-  "settings": WorkspaceSettings,
+  documents: DocumentSettings,
+  settings: WorkspaceSettings,
 };
 
 const DIALOG_ID = "manage-workspace-modal";
