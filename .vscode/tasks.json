@@ -4,10 +4,38 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "dependsOn": "create env",
       "type": "process",
       "options": {
-        "cwd": "${workspaceFolder}/collector/v-env"
+        "cwd": "${workspaceFolder}/collector",
+        "statusbar": {
+          "color": "#ffea00",
+          "detail": "Runs the collector",
+          "label": "Collector: $(play) run",
+          "running": {
+            "color": "#ffea00",
+            "label": "Collector: $(gear~spin) running"
+          }
+        }
+      },
+      "command": "${workspaceFolder}/collector/v-env/bin/python",
+      "args": ["${workspaceFolder}/collector/watch.py"],
+      "label": "Collector: run"
+    },
+    {
+      "dependsOn": "Collector: create env",
+      "type": "process",
+      "options": {
+        "cwd": "${workspaceFolder}/collector/v-env",
+        "statusbar": {
+          "color": "#ffea00",
+          "filePattern": "collector/*",
+          "detail": "Creates and updates the python virtual environment for the collector",
+          "label": "$(package) install deps",
+          "running": {
+            "color": "#ffea00",
+            "label": "$(sync~spin) installing"
+          }
+        }
       },
       "command": "${workspaceFolder}/collector/v-env/bin/pip",
       "args": [
@@ -16,7 +44,7 @@
         "-r",
         "${workspaceFolder}/collector/requirements.txt"
       ],
-      "label": "install deps"
+      "label": "Collector: install deps"
     },
     {
       "type": "process",
@@ -24,9 +52,12 @@
       "command": "virtualenv",
       "args": ["v-env"],
       "options": {
-        "cwd": "${workspaceFolder}/collector"
+        "cwd": "${workspaceFolder}/collector",
+        "statusbar": {
+          "hide": true
+        }
       },
-      "label": "create env"
+      "label": "Collector: create env"
     }
   ]
 }

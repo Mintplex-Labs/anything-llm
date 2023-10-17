@@ -5,11 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python Debugger: Current File",
+      "name": "Python Debugger: Collector watch",
       "type": "python",
       "cwd": "${workspaceFolder}/collector",
       "request": "launch",
-      "program": "${file}",
+      "program": "${workspaceFolder}/collector/watch.py",
       "console": "integratedTerminal"
     },
     {

@@ -18,14 +18,7 @@
       "version": "3.1.3"
     },
     "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
-      "packages": [
-        "curl",
-        "gnupg",
-        "less",
-        "locales",
-        "procps",
-        "tzdata"
-      ]
+      "packages": ["curl", "gnupg", "less", "locales", "procps", "tzdata"]
     }
   },
   "portsAttributes": {
@@ -61,7 +54,9 @@
         "ms-azuretools.vscode-docker",
         "ms-python.python",
         "streetsidesoftware.code-spell-checker",
+        "actboy168.tasks",
         "tombonnike.vscode-status-bar-format-toggle",
+        "ms-vscode.js-debug",
         "ms-python.vscode-pylance",
         "ms-python.black-formatter",
         "ms-python.debugpy",
@@ -123,10 +118,7 @@
         "python.analysis.useLibraryCodeForTypes": true,
         "python.analysis.autoFormatStrings": true,
         "python.analysis.inlayHints.callArgumentNames": "partial",
-        "pylint.args": [
-          "--rcfile",
-          "${workspaceFolder}/collector/.pylintrc"
-        ],
+        "pylint.args": ["--rcfile", "${workspaceFolder}/collector/.pylintrc"],
         "pylint.importStrategy": "useBundled",
         "eslint.debug": true,
         "eslint.enable": true,
