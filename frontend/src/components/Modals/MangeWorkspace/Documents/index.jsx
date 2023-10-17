@@ -6,7 +6,7 @@ import Workspace from "../../../../models/workspace";
 import System from "../../../../models/system";
 import Directory from "./Directory";
 
-export default function DocumentSettings({ workspace }) {
+export default function DocumentSettings({ workspace, fileTypes }) {
   const [selectedDocs, setSelectedDocs] = useState([]);
   const [isWorkspaceHighlighted, setIsWorkspaceHighlighted] = useState(false);
   const [availableDocs, setAvailableDocs] = useState([]);
@@ -48,7 +48,12 @@ export default function DocumentSettings({ workspace }) {
   return (
     <div className="flex gap-x-6 justify-center">
       {/* <MyDocumentsPicker fileDirectories={fileDirectories} loading={loading} /> */}
-      <Directory files={fileDirectories} loading={loading} />
+      <Directory
+        files={fileDirectories}
+        loading={loading}
+        fileTypes={fileTypes}
+        workspace={workspace}
+      />
       <div className="flex items-center">
         <ArrowsDownUp className="text-white text-base font-bold rotate-90 w-11 h-11" />
       </div>

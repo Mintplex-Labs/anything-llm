@@ -8,42 +8,49 @@ export default function Directory({
   parent = null,
   nested = 0,
   loading,
+  fileTypes,
+  workspace,
 }) {
-    const [selectedItems, setSelectedItems] = useState({});
+  const [selectedItems, setSelectedItems] = useState({});
 
-    const toggleSelection = (item) => {
-        setSelectedItems((prevSelectedItems) => {
-          // Copy the previous selection state.
-          const newSelectedItems = { ...prevSelectedItems };
+  const toggleSelection = (item) => {
+    setSelectedItems((prevSelectedItems) => {
+      const newSelectedItems = { ...prevSelectedItems };
 
-          if (item.type === 'folder') {
-            if (newSelectedItems[item.id]) {
-              delete newSelectedItems[item.id]; // Deselect the folder.
-              item.items.forEach(file => delete newSelectedItems[file.id]); // Deselect all files in the folder.
-            } else {
-              newSelectedItems[item.id] = true; // Select the folder.
-              item.items.forEach(file => newSelectedItems[file.id] = true); // Select all files in the folder.
-            }
-          } else { // For files.
-            if (newSelectedItems[item.id]) {
-              delete newSelectedItems[item.id]; // Deselect the file.
-            } else {
-              newSelectedItems[item.id] = true; // Select the file.
-            }
-          }
+      if (item.type === "folder") {
+        const isCurrentlySelected = isFolderCompletelySelected(item);
+        if (isCurrentlySelected) {
+          item.items.forEach((file) => delete newSelectedItems[file.id]);
+        } else {
+          item.items.forEach((file) => (newSelectedItems[file.id] = true));
+        }
+      } else {
+        if (newSelectedItems[item.id]) {
+          delete newSelectedItems[item.id];
+        } else {
+          newSelectedItems[item.id] = true;
+        }
+      }
 
-          return newSelectedItems;
-        });
-      };
+      return newSelectedItems;
+    });
+  };
 
   useEffect(() => {
     console.log("SELECTED ITEMS: ", selectedItems);
-    }, [selectedItems]);
+  }, [selectedItems]);
 
+  const isFolderCompletelySelected = (folder) => {
+    return folder.items.every((file) => selectedItems[file.id]);
+  };
 
-    const isSelected = (id) => {
-        return !!selectedItems[id];
-      };
+  const isSelected = (id, item) => {
+    if (item && item.type === "folder") {
+      return isFolderCompletelySelected(item);
+    }
+
+    return !!selectedItems[id];
+  };
 
   const onTrashClick = (event) => {
     event.stopPropagation();
@@ -71,7 +78,7 @@ export default function Directory({
             </div>
           </div>
 
-          <UploadFile />
+          <UploadFile fileTypes={fileTypes} workspace={workspace} />
         </div>
       </div>
     );
@@ -92,20 +99,20 @@ export default function Directory({
             <p className="col-span-2">Kind</p>
             <p className="col-span-2">Cached</p>
           </div>
-          {/* .items is each item */}
           {!!files.items ? (
-            // .item is each file's contents split
             files.items.map((item, index) =>
-              // Render folders and files here
               item.type === "folder" ? (
-                //   <p>folder</p>
                 <FolderRow
                   key={index}
                   item={item}
-                  selected={isSelected(item.id)}
+                  selected={isSelected(
+                    item.id,
+                    item.type === "folder" ? item : null
+                  )}
                   onRowClick={() => toggleSelection(item)}
                   toggleSelection={toggleSelection}
                   onTrashClick={onTrashClick}
+                  isSelected={isSelected}
                 />
               ) : (
                 <p>file</p>
@@ -120,7 +127,7 @@ export default function Directory({
           )}
         </div>
 
-        <UploadFile />
+        <UploadFile fileTypes={fileTypes} workspace={workspace} />
       </div>
     </div>
   );
@@ -132,8 +139,9 @@ function FolderRow({
   onRowClick,
   onTrashClick,
   toggleSelection,
+  isSelected,
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
 
   const handleExpandClick = (event) => {
     event.stopPropagation();
@@ -193,14 +201,14 @@ function FolderRow({
       </div>
       {expanded && (
         <div className="col-span-full">
-          {item.items.map((item) => (
+          {item.items.map((fileItem) => (
             <FileRow
-              key={item.id}
-              item={item}
-              selected={selected}
+              key={fileItem.id}
+              item={fileItem}
+              selected={isSelected(fileItem.id)}
               expanded={expanded}
               onTrashClick={onTrashClick}
-              onRowClick={() => toggleSelection(item)}
+              onRowClick={() => toggleSelection(fileItem)}
             />
           ))}
         </div>
