@@ -123,9 +123,9 @@ function FileRow({ item, selected, onRowClick, onTrashClick, expanded }) {
   return (
     <div
       onClick={onRowClick}
-      className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer ${
-        `${selected ? "bg-sky-500/20" : ""} ${expanded ? "bg-sky-500/10" : ""}`
-      }`}
+      className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer ${`${
+        selected ? "bg-sky-500/20" : ""
+      } ${expanded ? "bg-sky-500/10" : ""}`}`}
     >
       <div className="col-span-4 flex gap-x-[4px] items-center">
         <SelectedCheckbox selected={selected} />
@@ -139,7 +139,7 @@ function FileRow({ item, selected, onRowClick, onTrashClick, expanded }) {
             {truncate(item.name, 17)}
           </p>
           {showTooltip && (
-            <div className="absolute left-full ml-2 bg-white text-black p-1.5 rounded shadow-lg whitespace-nowrap">
+            <div className="absolute left-0 bg-white text-black p-1.5 rounded shadow-lg whitespace-nowrap">
               {item.name}
             </div>
           )}

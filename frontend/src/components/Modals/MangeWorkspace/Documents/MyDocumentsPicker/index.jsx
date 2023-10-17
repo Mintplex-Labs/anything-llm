@@ -53,7 +53,9 @@ export default function MyDocumentsPicker({
             <p className="col-span-2">Kind</p>
             <p className="col-span-2">Cached</p>
           </div>
+          {/* .items is each file */}
           {!!fileDirectories.items ? (
+            // .item is each file's contents split
             fileDirectories.items.map((item, index) => (
               <DocumentRow
                 key={index}
