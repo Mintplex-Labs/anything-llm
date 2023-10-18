@@ -12,7 +12,11 @@ export default function Directory({
   fetchKeys,
   selectedItems,
   setSelectedItems,
+  setHighlightWorkspace,
+  moveToWorkspace,
 }) {
+  const [amountSelected, setAmountSelected] = useState(0);
+
   const toggleSelection = (item) => {
     setSelectedItems((prevSelectedItems) => {
       const newSelectedItems = { ...prevSelectedItems };
@@ -48,36 +52,9 @@ export default function Directory({
     return !!selectedItems[id];
   };
 
-  if (loading) {
-    return (
-      <div className="px-8 pb-8">
-        <div className="flex flex-col gap-y-6">
-          <div className="flex items-center justify-between w-[560px] px-5">
-            <h3 className="text-white text-base font-bold">My Documents</h3>
-          </div>
-
-          <div className="w-[560px] h-[310px] bg-zinc-900 rounded-2xl overflow-y-auto relative">
-            <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900 sticky top-0 z-10">
-              <p className="col-span-4">Name</p>
-              <p className="col-span-2">Date</p>
-              <p className="col-span-2">Size</p>
-              <p className="col-span-2">Kind</p>
-              <p className="col-span-2">Cached</p>
-            </div>
-            <div className="w-full h-full flex items-center justify-center">
-              <PreLoader />
-            </div>
-          </div>
-
-          <UploadFile
-            fileTypes={fileTypes}
-            workspace={workspace}
-            fetchKeys={fetchKeys}
-          />
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    setAmountSelected(Object.keys(selectedItems).length);
+  }, [selectedItems]);
 
   return (
     <div className="px-8 pb-8">
@@ -86,37 +63,66 @@ export default function Directory({
           <h3 className="text-white text-base font-bold">My Documents</h3>
         </div>
 
-        <div className="w-[560px] h-[310px] bg-zinc-900 rounded-2xl overflow-y-auto relative">
-          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900 sticky top-0 z-10">
+        <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl">
+          <div className="rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900 sticky top-0 z-10">
             <p className="col-span-4">Name</p>
             <p className="col-span-2">Date</p>
             <p className="col-span-2">Size</p>
             <p className="col-span-2">Kind</p>
             <p className="col-span-2">Cached</p>
           </div>
-          {!!files.items ? (
-            files.items.map((item, index) =>
-              item.type === "folder" ? (
-                <FolderRow
-                  key={index}
-                  item={item}
-                  selected={isSelected(
-                    item.id,
-                    item.type === "folder" ? item : null
-                  )}
-                  onRowClick={() => toggleSelection(item)}
-                  toggleSelection={toggleSelection}
-                  isSelected={isSelected}
-                />
-              ) : (
-                <p>file</p>
+
+          <div
+            className="overflow-y-auto pb-9"
+            style={{ height: "calc(100% - 40px)" }}
+          >
+            {loading ? (
+              <div className="w-full h-full flex items-center justify-center">
+                <PreLoader />
+              </div>
+            ) : !!files.items ? (
+              files.items.map((item, index) =>
+                item.type === "folder" ? (
+                  <FolderRow
+                    key={index}
+                    item={item}
+                    selected={isSelected(
+                      item.id,
+                      item.type === "folder" ? item : null
+                    )}
+                    onRowClick={() => toggleSelection(item)}
+                    toggleSelection={toggleSelection}
+                    isSelected={isSelected}
+                  />
+                ) : (
+                  <p>file</p>
+                )
               )
-            )
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <p className="text-white text-opacity-40 text-sm font-medium">
-                No Documents
-              </p>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-white text-opacity-40 text-sm font-medium">
+                  No Documents
+                </p>
+              </div>
+            )}
+          </div>
+
+          {amountSelected !== 0 && (
+            <div className="absolute bottom-0 left-0 w-full flex justify-center items-center h-9 bg-white rounded-b-2xl">
+              <div className="flex gap-x-5">
+                <div
+                  onMouseEnter={() => setHighlightWorkspace(true)}
+                  onMouseLeave={() => setHighlightWorkspace(false)}
+                  onClick={moveToWorkspace}
+                  className="text-sm font-semibold h-7 px-2.5 rounded-lg transition-all duration-300 hover:text-white hover:bg-neutral-800/80 cursor-pointer flex items-center"
+                >
+                  Move{" "}
+                  {amountSelected === 1
+                    ? `${amountSelected} file`
+                    : `${amountSelected} files`}{" "}
+                  to workspace
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -333,6 +339,6 @@ const formatDate = (dateString) => {
 };
 
 function getFileExtension(path) {
-    const match = path.match(/[^\/\\&\?]+\.\w{1,4}(?=([\?&].*$|$))/);
-    return match ? match[0].split('.').pop() : 'file';
-  }
+  const match = path.match(/[^\/\\&\?]+\.\w{1,4}(?=([\?&].*$|$))/);
+  return match ? match[0].split(".").pop() : "file";
+}

@@ -1,14 +1,13 @@
 import { ArrowsDownUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import WorkspacePicker from "./WorkspacePicker";
-import MyDocumentsPicker from "./MyDocumentsPicker";
 import Workspace from "../../../../models/workspace";
 import System from "../../../../models/system";
 import Directory from "./Directory";
 import showToast from "../../../../utils/toast";
+import WorkspaceDirectory from "./WorkspaceDirectory";
 
 export default function DocumentSettings({ workspace, fileTypes }) {
-  const [isWorkspaceHighlighted, setIsWorkspaceHighlighted] = useState(false);
+  const [highlightWorkspace, setHighlightWorkspace] = useState(false);
   const [availableDocs, setAvailableDocs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [workspaceDocs, setWorkspaceDocs] = useState([]);
@@ -69,14 +68,13 @@ export default function DocumentSettings({ workspace, fileTypes }) {
     await fetchKeys(true);
   };
 
-
   const docChanges = () => {
     const changes = {
       adds: [
         "custom-documents/aisq-pitch-deck-fa3bb4af-ae3a-4190-90aa-5ac6b50f13a8.json",
         "custom-documents/individual-report-amanda-hatfield-2c97fbf1-6bf0-43c9-80bc-6d001aefee76.json",
-        "custom-documents/readme-test-2-7102e7f0-14d2-4dfa-87ee-623f59e224ee.json"
-    ],
+        "custom-documents/readme-test-2-7102e7f0-14d2-4dfa-87ee-623f59e224ee.json",
+      ],
       deletes: [],
     };
 
@@ -103,8 +101,6 @@ export default function DocumentSettings({ workspace, fileTypes }) {
 
   return (
     <div className="flex gap-x-6 justify-center">
-      {/* <MyDocumentsPicker fileDirectories={fileDirectories} loading={loading} /> */}
-      <button onClick={updateWorkspace}>Update Workspace</button>
       <Directory
         files={fileDirectories}
         loading={loading}
@@ -113,6 +109,10 @@ export default function DocumentSettings({ workspace, fileTypes }) {
         fetchKeys={fetchKeys}
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
+        updateWorkspace={updateWorkspace}
+        highlightWorkspace={highlightWorkspace}
+        setHighlightWorkspace={setHighlightWorkspace}
+        moveToWorkspace={updateWorkspace}
       />
       <div className="flex items-center">
         <ArrowsDownUp className="text-white text-base font-bold rotate-90 w-11 h-11" />
@@ -125,6 +125,11 @@ export default function DocumentSettings({ workspace, fileTypes }) {
         isWorkspaceHighlighted={isWorkspaceHighlighted}
         isLoading={isLoading}
       /> */}
+      <WorkspaceDirectory
+        workspace={workspace}
+        highlightWorkspace={highlightWorkspace}
+        loading={loading}
+      />
     </div>
   );
 }
