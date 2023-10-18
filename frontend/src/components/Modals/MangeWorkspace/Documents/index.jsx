@@ -73,9 +73,9 @@ export default function DocumentSettings({ workspace, fileTypes }) {
   const docChanges = () => {
     const changes = {
       adds: [
-        "file:///Users/seanhatfield/Documents/Mintplex/anything-llm/collector/hotdir/processed/Aisq Pitch Deck.pdf",
-        "file:///Users/seanhatfield/Documents/Mintplex/anything-llm/collector/hotdir/processed/Individual Report Amanda Hatfield.docx",
-        "file:///Users/seanhatfield/Documents/Mintplex/anything-llm/collector/hotdir/processed/README TEST 2.md"
+        "custom-documents/aisq-pitch-deck-fa3bb4af-ae3a-4190-90aa-5ac6b50f13a8.json",
+        "custom-documents/individual-report-amanda-hatfield-2c97fbf1-6bf0-43c9-80bc-6d001aefee76.json",
+        "custom-documents/readme-test-2-7102e7f0-14d2-4dfa-87ee-623f59e224ee.json"
     ],
       deletes: [],
     };
