@@ -10,9 +10,9 @@ export default function Directory({
   fileTypes,
   workspace,
   fetchKeys,
+  selectedItems,
+  setSelectedItems,
 }) {
-  const [selectedItems, setSelectedItems] = useState({});
-
   const toggleSelection = (item) => {
     setSelectedItems((prevSelectedItems) => {
       const newSelectedItems = { ...prevSelectedItems };
@@ -35,9 +35,6 @@ export default function Directory({
       return newSelectedItems;
     });
   };
-  useEffect(() => {
-    console.log("SELECTED ITEMS: ", selectedItems);
-  }, [selectedItems]);
 
   const isFolderCompletelySelected = (folder) => {
     return folder.items.every((file) => selectedItems[file.id]);
@@ -232,6 +229,7 @@ function FileRow({ item, selected, onRowClick, expanded }) {
     }
 
     try {
+      console.log(item.name, item);
       await System.deleteDocument(item.name, item);
     } catch (error) {
       console.error("Failed to delete the document:", error);
@@ -279,11 +277,11 @@ function FileRow({ item, selected, onRowClick, expanded }) {
           onMouseLeave={handleMouseLeave}
         >
           <p className="whitespace-nowrap overflow-hidden">
-            {truncate(item.name, 17)}
+            {truncate(item.title, 17)}
           </p>
           {showTooltip && (
             <div className="absolute left-0 bg-white text-black p-1.5 rounded shadow-lg whitespace-nowrap">
-              {item.name}
+              {item.title}
             </div>
           )}
         </div>
@@ -292,7 +290,7 @@ function FileRow({ item, selected, onRowClick, expanded }) {
         {formatDate(item?.published)}
       </p>
       <p className="col-span-2 pl-3">{item?.size || "---"}</p>
-      <p className="col-span-2 pl-2">{item?.type}</p>
+      <p className="col-span-2 pl-2 uppercase">{getFileExtension(item.url)}</p>
       <div className="col-span-2 flex justify-end items-center">
         {item?.cached && (
           <div className="bg-white/10 rounded-3xl">
@@ -333,3 +331,8 @@ const formatDate = (dateString) => {
   const formattedDate = date.toLocaleDateString("en-US", options);
   return formattedDate;
 };
+
+function getFileExtension(path) {
+    const match = path.match(/[^\/\\&\?]+\.\w{1,4}(?=([\?&].*$|$))/);
+    return match ? match[0].split('.').pop() : 'file';
+  }
