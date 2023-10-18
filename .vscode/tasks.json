@@ -4,7 +4,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "process",
+      "type": "shell",
       "options": {
         "cwd": "${workspaceFolder}/collector",
         "statusbar": {
@@ -17,8 +17,7 @@
           }
         }
       },
-      "command": "${workspaceFolder}/collector/v-env/bin/python",
-      "args": ["${workspaceFolder}/collector/watch.py"],
+      "command": "source ${workspaceFolder}/collector/v-env/bin/activate && cd ${workspaceFolder}/collector/ && python watch.py",
       "label": "Collector: run"
     },
     {
@@ -58,6 +57,40 @@
         }
       },
       "label": "Collector: create env"
+    },
+    {
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/server",
+        "statusbar": {
+          "color": "#ffea00",
+          "detail": "Runs the server",
+          "label": "Server: $(play) run",
+          "running": {
+            "color": "#ffea00",
+            "label": "Server: $(gear~spin) running"
+          }
+        }
+      },
+      "command": "cd ${workspaceFolder}/server/ && yarn dev",
+      "label": "Server: run"
+    },
+    {
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend",
+        "statusbar": {
+          "color": "#ffea00",
+          "detail": "Runs the frontend",
+          "label": "Frontend: $(play) run",
+          "running": {
+            "color": "#ffea00",
+            "label": "Frontend: $(gear~spin) running"
+          }
+        }
+      },
+      "command": "cd ${workspaceFolder}/frontend/ && yarn dev",
+      "label": "Frontend: run"
     }
   ]
 }
