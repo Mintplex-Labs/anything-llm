@@ -151,7 +151,6 @@ function FolderRow({
     setExpanded(!expanded);
   };
 
-  console.log("FOLDER ROW ITEM IN FOLDER ROW: ", item);
 
   return (
     <>
@@ -162,7 +161,6 @@ function FolderRow({
         }`}
       >
         <div className="col-span-4 flex gap-x-[4px] items-center">
-          {/* Checkbox */}
           <div
             className="w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
             role="checkbox"
@@ -196,11 +194,6 @@ function FolderRow({
               <p className="text-xs px-2 py-0.5">Cached</p>
             </div>
           )}
-          {/* {item.name !== "custom-documents" && (
-          <Trash
-            onClick={onTrashClick(item.name, item.items)}
-            className="transition-all duration-300 text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer rounded-md"
-          />)} */}
         </div>
       </div>
       {expanded && (
@@ -267,7 +260,6 @@ function FileRow({ item, selected, onRowClick, expanded }) {
       } ${expanded ? "bg-sky-500/10" : ""}`}`}
     >
       <div className="col-span-4 flex gap-x-[4px] items-center">
-        {/* Checkbox */}
         <div
           className="w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
           role="checkbox"

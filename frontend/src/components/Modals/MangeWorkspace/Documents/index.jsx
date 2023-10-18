@@ -117,14 +117,6 @@ export default function DocumentSettings({ workspace, fileTypes }) {
       <div className="flex items-center">
         <ArrowsDownUp className="text-white text-base font-bold rotate-90 w-11 h-11" />
       </div>
-      {/* <WorkspacePicker
-        workspace={workspace}
-        workspaceDocs={documentsInWorkspace}
-        selectedDocs={selectedDocs}
-        toggleDocSelection={toggleDocSelection}
-        isWorkspaceHighlighted={isWorkspaceHighlighted}
-        isLoading={isLoading}
-      /> */}
       <WorkspaceDirectory
         workspace={workspace}
         highlightWorkspace={highlightWorkspace}
