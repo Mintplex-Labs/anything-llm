@@ -109,7 +109,7 @@
         "python.missingPackage.severity": "Hint",
         "python.createEnvironment.trigger": "prompt",
         "python.createEnvironment.contentButton": "show",
-        "python.analysis.diagnosticMode": "workspace",
+        "python.analysis.diagnosticMode": "openFilesOnly",
         "python.analysis.enablePytestExtra": false,
         "python.analysis.enableSyncServer": false,
         "python.analysis.inlayHints.functionReturnTypes": true,

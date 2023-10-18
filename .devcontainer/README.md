@@ -36,7 +36,7 @@ Checklist:
 - [ ] Check if, in the Terminal window, the script has finished asking you to start the Server and Frontend in different windows. If not, wait until it does.
 - [ ] Open a JavaScript file, for example "server/index.js" and check if `eslint` is working. It will complain that `'err' is defined but never used.`. This means it is working.
 - [ ] Open a React File, for example, "frontend/src/main.jsx," and check if `eslint` complains about `Fast refresh only works when a file has exports. Move your component(s) to a separate file.`. Again, it means `eslint` is working. Now check at the status bar if the `Prettier` has a double checkmark :heavy_check_mark: (double). It means Prettier is working.
-- [ ] Check if, on the left pane, you have the NPM Scripts (this may have disabled it; look around). There will be scripts inside the `package.json` files. You will basically need to run the `dev:server` and the `dev:frontend`. When the frontend finishes starting, a window browser will open **inside** the VSCode. Still, you can open outside.
+- [ ] Check if, on the left pane, you have the NPM Scripts (this may be disabled; look at the "Explorer" tree-dots up-right). There will be scripts inside the `package.json` files. You will basically need to run the `dev:server` and the `dev:frontend`. When the frontend finishes starting, a window browser will open **inside** the VSCode. Still, you can open outside.
 
 ### For the Collector:
 
