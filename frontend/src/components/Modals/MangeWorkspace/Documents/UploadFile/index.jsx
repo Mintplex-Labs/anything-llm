@@ -42,7 +42,6 @@ export default function UploadFile({ workspace, fileTypes, fetchKeys }) {
     async function checkProcessorOnline() {
       const online = await System.checkDocumentProcessorOnline();
       setReady(online);
-      console.log("PROCESSOR ONLINE: ", online);
     }
     checkProcessorOnline();
   }, []);

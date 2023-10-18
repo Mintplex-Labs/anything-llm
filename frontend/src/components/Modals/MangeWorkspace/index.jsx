@@ -29,8 +29,6 @@ export default function ManageWorkspace({
     async function checkSupportedFiletypes() {
       const acceptedTypes = await System.acceptedDocumentTypes();
       setFileTypes(acceptedTypes ?? {});
-
-      console.log(acceptedTypes);
     }
     checkSupportedFiletypes();
   }, []);

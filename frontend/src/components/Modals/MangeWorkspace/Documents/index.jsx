@@ -12,7 +12,6 @@ export default function DocumentSettings({ workspace, fileTypes }) {
   const [loading, setLoading] = useState(true);
   const [workspaceDocs, setWorkspaceDocs] = useState([]);
   const [fileDirectories, setFileDirectories] = useState([]);
-  const [userHasFiles, setUserHasFiles] = useState(false);
   const [selectedItems, setSelectedItems] = useState({});
 
   async function fetchKeys(refetchWorkspace = false) {
@@ -24,16 +23,51 @@ export default function DocumentSettings({ workspace, fileTypes }) {
 
     const documentsInWorkspace =
       currentWorkspace.documents.map((doc) => doc.docpath) || [];
-    const isAnyLocalFiles = localFiles.items.some(
-      (folder) => folder?.items?.length > 0
-    );
 
-    console.log("documentsInWorkspace: ", documentsInWorkspace);
-    console.log("localFiles: ", localFiles);
+    // Documents that are not in the workspace
+    const availableDocs = {
+      ...localFiles,
+      items: localFiles.items.map((folder) => {
+        if (folder.items && folder.type === "folder") {
+          return {
+            ...folder,
+            items: folder.items.filter(
+              (file) =>
+                file.type === "file" &&
+                !documentsInWorkspace.includes(`${folder.name}/${file.name}`)
+            ),
+          };
+        } else {
+          return folder;
+        }
+      }),
+    };
 
+    // Documents that are already in the workspace
+    const workspaceDocs = {
+      ...localFiles,
+      items: localFiles.items.map((folder) => {
+        if (folder.items && folder.type === "folder") {
+          return {
+            ...folder,
+            items: folder.items.filter(
+              (file) =>
+                file.type === "file" &&
+                documentsInWorkspace.includes(`${folder.name}/${file.name}`)
+            ),
+          };
+        } else {
+          return folder;
+        }
+      }),
+    };
+
+    console.log("workspaceDocs: ", workspaceDocs);
+    console.log("availableDocs: ", availableDocs);
+
+    setAvailableDocs(availableDocs);
+    setWorkspaceDocs(workspaceDocs);
     setFileDirectories(localFiles);
-    setWorkspaceDocs(documentsInWorkspace);
-    setUserHasFiles(isAnyLocalFiles);
     setLoading(false);
   }
 
@@ -43,7 +77,7 @@ export default function DocumentSettings({ workspace, fileTypes }) {
 
   const updateWorkspace = async (e) => {
     e.preventDefault();
-    // setSaving(true);
+    setLoading(true);
     showToast("Updating workspace...", "info", { autoClose: false });
     // setShowConfirmation(false);
 
@@ -64,46 +98,44 @@ export default function DocumentSettings({ workspace, fileTypes }) {
         });
       });
 
-    // setSaving(false);
+    setLoading(false);
     await fetchKeys(true);
   };
 
   const docChanges = () => {
     const changes = {
-      adds: [
-        "custom-documents/aisq-pitch-deck-fa3bb4af-ae3a-4190-90aa-5ac6b50f13a8.json",
-        "custom-documents/individual-report-amanda-hatfield-2c97fbf1-6bf0-43c9-80bc-6d001aefee76.json",
-        "custom-documents/readme-test-2-7102e7f0-14d2-4dfa-87ee-623f59e224ee.json",
-      ],
+      adds: [],
       deletes: [],
     };
 
-    // selectedFiles.map((doc) => {
-    //   const inOriginal = !!originalDocuments.find((oDoc) => oDoc === doc);
-    //   if (!inOriginal) {
-    //     changes.adds.push(doc);
-    //   }
-    // });
+    if (!fileDirectories.items) return changes;
 
-    // originalDocuments.map((doc) => {
-    //   const selected = !!selectedFiles.find((oDoc) => oDoc === doc);
-    //   if (!selected) {
-    //     changes.deletes.push(doc);
-    //   }
-    // });
+    fileDirectories.items.forEach((folder) => {
+      if (folder.items) {
+        folder.items.forEach((file) => {
+          if (file.type === "file" && selectedItems[file.id]) {
+            const path = `${folder.name}/${file.name}`;
+            changes.adds.push(path);
+          }
+        });
+      }
+    });
 
     return changes;
   };
 
   useEffect(() => {
     console.log("SELECTED ITEMS: ", selectedItems);
-  }, [selectedItems]);
+    console.log("FILE DIRECTORIES: ", fileDirectories);
+    console.log("CURRENT CHANGES: ", docChanges());
+  }, [selectedItems, fileDirectories]);
 
   return (
     <div className="flex gap-x-6 justify-center">
       <Directory
-        files={fileDirectories}
+        files={availableDocs}
         loading={loading}
+        setLoading={setLoading}
         fileTypes={fileTypes}
         workspace={workspace}
         fetchKeys={fetchKeys}
@@ -119,6 +151,7 @@ export default function DocumentSettings({ workspace, fileTypes }) {
       </div>
       <WorkspaceDirectory
         workspace={workspace}
+        files={workspaceDocs}
         highlightWorkspace={highlightWorkspace}
         loading={loading}
       />

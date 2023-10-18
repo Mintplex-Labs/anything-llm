@@ -3,10 +3,16 @@ import PreLoader from "../../../../Preloader";
 import { useEffect, useRef, useState } from "react";
 import { CaretDown, File, FolderNotch, Trash } from "@phosphor-icons/react";
 import System from "../../../../../models/system";
+import {
+  formatDate,
+  getFileExtension,
+  truncate,
+} from "../../../../../utils/directories";
 
 export default function Directory({
   files,
   loading,
+  setLoading,
   fileTypes,
   workspace,
   fetchKeys,
@@ -81,22 +87,23 @@ export default function Directory({
                 <PreLoader />
               </div>
             ) : !!files.items ? (
-              files.items.map((item, index) =>
-                item.type === "folder" ? (
-                  <FolderRow
-                    key={index}
-                    item={item}
-                    selected={isSelected(
-                      item.id,
-                      item.type === "folder" ? item : null
-                    )}
-                    onRowClick={() => toggleSelection(item)}
-                    toggleSelection={toggleSelection}
-                    isSelected={isSelected}
-                  />
-                ) : (
-                  <p>file</p>
-                )
+              files.items.map(
+                (item, index) =>
+                  item.type === "folder" && (
+                    <FolderRow
+                      key={index}
+                      item={item}
+                      selected={isSelected(
+                        item.id,
+                        item.type === "folder" ? item : null
+                      )}
+                      fetchKeys={fetchKeys}
+                      onRowClick={() => toggleSelection(item)}
+                      toggleSelection={toggleSelection}
+                      isSelected={isSelected}
+                      setLoading={setLoading}
+                    />
+                  )
               )
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -143,6 +150,8 @@ function FolderRow({
   onRowClick,
   toggleSelection,
   isSelected,
+  fetchKeys,
+  setLoading,
 }) {
   const [expanded, setExpanded] = useState(true);
 
@@ -150,7 +159,6 @@ function FolderRow({
     event.stopPropagation();
     setExpanded(!expanded);
   };
-
 
   return (
     <>
@@ -202,9 +210,12 @@ function FolderRow({
             <FileRow
               key={fileItem.id}
               item={fileItem}
+              folderName={item.name}
               selected={isSelected(fileItem.id)}
               expanded={expanded}
               onRowClick={() => toggleSelection(fileItem)}
+              fetchKeys={fetchKeys}
+              setLoading={setLoading}
             />
           ))}
         </div>
@@ -213,7 +224,15 @@ function FolderRow({
   );
 }
 
-function FileRow({ item, selected, onRowClick, expanded }) {
+function FileRow({
+  item,
+  folderName,
+  selected,
+  onRowClick,
+  expanded,
+  fetchKeys,
+  setLoading,
+}) {
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipTimeoutRef = useRef(null);
 
@@ -228,11 +247,14 @@ function FileRow({ item, selected, onRowClick, expanded }) {
     }
 
     try {
-      console.log(item.name, item);
-      await System.deleteDocument(item.name, item);
+      setLoading(true);
+      await System.deleteDocument(`${folderName}/${item.name}`, item);
+      await fetchKeys(true);
     } catch (error) {
       console.error("Failed to delete the document:", error);
     }
+
+    setLoading(false);
   };
 
   const handleMouseEnter = () => {
@@ -302,35 +324,4 @@ function FileRow({ item, selected, onRowClick, expanded }) {
       </div>
     </div>
   );
-}
-
-function truncate(str, n) {
-  const fileExtensionPattern = /(\..+)$/;
-  const extensionMatch = str.match(fileExtensionPattern);
-
-  if (extensionMatch && extensionMatch[1]) {
-    const extension = extensionMatch[1];
-    const nameWithoutExtension = str.replace(fileExtensionPattern, "");
-    const truncationPoint = Math.max(0, n - extension.length - 4);
-    const truncatedName =
-      nameWithoutExtension.substr(0, truncationPoint) +
-      "..." +
-      nameWithoutExtension.slice(-4);
-
-    return truncatedName + extension;
-  } else {
-    return str.length > n ? str.substr(0, n - 8) + "..." + str.slice(-4) : str;
-  }
-}
-
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  const options = { year: "numeric", month: "short", day: "numeric" };
-  const formattedDate = date.toLocaleDateString("en-US", options);
-  return formattedDate;
-};
-
-function getFileExtension(path) {
-  const match = path.match(/[^\/\\&\?]+\.\w{1,4}(?=([\?&].*$|$))/);
-  return match ? match[0].split(".").pop() : "file";
 }
