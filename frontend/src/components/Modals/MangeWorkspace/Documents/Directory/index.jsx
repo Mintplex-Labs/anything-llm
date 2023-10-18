@@ -2,14 +2,14 @@ import UploadFile from "../UploadFile";
 import PreLoader from "../../../../Preloader";
 import { useEffect, useRef, useState } from "react";
 import { CaretDown, File, FolderNotch, Trash } from "@phosphor-icons/react";
+import System from "../../../../../models/system";
 
 export default function Directory({
   files,
-  parent = null,
-  nested = 0,
   loading,
   fileTypes,
   workspace,
+  fetchKeys,
 }) {
   const [selectedItems, setSelectedItems] = useState({});
 
@@ -35,7 +35,6 @@ export default function Directory({
       return newSelectedItems;
     });
   };
-
   useEffect(() => {
     console.log("SELECTED ITEMS: ", selectedItems);
   }, [selectedItems]);
@@ -52,11 +51,6 @@ export default function Directory({
     return !!selectedItems[id];
   };
 
-  const onTrashClick = (event) => {
-    event.stopPropagation();
-    console.log("trash clicked");
-  };
-
   if (loading) {
     return (
       <div className="px-8 pb-8">
@@ -66,7 +60,7 @@ export default function Directory({
           </div>
 
           <div className="w-[560px] h-[310px] bg-zinc-900 rounded-2xl overflow-y-auto relative">
-            <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900 sticky top-0">
+            <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900 sticky top-0 z-10">
               <p className="col-span-4">Name</p>
               <p className="col-span-2">Date</p>
               <p className="col-span-2">Size</p>
@@ -78,7 +72,11 @@ export default function Directory({
             </div>
           </div>
 
-          <UploadFile fileTypes={fileTypes} workspace={workspace} />
+          <UploadFile
+            fileTypes={fileTypes}
+            workspace={workspace}
+            fetchKeys={fetchKeys}
+          />
         </div>
       </div>
     );
@@ -92,7 +90,7 @@ export default function Directory({
         </div>
 
         <div className="w-[560px] h-[310px] bg-zinc-900 rounded-2xl overflow-y-auto relative">
-          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900 sticky top-0">
+          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900 sticky top-0 z-10">
             <p className="col-span-4">Name</p>
             <p className="col-span-2">Date</p>
             <p className="col-span-2">Size</p>
@@ -111,7 +109,6 @@ export default function Directory({
                   )}
                   onRowClick={() => toggleSelection(item)}
                   toggleSelection={toggleSelection}
-                  onTrashClick={onTrashClick}
                   isSelected={isSelected}
                 />
               ) : (
@@ -127,7 +124,11 @@ export default function Directory({
           )}
         </div>
 
-        <UploadFile fileTypes={fileTypes} workspace={workspace} />
+        <UploadFile
+          fileTypes={fileTypes}
+          workspace={workspace}
+          fetchKeys={fetchKeys}
+        />
       </div>
     </div>
   );
@@ -137,7 +138,6 @@ function FolderRow({
   item,
   selected,
   onRowClick,
-  onTrashClick,
   toggleSelection,
   isSelected,
 }) {
@@ -193,10 +193,11 @@ function FolderRow({
               <p className="text-xs px-2 py-0.5">Cached</p>
             </div>
           )}
+          {/* {item.name !== "custom-documents" && (
           <Trash
-            onClick={onTrashClick}
-            className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
-          />
+            onClick={onTrashClick(item.name, item.items)}
+            className="transition-all duration-300 text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer rounded-md"
+          />)} */}
         </div>
       </div>
       {expanded && (
@@ -207,7 +208,6 @@ function FolderRow({
               item={fileItem}
               selected={isSelected(fileItem.id)}
               expanded={expanded}
-              onTrashClick={onTrashClick}
               onRowClick={() => toggleSelection(fileItem)}
             />
           ))}
@@ -217,9 +217,26 @@ function FolderRow({
   );
 }
 
-function FileRow({ item, selected, onRowClick, onTrashClick, expanded }) {
+function FileRow({ item, selected, onRowClick, expanded }) {
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipTimeoutRef = useRef(null);
+
+  const onTrashClick = async (event) => {
+    event.stopPropagation();
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this document?\nThis will require you to re-upload and re-embed it.\nThis document will be removed from any workspace that is currently referencing it.\nThis action is not reversible."
+      )
+    ) {
+      return false;
+    }
+
+    try {
+      await System.deleteDocument(item.name, item);
+    } catch (error) {
+      console.error("Failed to delete the document:", error);
+    }
+  };
 
   const handleMouseEnter = () => {
     tooltipTimeoutRef.current = setTimeout(() => {

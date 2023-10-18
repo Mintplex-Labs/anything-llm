@@ -53,6 +53,7 @@ export default function DocumentSettings({ workspace, fileTypes }) {
         loading={loading}
         fileTypes={fileTypes}
         workspace={workspace}
+        fetchKeys={fetchKeys}
       />
       <div className="flex items-center">
         <ArrowsDownUp className="text-white text-base font-bold rotate-90 w-11 h-11" />
