@@ -47,6 +47,9 @@ export default function Directory({
   };
 
   const isFolderCompletelySelected = (folder) => {
+    if (folder.items.length === 0) {
+      return false;
+    }
     return folder.items.every((file) => selectedItems[file.id]);
   };
 

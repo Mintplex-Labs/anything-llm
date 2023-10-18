@@ -6,25 +6,19 @@ import {
   getFileExtension,
   truncate,
 } from "../../../../../utils/directories";
+import System from "../../../../../models/system";
+import Workspace from "../../../../../models/workspace";
 
 export default function WorkspaceDirectory({
   workspace,
   files,
-  workspaceDocuments,
-  selectedDocumentIds,
-  toggleDocumentSelection,
   highlightWorkspace,
   loading,
+  setLoading,
+  fetchKeys,
 }) {
   console.log("FILES: ", files.items);
-
-  const item = {
-    title: "test",
-    published: "2021-10-01T00:00:00.000Z",
-    size: "---",
-    cached: true,
-    url: "file:///Users/seanhatfield/Documents/Mintplex/anything-llm/collector/hotdir/processed/README TEST 2.md",
-  };
+  console.log("Workspace.slug: ", workspace.slug);
 
   if (loading) {
     return (
@@ -69,55 +63,49 @@ export default function WorkspaceDirectory({
           <p className="col-span-2">Cached</p>
         </div>
         <div className="w-full h-full flex flex-col z-0">
-          {/* <WorkspaceFileRow item={item} selected={false} />
-          <WorkspaceFileRow item={item} selected={false} />
-          <WorkspaceFileRow item={item} selected={false} />
-          <WorkspaceFileRow item={item} selected={false} />
-          <WorkspaceFileRow item={item} selected={false} />
-          <WorkspaceFileRow item={item} selected={false} />
-          <WorkspaceFileRow item={item} selected={false} />
-          <WorkspaceFileRow item={item} selected={false} />
-          <WorkspaceFileRow item={item} selected={false} />
-          <WorkspaceFileRow item={item} selected={false} />
-          <WorkspaceFileRow item={item} selected={false} />
-          <WorkspaceFileRow item={item} selected={false} />
-          <WorkspaceFileRow item={item} selected={false} /> */}
-          {/* {files.items.map((item, index) => (
-            <WorkspaceFileRow
-              key={index}
-              item={item}
-              selected={true}
-            />
-          ))} */}
+          {files.items.map((folder) =>
+            folder.items.map((item, index) => (
+              <WorkspaceFileRow
+                key={index}
+                item={item}
+                folderName={folder.name}
+                workspace={workspace}
+                setLoading={setLoading}
+                fetchKeys={fetchKeys}
+              />
+            ))
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function WorkspaceFileRow({ item, selected }) {
+function WorkspaceFileRow({
+  item,
+  folderName,
+  workspace,
+  setLoading,
+  fetchKeys,
+}) {
+  console.log("Folder Name: ", folderName);
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipTimeoutRef = useRef(null);
 
-  const onRowClick = () => {
-    console.log("row clicked");
-  };
-
-  const onTrashClick = async (event) => {
-    event.stopPropagation();
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this document?\nThis will require you to re-upload and re-embed it.\nThis document will be removed from any workspace that is currently referencing it.\nThis action is not reversible."
-      )
-    ) {
-      return false;
-    }
+  const onRemoveClick = async (event) => {
+    setLoading(true);
 
     try {
-      await System.deleteDocument(`custom-documents/${item.name}`, item);
+      await Workspace.modifyEmbeddings(workspace.slug, {
+        adds: [],
+        deletes: [`${folderName}/${item.name}`],
+      });
+      await fetchKeys(true);
     } catch (error) {
-      console.error("Failed to delete the document:", error);
+      console.error("Failed to remove document:", error);
     }
+
+    setLoading(false);
   };
 
   const handleMouseEnter = () => {
@@ -138,21 +126,12 @@ function WorkspaceFileRow({ item, selected }) {
   }, []);
 
   return (
-    <div
-      className={`items-center transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer ${`${
-        selected ? "bg-sky-500/20" : ""
-      }`}`}
-    >
+    <div className="items-center transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer">
       <div className="col-span-4 flex gap-x-[4px] items-center">
-        <div
-          className="w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
-          role="checkbox"
-          aria-checked={selected}
-          tabIndex={0}
-        >
-          {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
-        </div>
-        <File className="text-base font-bold w-4 h-4 mr-[3px]" weight="fill" />
+        <File
+          className="text-base font-bold w-4 h-4 ml-3 mr-[3px]"
+          weight="fill"
+        />
         <div
           className="relative"
           onMouseEnter={handleMouseEnter}
@@ -180,7 +159,7 @@ function WorkspaceFileRow({ item, selected }) {
           </div>
         )}
         <ArrowUUpLeft
-          onClick={onTrashClick}
+          onClick={onRemoveClick}
           className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
         />
       </div>

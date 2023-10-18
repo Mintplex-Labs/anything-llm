@@ -79,9 +79,10 @@ export default function DocumentSettings({ workspace, fileTypes }) {
     e.preventDefault();
     setLoading(true);
     showToast("Updating workspace...", "info", { autoClose: false });
-    // setShowConfirmation(false);
 
     const changes = docChanges();
+    setSelectedItems({});
+    setHighlightWorkspace(false);
     await Workspace.modifyEmbeddings(workspace.slug, changes)
       .then((res) => {
         if (res && res.workspace) {
@@ -154,6 +155,8 @@ export default function DocumentSettings({ workspace, fileTypes }) {
         files={workspaceDocs}
         highlightWorkspace={highlightWorkspace}
         loading={loading}
+        setLoading={setLoading}
+        fetchKeys={fetchKeys}
       />
     </div>
   );
