@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import System from "../../../../models/system";
-import { AUTH_TOKEN, AUTH_USER } from "../../../../utils/constants";
+import {
+  AUTH_TIMESTAMP,
+  AUTH_TOKEN,
+  AUTH_USER,
+} from "../../../../utils/constants";
 import paths from "../../../../utils/paths";
 
 const noop = () => false;
@@ -29,6 +33,7 @@ export default function MultiUserMode({ hideModal = noop }) {
       setTimeout(() => {
         window.localStorage.removeItem(AUTH_USER);
         window.localStorage.removeItem(AUTH_TOKEN);
+        window.localStorage.removeItem(AUTH_TIMESTAMP);
         window.location = paths.admin.users();
       }, 2_000);
       return;

@@ -115,15 +115,7 @@ export default function LLMSelection({
                       required={true}
                       className="bg-gray-50 border border-gray-500 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-stone-700 dark:border-slate-200 dark:placeholder-stone-500 dark:text-slate-200"
                     >
-                      {[
-                        "gpt-3.5-turbo",
-                        "gpt-3.5-turbo-0613",
-                        "gpt-3.5-turbo-16k",
-                        "gpt-4",
-                        "gpt-4-0613",
-                        "gpt-4-32k",
-                        "gpt-4-32k-0613",
-                      ].map((model) => {
+                      {["gpt-3.5-turbo", "gpt-4"].map((model) => {
                         return (
                           <option key={model} value={model}>
                             {model}
