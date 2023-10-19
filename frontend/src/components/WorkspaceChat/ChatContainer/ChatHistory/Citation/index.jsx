@@ -120,8 +120,10 @@ function CitationDetailModal({ source, onClose }) {
     >
       <div className="relative w-full max-w-2xl bg-main-gradient rounded-lg shadow border border-white/10 overflow-hidden">
         <div className="flex items-start justify-between p-6 border-b rounded-t border-gray-500/50">
-        <div className="flex flex-col flex-grow mr-4">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">{truncate(title, 52)}</h3>
+          <div className="flex flex-col flex-grow mr-4">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+              {truncate(title, 52)}
+            </h3>
             {references > 1 && (
               <p className="text-xs text-gray-400 mt-2">
                 Referenced {references} times.
@@ -136,7 +138,10 @@ function CitationDetailModal({ source, onClose }) {
             <X className="text-gray-300 text-lg" />
           </button>
         </div>
-        <div className="h-full w-full overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+        <div
+          className="h-full w-full overflow-y-auto"
+          style={{ maxHeight: "calc(100vh - 200px)" }}
+        >
           <div className="p-6 space-y-2 flex-col">
             {[...Array(3)].map((_, idx) => (
               <SkeletonLine key={idx} />
@@ -151,8 +156,7 @@ function CitationDetailModal({ source, onClose }) {
         </div>
       </div>
     </dialog>
-);
-
+  );
 }
 
 function truncateMiddle(title) {

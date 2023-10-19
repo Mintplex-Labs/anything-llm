@@ -105,7 +105,7 @@ export default function PromptInput({
           </div>
         </div>
       </form>
-        <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
+      <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
     </div>
   );
 }

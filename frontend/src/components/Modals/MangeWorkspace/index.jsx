@@ -39,8 +39,8 @@ export default function ManageWorkspace({
 
   if (!workspace) return null;
 
-  if(isMobile) {
-    return(
+  if (isMobile) {
+    return (
       <dialog id={DIALOG_ID} className="bg-transparent outline-none">
         <div className="relative max-w-lg mx-auto bg-main-gradient rounded-[12px] shadow border-2 border-slate-300/10">
           <div className="p-6">
@@ -48,7 +48,8 @@ export default function ManageWorkspace({
               Editing "{workspace.name}"
             </h1>
             <p className="text-white mt-4">
-              Editing these settings are only available on a desktop device. Please access this page on your desktop to continue.
+              Editing these settings are only available on a desktop device.
+              Please access this page on your desktop to continue.
             </p>
             <div className="mt-6 flex justify-end">
               <button
@@ -74,7 +75,9 @@ export default function ManageWorkspace({
               <button
                 onClick={() => setSelectedTab("documents")}
                 className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
-                  selectedTab === "documents" ? "bg-switch-selected shadow-md" : "bg-sidebar-button"
+                  selectedTab === "documents"
+                    ? "bg-switch-selected shadow-md"
+                    : "bg-sidebar-button"
                 }`}
               >
                 Documents
@@ -82,7 +85,9 @@ export default function ManageWorkspace({
               <button
                 onClick={() => setSelectedTab("settings")}
                 className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
-                  selectedTab === "settings" ? "bg-switch-selected shadow-md" : "bg-sidebar-button"
+                  selectedTab === "settings"
+                    ? "bg-switch-selected shadow-md"
+                    : "bg-sidebar-button"
                 }`}
               >
                 Settings
@@ -113,7 +118,6 @@ export default function ManageWorkspace({
 }
 
 export function useManageWorkspaceModal() {
-
   const showModal = () => {
     document.getElementById(DIALOG_ID)?.showModal();
   };

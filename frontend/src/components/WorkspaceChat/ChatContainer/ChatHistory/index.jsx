@@ -36,10 +36,7 @@ export default function ChatHistory({ history = [], workspace }) {
             </p>
           </div>
         </div>
-          <ManageWorkspace
-            hideModal={hideModal}
-            providedSlug={workspace.slug}
-          />
+        <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
       </div>
     );
   }
@@ -80,7 +77,7 @@ export default function ChatHistory({ history = [], workspace }) {
           />
         );
       })}
-        <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
+      <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
     </div>
   );
 }
