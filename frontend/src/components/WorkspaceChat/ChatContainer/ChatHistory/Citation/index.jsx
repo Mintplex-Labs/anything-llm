@@ -3,6 +3,7 @@ import { X } from "react-feather";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
 import { CaretRight, FileText } from "@phosphor-icons/react";
+import truncate from "truncate";
 
 function combineLikeSources(sources) {
   const combined = {};
@@ -78,7 +79,7 @@ const Citation = memo(({ source, onClick }) => {
 });
 
 function SkeletonLine() {
-  const numOfBoxes = Math.floor(Math.random() * 5) + 2; // Random number of boxes between 2 to 7, giving 2-5 lines of skeleton text
+  const numOfBoxes = Math.floor(Math.random() * 5) + 2;
   return (
     <div className="flex space-x-2 mb-2">
       {Array.from({ length: numOfBoxes }).map((_, index) => (
@@ -86,7 +87,7 @@ function SkeletonLine() {
           key={index}
           className="bg-white/20 rounded"
           style={{
-            width: `${Math.random() * 150 + 50}px`, // Random width between 50 to 200 pixels
+            width: `${Math.random() * 150 + 50}px`,
             height: "20px",
           }}
         ></div>
@@ -117,9 +118,16 @@ function CitationDetailModal({ source, onClose }) {
       ref={dialogRef}
       className="bg-transparent outline-none fixed top-0 left-0 w-full h-full flex items-center justify-center z-10"
     >
-      <div className="relative w-full max-w-2xl max-h-full bg-main-gradient rounded-lg shadow border border-white/10">
-        <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
-          <h3 className="text-xl font-semibold text-white truncate">{title}</h3>
+      <div className="relative w-full max-w-2xl bg-main-gradient rounded-lg shadow border border-white/10 overflow-hidden">
+        <div className="flex items-start justify-between p-6 border-b rounded-t border-gray-500/50">
+        <div className="flex flex-col flex-grow mr-4">
+            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">{truncate(title, 52)}</h3>
+            {references > 1 && (
+              <p className="text-xs text-gray-400 mt-2">
+                Referenced {references} times.
+              </p>
+            )}
+          </div>
           <button
             onClick={handleModalClose}
             type="button"
@@ -128,27 +136,23 @@ function CitationDetailModal({ source, onClose }) {
             <X className="text-gray-300 text-lg" />
           </button>
         </div>
-        <div className="p-6 space-y-6 flex-col h-full w-full overflow-y-scroll">
-          {/* Skeleton text lines before the actual text */}
-          {[...Array(3)].map((_, idx) => (
-            <SkeletonLine key={idx} />
-          ))}
-
-          {references > 1 && (
-            <p className="text-xs text-gray-500 dark:text-slate-500 mb-2">
-              Referenced {references} times.
-            </p>
-          )}
-          <p className="text-white whitespace-pre-line">{HTMLDecode(text)}</p>
-
-          {/* Skeleton text lines after the actual text */}
-          {[...Array(3)].map((_, idx) => (
-            <SkeletonLine key={idx} />
-          ))}
+        <div className="h-full w-full overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+          <div className="p-6 space-y-2 flex-col">
+            {[...Array(3)].map((_, idx) => (
+              <SkeletonLine key={idx} />
+            ))}
+            <p className="text-white whitespace-pre-line">{HTMLDecode(text)}</p>
+            <div className="mb-6">
+              {[...Array(3)].map((_, idx) => (
+                <SkeletonLine key={idx} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </dialog>
-  );
+);
+
 }
 
 function truncateMiddle(title) {
