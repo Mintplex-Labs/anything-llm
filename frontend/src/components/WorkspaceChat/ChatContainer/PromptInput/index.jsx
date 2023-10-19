@@ -52,8 +52,8 @@ export default function PromptInput({
         onSubmit={handleSubmit}
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl"
       >
-        <div className="flex items-center rounded-lg mb-4">
-          <div className="w-[600px] bg-main-gradient shadow-2xl border border-white rounded-2xl flex flex-col px-4 overflow-hidden">
+        <div className="flex items-center rounded-lg md:mb-4">
+          <div className="w-[600px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
             <div className="flex items-center w-full border-b-2 border-gray-500/50">
               <textarea
                 onKeyUp={adjustTextArea}
@@ -68,7 +68,7 @@ export default function PromptInput({
                   adjustTextArea(e);
                 }}
                 value={message}
-                className="cursor-text max-h-[100px] md:min-h-[40px] mx-2md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
+                className="cursor-text max-h-[100px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
                 placeholder={"Send a message"}
               />
               <button
