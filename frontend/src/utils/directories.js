@@ -14,6 +14,8 @@ export function truncate(str, n) {
   const fileExtensionPattern = /(\..+)$/;
   const extensionMatch = str.match(fileExtensionPattern);
 
+  if (str.length <= n) return str;
+
   if (extensionMatch && extensionMatch[1]) {
     const extension = extensionMatch[1];
     const nameWithoutExtension = str.replace(fileExtensionPattern, "");
