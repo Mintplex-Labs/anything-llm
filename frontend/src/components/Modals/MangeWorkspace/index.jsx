@@ -1,19 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { X } from "react-feather";
-import DocumentSettings from "./Documents";
-import WorkspaceSettings from "./Settings";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
 import System from "../../../models/system";
 
-const TABS = {
-  documents: DocumentSettings,
-  settings: WorkspaceSettings,
-};
+const DocumentSettings = lazy(() => import("./Documents"));
+const WorkspaceSettings = lazy(() => import("./Settings"));
 
 const DIALOG_ID = "manage-workspace-modal";
 
-const noop = () => false;
+const noop = () => {};
+
 export default function ManageWorkspace({
   hideModal = noop,
   providedSlug = null,
@@ -22,8 +19,6 @@ export default function ManageWorkspace({
   const [selectedTab, setSelectedTab] = useState("documents");
   const [workspace, setWorkspace] = useState(null);
   const [fileTypes, setFileTypes] = useState(null);
-
-  const CurrentTab = TABS[selectedTab || "documents"];
 
   useEffect(() => {
     async function checkSupportedFiletypes() {
@@ -39,7 +34,7 @@ export default function ManageWorkspace({
       setWorkspace(workspace);
     }
     fetchWorkspace();
-  }, [selectedTab, slug]);
+  }, [providedSlug, slug]);
 
   if (!workspace) return null;
 
@@ -52,9 +47,7 @@ export default function ManageWorkspace({
               <button
                 onClick={() => setSelectedTab("documents")}
                 className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
-                  selectedTab === "documents"
-                    ? "bg-switch-selected shadow-md"
-                    : "bg-sidebar-button"
+                  selectedTab === "documents" ? "bg-switch-selected shadow-md" : "bg-sidebar-button"
                 }`}
               >
                 Documents
@@ -62,9 +55,7 @@ export default function ManageWorkspace({
               <button
                 onClick={() => setSelectedTab("settings")}
                 className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
-                  selectedTab === "settings"
-                    ? "bg-switch-selected shadow-md"
-                    : "bg-sidebar-button"
+                  selectedTab === "settings" ? "bg-switch-selected shadow-md" : "bg-sidebar-button"
                 }`}
               >
                 Settings
@@ -80,7 +71,14 @@ export default function ManageWorkspace({
               <X className="text-gray-300 text-lg" />
             </button>
           </div>
-          <CurrentTab workspace={workspace} fileTypes={fileTypes} />
+          <Suspense fallback={<div>Loading...</div>}>
+            <div className={selectedTab === "documents" ? "" : "hidden"}>
+              <DocumentSettings workspace={workspace} fileTypes={fileTypes} />
+            </div>
+            <div className={selectedTab === "settings" ? "" : "hidden"}>
+              <WorkspaceSettings workspace={workspace} fileTypes={fileTypes} />
+            </div>
+          </Suspense>
         </div>
       </div>
     </dialog>
@@ -88,17 +86,14 @@ export default function ManageWorkspace({
 }
 
 export function useManageWorkspaceModal() {
-  const [showing, setShowing] = useState(true);
 
   const showModal = () => {
     document.getElementById(DIALOG_ID)?.showModal();
-    setShowing(true);
   };
 
   const hideModal = () => {
     document.getElementById(DIALOG_ID)?.close();
-    setShowing(false);
   };
 
-  return { showing, showModal, hideModal };
+  return { showModal, hideModal };
 }

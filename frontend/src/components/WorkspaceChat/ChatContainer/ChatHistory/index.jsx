@@ -6,7 +6,7 @@ import ManageWorkspace from "../../../Modals/MangeWorkspace";
 
 export default function ChatHistory({ history = [], workspace }) {
   const replyRef = useRef(null);
-  const { showModal, hideModal, showing } = useManageWorkspaceModal();
+  const { showModal, hideModal } = useManageWorkspaceModal();
 
   useEffect(() => {
     if (replyRef.current) {
@@ -36,12 +36,10 @@ export default function ChatHistory({ history = [], workspace }) {
             </p>
           </div>
         </div>
-        {showing && (
           <ManageWorkspace
             hideModal={hideModal}
             providedSlug={workspace.slug}
           />
-        )}
       </div>
     );
   }
@@ -82,9 +80,7 @@ export default function ChatHistory({ history = [], workspace }) {
           />
         );
       })}
-      {showing && (
         <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
-      )}
     </div>
   );
 }
