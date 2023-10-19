@@ -35,7 +35,7 @@ export default function DefaultChatContainer() {
   const MESSAGES = [
     <React.Fragment>
       <div
-        className={`flex justify-center items-end w-full ${aiBackgroundColor}`}
+        className={`flex justify-center items-end w-full ${aiBackgroundColor} md:mt-0 mt-[40px]`}
       >
         <div
           className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
