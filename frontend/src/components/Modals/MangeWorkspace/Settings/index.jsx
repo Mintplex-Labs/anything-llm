@@ -201,7 +201,6 @@ export default function WorkspaceSettings({ workspace }) {
                     <p className="text-white text-opacity-60 text-xs font-medium">
                       The number of previous chats that will be included in the
                       response's short-term memory.
-                      <br />
                       <i>Recommend 20. </i>
                       Anything more than 45 is likely to lead to continuous chat
                       failures depending on message size.

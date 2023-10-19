@@ -1,13 +1,7 @@
 import UploadFile from "../UploadFile";
 import PreLoader from "../../../../Preloader";
-import { useEffect, useRef, useState } from "react";
-import { CaretDown, File, FolderNotch, Trash } from "@phosphor-icons/react";
-import System from "../../../../../models/system";
-import {
-  formatDate,
-  getFileExtension,
-  truncate,
-} from "../../../../../utils/directories";
+import { useEffect, useState } from "react";
+import FolderRow from "./FolderRow";
 
 export default function Directory({
   files,
@@ -20,6 +14,8 @@ export default function Directory({
   setSelectedItems,
   setHighlightWorkspace,
   moveToWorkspace,
+  setLoadingMessage,
+  loadingMessage,
 }) {
   const [amountSelected, setAmountSelected] = useState(0);
 
@@ -86,8 +82,11 @@ export default function Directory({
             style={{ height: "calc(100% - 40px)" }}
           >
             {loading ? (
-              <div className="w-full h-full flex items-center justify-center">
+              <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
                 <PreLoader />
+                <p className="text-white/80 text-sm font-semibold animate-pulse text-center w-1/3">
+                  {loadingMessage}
+                </p>
               </div>
             ) : !!files.items ? (
               files.items.map(
@@ -105,6 +104,7 @@ export default function Directory({
                       toggleSelection={toggleSelection}
                       isSelected={isSelected}
                       setLoading={setLoading}
+                      setLoadingMessage={setLoadingMessage}
                     />
                   )
               )
@@ -141,188 +141,6 @@ export default function Directory({
           fileTypes={fileTypes}
           workspace={workspace}
           fetchKeys={fetchKeys}
-        />
-      </div>
-    </div>
-  );
-}
-
-function FolderRow({
-  item,
-  selected,
-  onRowClick,
-  toggleSelection,
-  isSelected,
-  fetchKeys,
-  setLoading,
-}) {
-  const [expanded, setExpanded] = useState(true);
-
-  const handleExpandClick = (event) => {
-    event.stopPropagation();
-    setExpanded(!expanded);
-  };
-
-  return (
-    <>
-      <div
-        onClick={onRowClick}
-        className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer w-full ${
-          selected ? "bg-sky-500/20" : ""
-        }`}
-      >
-        <div className="col-span-4 flex gap-x-[4px] items-center">
-          <div
-            className="w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
-            role="checkbox"
-            aria-checked={selected}
-            tabIndex={0}
-          >
-            {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
-          </div>
-          <div
-            onClick={handleExpandClick}
-            className={`transform transition-transform duration-200 ${
-              expanded ? "rotate-360" : " rotate-270"
-            }`}
-          >
-            <CaretDown className="text-base font-bold w-4 h-4" />
-          </div>
-          <FolderNotch
-            className="text-base font-bold w-4 h-4 mr-[3px]"
-            weight="fill"
-          />
-          <p className="whitespace-nowrap overflow-hidden">
-            {truncate(item.name, 20)}
-          </p>
-        </div>
-        <p className="col-span-2 pl-3.5">---</p>
-        <p className="col-span-2 pl-3">{item.size}</p>
-        <p className="col-span-2 pl-2">{document.kind}</p>
-        <div className="col-span-2 flex justify-end items-center">
-          {item.cached && (
-            <div className="bg-white/10 rounded-3xl">
-              <p className="text-xs px-2 py-0.5">Cached</p>
-            </div>
-          )}
-        </div>
-      </div>
-      {expanded && (
-        <div className="col-span-full">
-          {item.items.map((fileItem) => (
-            <FileRow
-              key={fileItem.id}
-              item={fileItem}
-              folderName={item.name}
-              selected={isSelected(fileItem.id)}
-              expanded={expanded}
-              onRowClick={() => toggleSelection(fileItem)}
-              fetchKeys={fetchKeys}
-              setLoading={setLoading}
-            />
-          ))}
-        </div>
-      )}
-    </>
-  );
-}
-
-function FileRow({
-  item,
-  folderName,
-  selected,
-  onRowClick,
-  expanded,
-  fetchKeys,
-  setLoading,
-}) {
-  const [showTooltip, setShowTooltip] = useState(false);
-  const tooltipTimeoutRef = useRef(null);
-
-  const onTrashClick = async (event) => {
-    event.stopPropagation();
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this document?\nThis will require you to re-upload and re-embed it.\nThis document will be removed from any workspace that is currently referencing it.\nThis action is not reversible."
-      )
-    ) {
-      return false;
-    }
-
-    try {
-      setLoading(true);
-      await System.deleteDocument(`${folderName}/${item.name}`, item);
-      await fetchKeys(true);
-    } catch (error) {
-      console.error("Failed to delete the document:", error);
-    }
-
-    setLoading(false);
-  };
-
-  const handleMouseEnter = () => {
-    tooltipTimeoutRef.current = setTimeout(() => {
-      setShowTooltip(true);
-    }, 300);
-  };
-
-  const handleMouseLeave = () => {
-    clearTimeout(tooltipTimeoutRef.current);
-    setShowTooltip(false);
-  };
-
-  useEffect(() => {
-    return () => {
-      clearTimeout(tooltipTimeoutRef.current);
-    };
-  }, []);
-
-  return (
-    <div
-      onClick={onRowClick}
-      className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer ${`${
-        selected ? "bg-sky-500/20" : ""
-      } ${expanded ? "bg-sky-500/10" : ""}`}`}
-    >
-      <div className="col-span-4 flex gap-x-[4px] items-center">
-        <div
-          className="w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
-          role="checkbox"
-          aria-checked={selected}
-          tabIndex={0}
-        >
-          {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
-        </div>
-        <File className="text-base font-bold w-4 h-4 mr-[3px]" weight="fill" />
-        <div
-          className="relative"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <p className="whitespace-nowrap overflow-hidden">
-            {truncate(item.title, 17)}
-          </p>
-          {showTooltip && (
-            <div className="absolute left-0 bg-white text-black p-1.5 rounded shadow-lg whitespace-nowrap">
-              {item.title}
-            </div>
-          )}
-        </div>
-      </div>
-      <p className="col-span-2 pl-3.5 whitespace-nowrap">
-        {formatDate(item?.published)}
-      </p>
-      <p className="col-span-2 pl-3">{item?.size || "---"}</p>
-      <p className="col-span-2 pl-2 uppercase">{getFileExtension(item.url)}</p>
-      <div className="col-span-2 flex justify-end items-center">
-        {item?.cached && (
-          <div className="bg-white/10 rounded-3xl">
-            <p className="text-xs px-2 py-0.5">Cached</p>
-          </div>
-        )}
-        <Trash
-          onClick={onTrashClick}
-          className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
         />
       </div>
     </div>

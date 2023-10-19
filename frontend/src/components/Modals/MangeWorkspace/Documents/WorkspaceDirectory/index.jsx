@@ -1,25 +1,21 @@
-import { ArrowUUpLeft, File } from "@phosphor-icons/react";
 import PreLoader from "../../../../Preloader";
-import { useEffect, useRef, useState } from "react";
-import {
-  formatDate,
-  getFileExtension,
-  truncate,
-} from "../../../../../utils/directories";
-import System from "../../../../../models/system";
-import Workspace from "../../../../../models/workspace";
+import { dollarFormat } from "../../../../../utils/numbers";
+import WorkspaceFileRow from "./WorkspaceFileRow";
 
 export default function WorkspaceDirectory({
   workspace,
   files,
   highlightWorkspace,
   loading,
+  loadingMessage,
+  setLoadingMessage,
   setLoading,
   fetchKeys,
+  hasChanges,
+  saveChanges,
+  embeddingCosts,
+  movedItems,
 }) {
-  console.log("FILES: ", files.items);
-  console.log("Workspace.slug: ", workspace.slug);
-
   if (loading) {
     return (
       <div className="px-8">
@@ -36,8 +32,11 @@ export default function WorkspaceDirectory({
             <p className="col-span-2">Kind</p>
             <p className="col-span-2">Cached</p>
           </div>
-          <div className="w-full h-full flex items-center justify-center">
+          <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
             <PreLoader />
+            <p className="text-white/80 text-sm font-semibold animate-pulse text-center w-1/3">
+              {loadingMessage}
+            </p>
           </div>
         </div>
       </div>
@@ -71,98 +70,40 @@ export default function WorkspaceDirectory({
                 folderName={folder.name}
                 workspace={workspace}
                 setLoading={setLoading}
+                setLoadingMessage={setLoadingMessage}
                 fetchKeys={fetchKeys}
+                hasChanges={hasChanges}
+                movedItems={movedItems}
               />
             ))
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function WorkspaceFileRow({
-  item,
-  folderName,
-  workspace,
-  setLoading,
-  fetchKeys,
-}) {
-  console.log("Folder Name: ", folderName);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const tooltipTimeoutRef = useRef(null);
-
-  const onRemoveClick = async (event) => {
-    setLoading(true);
-
-    try {
-      await Workspace.modifyEmbeddings(workspace.slug, {
-        adds: [],
-        deletes: [`${folderName}/${item.name}`],
-      });
-      await fetchKeys(true);
-    } catch (error) {
-      console.error("Failed to remove document:", error);
-    }
-
-    setLoading(false);
-  };
-
-  const handleMouseEnter = () => {
-    tooltipTimeoutRef.current = setTimeout(() => {
-      setShowTooltip(true);
-    }, 300);
-  };
-
-  const handleMouseLeave = () => {
-    clearTimeout(tooltipTimeoutRef.current);
-    setShowTooltip(false);
-  };
-
-  useEffect(() => {
-    return () => {
-      clearTimeout(tooltipTimeoutRef.current);
-    };
-  }, []);
-
-  return (
-    <div className="items-center transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer">
-      <div className="col-span-4 flex gap-x-[4px] items-center">
-        <File
-          className="text-base font-bold w-4 h-4 ml-3 mr-[3px]"
-          weight="fill"
-        />
-        <div
-          className="relative"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <p className="whitespace-nowrap overflow-hidden">
-            {truncate(item.title, 17)}
-          </p>
-          {showTooltip && (
-            <div className="absolute left-0 bg-white text-black p-1.5 rounded shadow-lg whitespace-nowrap">
-              {item.title}
-            </div>
-          )}
-        </div>
-      </div>
-      <p className="col-span-2 pl-3.5 whitespace-nowrap">
-        {formatDate(item?.published)}
-      </p>
-      <p className="col-span-2 pl-3">{item?.size || "---"}</p>
-      <p className="col-span-2 pl-2 uppercase">{getFileExtension(item.url)}</p>
-      <div className="col-span-2 flex justify-end items-center">
-        {item?.cached && (
-          <div className="bg-white/10 rounded-3xl">
-            <p className="text-xs px-2 py-0.5">Cached</p>
+      {hasChanges && (
+        <div className="flex items-center justify-between py-6 transition-all duration-300">
+          <div className="text-white/80">
+            <p className="text-sm font-semibold">
+              {embeddingCosts === 0
+                ? ""
+                : `Estimated Cost: ${
+                    embeddingCosts < 0.01
+                      ? `< $0.01`
+                      : dollarFormat(embeddingCosts)
+                  }`}
+            </p>
+            <p className="mt-2 text-xs italic" hidden={embeddingCosts === 0}>
+              *One time cost for embeddings
+            </p>
           </div>
-        )}
-        <ArrowUUpLeft
-          onClick={onRemoveClick}
-          className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
-        />
-      </div>
+
+          <button
+            onClick={saveChanges}
+            className="transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+          >
+            Save and Embed
+          </button>
+        </div>
+      )}
     </div>
   );
 }

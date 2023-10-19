@@ -6,13 +6,18 @@ import Directory from "./Directory";
 import showToast from "../../../../utils/toast";
 import WorkspaceDirectory from "./WorkspaceDirectory";
 
+const COST_PER_TOKEN = 0.0004;
+
 export default function DocumentSettings({ workspace, fileTypes }) {
   const [highlightWorkspace, setHighlightWorkspace] = useState(false);
   const [availableDocs, setAvailableDocs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [workspaceDocs, setWorkspaceDocs] = useState([]);
-  const [fileDirectories, setFileDirectories] = useState([]);
   const [selectedItems, setSelectedItems] = useState({});
+  const [hasChanges, setHasChanges] = useState(false);
+  const [temporaryChanges, setTemporaryChanges] = useState({});
+  const [embeddingsCost, setEmbeddingsCost] = useState(0);
+  const [loadingMessage, setLoadingMessage] = useState("");
 
   async function fetchKeys(refetchWorkspace = false) {
     setLoading(true);
@@ -62,12 +67,8 @@ export default function DocumentSettings({ workspace, fileTypes }) {
       }),
     };
 
-    console.log("workspaceDocs: ", workspaceDocs);
-    console.log("availableDocs: ", availableDocs);
-
     setAvailableDocs(availableDocs);
     setWorkspaceDocs(workspaceDocs);
-    setFileDirectories(localFiles);
     setLoading(false);
   }
 
@@ -79,11 +80,18 @@ export default function DocumentSettings({ workspace, fileTypes }) {
     e.preventDefault();
     setLoading(true);
     showToast("Updating workspace...", "info", { autoClose: false });
+    setLoadingMessage("This may take a while for large documents");
 
-    const changes = docChanges();
+    const changesToSend = {
+      adds: temporaryChanges.movedItems.map(
+        (item) => `${item.folderName}/${item.name}`
+      ),
+    };
+
     setSelectedItems({});
+    setHasChanges(false);
     setHighlightWorkspace(false);
-    await Workspace.modifyEmbeddings(workspace.slug, changes)
+    await Workspace.modifyEmbeddings(workspace.slug, changesToSend)
       .then((res) => {
         if (res && res.workspace) {
           showToast("Workspace updated successfully.", "success", {
@@ -99,43 +107,85 @@ export default function DocumentSettings({ workspace, fileTypes }) {
         });
       });
 
-    setLoading(false);
+    setTemporaryChanges({});
     await fetchKeys(true);
+    setLoading(false);
+    setLoadingMessage("");
   };
 
-  const docChanges = () => {
-    const changes = {
-      adds: [],
-      deletes: [],
-    };
+  const moveSelectedItemsToWorkspace = () => {
+    setHighlightWorkspace(false);
+    setHasChanges(true);
 
-    if (!fileDirectories.items) return changes;
+    const newMovedItems = [];
 
-    fileDirectories.items.forEach((folder) => {
-      if (folder.items) {
-        folder.items.forEach((file) => {
-          if (file.type === "file" && selectedItems[file.id]) {
-            const path = `${folder.name}/${file.name}`;
-            changes.adds.push(path);
-          }
-        });
+    for (const itemId of Object.keys(selectedItems)) {
+      for (const folder of availableDocs.items) {
+        const foundItem = folder.items.find((file) => file.id === itemId);
+        if (foundItem) {
+          newMovedItems.push({ ...foundItem, folderName: folder.name });
+          break;
+        }
+      }
+    }
+
+    let totalTokenCount = 0;
+    newMovedItems.forEach((item) => {
+      const { cached, token_count_estimate } = item;
+      if (!cached) {
+        totalTokenCount += token_count_estimate;
       }
     });
 
-    return changes;
-  };
+    const dollarAmount = (totalTokenCount / 1000) * COST_PER_TOKEN;
+    setEmbeddingsCost(dollarAmount);
 
-  useEffect(() => {
-    console.log("SELECTED ITEMS: ", selectedItems);
-    console.log("FILE DIRECTORIES: ", fileDirectories);
-    console.log("CURRENT CHANGES: ", docChanges());
-  }, [selectedItems, fileDirectories]);
+    setTemporaryChanges((prevChanges) => ({
+      ...prevChanges,
+      movedItems: [...(prevChanges.movedItems || []), ...newMovedItems],
+    }));
+
+    let newAvailableDocs = JSON.parse(JSON.stringify(availableDocs));
+    let newWorkspaceDocs = JSON.parse(JSON.stringify(workspaceDocs));
+
+    for (const itemId of Object.keys(selectedItems)) {
+      let foundItem = null;
+      let foundFolderIndex = null;
+
+      newAvailableDocs.items = newAvailableDocs.items.map(
+        (folder, folderIndex) => {
+          const remainingItems = folder.items.filter((file) => {
+            const match = file.id === itemId;
+            if (match) {
+              foundItem = { ...file };
+              foundFolderIndex = folderIndex;
+            }
+            return !match;
+          });
+
+          return {
+            ...folder,
+            items: remainingItems,
+          };
+        }
+      );
+
+      if (foundItem) {
+        newWorkspaceDocs.items[foundFolderIndex].items.push(foundItem);
+      }
+    }
+
+    setAvailableDocs(newAvailableDocs);
+    setWorkspaceDocs(newWorkspaceDocs);
+    setSelectedItems({});
+  };
 
   return (
     <div className="flex gap-x-6 justify-center">
       <Directory
         files={availableDocs}
         loading={loading}
+        loadingMessage={loadingMessage}
         setLoading={setLoading}
         fileTypes={fileTypes}
         workspace={workspace}
@@ -145,7 +195,8 @@ export default function DocumentSettings({ workspace, fileTypes }) {
         updateWorkspace={updateWorkspace}
         highlightWorkspace={highlightWorkspace}
         setHighlightWorkspace={setHighlightWorkspace}
-        moveToWorkspace={updateWorkspace}
+        moveToWorkspace={moveSelectedItemsToWorkspace}
+        setLoadingMessage={setLoadingMessage}
       />
       <div className="flex items-center">
         <ArrowsDownUp className="text-white text-base font-bold rotate-90 w-11 h-11" />
@@ -155,8 +206,14 @@ export default function DocumentSettings({ workspace, fileTypes }) {
         files={workspaceDocs}
         highlightWorkspace={highlightWorkspace}
         loading={loading}
+        loadingMessage={loadingMessage}
+        setLoadingMessage={setLoadingMessage}
         setLoading={setLoading}
         fetchKeys={fetchKeys}
+        hasChanges={hasChanges}
+        saveChanges={updateWorkspace}
+        embeddingCosts={embeddingsCost}
+        movedItems={temporaryChanges.movedItems}
       />
     </div>
   );
