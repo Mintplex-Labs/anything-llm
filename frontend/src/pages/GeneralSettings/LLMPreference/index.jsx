@@ -72,7 +72,7 @@ export default function GeneralLLMPreference() {
             onChange={() => setHasChanges(true)}
             className="flex w-full"
           >
-            <div className="flex flex-col w-full px-1 md:px-20 py-12">
+            <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
                 <div className="items-center flex gap-x-4">
                   <p className="text-2xl font-semibold text-white">

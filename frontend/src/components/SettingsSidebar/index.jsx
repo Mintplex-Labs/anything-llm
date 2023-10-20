@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { GitHub, Mail, Menu, MessageSquare, Settings } from "react-feather";
-import IndexCount from "../Sidebar/IndexCount";
-import LLMStatus from "../Sidebar/LLMStatus";
+// import IndexCount from "../Sidebar/IndexCount";
+// import LLMStatus from "../Sidebar/LLMStatus";
 import paths from "../../utils/paths";
 import useLogo from "../../hooks/useLogo";
 import {
@@ -19,7 +18,9 @@ import {
   Lock,
   GithubLogo,
   DotsThree,
+  House,
   X,
+  List,
 } from "@phosphor-icons/react";
 import useUser from "../../hooks/useUser";
 
@@ -177,6 +178,7 @@ export default function SettingsSidebar() {
 
 export function SidebarMobileHeader() {
   const { logo } = useLogo();
+  const { user } = useUser();
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
@@ -201,7 +203,7 @@ export function SidebarMobileHeader() {
           onClick={() => setShowSidebar(true)}
           className="rounded-md p-2 flex items-center justify-center text-slate-200"
         >
-          <Menu className="h-6 w-6" />
+          <List className="h-6 w-6" />
         </button>
         <div className="flex items-center justify-center flex-grow">
           <img
@@ -220,11 +222,10 @@ export function SidebarMobileHeader() {
         className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
       >
         <div
-          className={`${
-            showBgOverlay
-              ? "transition-all opacity-1"
-              : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 bg-historical-msg-user bg-opacity-75 w-screen h-screen`}
+          className={`${showBgOverlay
+            ? "transition-all opacity-1"
+            : "transition-none opacity-0"
+            }  duration-500 fixed top-0 left-0 bg-historical-msg-user bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div
@@ -247,7 +248,7 @@ export function SidebarMobileHeader() {
                   href={paths.home()}
                   className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                 >
-                  <X className="h-4 w-4" />
+                  <House className="h-4 w-4" />
                 </a>
               </div>
             </div>
@@ -259,40 +260,70 @@ export function SidebarMobileHeader() {
                   style={{ height: "calc(100vw - -3rem)" }}
                   className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
                 >
-                  <Option
-                    href={paths.admin.system()}
-                    btnText="System Preferences"
-                    icon={<Settings className="h-4 w-4 flex-shrink-0" />}
-                  />
-                  <Option
-                    href={paths.admin.invites()}
-                    btnText="Invitation Management"
-                    icon={<Mail className="h-4 w-4 flex-shrink-0" />}
-                  />
-                  <Option
-                    href={paths.admin.users()}
-                    btnText="User Management"
-                    icon={<Users className="h-4 w-4 flex-shrink-0" />}
-                  />
-                  <Option
-                    href={paths.admin.workspaces()}
-                    btnText="Workspace Management"
-                    icon={<BookOpen className="h-4 w-4 flex-shrink-0" />}
-                  />
-                  <Option
-                    href={paths.admin.chats()}
-                    btnText="Workspace Chat Management"
-                    icon={<MessageSquare className="h-4 w-4 flex-shrink-0" />}
-                  />
+                  {user?.role === "admin" && (
+                    <>
+                      <Option
+                        href={paths.admin.system()}
+                        btnText="System Preferences"
+                        icon={<SquaresFour className="h-5 w-5 flex-shrink-0" />}
+                      />
+                      <Option
+                        href={paths.admin.invites()}
+                        btnText="Invitation"
+                        icon={
+                          <EnvelopeSimple className="h-5 w-5 flex-shrink-0" />
+                        }
+                      />
+                      <Option
+                        href={paths.admin.users()}
+                        btnText="Users"
+                        icon={<Users className="h-5 w-5 flex-shrink-0" />}
+                      />
+                      <Option
+                        href={paths.admin.workspaces()}
+                        btnText="Workspaces"
+                        icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
+                      />
+                      <Option
+                        href={paths.admin.chats()}
+                        btnText="Workspace Chat"
+                        icon={
+                          <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
+                        }
+                      />
+                    </>
+                  )}
+
+                  {/* General Settings */}
                   <Option
                     href={paths.general.appearance()}
                     btnText="Appearance"
-                    icon={<Eye className="h-4 w-4 flex-shrink-0" />}
+                    icon={<Eye className="h-5 w-5 flex-shrink-0" />}
                   />
                   <Option
                     href={paths.general.apiKeys()}
                     btnText="API Keys"
-                    icon={<Key className="h-4 w-4 flex-shrink-0" />}
+                    icon={<Key className="h-5 w-5 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.general.llmPreference()}
+                    btnText="LLM Preference"
+                    icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.general.vectorDatabase()}
+                    btnText="Vector Database"
+                    icon={<Database className="h-5 w-5 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.general.exportImport()}
+                    btnText="Export or Import"
+                    icon={<DownloadSimple className="h-5 w-5 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.general.security()}
+                    btnText="Security"
+                    icon={<Lock className="h-5 w-5 flex-shrink-0" />}
                   />
                 </div>
               </div>
@@ -344,10 +375,9 @@ const Option = ({ btnText, icon, href }) => {
         className={`
           transition-all duration-[200ms]
           flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 rounded justify-start items-center border
-          ${
-            isActive
-              ? "bg-menu-item-selected-gradient border-slate-100 border-opacity-50 font-medium"
-              : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
+          ${isActive
+            ? "bg-menu-item-selected-gradient border-slate-100 border-opacity-50 font-medium"
+            : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
           }
         `}
       >

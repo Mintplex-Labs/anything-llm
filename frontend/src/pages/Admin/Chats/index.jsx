@@ -5,7 +5,6 @@ import Sidebar, {
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import usePrefersDarkMode from "../../../hooks/usePrefersDarkMode";
 import Admin from "../../../models/admin";
 import useQuery from "../../../hooks/useQuery";
 import ChatRow from "./ChatRow";
@@ -19,7 +18,7 @@ export default function AdminChats() {
         className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient md:min-w-[82%] p-[18px] h-full overflow-y-scroll"
       >
         {isMobile && <SidebarMobileHeader />}
-        <div className="flex flex-col w-full px-1 md:px-20 py-12">
+        <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
               <p className="text-2xl font-semibold text-white">
@@ -40,7 +39,6 @@ export default function AdminChats() {
 
 function ChatsContainer() {
   const query = useQuery();
-  const darkMode = usePrefersDarkMode();
   const [loading, setLoading] = useState(true);
   const [chats, setChats] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
