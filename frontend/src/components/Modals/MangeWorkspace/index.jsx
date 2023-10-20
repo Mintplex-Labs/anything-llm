@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from "react";
+import React, { useState, useEffect, lazy, Suspense, memo } from "react";
 import { X } from "react-feather";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
@@ -8,14 +8,8 @@ import { isMobile } from "react-device-detect";
 const DocumentSettings = lazy(() => import("./Documents"));
 const WorkspaceSettings = lazy(() => import("./Settings"));
 
-const DIALOG_ID = "manage-workspace-modal";
-
 const noop = () => {};
-
-export default function ManageWorkspace({
-  hideModal = noop,
-  providedSlug = null,
-}) {
+const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const { slug } = useParams();
   const [selectedTab, setSelectedTab] = useState("documents");
   const [workspace, setWorkspace] = useState(null);
@@ -41,34 +35,38 @@ export default function ManageWorkspace({
 
   if (isMobile) {
     return (
-      <dialog id={DIALOG_ID} className="bg-transparent outline-none">
-        <div className="relative max-w-lg mx-auto bg-main-gradient rounded-[12px] shadow border-2 border-slate-300/10">
-          <div className="p-6">
-            <h1 className="text-white text-lg font-semibold">
-              Editing "{workspace.name}"
-            </h1>
-            <p className="text-white mt-4">
-              Editing these settings are only available on a desktop device.
-              Please access this page on your desktop to continue.
-            </p>
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={hideModal}
-                type="button"
-                className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              >
-                Dismiss
-              </button>
+      <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center z-99">
+        <div className="backdrop h-full w-full absolute top-0 z-10" />
+        <div className={`absolute max-h-full transition duration-300 z-20`}>
+          <div className="relative max-w-lg mx-auto bg-main-gradient rounded-[12px] shadow border-2 border-slate-300/10">
+            <div className="p-6">
+              <h1 className="text-white text-lg font-semibold">
+                Editing "{workspace.name}"
+              </h1>
+              <p className="text-white mt-4">
+                Editing these settings are only available on a desktop device.
+                Please access this page on your desktop to continue.
+              </p>
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={hideModal}
+                  type="button"
+                  className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                >
+                  Dismiss
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </dialog>
+      </div>
     );
   }
 
   return (
-    <dialog id={DIALOG_ID} className="bg-transparent outline-none">
-      <div className={`relative max-h-full transition duration-300`}>
+    <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center z-99">
+      <div className="backdrop h-full w-full absolute top-0 z-10" />
+      <div className={`absolute max-h-full transition duration-300 z-20`}>
         <div className="relative bg-main-gradient rounded-[12px] shadow border-2 border-slate-300/10">
           <div className="absolute top-[-18px] left-1/2 transform -translate-x-1/2 bg-sidebar-button p-1 rounded-xl shadow border-2 border-slate-300/10">
             <div className="flex gap-x-1">
@@ -113,18 +111,20 @@ export default function ManageWorkspace({
           </Suspense>
         </div>
       </div>
-    </dialog>
+    </div>
   );
-}
+};
 
+export default memo(ManageWorkspace);
 export function useManageWorkspaceModal() {
+  const [showing, setShowing] = useState(false);
   const showModal = () => {
-    document.getElementById(DIALOG_ID)?.showModal();
+    setShowing(true);
   };
 
   const hideModal = () => {
-    document.getElementById(DIALOG_ID)?.close();
+    setShowing(false);
   };
 
-  return { showModal, hideModal };
+  return { showing, showModal, hideModal };
 }

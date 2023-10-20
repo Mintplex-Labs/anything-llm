@@ -15,7 +15,7 @@ export default function ActiveWorkspaces() {
   const [settingHover, setSettingHover] = useState(false);
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWs, setSelectedWs] = useState(null);
-  const { showModal, hideModal } = useManageWorkspaceModal();
+  const { showing, showModal, hideModal } = useManageWorkspaceModal();
 
   useEffect(() => {
     async function getWorkspaces() {
@@ -96,10 +96,12 @@ export default function ActiveWorkspaces() {
           </div>
         );
       })}
-      <ManageWorkspace
-        hideModal={hideModal}
-        providedSlug={selectedWs ? selectedWs.slug : null}
-      />
+      {showing && (
+        <ManageWorkspace
+          hideModal={hideModal}
+          providedSlug={selectedWs ? selectedWs.slug : null}
+        />
+      )}
     </>
   );
 }

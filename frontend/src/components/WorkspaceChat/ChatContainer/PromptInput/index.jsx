@@ -19,7 +19,7 @@ export default function PromptInput({
   inputDisabled,
   buttonDisabled,
 }) {
-  const { showModal, hideModal } = useManageWorkspaceModal();
+  const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const formRef = useRef(null);
   const [_, setFocused] = useState(false);
 
@@ -105,7 +105,9 @@ export default function PromptInput({
           </div>
         </div>
       </form>
-      <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
+      {showing && (
+        <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
+      )}
     </div>
   );
 }

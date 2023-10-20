@@ -137,7 +137,7 @@ export default function DocumentSettings({ workspace, fileTypes }) {
 
     const dollarAmount = (totalTokenCount / 1000) * COST_PER_TOKEN;
     setEmbeddingsCost(dollarAmount);
-    setMovedItems([...movedItems, newMovedItems]);
+    setMovedItems([...movedItems, ...newMovedItems]);
 
     let newAvailableDocs = JSON.parse(JSON.stringify(availableDocs));
     let newWorkspaceDocs = JSON.parse(JSON.stringify(workspaceDocs));

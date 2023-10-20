@@ -95,8 +95,6 @@ function FileUploadProgressComponent({
       </div>
     </div>
   );
-
-  return null;
 }
 
 export default memo(FileUploadProgressComponent);
