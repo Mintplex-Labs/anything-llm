@@ -12,7 +12,7 @@ export default function FileRow({
   item,
   folderName,
   selected,
-  onRowClick,
+  toggleSelection,
   expanded,
   fetchKeys,
   setLoading,
@@ -39,6 +39,7 @@ export default function FileRow({
       console.error("Failed to delete the document:", error);
     }
 
+    if (selected) toggleSelection(item);
     setLoading(false);
   };
 
@@ -54,7 +55,7 @@ export default function FileRow({
   const handleMouseLeave = debounce(handleHideTooltip, 500);
   return (
     <div
-      onClick={onRowClick}
+      onClick={() => toggleSelection(item)}
       className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer ${`${
         selected ? "bg-sky-500/20" : ""
       } ${expanded ? "bg-sky-500/10" : ""}`}`}

@@ -73,7 +73,7 @@ export default function FolderRow({
               folderName={item.name}
               selected={isSelected(fileItem.id)}
               expanded={expanded}
-              onRowClick={() => toggleSelection(fileItem)}
+              toggleSelection={toggleSelection}
               fetchKeys={fetchKeys}
               setLoading={setLoading}
               setLoadingMessage={setLoadingMessage}
