@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import {
   formatDate,
   getFileExtension,
@@ -6,6 +6,7 @@ import {
 } from "../../../../../../utils/directories";
 import { File, Trash } from "@phosphor-icons/react";
 import System from "../../../../../../models/system";
+import debounce from "lodash.debounce";
 
 export default function FileRow({
   item,
@@ -18,7 +19,6 @@ export default function FileRow({
   setLoadingMessage,
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
-  const tooltipTimeoutRef = useRef(null);
 
   const onTrashClick = async (event) => {
     event.stopPropagation();
@@ -42,23 +42,16 @@ export default function FileRow({
     setLoading(false);
   };
 
-  const handleMouseEnter = () => {
-    tooltipTimeoutRef.current = setTimeout(() => {
-      setShowTooltip(true);
-    }, 300);
+  const handleShowTooltip = () => {
+    setShowTooltip(true);
   };
 
-  const handleMouseLeave = () => {
-    clearTimeout(tooltipTimeoutRef.current);
+  const handleHideTooltip = () => {
     setShowTooltip(false);
   };
 
-  useEffect(() => {
-    return () => {
-      clearTimeout(tooltipTimeoutRef.current);
-    };
-  }, []);
-
+  const handleMouseEnter = debounce(handleShowTooltip, 500);
+  const handleMouseLeave = debounce(handleHideTooltip, 500);
   return (
     <div
       onClick={onRowClick}

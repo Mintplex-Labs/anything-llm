@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   formatDate,
   getFileExtension,
@@ -6,6 +6,7 @@ import {
 } from "../../../../../../utils/directories";
 import { ArrowUUpLeft, File } from "@phosphor-icons/react";
 import Workspace from "../../../../../../models/workspace";
+import debounce from "lodash.debounce";
 
 export default function WorkspaceFileRow({
   item,
@@ -18,9 +19,8 @@ export default function WorkspaceFileRow({
   movedItems,
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
-  const tooltipTimeoutRef = useRef(null);
 
-  const onRemoveClick = async (event) => {
+  const onRemoveClick = async () => {
     setLoading(true);
 
     try {
@@ -38,25 +38,17 @@ export default function WorkspaceFileRow({
     setLoading(false);
   };
 
-  const handleMouseEnter = () => {
-    tooltipTimeoutRef.current = setTimeout(() => {
-      setShowTooltip(true);
-    }, 300);
+  const handleShowTooltip = () => {
+    setShowTooltip(true);
   };
 
-  const handleMouseLeave = () => {
-    clearTimeout(tooltipTimeoutRef.current);
+  const handleHideTooltip = () => {
     setShowTooltip(false);
   };
 
-  useEffect(() => {
-    return () => {
-      clearTimeout(tooltipTimeoutRef.current);
-    };
-  }, []);
-
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
-
+  const handleMouseEnter = debounce(handleShowTooltip, 500);
+  const handleMouseLeave = debounce(handleHideTooltip, 500);
   return (
     <div
       className={`items-center transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer
