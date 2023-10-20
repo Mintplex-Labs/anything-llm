@@ -1,9 +1,9 @@
 import React, { useState, useEffect, memo } from "react";
-import Workspace from "../../../../../models/workspace";
 import truncate from "truncate";
-import { humanFileSize, milliToHms } from "../../../../../utils/numbers";
 import { CheckCircle, XCircle } from "react-feather";
-import { Grid } from "react-loading-icons";
+import Workspace from "../../../../../../models/workspace";
+import { humanFileSize, milliToHms } from "../../../../../../utils/numbers";
+import PreLoader from "../../../../../Preloader";
 
 function FileUploadProgressComponent({
   slug,
@@ -44,17 +44,15 @@ function FileUploadProgressComponent({
 
   if (rejected) {
     return (
-      <div className="w-fit px-2 py-2 flex items-center gap-x-4 rounded-lg bg-blue-100 border-blue-600 dark:bg-stone-800 bg-opacity-50 border dark:border-stone-600">
+      <div className="h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40">
         <div className="w-6 h-6">
           <XCircle className="w-6 h-6 stroke-white bg-red-500 rounded-full p-1 w-full h-full" />
         </div>
         <div className="flex flex-col">
-          <p className="text-black dark:text-stone-200 text-sm font-mono overflow-x-scroll">
+          <p className="text-white text-xs font-medium">
             {truncate(file.name, 30)}
           </p>
-          <p className="text-red-700 dark:text-red-400 text-xs font-mono">
-            {reason}
-          </p>
+          <p className="text-red-400 text-xs font-medium">{reason}</p>
         </div>
       </div>
     );
@@ -62,43 +60,41 @@ function FileUploadProgressComponent({
 
   if (status === "failed") {
     return (
-      <div className="w-fit px-2 py-2 flex items-center gap-x-4 rounded-lg bg-blue-100 border-blue-600 dark:bg-stone-800 bg-opacity-50 border dark:border-stone-600">
+      <div className="h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40 overflow-y-auto">
         <div className="w-6 h-6">
           <XCircle className="w-6 h-6 stroke-white bg-red-500 rounded-full p-1 w-full h-full" />
         </div>
         <div className="flex flex-col">
-          <p className="text-black dark:text-stone-200 text-sm font-mono overflow-x-scroll">
+          <p className="text-white text-xs font-medium">
             {truncate(file.name, 30)}
           </p>
-          <p className="text-red-700 dark:text-red-400 text-xs font-mono">
-            {error}
-          </p>
+          <p className="text-red-400 text-xs font-medium">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-fit px-2 py-2 flex items-center gap-x-4 rounded-lg bg-blue-100 border-blue-600 dark:bg-stone-800 bg-opacity-50 border dark:border-stone-600">
+    <div className="h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40">
       <div className="w-6 h-6">
         {status !== "complete" ? (
-          <Grid className="w-6 h-6 grid-loader" />
+          <div className="flex items-center justify-center">
+            <PreLoader size="6" />
+          </div>
         ) : (
           <CheckCircle className="w-6 h-6 stroke-white bg-green-500 rounded-full p-1 w-full h-full" />
         )}
       </div>
       <div className="flex flex-col">
-        <p className="text-black dark:text-stone-200 text-sm font-mono overflow-x-scroll">
+        <p className="text-white text-xs font-medium">
           {truncate(file.name, 30)}
         </p>
-        <p className="text-gray-700 dark:text-stone-400 text-xs font-mono">
+        <p className="text-white/60 text-xs font-medium">
           {humanFileSize(file.size)} | {milliToHms(timerMs)}
         </p>
       </div>
     </div>
   );
-
-  return null;
 }
 
 export default memo(FileUploadProgressComponent);

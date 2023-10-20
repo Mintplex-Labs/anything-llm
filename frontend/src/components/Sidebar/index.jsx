@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AtSign, LogOut, Menu, Package, Plus, Shield } from "react-feather";
+import { LogOut, Menu, Package, Plus, Shield } from "react-feather";
 import {
   Wrench,
   GithubLogo,
@@ -7,8 +7,8 @@ import {
   DiscordLogo,
   DotsThree,
 } from "@phosphor-icons/react";
-import IndexCount from "./IndexCount";
-import LLMStatus from "./LLMStatus";
+// import IndexCount from "./IndexCount";
+// import LLMStatus from "./LLMStatus";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
@@ -154,21 +154,22 @@ export function SidebarMobileHeader() {
 
   return (
     <>
-      <div className="flex justify-between relative top-0 left-0 w-full rounded-b-lg px-2 pb-4 bg-stone-800 text-slate-200">
+      <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-sidebar text-slate-200 shadow-lg">
         <button
           onClick={() => setShowSidebar(true)}
-          className="rounded-md bg-stone-800 p-2 flex items-center justify-center hover:bg-stone-900 text-slate-200"
+          className="rounded-md p-2 flex items-center justify-center text-slate-200"
         >
           <Menu className="h-6 w-6" />
         </button>
-        <div className="flex shrink-0 w-fit items-center justify-start">
+        <div className="flex items-center justify-center flex-grow">
           <img
             src={logo}
             alt="Logo"
-            className="rounded w-full max-h-[40px]"
-            style={{ objectFit: "contain" }}
+            className="block mx-auto h-6 w-auto"
+            style={{ maxHeight: "40px", objectFit: "contain" }}
           />
         </div>
+        <div className="w-12"></div>
       </div>
       <div
         style={{
@@ -181,12 +182,12 @@ export function SidebarMobileHeader() {
             showBgOverlay
               ? "transition-all opacity-1"
               : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 bg-stone-800 bg-opacity-75 w-screen h-screen`}
+          }  duration-500 fixed top-0 left-0 bg-historical-msg-user bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div
           ref={sidebarRef}
-          className="relative h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-stone-800 w-[80%] p-[18px] "
+          className="relative h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-sidebar w-[80%] p-[18px] "
         >
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             {/* Header Information */}
@@ -200,7 +201,6 @@ export function SidebarMobileHeader() {
                 />
               </div>
               <div className="flex gap-x-2 items-center text-slate-500 shink-0">
-                <AdminHome />
                 <SettingsButton />
               </div>
             </div>
@@ -215,11 +215,11 @@ export function SidebarMobileHeader() {
                   <div className="flex gap-x-2 items-center justify-between">
                     <button
                       onClick={showNewWsModal}
-                      className="flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-200 justify-start items-center hover:bg-stone-900"
+                      className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
                     >
-                      <Plus className="h-4 w-4" />
-                      <p className="text-slate-200 text-xs leading-loose font-semibold">
-                        New workspace
+                      <Plus className="h-5 w-5" />
+                      <p className="text-sidebar text-sm font-semibold">
+                        New Workspace
                       </p>
                     </button>
                   </div>
@@ -227,56 +227,34 @@ export function SidebarMobileHeader() {
                 </div>
               </div>
               <div>
-                <div className="flex flex-col gap-y-2">
-                  <div className="w-full flex items-center justify-between">
-                    <LLMStatus />
-                    <IndexCount />
-                  </div>
-                  <a
-                    href={paths.feedback()}
-                    target="_blank"
-                    className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-transparent rounded-lg text-slate-200 justify-center items-center bg-stone-800 hover:bg-stone-900"
-                  >
-                    <AtSign className="h-4 w-4" />
-                    <p className="text-slate-200 text-xs leading-loose font-semibold">
-                      Feedback form
-                    </p>
-                  </a>
-                  <ManagedHosting />
-                  <LogoutButton />
-                </div>
-
                 {/* Footer */}
-                <div className="flex items-end justify-between mt-2">
-                  <div className="flex gap-x-1 items-center">
+                <div className="flex justify-center mt-2">
+                  <div className="flex space-x-4">
                     <a
                       href={paths.github()}
-                      className="transition-all duration-300 p-2 rounded-full text-slate-400 bg-slate-800 hover:bg-slate-800 hover:text-slate-200"
+                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                     >
                       <GithubLogo weight="fill" className="h-5 w-5 " />
                     </a>
                     <a
                       href={paths.docs()}
-                      className="transition-all duration-300 p-2 rounded-full text-slate-400 bg-slate-800 hover:bg-slate-800 hover:text-slate-200"
+                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                     >
-                      <BookOpen weight="fill" className="h-4 w-4 " />
+                      <BookOpen weight="fill" className="h-5 w-5 " />
                     </a>
                     <a
                       href={paths.discord()}
-                      className="transition-all duration-300 p-2 rounded-full bg-slate-800 hover:bg-slate-800 group"
+                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                     >
                       <DiscordLogo
                         weight="fill"
-                        className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200"
+                        className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
                       />
                     </a>
+                    {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
+                    <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
+                  </button> */}
                   </div>
-                  <a
-                    href={paths.mailToMintplex()}
-                    className="transition-all duration-300 text-xs text-slate-600 hover:text-blue-400"
-                  >
-                    @MintplexLabs
-                  </a>
                 </div>
               </div>
             </div>

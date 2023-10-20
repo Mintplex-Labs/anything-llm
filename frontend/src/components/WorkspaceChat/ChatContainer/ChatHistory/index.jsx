@@ -2,11 +2,11 @@ import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import { useEffect, useRef } from "react";
 import { useManageWorkspaceModal } from "../../../Modals/MangeWorkspace";
-import ManageWorkspace from "../../../Modals/MangeWorkspace"; // Add this import if not already added.
+import ManageWorkspace from "../../../Modals/MangeWorkspace";
 
 export default function ChatHistory({ history = [], workspace }) {
   const replyRef = useRef(null);
-  const { showModal, hideModal, showing } = useManageWorkspaceModal(); // Destructure the necessary properties.
+  const { showing, showModal, hideModal } = useManageWorkspaceModal();
 
   useEffect(() => {
     if (replyRef.current) {
@@ -48,7 +48,7 @@ export default function ChatHistory({ history = [], workspace }) {
 
   return (
     <div
-      className="h-[89%] pb-[100px] md:pt-[50px] md:pt-0 md:pb-5 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
+      className="h-[89%] pb-[100px] md:pt-[50px] md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
       id="chat-history"
     >
       {history.map((props, index) => {
@@ -82,6 +82,7 @@ export default function ChatHistory({ history = [], workspace }) {
           />
         );
       })}
+
       {showing && (
         <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
       )}
