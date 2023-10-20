@@ -42,6 +42,7 @@ export default function WorkspaceDirectory({
       </div>
     );
   }
+
   return (
     <div className="px-8">
       <div className="flex items-center justify-start w-[560px]">
@@ -62,20 +63,32 @@ export default function WorkspaceDirectory({
           <p className="col-span-2">Cached</p>
         </div>
         <div className="w-full h-full flex flex-col z-0">
-          {files.items.map((folder) =>
-            folder.items.map((item, index) => (
-              <WorkspaceFileRow
-                key={index}
-                item={item}
-                folderName={folder.name}
-                workspace={workspace}
-                setLoading={setLoading}
-                setLoadingMessage={setLoadingMessage}
-                fetchKeys={fetchKeys}
-                hasChanges={hasChanges}
-                movedItems={movedItems}
-              />
-            ))
+          {Object.values(files.items).some(
+            (folder) => folder.items.length > 0
+          ) || movedItems.length > 0 ? (
+            <>
+              {files.items.map((folder) =>
+                folder.items.map((item, index) => (
+                  <WorkspaceFileRow
+                    key={index}
+                    item={item}
+                    folderName={folder.name}
+                    workspace={workspace}
+                    setLoading={setLoading}
+                    setLoadingMessage={setLoadingMessage}
+                    fetchKeys={fetchKeys}
+                    hasChanges={hasChanges}
+                    movedItems={movedItems}
+                  />
+                ))
+              )}
+            </>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <p className="text-white text-opacity-40 text-sm font-medium">
+                No Documents
+              </p>
+            </div>
           )}
         </div>
       </div>
