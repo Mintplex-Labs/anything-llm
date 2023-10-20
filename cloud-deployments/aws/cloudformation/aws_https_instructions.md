@@ -79,9 +79,11 @@ These instructions are for CLI configuration and assume you are logged in to EC2
 These instructions are for CLI configuration and assume you are logged in to EC2 instance as the ec2-user.
 1. $sudo certbot --nginx -d [Insert FQDN here] 
     Example command: $sudo certbot --nginx -d anythingllm.exampleorganization.org
-2. Enter the email address you would like to use for updates.
-3. Accept the terms of service.
-4. Accept or decline to recieve communication from letsencrypt.
+    This command will generate the appropriate certificate files, write the files to /etc/letsencrypt/live/yourFQDN, and make updates to the nginx
+    configuration file for anythingllm locdated at /etc/nginx/conf.d/anything.llm
+3. Enter the email address you would like to use for updates.
+4. Accept the terms of service.
+5. Accept or decline to recieve communication from letsencrypt.
 
 ## Step 10: Test Cert installation
 1. $sudo cat /etc/nginx/conf.d/anything.conf
