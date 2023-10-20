@@ -15,7 +15,7 @@ export default function DocumentSettings({ workspace, fileTypes }) {
   const [workspaceDocs, setWorkspaceDocs] = useState([]);
   const [selectedItems, setSelectedItems] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
-  const [temporaryChanges, setTemporaryChanges] = useState({});
+  const [movedItems, setMovedItems] = useState([]);
   const [embeddingsCost, setEmbeddingsCost] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState("");
 
@@ -83,9 +83,7 @@ export default function DocumentSettings({ workspace, fileTypes }) {
     setLoadingMessage("This may take a while for large documents");
 
     const changesToSend = {
-      adds: temporaryChanges.movedItems.map(
-        (item) => `${item.folderName}/${item.name}`
-      ),
+      adds: movedItems.map((item) => `${item.folderName}/${item.name}`),
     };
 
     setSelectedItems({});
@@ -107,7 +105,7 @@ export default function DocumentSettings({ workspace, fileTypes }) {
         });
       });
 
-    setTemporaryChanges({});
+    setMovedItems([]);
     await fetchKeys(true);
     setLoading(false);
     setLoadingMessage("");
@@ -139,11 +137,7 @@ export default function DocumentSettings({ workspace, fileTypes }) {
 
     const dollarAmount = (totalTokenCount / 1000) * COST_PER_TOKEN;
     setEmbeddingsCost(dollarAmount);
-
-    setTemporaryChanges((prevChanges) => ({
-      ...prevChanges,
-      movedItems: [...(prevChanges.movedItems || []), ...newMovedItems],
-    }));
+    setMovedItems([...movedItems, newMovedItems]);
 
     let newAvailableDocs = JSON.parse(JSON.stringify(availableDocs));
     let newWorkspaceDocs = JSON.parse(JSON.stringify(workspaceDocs));
@@ -213,7 +207,7 @@ export default function DocumentSettings({ workspace, fileTypes }) {
         hasChanges={hasChanges}
         saveChanges={updateWorkspace}
         embeddingCosts={embeddingsCost}
-        movedItems={temporaryChanges.movedItems}
+        movedItems={movedItems}
       />
     </div>
   );
