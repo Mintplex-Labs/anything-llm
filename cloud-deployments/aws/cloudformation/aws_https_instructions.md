@@ -62,7 +62,7 @@ These instructions are for CLI configuration and assume you are logged in to EC2
 server {
 
    listen 80;
-   server_name [insert FQDN here]];
+   server_name [insert FQDN here];
    location / {
       proxy_pass  http://0.0.0.0:3001;
       }
