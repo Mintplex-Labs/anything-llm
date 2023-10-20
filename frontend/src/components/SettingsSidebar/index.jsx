@@ -196,21 +196,22 @@ export function SidebarMobileHeader() {
 
   return (
     <>
-      <div className="flex justify-between relative top-0 left-0 w-full rounded-b-lg px-2 pb-4 bg-white dark:bg-black-900 text-slate-800 dark:text-slate-200">
+      <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-sidebar text-slate-200 shadow-lg h-16">
         <button
           onClick={() => setShowSidebar(true)}
-          className="rounded-md bg-stone-200 p-2 flex items-center justify-center text-slate-800 hover:bg-stone-300 group dark:bg-stone-800 dark:text-slate-200 dark:hover:bg-stone-900 dark:border dark:border-stone-800"
+          className="rounded-md p-2 flex items-center justify-center text-slate-200"
         >
           <Menu className="h-6 w-6" />
         </button>
-        <div className="flex shrink-0 w-fit items-center justify-start">
+        <div className="flex items-center justify-center flex-grow">
           <img
             src={logo}
             alt="Logo"
-            className="rounded w-full max-h-[40px]"
-            style={{ objectFit: "contain" }}
+            className="block mx-auto h-6 w-auto"
+            style={{ maxHeight: "40px", objectFit: "contain" }}
           />
         </div>
+        <div className="w-12"></div>
       </div>
       <div
         style={{
@@ -223,12 +224,12 @@ export function SidebarMobileHeader() {
             showBgOverlay
               ? "transition-all opacity-1"
               : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 bg-black-900 bg-opacity-75 w-screen h-screen`}
+          }  duration-500 fixed top-0 left-0 bg-historical-msg-user bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div
           ref={sidebarRef}
-          className="h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-white dark:bg-black-900 w-[80%] p-[18px] "
+          className="h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-sidebar w-[80%] p-[18px] "
         >
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             {/* Header Information */}
@@ -244,7 +245,7 @@ export function SidebarMobileHeader() {
               <div className="flex gap-x-2 items-center text-slate-500 shrink-0">
                 <a
                   href={paths.home()}
-                  className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+                  className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                 >
                   <X className="h-4 w-4" />
                 </a>
@@ -296,41 +297,34 @@ export function SidebarMobileHeader() {
                 </div>
               </div>
               <div>
-                <div className="flex flex-col gap-y-2">
-                  <div className="w-full flex items-center justify-between">
-                    <LLMStatus />
-                    <IndexCount />
-                  </div>
-                </div>
-
                 {/* Footer */}
-                <div className="flex items-end justify-between mt-2">
-                  <div className="flex gap-x-1 items-center">
+                <div className="flex justify-center mt-2">
+                  <div className="flex space-x-4">
                     <a
                       href={paths.github()}
-                      className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-slate-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                     >
-                      <GithubLogo className="h-4 w-4 " />
+                      <GithubLogo weight="fill" className="h-5 w-5 " />
                     </a>
                     <a
                       href={paths.docs()}
-                      className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-slate-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                     >
-                      <BookOpen className="h-4 w-4 " />
+                      <BookOpen weight="fill" className="h-5 w-5 " />
                     </a>
                     <a
                       href={paths.discord()}
-                      className="transition-all duration-300 p-2 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-800 group"
+                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                     >
-                      <DiscordLogo className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
+                      <DiscordLogo
+                        weight="fill"
+                        className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
+                      />
                     </a>
+                    {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
+                    <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
+                  </button> */}
                   </div>
-                  <a
-                    href={paths.mailToMintplex()}
-                    className="transition-all duration-300 text-xs text-slate-200 dark:text-slate-600 hover:text-blue-600 dark:hover:text-blue-400"
-                  >
-                    @MintplexLabs
-                  </a>
                 </div>
               </div>
             </div>
