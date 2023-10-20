@@ -1,9 +1,4 @@
-import {
-  Gear,
-  Microphone,
-  PaperPlaneRight,
-  TextT,
-} from "@phosphor-icons/react";
+import { Gear, PaperPlaneRight } from "@phosphor-icons/react";
 import React, { useState, useRef } from "react";
 import { isMobile } from "react-device-detect";
 import { Loader } from "react-feather";
@@ -92,15 +87,15 @@ export default function PromptInput({
                   className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"
                   weight="fill"
                 />
-                <TextT
+                {/* <TextT
                   className="w-7 h-7 text-white/30 cursor-not-allowed"
                   weight="fill"
-                />
+                /> */}
               </div>
-              <Microphone
+              {/* <Microphone
                 className="w-7 h-7 text-white/30 cursor-not-allowed"
                 weight="fill"
-              />
+              /> */}
             </div>
           </div>
         </div>
