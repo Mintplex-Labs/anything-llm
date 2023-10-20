@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AtSign, LogOut, Menu, Package, Plus, Shield } from "react-feather";
+import { LogOut, Menu, Package, Plus, Shield } from "react-feather";
 import {
   Wrench,
   GithubLogo,
@@ -7,8 +7,8 @@ import {
   DiscordLogo,
   DotsThree,
 } from "@phosphor-icons/react";
-import IndexCount from "./IndexCount";
-import LLMStatus from "./LLMStatus";
+// import IndexCount from "./IndexCount";
+// import LLMStatus from "./LLMStatus";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
@@ -27,10 +27,6 @@ export default function Sidebar() {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
-
-  if (!true) {
-    return <></>;
-  }
 
   return (
     <>

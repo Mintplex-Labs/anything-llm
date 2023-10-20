@@ -2,6 +2,7 @@ import UploadFile from "../UploadFile";
 import PreLoader from "../../../../Preloader";
 import { useEffect, useState } from "react";
 import FolderRow from "./FolderRow";
+import pluralize from "pluralize";
 
 export default function Directory({
   files,
@@ -126,11 +127,8 @@ export default function Directory({
                   onClick={moveToWorkspace}
                   className="text-sm font-semibold h-7 px-2.5 rounded-lg transition-all duration-300 hover:text-white hover:bg-neutral-800/80 cursor-pointer flex items-center"
                 >
-                  Move{" "}
-                  {amountSelected === 1
-                    ? `${amountSelected} file`
-                    : `${amountSelected} files`}{" "}
-                  to workspace
+                  Move {amountSelected} {pluralize("file", amountSelected)} to
+                  workspace
                 </div>
               </div>
             </div>

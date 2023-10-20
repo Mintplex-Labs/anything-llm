@@ -50,8 +50,8 @@ export default function WorkspaceDirectory({
         </h3>
       </div>
       <div
-        className={`relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5 overflow-y-auto border-4 border-transparent transition-all duration-300 ${
-          highlightWorkspace ? "border-cyan-300/80" : ""
+        className={`relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5 overflow-y-auto border-4 transition-all duration-300 ${
+          highlightWorkspace ? "border-cyan-300/80" : "border-transparent"
         }`}
       >
         <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 bg-zinc-900 sticky top-0 z-10">
