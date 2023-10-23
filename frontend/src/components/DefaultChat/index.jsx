@@ -326,6 +326,7 @@ export default function DefaultChatContainer() {
     processMsgs();
   }, []);
 
+  cons;
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
