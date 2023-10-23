@@ -23,7 +23,6 @@ function FileUploadProgressComponent({
       const formData = new FormData();
       formData.append("file", file, file.name);
       const timer = setInterval(() => {
-        console.log("timer");
         setTimerMs(Number(new Date()) - start);
       }, 100);
 
