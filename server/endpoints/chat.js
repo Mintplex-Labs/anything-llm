@@ -64,10 +64,14 @@ function chatEndpoints(app) {
         }
 
         const result = await chatWithWorkspace(workspace, message, mode, user);
+        const settings = await SystemSettings.getMultiple(['llm_provider', 'vector_db']);
+        const llm_provider = settings.llm_provider || "openai";
+        const vector_db = settings.vector_db || "pinecone";
+
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
-          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          LLMSelection: llm_provider,
+          VectorDbSelection: vector_db,
         });
         response.status(200).json({ ...result });
       } catch (e) {

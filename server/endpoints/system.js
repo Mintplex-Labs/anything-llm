@@ -143,7 +143,9 @@ function systemEndpoints(app) {
         return;
       } else {
         const { password } = reqBody(request);
-        if (password !== process.env.AUTH_TOKEN) {
+        const auth_token = await SystemSettings.get({ label: "auth_token" });
+
+        if (password !== auth_token) {
           response.status(401).json({
             valid: false,
             token: null,

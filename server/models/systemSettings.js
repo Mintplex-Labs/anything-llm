@@ -141,6 +141,27 @@ const SystemSettings = {
 
   },
 
+  getMultiple: async function(labels) {
+    try {
+      const settings = await prisma.system_settings.findMany({
+        where: {
+          label: {
+            in: labels,
+          },
+        },
+      });
+
+      return settings.reduce((acc, setting) => {
+        acc[setting.label] = setting.value;
+        return acc;
+      }, {});
+    } catch (error) {
+      console.error('Failed to retrieve multiple settings:', error.message);
+      return {};
+    }
+  },
+
+
   get: async function (clause = {}) {
     try {
       const setting = await prisma.system_settings.findFirst({ where: clause });

@@ -6,7 +6,7 @@ const { PrismaClient } = require("@prisma/client");
 // npx prisma migrate reset -> resets the db
 
 const prisma = new PrismaClient({
-  log: ["query", "info", "warn"],
+  // log: ["query", "info", "warn"],
 });
 
 module.exports = prisma;
