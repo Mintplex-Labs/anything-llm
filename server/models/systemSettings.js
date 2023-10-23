@@ -12,61 +12,131 @@ const SystemSettings = {
     "message_limit",
     "logo_filename",
     "telemetry_id",
+    "llm_provider",
+    "vector_db",
+    "no_debug",
+    "auth_token",
+    "jwt_secret",
+    "storage_dir",
+    "pinecone_environment",
+    "pinecone_api_key",
+    "pinecone_index",
+    "chroma_endpoint",
+    "chroma_api_header",
+    "chroma_api_key",
+    "weaviate_endpoint",
+    "weaviate_api_key",
+    "qdrant_endpoint",
+    "qdrant_api_key",
+    "open_ai_key",
+    "open_model_pref",
+    "azure_openai_endpoint",
+    "azure_openai_key",
+    "azure_openai_model_pref",
+    "azure_openai_embedding_model_pref",
   ],
-  currentSettings: async function () {
-    const llmProvider = process.env.LLM_PROVIDER || "openai";
-    const vectorDB = process.env.VECTOR_DB || "pinecone";
-    return {
-      CanDebug: !!!process.env.NO_DEBUG,
-      RequiresAuth: !!process.env.AUTH_TOKEN,
-      AuthToken: !!process.env.AUTH_TOKEN,
-      JWTSecret: !!process.env.JWT_SECRET,
-      StorageDir: process.env.STORAGE_DIR,
-      MultiUserMode: await this.isMultiUserMode(),
-      VectorDB: vectorDB,
-      ...(vectorDB === "pinecone"
-        ? {
-            PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
-            PineConeKey: !!process.env.PINECONE_API_KEY,
-            PineConeIndex: process.env.PINECONE_INDEX,
-          }
-        : {}),
-      ...(vectorDB === "chroma"
-        ? {
-            ChromaEndpoint: process.env.CHROMA_ENDPOINT,
-            ChromaApiHeader: process.env.CHROMA_API_HEADER,
-            ChromaApiKey: !!process.env.CHROMA_API_KEY,
-          }
-        : {}),
-      ...(vectorDB === "weaviate"
-        ? {
-            WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
-            WeaviateApiKey: process.env.WEAVIATE_API_KEY,
-          }
-        : {}),
-      ...(vectorDB === "qdrant"
-        ? {
-            QdrantEndpoint: process.env.QDRANT_ENDPOINT,
-            QdrantApiKey: process.env.QDRANT_API_KEY,
-          }
-        : {}),
-      LLMProvider: llmProvider,
-      ...(llmProvider === "openai"
-        ? {
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
-          }
-        : {}),
 
-      ...(llmProvider === "azure"
+  syncWithEnvVariables: async function() {
+    try {
+      const existingSettings = await prisma.system_settings.findMany({
+        where: {
+          label: { in: this.supportedFields },
+        },
+      });
+
+      const existingSettingsMap = new Map(existingSettings.map(setting => [setting.label, setting.value]));
+
+      const updates = {};
+      this.supportedFields.forEach((field) => {
+        const envVarName = field.toUpperCase();
+        if (process.env[envVarName] !== undefined && !existingSettingsMap.has(field)) {
+          updates[field] = process.env[envVarName];
+        }
+      });
+
+      const updatePromises = Object.keys(updates).map((key) => {
+        return prisma.system_settings.upsert({
+          where: { label: key },
+          update: { value: updates[key] },
+          create: { label: key, value: updates[key] },
+        });
+      });
+
+      if (updatePromises.length > 0) {
+        await Promise.all(updatePromises);
+        console.log('New environment variables have been synchronized with the database.');
+      } else {
+        console.log('No new settings to update.');
+      }
+    } catch (error) {
+      console.error('Failed to synchronize environment variables with the database:', error.message);
+    }
+  },
+
+  currentSettings: async function () {
+    // this.syncWithEnvVariables(); // call this on boot to dump all env vars into the database
+    const settingsArray = await prisma.system_settings.findMany({
+      where: {
+        label: { in: this.supportedFields },
+      },
+    });
+
+    const settings = Object.fromEntries(settingsArray.map((setting) => [setting.label, setting.value]));
+
+    const vectorDB = settings.vector_db || "pinecone";
+    const llm_provider = settings.llm_provider || "openai";
+
+    return {
+      CanDebug: !!!settings.no_debug,
+      RequiresAuth: !!settings.auth_token,
+      AuthToken: !!settings.auth_token,
+      JWTSecret: !!settings.jwt_secret,
+      StorageDir: settings.storage_dir,
+      MultiUserMode: await this.isMultiUserMode(),
+      vectorDB: vectorDB,
+      ...(vectorDB === "pinecone")
         ? {
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+            PineConeEnvironment: settings.pinecone_environment,
+            PineConeKey: !!settings.pinecone_api_key,
+            PineConeIndex: settings.pinecone_index,
           }
-        : {}),
+        : {},
+      ...(vectorDB === "chroma")
+        ? {
+            ChromaEndpoint: settings.chroma_endpoint,
+            ChromaApiHeader: settings.chroma_api_header,
+            ChromaApiKey: !!settings.chroma_api_key,
+          }
+        : {},
+      ...(vectorDB === "weaviate")
+      ? {
+        WeviateEndpoint: settings.weaviate_endpoint,
+        WeaviateApiKey: settings.weaviate_api_key,
+      }
+      : {},
+      ...(vectorDB === "qdrant")
+      ? {
+        QdrantEndpoint: settings.qdrant_endpoint,
+        QdrantApiKey: settings.qdrant_api_key,
+      }
+      : {},
+      LLMProvider : llm_provider,
+      ...(llm_provider === "openai")
+        ? {
+            OpenAiKey: !!settings.open_ai_key,
+            OpenAiModelPref: settings.open_model_pref || "gpt-3.5-turbo",
+          }
+        : {},
+      ...(llm_provider === "azure")
+        ? {
+            AzureOpenAiEndpoint: settings.azure_openai_endpoint,
+            AzureOpenAiKey: !!settings.azure_openai_key,
+            AzureOpenAiModelPref: settings.azure_openai_model_pref,
+            AzureOpenAiEmbeddingModelPref: settings.azure_openai_embedding_model_pref,
+          }
+        : {},
     };
+
   },
 
   get: async function (clause = {}) {
