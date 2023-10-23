@@ -316,10 +316,12 @@ function systemEndpoints(app) {
           message_limit: 25,
         });
 
+        const jwt_secret = await SystemSettings.get({ label: "jwt_secret" });
+
         updateENV(
           {
             AuthToken: "",
-            JWTSecret: process.env.JWT_SECRET ?? v4(),
+            JWTSecret: jwt_secret ?? v4(),
           },
           true
         );
