@@ -26,18 +26,8 @@ a {
 }
 
 @font-face {
-  font-family: "AvenirNextW10-Bold";
-  src: url("../public/fonts/AvenirNext.ttf");
-}
-
-@font-face {
   font-family: "plus-jakarta-sans";
   src: url("../public/fonts/PlusJakartaSans.ttf");
-  font-display: swap;
-}
-
-.Avenir {
-  font-family: AvenirNextW10-Bold;
   font-display: swap;
 }
 
