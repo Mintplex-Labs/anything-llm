@@ -301,17 +301,23 @@ dialog::backdrop {
   backdrop-filter: blur(2px);
 }
 
+.animate-slow-pulse {
+  transform: scale(1);
+  animation: subtlePulse 20s infinite;
+  will-change: transition;
+}
+
 @keyframes subtlePulse {
   0% {
-    background-size: 100% 100%;
+    transform: scale(1);
   }
 
   50% {
-    background-size: 110% 110%;
+    transform: scale(1.1);
   }
 
   100% {
-    background-size: 100% 100%;
+    transform: scale(1);
   }
 }
 

@@ -31,7 +31,7 @@ export default function MultiUserAuth() {
   return (
     <form onSubmit={handleLogin}>
       <div className="flex flex-col justify-center items-center relative rounded-2xl shadow border-2 border-slate-300 border-opacity-20 w-[400px] login-input-gradient">
-        <div className="flex items-start justify-between pt-11 pb-9 rounded-t dark:border-gray-600">
+        <div className="flex items-start justify-between pt-11 pb-9 rounded-t">
           <div className="flex items-center flex-col">
             <h3 className="text-md md:text-2xl font-bold text-gray-900 dark:text-white text-center">
               Sign In
@@ -45,7 +45,7 @@ export default function MultiUserAuth() {
                 name="username"
                 type="text"
                 placeholder="Username"
-                className="bg-neutral-800 bg-opacity-40 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-[#222628] dark:bg-opacity-40 dark:placeholder-[#FFFFFF99] dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-opacity-40 border-gray-300 text-sm rounded-lg block w-full p-2.5 bg-[#222628] placeholder-[#FFFFFF99] text-white focus:ring-blue-500 focus:border-blue-500"
                 required={true}
                 autoComplete="off"
               />
@@ -56,7 +56,7 @@ export default function MultiUserAuth() {
                 name="password"
                 type="password"
                 placeholder="Password"
-                className="bg-neutral-800 bg-opacity-40 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-[#222628] dark:bg-opacity-40 dark:placeholder-[#FFFFFF99] dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="bg-opacity-40 border-gray-300 text-sm rounded-lg block w-full p-2.5 bg-[#222628] placeholder-[#FFFFFF99] text-white focus:ring-blue-500 focus:border-blue-500"
                 required={true}
                 autoComplete="off"
               />

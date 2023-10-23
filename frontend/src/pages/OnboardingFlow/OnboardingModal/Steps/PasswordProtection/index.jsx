@@ -9,7 +9,6 @@ import {
 export default function PasswordProtection({ goToStep, prevStep }) {
   const [password, setPassword] = useState("");
   const handleSubmit = async (e) => {
-    debugger;
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);

@@ -4,6 +4,7 @@ import paths from "../../../../utils/paths";
 import { chatPrompt } from "../../../../utils/chat";
 import System from "../../../../models/system";
 import PreLoader from "../../../Preloader";
+import { useParams } from "react-router-dom";
 
 // Ensure that a type is correct before sending the body
 // to the backend.
@@ -22,6 +23,7 @@ function castToType(key, value) {
 }
 
 export default function WorkspaceSettings({ workspace }) {
+  const { slug } = useParams();
   const formEl = useRef(null);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);

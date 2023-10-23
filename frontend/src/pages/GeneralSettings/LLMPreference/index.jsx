@@ -156,15 +156,7 @@ export default function GeneralLLMPreference() {
                         required={true}
                         className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
                       >
-                        {[
-                          "gpt-3.5-turbo",
-                          "gpt-3.5-turbo-0613",
-                          "gpt-3.5-turbo-16k",
-                          "gpt-4",
-                          "gpt-4-0613",
-                          "gpt-4-32k",
-                          "gpt-4-32k-0613",
-                        ].map((model) => {
+                        {["gpt-3.5-turbo", "gpt-4"].map((model) => {
                           return (
                             <option key={model} value={model}>
                               {model}
