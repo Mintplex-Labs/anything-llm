@@ -12,6 +12,8 @@ const SystemSettings = {
     "message_limit",
     "logo_filename",
     "telemetry_id",
+    "server_port",
+    "cache_vectors",
     "llm_provider",
     "vector_db",
     "no_debug",

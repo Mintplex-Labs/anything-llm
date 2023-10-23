@@ -18,6 +18,7 @@ const { utilEndpoints } = require("./endpoints/utils");
 const { Telemetry } = require("./models/telemetry");
 const { developerEndpoints } = require("./endpoints/api");
 const setupTelemetry = require("./utils/telemetry");
+const { SystemSettings } = require("./models/systemSettings");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -88,20 +89,28 @@ app.all("*", function (_, response) {
   response.sendStatus(404);
 });
 
-app
-  .listen(process.env.SERVER_PORT || 3001, async () => {
-    await setupTelemetry();
-    console.log(
-      `Example app listening on port ${process.env.SERVER_PORT || 3001}`
-    );
-  })
-  .on("error", function (err) {
-    process.once("SIGUSR2", function () {
-      Telemetry.flush();
-      process.kill(process.pid, "SIGUSR2");
+
+async function startServer() {
+  try {
+    const portSetting = await SystemSettings.get({ label: "server_port" });
+    const port = portSetting ? portSetting.value : 3001;
+
+    app.listen(port, async () => {
+      await setupTelemetry();
+      console.log(`Example app listening on port ${port}`);
+    })
+    .on("error", function (err) {
+      process.once("SIGUSR2", function () {
+        Telemetry.flush();
+        process.kill(process.pid, "SIGUSR2");
+      });
+      process.on("SIGINT", function () {
+        Telemetry.flush();
+        process.kill(process.pid, "SIGINT");
+      });
     });
-    process.on("SIGINT", function () {
-      Telemetry.flush();
-      process.kill(process.pid, "SIGINT");
-    });
-  });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+  }
+}
+startServer();
