@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import System from "../../../../../models/system";
 import {
   AUTH_TIMESTAMP,
@@ -7,7 +7,7 @@ import {
 } from "../../../../../utils/constants";
 import debounce from "lodash.debounce";
 
-export default function PasswordProtection({ goToStep, prevStep }) {
+function PasswordProtection({ goToStep, prevStep }) {
   const [password, setPassword] = useState("");
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,10 +40,8 @@ export default function PasswordProtection({ goToStep, prevStep }) {
     goToStep(7);
   };
 
-  const handlePasswordChange = debounce(
-    (e) => setPassword(e.target.value),
-    500
-  );
+  const setNewPassword = (e) => setPassword(e.target.value);
+  const handlePasswordChange = debounce(setNewPassword, 500);
   return (
     <div className="w-full">
       <form className="flex flex-col w-full" onSubmit={handleSubmit}>
@@ -93,11 +91,10 @@ export default function PasswordProtection({ goToStep, prevStep }) {
             </button>
             <button
               type="submit"
-              className={`border px-4 py-2 rounded-lg text-sm items-center flex gap-x-2 ${
-                !!password
-                  ? "border-slate-200 text-slate-800 bg-slate-200 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
-                  : "border-gray-400 text-slate-800 bg-gray-400 cursor-not-allowed"
-              }`}
+              disabled={!password}
+              className="border px-4 py-2 rounded-lg text-sm items-center flex gap-x-2 
+              border-slate-200 text-slate-800 bg-slate-200 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow
+              disabled:border-gray-400 disabled:text-slate-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               Continue
             </button>
@@ -107,3 +104,4 @@ export default function PasswordProtection({ goToStep, prevStep }) {
     </div>
   );
 }
+export default memo(PasswordProtection);

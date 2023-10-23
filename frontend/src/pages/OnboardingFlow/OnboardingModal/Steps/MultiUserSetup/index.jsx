@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import System from "../../../../../models/system";
 import {
   AUTH_TIMESTAMP,
@@ -8,7 +8,7 @@ import {
 import debounce from "lodash.debounce";
 
 // Multi-user mode step
-export default function MultiUserSetup({ nextStep, prevStep }) {
+function MultiUserSetup({ nextStep, prevStep }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -36,14 +36,10 @@ export default function MultiUserSetup({ nextStep, prevStep }) {
     nextStep();
   };
 
-  const handleUsernameChange = debounce(
-    (e) => setUsername(e.target.value),
-    500
-  );
-  const handlePasswordChange = debounce(
-    (e) => setPassword(e.target.value),
-    500
-  );
+  const setNewUsername = (e) => setPassword(e.target.value);
+  const setNewPassword = (e) => setPassword(e.target.value);
+  const handleUsernameChange = debounce(setNewUsername, 500);
+  const handlePasswordChange = debounce(setNewPassword, 500);
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -109,11 +105,9 @@ export default function MultiUserSetup({ nextStep, prevStep }) {
             </button>
             <button
               type="submit"
-              className={`border px-4 py-2 rounded-lg text-sm items-center flex gap-x-2 ${
-                !!username && !!password
-                  ? "border-slate-200 text-slate-800 bg-slate-200 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
-                  : "border-gray-400 text-slate-800 bg-gray-400 cursor-not-allowed"
-              }`}
+              className="border px-4 py-2 rounded-lg text-sm items-center flex gap-x-2 
+              border-slate-200 text-slate-800 bg-slate-200 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow
+              disabled:border-gray-400 disabled:text-slate-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
               disabled={!(!!username && !!password)}
             >
               Continue
@@ -124,3 +118,4 @@ export default function MultiUserSetup({ nextStep, prevStep }) {
     </div>
   );
 }
+export default memo(MultiUserSetup);

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import System from "../../../../../models/system";
 import AnythingLLM from "../../../../../media/logo/anything-llm.png";
 import useLogo from "../../../../../hooks/useLogo";
 import { Plus } from "@phosphor-icons/react";
 import showToast from "../../../../../utils/toast";
 
-export default function AppearanceSetup({ nextStep }) {
+function AppearanceSetup({ nextStep }) {
   const { logo: _initLogo } = useLogo();
   const [logo, setLogo] = useState("");
   const [isDefaultLogo, setIsDefaultLogo] = useState(true);
@@ -133,3 +133,4 @@ export default function AppearanceSetup({ nextStep }) {
     </div>
   );
 }
+export default memo(AppearanceSetup);

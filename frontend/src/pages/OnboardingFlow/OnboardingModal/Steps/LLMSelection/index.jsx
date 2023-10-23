@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 
 import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
@@ -7,7 +7,7 @@ import System from "../../../../../models/system";
 import PreLoader from "../../../../../components/Preloader";
 import LLMProviderOption from "../../../../../components/LLMProviderOption";
 
-export default function LLMSelection({ nextStep, prevStep, currentStep }) {
+function LLMSelection({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -59,7 +59,7 @@ export default function LLMSelection({ nextStep, prevStep, currentStep }) {
             LLM Providers
           </div>
           <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
-            <input hidden={true} name="LLMProvider" value={llmChoice} />
+            <input hidden={true} name="LLMProvider" defaultValue={llmChoice} />
             <LLMProviderOption
               name="OpenAI"
               value="openai"
@@ -227,3 +227,5 @@ export default function LLMSelection({ nextStep, prevStep, currentStep }) {
     </div>
   );
 }
+
+export default memo(LLMSelection);

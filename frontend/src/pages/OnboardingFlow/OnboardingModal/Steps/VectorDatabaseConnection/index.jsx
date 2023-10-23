@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 
 import VectorDBOption from "../../../../../components/VectorDBOption";
 import ChromaLogo from "../../../../../media/vectordbs/chroma.png";
@@ -9,11 +9,7 @@ import QDrantLogo from "../../../../../media/vectordbs/qdrant.png";
 import System from "../../../../../models/system";
 import PreLoader from "../../../../../components/Preloader";
 
-export default function VectorDatabaseConnection({
-  nextStep,
-  prevStep,
-  currentStep,
-}) {
+function VectorDatabaseConnection({ nextStep, prevStep, currentStep }) {
   const [vectorDB, setVectorDB] = useState("lancedb");
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
@@ -310,3 +306,5 @@ export default function VectorDatabaseConnection({
     </div>
   );
 }
+
+export default memo(VectorDatabaseConnection);

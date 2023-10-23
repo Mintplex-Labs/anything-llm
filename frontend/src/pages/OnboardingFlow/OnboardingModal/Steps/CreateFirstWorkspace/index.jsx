@@ -1,9 +1,9 @@
-import React from "react";
+import React, { memo } from "react";
 import { useNavigate } from "react-router-dom";
 import paths from "../../../../../utils/paths";
 import Workspace from "../../../../../models/workspace";
 
-export default function CreateFirstWorkspace() {
+function CreateFirstWorkspace() {
   const navigate = useNavigate();
 
   const handleCreate = async (e) => {
@@ -57,3 +57,4 @@ export default function CreateFirstWorkspace() {
     </div>
   );
 }
+export default memo(CreateFirstWorkspace);
