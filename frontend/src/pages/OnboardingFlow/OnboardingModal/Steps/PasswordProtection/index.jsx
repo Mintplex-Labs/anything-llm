@@ -5,6 +5,7 @@ import {
   AUTH_TOKEN,
   AUTH_USER,
 } from "../../../../../utils/constants";
+import debounce from "lodash.debounce";
 
 export default function PasswordProtection({ goToStep, prevStep }) {
   const [password, setPassword] = useState("");
@@ -38,6 +39,11 @@ export default function PasswordProtection({ goToStep, prevStep }) {
   const handleSkip = () => {
     goToStep(7);
   };
+
+  const handlePasswordChange = debounce(
+    (e) => setPassword(e.target.value),
+    500
+  );
   return (
     <div className="w-full">
       <form className="flex flex-col w-full" onSubmit={handleSubmit}>
@@ -56,7 +62,7 @@ export default function PasswordProtection({ goToStep, prevStep }) {
                 </p>
               </div>
               <input
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 name="password"
                 type="text"
                 className="bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
@@ -72,7 +78,7 @@ export default function PasswordProtection({ goToStep, prevStep }) {
           <button
             onClick={prevStep}
             type="button"
-            className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
+            className="px-4 py-2 rounded-lg text-white hover:bg-sidebar"
           >
             Back
           </button>
@@ -81,13 +87,13 @@ export default function PasswordProtection({ goToStep, prevStep }) {
             <button
               onClick={handleSkip}
               type="button"
-              className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
+              className="px-4 py-2 rounded-lg text-white hover:bg-sidebar"
             >
               Skip
             </button>
             <button
               type="submit"
-              className={`transition-all duration-200 border px-4 py-2 rounded-lg text-sm items-center flex gap-x-2 ${
+              className={`border px-4 py-2 rounded-lg text-sm items-center flex gap-x-2 ${
                 !!password
                   ? "border-slate-200 text-slate-800 bg-slate-200 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
                   : "border-gray-400 text-slate-800 bg-gray-400 cursor-not-allowed"

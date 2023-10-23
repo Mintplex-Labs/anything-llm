@@ -132,17 +132,21 @@ a {
 
 @media (prefers-color-scheme: light) {
   .fade-up-border {
-    background: linear-gradient(to bottom,
-        rgba(220, 221, 223, 10%),
-        rgb(220, 221, 223) 89%);
+    background: linear-gradient(
+      to bottom,
+      rgba(220, 221, 223, 10%),
+      rgb(220, 221, 223) 89%
+    );
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .fade-up-border {
-    background: linear-gradient(to bottom,
-        rgba(41, 37, 36, 50%),
-        rgb(41 37 36) 90%);
+    background: linear-gradient(
+      to bottom,
+      rgba(41, 37, 36, 50%),
+      rgb(41 37 36) 90%
+    );
   }
 }
 
@@ -269,7 +273,7 @@ a {
   height: 100px !important;
 }
 
-.grid-loader>circle {
+.grid-loader > circle {
   fill: #008eff;
 }
 
@@ -332,9 +336,11 @@ dialog::backdrop {
 }
 
 .login-input-gradient {
-  background: linear-gradient(180deg,
-      rgba(61, 65, 71, 0.3) 0%,
-      rgba(44, 47, 53, 0.3) 100%) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(61, 65, 71, 0.3) 0%,
+    rgba(44, 47, 53, 0.3) 100%
+  ) !important;
   box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.25);
 }
 

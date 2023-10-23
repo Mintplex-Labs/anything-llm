@@ -15,36 +15,20 @@ function hideModal() {
 }
 
 export const OnboardingModalId = DIALOG_ID;
-
-export default function OnboardingModal({
-  transitionClass,
-  setTransitionClass,
-}) {
+export default function OnboardingModal() {
   const [currentStep, setCurrentStep] = useState(1);
 
   const nextStep = () => {
-    setTransitionClass("opacity-0");
-    setTimeout(() => {
-      setCurrentStep((prevStep) => prevStep + 1);
-      setTransitionClass("opacity-100");
-    }, 300);
+    setCurrentStep((prevStep) => prevStep + 1);
   };
 
   const prevStep = () => {
     if (currentStep === 1) return hideModal();
-    setTransitionClass("opacity-0");
-    setTimeout(() => {
-      setCurrentStep((prevStep) => prevStep - 1);
-      setTransitionClass("opacity-100");
-    }, 300);
+    setCurrentStep((prevStep) => prevStep - 1);
   };
 
   const goToStep = (step) => {
-    setTransitionClass("opacity-0");
-    setTimeout(() => {
-      setCurrentStep(step);
-      setTransitionClass("opacity-100");
-    }, 300);
+    setCurrentStep(step);
   };
 
   const steps = {
@@ -111,9 +95,7 @@ export default function OnboardingModal({
 
   return (
     <dialog id={DIALOG_ID} className="bg-transparent outline-none">
-      <div
-        className={`relative max-h-full transition duration-300 ${transitionClass}`}
-      >
+      <div className="relative max-h-full">
         <div className="relative bg-main-gradient rounded-2xl shadow border-2 border-slate-300/10">
           <div className="flex items-start justify-between p-8 border-b rounded-t border-gray-500/50">
             <div className="flex flex-col gap-2">
@@ -128,7 +110,7 @@ export default function OnboardingModal({
             <button
               onClick={hideModal}
               type="button"
-              className="transition-all duration-300 text-gray-400 bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:border-white/60 bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+              className="text-gray-400 bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:border-white/60 bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
             >
               <X className="text-gray-300 text-lg" />
             </button>

@@ -74,10 +74,7 @@ export default function AppearanceSetup({ nextStep }) {
             onError={(e) => (e.target.src = AnythingLLM)}
           />
           <div className="flex flex-row gap-x-8">
-            <label
-              className="mt-5 transition-all duration-300 hover:opacity-60"
-              hidden={!isDefaultLogo}
-            >
+            <label className="mt-5 hover:opacity-60" hidden={!isDefaultLogo}>
               <input
                 id="logo-upload"
                 type="file"
@@ -120,14 +117,14 @@ export default function AppearanceSetup({ nextStep }) {
           <button
             onClick={nextStep}
             type="button"
-            className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
+            className="px-4 py-2 rounded-lg text-white hover:bg-sidebar"
           >
             Skip
           </button>
           <button
             onClick={nextStep}
             type="button"
-            className="transition-all duration-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
+            className="border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
           >
             Continue
           </button>

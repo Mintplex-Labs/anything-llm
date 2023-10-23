@@ -5,6 +5,7 @@ import {
   AUTH_TOKEN,
   AUTH_USER,
 } from "../../../../../utils/constants";
+import debounce from "lodash.debounce";
 
 // Multi-user mode step
 export default function MultiUserSetup({ nextStep, prevStep }) {
@@ -35,6 +36,14 @@ export default function MultiUserSetup({ nextStep, prevStep }) {
     nextStep();
   };
 
+  const handleUsernameChange = debounce(
+    (e) => setUsername(e.target.value),
+    500
+  );
+  const handlePasswordChange = debounce(
+    (e) => setPassword(e.target.value),
+    500
+  );
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -56,7 +65,7 @@ export default function MultiUserSetup({ nextStep, prevStep }) {
                   minLength={6}
                   required={true}
                   autoComplete="off"
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={handleUsernameChange}
                 />
               </div>
               <div>
@@ -74,7 +83,7 @@ export default function MultiUserSetup({ nextStep, prevStep }) {
                   minLength={8}
                   required={true}
                   autoComplete="off"
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
                 />
               </div>
               <p className="w-96 text-white text-opacity-80 text-xs font-base">
@@ -94,13 +103,13 @@ export default function MultiUserSetup({ nextStep, prevStep }) {
             <button
               onClick={prevStep}
               type="button"
-              className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
+              className="px-4 py-2 rounded-lg text-white hover:bg-sidebar"
             >
               Back
             </button>
             <button
               type="submit"
-              className={`transition-all duration-200 border px-4 py-2 rounded-lg text-sm items-center flex gap-x-2 ${
+              className={`border px-4 py-2 rounded-lg text-sm items-center flex gap-x-2 ${
                 !!username && !!password
                   ? "border-slate-200 text-slate-800 bg-slate-200 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
                   : "border-gray-400 text-slate-800 bg-gray-400 cursor-not-allowed"

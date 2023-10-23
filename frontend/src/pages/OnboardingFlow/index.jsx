@@ -1,16 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import OnboardingModal, { OnboardingModalId } from "./OnboardingModal";
 import useLogo from "../../hooks/useLogo";
 
 export default function OnboardingFlow() {
   const { logo } = useLogo();
-  const [transitionClass, setTransitionClass] = useState("opacity-0");
 
   function showModal() {
     document?.getElementById(OnboardingModalId)?.showModal();
-    setTimeout(() => {
-      setTransitionClass("opacity-100");
-    }, 300);
   }
 
   return (
@@ -22,17 +18,14 @@ export default function OnboardingFlow() {
         <img src={logo} alt="logo" className="w-80 mx-auto m-3 mb-11" />
         <div className="flex justify-center items-center">
           <button
-            className="transition-all duration-200 border border-slate-200 px-5 py-2.5 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow animate-pulse"
+            className="border border-slate-200 px-5 py-2.5 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow animate-pulse"
             onClick={showModal}
           >
             Get Started
           </button>
         </div>
       </div>
-      <OnboardingModal
-        transitionClass={transitionClass}
-        setTransitionClass={setTransitionClass}
-      />
+      <OnboardingModal />
     </div>
   );
 }

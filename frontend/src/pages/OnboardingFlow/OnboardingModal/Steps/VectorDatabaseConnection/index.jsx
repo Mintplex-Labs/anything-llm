@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import VectorDBOption from "../../../../../components/VectorDBOption";
 import ChromaLogo from "../../../../../media/vectordbs/chroma.png";
@@ -17,8 +17,6 @@ export default function VectorDatabaseConnection({
   const [vectorDB, setVectorDB] = useState("lancedb");
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
-
-  const formRef = useRef(null);
 
   useEffect(() => {
     async function fetchKeys() {
@@ -60,11 +58,7 @@ export default function VectorDatabaseConnection({
 
   return (
     <div>
-      <form
-        ref={formRef}
-        onSubmit={handleSubmit}
-        className="flex flex-col w-full"
-      >
+      <form onSubmit={handleSubmit} className="flex flex-col w-full">
         <div className="flex flex-col w-full px-1 md:px-8 py-12">
           <div className="text-white text-sm font-medium pb-4">
             Select your preferred vector database provider
@@ -301,13 +295,13 @@ export default function VectorDatabaseConnection({
           <button
             onClick={prevStep}
             type="button"
-            className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
+            className="px-4 py-2 rounded-lg text-white hover:bg-sidebar"
           >
             Back
           </button>
           <button
             type="submit"
-            className="transition-all duration-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
+            className="border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
           >
             Continue
           </button>

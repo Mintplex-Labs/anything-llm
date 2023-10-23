@@ -212,13 +212,13 @@ export default function LLMSelection({ nextStep, prevStep, currentStep }) {
           <button
             onClick={prevStep}
             type="button"
-            className="px-4 py-2 rounded-lg text-white hover:bg-sidebar transition-all duration-300"
+            className="px-4 py-2 rounded-lg text-white hover:bg-sidebar"
           >
             Back
           </button>
           <button
             type="submit"
-            className="transition-all duration-200 border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
+            className="border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
           >
             Continue
           </button>
