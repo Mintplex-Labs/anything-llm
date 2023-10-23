@@ -10,6 +10,10 @@ import ChatBubble from "../ChatBubble";
 import System from "../../models/system";
 import Jazzicon from "../UserIcon";
 import { userFromStorage } from "../../utils/request";
+import {
+  AI_BACKGROUND_COLOR,
+  USER_BACKGROUND_COLOR,
+} from "../../utils/constants";
 
 export default function DefaultChatContainer() {
   const [mockMsgs, setMockMessages] = useState([]);
@@ -20,9 +24,6 @@ export default function DefaultChatContainer() {
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
   const popMsg = !window.localStorage.getItem("anythingllm_intro");
-
-  const userBackgroundColor = "bg-historical-msg-user";
-  const aiBackgroundColor = "bg-historical-msg-system";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +36,7 @@ export default function DefaultChatContainer() {
   const MESSAGES = [
     <React.Fragment>
       <div
-        className={`flex justify-center items-end w-full ${aiBackgroundColor} md:mt-0 mt-[40px]`}
+        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR} md:mt-0 mt-[40px]`}
       >
         <div
           className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
@@ -59,7 +60,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex justify-center items-end w-full ${aiBackgroundColor}`}
+        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
           className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
@@ -82,7 +83,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex justify-center items-end w-full ${aiBackgroundColor}`}
+        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
           className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
@@ -116,7 +117,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex justify-center items-end w-full ${userBackgroundColor}`}
+        className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
         <div
           className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
@@ -140,7 +141,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex justify-center items-end w-full ${aiBackgroundColor}`}
+        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
           className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
@@ -175,7 +176,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex justify-center items-end w-full ${userBackgroundColor}`}
+        className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
         <div
           className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
@@ -200,7 +201,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex justify-center items-end w-full ${aiBackgroundColor}`}
+        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
           className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
@@ -238,7 +239,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex justify-center items-end w-full ${userBackgroundColor}`}
+        className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
         <div
           className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
@@ -262,7 +263,7 @@ export default function DefaultChatContainer() {
 
     <React.Fragment>
       <div
-        className={`flex justify-center items-end w-full ${aiBackgroundColor}`}
+        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
           className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}

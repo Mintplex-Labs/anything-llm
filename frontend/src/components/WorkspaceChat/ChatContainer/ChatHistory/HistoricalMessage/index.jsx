@@ -4,17 +4,18 @@ import Jazzicon from "../../../../UserIcon";
 import renderMarkdown from "../../../../../utils/chat/markdown";
 import { userFromStorage } from "../../../../../utils/request";
 import Citations from "../Citation";
+import {
+  AI_BACKGROUND_COLOR,
+  USER_BACKGROUND_COLOR,
+} from "../../../../../utils/constants";
 
 const HistoricalMessage = forwardRef(
   ({ message, role, workspace, sources = [], error = false }, ref) => {
-    const userBackgroundColor = "bg-historical-msg-user";
-    const aiBackgroundColor = "bg-historical-msg-system";
-
     return (
       <div
         ref={ref}
         className={`flex justify-center items-end w-full ${
-          role === "user" ? userBackgroundColor : aiBackgroundColor
+          role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
         }`}
       >
         <div

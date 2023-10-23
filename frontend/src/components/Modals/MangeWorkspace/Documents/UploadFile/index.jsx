@@ -19,7 +19,7 @@ export default function UploadFile({ workspace, fileTypes, fetchKeys }) {
     showToast(`Error uploading file: ${message}`, "error");
   };
 
-  const onDrop = useCallback(async (acceptedFiles, rejections) => {
+  const onDrop = async (acceptedFiles, rejections) => {
     const newAccepted = acceptedFiles.map((file) => {
       return {
         uid: v4(),
@@ -36,7 +36,7 @@ export default function UploadFile({ workspace, fileTypes, fetchKeys }) {
     });
 
     setFiles([...files, ...newAccepted, ...newRejected]);
-  }, []);
+  };
 
   useEffect(() => {
     async function checkProcessorOnline() {

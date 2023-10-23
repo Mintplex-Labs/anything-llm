@@ -49,20 +49,14 @@ export default function FolderRow({
             className="text-base font-bold w-4 h-4 mr-[3px]"
             weight="fill"
           />
-          <p className="whitespace-nowrap overflow-hidden">
-            {truncate(item.name, 20)}
+          <p className="whitespace-nowrap overflow-show">
+            {truncate(item.name, 40)}
           </p>
         </div>
-        <p className="col-span-2 pl-3.5">---</p>
-        <p className="col-span-2 pl-3">{item.size}</p>
-        <p className="col-span-2 pl-2">{document.kind}</p>
-        <div className="col-span-2 flex justify-end items-center">
-          {item.cached && (
-            <div className="bg-white/10 rounded-3xl">
-              <p className="text-xs px-2 py-0.5">Cached</p>
-            </div>
-          )}
-        </div>
+        <p className="col-span-2 pl-3.5" />
+        <p className="col-span-2 pl-3" />
+        <p className="col-span-2 pl-2" />
+        <div className="col-span-2 flex justify-end items-center" />
       </div>
       {expanded && (
         <div className="col-span-full">

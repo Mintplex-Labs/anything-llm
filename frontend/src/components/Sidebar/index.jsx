@@ -16,7 +16,12 @@ import ActiveWorkspaces from "./ActiveWorkspaces";
 import paths from "../../utils/paths";
 import useUser from "../../hooks/useUser";
 import { userFromStorage } from "../../utils/request";
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
+import {
+  AUTH_TIMESTAMP,
+  AUTH_TOKEN,
+  AUTH_USER,
+  USER_BACKGROUND_COLOR,
+} from "../../utils/constants";
 import useLogo from "../../hooks/useLogo";
 
 export default function Sidebar() {
@@ -182,7 +187,7 @@ export function SidebarMobileHeader() {
             showBgOverlay
               ? "transition-all opacity-1"
               : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 bg-historical-msg-user bg-opacity-75 w-screen h-screen`}
+          }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div

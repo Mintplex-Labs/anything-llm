@@ -1,13 +1,14 @@
 import React from "react";
 import Jazzicon from "../UserIcon";
 import { userFromStorage } from "../../utils/request";
+import {
+  AI_BACKGROUND_COLOR,
+  USER_BACKGROUND_COLOR,
+} from "../../utils/constants";
 
 export default function ChatBubble({ message, type, popMsg }) {
   const isUser = type === "user";
-
-  const userBackgroundColor = "bg-historical-msg-user";
-  const aiBackgroundColor = "bg-historical-msg-system";
-  const backgroundColor = isUser ? userBackgroundColor : aiBackgroundColor;
+  const backgroundColor = isUser ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR;
 
   return (
     <div className={`flex justify-center items-end w-full ${backgroundColor}`}>
