@@ -4,6 +4,7 @@ import { ContextWrapper } from "./AuthContext";
 import PrivateRoute, { AdminRoute } from "./components/PrivateRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Login from "./pages/Login";
 
 const Main = lazy(() => import("./pages/Main"));
 const InvitePage = lazy(() => import("./pages/Invite"));
@@ -13,20 +14,62 @@ const AdminInvites = lazy(() => import("./pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("./pages/Admin/Workspaces"));
 const AdminChats = lazy(() => import("./pages/Admin/Chats"));
 const AdminSystem = lazy(() => import("./pages/Admin/System"));
-const AdminAppearance = lazy(() => import("./pages/Admin/Appearance"));
-const AdminApiKeys = lazy(() => import("./pages/Admin/ApiKeys"));
+const GeneralAppearance = lazy(() =>
+  import("./pages/GeneralSettings/Appearance")
+);
+const GeneralApiKeys = lazy(() => import("./pages/GeneralSettings/ApiKeys"));
+
+const GeneralLLMPreference = lazy(() =>
+  import("./pages/GeneralSettings/LLMPreference")
+);
+const GeneralVectorDatabase = lazy(() =>
+  import("./pages/GeneralSettings/VectorDatabase")
+);
+const GeneralExportImport = lazy(() =>
+  import("./pages/GeneralSettings/ExportImport")
+);
+const GeneralSecurity = lazy(() => import("./pages/GeneralSettings/Security"));
+
+const OnboardingFlow = lazy(() => import("./pages/OnboardingFlow"));
 
 export default function App() {
   return (
     <Suspense fallback={<div />}>
       <ContextWrapper>
         <Routes>
-          <Route path="/" element={<Main />} />
+          <Route path="/" element={<PrivateRoute Component={Main} />} />
+          <Route path="/login" element={<Login />} />
           <Route
             path="/workspace/:slug"
             element={<PrivateRoute Component={WorkspaceChat} />}
           />
           <Route path="/accept-invite/:code" element={<InvitePage />} />
+
+          {/* General Routes */}
+          <Route
+            path="/general/llm-preference"
+            element={<PrivateRoute Component={GeneralLLMPreference} />}
+          />
+          <Route
+            path="/general/vector-database"
+            element={<PrivateRoute Component={GeneralVectorDatabase} />}
+          />
+          <Route
+            path="/general/export-import"
+            element={<PrivateRoute Component={GeneralExportImport} />}
+          />
+          <Route
+            path="/general/security"
+            element={<PrivateRoute Component={GeneralSecurity} />}
+          />
+          <Route
+            path="/general/appearance"
+            element={<PrivateRoute Component={GeneralAppearance} />}
+          />
+          <Route
+            path="/general/api-keys"
+            element={<PrivateRoute Component={GeneralApiKeys} />}
+          />
 
           {/* Admin Routes */}
           <Route
@@ -49,14 +92,9 @@ export default function App() {
             path="/admin/workspace-chats"
             element={<AdminRoute Component={AdminChats} />}
           />
-          <Route
-            path="/admin/appearance"
-            element={<AdminRoute Component={AdminAppearance} />}
-          />
-          <Route
-            path="/admin/api-keys"
-            element={<AdminRoute Component={AdminApiKeys} />}
-          />
+
+          {/* Onboarding Flow */}
+          <Route path="/onboarding" element={<OnboardingFlow />} />
         </Routes>
         <ToastContainer />
       </ContextWrapper>

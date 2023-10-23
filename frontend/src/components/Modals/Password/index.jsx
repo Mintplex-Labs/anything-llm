@@ -3,16 +3,31 @@ import System from "../../../models/system";
 import SingleUserAuth from "./SingleUserAuth";
 import MultiUserAuth from "./MultiUserAuth";
 import {
-  AUTH_TIMESTAMP,
   AUTH_TOKEN,
   AUTH_USER,
+  AUTH_TIMESTAMP,
 } from "../../../utils/constants";
+import useLogo from "../../../hooks/useLogo";
 
 export default function PasswordModal({ mode = "single" }) {
+  const { logo: _initLogo } = useLogo();
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-gray-600 dark:bg-stone-800 flex items-center justify-center">
-      <div className="flex fixed top-0 left-0 right-0 w-full h-full" />
-      <div className="relative w-full max-w-2xl max-h-full">
+    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-zinc-800 flex items-center justify-center">
+      <div
+        className="fixed top-0 left-0 right-0 bottom-0 z-40 animate-slow-pulse"
+        style={{
+          background: `
+            radial-gradient(circle at center, transparent 40%, black 100%),
+            linear-gradient(180deg, #FF8585 0%, #D4A447 100%)
+          `,
+          width: "575px",
+          filter: "blur(200px)",
+          margin: "auto",
+        }}
+      />
+
+      <div className="flex flex-col items-center justify-center h-full w-full z-50">
+        <img src={_initLogo} className="mb-20 w-80 opacity-80" alt="logo" />
         {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth />}
       </div>
     </div>

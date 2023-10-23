@@ -121,6 +121,18 @@ const System = {
         return { success: false, error: e.message };
       });
   },
+  isMultiUserMode: async () => {
+    return await fetch(`${API_BASE}/system/multi-user-mode`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.multiUserMode)
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
   deleteDocument: async (name, meta) => {
     return await fetch(`${API_BASE}/system/remove-document`, {
       method: "DELETE",
@@ -162,6 +174,7 @@ const System = {
     return await fetch(`${API_BASE}/system/upload-logo`, {
       method: "POST",
       body: formData,
+      headers: baseHeaders(),
     })
       .then((res) => {
         if (!res.ok) throw new Error("Error uploading logo.");
@@ -172,8 +185,8 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  fetchLogo: async function (light = false) {
-    return await fetch(`${API_BASE}/system/logo${light ? "/light" : ""}`, {
+  fetchLogo: async function () {
+    return await fetch(`${API_BASE}/system/logo`, {
       method: "GET",
       cache: "no-cache",
     })
@@ -187,8 +200,25 @@ const System = {
         return null;
       });
   },
+  isDefaultLogo: async function () {
+    return await fetch(`${API_BASE}/system/is-default-logo`, {
+      method: "GET",
+      cache: "no-cache",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to get is default logo!");
+        return res.json();
+      })
+      .then((res) => res?.isDefaultLogo)
+      .catch((e) => {
+        console.log(e);
+        return null;
+      });
+  },
   removeCustomLogo: async function () {
-    return await fetch(`${API_BASE}/system/remove-logo`)
+    return await fetch(`${API_BASE}/system/remove-logo`, {
+      headers: baseHeaders(),
+    })
       .then((res) => {
         if (res.ok) return { success: true, error: null };
         throw new Error("Error removing logo!");
@@ -246,8 +276,8 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  getApiKey: async function () {
-    return fetch(`${API_BASE}/system/api-key`, {
+  getApiKeys: async function () {
+    return fetch(`${API_BASE}/system/api-keys`, {
       method: "GET",
       headers: baseHeaders(),
     })

@@ -4,6 +4,7 @@ import paths from "../../../../utils/paths";
 import EditWorkspaceUsersModal, {
   EditWorkspaceUsersModalId,
 } from "./EditWorkspaceUsersModal";
+import { DotsThreeOutline, LinkSimple, Trash } from "@phosphor-icons/react";
 
 export default function WorkspaceRow({ workspace, users }) {
   const rowRef = useRef(null);
@@ -20,20 +21,20 @@ export default function WorkspaceRow({ workspace, users }) {
 
   return (
     <>
-      <tr ref={rowRef} className="bg-transparent">
-        <th
-          scope="row"
-          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-        >
+      <tr
+        ref={rowRef}
+        className="bg-transparent text-white text-opacity-80 text-sm font-medium"
+      >
+        <th scope="row" className="px-6 py-4 whitespace-nowrap">
           {workspace.name}
         </th>
-        <td className="px-6 py-4">
+        <td className="px-6 py-4 flex items-center">
           <a
             href={paths.workspace.chat(workspace.slug)}
             target="_blank"
-            className="text-blue-500"
+            className="text-white flex items-center hover:underline"
           >
-            {workspace.slug}
+            <LinkSimple className="mr-2 w-5 h-5" /> {workspace.slug}
           </a>
         </td>
         <td className="px-6 py-4">{workspace.userIds?.length}</td>
@@ -45,15 +46,15 @@ export default function WorkspaceRow({ workspace, users }) {
                 ?.getElementById(EditWorkspaceUsersModalId(workspace))
                 ?.showModal()
             }
-            className="font-medium text-blue-600 dark:text-blue-300 px-2 py-1 rounded-lg hover:bg-blue-50 hover:dark:bg-blue-800 hover:dark:bg-opacity-20"
+            className="font-medium rounded-lg hover:text-white hover:text-opacity-60 px-2 py-1 hover:bg-white hover:bg-opacity-10"
           >
-            Edit Users
+            <DotsThreeOutline weight="fill" className="h-5 w-5" />
           </button>
           <button
             onClick={handleDelete}
-            className="font-medium text-red-600 dark:text-red-300 px-2 py-1 rounded-lg hover:bg-red-50 hover:dark:bg-red-800 hover:dark:bg-opacity-20"
+            className="font-medium text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
           >
-            Delete
+            <Trash className="h-5 w-5" />
           </button>
         </td>
       </tr>

@@ -6,17 +6,51 @@ import paths from "../../utils/paths";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
 import { userFromStorage } from "../../utils/request";
 import System from "../../models/system";
+import UserMenu from "../UserMenu";
 
 // Used only for Multi-user mode only as we permission specific pages based on auth role.
 // When in single user mode we just bypass any authchecks.
 function useIsAuthenticated() {
   const [isAuthd, setIsAuthed] = useState(null);
+  const [shouldRedirectToOnboarding, setShouldRedirectToOnboarding] =
+    useState(false);
 
   useEffect(() => {
     const validateSession = async () => {
-      const multiUserMode = (await System.keys()).MultiUserMode;
-      if (!multiUserMode) {
+      const {
+        MultiUserMode,
+        RequiresAuth,
+        OpenAiKey = false,
+        AzureOpenAiKey = false,
+      } = await System.keys();
+
+      // Check for the onboarding redirect condition
+      if (
+        !MultiUserMode &&
+        !RequiresAuth && // Not in Multi-user AND no password set.
+        !OpenAiKey &&
+        !AzureOpenAiKey // AND no LLM API Key set at all.
+      ) {
+        setShouldRedirectToOnboarding(true);
         setIsAuthed(true);
+        return;
+      }
+
+      if (!MultiUserMode && !RequiresAuth) {
+        setIsAuthed(true);
+        return;
+      }
+
+      // Single User password mode check
+      if (!MultiUserMode && RequiresAuth) {
+        const localAuthToken = localStorage.getItem(AUTH_TOKEN);
+        if (!localAuthToken) {
+          setIsAuthed(false);
+          return;
+        }
+
+        const isValid = await validateSessionTokenForUser();
+        setIsAuthed(isValid);
         return;
       }
 
@@ -41,24 +75,40 @@ function useIsAuthenticated() {
     validateSession();
   }, []);
 
-  return isAuthd;
+  return { isAuthd, shouldRedirectToOnboarding };
 }
 
 export function AdminRoute({ Component }) {
-  const authed = useIsAuthenticated();
-  if (authed === null) return <FullScreenLoader />;
+  const { isAuthd, shouldRedirectToOnboarding } = useIsAuthenticated();
+  if (isAuthd === null) return <FullScreenLoader />;
+
+  if (shouldRedirectToOnboarding) {
+    return <Navigate to={paths.onboarding()} />;
+  }
 
   const user = userFromStorage();
-  return authed && user?.role === "admin" ? (
-    <Component />
+  return isAuthd && user?.role === "admin" ? (
+    <UserMenu>
+      <Component />
+    </UserMenu>
   ) : (
     <Navigate to={paths.home()} />
   );
 }
 
 export default function PrivateRoute({ Component }) {
-  const authed = useIsAuthenticated();
-  if (authed === null) return <FullScreenLoader />;
+  const { isAuthd, shouldRedirectToOnboarding } = useIsAuthenticated();
+  if (isAuthd === null) return <FullScreenLoader />;
 
-  return authed ? <Component /> : <Navigate to={paths.home()} />;
+  if (shouldRedirectToOnboarding) {
+    return <Navigate to="/onboarding" />;
+  }
+
+  return isAuthd ? (
+    <UserMenu>
+      <Component />
+    </UserMenu>
+  ) : (
+    <Navigate to={paths.login()} />
+  );
 }

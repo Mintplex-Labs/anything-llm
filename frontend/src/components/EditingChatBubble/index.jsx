@@ -14,25 +14,27 @@ export default function EditingChatBubble({
 
   return (
     <div
-      className={`flex w-full mt-2 items-center ${
+      className={`relative flex w-full mt-2 items-start ${
         isUser ? "justify-end" : "justify-start"
       }`}
     >
-      {isUser && (
-        <button
-          className="flex items-center text-red-500 hover:text-red-700 transition mr-2"
-          onClick={() => removeMessage(index)}
-        >
-          <X className="mr-2" size={20} />
-        </button>
-      )}
+      <button
+        className={`transition-all duration-300 absolute z-10 text-white bg-neutral-700 rounded-full hover:bg-selected-preference-gradient hover:border-white border-transparent border shadow-lg ${
+          isUser ? "right-0 mr-2" : "ml-2"
+        }`}
+        style={{ top: "-8px", [isUser ? "right" : "left"]: "255px" }}
+        onClick={() => removeMessage(index)}
+      >
+        <X className="m-0.5" size={20} />
+      </button>
       <div
-        className={`p-4 max-w-full md:max-w-[75%] ${
+        className={`p-4 max-w-full md:w-[290px] ${
+          isUser ? "bg-sky-400 text-black" : "bg-white text-black"
+        } ${
           isUser
-            ? "bg-slate-200 dark:bg-amber-800"
-            : "bg-orange-100 dark:bg-stone-700"
-        } rounded-b-2xl ${isUser ? "rounded-tl-2xl" : "rounded-tr-2xl"} ${
-          isUser ? "rounded-tr-sm" : "rounded-tl-sm"
+            ? "rounded-tr-[40px] rounded-tl-[40px] rounded-bl-[40px]"
+            : "rounded-br-[40px] rounded-tl-[40px] rounded-tr-[40px]"
+        }
         }`}
         onDoubleClick={() => setIsEditing(true)}
       >
@@ -45,23 +47,16 @@ export default function EditingChatBubble({
               setIsEditing(false);
             }}
             autoFocus
+            className="w-full"
           />
         ) : (
           tempMessage && (
-            <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
+            <p className="text-black font-[500] md:font-semibold text-sm md:text-base break-words">
               {tempMessage}
             </p>
           )
         )}
       </div>
-      {!isUser && (
-        <button
-          className="flex items-center text-red-500 hover:text-red-700 transition ml-2"
-          onClick={() => removeMessage(index)}
-        >
-          <X className="mr-2" size={20} />
-        </button>
-      )}
     </div>
   );
 }

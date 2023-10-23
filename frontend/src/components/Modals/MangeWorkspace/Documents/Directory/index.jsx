@@ -1,171 +1,146 @@
-import React, { useState } from "react";
-import {
-  FileMinus,
-  FilePlus,
-  Folder,
-  FolderMinus,
-  FolderPlus,
-  Zap,
-} from "react-feather";
-import { nFormatter } from "../../../../../utils/numbers";
-import System from "../../../../../models/system";
+import UploadFile from "../UploadFile";
+import PreLoader from "../../../../Preloader";
+import { useEffect, useState } from "react";
+import FolderRow from "./FolderRow";
+import pluralize from "pluralize";
 
 export default function Directory({
   files,
-  parent = null,
-  nested = 0,
-  toggleSelection,
-  isSelected,
+  loading,
+  setLoading,
+  fileTypes,
+  workspace,
+  fetchKeys,
+  selectedItems,
+  setSelectedItems,
+  setHighlightWorkspace,
+  moveToWorkspace,
+  setLoadingMessage,
+  loadingMessage,
 }) {
-  const [isExpanded, toggleExpanded] = useState(false);
-  const [showDetails, toggleDetails] = useState(false);
-  const [showZap, setShowZap] = useState(false);
-  const handleDelete = async (name, meta) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this document?\nThis will require you to re-upload and re-embed it.\nThis document will be removed from any workspace that is currently referencing it.\nThis action is not reversible."
-      )
-    )
-      return false;
-    document?.getElementById(meta?.id)?.remove();
-    await System.deleteDocument(name, meta);
+  const [amountSelected, setAmountSelected] = useState(0);
+
+  const toggleSelection = (item) => {
+    setSelectedItems((prevSelectedItems) => {
+      const newSelectedItems = { ...prevSelectedItems };
+
+      if (item.type === "folder") {
+        const isCurrentlySelected = isFolderCompletelySelected(item);
+        if (isCurrentlySelected) {
+          item.items.forEach((file) => delete newSelectedItems[file.id]);
+        } else {
+          item.items.forEach((file) => (newSelectedItems[file.id] = true));
+        }
+      } else {
+        if (newSelectedItems[item.id]) {
+          delete newSelectedItems[item.id];
+        } else {
+          newSelectedItems[item.id] = true;
+        }
+      }
+
+      return newSelectedItems;
+    });
   };
 
-  if (files.type === "folder") {
-    return (
-      <div style={{ marginLeft: nested }} className="mb-2">
-        <div
-          className={`flex items-center hover:bg-gray-100 gap-x-2 text-gray-800 dark:text-stone-200 dark:hover:bg-stone-800 px-2 rounded-lg`}
-        >
-          {files.items.some((files) => files.type === "folder") ? (
-            <Folder className="w-6 h-6" />
-          ) : (
-            <button onClick={() => toggleSelection(files.name)}>
-              {isSelected(files.name) ? (
-                <FolderMinus className="w-6 h-6 stroke-red-800 hover:fill-red-500" />
-              ) : (
-                <FolderPlus className="w-6 h-6 hover:stroke-green-800 hover:fill-green-500" />
-              )}
-            </button>
-          )}
+  const isFolderCompletelySelected = (folder) => {
+    if (folder.items.length === 0) {
+      return false;
+    }
+    return folder.items.every((file) => selectedItems[file.id]);
+  };
+
+  const isSelected = (id, item) => {
+    if (item && item.type === "folder") {
+      return isFolderCompletelySelected(item);
+    }
+
+    return !!selectedItems[id];
+  };
+
+  useEffect(() => {
+    setAmountSelected(Object.keys(selectedItems).length);
+  }, [selectedItems]);
+
+  return (
+    <div className="px-8 pb-8">
+      <div className="flex flex-col gap-y-6">
+        <div className="flex items-center justify-between w-[560px] px-5">
+          <h3 className="text-white text-base font-bold">My Documents</h3>
+        </div>
+
+        <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl">
+          <div className="rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900 sticky top-0 z-10">
+            <p className="col-span-4">Name</p>
+            <p className="col-span-2">Date</p>
+            <p className="col-span-2">Size</p>
+            <p className="col-span-2">Kind</p>
+            <p className="col-span-2">Cached</p>
+          </div>
 
           <div
-            className="flex gap-x-2 items-center  cursor-pointer w-full"
-            onClick={() => toggleExpanded(!isExpanded)}
+            className="overflow-y-auto pb-9"
+            style={{ height: "calc(100% - 40px)" }}
           >
-            <h2 className="text-base md:text-2xl">{files.name}</h2>
-            {files.items.some((files) => files.type === "folder") ? (
-              <p className="text-xs italic">{files.items.length} folders</p>
+            {loading ? (
+              <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
+                <PreLoader />
+                <p className="text-white/80 text-sm font-semibold animate-pulse text-center w-1/3">
+                  {loadingMessage}
+                </p>
+              </div>
+            ) : !!files.items ? (
+              files.items.map(
+                (item, index) =>
+                  item.type === "folder" && (
+                    <FolderRow
+                      key={index}
+                      item={item}
+                      selected={isSelected(
+                        item.id,
+                        item.type === "folder" ? item : null
+                      )}
+                      fetchKeys={fetchKeys}
+                      onRowClick={() => toggleSelection(item)}
+                      toggleSelection={toggleSelection}
+                      isSelected={isSelected}
+                      setLoading={setLoading}
+                      setLoadingMessage={setLoadingMessage}
+                    />
+                  )
+              )
             ) : (
-              <p className="text-xs italic">
-                {files.items.length} documents |{" "}
-                {nFormatter(
-                  files.items.reduce((a, b) => a + b.token_count_estimate, 0)
-                )}{" "}
-                tokens
-              </p>
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-white text-opacity-40 text-sm font-medium">
+                  No Documents
+                </p>
+              </div>
             )}
           </div>
-        </div>
-        {isExpanded &&
-          files.items.map((item) => (
-            <Directory
-              key={item.name}
-              parent={files.name}
-              files={item}
-              nested={nested + 20}
-              toggleSelection={toggleSelection}
-              isSelected={isSelected}
-            />
-          ))}
-      </div>
-    );
-  }
 
-  const { name, type: _type, ...meta } = files;
-  return (
-    <div className="ml-[20px] my-2" id={meta.id}>
-      <div className="flex items-center">
-        {meta?.cached && (
-          <button
-            type="button"
-            onClick={() => setShowZap(true)}
-            className="rounded-full p-1 hover:bg-stone-500 hover:bg-opacity-75"
-          >
-            <Zap className="h-4 w-4 stroke-yellow-500 fill-yellow-400" />
-          </button>
-        )}
-        {showZap && (
-          <dialog
-            open={true}
-            style={{ zIndex: 100 }}
-            className="fixed top-0 flex bg-black bg-opacity-50 w-[100vw] h-full items-center justify-center "
-          >
-            <div className="w-fit px-10 py-4 w-[25%] rounded-lg bg-white shadow dark:bg-stone-700 text-black dark:text-slate-200">
-              <div className="flex flex-col w-full">
-                <p className="font-semibold text-xl flex items-center gap-x-1 justify-left">
-                  What does{" "}
-                  <Zap className="h-4 w-4 stroke-yellow-500 fill-yellow-400" />{" "}
-                  mean?
-                </p>
-                <p className="text-base mt-4">
-                  This symbol indicates that you have embed this document before
-                  and will not have to pay to re-embed this document.
-                </p>
-                <div className="flex w-full justify-center items-center mt-4">
-                  <button
-                    onClick={() => setShowZap(false)}
-                    className="border border-gray-800 text-gray-800 hover:bg-gray-100 px-4 py-1 rounded-lg dark:text-slate-200 dark:border-slate-200 dark:hover:bg-stone-900"
-                  >
-                    Close
-                  </button>
+          {amountSelected !== 0 && (
+            <div className="absolute bottom-0 left-0 w-full flex justify-center items-center h-9 bg-white rounded-b-2xl">
+              <div className="flex gap-x-5">
+                <div
+                  onMouseEnter={() => setHighlightWorkspace(true)}
+                  onMouseLeave={() => setHighlightWorkspace(false)}
+                  onClick={moveToWorkspace}
+                  className="text-sm font-semibold h-7 px-2.5 rounded-lg transition-all duration-300 hover:text-white hover:bg-neutral-800/80 cursor-pointer flex items-center"
+                >
+                  Move {amountSelected} {pluralize("file", amountSelected)} to
+                  workspace
                 </div>
               </div>
             </div>
-          </dialog>
-        )}
+          )}
+        </div>
 
-        <div
-          className={`flex items-center gap-x-2 text-gray-800 dark:text-stone-200 hover:bg-gray-100 dark:hover:bg-stone-800 px-2 rounded-lg`}
-        >
-          <button onClick={() => toggleSelection(`${parent}/${name}`)}>
-            {isSelected(`${parent}/${name}`) ? (
-              <FileMinus className="w-6 h-6 stroke-red-800 hover:fill-red-500" />
-            ) : (
-              <FilePlus className="w-6 h-6 hover:stroke-green-800 hover:fill-green-500" />
-            )}
-          </button>
-          <div
-            className="w-full items-center flex cursor-pointer"
-            onClick={() => toggleDetails(!showDetails)}
-          >
-            <h3 className="text-sm">{name}</h3>
-            <br />
-          </div>
-        </div>
+        <UploadFile
+          fileTypes={fileTypes}
+          workspace={workspace}
+          fetchKeys={fetchKeys}
+        />
       </div>
-      {showDetails && (
-        <div className="w-full flex flex-col">
-          <div className="ml-[20px] flex flex-col gap-y-1 my-1 p-2 rounded-md bg-slate-200 font-mono text-sm overflow-x-scroll">
-            {Object.entries(meta).map(([key, value], i) => {
-              if (key === "cached") return null;
-              return (
-                <p key={i} className="whitespace-pre">
-                  {key}: {value}
-                </p>
-              );
-            })}
-          </div>
-          <div
-            onClick={() => handleDelete(`${parent}/${name}`, meta)}
-            className="flex items-center justify-end w-full"
-          >
-            <button className="text-sm text-slate-400 dark:text-stone-500 hover:text-red-500">
-              Purge Document
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

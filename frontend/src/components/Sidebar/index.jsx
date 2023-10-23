@@ -1,34 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
+import { LogOut, Menu, Package, Plus, Shield } from "react-feather";
 import {
-  AtSign,
+  Wrench,
+  GithubLogo,
   BookOpen,
-  GitHub,
-  LogOut,
-  Menu,
-  Package,
-  Plus,
-  Shield,
-  Tool,
-  X,
-} from "react-feather";
-import IndexCount from "./IndexCount";
-import LLMStatus from "./LLMStatus";
+  DiscordLogo,
+  DotsThree,
+} from "@phosphor-icons/react";
+// import IndexCount from "./IndexCount";
+// import LLMStatus from "./LLMStatus";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
 import ActiveWorkspaces from "./ActiveWorkspaces";
 import paths from "../../utils/paths";
-import Discord from "../Icons/Discord";
 import useUser from "../../hooks/useUser";
 import { userFromStorage } from "../../utils/request";
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
+import {
+  AUTH_TIMESTAMP,
+  AUTH_TOKEN,
+  AUTH_USER,
+  USER_BACKGROUND_COLOR,
+} from "../../utils/constants";
 import useLogo from "../../hooks/useLogo";
-import SettingsOverlay, { useSystemSettingsOverlay } from "./SettingsOverlay";
 
 export default function Sidebar() {
   const { logo } = useLogo();
   const sidebarRef = useRef(null);
-  const { showOverlay } = useSystemSettingsOverlay();
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
@@ -40,13 +38,12 @@ export default function Sidebar() {
       <div
         ref={sidebarRef}
         style={{ height: "calc(100% - 32px)" }}
-        className="relative transition-all duration-500 relative m-[16px] rounded-[26px] bg-white dark:bg-black-900 min-w-[15.5%] p-[18px] "
+        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px]"
       >
-        <SettingsOverlay />
-        <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
+        <div className="flex flex-col h-full overflow-x-hidden">
           {/* Header Information */}
-          <div className="flex w-full items-center justify-between">
-            <div className="flex shrink-0 max-w-[50%] items-center justify-start">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex shrink-0 max-w-[65%] items-center justify-start">
               <img
                 src={logo}
                 alt="Logo"
@@ -54,32 +51,30 @@ export default function Sidebar() {
                 style={{ objectFit: "contain" }}
               />
             </div>
-            <div className="flex gap-x-2 items-center text-slate-500">
-              <AdminHome />
-              <SettingsButton onClick={showOverlay} />
+            <div className="flex gap-x-2 items-center text-slate-200">
+              {/* <AdminHome /> */}
+              <SettingsButton />
             </div>
           </div>
 
           {/* Primary Body */}
-          <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
-            <div className="h-auto sidebar-items dark:sidebar-items">
-              <div className="flex flex-col gap-y-4 h-[65vh] pb-8 overflow-y-scroll no-scroll">
-                <div className="flex gap-x-2 items-center justify-between">
-                  <button
-                    onClick={showNewWsModal}
-                    className="flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900"
-                  >
-                    <Plus className="h-4 w-4" />
-                    <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                      New workspace
-                    </p>
-                  </button>
-                </div>
-                <ActiveWorkspaces />
+          <div className="flex-grow flex flex-col">
+            <div className="flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll">
+              <div className="flex gap-x-2 items-center justify-between">
+                <button
+                  onClick={showNewWsModal}
+                  className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                >
+                  <Plus className="h-5 w-5" />
+                  <p className="text-sidebar text-sm font-semibold">
+                    New Workspace
+                  </p>
+                </button>
               </div>
+              <ActiveWorkspaces />
             </div>
-            <div>
-              <div className="flex flex-col gap-y-2">
+            <div className="flex flex-col flex-grow justify-end mb-2">
+              {/* <div className="flex flex-col gap-y-2">
                 <div className="w-full flex items-center justify-between">
                   <LLMStatus />
                   <IndexCount />
@@ -87,45 +82,45 @@ export default function Sidebar() {
                 <a
                   href={paths.feedback()}
                   target="_blank"
-                  className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
+                  className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-transparent rounded-lg text-slate-200 justify-center items-center bg-stone-800 hover:bg-stone-900"
                 >
                   <AtSign className="h-4 w-4" />
-                  <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
+                  <p className="text-slate-200 text-xs leading-loose font-semibold">
                     Feedback form
                   </p>
                 </a>
                 <ManagedHosting />
                 <LogoutButton />
-              </div>
+              </div> */}
 
               {/* Footer */}
-              <div className="flex items-end justify-between mt-2">
-                <div className="flex gap-x-1 items-center">
+              <div className="flex justify-center mt-2">
+                <div className="flex space-x-4">
                   <a
                     href={paths.github()}
-                    className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-slate-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                   >
-                    <GitHub className="h-4 w-4 " />
+                    <GithubLogo weight="fill" className="h-5 w-5 " />
                   </a>
                   <a
                     href={paths.docs()}
-                    className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-slate-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                   >
-                    <BookOpen className="h-4 w-4 " />
+                    <BookOpen weight="fill" className="h-5 w-5 " />
                   </a>
                   <a
                     href={paths.discord()}
-                    className="transition-all duration-300 p-2 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-800 group"
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                   >
-                    <Discord className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
+                    <DiscordLogo
+                      weight="fill"
+                      className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
+                    />
                   </a>
+                  <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
+                    <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
+                  </button>
                 </div>
-                <a
-                  href={paths.mailToMintplex()}
-                  className="transition-all duration-300 text-xs text-slate-500 dark:text-slate-600 hover:text-blue-600 dark:hover:text-blue-400"
-                >
-                  @MintplexLabs
-                </a>
               </div>
             </div>
           </div>
@@ -141,7 +136,6 @@ export function SidebarMobileHeader() {
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
-  const { showOverlay } = useSystemSettingsOverlay();
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
@@ -165,21 +159,22 @@ export function SidebarMobileHeader() {
 
   return (
     <>
-      <div className="flex justify-between relative top-0 left-0 w-full rounded-b-lg px-2 pb-4 bg-white dark:bg-black-900 text-slate-800 dark:text-slate-200">
+      <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-sidebar text-slate-200 shadow-lg h-16">
         <button
           onClick={() => setShowSidebar(true)}
-          className="rounded-md bg-stone-200 p-2 flex items-center justify-center text-slate-800 hover:bg-stone-300 group dark:bg-stone-800 dark:text-slate-200 dark:hover:bg-stone-900 dark:border dark:border-stone-800"
+          className="rounded-md p-2 flex items-center justify-center text-slate-200"
         >
           <Menu className="h-6 w-6" />
         </button>
-        <div className="flex shrink-0 w-fit items-center justify-start">
+        <div className="flex items-center justify-center flex-grow">
           <img
             src={logo}
             alt="Logo"
-            className="rounded w-full max-h-[40px]"
-            style={{ objectFit: "contain" }}
+            className="block mx-auto h-6 w-auto"
+            style={{ maxHeight: "40px", objectFit: "contain" }}
           />
         </div>
+        <div className="w-12"></div>
       </div>
       <div
         style={{
@@ -192,14 +187,13 @@ export function SidebarMobileHeader() {
             showBgOverlay
               ? "transition-all opacity-1"
               : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 bg-black-900 bg-opacity-75 w-screen h-screen`}
+          }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div
           ref={sidebarRef}
-          className="relative h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-white dark:bg-black-900 w-[80%] p-[18px] "
+          className="relative h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-sidebar w-[80%] p-[18px] "
         >
-          <SettingsOverlay />
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             {/* Header Information */}
             <div className="flex w-full items-center justify-between gap-x-4">
@@ -212,14 +206,13 @@ export function SidebarMobileHeader() {
                 />
               </div>
               <div className="flex gap-x-2 items-center text-slate-500 shink-0">
-                <AdminHome />
-                <SettingsButton onClick={showOverlay} />
+                <SettingsButton />
               </div>
             </div>
 
             {/* Primary Body */}
             <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-hidden ">
-              <div className="h-auto md:sidebar-items md:dark:sidebar-items">
+              <div className="h-auto md:sidebar-items">
                 <div
                   style={{ height: "calc(100vw - -3rem)" }}
                   className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
@@ -227,11 +220,11 @@ export function SidebarMobileHeader() {
                   <div className="flex gap-x-2 items-center justify-between">
                     <button
                       onClick={showNewWsModal}
-                      className="flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 rounded-lg text-slate-800 dark:text-slate-200 justify-start items-center hover:bg-slate-100 dark:hover:bg-stone-900"
+                      className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
                     >
-                      <Plus className="h-4 w-4" />
-                      <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                        New workspace
+                      <Plus className="h-5 w-5" />
+                      <p className="text-sidebar text-sm font-semibold">
+                        New Workspace
                       </p>
                     </button>
                   </div>
@@ -239,53 +232,34 @@ export function SidebarMobileHeader() {
                 </div>
               </div>
               <div>
-                <div className="flex flex-col gap-y-2">
-                  <div className="w-full flex items-center justify-between">
-                    <LLMStatus />
-                    <IndexCount />
-                  </div>
-                  <a
-                    href={paths.feedback()}
-                    target="_blank"
-                    className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
-                  >
-                    <AtSign className="h-4 w-4" />
-                    <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
-                      Feedback form
-                    </p>
-                  </a>
-                  <ManagedHosting />
-                  <LogoutButton />
-                </div>
-
                 {/* Footer */}
-                <div className="flex items-end justify-between mt-2">
-                  <div className="flex gap-x-1 items-center">
+                <div className="flex justify-center mt-2">
+                  <div className="flex space-x-4">
                     <a
                       href={paths.github()}
-                      className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-slate-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                     >
-                      <GitHub className="h-4 w-4 " />
+                      <GithubLogo weight="fill" className="h-5 w-5 " />
                     </a>
                     <a
                       href={paths.docs()}
-                      className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-slate-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                     >
-                      <BookOpen className="h-4 w-4 " />
+                      <BookOpen weight="fill" className="h-5 w-5 " />
                     </a>
                     <a
                       href={paths.discord()}
-                      className="transition-all duration-300 p-2 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-800 group"
+                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                     >
-                      <Discord className="h-4 w-4 stroke-slate-400 group-hover:stroke-slate-200 dark:group-hover:stroke-slate-200" />
+                      <DiscordLogo
+                        weight="fill"
+                        className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
+                      />
                     </a>
+                    {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
+                    <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
+                  </button> */}
                   </div>
-                  <a
-                    href={paths.mailToMintplex()}
-                    className="transition-all duration-300 text-xs text-slate-500 dark:text-slate-600 hover:text-blue-600 dark:hover:text-blue-400"
-                  >
-                    @MintplexLabs
-                  </a>
                 </div>
               </div>
             </div>
@@ -303,7 +277,7 @@ function AdminHome() {
   return (
     <a
       href={paths.admin.system()}
-      className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+      className="transition-all duration-300 p-2 rounded-full text-slate-400 bg-stone-800 hover:bg-slate-800 hover:text-slate-200"
     >
       <Shield className="h-4 w-4" />
     </a>
@@ -323,27 +297,24 @@ function LogoutButton() {
         window.localStorage.removeItem(AUTH_TIMESTAMP);
         window.location.replace(paths.home());
       }}
-      className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
+      className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-transparent rounded-lg text-slate-200 justify-center items-center bg-stone-800 hover:bg-stone-900"
     >
       <LogOut className="h-4 w-4" />
-      <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
+      <p className="text-slate-200 text-xs leading-loose font-semibold">
         Log out of {user.username}
       </p>
     </button>
   );
 }
 
-function SettingsButton({ onClick }) {
-  const { user } = useUser();
-
-  if (!!user && user?.role !== "admin") return null;
+function SettingsButton() {
   return (
-    <button
-      onClick={onClick}
-      className="transition-all duration-300 p-2 rounded-full bg-slate-200 text-slate-400 dark:bg-stone-800 hover:bg-slate-800 hover:text-slate-200 dark:hover:text-slate-200"
+    <a
+      href={paths.general.llmPreference()}
+      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
     >
-      <Tool className="h-4 w-4 " />
-    </button>
+      <Wrench className="h-4 w-4" weight="fill" />
+    </a>
   );
 }
 
@@ -353,10 +324,10 @@ function ManagedHosting() {
     <a
       href={paths.hosting()}
       target="_blank"
-      className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-slate-400 dark:border-transparent rounded-lg text-slate-800 dark:text-slate-200 justify-center items-center hover:bg-slate-100 dark:bg-stone-800 dark:hover:bg-stone-900"
+      className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-transparent rounded-lg text-slate-200 justify-center items-center bg-stone-800 hover:bg-stone-900"
     >
       <Package className="h-4 w-4" />
-      <p className="text-slate-800 dark:text-slate-200 text-xs leading-loose font-semibold">
+      <p className="text-slate-200 text-xs leading-loose font-semibold">
         Managed cloud hosting
       </p>
     </a>
