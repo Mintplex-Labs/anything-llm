@@ -1,28 +1,33 @@
 import React from "react";
+import Jazzicon from "../UserIcon";
+import { userFromStorage } from "../../utils/request";
+import {
+  AI_BACKGROUND_COLOR,
+  USER_BACKGROUND_COLOR,
+} from "../../utils/constants";
 
 export default function ChatBubble({ message, type, popMsg }) {
   const isUser = type === "user";
+  const backgroundColor = isUser ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR;
 
   return (
-    <div
-      className={`flex w-full mt-2 items-center ${
-        popMsg ? "chat__message" : ""
-      } ${isUser ? "justify-end" : "justify-start"}`}
-    >
+    <div className={`flex justify-center items-end w-full ${backgroundColor}`}>
       <div
-        className={`p-4 max-w-full md:max-w-[75%] ${
-          isUser
-            ? "bg-slate-200 dark:bg-amber-800"
-            : "bg-orange-100 dark:bg-stone-700"
-        } rounded-b-2xl ${isUser ? "rounded-tl-2xl" : "rounded-tr-2xl"} ${
-          isUser ? "rounded-tr-sm" : "rounded-tl-sm"
-        }`}
+        className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
       >
-        {message && (
-          <p className="text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base">
+        <div className="flex gap-x-5">
+          <Jazzicon
+            size={36}
+            user={{ uid: isUser ? userFromStorage()?.username : "system" }}
+            role={type}
+          />
+
+          <span
+            className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+          >
             {message}
-          </p>
-        )}
+          </span>
+        </div>
       </div>
     </div>
   );

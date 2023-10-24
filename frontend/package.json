@@ -12,8 +12,10 @@
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@metamask/jazzicon": "^2.0.0",
+    "@phosphor-icons/react": "^2.0.13",
     "buffer": "^6.0.3",
     "he": "^1.2.0",
+    "lodash.debounce": "^4.0.8",
     "markdown-it": "^13.0.1",
     "pluralize": "^8.0.0",
     "react": "^18.2.0",

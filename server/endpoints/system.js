@@ -32,7 +32,7 @@ const {
   validFilename,
   renameLogoFile,
   removeCustomLogo,
-  DARK_LOGO_FILENAME,
+  LOGO_FILENAME,
 } = require("../utils/files/logo");
 const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
@@ -323,11 +323,26 @@ function systemEndpoints(app) {
         await Telemetry.sendTelemetry("enabled_multi_user_mode");
         response.status(200).json({ success: !!user, error });
       } catch (e) {
+        await User.delete({});
+        await SystemSettings.updateSettings({
+          multi_user_mode: false,
+        });
+
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
     }
   );
+
+  app.get("/system/multi-user-mode", async (request, response) => {
+    try {
+      const multiUserMode = await SystemSettings.isMultiUserMode();
+      response.status(200).json({ multiUserMode });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
 
   app.get("/system/data-export", [validatedRequest], async (_, response) => {
     try {
@@ -339,34 +354,32 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get(
-    "/system/data-exports/:filename",
-    [validatedRequest],
-    (request, response) => {
-      const exportLocation = __dirname + "/../storage/exports/";
-      const sanitized = path
-        .normalize(request.params.filename)
-        .replace(/^(\.\.(\/|\\|$))+/, "");
-      const finalDestination = path.join(exportLocation, sanitized);
+  app.get("/system/data-exports/:filename", (request, response) => {
+    const exportLocation = __dirname + "/../storage/exports/";
+    const sanitized = path
+      .normalize(request.params.filename)
+      .replace(/^(\.\.(\/|\\|$))+/, "");
+    const finalDestination = path.join(exportLocation, sanitized);
 
-      if (!fs.existsSync(finalDestination)) {
-        response.status(404).json({
-          error: 404,
-          msg: `File ${request.params.filename} does not exist in exports.`,
-        });
-        return;
-      }
-
-      response.download(finalDestination, request.params.filename, (err) => {
-        if (err) {
-          response.send({
-            error: err,
-            msg: "Problem downloading the file",
-          });
-        }
+    if (!fs.existsSync(finalDestination)) {
+      response.status(404).json({
+        error: 404,
+        msg: `File ${request.params.filename} does not exist in exports.`,
       });
+      return;
     }
-  );
+
+    response.download(finalDestination, request.params.filename, (err) => {
+      if (err) {
+        response.send({
+          error: err,
+          msg: "Problem downloading the file",
+        });
+      }
+      // delete on download because endpoint is not authenticated.
+      fs.rmSync(finalDestination);
+    });
+  });
 
   app.post(
     "/system/data-import",
@@ -378,9 +391,9 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/logo/:mode?", async function (request, response) {
+  app.get("/system/logo", async function (request, response) {
     try {
-      const defaultFilename = getDefaultFilename(request.params.mode);
+      const defaultFilename = getDefaultFilename();
       const logoPath = await determineLogoFilepath(defaultFilename);
       const { buffer, size, mime } = fetchLogo(logoPath);
       response.writeHead(200, {
@@ -441,6 +454,17 @@ function systemEndpoints(app) {
     }
   );
 
+  app.get("/system/is-default-logo", async (request, response) => {
+    try {
+      const currentLogoFilename = await SystemSettings.currentLogoFilename();
+      const isDefaultLogo = currentLogoFilename === LOGO_FILENAME;
+      response.status(200).json({ isDefaultLogo });
+    } catch (error) {
+      console.error("Error processing the logo request:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.get(
     "/system/remove-logo",
     [validatedRequest],
@@ -456,7 +480,7 @@ function systemEndpoints(app) {
         const currentLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(currentLogoFilename);
         const { success, error } = await SystemSettings.updateSettings({
-          logo_filename: DARK_LOGO_FILENAME,
+          logo_filename: LOGO_FILENAME,
         });
 
         return response.status(success ? 200 : 500).json({
@@ -544,15 +568,15 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/api-key", [validatedRequest], async (_, response) => {
+  app.get("/system/api-keys", [validatedRequest], async (_, response) => {
     try {
       if (response.locals.multiUserMode) {
         return response.sendStatus(401).end();
       }
 
-      const apiKey = await ApiKey.get({});
+      const apiKeys = await ApiKey.where({});
       return response.status(200).json({
-        apiKey,
+        apiKeys,
         error: null,
       });
     } catch (error) {
@@ -573,7 +597,6 @@ function systemEndpoints(app) {
           return response.sendStatus(401).end();
         }
 
-        await ApiKey.delete();
         const { apiKey, error } = await ApiKey.create();
         return response.status(200).json({
           apiKey,
