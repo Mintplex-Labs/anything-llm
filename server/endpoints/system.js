@@ -145,7 +145,7 @@ function systemEndpoints(app) {
         const { password } = reqBody(request);
         const auth_token = await SystemSettings.get({ label: "auth_token" });
 
-        if (password !== auth_token) {
+        if (password !== auth_token.value) {
           response.status(401).json({
             valid: false,
             token: null,
@@ -273,14 +273,12 @@ function systemEndpoints(app) {
         }
 
         const { usePassword, newPassword } = reqBody(request);
-        const { error } = updateENV(
-          {
-            AuthToken: usePassword ? newPassword : "",
-            JWTSecret: usePassword ? v4() : "",
-          },
-          true
-        );
-        if (process.env.NODE_ENV === "production") await dumpENV();
+
+        const { error } = await SystemSettings.updateSettings({
+          auth_token: usePassword ? newPassword : "",
+          jwt_secret: usePassword ? v4() : "",
+        });
+
         response.status(200).json({ success: !error, error });
       } catch (e) {
         console.log(e.message, e);
@@ -309,22 +307,19 @@ function systemEndpoints(app) {
           password,
           role: "admin",
         });
+
+        const jwt_secret = await SystemSettings.get({ label: "jwt_secret" });
+
         await SystemSettings.updateSettings({
           multi_user_mode: true,
           users_can_delete_workspaces: false,
           limit_user_messages: false,
           message_limit: 25,
+          auth_token: "",
+          jwt_secret: jwt_secret.value ?? v4(),
         });
 
-        const jwt_secret = await SystemSettings.get({ label: "jwt_secret" });
 
-        updateENV(
-          {
-            AuthToken: "",
-            JWTSecret: jwt_secret ?? v4(),
-          },
-          true
-        );
         if (process.env.NODE_ENV === "production") await dumpENV();
         await Telemetry.sendTelemetry("enabled_multi_user_mode");
         response.status(200).json({ success: !!user, error });
