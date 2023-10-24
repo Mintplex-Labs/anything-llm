@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass } = require("../utils/helpers");
 const prisma = require("../utils/prisma");
 const { Telemetry } = require("./telemetry");
+const { SystemSettings } = require("./systemSettings");
 
 const Document = {
   forWorkspace: async function (workspaceId = null) {

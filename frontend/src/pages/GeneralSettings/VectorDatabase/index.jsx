@@ -23,6 +23,7 @@ export default function GeneralVectorDatabase() {
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
+      console.log("SETTINGS: ", _settings);
       setSettings(_settings);
       setVectorDB(_settings?.VectorDB || "lancedb");
       setLoading(false);
@@ -42,6 +43,7 @@ export default function GeneralVectorDatabase() {
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
+    console.log("DATA: ", data);
     if (error) {
       showToast(`Failed to save settings: ${error}`, "error");
     } else {
@@ -100,7 +102,7 @@ export default function GeneralVectorDatabase() {
                 Select your preferred vector database provider
               </div>
               <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
-                <input hidden={true} name="VectorDB" value={vectorDB} />
+                <input hidden={true} name="vector_db" value={vectorDB} />
                 <VectorDBOption
                   name="Chroma"
                   value="chroma"
@@ -156,7 +158,7 @@ export default function GeneralVectorDatabase() {
                       </label>
                       <input
                         type="password"
-                        name="PineConeKey"
+                        name="pinecone_api_key"
                         className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="Pinecone API Key"
                         defaultValue={
@@ -174,7 +176,7 @@ export default function GeneralVectorDatabase() {
                       </label>
                       <input
                         type="text"
-                        name="PineConeEnvironment"
+                        name="pinecone_environment"
                         className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="us-gcp-west-1"
                         defaultValue={settings?.PineConeEnvironment}
@@ -190,7 +192,7 @@ export default function GeneralVectorDatabase() {
                       </label>
                       <input
                         type="text"
-                        name="PineConeIndex"
+                        name="pinecone_index"
                         className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="my-index"
                         defaultValue={settings?.PineConeIndex}
@@ -210,7 +212,7 @@ export default function GeneralVectorDatabase() {
                       </label>
                       <input
                         type="url"
-                        name="ChromaEndpoint"
+                        name="chroma_endpoint"
                         className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="http://localhost:8000"
                         defaultValue={settings?.ChromaEndpoint}
@@ -225,7 +227,7 @@ export default function GeneralVectorDatabase() {
                         API Header
                       </label>
                       <input
-                        name="ChromaApiHeader"
+                        name="chroma_api_header"
                         autoComplete="off"
                         type="text"
                         defaultValue={settings?.ChromaApiHeader}
@@ -239,7 +241,7 @@ export default function GeneralVectorDatabase() {
                         API Key
                       </label>
                       <input
-                        name="ChromaApiKey"
+                        name="chroma_api_key"
                         autoComplete="off"
                         type="password"
                         defaultValue={
@@ -268,7 +270,7 @@ export default function GeneralVectorDatabase() {
                       </label>
                       <input
                         type="url"
-                        name="QdrantEndpoint"
+                        name="qdrant_endpoint"
                         className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="http://localhost:6633"
                         defaultValue={settings?.QdrantEndpoint}
@@ -284,7 +286,7 @@ export default function GeneralVectorDatabase() {
                       </label>
                       <input
                         type="password"
-                        name="QdrantApiKey"
+                        name="qdrant_api_key"
                         className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="wOeqxsYP4....1244sba"
                         defaultValue={settings?.QdrantApiKey}
@@ -303,7 +305,7 @@ export default function GeneralVectorDatabase() {
                       </label>
                       <input
                         type="url"
-                        name="WeaviateEndpoint"
+                        name="weaviate_endpoint"
                         className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="http://localhost:8080"
                         defaultValue={settings?.WeaviateEndpoint}
@@ -319,7 +321,7 @@ export default function GeneralVectorDatabase() {
                       </label>
                       <input
                         type="password"
-                        name="WeaviateApiKey"
+                        name="weaviate_api_key"
                         className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="sk-123Abcweaviate"
                         defaultValue={settings?.WeaviateApiKey}
