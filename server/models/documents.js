@@ -68,9 +68,15 @@ const Document = {
       }
     }
 
+    const settings = await SystemSettings.getMultiple([
+      "llm_provider",
+      "vector_db",
+    ]);
+
+
     await Telemetry.sendTelemetry("documents_embedded_in_workspace", {
-      LLMSelection: process.env.LLM_PROVIDER || "openai",
-      VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+      LLMSelection: settings.llm_provider || "openai",
+      VectorDbSelection: settings.vector_db || "pinecone",
     });
     return;
   },
@@ -99,9 +105,14 @@ const Document = {
       }
     }
 
+    const settings = await SystemSettings.getMultiple([
+      "llm_provider",
+      "vector_db",
+    ]);
+
     await Telemetry.sendTelemetry("documents_removed_in_workspace", {
-      LLMSelection: process.env.LLM_PROVIDER || "openai",
-      VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+      LLMSelection: settings.llm_provider || "openai",
+      VectorDbSelection: settings.vector_db || "pinecone",
     });
     return true;
   },
