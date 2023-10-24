@@ -73,7 +73,6 @@ const Document = {
       "vector_db",
     ]);
 
-
     await Telemetry.sendTelemetry("documents_embedded_in_workspace", {
       LLMSelection: settings.llm_provider || "openai",
       VectorDbSelection: settings.vector_db || "pinecone",

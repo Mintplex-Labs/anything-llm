@@ -319,7 +319,6 @@ function systemEndpoints(app) {
           jwt_secret: jwt_secret?.value ?? v4(),
         });
 
-
         if (process.env.NODE_ENV === "production") await dumpENV();
         await Telemetry.sendTelemetry("enabled_multi_user_mode");
         response.status(200).json({ success: !!user, error });

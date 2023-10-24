@@ -89,29 +89,29 @@ app.all("*", function (_, response) {
   response.sendStatus(404);
 });
 
-
 async function startServer() {
   try {
     const portSetting = await SystemSettings.get({ label: "server_port" });
     const port = portSetting ? portSetting.value : 3001;
 
-    app.listen(port, async () => {
-      await setupTelemetry();
-      await SystemSettings.syncWithEnvVariables();
-      console.log(`Example app listening on port ${port}`);
-    })
-    .on("error", function (err) {
-      process.once("SIGUSR2", function () {
-        Telemetry.flush();
-        process.kill(process.pid, "SIGUSR2");
+    app
+      .listen(port, async () => {
+        await setupTelemetry();
+        await SystemSettings.syncWithEnvVariables();
+        console.log(`Example app listening on port ${port}`);
+      })
+      .on("error", function (err) {
+        process.once("SIGUSR2", function () {
+          Telemetry.flush();
+          process.kill(process.pid, "SIGUSR2");
+        });
+        process.on("SIGINT", function () {
+          Telemetry.flush();
+          process.kill(process.pid, "SIGINT");
+        });
       });
-      process.on("SIGINT", function () {
-        Telemetry.flush();
-        process.kill(process.pid, "SIGINT");
-      });
-    });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error("Failed to start server:", error);
   }
 }
 startServer();

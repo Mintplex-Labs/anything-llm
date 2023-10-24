@@ -64,8 +64,10 @@ function chatEndpoints(app) {
         }
 
         const result = await chatWithWorkspace(workspace, message, mode, user);
-        const settings = await SystemSettings.getMultiple(['llm_provider', 'vector_db']);
-
+        const settings = await SystemSettings.getMultiple([
+          "llm_provider",
+          "vector_db",
+        ]);
 
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),

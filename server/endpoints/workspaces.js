@@ -23,7 +23,10 @@ function workspaceEndpoints(app) {
       const user = await userFromSession(request, response);
       const { name = null } = reqBody(request);
       const { workspace, message } = await Workspace.new(name, user?.id);
-      const settings = await SystemSettings.getMultiple(['llm_provider', 'vector_db']);
+      const settings = await SystemSettings.getMultiple([
+        "llm_provider",
+        "vector_db",
+      ]);
 
       await Telemetry.sendTelemetry("workspace_created", {
         multiUserMode: multiUserMode(response),

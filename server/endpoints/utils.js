@@ -37,7 +37,7 @@ function utilEndpoints(app) {
 
   app.get("/utils/metrics", async (_, response) => {
     try {
-      const vectorDB =  SystemSettings.get({ label: "vector_db"  });
+      const vectorDB = SystemSettings.get({ label: "vector_db" });
       const metrics = {
         online: true,
         version: getGitVersion(),

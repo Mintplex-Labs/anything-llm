@@ -39,7 +39,7 @@ const SystemSettings = {
     "azure_openai_embedding_model_pref",
   ],
 
-  syncWithEnvVariables: async function() {
+  syncWithEnvVariables: async function () {
     try {
       const existingSettings = await prisma.system_settings.findMany({
         where: {
@@ -47,12 +47,17 @@ const SystemSettings = {
         },
       });
 
-      const existingSettingsMap = new Map(existingSettings.map(setting => [setting.label, setting.value]));
+      const existingSettingsMap = new Map(
+        existingSettings.map((setting) => [setting.label, setting.value])
+      );
 
       const updates = {};
       this.supportedFields.forEach((field) => {
         const envVarName = field.toUpperCase();
-        if (process.env[envVarName] !== undefined && !existingSettingsMap.has(field)) {
+        if (
+          process.env[envVarName] !== undefined &&
+          !existingSettingsMap.has(field)
+        ) {
           updates[field] = process.env[envVarName];
         }
       });
@@ -67,12 +72,17 @@ const SystemSettings = {
 
       if (updatePromises.length > 0) {
         await Promise.all(updatePromises);
-        console.log('New environment variables have been synchronized with the database.');
+        console.log(
+          "New environment variables have been synchronized with the database."
+        );
       } else {
-        console.log('No new settings to update.');
+        console.log("No new settings to update.");
       }
     } catch (error) {
-      console.error('Failed to synchronize environment variables with the database:', error.message);
+      console.error(
+        "Failed to synchronize environment variables with the database:",
+        error.message
+      );
     }
   },
 
@@ -83,7 +93,9 @@ const SystemSettings = {
       },
     });
 
-    const settings = Object.fromEntries(settingsArray.map((setting) => [setting.label, setting.value]));
+    const settings = Object.fromEntries(
+      settingsArray.map((setting) => [setting.label, setting.value])
+    );
 
     const vectorDB = settings.vector_db || "pinecone";
     const llm_provider = settings.llm_provider || "openai";
@@ -96,52 +108,52 @@ const SystemSettings = {
       StorageDir: settings.storage_dir,
       MultiUserMode: await this.isMultiUserMode(),
       vectorDB: vectorDB,
-      ...(vectorDB === "pinecone")
+      ...(vectorDB === "pinecone"
         ? {
             PineConeEnvironment: settings.pinecone_environment,
             PineConeKey: !!settings.pinecone_api_key,
             PineConeIndex: settings.pinecone_index,
           }
-        : {},
-      ...(vectorDB === "chroma")
+        : {}),
+      ...(vectorDB === "chroma"
         ? {
             ChromaEndpoint: settings.chroma_endpoint,
             ChromaApiHeader: settings.chroma_api_header,
             ChromaApiKey: !!settings.chroma_api_key,
           }
-        : {},
-      ...(vectorDB === "weaviate")
-      ? {
-        WeviateEndpoint: settings.weaviate_endpoint,
-        WeaviateApiKey: settings.weaviate_api_key,
-      }
-      : {},
-      ...(vectorDB === "qdrant")
-      ? {
-        QdrantEndpoint: settings.qdrant_endpoint,
-        QdrantApiKey: settings.qdrant_api_key,
-      }
-      : {},
-      LLMProvider : llm_provider,
-      ...(llm_provider === "openai")
+        : {}),
+      ...(vectorDB === "weaviate"
+        ? {
+            WeviateEndpoint: settings.weaviate_endpoint,
+            WeaviateApiKey: settings.weaviate_api_key,
+          }
+        : {}),
+      ...(vectorDB === "qdrant"
+        ? {
+            QdrantEndpoint: settings.qdrant_endpoint,
+            QdrantApiKey: settings.qdrant_api_key,
+          }
+        : {}),
+      LLMProvider: llm_provider,
+      ...(llm_provider === "openai"
         ? {
             OpenAiKey: !!settings.open_ai_key,
             OpenAiModelPref: settings.open_model_pref || "gpt-3.5-turbo",
           }
-        : {},
-      ...(llm_provider === "azure")
+        : {}),
+      ...(llm_provider === "azure"
         ? {
             AzureOpenAiEndpoint: settings.azure_openai_endpoint,
             AzureOpenAiKey: !!settings.azure_openai_key,
             AzureOpenAiModelPref: settings.azure_openai_model_pref,
-            AzureOpenAiEmbeddingModelPref: settings.azure_openai_embedding_model_pref,
+            AzureOpenAiEmbeddingModelPref:
+              settings.azure_openai_embedding_model_pref,
           }
-        : {},
+        : {}),
     };
-
   },
 
-  getMultiple: async function(labels) {
+  getMultiple: async function (labels) {
     try {
       const settings = await prisma.system_settings.findMany({
         where: {
@@ -156,11 +168,10 @@ const SystemSettings = {
         return acc;
       }, {});
     } catch (error) {
-      console.error('Failed to retrieve multiple settings:', error.message);
+      console.error("Failed to retrieve multiple settings:", error.message);
       return {};
     }
   },
-
 
   get: async function (clause = {}) {
     try {
