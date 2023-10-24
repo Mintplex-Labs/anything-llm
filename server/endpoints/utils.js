@@ -37,13 +37,14 @@ function utilEndpoints(app) {
 
   app.get("/utils/metrics", async (_, response) => {
     try {
+      const vectorDB =  SystemSettings.get({ label: "vector_db"  });
       const metrics = {
         online: true,
         version: getGitVersion(),
         mode: (await SystemSettings.isMultiUserMode())
           ? "multi-user"
           : "single-user",
-        vectorDB: process.env.VECTOR_DB || "lancedb",
+        vectorDB: vectorDB?.value || "lancedb",
         storage: await getDiskStorage(),
       };
       response.status(200).json(metrics);
