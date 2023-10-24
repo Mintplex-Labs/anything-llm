@@ -145,7 +145,7 @@ function systemEndpoints(app) {
         const { password } = reqBody(request);
         const auth_token = await SystemSettings.get({ label: "auth_token" });
 
-        if (password !== auth_token.value) {
+        if (password !== auth_token?.value) {
           response.status(401).json({
             valid: false,
             token: null,
@@ -316,7 +316,7 @@ function systemEndpoints(app) {
           limit_user_messages: false,
           message_limit: 25,
           auth_token: "",
-          jwt_secret: jwt_secret.value ?? v4(),
+          jwt_secret: jwt_secret?.value ?? v4(),
         });
 
 
