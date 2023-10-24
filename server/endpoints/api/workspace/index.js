@@ -61,10 +61,14 @@ function apiWorkspaceEndpoints(app) {
     try {
       const { name = null } = reqBody(request);
       const { workspace, message } = await Workspace.new(name);
+      const settings = await SystemSettings.getMultiple([
+        "llm_provider",
+        "vector_db",
+      ]);
       await Telemetry.sendTelemetry("workspace_created", {
         multiUserMode: multiUserMode(response),
-        LLMSelection: process.env.LLM_PROVIDER || "openai",
-        VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        LLMSelection: settings.llm_provider || "openai",
+        VectorDbSelection: settings.vector_db || "pinecone",
       });
       response.status(200).json({ workspace, message });
     } catch (e) {
@@ -485,9 +489,13 @@ function apiWorkspaceEndpoints(app) {
         }
 
         const result = await chatWithWorkspace(workspace, message, mode);
+        const settings = await SystemSettings.getMultiple([
+          "llm_provider",
+          "vector_db",
+        ]);
         await Telemetry.sendTelemetry("sent_chat", {
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
-          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          LLMSelection: settings.llm_provider || "openai",
+          VectorDbSelection: settings.vector_db || "pinecone",
         });
         response.status(200).json({ ...result });
       } catch (e) {
