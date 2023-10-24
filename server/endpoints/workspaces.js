@@ -23,10 +23,14 @@ function workspaceEndpoints(app) {
       const user = await userFromSession(request, response);
       const { name = null } = reqBody(request);
       const { workspace, message } = await Workspace.new(name, user?.id);
+      const settings = await SystemSettings.getMultiple(['llm_provider', 'vector_db']);
+      const llm_provider = settings.llm_provider || "openai";
+      const vector_db = settings.vector_db || "pinecone";
+
       await Telemetry.sendTelemetry("workspace_created", {
         multiUserMode: multiUserMode(response),
-        LLMSelection: process.env.LLM_PROVIDER || "openai",
-        VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        LLMSelection: llm_provider || "openai",
+        VectorDbSelection: vector_db || "pinecone",
       });
       response.status(200).json({ workspace, message });
     } catch (e) {

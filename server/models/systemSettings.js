@@ -76,7 +76,6 @@ const SystemSettings = {
   },
 
   currentSettings: async function () {
-    // this.syncWithEnvVariables(); // call this on boot to dump all env vars into the database
     const settingsArray = await prisma.system_settings.findMany({
       where: {
         label: { in: this.supportedFields },

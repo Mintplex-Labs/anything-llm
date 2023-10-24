@@ -97,6 +97,7 @@ async function startServer() {
 
     app.listen(port, async () => {
       await setupTelemetry();
+      await SystemSettings.syncWithEnvVariables();
       console.log(`Example app listening on port ${port}`);
     })
     .on("error", function (err) {
