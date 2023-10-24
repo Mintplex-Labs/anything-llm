@@ -22,8 +22,9 @@ const Telemetry = {
     return process.env.NODE_ENV === "development" && this.stubDevelopmentEvents;
   },
 
-  client: function () {
-    if (process.env.DISABLE_TELEMETRY === "true" || this.isDev()) return null;
+  client: async function () {
+    const disable_telemetry = await SystemSettings.get({ label: "disable_telemetry" });
+    if (disable_telemetry?.value === "true" || this.isDev()) return null;
     const { PostHog } = require("posthog-node");
     return new PostHog(this.pubkey);
   },

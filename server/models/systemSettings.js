@@ -17,6 +17,7 @@ const SystemSettings = {
     "llm_provider",
     "vector_db",
     "no_debug",
+    "disable_telemetry",
     "auth_token",
     "jwt_secret",
     "storage_dir",
