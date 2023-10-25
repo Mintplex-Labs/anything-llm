@@ -1,17 +1,34 @@
+const { SystemSettings } = require("../../../models/systemSettings");
 const { toChunks } = require("../../helpers");
 
 class AzureOpenAi {
   constructor() {
-    const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
-    const openai = new OpenAIClient(
-      process.env.AZURE_OPENAI_ENDPOINT,
-      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
-    );
-    this.openai = openai;
-
     // The maximum amount of "inputs" that OpenAI API can process in a single call.
     // https://learn.microsoft.com/en-us/azure/ai-services/openai/faq#i-am-trying-to-use-embeddings-and-received-the-error--invalidrequesterror--too-many-inputs--the-max-number-of-inputs-is-1---how-do-i-fix-this-:~:text=consisting%20of%20up%20to%2016%20inputs%20per%20API%20request
     this.embeddingChunkLimit = 16;
+    this.azure_openai_endpoint = null;
+    this.azure_openai_key = null;
+    this.azure_openai_model_pref = null;
+    this.azure_openai_embedding_model_pref = null;
+  }
+
+  async init() {
+    const settings = await SystemSettings.getMultiple([
+      "azure_openai_endpoint",
+      "azure_openai_key",
+      "azure_openai_model_pref",
+      "azure_openai_embedding_model_pref",
+    ]);
+    const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
+    const openai = new OpenAIClient(
+      settings.azure_openai_endpoint,
+      new AzureKeyCredential(settings.azure_openai_key)
+    );
+    this.openai = openai;
+    this.azure_openai_endpoint = settings.azure_openai_endpoint;
+    this.azure_openai_key = settings.azure_openai_key;
+    this.azure_openai_model_pref = settings.azure_openai_model_pref;
+    this.azure_openai_embedding_model_pref = settings.azure_openai_embedding_model_pref;
   }
 
   isValidChatModel(_modelName = "") {
@@ -27,7 +44,7 @@ class AzureOpenAi {
   }
 
   async sendChat(chatHistory = [], prompt, workspace = {}) {
-    const model = process.env.OPEN_MODEL_PREF;
+    const model = this.azure_openai_model_pref;
     if (!model)
       throw new Error(
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
@@ -63,7 +80,7 @@ class AzureOpenAi {
   }
 
   async getChatCompletion(messages = [], { temperature = 0.7 }) {
-    const model = process.env.OPEN_MODEL_PREF;
+    const model = this.azure_openai_model_pref;
     if (!model)
       throw new Error(
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
@@ -82,8 +99,7 @@ class AzureOpenAi {
   }
 
   async embedChunks(textChunks = []) {
-    const textEmbeddingModel =
-      process.env.EMBEDDING_MODEL_PREF || "text-embedding-ada-002";
+    const textEmbeddingModel = this.azure_openai_embedding_model_pref || "text-embedding-ada-002";
     if (!textEmbeddingModel)
       throw new Error(
         "No EMBEDDING_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an embedding model."

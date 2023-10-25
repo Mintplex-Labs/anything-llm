@@ -29,7 +29,6 @@ async function getLLMProvider() {
     case "openai":
       const { OpenAi } = require("../AiProviders/openAi");
       providerInstance = new OpenAi();
-      console.log("OpenAi::calling init constructor");
       await providerInstance.init();
       break;
     case "azure":
