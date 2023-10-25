@@ -4,11 +4,15 @@
 ![Homescreen](./home.png)
 
 ### Document Manager
-⚡ means the current version of the document has been embedded before and will not cost money to convert into a vector!
+`Cached` means the current version of the document has been embedded before and will not cost money to convert into a vector!
 ![Document Manager](./document.png)
 
-### Chatting
-![Chatting](./chat.png)
+### Document Uploading & Embedding
+![Uploading Document](./uploading_doc.gif)
 
-### Setup check
-![Setup check](./keys.png)
+### Chatting
+![Chatting](./chatting.gif)
+
+### Settings & Configs
+![LLM Selection](./llm_selection.png)
+![Vector Database Selection](./vector_databases.png)
