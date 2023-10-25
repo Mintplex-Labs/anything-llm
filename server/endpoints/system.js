@@ -235,6 +235,7 @@ function systemEndpoints(app) {
     }
   );
 
+  // TODO: deprecate this endpoint.
   app.post(
     "/system/update-env",
     [validatedRequest],
@@ -254,6 +255,33 @@ function systemEndpoints(app) {
         const { newValues, error } = updateENV(body);
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/update-settings",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const body = reqBody(request);
+
+        // Only admins can update the ENV settings.
+        if (multiUserMode(response)) {
+          const user = await userFromSession(request, response);
+          if (!user || user?.role !== "admin") {
+            response.sendStatus(401).end();
+            return;
+          }
+        }
+
+        console.log("body", body);
+
+        const { error } = await SystemSettings.updateSettings(body);
+        response.status(200).json({ success: !error, error });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();

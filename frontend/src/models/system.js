@@ -86,7 +86,7 @@ const System = {
       .catch(() => null);
   },
   updateSystem: async (data) => {
-    return await fetch(`${API_BASE}/system/update-env`, {
+    return await fetch(`${API_BASE}/system/update-settings`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),

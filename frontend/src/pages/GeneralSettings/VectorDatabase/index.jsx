@@ -23,9 +23,8 @@ export default function GeneralVectorDatabase() {
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
-      console.log("SETTINGS: ", _settings);
       setSettings(_settings);
-      setVectorDB(_settings?.VectorDB || "lancedb");
+      setVectorDB(_settings?.vectorDB || "lancedb");
       setLoading(false);
     }
     fetchKeys();
@@ -43,7 +42,6 @@ export default function GeneralVectorDatabase() {
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
-    console.log("DATA: ", data);
     if (error) {
       showToast(`Failed to save settings: ${error}`, "error");
     } else {
