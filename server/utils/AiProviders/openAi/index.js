@@ -1,12 +1,34 @@
+const { SystemSettings } = require("../../../models/systemSettings");
+
 class OpenAi {
   constructor() {
+    // const { Configuration, OpenAIApi } = require("openai");
+    // const config = new Configuration({
+    //   apiKey: process.env.OPEN_AI_KEY,
+    // });
+    // const openai = new OpenAIApi(config);
+    // this.openai = openai;
+
+    console.log("OpenAi::constructor");
+    this.openai = null;
+    this.chatModel = null;
+  }
+
+  async init() {
+    const settings = await SystemSettings.currentSettings();
+    const { OpenAiKey, OpenAiModelPref } = settings;
+    if (!OpenAiKey || !OpenAiModelPref)
+      throw new Error("OpenAI settings are not configured!");
+
     const { Configuration, OpenAIApi } = require("openai");
     const config = new Configuration({
-      apiKey: process.env.OPEN_AI_KEY,
+      apiKey: OpenAiKey,
     });
     const openai = new OpenAIApi(config);
     this.openai = openai;
+    this.chatModel = OpenAiModelPref;
   }
+
 
   isValidChatModel(modelName = "") {
     const validModels = ["gpt-4", "gpt-3.5-turbo"];

@@ -21,18 +21,29 @@ function getVectorDbClass() {
   }
 }
 
-function getLLMProvider() {
-  const vectorSelection = process.env.LLM_PROVIDER || "openai";
-  switch (vectorSelection) {
+async function getLLMProvider() {
+  const llmSeclection = process.env.LLM_PROVIDER || "openai";
+  let providerInstance;
+
+  switch (llmSeclection) {
     case "openai":
       const { OpenAi } = require("../AiProviders/openAi");
-      return new OpenAi();
+      providerInstance = new OpenAi();
+      console.log("OpenAi::calling init constructor");
+      await providerInstance.init();
+      break;
     case "azure":
       const { AzureOpenAi } = require("../AiProviders/azureOpenAi");
-      return new AzureOpenAi();
+      providerInstance = new AzureOpenAi();
+      await providerInstance.init();
+      break;
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
   }
+
+  console.log(`Using ${llmSeclection} as LLM provider.`);
+
+  return providerInstance;
 }
 
 function toChunks(arr, size) {

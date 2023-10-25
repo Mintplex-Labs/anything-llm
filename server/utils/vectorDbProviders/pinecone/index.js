@@ -128,7 +128,7 @@ const Pinecone = {
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
-      const LLMConnector = getLLMProvider();
+      const LLMConnector = await getLLMProvider();
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await LLMConnector.embedChunks(textChunks);
@@ -233,7 +233,7 @@ const Pinecone = {
       };
     }
 
-    const LLMConnector = getLLMProvider();
+    const LLMConnector = await getLLMProvider();
     const queryVector = await LLMConnector.embedTextInput(input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       pineconeIndex,
@@ -281,7 +281,7 @@ const Pinecone = {
         "Invalid namespace - has it been collected and seeded yet?"
       );
 
-    const LLMConnector = getLLMProvider();
+    const LLMConnector = await getLLMProvider();
     const queryVector = await LLMConnector.embedTextInput(input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       pineconeIndex,
