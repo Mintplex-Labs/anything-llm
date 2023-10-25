@@ -2,31 +2,19 @@ const { SystemSettings } = require("../../../models/systemSettings");
 
 class OpenAi {
   constructor() {
-    // const { Configuration, OpenAIApi } = require("openai");
-    // const config = new Configuration({
-    //   apiKey: process.env.OPEN_AI_KEY,
-    // });
-    // const openai = new OpenAIApi(config);
-    // this.openai = openai;
-
-    console.log("OpenAi::constructor");
     this.openai = null;
     this.chatModel = null;
   }
 
   async init() {
-    const settings = await SystemSettings.currentSettings();
-    const { OpenAiKey, OpenAiModelPref } = settings;
-    if (!OpenAiKey || !OpenAiModelPref)
-      throw new Error("OpenAI settings are not configured!");
-
+    const settings = await SystemSettings.getMultiple(["open_ai_key", "open_model_pref"]);
     const { Configuration, OpenAIApi } = require("openai");
     const config = new Configuration({
-      apiKey: OpenAiKey,
+      apiKey: settings.open_ai_key,
     });
     const openai = new OpenAIApi(config);
     this.openai = openai;
-    this.chatModel = OpenAiModelPref;
+    this.chatModel = settings.open_model_pref;
   }
 
 
@@ -68,7 +56,7 @@ class OpenAi {
   }
 
   async sendChat(chatHistory = [], prompt, workspace = {}) {
-    const model = process.env.OPEN_MODEL_PREF;
+    const model = this.chatModel || "gpt-3.5-turbo";
     if (!this.isValidChatModel(model))
       throw new Error(
         `OpenAI chat: ${model} is not valid for chat completion!`
@@ -104,7 +92,7 @@ class OpenAi {
   }
 
   async getChatCompletion(messages = [], { temperature = 0.7 }) {
-    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
+    const model = this.chatModel || "gpt-3.5-turbo";
     const { data } = await this.openai.createChatCompletion({
       model,
       messages,

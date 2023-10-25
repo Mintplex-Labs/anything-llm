@@ -67,7 +67,7 @@ async function chatWithWorkspace(
   user = null
 ) {
   const uuid = uuidv4();
-  const LLMConnector = getLLMProvider();
+  const LLMConnector = await getLLMProvider();
   const VectorDb = getVectorDbClass();
   const command = grepCommand(message);
 
