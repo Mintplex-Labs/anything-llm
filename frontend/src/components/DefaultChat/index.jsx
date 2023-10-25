@@ -334,23 +334,23 @@ export default function DefaultChatContainer() {
       {isMobile && <SidebarMobileHeader />}
       {fetchedMessages.length === 0
         ? mockMsgs.map((content, i) => {
-          return <React.Fragment key={i}>{content}</React.Fragment>;
-        })
+            return <React.Fragment key={i}>{content}</React.Fragment>;
+          })
         : fetchedMessages.map((fetchedMessage, i) => {
-          return (
-            <React.Fragment key={i}>
-              <ChatBubble
-                message={
-                  fetchedMessage.user === ""
-                    ? fetchedMessage.response
-                    : fetchedMessage.user
-                }
-                type={fetchedMessage.user === "" ? "response" : "user"}
-                popMsg={popMsg}
-              />
-            </React.Fragment>
-          );
-        })}
+            return (
+              <React.Fragment key={i}>
+                <ChatBubble
+                  message={
+                    fetchedMessage.user === ""
+                      ? fetchedMessage.response
+                      : fetchedMessage.user
+                  }
+                  type={fetchedMessage.user === "" ? "response" : "user"}
+                  popMsg={popMsg}
+                />
+              </React.Fragment>
+            );
+          })}
       {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
     </div>
   );
