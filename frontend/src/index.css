@@ -7,6 +7,7 @@ body {
   padding: 0;
   margin: 0;
   font-family:
+    "plus-jakarta-sans",
     -apple-system,
     BlinkMacSystemFont,
     Segoe UI,
@@ -35,12 +36,8 @@ a {
 }
 
 @font-face {
-  font-family: "AvenirNextW10-Bold";
-  src: url("../public/fonts/AvenirNext.ttf");
-}
-
-.Avenir {
-  font-family: AvenirNextW10-Bold;
+  font-family: "plus-jakarta-sans";
+  src: url("/fonts/PlusJakartaSans.ttf");
   font-display: swap;
 }
 
@@ -115,11 +112,6 @@ a {
     right: 0px;
     height: 4em;
     top: 69vh;
-    background: linear-gradient(
-      to bottom,
-      rgba(173, 3, 3, 0),
-      rgb(255 255 255) 50%
-    );
     z-index: 1;
     pointer-events: none;
   }
@@ -133,11 +125,6 @@ a {
     right: 0px;
     height: 4em;
     top: 69vh;
-    background: linear-gradient(
-      to bottom,
-      rgba(173, 3, 3, 0),
-      rgb(20 20 20) 50%
-    );
     z-index: 1;
     pointer-events: none;
   }
@@ -174,9 +161,9 @@ a {
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #5fa4fa;
+  background-color: #eeeeee;
   color: #5fa4fa;
-  box-shadow: 9999px 0 0 0 #5fa4fa;
+  box-shadow: 9999px 0 0 0 #eeeeee;
   animation: dot-falling 1.5s infinite linear;
   animation-delay: 0.1s;
 }
@@ -193,8 +180,8 @@ a {
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #5fa4fa;
-  color: #5fa4fa;
+  background-color: #eeeeee;
+  color: #eeeeee;
   animation: dot-falling-before 1.5s infinite linear;
   animation-delay: 0s;
 }
@@ -203,8 +190,8 @@ a {
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background-color: #5fa4fa;
-  color: #5fa4fa;
+  background-color: #eeeeee;
+  color: #eeeeee;
   animation: dot-falling-after 1.5s infinite linear;
   animation-delay: 0.2s;
 }
@@ -217,7 +204,7 @@ a {
   25%,
   50%,
   75% {
-    box-shadow: 9999px 0 0 0 #5fa4fa;
+    box-shadow: 9999px 0 0 0 #eeeeee;
   }
 
   100% {
@@ -233,7 +220,7 @@ a {
   25%,
   50%,
   75% {
-    box-shadow: 9984px 0 0 0 #5fa4fa;
+    box-shadow: 9984px 0 0 0 #eeeeee;
   }
 
   100% {
@@ -249,7 +236,7 @@ a {
   25%,
   50%,
   75% {
-    box-shadow: 10014px 0 0 0 #5fa4fa;
+    box-shadow: 10014px 0 0 0 #eeeeee;
   }
 
   100% {
@@ -307,4 +294,56 @@ dialog[open] {
 dialog::backdrop {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
+}
+
+.backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.animate-slow-pulse {
+  transform: scale(1);
+  animation: subtlePulse 20s infinite;
+  will-change: transform;
+}
+
+@keyframes subtlePulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes subtleShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.login-input-gradient {
+  background: linear-gradient(
+    180deg,
+    rgba(61, 65, 71, 0.3) 0%,
+    rgba(44, 47, 53, 0.3) 100%
+  ) !important;
+  box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.25);
+}
+
+.white-fill {
+  fill: white;
 }

@@ -6,6 +6,7 @@ import PasswordModal, {
 } from "../../components/Modals/Password";
 import { isMobile } from "react-device-detect";
 import { FullScreenLoader } from "../../components/Preloader";
+import UserMenu from "../../components/UserMenu";
 
 export default function Main() {
   const { loading, requiresAuth, mode } = usePasswordModal();
@@ -16,9 +17,11 @@ export default function Main() {
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-orange-100 dark:bg-stone-700 flex">
-      {!isMobile && <Sidebar />}
-      <DefaultChatContainer />
-    </div>
+    <UserMenu>
+      <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+        {!isMobile && <Sidebar />}
+        <DefaultChatContainer />
+      </div>
+    </UserMenu>
   );
 }

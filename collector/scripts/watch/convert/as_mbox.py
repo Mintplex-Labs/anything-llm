@@ -58,6 +58,13 @@ def as_mbox(**kwargs):
     filename = kwargs.get("filename")
     ext = kwargs.get("ext", ".mbox")
     remove = kwargs.get("remove_on_complete", False)
+
+    if filename is not None:
+        filename = str(filename)
+    else:
+        print("[ERROR]: No filename provided.")
+        return (False, "No filename provided.")
+
     fullpath = f"{parent_dir}/{filename}{ext}"
 
     print(f"-- Working {fullpath} --")

@@ -4,49 +4,50 @@ import Jazzicon from "../../../../UserIcon";
 import renderMarkdown from "../../../../../utils/chat/markdown";
 import { userFromStorage } from "../../../../../utils/request";
 import Citations from "../Citation";
+import {
+  AI_BACKGROUND_COLOR,
+  USER_BACKGROUND_COLOR,
+} from "../../../../../utils/constants";
 
 const HistoricalMessage = forwardRef(
   ({ message, role, workspace, sources = [], error = false }, ref) => {
-    if (role === "user") {
-      return (
-        <div className="flex justify-end mb-4 items-start">
-          <div className="mr-2 py-1 px-4 w-fit md:max-w-[75%] bg-slate-200 dark:bg-amber-800 rounded-b-2xl rounded-tl-2xl rounded-tr-sm">
-            <span
-              className={`inline-block p-2 rounded-lg whitespace-pre-line text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base`}
-            >
-              {message}
-            </span>
-          </div>
-          <Jazzicon size={30} user={{ uid: userFromStorage()?.username }} />
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div className="flex justify-start mb-4 items-end">
-          <Jazzicon size={30} user={{ uid: workspace.slug }} />
-          <div className="ml-2 max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
-            <span
-              className={`inline-block p-2 rounded-lg bg-red-50 text-red-500`}
-            >
-              <AlertTriangle className="h-4 w-4 mb-1 inline-block" /> Could not
-              respond to message.
-            </span>
-          </div>
-        </div>
-      );
-    }
-
     return (
-      <div ref={ref} className="flex justify-start items-end mb-4">
-        <Jazzicon size={30} user={{ uid: workspace.slug }} />
-        <div className="ml-2 py-3 px-4 overflow-x-scroll w-fit md:max-w-[75%] bg-orange-100 dark:bg-stone-700 rounded-t-2xl rounded-br-2xl rounded-bl-sm">
-          <span
-            className="no-scroll whitespace-pre-line text-slate-800 dark:text-slate-200 font-[500] md:font-semibold text-sm md:text-base flex flex-col gap-y-1"
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(message) }}
-          />
-          <Citations sources={sources} />
+      <div
+        ref={ref}
+        className={`flex justify-center items-end w-full ${
+          role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
+        }`}
+      >
+        <div
+          className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+        >
+          <div className="flex gap-x-5">
+            <Jazzicon
+              size={36}
+              user={{
+                uid:
+                  role === "user"
+                    ? userFromStorage()?.username
+                    : workspace.slug,
+              }}
+              role={role}
+            />
+
+            {error ? (
+              <span
+                className={`inline-block p-2 rounded-lg bg-red-50 text-red-500`}
+              >
+                <AlertTriangle className="h-4 w-4 mb-1 inline-block" /> Could
+                not respond to message.
+              </span>
+            ) : (
+              <span
+                className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+                dangerouslySetInnerHTML={{ __html: renderMarkdown(message) }}
+              />
+            )}
+          </div>
+          {role === "assistant" && <Citations sources={sources} />}
         </div>
       </div>
     );
