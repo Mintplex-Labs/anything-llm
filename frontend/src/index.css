@@ -337,3 +337,20 @@ dialog::backdrop {
 .white-fill {
   fill: white;
 }
+
+.tip:before {
+  content: "";
+  display: block;
+  width: 0;
+  height: 0;
+  position: absolute;
+
+  border-bottom: 8px solid transparent;
+  border-top: 8px solid rgba(255, 255, 255, 0.5);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-radius: 0px 0px 0px 5px;
+  left: 1%;
+
+  top: 100%;
+}
