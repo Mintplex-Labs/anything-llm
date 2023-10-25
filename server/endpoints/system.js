@@ -269,7 +269,6 @@ function systemEndpoints(app) {
       try {
         const body = reqBody(request);
 
-        // Only admins can update the ENV settings.
         if (multiUserMode(response)) {
           const user = await userFromSession(request, response);
           if (!user || user?.role !== "admin") {
@@ -277,9 +276,6 @@ function systemEndpoints(app) {
             return;
           }
         }
-
-        console.log("body", body);
-
         const { error } = await SystemSettings.updateSettings(body);
         response.status(200).json({ success: !error, error });
       } catch (e) {

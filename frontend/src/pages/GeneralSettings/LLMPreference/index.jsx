@@ -17,13 +17,21 @@ export default function GeneralLLMPreference() {
   const [llmChoice, setLLMChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [openAiKeyValue, setOpenAiKeyValue] = useState("");
+  const [apiKeyEdited, setApiKeyEdited] = useState(false);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     const data = {};
     const form = new FormData(e.target);
-    for (var [key, value] of form.entries()) data[key] = value;
+
+    for (var [key, value] of form.entries()) {
+      if (key !== "open_ai_key" || apiKeyEdited) {
+        data[key] = value;
+      }
+    }
     const { error } = await System.updateSystem(data);
     if (error) {
       showToast(`Failed to save LLM settings: ${error}`, "error");
@@ -37,6 +45,13 @@ export default function GeneralLLMPreference() {
   const updateLLMChoice = (selection) => {
     setLLMChoice(selection);
     setHasChanges(true);
+  };
+
+  const handleApiKeyChange = (e) => {
+    if (e.target.value !== "*".repeat(20)) {
+      setApiKeyEdited(true);
+      setOpenAiKeyValue(e.target.value);
+    }
   };
 
   useEffect(() => {
@@ -134,16 +149,17 @@ export default function GeneralLLMPreference() {
                       <label className="text-white text-sm font-semibold block mb-4">
                         API Key
                       </label>
-                      <input
-                        type="text"
-                        name="OpenAiKey"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="OpenAI API Key"
-                        defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
-                        required={true}
-                        autoComplete="off"
-                        spellCheck={false}
-                      />
+                    <input
+                      type="text"
+                      name="open_ai_key"
+                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      placeholder="OpenAI API Key"
+                      value={apiKeyEdited ? openAiKeyValue : (settings?.OpenAiKey ? "*".repeat(20) : "")}
+                      onChange={handleApiKeyChange}
+                      required={true}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
                     </div>
 
                     <div className="flex flex-col w-60">
@@ -151,7 +167,7 @@ export default function GeneralLLMPreference() {
                         Chat Model Selection
                       </label>
                       <select
-                        name="OpenAiModelPref"
+                        name="open_model_pref"
                         defaultValue={settings?.OpenAiModelPref}
                         required={true}
                         className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
@@ -176,7 +192,7 @@ export default function GeneralLLMPreference() {
                       </label>
                       <input
                         type="url"
-                        name="AzureOpenAiEndpoint"
+                        name="azure_openai_endpoint"
                         className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="https://my-azure.openai.azure.com"
                         defaultValue={settings?.AzureOpenAiEndpoint}
@@ -192,7 +208,7 @@ export default function GeneralLLMPreference() {
                       </label>
                       <input
                         type="password"
-                        name="AzureOpenAiKey"
+                        name="azure_openai_key"
                         className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="Azure OpenAI API Key"
                         defaultValue={
@@ -210,7 +226,7 @@ export default function GeneralLLMPreference() {
                       </label>
                       <input
                         type="text"
-                        name="AzureOpenAiModelPref"
+                        name="azure_openai_model_pref"
                         className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="Azure OpenAI chat model deployment name"
                         defaultValue={settings?.AzureOpenAiModelPref}
@@ -226,7 +242,7 @@ export default function GeneralLLMPreference() {
                       </label>
                       <input
                         type="text"
-                        name="AzureOpenAiEmbeddingModelPref"
+                        name="azure_openai_embedding_model_pref"
                         className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="Azure OpenAI embedding model deployment name"
                         defaultValue={settings?.AzureOpenAiEmbeddingModelPref}
