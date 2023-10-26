@@ -91,13 +91,13 @@ export default function DocumentSettings({ workspace, fileTypes }) {
     setHighlightWorkspace(false);
     await Workspace.modifyEmbeddings(workspace.slug, changesToSend)
       .then((res) => {
-        if (res && res.workspace) {
-          showToast("Workspace updated successfully.", "success", {
-            clear: true,
-          });
-        } else {
-          showToast("Workspace update failed.", "error", { clear: true });
+        if (!!res.message) {
+          showToast(`Error: ${res.message}`, "error", { clear: true });
+          return;
         }
+        showToast("Workspace updated successfully.", "success", {
+          clear: true,
+        });
       })
       .catch((error) => {
         showToast(`Workspace update failed: ${error}`, "error", {

@@ -114,9 +114,18 @@ function workspaceEndpoints(app) {
         }
 
         await Document.removeDocuments(currWorkspace, deletes);
-        await Document.addDocuments(currWorkspace, adds);
+        const { failed = [] } = await Document.addDocuments(
+          currWorkspace,
+          adds
+        );
         const updatedWorkspace = await Workspace.get({ id: currWorkspace.id });
-        response.status(200).json({ workspace: updatedWorkspace });
+        response.status(200).json({
+          workspace: updatedWorkspace,
+          message:
+            failed.length > 0
+              ? `${failed.length} documents could not be embedded.`
+              : null,
+        });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
