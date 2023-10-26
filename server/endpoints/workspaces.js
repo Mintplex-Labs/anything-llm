@@ -21,13 +21,16 @@ function workspaceEndpoints(app) {
   app.post("/workspace/new", [validatedRequest], async (request, response) => {
     try {
       const user = await userFromSession(request, response);
-      const { name = null } = reqBody(request);
+      const { name = null, onboardingComplete = false } = reqBody(request);
       const { workspace, message } = await Workspace.new(name, user?.id);
       await Telemetry.sendTelemetry("workspace_created", {
         multiUserMode: multiUserMode(response),
         LLMSelection: process.env.LLM_PROVIDER || "openai",
         VectorDbSelection: process.env.VECTOR_DB || "pinecone",
       });
+      if (onboardingComplete === true)
+        await Telemetry.sendTelemetry("onboarding_complete");
+
       response.status(200).json({ workspace, message });
     } catch (e) {
       console.log(e.message, e);

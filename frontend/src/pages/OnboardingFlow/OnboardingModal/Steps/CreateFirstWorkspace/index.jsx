@@ -11,6 +11,7 @@ function CreateFirstWorkspace() {
     const form = new FormData(e.target);
     const { workspace, error } = await Workspace.new({
       name: form.get("name"),
+      onboardingComplete: true,
     });
     if (!!workspace) {
       navigate(paths.home());
