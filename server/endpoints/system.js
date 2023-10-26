@@ -168,7 +168,7 @@ function systemEndpoints(app) {
 
   app.get("/system/system-vectors", [validatedRequest], async (_, response) => {
     try {
-      const VectorDb = getVectorDbClass();
+      const VectorDb = await getVectorDbClass();
       const vectorCount = await VectorDb.totalVectors();
       response.status(200).json({ vectorCount });
     } catch (e) {
@@ -262,28 +262,29 @@ function systemEndpoints(app) {
     }
   );
 
-  app.post(
-    "/system/update-settings",
-    [validatedRequest],
-    async (request, response) => {
-      try {
-        const body = reqBody(request);
+  app.post("/system/update-settings", [validatedRequest], async (request, response) => {
+    try {
+      let body = reqBody(request);
+      // Sanitize API keys: if they are placeholder values, do not update them
+      const sanitizedUpdates = Object.fromEntries(
+        Object.entries(body).filter(([key, value]) => value !== "*".repeat(20))
+      );
 
-        if (multiUserMode(response)) {
-          const user = await userFromSession(request, response);
-          if (!user || user?.role !== "admin") {
-            response.sendStatus(401).end();
-            return;
-          }
+      if (multiUserMode(response)) {
+        const user = await userFromSession(request, response);
+        if (!user || user?.role !== "admin") {
+          response.sendStatus(401).end();
+          return;
         }
-        const { error } = await SystemSettings.updateSettings(body);
-        response.status(200).json({ success: !error, error });
-      } catch (e) {
-        console.log(e.message, e);
-        response.sendStatus(500).end();
       }
+      const { error } = await SystemSettings.updateSettings(sanitizedUpdates);
+      response.status(200).json({ success: !error, error });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
     }
-  );
+  });
+
 
   app.post(
     "/system/update-password",

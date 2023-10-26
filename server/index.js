@@ -44,7 +44,7 @@ developerEndpoints(app, apiRouter);
 
 apiRouter.post("/v/:command", async (request, response) => {
   try {
-    const VectorDb = getVectorDbClass();
+    const VectorDb = await getVectorDbClass();
     const { command } = request.params;
     if (!Object.getOwnPropertyNames(VectorDb).includes(command)) {
       response.status(500).json({

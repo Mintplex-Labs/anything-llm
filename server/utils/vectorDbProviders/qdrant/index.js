@@ -4,17 +4,23 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getLLMProvider } = require("../../helpers");
 const { chatPrompt } = require("../../chats");
+const { SystemSettings } = require("../../../models/systemSettings");
 
 const QDrant = {
   name: "QDrant",
   connect: async function () {
-    if (process.env.VECTOR_DB !== "qdrant")
+    const settings = await SystemSettings.getMultiple([
+      "vector_db",
+      "qdrant_endpoint",
+      "qdrant_api_key",
+    ]);
+    if (settings.vector_db !== "qdrant")
       throw new Error("QDrant::Invalid ENV settings");
 
     const client = new QdrantClient({
-      url: process.env.QDRANT_ENDPOINT,
-      ...(process.env.QDRANT_API_KEY
-        ? { apiKey: process.env.QDRANT_API_KEY }
+      url: settings.qdrant_endpoint,
+      ...(settings.qdrant_api_key
+        ? { apiKey: settings.qdrant_api_key }
         : {}),
     });
 

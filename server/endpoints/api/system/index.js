@@ -89,7 +89,7 @@ function apiSystemEndpoints(app) {
     }
     */
     try {
-      const VectorDb = getVectorDbClass();
+      const VectorDb = await getVectorDbClass();
       const vectorCount = await VectorDb.totalVectors();
       response.status(200).json({ vectorCount });
     } catch (e) {

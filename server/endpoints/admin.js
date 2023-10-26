@@ -226,7 +226,7 @@ function adminEndpoints(app) {
         }
 
         const { id } = request.params;
-        const VectorDb = getVectorDbClass();
+        const VectorDb = await getVectorDbClass();
         const workspace = await Workspace.get({ id: Number(id) });
         if (!workspace) {
           response.sendStatus(404).end();

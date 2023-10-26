@@ -4,25 +4,32 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getLLMProvider } = require("../../helpers");
 const { chatPrompt } = require("../../chats");
+const { SystemSettings } = require("../../../models/systemSettings");
 
 const Pinecone = {
   name: "Pinecone",
   connect: async function () {
-    if (process.env.VECTOR_DB !== "pinecone")
-      throw new Error("Pinecone::Invalid ENV settings");
+    const settings = await SystemSettings.getMultiple([
+      "pinecone_api_key",
+      "pinecone_environment",
+      "pinecone_index",
+      "vector_db"
+    ]);
+
+    if(settings.vector_db !== "pinecone") throw new Error("Pinecone::Invalid vector_db settings");
 
     const client = new PineconeClient();
     await client.init({
-      apiKey: process.env.PINECONE_API_KEY,
-      environment: process.env.PINECONE_ENVIRONMENT,
+      apiKey: settings.pinecone_api_key,
+      environment: settings.pinecone_environment,
     });
-    const pineconeIndex = client.Index(process.env.PINECONE_INDEX);
+    const pineconeIndex = client.Index(settings.pinecone_index);
     const { status } = await client.describeIndex({
-      indexName: process.env.PINECONE_INDEX,
+      indexName: settings.pinecone_index,
     });
 
     if (!status.ready) throw new Error("Pinecode::Index not ready.");
-    return { client, pineconeIndex, indexName: process.env.PINECONE_INDEX };
+    return { client, pineconeIndex, indexName: settings.pinecone_index };
   },
   totalVectors: async function () {
     const { pineconeIndex } = await this.connect();

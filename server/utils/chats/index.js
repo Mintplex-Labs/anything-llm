@@ -68,7 +68,7 @@ async function chatWithWorkspace(
 ) {
   const uuid = uuidv4();
   const LLMConnector = await getLLMProvider();
-  const VectorDb = getVectorDbClass();
+  const VectorDb = await getVectorDbClass();
   const command = grepCommand(message);
 
   if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {

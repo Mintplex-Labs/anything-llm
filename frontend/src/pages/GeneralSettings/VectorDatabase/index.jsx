@@ -23,6 +23,7 @@ export default function GeneralVectorDatabase() {
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
+      console.log("SETTINGS: ", _settings);
       setSettings(_settings);
       setVectorDB(_settings?.vectorDB || "lancedb");
       setLoading(false);

@@ -4,21 +4,28 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getLLMProvider } = require("../../helpers");
 const { chatPrompt } = require("../../chats");
+const { SystemSettings } = require("../../../models/systemSettings");
 
 const Chroma = {
   name: "Chroma",
   connect: async function () {
-    if (process.env.VECTOR_DB !== "chroma")
+    const settings = await SystemSettings.getMultiple([
+      "chroma_endpoint",
+      "chroma_api_header",
+      "chroma_api_key",
+      "vector_db",
+    ]);
+    if (settings.vector_db !== "chroma")
       throw new Error("Chroma::Invalid ENV settings");
 
     const client = new ChromaClient({
-      path: process.env.CHROMA_ENDPOINT, // if not set will fallback to localhost:8000
-      ...(!!process.env.CHROMA_API_HEADER && !!process.env.CHROMA_API_KEY
+      path: settings.chroma_endpoint, // if not set will fallback to localhost:8000
+      ...(!!settings.chroma_api_header && !!settings.chroma_api_key
         ? {
             fetchOptions: {
               headers: {
-                [process.env.CHROMA_API_HEADER || "X-Api-Key"]:
-                  process.env.CHROMA_API_KEY,
+                [settings.chroma_api_header || "X-Api-Key"]:
+                  settings.chroma_api_key,
               },
             },
           }

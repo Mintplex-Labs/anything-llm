@@ -11,19 +11,11 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [openAiKeyValue, setOpenAiKeyValue] = useState("");
-  const [apiKeyEdited, setApiKeyEdited] = useState(false);
 
   const updateLLMChoice = (selection) => {
     setLLMChoice(selection);
   };
 
-  const handleApiKeyChange = (e) => {
-    if (e.target.value !== "*".repeat(20)) {
-      setApiKeyEdited(true);
-      setOpenAiKeyValue(e.target.value);
-    }
-  };
 
   useEffect(() => {
     async function fetchKeys() {
@@ -38,16 +30,13 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
     }
   }, [currentStep]);
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
     const data = {};
     const formData = new FormData(form);
-    for (var [key, value] of form.entries()) {
-      if (key !== "open_ai_key" || apiKeyEdited) {
-        data[key] = value;
-      }
-    }
+    for (var [key, value] of form.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
     if (error) {
       alert(`Failed to save LLM settings: ${error}`, "error");
@@ -112,8 +101,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
                       name="open_ai_key"
                       className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                       placeholder="OpenAI API Key"
-                      value={apiKeyEdited ? openAiKeyValue : (settings?.OpenAiKey ? "*".repeat(20) : "")}
-                      onChange={handleApiKeyChange}
+                      value={settings?.OpenAiKey ? "*".repeat(20) : ""}
                       required={true}
                       autoComplete="off"
                       spellCheck={false}

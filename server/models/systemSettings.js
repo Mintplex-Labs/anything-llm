@@ -12,15 +12,15 @@ const SystemSettings = {
     "message_limit",
     "logo_filename",
     "telemetry_id",
-    "server_port",
-    "cache_vectors",
+    "server_port", // stay in env
+    "cache_vectors", // stay in env
     "llm_provider",
     "vector_db",
-    "no_debug",
-    "disable_telemetry",
-    "auth_token",
-    "jwt_secret",
-    "storage_dir",
+    "no_debug", // stay in env
+    "disable_telemetry", // stay in env
+    "auth_token", // stay in env
+    "jwt_secret", // stay in env
+    "storage_dir", // stay in env
     "pinecone_environment",
     "pinecone_api_key",
     "pinecone_index",

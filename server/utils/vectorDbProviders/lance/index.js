@@ -5,15 +5,23 @@ const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { chatPrompt } = require("../../chats");
+const { SystemSettings } = require("../../../models/systemSettings");
 
 const LanceDb = {
   uri: `${
     !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
   }lancedb`,
   name: "LanceDb",
+  open_ai_key: "",
   connect: async function () {
-    if (process.env.VECTOR_DB !== "lancedb")
+    const settings = await SystemSettings.getMultiple([
+      "vector_db",
+      "open_ai_key"
+    ]);
+    if (settings.vector_db !== "lancedb")
       throw new Error("LanceDB::Invalid ENV settings");
+
+    this.open_ai_key = settings.open_ai_key;
 
     const client = await lancedb.connect(this.uri);
     return { client };
@@ -47,7 +55,7 @@ const LanceDb = {
     return (await table.countRows()) || 0;
   },
   embedder: function () {
-    return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
+    return new OpenAIEmbeddings({ openAIApiKey: this.open_ai_key });
   },
   similarityResponse: async function (client, namespace, queryVector) {
     const collection = await client.openTable(namespace);

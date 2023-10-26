@@ -190,7 +190,7 @@ function apiWorkspaceEndpoints(app) {
     */
       try {
         const { slug = "" } = request.params;
-        const VectorDb = getVectorDbClass();
+        const VectorDb = await getVectorDbClass();
         const workspace = await Workspace.get({ slug });
 
         if (!workspace) {

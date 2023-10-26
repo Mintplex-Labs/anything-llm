@@ -5,19 +5,26 @@ const { v4: uuidv4 } = require("uuid");
 const { toChunks, getLLMProvider } = require("../../helpers");
 const { chatPrompt } = require("../../chats");
 const { camelCase } = require("../../helpers/camelcase");
+const { SystemSettings } = require("../../../models/systemSettings");
 
 const Weaviate = {
   name: "Weaviate",
   connect: async function () {
-    if (process.env.VECTOR_DB !== "weaviate")
+    const settings = await SystemSettings.getMultiple([
+      "weaviate_endpoint",
+      "weaviate_api_key",
+      "vector_db",
+    ]);
+
+    if (settings.vector_db !== "weaviate")
       throw new Error("Weaviate::Invalid ENV settings");
 
-    const weaviateUrl = new URL(process.env.WEAVIATE_ENDPOINT);
+    const weaviateUrl = new URL(settings.weaviate_endpoint);
     const options = {
       scheme: weaviateUrl.protocol?.replace(":", "") || "http",
       host: weaviateUrl?.host,
-      ...(process.env?.WEAVIATE_API_KEY?.length > 0
-        ? { apiKey: new weaviate.ApiKey(process.env?.WEAVIATE_API_KEY) }
+      ...(settings.weaviate_api_key?.length > 0
+        ? { apiKey: new weaviate.ApiKey(settings.weaviate_api_key) }
         : {}),
     };
     const client = weaviate.client(options);

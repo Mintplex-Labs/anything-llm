@@ -36,7 +36,7 @@ const Document = {
   },
 
   addDocuments: async function (workspace, additions = []) {
-    const VectorDb = getVectorDbClass();
+    const VectorDb = await getVectorDbClass();
     if (additions.length === 0) return;
 
     for (const path of additions) {
@@ -82,7 +82,7 @@ const Document = {
   },
 
   removeDocuments: async function (workspace, removals = []) {
-    const VectorDb = getVectorDbClass();
+    const VectorDb = await getVectorDbClass();
     if (removals.length === 0) return;
 
     for (const path of removals) {

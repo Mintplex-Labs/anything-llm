@@ -1,5 +1,8 @@
-function getVectorDbClass() {
-  const vectorSelection = process.env.VECTOR_DB || "pinecone";
+const { SystemSettings } = require("../../models/systemSettings");
+
+async function getVectorDbClass() {
+  const vector_db = await SystemSettings.get({ label: "vector_db"});
+  const vectorSelection = vector_db.value || "pinecone";
   switch (vectorSelection) {
     case "pinecone":
       const { Pinecone } = require("../vectorDbProviders/pinecone");
@@ -22,10 +25,11 @@ function getVectorDbClass() {
 }
 
 async function getLLMProvider() {
-  const llmSeclection = process.env.LLM_PROVIDER || "openai";
+  const llm_provider = await SystemSettings.get({ label: "llm_provider"});
+  const llmSelection = llm_provider.value || "openai";
   let providerInstance;
 
-  switch (llmSeclection) {
+  switch (llmSelection) {
     case "openai":
       const { OpenAi } = require("../AiProviders/openAi");
       providerInstance = new OpenAi();
@@ -40,7 +44,6 @@ async function getLLMProvider() {
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
   }
 
-  console.log(`Using ${llmSeclection} as LLM provider.`);
 
   return providerInstance;
 }

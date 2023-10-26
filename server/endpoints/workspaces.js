@@ -136,7 +136,7 @@ function workspaceEndpoints(app) {
       try {
         const { slug = "" } = request.params;
         const user = await userFromSession(request, response);
-        const VectorDb = getVectorDbClass();
+        const VectorDb = await getVectorDbClass();
         const workspace = multiUserMode(response)
           ? await Workspace.getWithUser(user, { slug })
           : await Workspace.get({ slug });
