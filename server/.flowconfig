@@ -1,0 +1,30 @@
+# How to config: https://flow.org/en/docs/config/
+[version]
+
+[options]
+all=false
+emoji=false
+include_warnings=false
+lazy_mode=false
+
+[include]
+
+[ignore]
+.*/node_modules/resolve/test/.*
+
+[untyped]
+# <PROJECT_ROOT>/src/models/.*
+
+[declarations]
+
+[libs]
+
+[lints]
+all=warn
+
+[strict]
+nonstrict-import
+unclear-type
+unsafe-getters-setters
+untyped-import
+untyped-type-import

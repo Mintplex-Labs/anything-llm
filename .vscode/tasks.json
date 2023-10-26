@@ -1,0 +1,96 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/collector",
+        "statusbar": {
+          "color": "#ffea00",
+          "detail": "Runs the collector",
+          "label": "Collector: $(play) run",
+          "running": {
+            "color": "#ffea00",
+            "label": "Collector: $(gear~spin) running"
+          }
+        }
+      },
+      "command": "source ${workspaceFolder}/collector/v-env/bin/activate && cd ${workspaceFolder}/collector/ && python watch.py",
+      "label": "Collector: run"
+    },
+    {
+      "dependsOn": "Collector: create env",
+      "type": "process",
+      "options": {
+        "cwd": "${workspaceFolder}/collector/v-env",
+        "statusbar": {
+          "color": "#ffea00",
+          "filePattern": "collector/*",
+          "detail": "Creates and updates the python virtual environment for the collector",
+          "label": "$(package) install deps",
+          "running": {
+            "color": "#ffea00",
+            "label": "$(sync~spin) installing"
+          }
+        }
+      },
+      "command": "${workspaceFolder}/collector/v-env/bin/pip",
+      "args": [
+        "install",
+        "--no-cache-dir",
+        "-r",
+        "${workspaceFolder}/collector/requirements.txt"
+      ],
+      "label": "Collector: install deps"
+    },
+    {
+      "type": "process",
+      "hide": true,
+      "command": "virtualenv",
+      "args": ["v-env"],
+      "options": {
+        "cwd": "${workspaceFolder}/collector",
+        "statusbar": {
+          "hide": true
+        }
+      },
+      "label": "Collector: create env"
+    },
+    {
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/server",
+        "statusbar": {
+          "color": "#ffea00",
+          "detail": "Runs the server",
+          "label": "Server: $(play) run",
+          "running": {
+            "color": "#ffea00",
+            "label": "Server: $(gear~spin) running"
+          }
+        }
+      },
+      "command": "cd ${workspaceFolder}/server/ && yarn dev",
+      "label": "Server: run"
+    },
+    {
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend",
+        "statusbar": {
+          "color": "#ffea00",
+          "detail": "Runs the frontend",
+          "label": "Frontend: $(play) run",
+          "running": {
+            "color": "#ffea00",
+            "label": "Frontend: $(gear~spin) running"
+          }
+        }
+      },
+      "command": "cd ${workspaceFolder}/frontend/ && yarn dev",
+      "label": "Frontend: run"
+    }
+  ]
+}

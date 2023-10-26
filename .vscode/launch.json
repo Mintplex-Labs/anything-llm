@@ -1,0 +1,59 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Server debug",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/server",
+      "runtimeArgs": ["dev"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    },
+    {
+      "name": "Frontend debug",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeArgs": ["dev:frontend"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    },
+    {
+      "name": "Python Debugger: Collector watch",
+      "type": "python",
+      "cwd": "${workspaceFolder}/collector",
+      "request": "launch",
+      "program": "${workspaceFolder}/collector/watch.py",
+      "console": "integratedTerminal"
+    },
+    // {
+    //   "name": "Launch Vite",
+    //   "program": "${workspaceFolder}/frontend/node_modules/.bin/vite",
+    //   "args": ["--debug", "--host=0.0.0.0"],
+    //   "request": "launch",
+    //   "cwd": "${workspaceFolder}/frontend",
+    //   "env": {
+    //     "VITE_API_BASE": "http://localhost:3001/api"
+    //   },
+    //   "type": "node"
+    // },
+    {
+      "name": "Launch Edge",
+      "request": "launch",
+      "type": "msedge",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome against localhost",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
+    }
+  ]
+}
