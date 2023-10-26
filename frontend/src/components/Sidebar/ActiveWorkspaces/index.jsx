@@ -8,6 +8,7 @@ import ManageWorkspace, {
 import paths from "../../../utils/paths";
 import { useParams } from "react-router-dom";
 import { GearSix, SquaresFour } from "@phosphor-icons/react";
+import truncate from "truncate";
 
 export default function ActiveWorkspaces() {
   const { slug } = useParams();
@@ -73,7 +74,7 @@ export default function ActiveWorkspaces() {
                       isActive ? "" : "text-opacity-80"
                     }`}
                   >
-                    {workspace.name}
+                    {isActive ? truncate(workspace.name, 17) : truncate(workspace.name, 20)}
                   </p>
                 </div>
                 <button
