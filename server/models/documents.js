@@ -37,6 +37,8 @@ const Document = {
   addDocuments: async function (workspace, additions = []) {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return;
+    const embedded = [];
+    const failedToEmbed = [];
 
     for (const path of additions) {
       const data = await fileData(path);
@@ -58,11 +60,13 @@ const Document = {
       );
       if (!vectorized) {
         console.error("Failed to vectorize", path);
+        failedToEmbed.push(path);
         continue;
       }
 
       try {
         await prisma.workspace_documents.create({ data: newDoc });
+        embedded.push(path);
       } catch (error) {
         console.error(error.message);
       }
@@ -72,7 +76,7 @@ const Document = {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
       VectorDbSelection: process.env.VECTOR_DB || "pinecone",
     });
-    return;
+    return { failed: failedToEmbed, embedded };
   },
 
   removeDocuments: async function (workspace, removals = []) {
