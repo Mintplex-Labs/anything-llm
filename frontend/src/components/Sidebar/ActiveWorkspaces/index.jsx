@@ -74,7 +74,9 @@ export default function ActiveWorkspaces() {
                       isActive ? "" : "text-opacity-80"
                     }`}
                   >
-                    {isActive ? truncate(workspace.name, 17) : truncate(workspace.name, 20)}
+                    {isActive
+                      ? truncate(workspace.name, 17)
+                      : truncate(workspace.name, 20)}
                   </p>
                 </div>
                 <button

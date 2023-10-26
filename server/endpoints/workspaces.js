@@ -28,10 +28,8 @@ function workspaceEndpoints(app) {
         LLMSelection: process.env.LLM_PROVIDER || "openai",
         VectorDbSelection: process.env.VECTOR_DB || "pinecone",
       });
-
-      if(onboardingComplete === true) {
-        await Telemetry.sendTelemetry("onboarding_complete", {});
-      }
+      if (onboardingComplete === true)
+        await Telemetry.sendTelemetry("onboarding_complete");
 
       response.status(200).json({ workspace, message });
     } catch (e) {
