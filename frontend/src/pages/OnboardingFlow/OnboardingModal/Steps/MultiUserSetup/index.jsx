@@ -36,7 +36,7 @@ function MultiUserSetup({ nextStep, prevStep }) {
     nextStep();
   };
 
-  const setNewUsername = (e) => setPassword(e.target.value);
+  const setNewUsername = (e) => setUsername(e.target.value);
   const setNewPassword = (e) => setPassword(e.target.value);
   const handleUsernameChange = debounce(setNewUsername, 500);
   const handlePasswordChange = debounce(setNewPassword, 500);

@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-    <b>AnythingLLM: A business-compliant document chatbot</b>. <br />
-    A hyper-efficient and open-source enterprise-ready document chatbot solution for all.
+    <b>AnythingLLM: A document chatbot to chat with <i>anything!</i></b>. <br />
+    An efficient, customizable, and open-source enterprise-ready document chatbot solution.
 </p>
 
 <p align="center">
@@ -22,15 +22,14 @@
   </a>
 </p>
 
-A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use. Currently this project supports [Pinecone](https://pinecone.io), [ChromaDB](https://trychroma.com) & more for vector storage and [OpenAI](https://openai.com) for LLM/chatting.
+A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use.
 
-
-![Chatting](/images/screenshots/chat.png)
+![Chatting](/images/screenshots/chatting.gif)
 [view more screenshots](/images/screenshots/SCREENSHOTS.md)
 
 ### Watch the demo!
 
-[![Watch the video](/images/youtube.png)](https://youtu.be/0vZ69AIP_hM)
+[![Watch the video](/images/youtube.png)](https://youtu.be/f95rGD9trL0)
 
 
 ### Product Overview
@@ -47,9 +46,23 @@ Some cool features of AnythingLLM
 - Each chat response contains a citation that is linked to the original content
 - Simple technology stack for fast iteration
 - 100% Cloud deployment ready.
-- "Bring your own LLM" model. _still in progress - openai support only currently_
+- "Bring your own LLM" model.
 - Extremely efficient cost-saving measures for managing very large documents. You'll never pay to embed a massive document or transcript more than once. 90% more cost effective than other document chatbot solutions.
 - Full Developer API for custom integrations!
+
+### Supported LLMs and Vector Databases
+**Supported LLMs:**
+- OpenAI
+- Azure OpenAI
+- Anthropic ClaudeV2
+
+**Supported Vector Databases:**
+- [LanceDB](https://github.com/lancedb/lancedb) (default)
+- [Pinecone](https://pinecone.io)
+- [Chroma](https://trychroma.com)
+- [Weaviate](https://weaviate.io)
+- [QDrant](https://qdrant.tech)
+
 
 ### Technical Overview
 This monorepo consists of three main sections:

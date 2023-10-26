@@ -8,11 +8,16 @@ import {
   AI_BACKGROUND_COLOR,
   USER_BACKGROUND_COLOR,
 } from "../../../../../utils/constants";
+import { v4 } from "uuid";
 
 const HistoricalMessage = forwardRef(
-  ({ message, role, workspace, sources = [], error = false }, ref) => {
+  (
+    { uuid = v4(), message, role, workspace, sources = [], error = false },
+    ref
+  ) => {
     return (
       <div
+        key={uuid}
         ref={ref}
         className={`flex justify-center items-end w-full ${
           role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
