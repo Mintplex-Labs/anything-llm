@@ -9,15 +9,32 @@
         "cwd": "${workspaceFolder}/collector",
         "statusbar": {
           "color": "#ffea00",
-          "detail": "Runs the collector",
-          "label": "Collector: $(play) run",
+          "detail": "Watch the hotdir",
+          "label": "Collector: $(play) watch",
           "running": {
             "color": "#ffea00",
-            "label": "Collector: $(gear~spin) running"
+            "label": "Collector: $(gear~spin) watching"
           }
         }
       },
       "command": "source ${workspaceFolder}/collector/v-env/bin/activate && cd ${workspaceFolder}/collector/ && python watch.py",
+      "label": "Collector: watch"
+    },
+    {
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/collector",
+        "statusbar": {
+          "color": "#ffea00",
+          "detail": "Runs the collector",
+          "label": "$(play) run",
+          "running": {
+            "color": "#ffea00",
+            "label": "$(gear~spin) running"
+          }
+        }
+      },
+      "command": "source ${workspaceFolder}/collector/v-env/bin/activate && cd ${workspaceFolder}/collector/ && FLASK_ENV=development FLASK_APP=wsgi.py gunicorn --timeout 300 --workers 4 --bind 0.0.0.0:8888 wsgi:api",
       "label": "Collector: run"
     },
     {

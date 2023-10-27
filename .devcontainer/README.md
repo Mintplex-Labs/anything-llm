@@ -47,7 +47,8 @@ Checklist:
 ### For the Collector:
 
 - [ ] Open any file inside the Collector folder. A new option in the status bar (on the left) will appear, colored yellow, called `install deps`. Click on it whenever you want to be sure the v-env is installed and up-to-date.
-- [ ] To run the Collector, click the `run` option in the status bar. It will open a new terminal and run the collector. You can also run the collector from the terminal, but you must activate the v-env first if the VSCode doesn't do so automatically. To do so, run `source v-env/bin/activate` inside the collector folder and then run the collector with `python watch.py`.
+- [ ] To run the Collector in "watch" mode (uses the hotdir as input), click the `watch` option in the status bar. It will open a new terminal and run the collector in "watch" mode. You can also run the collector from the terminal, but you must activate the v-env first if the VSCode doesn't do so automatically. To do so, run `source v-env/bin/activate` inside the collector folder and then run the collector with `python watch.py`.
+- [ ] To run the Collector as a background service for the webapp, click the `run` option in the status bar. It will open a new terminal and run the collector using gunicorn. You can also run the collector from the terminal, but you must activate the v-env first if the VSCode doesn't do so automatically. To do so, run `source v-env/bin/activate` inside the collector folder and then run the collector with `FLASK_APP=wsgi.py gunicorn --timeout 300 --workers 4 --bind 0.0.0.0:8888 wsgi:api`.
 
 ### For the Collector again:
 
