@@ -2,6 +2,8 @@
 
 Welcome to the AnythingLLM development container configuration, designed to create a seamless and feature-rich development environment for this project.
 
+<center><h1><b>PLEASE READ THIS</b></h1></center>
+
 ## Prerequisites
 
 - [Docker](https://www.docker.com/get-started)
@@ -37,6 +39,10 @@ Checklist:
 - [ ] Open a JavaScript file, for example "server/index.js" and check if `eslint` is working. It will complain that `'err' is defined but never used.`. This means it is working.
 - [ ] Open a React File, for example, "frontend/src/main.jsx," and check if `eslint` complains about `Fast refresh only works when a file has exports. Move your component(s) to a separate file.`. Again, it means `eslint` is working. Now check at the status bar if the `Prettier` has a double checkmark :heavy_check_mark: (double). It means Prettier is working.
 - [ ] Check if, on the left pane, you have the NPM Scripts (this may be disabled; look at the "Explorer" tree-dots up-right). There will be scripts inside the `package.json` files. You will basically need to run the `dev:server` and the `dev:frontend`. When the frontend finishes starting, a window browser will open **inside** the VSCode. Still, you can open outside.
+
+:warning: **Important for Github Codespaces** :warning:
+
+- [ ] When running the "Server" for the first time, its port will be automatically forward. Read the content of the `.env` file on the frontend folder about this, and make sure the port "Visibility" is set to "Public", so the frontend can reach the backend. Again, this is only needed for developing on Github Codespaces. We appreciate to know if you have a better solution.
 
 ### For the Collector:
 

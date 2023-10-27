@@ -40,7 +40,11 @@
   "postCreateCommand": "yarn run setup",
   // Configure tool-specific properties.
   "customizations": {
+    "codespaces": {
+      "openFiles": ["README.md", ".devcontainer/README.md"]
+    },
     "vscode": {
+      "openFiles": ["README.md", ".devcontainer/README.md"],
       "extensions": [
         "bierner.github-markdown-preview",
         "bradlc.vscode-tailwindcss",
@@ -103,8 +107,8 @@
           "--config",
           "${workspaceFolder}/collector/pyproject.toml"
         ],
-        "python.formatting.provider": "none",
         "python.envFile": "${workspaceFolder}/collector/.env",
+        "python.defaultInterpreterPath": "${workspaceFolder}/collector/v-env/bin/python",
         "python.languageServer": "Pylance",
         "python.missingPackage.severity": "Hint",
         "python.createEnvironment.trigger": "prompt",
