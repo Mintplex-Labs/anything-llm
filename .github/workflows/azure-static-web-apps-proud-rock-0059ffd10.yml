@@ -18,10 +18,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-          lfs: false
-      - name: Install and build
-        run: cd frontend && npm install && run build
-        
+          lfs: false       
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -29,11 +26,11 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PROUD_ROCK_0059FFD10 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "/" # App source code path
-          api_location: "" # Api source code path - optional
+          app_location: "/frontend" # App source code path
+          api_location: "/server" # Api source code path - optional
           output_location: "/dist" # Built app content directory - optional
+          skip_api_build: true
+          app_build_command: "npm i && npm run build"
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
