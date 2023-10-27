@@ -54,6 +54,7 @@ const LanceDb = {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
+      scores: [],
     };
 
     const response = await collection
@@ -66,6 +67,7 @@ const LanceDb = {
       const { vector: _, ...rest } = item;
       result.contextTexts.push(rest.text);
       result.sourceDocuments.push(rest);
+      result.scores.push(item.score);
     });
 
     return result;
