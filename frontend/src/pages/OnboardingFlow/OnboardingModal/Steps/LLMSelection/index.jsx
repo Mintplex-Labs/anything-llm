@@ -80,11 +80,12 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
             />
             <LLMProviderOption
               name="Anthropic Claude 2"
-              value="anthropic-claude-2"
+              value="anthropic"
               link="anthropic.com"
-              description="[COMING SOON] A friendly AI Assistant hosted by Anthropic. Provides chat services only!"
-              checked={llmChoice === "anthropic-claude-2"}
+              description="A friendly AI Assistant hosted by Anthropic. Provides chat services only!"
+              checked={llmChoice === "anthropic"}
               image={AnthropicLogo}
+              onClick={updateLLMChoice}
             />
           </div>
           <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
@@ -198,7 +199,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               </>
             )}
 
-            {llmChoice === "anthropic-claude-2" && (
+            {llmChoice === "anthropic" && (
               <div className="w-full h-40 items-center justify-center flex">
                 <p className="text-gray-800 dark:text-slate-400">
                   This provider is unavailable and cannot be used in AnythingLLM

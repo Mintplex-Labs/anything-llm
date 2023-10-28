@@ -66,6 +66,13 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
+
+      ...(llmProvider === "anthropic"
+        ? {
+            AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
+            AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
+          }
+        : {}),
     };
   },
 
