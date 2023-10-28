@@ -43,6 +43,9 @@ export default {
     llmPreference: () => {
       return "/general/llm-preference";
     },
+    embeddingPreference: () => {
+      return "/general/embedding-preference";
+    },
     vectorDatabase: () => {
       return "/general/vector-database";
     },

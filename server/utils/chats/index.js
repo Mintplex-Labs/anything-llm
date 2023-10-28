@@ -65,14 +65,14 @@ async function chatWithWorkspace(
   user = null
 ) {
   const uuid = uuidv4();
-  const LLMConnector = getLLMProvider();
-  const VectorDb = getVectorDbClass();
   const command = grepCommand(message);
 
   if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
     return await VALID_COMMANDS[command](workspace, message, uuid, user);
   }
 
+  const LLMConnector = getLLMProvider();
+  const VectorDb = getVectorDbClass();
   const { safe, reasons = [] } = await LLMConnector.isSafe(message);
   if (!safe) {
     return {
