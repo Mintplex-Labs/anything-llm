@@ -7,7 +7,12 @@ import base64
 from mailbox import mbox, mboxMessage
 from slugify import slugify
 from bs4 import BeautifulSoup
-from scripts.watch.utils import guid, file_creation_time, write_to_server_documents, move_source
+from scripts.watch.utils import (
+    guid,
+    file_creation_time,
+    write_to_server_documents,
+    move_source,
+)
 from scripts.utils import tokenize
 
 
@@ -80,7 +85,9 @@ def as_mbox(**kwargs):
 
         date_tuple = email.utils.parsedate_tz(message["Date"])
         if date_tuple:
-            local_date = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
+            local_date = datetime.datetime.fromtimestamp(
+                email.utils.mktime_tz(date_tuple)
+            )
             date_sent = local_date.strftime("%a, %d %b %Y %H:%M:%S")
         else:
             date_sent = None
@@ -93,10 +100,12 @@ def as_mbox(**kwargs):
         else:
             subject = parse_subject(subject)
 
+        abs_path = os.path.abspath(
+            f"{parent_dir}/processed/{slugify(filename)}-{guid()}{ext}"
+        )
         data = {
             "id": guid(),
-            "url": "file://"
-            + os.path.abspath(f"{parent_dir}/processed/{slugify(filename)}-{guid()}{ext}"),
+            "url": f"file://{abs_path}",
             "title": subject,
             "docAuthor": message["From"],
             "description": f"email from {message['From']} to {message['To']}",
