@@ -5,11 +5,11 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 ## Requirements
 - Install [Docker](https://www.docker.com/) on your computer or machine.
 
-## How to install
+## How to install & run locally
 - `git clone` this repo and `cd anything-llm` to get to the root directory.
-- `yarn setup`
+- `touch server/storage/anythingllm.db` to create empty SQLite DB file.
 - `cd docker/`
-- Edit `.env` file and update the variables
+- `cp .env.example .env`
 - `docker-compose up -d --build` to build the image - this will take a few moments.
 
 Your docker host will show the image as online once the build process is completed. This will build the app to `http://localhost:3001`.
@@ -17,7 +17,7 @@ Your docker host will show the image as online once the build process is complet
 ## How to use the user interface
 - To access the full application, visit `http://localhost:3001` in your browser.
 
-## How to add files to my system
+## How to add files to my system using the standalone scripts
 - Upload files from the UI in your Workspace settings
 
 - To run the collector scripts to grab external data (articles, URLs, etc.)
@@ -26,9 +26,6 @@ Your docker host will show the image as online once the build process is complet
 - To run the collector watch script to process files from the hotdir
   - `docker exec -it --workdir=/app/collector anything-llm python watch.py`
   - Upload [compliant files](../collector/hotdir/__HOTDIR__.md) to `./collector/hotdir` and they will be processed and made available in the UI.
-
-## How to update and rebuild the ENV?
-- Update the `./docker/.env` and run `docker-compose up -d --build` to rebuild with new environments.
 
 ## About UID and GID in the ENV
 - The UID and GID are set to 1000 by default. This is the default user in the Docker container and on most host operating systems. If there is a mismatch between your host user UID and GID and what is set in the `.env` file, you may experience permission issues.
