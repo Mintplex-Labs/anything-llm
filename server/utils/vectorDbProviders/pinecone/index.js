@@ -41,6 +41,7 @@ const Pinecone = {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
+      scores: [],
     };
     const response = await index.query({
       queryRequest: {
@@ -54,6 +55,7 @@ const Pinecone = {
     response.matches.forEach((match) => {
       result.contextTexts.push(match.metadata.text);
       result.sourceDocuments.push(match);
+      result.scores.push(match.score);
     });
 
     return result;

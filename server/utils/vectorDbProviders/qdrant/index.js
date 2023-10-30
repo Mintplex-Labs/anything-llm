@@ -51,11 +51,13 @@ const QDrant = {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
+      scores: [],
     };
 
     const responses = await client.search(namespace, {
       vector: queryVector,
       limit: 4,
+      with_payload: true,
     });
 
     responses.forEach((response) => {
@@ -64,6 +66,7 @@ const QDrant = {
         ...(response?.payload || {}),
         id: response.id,
       });
+      result.scores.push(response.score);
     });
 
     return result;
