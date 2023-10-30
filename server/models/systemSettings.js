@@ -24,6 +24,7 @@ const SystemSettings = {
       StorageDir: process.env.STORAGE_DIR,
       MultiUserMode: await this.isMultiUserMode(),
       VectorDB: vectorDB,
+      EmbeddingEngine: process.env.EMBEDDING_ENGINE,
       ...(vectorDB === "pinecone"
         ? {
             PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
@@ -63,6 +64,19 @@ const SystemSettings = {
             AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
             AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
             AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
+
+      ...(llmProvider === "anthropic"
+        ? {
+            AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
+            AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
+
+            // For embedding credentials when Anthropic is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),

@@ -10,6 +10,8 @@ import AzureOpenAiLogo from "../../../media/llmprovider/azure.png";
 import AnthropicLogo from "../../../media/llmprovider/anthropic.png";
 import PreLoader from "../../../components/Preloader";
 import LLMProviderOption from "../../../components/LLMProviderOption";
+import { Info } from "@phosphor-icons/react";
+import paths from "../../../utils/paths";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -31,7 +33,7 @@ export default function GeneralLLMPreference() {
       showToast("LLM preferences saved successfully.", "success");
     }
     setSaving(false);
-    setHasChanges(!!error ? true : false);
+    setHasChanges(!!error);
   };
 
   const updateLLMChoice = (selection) => {
@@ -120,11 +122,12 @@ export default function GeneralLLMPreference() {
                 />
                 <LLMProviderOption
                   name="Anthropic Claude 2"
-                  value="anthropic-claude-2"
+                  value="anthropic"
                   link="anthropic.com"
-                  description="[COMING SOON] A friendly AI Assistant hosted by Anthropic. Provides chat services only!"
-                  checked={llmChoice === "anthropic-claude-2"}
+                  description="A friendly AI Assistant hosted by Anthropic. Provides chat services only!"
+                  checked={llmChoice === "anthropic"}
                   image={AnthropicLogo}
+                  onClick={updateLLMChoice}
                 />
               </div>
               <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
@@ -206,7 +209,7 @@ export default function GeneralLLMPreference() {
 
                     <div className="flex flex-col w-60">
                       <label className="text-white text-sm font-semibold block mb-4">
-                        Chat Model Deployment Name
+                        Chat Deployment Name
                       </label>
                       <input
                         type="text"
@@ -222,7 +225,7 @@ export default function GeneralLLMPreference() {
 
                     <div className="flex flex-col w-60">
                       <label className="text-white text-sm font-semibold block mb-4">
-                        Embedding Model Deployment Name
+                        Embedding Deployment Name
                       </label>
                       <input
                         type="text"
@@ -238,12 +241,64 @@ export default function GeneralLLMPreference() {
                   </>
                 )}
 
-                {llmChoice === "anthropic-claude-2" && (
-                  <div className="w-full h-40 items-center justify-center flex">
-                    <p className="text-gray-800 dark:text-slate-400">
-                      This provider is unavailable and cannot be used in
-                      AnythingLLM currently.
-                    </p>
+                {llmChoice === "anthropic" && (
+                  <div className="w-full flex flex-col">
+                    <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-6 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+                      <div className="gap-x-2 flex items-center">
+                        <Info size={12} className="hidden md:visible" />
+                        <p className="text-sm md:text-base">
+                          Anthropic as your LLM requires you to set an embedding
+                          service to use.
+                        </p>
+                      </div>
+                      <a
+                        href={paths.general.embeddingPreference()}
+                        className="text-sm md:text-base my-2 underline"
+                      >
+                        Manage embedding &rarr;
+                      </a>
+                    </div>
+                    <div className="w-full flex items-center gap-4">
+                      <div className="flex flex-col w-60">
+                        <label className="text-white text-sm font-semibold block mb-4">
+                          Anthropic Claude-2 API Key
+                        </label>
+                        <input
+                          type="text"
+                          name="AnthropicApiKey"
+                          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                          placeholder="Anthropic Claude-2 API Key"
+                          defaultValue={
+                            settings?.AnthropicApiKey ? "*".repeat(20) : ""
+                          }
+                          required={true}
+                          autoComplete="off"
+                          spellCheck={false}
+                        />
+                      </div>
+
+                      <div className="flex flex-col w-60">
+                        <label className="text-white text-sm font-semibold block mb-4">
+                          Chat Model Selection
+                        </label>
+                        <select
+                          name="AnthropicModelPref"
+                          defaultValue={
+                            settings?.AnthropicModelPref || "claude-2"
+                          }
+                          required={true}
+                          className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+                        >
+                          {["claude-2"].map((model) => {
+                            return (
+                              <option key={model} value={model}>
+                                {model}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

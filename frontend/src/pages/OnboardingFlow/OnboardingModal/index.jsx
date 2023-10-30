@@ -7,6 +7,7 @@ import UserModeSelection from "./Steps/UserModeSelection";
 import PasswordProtection from "./Steps/PasswordProtection";
 import MultiUserSetup from "./Steps/MultiUserSetup";
 import CreateFirstWorkspace from "./Steps/CreateFirstWorkspace";
+import EmbeddingSelection from "./Steps/EmbeddingSelection";
 
 const DIALOG_ID = "onboarding-modal";
 
@@ -53,6 +54,12 @@ const STEPS = {
     title: "Create Workspace",
     description: "To get started, create a new workspace.",
     component: CreateFirstWorkspace,
+  },
+  8: {
+    title: "Embedding Preference",
+    description:
+      "Due to your LLM selection you need to set up a provider for embedding files and text.",
+    component: EmbeddingSelection,
   },
 };
 

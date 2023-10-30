@@ -21,6 +21,7 @@ import {
   House,
   X,
   List,
+  FileCode,
 } from "@phosphor-icons/react";
 import useUser from "../../hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "../../utils/constants";
@@ -114,6 +115,11 @@ export default function SettingsSidebar() {
                   href={paths.general.llmPreference()}
                   btnText="LLM Preference"
                   icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
+                />
+                <Option
+                  href={paths.general.embeddingPreference()}
+                  btnText="Embedding Preference"
+                  icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
                 />
                 <Option
                   href={paths.general.vectorDatabase()}
@@ -311,6 +317,11 @@ export function SidebarMobileHeader() {
                     href={paths.general.llmPreference()}
                     btnText="LLM Preference"
                     icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.general.embeddingPreference()}
+                    btnText="Embedding Preference"
+                    icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
                   />
                   <Option
                     href={paths.general.vectorDatabase()}

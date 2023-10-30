@@ -25,13 +25,33 @@ function getLLMProvider() {
   const vectorSelection = process.env.LLM_PROVIDER || "openai";
   switch (vectorSelection) {
     case "openai":
-      const { OpenAi } = require("../AiProviders/openAi");
-      return new OpenAi();
+      const { OpenAiLLM } = require("../AiProviders/openAi");
+      return new OpenAiLLM();
     case "azure":
-      const { AzureOpenAi } = require("../AiProviders/azureOpenAi");
-      return new AzureOpenAi();
+      const { AzureOpenAiLLM } = require("../AiProviders/azureOpenAi");
+      return new AzureOpenAiLLM();
+    case "anthropic":
+      const { AnthropicLLM } = require("../AiProviders/anthropic");
+      const embedder = getEmbeddingEngineSelection();
+      return new AnthropicLLM(embedder);
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
+  }
+}
+
+function getEmbeddingEngineSelection() {
+  const engineSelection = process.env.EMBEDDING_ENGINE;
+  switch (engineSelection) {
+    case "openai":
+      const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
+      return new OpenAiEmbedder();
+    case "azure":
+      const {
+        AzureOpenAiEmbedder,
+      } = require("../../EmbeddingEngines/azureOpenAi");
+      return new AzureOpenAiEmbedder();
+    default:
+      return null;
   }
 }
 
@@ -42,6 +62,7 @@ function toChunks(arr, size) {
 }
 
 module.exports = {
+  getEmbeddingEngineSelection,
   getVectorDbClass,
   getLLMProvider,
   toChunks,

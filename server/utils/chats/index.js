@@ -1,10 +1,8 @@
 const { v4: uuidv4 } = require("uuid");
-const { OpenAi } = require("../AiProviders/openAi");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { resetMemory } = require("./commands/reset");
 const moment = require("moment");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
-const { AzureOpenAi } = require("../AiProviders/azureOpenAi");
 
 function convertToChatHistory(history = []) {
   const formattedHistory = [];
@@ -67,14 +65,14 @@ async function chatWithWorkspace(
   user = null
 ) {
   const uuid = uuidv4();
-  const LLMConnector = getLLMProvider();
-  const VectorDb = getVectorDbClass();
   const command = grepCommand(message);
 
   if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
     return await VALID_COMMANDS[command](workspace, message, uuid, user);
   }
 
+  const LLMConnector = getLLMProvider();
+  const VectorDb = getVectorDbClass();
   const { safe, reasons = [] } = await LLMConnector.isSafe(message);
   if (!safe) {
     return {
