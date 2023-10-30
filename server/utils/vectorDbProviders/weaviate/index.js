@@ -77,6 +77,7 @@ const Weaviate = {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
+      scores: [],
     };
 
     const weaviateClass = await this.namespace(client, namespace);
@@ -84,7 +85,7 @@ const Weaviate = {
     const queryResponse = await client.graphql
       .get()
       .withClassName(camelCase(namespace))
-      .withFields(`${fields} _additional { id }`)
+      .withFields(`${fields} _additional { id certainty }`)
       .withNearVector({ vector: queryVector })
       .withLimit(4)
       .do();
@@ -94,11 +95,12 @@ const Weaviate = {
       // In Weaviate we have to pluck id from _additional and spread it into the rest
       // of the properties.
       const {
-        _additional: { id },
+        _additional: { id, certainty },
         ...rest
       } = response;
       result.contextTexts.push(rest.text);
       result.sourceDocuments.push({ ...rest, id });
+      result.scores.push(certainty);
     });
 
     return result;

@@ -18,6 +18,12 @@ const LanceDb = {
     const client = await lancedb.connect(this.uri);
     return { client };
   },
+  distanceToSimilarity: function (distance = null) {
+    if (distance === null || typeof distance !== "number") return 0.0;
+    if (distance >= 1.0) return 1;
+    if (distance <= 0) return 0;
+    return 1 - distance;
+  },
   heartbeat: async function () {
     await this.connect();
     return { heartbeat: Number(new Date()) };
@@ -54,6 +60,7 @@ const LanceDb = {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
+      scores: [],
     };
 
     const response = await collection
@@ -66,6 +73,7 @@ const LanceDb = {
       const { vector: _, ...rest } = item;
       result.contextTexts.push(rest.text);
       result.sourceDocuments.push(rest);
+      result.scores.push(this.distanceToSimilarity(item.score));
     });
 
     return result;
