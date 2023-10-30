@@ -83,8 +83,9 @@ class AnthropicLLM {
       })
       .then((res) => {
         const { completion } = res;
-        const re =
-          /(?:<anythingllmresponse>)([\s\S]*)(?:<\/anythingllmresponse>)/;
+        const re = new RegExp(
+          "(?:<" + this.answerKey + ">)([\\s\\S]*)(?:</" + this.answerKey + ">)"
+        );
         const response = completion.match(re)?.[1]?.trim();
         if (!response)
           throw new Error("Anthropic: No response could be parsed.");
@@ -116,10 +117,6 @@ class AnthropicLLM {
         const re = new RegExp(
           "(?:<" + this.answerKey + ">)([\\s\\S]*)(?:</" + this.answerKey + ">)"
         );
-
-        console.log(re.source, completion, completion.match(re)?.[1]?.trim());
-        // const re =
-        //   /(?:<anythingllmresponse>)([\s\S]*)(?:<\/anythingllmresponse>)/;
         const response = completion.match(re)?.[1]?.trim();
         if (!response)
           throw new Error("Anthropic: No response could be parsed.");
@@ -142,23 +139,6 @@ class AnthropicLLM {
   }
 }
 
-function getEmbeddingEngineSelection() {
-  const engineSelection = process.env.EMBEDDING_ENGINE;
-  switch (engineSelection) {
-    case "openai":
-      const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
-      return new OpenAiEmbedder();
-    case "azure":
-      const {
-        AzureOpenAiEmbedder,
-      } = require("../../EmbeddingEngines/azureOpenAi");
-      return new AzureOpenAiEmbedder();
-    default:
-      return null;
-  }
-}
-
 module.exports = {
   AnthropicLLM,
-  getEmbeddingEngineSelection,
 };

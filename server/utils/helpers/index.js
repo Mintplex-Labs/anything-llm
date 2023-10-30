@@ -31,14 +31,27 @@ function getLLMProvider() {
       const { AzureOpenAiLLM } = require("../AiProviders/azureOpenAi");
       return new AzureOpenAiLLM();
     case "anthropic":
-      const {
-        AnthropicLLM,
-        getEmbeddingEngineSelection,
-      } = require("../AiProviders/anthropic");
+      const { AnthropicLLM } = require("../AiProviders/anthropic");
       const embedder = getEmbeddingEngineSelection();
       return new AnthropicLLM(embedder);
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
+  }
+}
+
+function getEmbeddingEngineSelection() {
+  const engineSelection = process.env.EMBEDDING_ENGINE;
+  switch (engineSelection) {
+    case "openai":
+      const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
+      return new OpenAiEmbedder();
+    case "azure":
+      const {
+        AzureOpenAiEmbedder,
+      } = require("../../EmbeddingEngines/azureOpenAi");
+      return new AzureOpenAiEmbedder();
+    default:
+      return null;
   }
 }
 
@@ -49,6 +62,7 @@ function toChunks(arr, size) {
 }
 
 module.exports = {
+  getEmbeddingEngineSelection,
   getVectorDbClass,
   getLLMProvider,
   toChunks,
