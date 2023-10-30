@@ -48,7 +48,7 @@ export default function GeneralVectorDatabase() {
       showToast("Settings saved successfully.", "success");
     }
     setSaving(false);
-    setHasChanges(!!error ? true : false);
+    setHasChanges(!!error);
   };
 
   return (

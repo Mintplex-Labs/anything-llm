@@ -1,3 +1,4 @@
+const { v4 } = require("uuid");
 const { chatPrompt } = require("../../chats");
 
 class AnthropicLLM {
@@ -17,6 +18,7 @@ class AnthropicLLM {
         "INVALID ANTHROPIC SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Anthropic as your LLM."
       );
     this.embedder = embedder;
+    this.answerKey = v4().split("-")[0];
   }
 
   isValidChatModel(modelName = "") {
@@ -37,7 +39,9 @@ class AnthropicLLM {
     chatHistory = [],
     userPrompt = "",
   }) {
-    return `\n\nHuman: Please read question supplied within the <question> tags. Using all information generate an answer to the question and output it within <anythingllmresponse> tags. Previous conversations can be used within the <history> tags and can be used to influence the output. Content between the <system> tag is additional information and instruction that will impact how answers are formatted or responded to. Additional contextual information retrieved to help answer the users specific query is available to use for answering and can be found between <context> tags. When no <context> tags may are present use the knowledge available and in the conversation to answer. When one or more <context> tags are available you will use those to help answer the question or augment pre-existing knowledge. You should never say "Based on the provided context" or other phrasing that is not related to the user question.
+    return `\n\nHuman: Please read question supplied within the <question> tags. Using all information generate an answer to the question and output it within <${
+      this.answerKey
+    }> tags. Previous conversations can be used within the <history> tags and can be used to influence the output. Content between the <system> tag is additional information and instruction that will impact how answers are formatted or responded to. Additional contextual information retrieved to help answer the users specific query is available to use for answering and can be found between <context> tags. When no <context> tags may are present use the knowledge available and in the conversation to answer. When one or more <context> tags are available you will use those to help answer the question or augment pre-existing knowledge. You should never say "Based on the provided context" or other phrasing that is not related to the user question.
     <system>${systemPrompt}</system>
     ${contextTexts
       .map((text, i) => {
@@ -109,8 +113,13 @@ class AnthropicLLM {
       })
       .then((res) => {
         const { completion } = res;
-        const re =
-          /(?:<anythingllmresponse>)([\s\S]*)(?:<\/anythingllmresponse>)/;
+        const re = new RegExp(
+          "(?:<" + this.answerKey + ">)([\\s\\S]*)(?:</" + this.answerKey + ">)"
+        );
+
+        console.log(re.source, completion, completion.match(re)?.[1]?.trim());
+        // const re =
+        //   /(?:<anythingllmresponse>)([\s\S]*)(?:<\/anythingllmresponse>)/;
         const response = completion.match(re)?.[1]?.trim();
         if (!response)
           throw new Error("Anthropic: No response could be parsed.");

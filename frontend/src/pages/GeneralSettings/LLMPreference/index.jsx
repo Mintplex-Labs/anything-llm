@@ -33,7 +33,7 @@ export default function GeneralLLMPreference() {
       showToast("LLM preferences saved successfully.", "success");
     }
     setSaving(false);
-    setHasChanges(!!error ? true : false);
+    setHasChanges(!!error);
   };
 
   const updateLLMChoice = (selection) => {

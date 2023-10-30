@@ -30,7 +30,7 @@ export default function GeneralEmbeddingPreference() {
       showToast("Embedding preferences saved successfully.", "success");
     }
     setSaving(false);
-    setHasChanges(!!error ? true : false);
+    setHasChanges(!!error);
   };
 
   const updateChoice = (selection) => {
