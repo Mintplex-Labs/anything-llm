@@ -49,7 +49,7 @@ const Chroma = {
     }
     return totalVectors;
   },
-  distanceToScore: function (distance = null) {
+  distanceToSimilarity: function (distance = null) {
     if (distance === null || typeof distance !== "number") return 0.0;
     if (distance >= 1.0) return 1;
     if (distance <= 0) return 0;
@@ -75,7 +75,7 @@ const Chroma = {
     response.ids[0].forEach((_, i) => {
       result.contextTexts.push(response.documents[0][i]);
       result.sourceDocuments.push(response.metadatas[0][i]);
-      result.scores.push(this.distanceToScore(response.distances[0][i]));
+      result.scores.push(this.distanceToSimilarity(response.distances[0][i]));
     });
 
     return result;
