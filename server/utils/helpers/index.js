@@ -43,12 +43,12 @@ function getEmbeddingEngineSelection() {
   const engineSelection = process.env.EMBEDDING_ENGINE;
   switch (engineSelection) {
     case "openai":
-      const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
+      const { OpenAiEmbedder } = require("../EmbeddingEngines/openAi");
       return new OpenAiEmbedder();
     case "azure":
       const {
         AzureOpenAiEmbedder,
-      } = require("../../EmbeddingEngines/azureOpenAi");
+      } = require("../EmbeddingEngines/azureOpenAi");
       return new AzureOpenAiEmbedder();
     default:
       return null;
