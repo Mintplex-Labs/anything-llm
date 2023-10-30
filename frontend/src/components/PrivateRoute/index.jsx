@@ -21,6 +21,7 @@ function useIsAuthenticated() {
         MultiUserMode,
         RequiresAuth,
         OpenAiKey = false,
+        AnthropicApiKey = false,
         AzureOpenAiKey = false,
       } = await System.keys();
 
@@ -29,6 +30,7 @@ function useIsAuthenticated() {
         !MultiUserMode &&
         !RequiresAuth && // Not in Multi-user AND no password set.
         !OpenAiKey &&
+        !AnthropicApiKey &&
         !AzureOpenAiKey // AND no LLM API Key set at all.
       ) {
         setShouldRedirectToOnboarding(true);

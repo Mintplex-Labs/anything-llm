@@ -30,6 +30,21 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Anthropic Settings
+  AnthropicApiKey: {
+    envKey: "ANTHROPIC_API_KEY",
+    checks: [isNotEmpty, validAnthropicApiKey],
+  },
+  AnthropicModelPref: {
+    envKey: "ANTHROPIC_MODEL_PREF",
+    checks: [isNotEmpty, validAnthropicModel],
+  },
+
+  EmbeddingEngine: {
+    envKey: "EMBEDDING_ENGINE",
+    checks: [supportedEmbeddingModel],
+  },
+
   // Vector Database Selection Settings
   VectorDB: {
     envKey: "VECTOR_DB",
@@ -113,8 +128,14 @@ function validOpenAIKey(input = "") {
   return input.startsWith("sk-") ? null : "OpenAI Key must start with sk-";
 }
 
+function validAnthropicApiKey(input = "") {
+  return input.startsWith("sk-ant-")
+    ? null
+    : "Anthropic Key must start with sk-ant-";
+}
+
 function supportedLLM(input = "") {
-  return ["openai", "azure"].includes(input);
+  return ["openai", "azure", "anthropic"].includes(input);
 }
 
 function validOpenAIModel(input = "") {
@@ -122,6 +143,20 @@ function validOpenAIModel(input = "") {
   return validModels.includes(input)
     ? null
     : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
+}
+
+function validAnthropicModel(input = "") {
+  const validModels = ["claude-2"];
+  return validModels.includes(input)
+    ? null
+    : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
+}
+
+function supportedEmbeddingModel(input = "") {
+  const supported = ["openai", "azure"];
+  return supported.includes(input)
+    ? null
+    : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;
 }
 
 function supportedVectorDB(input = "") {

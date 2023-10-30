@@ -246,17 +246,11 @@ const LanceDb = {
       namespace,
       queryVector
     );
-    const prompt = {
-      role: "system",
-      content: `${chatPrompt(workspace)}
-    Context:
-    ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
-    };
-    const memory = [prompt, { role: "user", content: input }];
+    const memory = LLMConnector.constructPrompt({
+      systemPrompt: chatPrompt(workspace),
+      contextTexts: contextTexts,
+      userPrompt: input,
+    });
     const responseText = await LLMConnector.getChatCompletion(memory, {
       temperature: workspace?.openAiTemp ?? 0.7,
     });
@@ -296,17 +290,12 @@ const LanceDb = {
       namespace,
       queryVector
     );
-    const prompt = {
-      role: "system",
-      content: `${chatPrompt(workspace)}
-    Context:
-    ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
-    };
-    const memory = [prompt, ...chatHistory, { role: "user", content: input }];
+    const memory = LLMConnector.constructPrompt({
+      systemPrompt: chatPrompt(workspace),
+      contextTexts: contextTexts,
+      userPrompt: input,
+      chatHistory,
+    });
     const responseText = await LLMConnector.getChatCompletion(memory, {
       temperature: workspace?.openAiTemp ?? 0.7,
     });

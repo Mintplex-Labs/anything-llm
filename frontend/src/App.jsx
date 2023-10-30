@@ -22,6 +22,9 @@ const GeneralApiKeys = lazy(() => import("./pages/GeneralSettings/ApiKeys"));
 const GeneralLLMPreference = lazy(() =>
   import("./pages/GeneralSettings/LLMPreference")
 );
+const GeneralEmbeddingPreference = lazy(() =>
+  import("./pages/GeneralSettings/EmbeddingPreference")
+);
 const GeneralVectorDatabase = lazy(() =>
   import("./pages/GeneralSettings/VectorDatabase")
 );
@@ -49,6 +52,10 @@ export default function App() {
           <Route
             path="/general/llm-preference"
             element={<PrivateRoute Component={GeneralLLMPreference} />}
+          />
+          <Route
+            path="/general/embedding-preference"
+            element={<PrivateRoute Component={GeneralEmbeddingPreference} />}
           />
           <Route
             path="/general/vector-database"
