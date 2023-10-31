@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import System from "../../../models/system";
-import debounce from "lodash.debounce";
 
 export default function OpenAiOptions({ settings }) {
+  const [inputValue, setInputValue] = useState(settings?.OpenAiKey);
   const [openAIKey, setOpenAIKey] = useState(settings?.OpenAiKey);
+  function updateOpenAiKey() {
+    setOpenAIKey(inputValue);
+  }
 
-  const onUpdateOpenAiKey = debounce((e) => {
-    setOpenAIKey(e.target.value);
-  }, 500);
   return (
     <>
       <div className="flex flex-col w-60">
@@ -23,7 +23,8 @@ export default function OpenAiOptions({ settings }) {
           required={true}
           autoComplete="off"
           spellCheck={false}
-          onChange={onUpdateOpenAiKey}
+          onChange={(e) => setInputValue(e.target.value)}
+          onBlur={updateOpenAiKey}
         />
       </div>
       <OpenAIModelSelection settings={settings} apiKey={openAIKey} />

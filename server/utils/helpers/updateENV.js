@@ -107,8 +107,6 @@ const KEY_MAPPING = {
     envKey: "JWT_SECRET",
     checks: [requiresForceMode],
   },
-  // Not supported yet.
-  // 'StorageDir': 'STORAGE_DIR',
 };
 
 function isNotEmpty(input = "") {
