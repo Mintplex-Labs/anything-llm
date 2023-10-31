@@ -266,7 +266,7 @@ export default function WorkspaceSettings({ workspace }) {
                       Similarity Score Threshold
                     </label>
                     <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-                      The minimum similarity score required for a source to be considered related to the chat. The higher the number (1.0 maximum), the more similar the source must be to the chat to be considered related. <i>Recommended 0.2</i>.
+                      The minimum similarity score required for a source to be considered related to the chat. The higher the number (1.0 maximum), the more similar the source must be to the chat to be considered related. <i>Recommended 0.75</i>.
                     </p>
                   </div>
                   <input
@@ -274,9 +274,9 @@ export default function WorkspaceSettings({ workspace }) {
                     type="number"
                     min={0.0}
                     max={1.0}
-                    step={0.1}
+                    step={0.01}
                     onWheel={(e) => e.target.blur()}
-                    defaultValue={workspace?.similarityThreshold ?? 0.2}
+                    defaultValue={workspace?.similarityThreshold ?? 0.75}
                     className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="0.2"
                     required={true}

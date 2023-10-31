@@ -37,7 +37,7 @@ const Pinecone = {
     const namespace = await this.namespace(pineconeIndex, _namespace);
     return namespace?.vectorCount || 0;
   },
-  similarityResponse: async function (index, namespace, queryVector) {
+  similarityResponse: async function (index, namespace, queryVector, similarityThreshold = 0.75) {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
@@ -52,14 +52,24 @@ const Pinecone = {
       },
     });
 
+    // TODO: Console logs for debugging, remove later
     response.matches.forEach((match) => {
-      result.contextTexts.push(match.metadata.text);
-      result.sourceDocuments.push(match);
-      result.scores.push(match.score);
+      console.log("Match score:", match.score);
+      if(match.score < similarityThreshold){
+        console.log("Match score is below threshold, skipping.");
+      }
+
+      if (match.score > similarityThreshold) {
+        console.log("Match score is above threshold, adding to results.");
+        result.contextTexts.push(match.metadata.text);
+        result.sourceDocuments.push(match);
+        result.scores.push(match.score);
+      }
     });
 
     return result;
   },
+
   namespace: async function (index, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const { namespaces } = await index.describeIndexStats1();
@@ -240,7 +250,8 @@ const Pinecone = {
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       pineconeIndex,
       namespace,
-      queryVector
+      queryVector,
+      workspace?.similarityThreshold ?? 0.75
     );
     const memory = LLMConnector.constructPrompt({
       systemPrompt: chatPrompt(workspace),
@@ -281,7 +292,8 @@ const Pinecone = {
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       pineconeIndex,
       namespace,
-      queryVector
+      queryVector,
+      workspace?.similarityThreshold ?? 0.75
     );
     const memory = LLMConnector.constructPrompt({
       systemPrompt: chatPrompt(workspace),
