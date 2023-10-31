@@ -16,6 +16,9 @@ function castToType(key, value) {
     openAiHistory: {
       cast: (value) => Number(value),
     },
+    similarityThreshold: {
+      cast: (value) => parseFloat(value),
+    },
   };
 
   if (!definitions.hasOwnProperty(key)) return value;
@@ -254,6 +257,33 @@ export default function WorkspaceSettings({ workspace }) {
                   autoComplete="off"
                   onChange={() => setHasChanges(true)}
                 />
+                <div className="mt-4">
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-white"
+                    >
+                      Similarity Score Threshold
+                    </label>
+                    <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+                      The minimum similarity score required for a source to be considered related to the chat. The higher the number (1.0 maximum), the more similar the source must be to the chat to be considered related. <i>Recommended 0.2</i>.
+                    </p>
+                  </div>
+                  <input
+                    name="similarityThreshold"
+                    type="number"
+                    min={0.0}
+                    max={1.0}
+                    step={0.1}
+                    onWheel={(e) => e.target.blur()}
+                    defaultValue={workspace?.similarityThreshold ?? 0.2}
+                    className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder="0.2"
+                    required={true}
+                    autoComplete="off"
+                    onChange={() => setHasChanges(true)}
+                  />
+                </div>
               </div>
             </div>
           </div>
