@@ -3,12 +3,10 @@ import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
 import System from "../../../../../models/system";
 import PreLoader from "../../../../../components/Preloader";
-import LLMProviderOption from "../../../../../components/LLMProviderOption";
+import LLMProviderOption from "../../../../../components/LLMSelection/LLMProviderOption";
 
 function EmbeddingSelection({ nextStep, prevStep, currentStep, goToStep }) {
   const [embeddingChoice, setEmbeddingChoice] = useState("openai");
-  const [llmChoice, setLLMChoice] = useState("openai");
-
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
 

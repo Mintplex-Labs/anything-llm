@@ -10,7 +10,7 @@ const KEY_MAPPING = {
   },
   OpenAiModelPref: {
     envKey: "OPEN_MODEL_PREF",
-    checks: [isNotEmpty, validOpenAIModel],
+    checks: [isNotEmpty],
   },
   // Azure OpenAI Settings
   AzureOpenAiEndpoint: {
@@ -136,13 +136,6 @@ function validAnthropicApiKey(input = "") {
 
 function supportedLLM(input = "") {
   return ["openai", "azure", "anthropic"].includes(input);
-}
-
-function validOpenAIModel(input = "") {
-  const validModels = ["gpt-4", "gpt-3.5-turbo"];
-  return validModels.includes(input)
-    ? null
-    : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
 }
 
 function validAnthropicModel(input = "") {
