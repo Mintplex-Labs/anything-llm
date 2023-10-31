@@ -319,6 +319,26 @@ const System = {
         return false;
       });
   },
+  customModels: async function (provider, apiKey) {
+    return fetch(`${API_BASE}/system/custom-models`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({
+        provider,
+        apiKey,
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText || "Error finding custom models.");
+        }
+        return res.json();
+      })
+      .catch((e) => {
+        console.error(e);
+        return { models: [], error: e.message };
+      });
+  },
 };
 
 export default System;
