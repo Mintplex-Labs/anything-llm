@@ -8,7 +8,7 @@ import showToast from "../../../utils/toast";
 import OpenAiLogo from "../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../media/llmprovider/azure.png";
 import PreLoader from "../../../components/Preloader";
-import LLMProviderOption from "../../../components/LLMProviderOption";
+import LLMProviderOption from "../../../components/LLMSelection/LLMProviderOption";
 
 export default function GeneralEmbeddingPreference() {
   const [saving, setSaving] = useState(false);
