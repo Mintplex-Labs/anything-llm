@@ -87,10 +87,22 @@ async function chatWithWorkspace(
     };
   }
 
+  const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
   if (!hasVectorizedSpace || embeddingsCount === 0) {
-    const rawHistory = await WorkspaceChats.forWorkspace(workspace.id);
+    const rawHistory = (
+      user
+        ? await WorkspaceChats.forWorkspaceByUser(
+            workspace.id,
+            user.id,
+            messageLimit,
+            { id: "desc" }
+          )
+        : await WorkspaceChats.forWorkspace(workspace.id, messageLimit, {
+            id: "desc",
+          })
+    ).reverse();
     const chatHistory = convertToPromptHistory(rawHistory);
     const response = await LLMConnector.sendChat(
       chatHistory,
@@ -114,12 +126,18 @@ async function chatWithWorkspace(
       error: null,
     };
   } else {
-    var messageLimit = workspace?.openAiHistory;
-
-    const rawHistory = await WorkspaceChats.forWorkspace(
-      workspace.id,
-      messageLimit
-    );
+    const rawHistory = (
+      user
+        ? await WorkspaceChats.forWorkspaceByUser(
+            workspace.id,
+            user.id,
+            messageLimit,
+            { id: "desc" }
+          )
+        : await WorkspaceChats.forWorkspace(workspace.id, messageLimit, {
+            id: "desc",
+          })
+    ).reverse();
     const chatHistory = convertToPromptHistory(rawHistory);
     const {
       response,

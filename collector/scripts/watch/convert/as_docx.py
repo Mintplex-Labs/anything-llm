@@ -61,7 +61,7 @@ def as_odt(**kwargs):
     'id': guid(),
     'url': "file://"+os.path.abspath(f"{parent_dir}/processed/{filename}{ext}"),
     'title': f"{filename}{ext}",
-    'author': 'Unknown', # TODO: Find a better author
+    'docAuthor': 'Unknown', # TODO: Find a better author
     'description': 'Unknown', # TODO: Find a better bescription
     'docSource': 'ODT Text file uploaded by the user.',
     'chunkSource': f"{filename}{ext}",
