@@ -9,9 +9,10 @@ import OpenAiLogo from "../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../media/llmprovider/azure.png";
 import AnthropicLogo from "../../../media/llmprovider/anthropic.png";
 import PreLoader from "../../../components/Preloader";
-import LLMProviderOption from "../../../components/LLMProviderOption";
-import { Info } from "@phosphor-icons/react";
-import paths from "../../../utils/paths";
+import LLMProviderOption from "../../../components/LLMSelection/LLMProviderOption";
+import OpenAiOptions from "../../../components/LLMSelection/OpenAiOptions";
+import AzureAiOptions from "../../../components/LLMSelection/AzureAiOptions";
+import AnthropicAiOptions from "../../../components/LLMSelection/AnthropicAiOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -132,174 +133,13 @@ export default function GeneralLLMPreference() {
               </div>
               <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
                 {llmChoice === "openai" && (
-                  <>
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        API Key
-                      </label>
-                      <input
-                        type="text"
-                        name="OpenAiKey"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="OpenAI API Key"
-                        defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
-                        required={true}
-                        autoComplete="off"
-                        spellCheck={false}
-                      />
-                    </div>
-
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        Chat Model Selection
-                      </label>
-                      <select
-                        name="OpenAiModelPref"
-                        defaultValue={settings?.OpenAiModelPref}
-                        required={true}
-                        className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
-                      >
-                        {["gpt-3.5-turbo", "gpt-4"].map((model) => {
-                          return (
-                            <option key={model} value={model}>
-                              {model}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  </>
+                  <OpenAiOptions settings={settings} />
                 )}
-
                 {llmChoice === "azure" && (
-                  <>
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        Azure Service Endpoint
-                      </label>
-                      <input
-                        type="url"
-                        name="AzureOpenAiEndpoint"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="https://my-azure.openai.azure.com"
-                        defaultValue={settings?.AzureOpenAiEndpoint}
-                        required={true}
-                        autoComplete="off"
-                        spellCheck={false}
-                      />
-                    </div>
-
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        API Key
-                      </label>
-                      <input
-                        type="password"
-                        name="AzureOpenAiKey"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="Azure OpenAI API Key"
-                        defaultValue={
-                          settings?.AzureOpenAiKey ? "*".repeat(20) : ""
-                        }
-                        required={true}
-                        autoComplete="off"
-                        spellCheck={false}
-                      />
-                    </div>
-
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        Chat Deployment Name
-                      </label>
-                      <input
-                        type="text"
-                        name="AzureOpenAiModelPref"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="Azure OpenAI chat model deployment name"
-                        defaultValue={settings?.AzureOpenAiModelPref}
-                        required={true}
-                        autoComplete="off"
-                        spellCheck={false}
-                      />
-                    </div>
-
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        Embedding Deployment Name
-                      </label>
-                      <input
-                        type="text"
-                        name="AzureOpenAiEmbeddingModelPref"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="Azure OpenAI embedding model deployment name"
-                        defaultValue={settings?.AzureOpenAiEmbeddingModelPref}
-                        required={true}
-                        autoComplete="off"
-                        spellCheck={false}
-                      />
-                    </div>
-                  </>
+                  <AzureAiOptions settings={settings} />
                 )}
-
                 {llmChoice === "anthropic" && (
-                  <div className="w-full flex flex-col">
-                    <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-6 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
-                      <div className="gap-x-2 flex items-center">
-                        <Info size={12} className="hidden md:visible" />
-                        <p className="text-sm md:text-base">
-                          Anthropic as your LLM requires you to set an embedding
-                          service to use.
-                        </p>
-                      </div>
-                      <a
-                        href={paths.general.embeddingPreference()}
-                        className="text-sm md:text-base my-2 underline"
-                      >
-                        Manage embedding &rarr;
-                      </a>
-                    </div>
-                    <div className="w-full flex items-center gap-4">
-                      <div className="flex flex-col w-60">
-                        <label className="text-white text-sm font-semibold block mb-4">
-                          Anthropic Claude-2 API Key
-                        </label>
-                        <input
-                          type="text"
-                          name="AnthropicApiKey"
-                          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                          placeholder="Anthropic Claude-2 API Key"
-                          defaultValue={
-                            settings?.AnthropicApiKey ? "*".repeat(20) : ""
-                          }
-                          required={true}
-                          autoComplete="off"
-                          spellCheck={false}
-                        />
-                      </div>
-
-                      <div className="flex flex-col w-60">
-                        <label className="text-white text-sm font-semibold block mb-4">
-                          Chat Model Selection
-                        </label>
-                        <select
-                          name="AnthropicModelPref"
-                          defaultValue={
-                            settings?.AnthropicModelPref || "claude-2"
-                          }
-                          required={true}
-                          className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
-                        >
-                          {["claude-2"].map((model) => {
-                            return (
-                              <option key={model} value={model}>
-                                {model}
-                              </option>
-                            );
-                          })}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
+                  <AnthropicAiOptions settings={settings} showAlert={true} />
                 )}
               </div>
             </div>

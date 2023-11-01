@@ -12,9 +12,16 @@ class OpenAiLLM extends OpenAiEmbedder {
     this.openai = new OpenAIApi(config);
   }
 
-  isValidChatModel(modelName = "") {
+  async isValidChatCompletionModel(modelName = "") {
     const validModels = ["gpt-4", "gpt-3.5-turbo"];
-    return validModels.includes(modelName);
+    const isPreset = validModels.some((model) => modelName === model);
+    if (isPreset) return true;
+
+    const model = await this.openai
+      .retrieveModel(modelName)
+      .then((res) => res.data)
+      .catch(() => null);
+    return !!model;
   }
 
   constructPrompt({
@@ -70,7 +77,7 @@ class OpenAiLLM extends OpenAiEmbedder {
 
   async sendChat(chatHistory = [], prompt, workspace = {}) {
     const model = process.env.OPEN_MODEL_PREF;
-    if (!this.isValidChatModel(model))
+    if (!(await this.isValidChatCompletionModel(model)))
       throw new Error(
         `OpenAI chat: ${model} is not valid for chat completion!`
       );
@@ -95,7 +102,6 @@ class OpenAiLLM extends OpenAiEmbedder {
         return res.choices[0].message.content;
       })
       .catch((error) => {
-        console.log(error);
         throw new Error(
           `OpenAI::createChatCompletion failed with: ${error.message}`
         );
@@ -104,8 +110,13 @@ class OpenAiLLM extends OpenAiEmbedder {
     return textResponse;
   }
 
-  async getChatCompletion(messages = [], { temperature = 0.7 }) {
+  async getChatCompletion(messages = null, { temperature = 0.7 }) {
     const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
+    if (!(await this.isValidChatCompletionModel(model)))
+      throw new Error(
+        `OpenAI chat: ${model} is not valid for chat completion!`
+      );
+
     const { data } = await this.openai.createChatCompletion({
       model,
       messages,
