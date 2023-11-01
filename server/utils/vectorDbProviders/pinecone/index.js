@@ -57,19 +57,11 @@ const Pinecone = {
       },
     });
 
-    // TODO: Console logs for debugging, remove later
     response.matches.forEach((match) => {
-      console.log("Match score:", match.score);
-      if (match.score < similarityThreshold) {
-        console.log("Match score is below threshold, skipping.");
-      }
-
-      if (match.score > similarityThreshold) {
-        console.log("Match score is above threshold, adding to results.");
-        result.contextTexts.push(match.metadata.text);
-        result.sourceDocuments.push(match);
-        result.scores.push(match.score);
-      }
+      if (match.score < similarityThreshold) return;
+      result.contextTexts.push(match.metadata.text);
+      result.sourceDocuments.push(match);
+      result.scores.push(match.score);
     });
 
     return result;

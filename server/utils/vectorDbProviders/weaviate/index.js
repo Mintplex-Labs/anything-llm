@@ -73,7 +73,7 @@ const Weaviate = {
       return 0;
     }
   },
-  similarityResponse: async function (client, namespace, queryVector) {
+  similarityResponse: async function (client, namespace, queryVector, similarityThreshold = 0.25) {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
@@ -98,6 +98,7 @@ const Weaviate = {
         _additional: { id, certainty },
         ...rest
       } = response;
+      if (certainty < similarityThreshold) return;
       result.contextTexts.push(rest.text);
       result.sourceDocuments.push({ ...rest, id });
       result.scores.push(certainty);
@@ -351,7 +352,8 @@ const Weaviate = {
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
-      queryVector
+      queryVector,
+      workspace?.similarityThreshold ?? 0.25
     );
     const memory = LLMConnector.constructPrompt({
       systemPrompt: chatPrompt(workspace),
@@ -395,7 +397,8 @@ const Weaviate = {
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
-      queryVector
+      queryVector,
+      workspace?.similarityThreshold ?? 0.25
     );
     const memory = LLMConnector.constructPrompt({
       systemPrompt: chatPrompt(workspace),
