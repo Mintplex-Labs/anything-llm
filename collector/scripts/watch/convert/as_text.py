@@ -23,6 +23,7 @@ def as_text(**kwargs):
     'title': f"{filename}{ext}",
     'docAuthor': 'Unknown', # TODO: Find a better author
     'description': 'Unknown', # TODO: Find a better description
+    'docSource': 'a text file uploaded by the user.',
     'chunkSource': f"{filename}{ext}",
     'published': file_creation_time(fullpath),
     'wordCount': len(content),
