@@ -36,6 +36,7 @@
     "express": "^4.18.2",
     "extract-zip": "^2.0.1",
     "graphql": "^16.7.1",
+    "js-tiktoken": "^1.0.7",
     "jsonwebtoken": "^8.5.1",
     "langchain": "^0.0.90",
     "mime": "^3.0.0",

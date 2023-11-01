@@ -32,9 +32,7 @@ const WorkspaceChats = {
           include: true,
         },
         ...(limit !== null ? { take: limit } : {}),
-        orderBy: {
-          id: "asc",
-        },
+        ...(orderBy !== null ? { orderBy } : { orderBy: { id: "asc" } }),
       });
       return chats;
     } catch (error) {
@@ -43,7 +41,11 @@ const WorkspaceChats = {
     }
   },
 
-  forWorkspace: async function (workspaceId = null, limit = null) {
+  forWorkspace: async function (
+    workspaceId = null,
+    limit = null,
+    orderBy = {}
+  ) {
     if (!workspaceId) return [];
     try {
       const chats = await prisma.workspace_chats.findMany({
@@ -52,9 +54,7 @@ const WorkspaceChats = {
           include: true,
         },
         ...(limit !== null ? { take: limit } : {}),
-        orderBy: {
-          id: "asc",
-        },
+        ...(orderBy !== null ? { orderBy } : { orderBy: { id: "asc" } }),
       });
       return chats;
     } catch (error) {

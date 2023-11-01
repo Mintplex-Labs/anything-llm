@@ -3,6 +3,7 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { resetMemory } = require("./commands/reset");
 const moment = require("moment");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
+const { CacheData } = require("../../models/cacheData");
 
 function convertToChatHistory(history = []) {
   const formattedHistory = [];
@@ -87,15 +88,22 @@ async function chatWithWorkspace(
     };
   }
 
+  const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
   if (!hasVectorizedSpace || embeddingsCount === 0) {
-    const rawHistory = await WorkspaceChats.forWorkspace(workspace.id);
-    const chatHistory = convertToPromptHistory(rawHistory);
+    const _rawRecentHistory = (
+      await WorkspaceChats.forWorkspace(workspace.id, messageLimit, {
+        id: "desc",
+      })
+    ).reverse();
+    const recentChats = await compressRawHistory(_rawRecentHistory);
+    const chatHistory = convertToPromptHistory(recentChats);
     const response = await LLMConnector.sendChat(
       chatHistory,
       message,
-      workspace
+      workspace,
+      recentChats
     );
     const data = { text: response, sources: [], type: "chat" };
 
@@ -114,8 +122,6 @@ async function chatWithWorkspace(
       error: null,
     };
   } else {
-    var messageLimit = workspace?.openAiHistory;
-
     const rawHistory = await WorkspaceChats.forWorkspace(
       workspace.id,
       messageLimit
@@ -158,6 +164,31 @@ async function chatWithWorkspace(
       error,
     };
   }
+}
+
+async function compressRawHistory(rawHistory = []) {
+  if (rawHistory.length === 0) return rawHistory;
+
+  const caches = await CacheData.where({
+    belongsTo: "workspace_chats",
+    byId: { in: rawHistory.map((h) => h.id) },
+  });
+  if (caches.length === 0) return rawHistory;
+
+  const mostRecentSummary = caches.slice(-1)[0];
+  const idxOfSummary = rawHistory.findIndex(
+    (history) => history.id === mostRecentSummary.byId
+  );
+  const { response, ...chatLog } = rawHistory[idxOfSummary];
+  const resData = JSON.parse(response);
+  return [
+    {
+      ...chatLog,
+      prompt: "What is the summary of our conversation so far?",
+      response: JSON.stringify({ ...resData, text: mostRecentSummary.data }),
+    },
+    ...rawHistory.slice(idxOfSummary + 1),
+  ];
 }
 
 function chatPrompt(workspace) {
