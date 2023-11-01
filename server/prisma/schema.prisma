@@ -91,7 +91,7 @@ model workspaces {
   openAiHistory       Int                   @default(20)
   lastUpdatedAt       DateTime              @default(now())
   openAiPrompt        String?
-  similarityThreshold Float?                @default(0.75)
+  similarityThreshold Float?                @default(0.25)
   workspace_users     workspace_users[]
   documents           workspace_documents[]
 }

@@ -37,7 +37,12 @@ const Pinecone = {
     const namespace = await this.namespace(pineconeIndex, _namespace);
     return namespace?.vectorCount || 0;
   },
-  similarityResponse: async function (index, namespace, queryVector, similarityThreshold = 0.75) {
+  similarityResponse: async function (
+    index,
+    namespace,
+    queryVector,
+    similarityThreshold = 0.25
+  ) {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
@@ -55,7 +60,7 @@ const Pinecone = {
     // TODO: Console logs for debugging, remove later
     response.matches.forEach((match) => {
       console.log("Match score:", match.score);
-      if(match.score < similarityThreshold){
+      if (match.score < similarityThreshold) {
         console.log("Match score is below threshold, skipping.");
       }
 
@@ -251,7 +256,7 @@ const Pinecone = {
       pineconeIndex,
       namespace,
       queryVector,
-      workspace?.similarityThreshold ?? 0.75
+      workspace?.similarityThreshold ?? 0.25
     );
     const memory = LLMConnector.constructPrompt({
       systemPrompt: chatPrompt(workspace),
@@ -293,7 +298,7 @@ const Pinecone = {
       pineconeIndex,
       namespace,
       queryVector,
-      workspace?.similarityThreshold ?? 0.75
+      workspace?.similarityThreshold ?? 0.25
     );
     const memory = LLMConnector.constructPrompt({
       systemPrompt: chatPrompt(workspace),

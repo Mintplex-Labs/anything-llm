@@ -263,26 +263,32 @@ export default function WorkspaceSettings({ workspace }) {
                       htmlFor="name"
                       className="block text-sm font-medium text-white"
                     >
-                      Similarity Score Threshold
+                      Document similarity threshold
                     </label>
                     <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-                      The minimum similarity score required for a source to be considered related to the chat. The higher the number (1.0 maximum), the more similar the source must be to the chat to be considered related. <i>Recommended 0.75</i>.
+                      The minimum similarity score required for a source to be
+                      considered related to the chat. The higher the number, the
+                      more similar the source must be to the chat.
                     </p>
                   </div>
-                  <input
+                  <select
                     name="similarityThreshold"
-                    type="number"
-                    min={0.0}
-                    max={1.0}
-                    step={0.01}
-                    onWheel={(e) => e.target.blur()}
-                    defaultValue={workspace?.similarityThreshold ?? 0.75}
+                    defaultValue={workspace?.similarityThreshold ?? 0.25}
                     className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    placeholder="0.2"
-                    required={true}
-                    autoComplete="off"
                     onChange={() => setHasChanges(true)}
-                  />
+                    required={true}
+                  >
+                    <option value={0.0}>No restriction</option>
+                    <option value={0.25}>
+                      Low (similarity score &ge; .25)
+                    </option>
+                    <option value={0.5}>
+                      Medium (similarity score &ge; .50)
+                    </option>
+                    <option value={0.75}>
+                      High (similarity score &ge; .75)
+                    </option>
+                  </select>
                 </div>
               </div>
             </div>
