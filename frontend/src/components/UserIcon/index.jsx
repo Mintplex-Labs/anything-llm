@@ -16,7 +16,7 @@ export default function Jazzicon({ size = 10, user, role }) {
 
   return (
     <div
-      className={`flex ${role === "user" ? "border-2 rounded-full" : ""}`}
+      className={`flex ${role === "user" ? "user-reply" : ""}`}
       ref={divRef}
     />
   );
