@@ -46,7 +46,12 @@ const QDrant = {
     const namespace = await this.namespace(client, _namespace);
     return namespace?.vectorCount || 0;
   },
-  similarityResponse: async function (_client, namespace, queryVector, similarityThreshold = 0.25) {
+  similarityResponse: async function (
+    _client,
+    namespace,
+    queryVector,
+    similarityThreshold = 0.25
+  ) {
     const { client } = await this.connect();
     const result = {
       contextTexts: [],

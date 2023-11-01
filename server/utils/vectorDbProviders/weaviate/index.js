@@ -73,7 +73,12 @@ const Weaviate = {
       return 0;
     }
   },
-  similarityResponse: async function (client, namespace, queryVector, similarityThreshold = 0.25) {
+  similarityResponse: async function (
+    client,
+    namespace,
+    queryVector,
+    similarityThreshold = 0.25
+  ) {
     const result = {
       contextTexts: [],
       sourceDocuments: [],

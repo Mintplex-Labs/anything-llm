@@ -55,7 +55,12 @@ const LanceDb = {
   embedder: function () {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
   },
-  similarityResponse: async function (client, namespace, queryVector, similarityThreshold = 0.25) {
+  similarityResponse: async function (
+    client,
+    namespace,
+    queryVector,
+    similarityThreshold = 0.25
+  ) {
     const collection = await client.openTable(namespace);
     const result = {
       contextTexts: [],
