@@ -11,5 +11,6 @@
 **/__pycache__/
 **/.env
 **/.env.*
-!frontend/.env.production
 **/tmp/**
+!docker/.env.example
+!frontend/.env.production
