@@ -5,6 +5,7 @@ import { chatPrompt } from "../../../../utils/chat";
 import System from "../../../../models/system";
 import PreLoader from "../../../Preloader";
 import { useParams } from "react-router-dom";
+import showToast from "../../../../utils/toast";
 
 // Ensure that a type is correct before sending the body
 // to the backend.
@@ -27,27 +28,9 @@ export default function WorkspaceSettings({ workspace }) {
   const formEl = useRef(null);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
   const [totalVectors, setTotalVectors] = useState(null);
   const [canDelete, setCanDelete] = useState(false);
 
-  useEffect(() => {
-    function setTimer() {
-      if (success !== null) {
-        setTimeout(() => {
-          setSuccess(null);
-        }, 3_000);
-      }
-
-      if (error !== null) {
-        setTimeout(() => {
-          setError(null);
-        }, 3_000);
-      }
-    }
-    setTimer();
-  }, [success, error]);
 
   useEffect(() => {
     async function fetchKeys() {
@@ -61,8 +44,6 @@ export default function WorkspaceSettings({ workspace }) {
   }, []);
 
   const handleUpdate = async (e) => {
-    setError(null);
-    setSuccess(null);
     setSaving(true);
     e.preventDefault();
     const data = {};
@@ -73,9 +54,9 @@ export default function WorkspaceSettings({ workspace }) {
       data
     );
     if (!!updatedWorkspace) {
-      setSuccess("Workspace updated!");
+      showToast("Workspace updated!", "success", { clear: true });
     } else {
-      setError(message);
+      showToast(`Error: ${message}`, "error", { clear: true });
     }
     setSaving(false);
     setHasChanges(false);
@@ -256,12 +237,6 @@ export default function WorkspaceSettings({ workspace }) {
                 />
               </div>
             </div>
-          </div>
-          <div className="text-center">
-            {error && <p className="text-red-400 text-sm">Error: {error}</p>}
-            {success && (
-              <p className="text-green-400 text-sm">Success: {success}</p>
-            )}
           </div>
         </div>
       </div>
