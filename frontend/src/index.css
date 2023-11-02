@@ -354,3 +354,7 @@ dialog::backdrop {
 
   top: 100%;
 }
+
+.user-reply>div:first-of-type {
+  border: 2px solid white;
+}

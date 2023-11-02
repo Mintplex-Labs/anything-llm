@@ -9,7 +9,7 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 - `git clone` this repo and `cd anything-llm` to get to the root directory.
 - `touch server/storage/anythingllm.db` to create empty SQLite DB file.
 - `cd docker/`
-- `cp .env.example .env`
+- `cp .env.example .env` **you must do this before building**
 - `docker-compose up -d --build` to build the image - this will take a few moments.
 
 Your docker host will show the image as online once the build process is completed. This will build the app to `http://localhost:3001`.
