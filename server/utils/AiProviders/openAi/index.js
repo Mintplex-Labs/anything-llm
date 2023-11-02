@@ -13,6 +13,7 @@ class OpenAiLLM extends OpenAiEmbedder {
       apiKey: process.env.OPEN_AI_KEY,
     });
     this.openai = new OpenAIApi(config);
+
     this.model = process.env.OPEN_MODEL_PREF;
     this.limits = {
       system: this.promptWindowLimit() * 0.15,
@@ -25,7 +26,7 @@ class OpenAiLLM extends OpenAiEmbedder {
       case "gpt-3.5-turbo":
         return 4096;
       case "gpt-4":
-        return 8_192;
+        return 8192;
       default:
         return 4096; // assume a fine-tune 3.5
     }
@@ -54,10 +55,10 @@ class OpenAiLLM extends OpenAiEmbedder {
       content: `${systemPrompt}
     Context:
     ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+          .map((text, i) => {
+            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+          })
+          .join("")}`,
     };
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }

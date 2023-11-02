@@ -186,6 +186,7 @@ async function compressRawHistory(rawHistory = []) {
       ...chatLog,
       prompt: "What is the summary of our conversation so far?",
       response: JSON.stringify({ ...resData, text: mostRecentSummary.data }),
+      isSummary: true,
     },
     ...rawHistory.slice(idxOfSummary + 1),
   ];

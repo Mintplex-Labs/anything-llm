@@ -21,7 +21,8 @@ const WorkspaceChats = {
   forWorkspaceByUser: async function (
     workspaceId = null,
     userId = null,
-    limit = null
+    limit = null,
+    orderBy = null,
   ) {
     if (!workspaceId || !userId) return [];
     try {
@@ -44,7 +45,7 @@ const WorkspaceChats = {
   forWorkspace: async function (
     workspaceId = null,
     limit = null,
-    orderBy = {}
+    orderBy = null,
   ) {
     if (!workspaceId) return [];
     try {
