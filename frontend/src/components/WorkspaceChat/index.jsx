@@ -31,9 +31,9 @@ export default function WorkspaceChat({ loading, workspace }) {
           <dialog
             open={true}
             style={{ zIndex: 100 }}
-            className="fixed top-0 flex bg-black bg-opacity-50 w-[100vw] h-full items-center justify-center"
+            className="fixed top-0 flex bg-black bg-opacity-50 w-full md:w-[100vw] h-full items-center justify-center"
           >
-            <div className="relative w-[500px] max-w-2xl max-h-full bg-main-gradient rounded-lg shadow p-4">
+            <div className="relative w-full md:max-w-2xl max-h-full bg-main-gradient rounded-lg shadow p-4">
               <div className="flex flex-col gap-y-4 w-full p-6 text-center">
                 <p className="font-semibold text-red-500 text-xl">
                   Workspace not found!

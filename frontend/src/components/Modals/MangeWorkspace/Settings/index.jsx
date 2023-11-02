@@ -31,7 +31,6 @@ export default function WorkspaceSettings({ workspace }) {
   const [totalVectors, setTotalVectors] = useState(null);
   const [canDelete, setCanDelete] = useState(false);
 
-
   useEffect(() => {
     async function fetchKeys() {
       const canDelete = await System.getCanDeleteWorkspaces();
