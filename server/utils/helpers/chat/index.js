@@ -8,14 +8,14 @@ TLDR: So anyway, i started blasting (your prompts & stuff)
 messageArrayCompressor arose out of a need for users to be able to insert unlimited token prompts
 and also maintain coherent history, system instructions and context, if applicable.
 
-We took an originated approach that after much back-testing we have found retains a highly coherent answer
+We took an opinionated approach that after much back-testing we have found retained a highly coherent answer
 under most user conditions that a user would take while using this specific system. While other systems may
 use a more advanced model for compressing message history or simplify text through a recursive approach - our is much more simple.
 
 We "cannonball" the input.
 Cannonball (verb): To ensure a prompt fits through a model window we blast a hole in the center of any inputs blocking our path to doing so.
 This starts by dissecting the input as tokens and delete from the middle-out bi-directionally until the prompt window is satisfied.
-You may think: "Doesn't this result in massive data loss?" - no.
+You may think: "Doesn't this result in massive data loss?" - yes & no.
 Under the use cases we expect the tool to be used, which is mostly chatting with documents, we are able to use this approach with minimal blowback
 on the quality of responses.
 
@@ -26,7 +26,7 @@ In general:
   history: at best 15% of token capacity
   prompt: at best 70% of token capacity.
 
-we over overflows by taking an aggressive path for two main cases.
+we handle overflows by taking an aggressive path for two main cases.
 
 1. Very large user prompt
 - Likely uninterested in context, history, or even system prompt. This is a "standalone" prompt that highjacks the whole thread.
@@ -38,8 +38,10 @@ we over overflows by taking an aggressive path for two main cases.
 - We check a sliding window of history, only allowing up to 15% of the history to pass through if it fits, with a 
 preference for recent history if we can cannonball to fit it, otherwise it is omitted.
 
-We end up with a rather large prompt that fit through a given window with a lot of room for response in most use-cases.
+We end up with a rather large prompt that fits through a given window with a lot of room for response in most use-cases.
 We also take the approach that history is the least important and most flexible of the items in this array of responses.
+
+There is a supplemental version of this function that also returns a formatted string for models like Claude-2
 */
 
 async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
@@ -282,7 +284,7 @@ async function messageStringCompressor(llm, promptArgs = {}, rawHistory = []) {
 }
 
 // Cannonball prompting: aka where we shoot a proportionally big cannonball through a proportional large prompt
-// Nobody should be sending prompts this big, but no reason we shouldn't allow it.
+// Nobody should be sending prompts this big, but there is no reason we shouldn't allow it if results are good even by doing it.
 function cannonball({
   input = "",
   targetTokenSize = 0,

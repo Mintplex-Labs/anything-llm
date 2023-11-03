@@ -79,7 +79,6 @@ class AnthropicLLM {
     \n\nAssistant:`;
   }
 
-  // TODO: IMPLEMENT COMPRESSION
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
@@ -148,7 +147,6 @@ class AnthropicLLM {
     return content;
   }
 
-  // TODO: IMPLEMENT COMPRESSOR FOR STRING
   async compressMessages(promptArgs = {}, rawHistory = []) {
     const { messageStringCompressor } = require("../../helpers/chat");
     const compressedPrompt = await messageStringCompressor(

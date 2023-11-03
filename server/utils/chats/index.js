@@ -174,8 +174,8 @@ async function chatWithWorkspace(
   };
 }
 
-// On query we dont return message history. All other chatmodes and when chatting
-// with not embeddings we return history.
+// On query we dont return message history. All other chat modes and when chatting
+// with no embeddings we return history.
 async function recentChatHistory(
   user = null,
   workspace,
