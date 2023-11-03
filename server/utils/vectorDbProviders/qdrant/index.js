@@ -286,7 +286,7 @@ const QDrant = {
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
-      return { metadata: { ...metadata, text: contextTexts[i] } };
+      return { ...metadata, text: contextTexts[i] };
     });
     return {
       contextTexts,
@@ -329,8 +329,11 @@ const QDrant = {
     const documents = [];
     for (const source of sources) {
       if (Object.keys(source).length > 0) {
+        const metadata = source.hasOwnProperty("metadata")
+          ? source.metadata
+          : source;
         documents.push({
-          ...source,
+          ...metadata,
         });
       }
     }

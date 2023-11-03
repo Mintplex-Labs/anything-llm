@@ -357,7 +357,7 @@ const Weaviate = {
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
-      return { metadata: { ...metadata, text: contextTexts[i] } };
+      return { ...metadata, text: contextTexts[i] };
     });
     return {
       contextTexts,
@@ -397,7 +397,10 @@ const Weaviate = {
     const documents = [];
     for (const source of sources) {
       if (Object.keys(source).length > 0) {
-        documents.push(source);
+        const metadata = source.hasOwnProperty("metadata")
+          ? source.metadata
+          : source;
+        documents.push({ ...metadata });
       }
     }
 
