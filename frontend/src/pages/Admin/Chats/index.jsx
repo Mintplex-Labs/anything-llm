@@ -9,6 +9,7 @@ import Admin from "../../../models/admin";
 import useQuery from "../../../hooks/useQuery";
 import ChatRow from "./ChatRow";
 
+const PAGE_SIZE = 20;
 export default function AdminChats() {
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
@@ -45,21 +46,10 @@ function ChatsContainer() {
   const [canNext, setCanNext] = useState(false);
 
   const handlePrevious = () => {
-    if (chats.length === 0) {
-      setOffset(0);
-      return;
-    }
-
-    const chat = chats.at(-1);
-    if (chat.id - 20 <= 0) {
-      setOffset(0);
-      return;
-    }
-
-    setOffset(chat.id - 1);
+    setOffset(Math.max(offset - 1, 0));
   };
   const handleNext = () => {
-    setOffset(chats[0].id + 1);
+    setOffset(offset + 1);
   };
 
   useEffect(() => {

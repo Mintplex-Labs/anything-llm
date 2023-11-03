@@ -71,21 +71,21 @@ function hideModal(modalName) {
 const TextPreview = ({ text, modalName }) => {
   return (
     <dialog id={modalName} className="bg-transparent outline-none w-full">
-      <div className="relative w-full max-w-2xl max-h-full min-w-1/2">
-        <div className="min-w-1/2 relative rounded-lg shadow bg-stone-700">
+      <div className="relative w-full md:max-w-2xl max-h-full">
+        <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-600">
             <h3 className="text-xl font-semibold text-white">Viewing Text</h3>
             <button
               onClick={() => hideModal(modalName)}
               type="button"
-              className="text-gray-400 bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:bg-gray-600 hover:text-white"
+              className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
               data-modal-hide="staticModal"
             >
               <X className="text-gray-300 text-lg" />
             </button>
           </div>
-          <div className="w-full p-4 flex">
-            <pre className="w-full flex h-[200px] py-2 px-4 overflow-scroll rounded-lg bg-gray-200 text-slate-800">
+          <div className="w-full p-6">
+            <pre className="w-full h-[200px] py-2 px-4 whitespace-pre-line overflow-auto rounded-lg bg-zinc-900 border border-gray-500 text-white text-sm">
               {text}
             </pre>
           </div>

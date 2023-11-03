@@ -18,6 +18,7 @@ services:
         ARG_UID: ${UID}
         ARG_GID: ${GID}
     volumes:
+      - "./.env:/app/server/.env"
       - "../server/storage:/app/server/storage"
       - "../collector/hotdir/:/app/collector/hotdir"
       - "../collector/outputs/:/app/collector/outputs"

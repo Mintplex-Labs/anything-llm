@@ -108,11 +108,17 @@ const WorkspaceChats = {
     }
   },
 
-  where: async function (clause = {}, limit = null, orderBy = null) {
+  where: async function (
+    clause = {},
+    limit = null,
+    orderBy = null,
+    offset = null
+  ) {
     try {
       const chats = await prisma.workspace_chats.findMany({
         where: clause,
         ...(limit !== null ? { take: limit } : {}),
+        ...(offset !== null ? { skip: offset } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
       });
       return chats;
@@ -134,12 +140,17 @@ const WorkspaceChats = {
     }
   },
 
-  whereWithData: async function (clause = {}, limit = null, orderBy = null) {
+  whereWithData: async function (
+    clause = {},
+    limit = null,
+    offset = null,
+    orderBy = null
+  ) {
     const { Workspace } = require("./workspace");
     const { User } = require("./user");
 
     try {
-      const results = await this.where(clause, limit, orderBy);
+      const results = await this.where(clause, limit, orderBy, offset);
 
       for (const res of results) {
         const workspace = await Workspace.get({ id: res.workspaceId });

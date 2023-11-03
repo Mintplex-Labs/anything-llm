@@ -11,4 +11,5 @@ collector/outputs/**
 **/__pycache__/
 **/.env
 **/.env.*
+!docker/.env.example
 !frontend/.env.production
