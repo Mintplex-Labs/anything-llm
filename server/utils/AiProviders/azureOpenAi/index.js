@@ -69,11 +69,11 @@ Context:
       );
 
     const messages = await this.compressMessages(
-      [
-        { role: "system", content: chatPrompt(workspace) },
-        ...chatHistory,
-        { role: "user", content: prompt },
-      ],
+      {
+        systemPrompt: chatPrompt(workspace),
+        userPrompt: prompt,
+        chatHistory,
+      },
       rawHistory
     );
     const textResponse = await this.openai

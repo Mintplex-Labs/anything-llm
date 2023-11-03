@@ -106,11 +106,11 @@ Context:
         temperature: Number(workspace?.openAiTemp ?? 0.7),
         n: 1,
         messages: await this.compressMessages(
-          [
-            { role: "system", content: chatPrompt(workspace) },
-            ...chatHistory,
-            { role: "user", content: prompt },
-          ],
+          {
+            systemPrompt: chatPrompt(workspace),
+            userPrompt: prompt,
+            chatHistory,
+          },
           rawHistory
         ),
       })
