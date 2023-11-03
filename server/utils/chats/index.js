@@ -3,7 +3,6 @@ const { WorkspaceChats } = require("../../models/workspaceChats");
 const { resetMemory } = require("./commands/reset");
 const moment = require("moment");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
-const { CacheData } = require("../../models/cacheData");
 
 function convertToChatHistory(history = []) {
   const formattedHistory = [];
@@ -92,104 +91,143 @@ async function chatWithWorkspace(
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
   if (!hasVectorizedSpace || embeddingsCount === 0) {
-    const _rawRecentHistory = (
-      await WorkspaceChats.forWorkspace(workspace.id, messageLimit, {
-        id: "desc",
-      })
-    ).reverse();
-    const recentChats = await compressRawHistory(_rawRecentHistory);
-    const chatHistory = convertToPromptHistory(recentChats);
-    const response = await LLMConnector.sendChat(
-      chatHistory,
+    // If there are no embeddings - chat like a normal LLM chat interface.
+    return await emptyEmbeddingChat({
+      uuid,
+      user,
       message,
       workspace,
-      recentChats
-    );
-    const data = { text: response, sources: [], type: "chat" };
-
-    await WorkspaceChats.new({
-      workspaceId: workspace.id,
-      prompt: message,
-      response: data,
-      user,
+      messageLimit,
+      LLMConnector,
     });
+  }
+
+  // If chat mode is query - we don't collect history of previous chats.
+  var chatHistory = [];
+  if (chatMode !== "query") {
+    const rawHistory = (
+      user
+        ? await WorkspaceChats.forWorkspaceByUser(
+            workspace.id,
+            user.id,
+            messageLimit,
+            { id: "desc" }
+          )
+        : await WorkspaceChats.forWorkspace(workspace.id, messageLimit, {
+            id: "desc",
+          })
+    ).reverse();
+    chatHistory = convertToPromptHistory(rawHistory);
+  }
+
+  // Get similar texts from prompt.
+  const {
+    contextTexts = [],
+    sources = [],
+    message: error,
+  } = VectorDb.performSimilaritySearch({
+    namespace: workspace.slug,
+    input: message,
+    LLMConnector,
+  });
+
+  // Failed similarity search.
+  if (!!error) {
     return {
       id: uuid,
-      type: "textResponse",
-      textResponse: response,
+      type: "abort",
+      textResponse: null,
       sources: [],
-      close: true,
-      error: null,
-    };
-  } else {
-    const rawHistory = await WorkspaceChats.forWorkspace(
-      workspace.id,
-      messageLimit
-    );
-    const chatHistory = convertToPromptHistory(rawHistory);
-    const {
-      response,
-      sources,
-      message: error,
-    } = await VectorDb[chatMode]({
-      namespace: workspace.slug,
-      input: message,
-      workspace,
-      chatHistory,
-    });
-    if (!response) {
-      return {
-        id: uuid,
-        type: "abort",
-        textResponse: null,
-        sources: [],
-        close: true,
-        error,
-      };
-    }
-
-    const data = { text: response, sources, type: chatMode };
-    await WorkspaceChats.new({
-      workspaceId: workspace.id,
-      prompt: message,
-      response: data,
-      user,
-    });
-    return {
-      id: uuid,
-      type: "textResponse",
-      textResponse: response,
-      sources,
       close: true,
       error,
     };
   }
+
+  // Compress message to ensure prompt passes token limit with room for response
+  // and build system messages based on inputs and history.
+  const messages = await LLMConnector.compressMessages(
+    LLMConnector.constructPrompt({
+      systemPrompt: chatPrompt(workspace),
+      userPrompt: message,
+      contextTexts,
+      chatHistory,
+    }),
+    rawHistory
+  );
+
+  // Send the text completion.
+  const textResponse = await LLMConnector.getChatCompletion(messages, {
+    temperature: workspace?.openAiTemp ?? 0.7,
+  });
+
+  if (!textResponse) {
+    return {
+      id: uuid,
+      type: "abort",
+      textResponse: null,
+      sources: [],
+      close: true,
+      error: "No text completion could be completed with this input.",
+    };
+  }
+
+  await WorkspaceChats.new({
+    workspaceId: workspace.id,
+    prompt: message,
+    response: { text: textResponse, sources, type: chatMode },
+    user,
+  });
+  return {
+    id: uuid,
+    type: "textResponse",
+    close: true,
+    textResponse,
+    sources,
+    error,
+  };
 }
 
-async function compressRawHistory(rawHistory = []) {
-  if (rawHistory.length === 0) return rawHistory;
-
-  const caches = await CacheData.where({
-    belongsTo: "workspace_chats",
-    byId: { in: rawHistory.map((h) => h.id) },
-  });
-  if (caches.length === 0) return rawHistory;
-
-  const mostRecentSummary = caches.slice(-1)[0];
-  const idxOfSummary = rawHistory.findIndex(
-    (history) => history.id === mostRecentSummary.byId
+async function emptyEmbeddingChat({
+  uuid,
+  user,
+  message,
+  workspace,
+  messageLimit,
+  LLMConnector,
+}) {
+  const rawHistory = (
+    user
+      ? await WorkspaceChats.forWorkspaceByUser(
+          workspace.id,
+          user.id,
+          messageLimit,
+          { id: "desc" }
+        )
+      : await WorkspaceChats.forWorkspace(workspace.id, messageLimit, {
+          id: "desc",
+        })
+  ).reverse();
+  const chatHistory = convertToPromptHistory(rawHistory);
+  const textResponse = await LLMConnector.sendChat(
+    chatHistory,
+    message,
+    workspace,
+    rawHistory
   );
-  const { response, ...chatLog } = rawHistory[idxOfSummary];
-  const resData = JSON.parse(response);
-  return [
-    {
-      ...chatLog,
-      prompt: "What is the summary of our conversation so far?",
-      response: JSON.stringify({ ...resData, text: mostRecentSummary.data }),
-      isSummary: true,
-    },
-    ...rawHistory.slice(idxOfSummary + 1),
-  ];
+  await WorkspaceChats.new({
+    workspaceId: workspace.id,
+    prompt: message,
+    response: { text: textResponse, sources: [], type: "chat" },
+    user,
+  });
+  return {
+    id: uuid,
+    type: "textResponse",
+    sources: [],
+    close: true,
+    error: null,
+    textResponse,
+  };
 }
 
 function chatPrompt(workspace) {
@@ -200,6 +238,7 @@ function chatPrompt(workspace) {
 }
 
 module.exports = {
+  convertToPromptHistory,
   convertToChatHistory,
   chatWithWorkspace,
   chatPrompt,

@@ -16,6 +16,16 @@ class TokenManager {
     }
   }
 
+  tokensFromString(input = "") {
+    const tokens = this.encoder.encode(input);
+    return tokens;
+  }
+
+  bytesFromTokens(tokens = []) {
+    const bytes = this.encoder.decode(tokens);
+    return bytes;
+  }
+
   countFromString(input = "") {
     const tokens = this.encoder.encode(input);
     return tokens.length;
