@@ -102,30 +102,17 @@ async function chatWithWorkspace(
     });
   }
 
-  // If chat mode is query - we don't collect history of previous chats.
-  var chatHistory = [];
-  if (chatMode !== "query") {
-    const rawHistory = (
-      user
-        ? await WorkspaceChats.forWorkspaceByUser(
-            workspace.id,
-            user.id,
-            messageLimit,
-            { id: "desc" }
-          )
-        : await WorkspaceChats.forWorkspace(workspace.id, messageLimit, {
-            id: "desc",
-          })
-    ).reverse();
-    chatHistory = convertToPromptHistory(rawHistory);
-  }
-
-  // Get similar texts from prompt.
+  const { rawHistory, chatHistory } = await recentChatHistory(
+    user,
+    workspace,
+    messageLimit,
+    chatMode
+  );
   const {
     contextTexts = [],
     sources = [],
     message: error,
-  } = VectorDb.performSimilaritySearch({
+  } = await VectorDb.performSimilaritySearch({
     namespace: workspace.slug,
     input: message,
     LLMConnector,
@@ -146,12 +133,12 @@ async function chatWithWorkspace(
   // Compress message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
-    LLMConnector.constructPrompt({
+    {
       systemPrompt: chatPrompt(workspace),
       userPrompt: message,
       contextTexts,
       chatHistory,
-    }),
+    },
     rawHistory
   );
 
@@ -187,14 +174,15 @@ async function chatWithWorkspace(
   };
 }
 
-async function emptyEmbeddingChat({
-  uuid,
-  user,
-  message,
+// On query we dont return message history. All other chatmodes and when chatting
+// with not embeddings we return history.
+async function recentChatHistory(
+  user = null,
   workspace,
-  messageLimit,
-  LLMConnector,
-}) {
+  messageLimit = 20,
+  chatMode = null
+) {
+  if (chatMode === "query") return [];
   const rawHistory = (
     user
       ? await WorkspaceChats.forWorkspaceByUser(
@@ -207,7 +195,22 @@ async function emptyEmbeddingChat({
           id: "desc",
         })
   ).reverse();
-  const chatHistory = convertToPromptHistory(rawHistory);
+  return { rawHistory, chatHistory: convertToPromptHistory(rawHistory) };
+}
+
+async function emptyEmbeddingChat({
+  uuid,
+  user,
+  message,
+  workspace,
+  messageLimit,
+  LLMConnector,
+}) {
+  const { rawHistory, chatHistory } = await recentChatHistory(
+    user,
+    workspace,
+    messageLimit
+  );
   const textResponse = await LLMConnector.sendChat(
     chatHistory,
     message,

@@ -161,6 +161,126 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
   return [cSystem, ...cHistory, cPrompt];
 }
 
+// Implementation of messageArrayCompressor, but for string only completion models
+async function messageStringCompressor(llm, promptArgs = {}, rawHistory = []) {
+  const tokenBuffer = 600;
+  const tokenManager = new TokenManager(llm.model);
+  const initialPrompt = llm.constructPrompt(promptArgs);
+  if (
+    tokenManager.statsFrom(initialPrompt) + tokenBuffer <
+    llm.promptWindowLimit()
+  )
+    return initialPrompt;
+
+  const system = promptArgs.systemPrompt;
+  const user = promptArgs.userPrompt;
+  const userPromptSize = tokenManager.countFromString(user);
+
+  // User prompt is the main focus here - we we prioritize it and allow
+  // it to highjack the entire conversation thread. We are going to
+  // cannonball the prompt through to ensure the reply has at least 20% of
+  // the token supply to reply with.
+  if (userPromptSize > llm.limits.user) {
+    return llm.constructPrompt({
+      userPrompt: cannonball({
+        input: user,
+        targetTokenSize: llm.promptWindowLimit() * 0.8,
+        tiktokenInstance: tokenManager,
+      }),
+    });
+  }
+
+  const compressedSystem = new Promise(async (resolve) => {
+    const count = tokenManager.countFromString(system);
+    if (count < llm.limits.system) {
+      resolve(system);
+      return;
+    }
+    resolve(
+      cannonball({
+        input: system,
+        targetTokenSize: llm.limits.system,
+        tiktokenInstance: tokenManager,
+      })
+    );
+  });
+
+  // Prompt is allowed to take up to 70% of window - we know its under
+  // if we are here, so passthrough.
+  const compressedPrompt = new Promise(async (resolve) => resolve(user));
+
+  // We always aggressively compress history because it is the least
+  // important data to retain in full-fidelity.
+  const compressedHistory = new Promise((resolve) => {
+    const eligibleHistoryItems = [];
+    var historyTokenCount = 0;
+
+    for (const [i, history] of rawHistory.reverse().entries()) {
+      const [user, assistant] = convertToPromptHistory([history]);
+      const [userTokens, assistantTokens] = [
+        tokenManager.countFromString(user.content),
+        tokenManager.countFromString(assistant.content),
+      ];
+      const total = userTokens + assistantTokens;
+
+      // If during the loop the token cost of adding this history
+      // is small, we can add it to history and move onto next.
+      if (historyTokenCount + total < llm.limits.history) {
+        eligibleHistoryItems.unshift(user, assistant);
+        historyTokenCount += total;
+        continue;
+      }
+
+      // If we reach here the overhead of adding this history item will
+      // be too much of the limit. So now, we are prioritizing
+      // the most recent 3 message pairs - if we are already past those - exit loop and stop
+      // trying to make history work.
+      if (i > 2) break;
+
+      // We are over the limit and we are within the first 3 most recent chats.
+      // so now we cannonball them to make them fit into the window.
+      // max size = llm.limit.history; Each component of the message, can at most
+      // be 50% of the history. We cannonball whichever is the problem.
+      // The math isnt perfect for tokens, so we have to add a fudge factor for safety.
+      const maxTargetSize = Math.floor(llm.limits.history / 2.2);
+      if (userTokens > maxTargetSize) {
+        user.content = cannonball({
+          input: user.content,
+          targetTokenSize: maxTargetSize,
+          tiktokenInstance: tokenManager,
+        });
+      }
+
+      if (assistantTokens > maxTargetSize) {
+        assistant.content = cannonball({
+          input: assistant.content,
+          targetTokenSize: maxTargetSize,
+          tiktokenInstance: tokenManager,
+        });
+      }
+
+      const newTotal = tokenManager.statsFrom([user, assistant]);
+      if (historyTokenCount + newTotal > llm.limits.history) continue;
+      eligibleHistoryItems.unshift(user, assistant);
+      historyTokenCount += newTotal;
+    }
+    resolve(eligibleHistoryItems);
+  });
+
+  const [cSystem, cHistory, cPrompt] = await Promise.all([
+    compressedSystem,
+    compressedHistory,
+    compressedPrompt,
+  ]);
+
+  return llm.constructPrompt({
+    systemPrompt: cSystem,
+    contextTexts: promptArgs?.contextTexts || [],
+    chatHistory: cHistory,
+    userPrompt: cPrompt,
+  });
+}
+
 // Cannonball prompting: aka where we shoot a proportionally big cannonball through a proportional large prompt
 // Nobody should be sending prompts this big, but no reason we shouldn't allow it.
 function cannonball({
@@ -199,4 +319,5 @@ function cannonball({
 
 module.exports = {
   messageArrayCompressor,
+  messageStringCompressor,
 };

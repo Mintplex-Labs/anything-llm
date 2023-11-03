@@ -141,15 +141,15 @@ Context:
       model: this.model,
       messages,
       temperature,
-      ...opts,
     });
 
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
   }
 
-  async compressMessages(messageArray = [], rawHistory = []) {
+  async compressMessages(promptArgs = {}, rawHistory = []) {
     const { messageArrayCompressor } = require("../../helpers/chat");
+    const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);
   }
 }

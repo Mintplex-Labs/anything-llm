@@ -86,16 +86,19 @@ class AnthropicLLM {
         `Anthropic chat: ${this.model} is not valid for chat completion!`
       );
 
-    //TODO: Implement String message compressor method
+    const compressedPrompt = await this.compressMessages(
+      {
+        systemPrompt: chatPrompt(workspace),
+        userPrompt: prompt,
+        chatHistory,
+      },
+      rawHistory
+    );
     const { content, error } = await this.anthropic.completions
       .create({
         model: this.model,
         max_tokens_to_sample: 300,
-        prompt: this.constructPrompt({
-          systemPrompt: chatPrompt(workspace),
-          userPrompt: prompt,
-          chatHistory,
-        }),
+        prompt: compressedPrompt,
       })
       .then((res) => {
         const { completion } = res;
@@ -146,9 +149,14 @@ class AnthropicLLM {
   }
 
   // TODO: IMPLEMENT COMPRESSOR FOR STRING
-  async compressMessages(messageArray = [], rawHistory = []) {
-    const { messageArrayCompressor } = require("../../helpers/chat");
-    return await messageArrayCompressor(this, messageArray, rawHistory);
+  async compressMessages(promptArgs = {}, rawHistory = []) {
+    const { messageStringCompressor } = require("../../helpers/chat");
+    const compressedPrompt = await messageStringCompressor(
+      this,
+      promptArgs,
+      rawHistory
+    );
+    return compressedPrompt;
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
