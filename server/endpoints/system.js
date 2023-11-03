@@ -8,7 +8,7 @@ const {
   acceptedFileTypes,
 } = require("../utils/files/documentProcessor");
 const { purgeDocument } = require("../utils/files/purgeDocument");
-const { getVectorDbClass } = require("../utils/helpers");
+const { getVectorDbClass, getLLMProvider } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
 const {
   reqBody,
@@ -37,6 +37,7 @@ const {
 const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
 const { ApiKey } = require("../models/apiKeys");
+const { getCustomModels } = require("../utils/helpers/customModels");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -627,6 +628,24 @@ function systemEndpoints(app) {
       response.status(500).end();
     }
   });
+
+  app.post(
+    "/system/custom-models",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { provider, apiKey } = reqBody(request);
+        const { models, error } = await getCustomModels(provider, apiKey);
+        return response.status(200).json({
+          models,
+          error,
+        });
+      } catch (error) {
+        console.error(error);
+        response.status(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { systemEndpoints };

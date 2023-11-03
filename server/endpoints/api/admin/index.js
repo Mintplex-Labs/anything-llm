@@ -513,14 +513,17 @@ function apiAdminEndpoints(app) {
           response.sendStatus(401).end();
           return;
         }
-
+        const pgSize = 20;
         const { offset = 0 } = reqBody(request);
         const chats = await WorkspaceChats.whereWithData(
-          { id: { gte: offset } },
-          20
+          {},
+          pgSize,
+          offset * pgSize,
+          { id: "desc" }
         );
-        const hasPages = (await WorkspaceChats.count()) > 20;
-        response.status(200).json({ chats: chats.reverse(), hasPages });
+
+        const hasPages = (await WorkspaceChats.count()) > (offset + 1) * pgSize;
+        response.status(200).json({ chats: chats, hasPages });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
