@@ -66,9 +66,7 @@
       "type": "process",
       "hide": true,
       "command": "virtualenv",
-      "args": [
-        "v-env"
-      ],
+      "args": ["v-env"],
       "options": {
         "cwd": "${workspaceFolder}/collector",
         "statusbar": {

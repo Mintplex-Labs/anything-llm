@@ -8,8 +8,12 @@
       "name": "Server debug",
       "request": "launch",
       "cwd": "${workspaceFolder}/server",
-      "runtimeArgs": ["dev"],
-      "runtimeExecutable": "yarn",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "runtimeArgs": ["index.js"],
+      // not using yarn/nodemon because it doesn't work with breakpoints
+      // "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node"
     },

@@ -40,6 +40,10 @@ Checklist:
 - [ ] Open a React File, for example, "frontend/src/main.jsx," and check if `eslint` complains about `Fast refresh only works when a file has exports. Move your component(s) to a separate file.`. Again, it means `eslint` is working. Now check at the status bar if the `Prettier` has a double checkmark :heavy_check_mark: (double). It means Prettier is working.
 - [ ] Check if, on the left pane, you have the NPM Scripts (this may be disabled; look at the "Explorer" tree-dots up-right). There will be scripts inside the `package.json` files. You will basically need to run the `dev:server` and the `dev:frontend`. When the frontend finishes starting, a window browser will open **inside** the VSCode. Still, you can open outside.
 
+:warning: **Important for all developers** :warning:
+
+- [ ] Whe you are using the `NODE_ENV=development` the server will not store the configurations you set for security reasons. Please set the proper config on file `.env.development`. The side-effect if you don't, everytime you restart the server, you will be sent to the "Onboarding" page again.
+
 :warning: **Important for Github Codespaces** :warning:
 
 - [ ] When running the "Server" for the first time, its port will be automatically forward. Read the content of the `.env` file on the frontend folder about this, and make sure the port "Visibility" is set to "Public", so the frontend can reach the backend. Again, this is only needed for developing on Github Codespaces. We appreciate to know if you have a better solution.
