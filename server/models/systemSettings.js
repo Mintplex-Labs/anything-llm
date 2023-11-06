@@ -65,6 +65,7 @@ const SystemSettings = {
             AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
             AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+            AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
           }
         : {}),
 
