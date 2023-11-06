@@ -47,6 +47,10 @@ function ImportData() {
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
 
+  // Disable import on hosted instances
+  const hostname = window.location.hostname;
+  const isHosted = hostname.includes(".useanything.com");
+
   const startInput = () => inputRef?.current?.click();
 
   const handleUpload = async (e) => {
@@ -76,6 +80,19 @@ function ImportData() {
     setLoading(false);
     setFile(null);
   };
+
+  if (isHosted) {
+    return (
+      <div className="max-w-[600px] py-4 bg-zinc-900/50 rounded-2xl border-2 border-dashed border-white border-opacity-60 justify-center items-center inline-flex transition-all duration-300 hover:opacity-60 cursor-not-allowed">
+        <div className="flex flex-col items-center justify-center">
+          <CloudArrowUp className="w-8 h-8 text-white/80" />
+          <div className="text-white text-opacity-80 text-sm font-semibold py-1">
+            Importing is currently unavailable on hosted instances.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
