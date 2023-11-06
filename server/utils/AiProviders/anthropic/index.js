@@ -12,6 +12,12 @@ class AnthropicLLM {
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
     this.anthropic = anthropic;
+    this.model = process.env.ANTHROPIC_MODEL_PREF;
+    this.limits = {
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
+    };
 
     if (!embedder)
       throw new Error(
@@ -21,8 +27,19 @@ class AnthropicLLM {
     this.answerKey = v4().split("-")[0];
   }
 
-  isValidChatModel(modelName = "") {
-    const validModels = ["claude-2"];
+  promptWindowLimit() {
+    switch (this.model) {
+      case "claude-instant-1":
+        return 72_000;
+      case "claude-2":
+        return 100_000;
+      default:
+        return 72_000; // assume a claude-instant-1 model
+    }
+  }
+
+  isValidChatCompletionModel(modelName = "") {
+    const validModels = ["claude-2", "claude-instant-1"];
     return validModels.includes(modelName);
   }
 
@@ -62,24 +79,25 @@ class AnthropicLLM {
     \n\nAssistant:`;
   }
 
-  // This is the interface used when no embeddings are present in the workspace
-  // This is just having a conversation with the LLM as one would normally.
-  async sendChat(chatHistory = [], prompt, workspace = {}) {
-    const model = process.env.ANTHROPIC_MODEL_PREF || "claude-2";
-    if (!this.isValidChatModel(model))
+  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
+    if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `Anthropic chat: ${model} is not valid for chat completion!`
+        `Anthropic chat: ${this.model} is not valid for chat completion!`
       );
 
+    const compressedPrompt = await this.compressMessages(
+      {
+        systemPrompt: chatPrompt(workspace),
+        userPrompt: prompt,
+        chatHistory,
+      },
+      rawHistory
+    );
     const { content, error } = await this.anthropic.completions
       .create({
-        model: "claude-2",
+        model: this.model,
         max_tokens_to_sample: 300,
-        prompt: this.constructPrompt({
-          systemPrompt: chatPrompt(workspace),
-          userPrompt: prompt,
-          chatHistory,
-        }),
+        prompt: compressedPrompt,
       })
       .then((res) => {
         const { completion } = res;
@@ -100,15 +118,14 @@ class AnthropicLLM {
   }
 
   async getChatCompletion(prompt = "", _opts = {}) {
-    const model = process.env.ANTHROPIC_MODEL_PREF || "claude-2";
-    if (!this.isValidChatModel(model))
+    if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `Anthropic chat: ${model} is not valid for chat completion!`
+        `Anthropic chat: ${this.model} is not valid for chat completion!`
       );
 
     const { content, error } = await this.anthropic.completions
       .create({
-        model: "claude-2",
+        model: this.model,
         max_tokens_to_sample: 300,
         prompt,
       })
@@ -128,6 +145,16 @@ class AnthropicLLM {
 
     if (error) throw new Error(error);
     return content;
+  }
+
+  async compressMessages(promptArgs = {}, rawHistory = []) {
+    const { messageStringCompressor } = require("../../helpers/chat");
+    const compressedPrompt = await messageStringCompressor(
+      this,
+      promptArgs,
+      rawHistory
+    );
+    return compressedPrompt;
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
