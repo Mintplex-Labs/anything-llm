@@ -84,17 +84,19 @@ function OpenAIModelSelection({ apiKey, settings }) {
         className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         <optgroup label="General LLM models">
-          {["gpt-3.5-turbo", "gpt-4"].map((model) => {
-            return (
-              <option
-                key={model}
-                value={model}
-                selected={settings.OpenAiModelPref === model}
-              >
-                {model}
-              </option>
-            );
-          })}
+          {["gpt-3.5-turbo", "gpt-4", "gpt-4-1106-preview", "gpt-4-32k"].map(
+            (model) => {
+              return (
+                <option
+                  key={model}
+                  value={model}
+                  selected={settings.OpenAiModelPref === model}
+                >
+                  {model}
+                </option>
+              );
+            }
+          )}
         </optgroup>
         {customModels.length > 0 && (
           <optgroup label="Your fine-tuned models">
