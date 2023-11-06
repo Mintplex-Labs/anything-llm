@@ -80,6 +80,19 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
+
+      ...(llmProvider === "localai"
+        ? {
+            // LocalAiApiKey: !!process.env.LOCALAI_API_KEY, // not used for now
+            LocalAiBasePath: process.env.LOCALAI_BASE_PATH,
+
+            // For embedding credentials when localai is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
     };
   },
 
