@@ -73,7 +73,7 @@ This monorepo consists of three main sections:
 ### Requirements
 - `yarn` and `node` on your machine
 - `python` 3.9+ for running scripts in `collector/`.
-- access to an LLM like `GPT-3.5`, `GPT-4`.
+- access to an LLM like `GPT-3.5`, `GPT-4`, etc.
 - (optional) a vector database like Pinecone, qDrant, Weaviate, or Chroma*.
 *AnythingLLM by default uses a built-in vector db called LanceDB.
 
