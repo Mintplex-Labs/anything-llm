@@ -25,13 +25,22 @@ class OpenAiLLM extends OpenAiEmbedder {
         return 4096;
       case "gpt-4":
         return 8192;
+      case "gpt-4-1106-preview":
+        return 128000;
+      case "gpt-4-32k":
+        return 32000;
       default:
         return 4096; // assume a fine-tune 3.5
     }
   }
 
   async isValidChatCompletionModel(modelName = "") {
-    const validModels = ["gpt-4", "gpt-3.5-turbo"];
+    const validModels = [
+      "gpt-4",
+      "gpt-3.5-turbo",
+      "gpt-4-1106-preview",
+      "gpt-4-32k",
+    ];
     const isPreset = validModels.some((model) => modelName === model);
     if (isPreset) return true;
 
