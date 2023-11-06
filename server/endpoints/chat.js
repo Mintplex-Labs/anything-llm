@@ -71,6 +71,7 @@ function chatEndpoints(app) {
         });
         response.status(200).json({ ...result });
       } catch (e) {
+        console.error(e);
         response.status(500).json({
           id: uuidv4(),
           type: "abort",

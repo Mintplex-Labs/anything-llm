@@ -3,7 +3,6 @@ const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getLLMProvider } = require("../../helpers");
-const { chatPrompt } = require("../../chats");
 
 const QDrant = {
   name: "QDrant",
@@ -262,83 +261,36 @@ const QDrant = {
     await DocumentVectors.deleteIds(indexes);
     return true;
   },
-  query: async function (reqBody = {}) {
-    const { namespace = null, input, workspace = {} } = reqBody;
-    if (!namespace || !input) throw new Error("Invalid request body");
+  performSimilaritySearch: async function ({
+    namespace = null,
+    input = "",
+    LLMConnector = null,
+  }) {
+    if (!namespace || !input || !LLMConnector)
+      throw new Error("Invalid request to performSimilaritySearch.");
 
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) {
       return {
-        response: null,
+        contextTexts: [],
         sources: [],
         message: "Invalid query - no documents found for workspace!",
       };
     }
 
-    const LLMConnector = getLLMProvider();
     const queryVector = await LLMConnector.embedTextInput(input);
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
       queryVector
     );
-    const memory = LLMConnector.constructPrompt({
-      systemPrompt: chatPrompt(workspace),
-      contextTexts: contextTexts,
-      userPrompt: input,
-    });
-    const responseText = await LLMConnector.getChatCompletion(memory, {
-      temperature: workspace?.openAiTemp ?? 0.7,
-    });
 
+    const sources = sourceDocuments.map((metadata, i) => {
+      return { ...metadata, text: contextTexts[i] };
+    });
     return {
-      response: responseText,
-      sources: this.curateSources(sourceDocuments),
-      message: false,
-    };
-  },
-  // This implementation of chat uses the chat history and modifies the system prompt at execution
-  // this is improved over the regular langchain implementation so that chats do not directly modify embeddings
-  // because then multi-user support will have all conversations mutating the base vector collection to which then
-  // the only solution is replicating entire vector databases per user - which will very quickly consume space on VectorDbs
-  chat: async function (reqBody = {}) {
-    const {
-      namespace = null,
-      input,
-      workspace = {},
-      chatHistory = [],
-    } = reqBody;
-    if (!namespace || !input) throw new Error("Invalid request body");
-
-    const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace))) {
-      return {
-        response: null,
-        sources: [],
-        message: "Invalid query - no documents found for workspace!",
-      };
-    }
-
-    const LLMConnector = getLLMProvider();
-    const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse(
-      client,
-      namespace,
-      queryVector
-    );
-    const memory = LLMConnector.constructPrompt({
-      systemPrompt: chatPrompt(workspace),
-      contextTexts: contextTexts,
-      userPrompt: input,
-      chatHistory,
-    });
-    const responseText = await LLMConnector.getChatCompletion(memory, {
-      temperature: workspace?.openAiTemp ?? 0.7,
-    });
-
-    return {
-      response: responseText,
-      sources: this.curateSources(sourceDocuments),
+      contextTexts,
+      sources: this.curateSources(sources),
       message: false,
     };
   },
@@ -377,8 +329,11 @@ const QDrant = {
     const documents = [];
     for (const source of sources) {
       if (Object.keys(source).length > 0) {
+        const metadata = source.hasOwnProperty("metadata")
+          ? source.metadata
+          : source;
         documents.push({
-          ...source,
+          ...metadata,
         });
       }
     }

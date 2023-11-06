@@ -17,6 +17,10 @@ const KEY_MAPPING = {
     envKey: "AZURE_OPENAI_ENDPOINT",
     checks: [isNotEmpty, validAzureURL],
   },
+  AzureOpenAiTokenLimit: {
+    envKey: "AZURE_OPENAI_TOKEN_LIMIT",
+    checks: [validOpenAiTokenLimit],
+  },
   AzureOpenAiKey: {
     envKey: "AZURE_OPENAI_KEY",
     checks: [isNotEmpty],
@@ -137,7 +141,7 @@ function supportedLLM(input = "") {
 }
 
 function validAnthropicModel(input = "") {
-  const validModels = ["claude-2"];
+  const validModels = ["claude-2", "claude-instant-1"];
   return validModels.includes(input)
     ? null
     : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
@@ -172,6 +176,14 @@ function validAzureURL(input = "") {
   } catch {
     return "Not a valid URL";
   }
+}
+
+function validOpenAiTokenLimit(input = "") {
+  const tokenLimit = Number(input);
+  if (isNaN(tokenLimit)) return "Token limit is not a number";
+  if (![4_096, 16_384, 8_192, 32_768].includes(tokenLimit))
+    return "Invalid OpenAI token limit.";
+  return null;
 }
 
 function requiresForceMode(_, forceModeEnabled = false) {

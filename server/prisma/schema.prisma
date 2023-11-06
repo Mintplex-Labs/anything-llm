@@ -116,3 +116,14 @@ model workspace_users {
   workspaces    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   users         users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
+
+model cache_data {
+  id            Int       @id @default(autoincrement())
+  name          String
+  data          String
+  belongsTo     String?
+  byId          Int?
+  expiresAt     DateTime?
+  createdAt     DateTime  @default(now())
+  lastUpdatedAt DateTime  @default(now())
+}
