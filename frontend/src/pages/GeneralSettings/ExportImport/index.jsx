@@ -8,8 +8,48 @@ import showToast from "../../../utils/toast";
 import { CloudArrowUp, DownloadSimple } from "@phosphor-icons/react";
 import System from "../../../models/system";
 import { API_BASE } from "../../../utils/constants";
+import paths from "../../../utils/paths";
 
 export default function GeneralExportImport() {
+  const hostname = window?.location?.hostname;
+  const isHosted = hostname.includes(".useanything.com");
+
+  if (isHosted) {
+    return (
+      <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+        {!isMobile && <Sidebar />}
+        <div
+          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+          className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient md:min-w-[82%] p-[18px] h-full overflow-y-scroll"
+        >
+          {isMobile && <SidebarMobileHeader />}
+          <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
+            <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+              <div className="items-center flex gap-x-4">
+                <p className="text-2xl font-semibold text-white">
+                  Export or Import
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full items-center justify-center flex flex-col gap-y-4">
+            <p className="text-lg font-base text-white text-opacity-60">
+              This feature is temporarily disabled for hosted AnythingLLM
+              instances.
+            </p>
+            <a
+              href={`${paths.mailToMintplex()}?Subject=Import/Export disabled on hosted AnythingLLM.`}
+              className="text-blue-300 hover:underline"
+            >
+              Contact Mintplex Labs Inc.
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       {!isMobile && <Sidebar />}
@@ -48,7 +88,6 @@ function ImportData() {
   const [result, setResult] = useState(null);
 
   const startInput = () => inputRef?.current?.click();
-
   const handleUpload = async (e) => {
     setLoading(true);
     e.preventDefault();
