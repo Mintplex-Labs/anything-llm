@@ -36,7 +36,12 @@ const Pinecone = {
     const namespace = await this.namespace(pineconeIndex, _namespace);
     return namespace?.vectorCount || 0;
   },
-  similarityResponse: async function (index, namespace, queryVector) {
+  similarityResponse: async function (
+    index,
+    namespace,
+    queryVector,
+    similarityThreshold = 0.25
+  ) {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
@@ -52,6 +57,7 @@ const Pinecone = {
     });
 
     response.matches.forEach((match) => {
+      if (match.score < similarityThreshold) return;
       result.contextTexts.push(match.metadata.text);
       result.sourceDocuments.push(match);
       result.scores.push(match.score);
@@ -59,6 +65,7 @@ const Pinecone = {
 
     return result;
   },
+
   namespace: async function (index, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const { namespaces } = await index.describeIndexStats1();
@@ -225,6 +232,7 @@ const Pinecone = {
     namespace = null,
     input = "",
     LLMConnector = null,
+    similarityThreshold = 0.25,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -239,7 +247,8 @@ const Pinecone = {
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       pineconeIndex,
       namespace,
-      queryVector
+      queryVector,
+      similarityThreshold
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

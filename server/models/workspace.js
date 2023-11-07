@@ -13,6 +13,7 @@ const Workspace = {
     "openAiHistory",
     "lastUpdatedAt",
     "openAiPrompt",
+    "similarityThreshold",
   ],
 
   new: async function (name = null, creatorId = null) {

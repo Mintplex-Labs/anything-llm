@@ -45,7 +45,12 @@ const QDrant = {
     const namespace = await this.namespace(client, _namespace);
     return namespace?.vectorCount || 0;
   },
-  similarityResponse: async function (_client, namespace, queryVector) {
+  similarityResponse: async function (
+    _client,
+    namespace,
+    queryVector,
+    similarityThreshold = 0.25
+  ) {
     const { client } = await this.connect();
     const result = {
       contextTexts: [],
@@ -60,6 +65,7 @@ const QDrant = {
     });
 
     responses.forEach((response) => {
+      if (response.score < similarityThreshold) return;
       result.contextTexts.push(response?.payload?.text || "");
       result.sourceDocuments.push({
         ...(response?.payload || {}),
@@ -265,6 +271,7 @@ const QDrant = {
     namespace = null,
     input = "",
     LLMConnector = null,
+    similarityThreshold = 0.25,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -282,7 +289,8 @@ const QDrant = {
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
-      queryVector
+      queryVector,
+      similarityThreshold
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
