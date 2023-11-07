@@ -8,6 +8,7 @@ import PasswordProtection from "./Steps/PasswordProtection";
 import MultiUserSetup from "./Steps/MultiUserSetup";
 import CreateFirstWorkspace from "./Steps/CreateFirstWorkspace";
 import EmbeddingSelection from "./Steps/EmbeddingSelection";
+import DataHandling from "./Steps/DataHandling";
 
 const DIALOG_ID = "onboarding-modal";
 
@@ -50,12 +51,17 @@ const STEPS = {
       "Setup your instance to support your team by activating multi-user mode.",
     component: MultiUserSetup,
   },
-  7: {
+  7:{
+    title: "Data Handling",
+    description: "We are committed to transparency and control when it comes to your personal data.",
+    component: DataHandling,
+  },
+  8: {
     title: "Create Workspace",
     description: "To get started, create a new workspace.",
     component: CreateFirstWorkspace,
   },
-  8: {
+  9: {
     title: "Embedding Preference",
     description:
       "Due to your LLM selection you need to set up a provider for embedding files and text.",
