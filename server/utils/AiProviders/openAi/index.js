@@ -1,4 +1,5 @@
 const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
+const { chatPrompt } = require("../../chats");
 
 class OpenAiLLM extends OpenAiEmbedder {
   constructor() {
@@ -10,10 +11,36 @@ class OpenAiLLM extends OpenAiEmbedder {
       apiKey: process.env.OPEN_AI_KEY,
     });
     this.openai = new OpenAIApi(config);
+    this.model = process.env.OPEN_MODEL_PREF;
+    this.limits = {
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
+    };
+  }
+
+  promptWindowLimit() {
+    switch (this.model) {
+      case "gpt-3.5-turbo":
+        return 4096;
+      case "gpt-4":
+        return 8192;
+      case "gpt-4-1106-preview":
+        return 128000;
+      case "gpt-4-32k":
+        return 32000;
+      default:
+        return 4096; // assume a fine-tune 3.5
+    }
   }
 
   async isValidChatCompletionModel(modelName = "") {
-    const validModels = ["gpt-4", "gpt-3.5-turbo"];
+    const validModels = [
+      "gpt-4",
+      "gpt-3.5-turbo",
+      "gpt-4-1106-preview",
+      "gpt-4-32k",
+    ];
     const isPreset = validModels.some((model) => modelName === model);
     if (isPreset) return true;
 
@@ -33,7 +60,7 @@ class OpenAiLLM extends OpenAiEmbedder {
     const prompt = {
       role: "system",
       content: `${systemPrompt}
-    Context:
+Context:
     ${contextTexts
       .map((text, i) => {
         return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
@@ -75,7 +102,7 @@ class OpenAiLLM extends OpenAiEmbedder {
     return { safe: false, reasons };
   }
 
-  async sendChat(chatHistory = [], prompt, workspace = {}) {
+  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     const model = process.env.OPEN_MODEL_PREF;
     if (!(await this.isValidChatCompletionModel(model)))
       throw new Error(
@@ -87,11 +114,14 @@ class OpenAiLLM extends OpenAiEmbedder {
         model,
         temperature: Number(workspace?.openAiTemp ?? 0.7),
         n: 1,
-        messages: [
-          { role: "system", content: "" },
-          ...chatHistory,
-          { role: "user", content: prompt },
-        ],
+        messages: await this.compressMessages(
+          {
+            systemPrompt: chatPrompt(workspace),
+            userPrompt: prompt,
+            chatHistory,
+          },
+          rawHistory
+        ),
       })
       .then((json) => {
         const res = json.data;
@@ -111,20 +141,25 @@ class OpenAiLLM extends OpenAiEmbedder {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
-    if (!(await this.isValidChatCompletionModel(model)))
+    if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${model} is not valid for chat completion!`
+        `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const { data } = await this.openai.createChatCompletion({
-      model,
+      model: this.model,
       messages,
       temperature,
     });
 
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
+  }
+
+  async compressMessages(promptArgs = {}, rawHistory = []) {
+    const { messageArrayCompressor } = require("../../helpers/chat");
+    const messageArray = this.constructPrompt(promptArgs);
+    return await messageArrayCompressor(this, messageArray, rawHistory);
   }
 }
 

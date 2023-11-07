@@ -1,0 +1,11 @@
+-- CreateTable
+CREATE TABLE "cache_data" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "data" TEXT NOT NULL,
+    "belongsTo" TEXT,
+    "byId" INTEGER,
+    "expiresAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUpdatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

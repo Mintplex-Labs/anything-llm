@@ -55,7 +55,6 @@ export default function PromptInput({
                 onKeyDown={captureEnter}
                 onChange={onChange}
                 required={true}
-                maxLength={240}
                 disabled={inputDisabled}
                 onFocus={() => setFocused(true)}
                 onBlur={(e) => {
