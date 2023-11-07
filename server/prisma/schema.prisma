@@ -82,17 +82,18 @@ model welcome_messages {
 }
 
 model workspaces {
-  id              Int                   @id @default(autoincrement())
-  name            String
-  slug            String                @unique
-  vectorTag       String?
-  createdAt       DateTime              @default(now())
-  openAiTemp      Float?
-  openAiHistory   Int                   @default(20)
-  lastUpdatedAt   DateTime              @default(now())
-  openAiPrompt    String?
-  workspace_users workspace_users[]
-  documents       workspace_documents[]
+  id                  Int                   @id @default(autoincrement())
+  name                String
+  slug                String                @unique
+  vectorTag           String?
+  createdAt           DateTime              @default(now())
+  openAiTemp          Float?
+  openAiHistory       Int                   @default(20)
+  lastUpdatedAt       DateTime              @default(now())
+  openAiPrompt        String?
+  similarityThreshold Float?                @default(0.25)
+  workspace_users     workspace_users[]
+  documents           workspace_documents[]
 }
 
 model workspace_chats {

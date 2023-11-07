@@ -59,7 +59,12 @@ const Chroma = {
     const namespace = await this.namespace(client, _namespace);
     return namespace?.vectorCount || 0;
   },
-  similarityResponse: async function (client, namespace, queryVector) {
+  similarityResponse: async function (
+    client,
+    namespace,
+    queryVector,
+    similarityThreshold = 0.25
+  ) {
     const collection = await client.getCollection({ name: namespace });
     const result = {
       contextTexts: [],
@@ -72,6 +77,11 @@ const Chroma = {
       nResults: 4,
     });
     response.ids[0].forEach((_, i) => {
+      if (
+        this.distanceToSimilarity(response.distances[0][i]) <
+        similarityThreshold
+      )
+        return;
       result.contextTexts.push(response.documents[0][i]);
       result.sourceDocuments.push(response.metadatas[0][i]);
       result.scores.push(this.distanceToSimilarity(response.distances[0][i]));
@@ -256,6 +266,7 @@ const Chroma = {
     namespace = null,
     input = "",
     LLMConnector = null,
+    similarityThreshold = 0.25,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -273,7 +284,8 @@ const Chroma = {
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
-      queryVector
+      queryVector,
+      similarityThreshold
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
