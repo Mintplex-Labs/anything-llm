@@ -116,6 +116,7 @@ async function chatWithWorkspace(
     namespace: workspace.slug,
     input: message,
     LLMConnector,
+    similarityThreshold: workspace?.similarityThreshold,
   });
 
   // Failed similarity search.

@@ -54,7 +54,12 @@ const LanceDb = {
   embedder: function () {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
   },
-  similarityResponse: async function (client, namespace, queryVector) {
+  similarityResponse: async function (
+    client,
+    namespace,
+    queryVector,
+    similarityThreshold = 0.25
+  ) {
     const collection = await client.openTable(namespace);
     const result = {
       contextTexts: [],
@@ -69,6 +74,7 @@ const LanceDb = {
       .execute();
 
     response.forEach((item) => {
+      if (this.distanceToSimilarity(item.score) < similarityThreshold) return;
       const { vector: _, ...rest } = item;
       result.contextTexts.push(rest.text);
       result.sourceDocuments.push(rest);
@@ -229,6 +235,7 @@ const LanceDb = {
     namespace = null,
     input = "",
     LLMConnector = null,
+    similarityThreshold = 0.25,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -246,7 +253,8 @@ const LanceDb = {
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
-      queryVector
+      queryVector,
+      similarityThreshold
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

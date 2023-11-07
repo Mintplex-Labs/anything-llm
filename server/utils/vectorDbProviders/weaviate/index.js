@@ -72,7 +72,12 @@ const Weaviate = {
       return 0;
     }
   },
-  similarityResponse: async function (client, namespace, queryVector) {
+  similarityResponse: async function (
+    client,
+    namespace,
+    queryVector,
+    similarityThreshold = 0.25
+  ) {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
@@ -97,6 +102,7 @@ const Weaviate = {
         _additional: { id, certainty },
         ...rest
       } = response;
+      if (certainty < similarityThreshold) return;
       result.contextTexts.push(rest.text);
       result.sourceDocuments.push({ ...rest, id });
       result.scores.push(certainty);
@@ -336,6 +342,7 @@ const Weaviate = {
     namespace = null,
     input = "",
     LLMConnector = null,
+    similarityThreshold = 0.25,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -353,7 +360,8 @@ const Weaviate = {
     const { contextTexts, sourceDocuments } = await this.similarityResponse(
       client,
       namespace,
-      queryVector
+      queryVector,
+      similarityThreshold
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
