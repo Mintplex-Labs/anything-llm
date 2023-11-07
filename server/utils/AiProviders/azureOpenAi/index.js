@@ -1,4 +1,5 @@
 const { AzureOpenAiEmbedder } = require("../../EmbeddingEngines/azureOpenAi");
+const { chatPrompt } = require("../../chats");
 
 class AzureOpenAiLLM extends AzureOpenAiEmbedder {
   constructor() {
@@ -13,9 +14,24 @@ class AzureOpenAiLLM extends AzureOpenAiEmbedder {
       process.env.AZURE_OPENAI_ENDPOINT,
       new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
     );
+    this.model = process.env.OPEN_MODEL_PREF;
+    this.limits = {
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
+    };
   }
 
-  isValidChatModel(_modelName = "") {
+  // Sure the user selected a proper value for the token limit
+  // could be any of these https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#gpt-4-models
+  // and if undefined - assume it is the lowest end.
+  promptWindowLimit() {
+    return !!process.env.AZURE_OPENAI_TOKEN_LIMIT
+      ? Number(process.env.AZURE_OPENAI_TOKEN_LIMIT)
+      : 4096;
+  }
+
+  isValidChatCompletionModel(_modelName = "") {
     // The Azure user names their "models" as deployments and they can be any name
     // so we rely on the user to put in the correct deployment as only they would
     // know it.
@@ -31,7 +47,7 @@ class AzureOpenAiLLM extends AzureOpenAiEmbedder {
     const prompt = {
       role: "system",
       content: `${systemPrompt}
-    Context:
+Context:
     ${contextTexts
       .map((text, i) => {
         return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
@@ -46,26 +62,25 @@ class AzureOpenAiLLM extends AzureOpenAiEmbedder {
     return { safe: true, reasons: [] };
   }
 
-  async sendChat(chatHistory = [], prompt, workspace = {}) {
-    const model = process.env.OPEN_MODEL_PREF;
-    if (!model)
+  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
+    if (!this.model)
       throw new Error(
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
       );
 
+    const messages = await this.compressMessages(
+      {
+        systemPrompt: chatPrompt(workspace),
+        userPrompt: prompt,
+        chatHistory,
+      },
+      rawHistory
+    );
     const textResponse = await this.openai
-      .getChatCompletions(
-        model,
-        [
-          { role: "system", content: "" },
-          ...chatHistory,
-          { role: "user", content: prompt },
-        ],
-        {
-          temperature: Number(workspace?.openAiTemp ?? 0.7),
-          n: 1,
-        }
-      )
+      .getChatCompletions(this.model, messages, {
+        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        n: 1,
+      })
       .then((res) => {
         if (!res.hasOwnProperty("choices"))
           throw new Error("OpenAI chat: No results!");
@@ -83,17 +98,22 @@ class AzureOpenAiLLM extends AzureOpenAiEmbedder {
   }
 
   async getChatCompletion(messages = [], { temperature = 0.7 }) {
-    const model = process.env.OPEN_MODEL_PREF;
-    if (!model)
+    if (!this.model)
       throw new Error(
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
       );
 
-    const data = await this.openai.getChatCompletions(model, messages, {
+    const data = await this.openai.getChatCompletions(this.model, messages, {
       temperature,
     });
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
+  }
+
+  async compressMessages(promptArgs = {}, rawHistory = []) {
+    const { messageArrayCompressor } = require("../../helpers/chat");
+    const messageArray = this.constructPrompt(promptArgs);
+    return await messageArrayCompressor(this, messageArray, rawHistory);
   }
 }
 

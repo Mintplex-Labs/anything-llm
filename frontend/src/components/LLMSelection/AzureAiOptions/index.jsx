@@ -51,6 +51,23 @@ export default function AzureAiOptions({ settings }) {
 
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-4">
+          Chat Model Token Limit
+        </label>
+        <select
+          name="AzureOpenAiTokenLimit"
+          defaultValue={settings?.AzureOpenAiTokenLimit || 4096}
+          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          required={true}
+        >
+          <option value={4096}>4,096 (gpt-3.5-turbo)</option>
+          <option value={16384}>16,384 (gpt-3.5-16k)</option>
+          <option value={8192}>8,192 (gpt-4)</option>
+          <option value={32768}>32,768 (gpt-4-32k)</option>
+        </select>
+      </div>
+
+      <div className="flex flex-col w-60">
+        <label className="text-white text-sm font-semibold block mb-4">
           Embedding Deployment Name
         </label>
         <input

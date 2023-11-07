@@ -24,7 +24,7 @@ export default function AnthropicAiOptions({ settings, showAlert = false }) {
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
-            Anthropic Claude-2 API Key
+            Anthropic API Key
           </label>
           <input
             type="password"
@@ -48,7 +48,7 @@ export default function AnthropicAiOptions({ settings, showAlert = false }) {
             required={true}
             className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
-            {["claude-2"].map((model) => {
+            {["claude-2", "claude-instant-1"].map((model) => {
               return (
                 <option key={model} value={model}>
                   {model}

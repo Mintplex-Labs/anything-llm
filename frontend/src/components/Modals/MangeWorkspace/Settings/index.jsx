@@ -224,7 +224,6 @@ export default function WorkspaceSettings({ workspace }) {
                 </div>
                 <textarea
                   name="openAiPrompt"
-                  maxLength={500}
                   rows={5}
                   defaultValue={chatPrompt(workspace)}
                   className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
