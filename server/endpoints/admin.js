@@ -302,6 +302,81 @@ function adminEndpoints(app) {
   );
 
   app.get(
+    "/admin/export-chats",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        if (!user || user?.role !== "admin") {
+          response.sendStatus(401).end();
+          return;
+        }
+
+        const chats = await WorkspaceChats.whereWithData({}, null, null, {
+          id: "asc",
+        });
+        const workspaceIds = [
+          ...new Set(chats.map((chat) => chat.workspaceId)),
+        ];
+
+        const workspacesWithPrompts = await Promise.all(
+          workspaceIds.map((id) => Workspace.get({ id: Number(id) }))
+        );
+
+        const workspacePromptsMap = workspacesWithPrompts.reduce(
+          (acc, workspace) => {
+            acc[workspace.id] = workspace.openAiPrompt;
+            return acc;
+          },
+          {}
+        );
+
+        const workspaceChatsMap = chats.reduce((acc, chat) => {
+          const { prompt, response, workspaceId } = chat;
+          const responseJson = JSON.parse(response);
+
+          if (!acc[workspaceId]) {
+            acc[workspaceId] = {
+              messages: [
+                {
+                  role: "system",
+                  content:
+                    workspacePromptsMap[workspaceId] ||
+                    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
+                },
+              ],
+            };
+          }
+
+          acc[workspaceId].messages.push(
+            {
+              role: "user",
+              content: prompt,
+            },
+            {
+              role: "assistant",
+              content: responseJson.text,
+            }
+          );
+
+          return acc;
+        }, {});
+
+        // Convert to JSONL
+        const jsonl = Object.values(workspaceChatsMap)
+          .map((workspaceChats) => JSON.stringify(workspaceChats))
+          .join("\n");
+
+        response.setHeader("Content-Type", "application/jsonl");
+        response.status(200).send(jsonl);
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
     "/admin/system-preferences",
     [validatedRequest],
     async (request, response) => {

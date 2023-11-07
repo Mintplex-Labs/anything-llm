@@ -163,6 +163,17 @@ const Admin = {
         return { success: false, error: e.message };
       });
   },
+  exportChats: async () => {
+    return await fetch(`${API_BASE}/admin/export-chats`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.text())
+      .catch((e) => {
+        console.error(e);
+        return null;
+      });
+  },
 
   // System Preferences
   systemPreferences: async () => {

@@ -11,6 +11,22 @@ import ChatRow from "./ChatRow";
 
 const PAGE_SIZE = 20;
 export default function AdminChats() {
+  const handleDumpChats = async () => {
+    const chats = await Admin.exportChats();
+    if (chats) {
+      const blob = new Blob([chats], { type: "application/jsonl" });
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = "chats.jsonl";
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(link.href);
+      document.body.removeChild(link);
+    } else {
+      console.error("Failed to download chats.");
+    }
+  };
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       {!isMobile && <Sidebar />}
@@ -25,6 +41,12 @@ export default function AdminChats() {
               <p className="text-2xl font-semibold text-white">
                 Workspace Chats
               </p>
+              <button
+                onClick={handleDumpChats}
+                className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
+              >
+                Export Chats to JSONL
+              </button>
             </div>
             <p className="text-sm font-base text-white text-opacity-60">
               These are all the recorded chats and messages that have been sent
