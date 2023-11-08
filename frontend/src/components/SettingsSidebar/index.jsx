@@ -25,11 +25,21 @@ import {
 } from "@phosphor-icons/react";
 import useUser from "../../hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "../../utils/constants";
+import System from "../../models/system";
 
 export default function SettingsSidebar() {
   const { logo } = useLogo();
   const sidebarRef = useRef(null);
   const { user } = useUser();
+  const [multiUserMode, setMultiUserMode] = useState(false);
+
+  useEffect(() => {
+    async function checkMultiUserMode() {
+      const isMultiUserMode = await System.isMultiUserMode();
+      setMultiUserMode(isMultiUserMode);
+    }
+    checkMultiUserMode();
+  }, []);
 
   return (
     <>
@@ -91,7 +101,7 @@ export default function SettingsSidebar() {
                       icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
                     />
                     <Option
-                      href={paths.admin.chats()}
+                      href={paths.general.chats()}
                       btnText="Workspace Chat"
                       icon={
                         <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
@@ -101,6 +111,15 @@ export default function SettingsSidebar() {
                 )}
 
                 {/* General Settings */}
+                {!multiUserMode && user?.role !== "admin" && (
+                  <Option
+                    href={paths.general.chats()}
+                    btnText="Workspace Chat"
+                    icon={
+                      <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
+                    }
+                  />
+                )}
                 <Option
                   href={paths.general.appearance()}
                   btnText="Appearance"
@@ -292,17 +311,17 @@ export function SidebarMobileHeader() {
                         btnText="Workspaces"
                         icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
                       />
-                      <Option
-                        href={paths.admin.chats()}
-                        btnText="Workspace Chat"
-                        icon={
-                          <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
-                        }
-                      />
                     </>
                   )}
 
                   {/* General Settings */}
+                  <Option
+                    href={paths.general.chats()}
+                    btnText="Workspace Chat"
+                    icon={
+                      <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
+                    }
+                  />
                   <Option
                     href={paths.general.appearance()}
                     btnText="Appearance"
