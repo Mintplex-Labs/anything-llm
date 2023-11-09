@@ -44,6 +44,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty, validAnthropicModel],
   },
 
+  // LMStudio Settings
+  LMStudioBasePath: {
+    envKey: "LMSTUDIO_BASE_PATH",
+    checks: [isNotEmpty, validLMStudioBasePath],
+  },
+  LMStudioTokenLimit: {
+    envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
@@ -117,6 +127,11 @@ function isNotEmpty(input = "") {
   return !input || input.length === 0 ? "Value cannot be empty" : null;
 }
 
+function nonZero(input = "") {
+  if (isNaN(Number(input))) return "Value must be a number";
+  return Number(input) <= 0 ? "Value must be greater than zero" : null;
+}
+
 function isValidURL(input = "") {
   try {
     new URL(input);
@@ -136,8 +151,20 @@ function validAnthropicApiKey(input = "") {
     : "Anthropic Key must start with sk-ant-";
 }
 
+function validLMStudioBasePath(input = "") {
+  try {
+    new URL(input);
+    if (!input.includes("v1")) return "URL must include /v1";
+    if (input.split("").slice(-1)?.[0] === "/")
+      return "URL cannot end with a slash";
+    return null;
+  } catch {
+    return "Not a valid URL";
+  }
+}
+
 function supportedLLM(input = "") {
-  return ["openai", "azure", "anthropic"].includes(input);
+  return ["openai", "azure", "anthropic", "lmstudio"].includes(input);
 }
 
 function validAnthropicModel(input = "") {

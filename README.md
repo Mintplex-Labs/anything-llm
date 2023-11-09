@@ -52,9 +52,10 @@ Some cool features of AnythingLLM
 
 ### Supported LLMs and Vector Databases
 **Supported LLMs:**
-- OpenAI
-- Azure OpenAI
-- Anthropic ClaudeV2
+- [OpenAI](https://openai.com)
+- [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+- [Anthropic ClaudeV2](https://www.anthropic.com/)
+- [LM Studio (all models)](https://lmstudio.ai)
 
 **Supported Vector Databases:**
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
@@ -73,7 +74,7 @@ This monorepo consists of three main sections:
 ### Requirements
 - `yarn` and `node` on your machine
 - `python` 3.9+ for running scripts in `collector/`.
-- access to an LLM like `GPT-3.5`, `GPT-4`, etc.
+- access to an LLM service like `GPT-3.5`, `GPT-4`, `Mistral`, `LLama`, etc.
 - (optional) a vector database like Pinecone, qDrant, Weaviate, or Chroma*.
 *AnythingLLM by default uses a built-in vector db called LanceDB.
 

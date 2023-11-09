@@ -2,12 +2,14 @@ import React, { memo, useEffect, useState } from "react";
 import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
 import AnthropicLogo from "../../../../../media/llmprovider/anthropic.png";
+import LMStudioLogo from "../../../../../media/llmprovider/lmstudio.png";
 import System from "../../../../../models/system";
 import PreLoader from "../../../../../components/Preloader";
 import LLMProviderOption from "../../../../../components/LLMSelection/LLMProviderOption";
 import OpenAiOptions from "../../../../../components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "../../../../../components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "../../../../../components/LLMSelection/AnthropicAiOptions";
+import LMStudioOptions from "../../../../../components/LLMSelection/LMStudioOptions";
 
 function LLMSelection({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");
@@ -45,6 +47,8 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
 
     switch (data.LLMProvider) {
       case "anthropic":
+        return nextStep("embedding_preferences");
+      case "lmstudio":
         return nextStep("embedding_preferences");
       default:
         return nextStep("vector_database");
@@ -94,12 +98,24 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               image={AnthropicLogo}
               onClick={updateLLMChoice}
             />
+            <LLMProviderOption
+              name="LM Studio"
+              value="lmstudio"
+              link="lmstudio.ai"
+              description="Discover, download, and run thousands of cutting edge LLMs in a few clicks."
+              checked={llmChoice === "lmstudio"}
+              image={LMStudioLogo}
+              onClick={updateLLMChoice}
+            />
           </div>
           <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
             {llmChoice === "openai" && <OpenAiOptions settings={settings} />}
             {llmChoice === "azure" && <AzureAiOptions settings={settings} />}
             {llmChoice === "anthropic" && (
               <AnthropicAiOptions settings={settings} />
+            )}
+            {llmChoice === "lmstudio" && (
+              <LMStudioOptions settings={settings} />
             )}
           </div>
         </div>
