@@ -6,9 +6,9 @@ import {
   BookOpen,
   DiscordLogo,
   DotsThree,
+  X,
+  SketchLogo,
 } from "@phosphor-icons/react";
-// import IndexCount from "./IndexCount";
-// import LLMStatus from "./LLMStatus";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
@@ -23,6 +23,7 @@ import {
   USER_BACKGROUND_COLOR,
 } from "../../utils/constants";
 import useLogo from "../../hooks/useLogo";
+import pluralize from "pluralize";
 
 export default function Sidebar() {
   const { logo } = useLogo();
@@ -32,6 +33,30 @@ export default function Sidebar() {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
+
+  // Placeholder for trial status
+  const [showTrialModal, setShowTrialModal] = useState(true);
+  const [upgradeLink, setUpgradeLink] = useState("https://google.com");
+  const [daysLeft, setDaysLeft] = useState(3);
+
+  const handleTrialXClick = () => {
+    setShowTrialModal(false);
+  };
+
+  const handleUpgradeClick = () => {
+    window.open(upgradeLink, "_blank");
+  };
+
+  // useEffect(() => {
+  //   // Call SaaS dashboard endpoint to get trialStatus, upgrade link, and days left
+  //   async function getTrialStatus() {
+  //     const { trialStatus, upgradeLink, daysLeft } = await HostedInstance.getTrialStatus();
+  //     setShowTrialModal(trialStatus);
+  //     setUpgradeLink(upgradeLink);
+  //     setDaysLeft(daysLeft);
+  //   }
+  //   getTrialStatus();
+  // }, []);
 
   return (
     <>
@@ -74,24 +99,42 @@ export default function Sidebar() {
               <ActiveWorkspaces />
             </div>
             <div className="flex flex-col flex-grow justify-end mb-2">
-              {/* <div className="flex flex-col gap-y-2">
-                <div className="w-full flex items-center justify-between">
-                  <LLMStatus />
-                  <IndexCount />
+              {showTrialModal && (
+                <div className="w-full h-[200px] bg-[#655137] rounded-xl mb-6 shadow-md">
+                  <div className="p-4 flex flex-col gap-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white text-sm font-medium">
+                        Your trial ends in
+                      </span>
+                      <X
+                        className="w-[18px] h-[18px] text-white hover:cursor-pointer"
+                        weight="bold"
+                        onClick={handleTrialXClick}
+                      />
+                    </div>
+                    <span className="text-white text-2xl font-extrabold">
+                      {pluralize("day", daysLeft, true)}
+                    </span>
+                    <div className="flex flex-col gap-y-0.5 mt-4">
+                      <span className="text-white text-sm font-medium">
+                        Want to continue
+                      </span>
+                      <span className="text-white text-sm font-medium">
+                        enjoying <b>AnythingLLM?</b>
+                      </span>
+                    </div>
+                    <button
+                      className="mt-2 flex flex-grow w-[100%]  gap-x-2 py-[9px] px-4 border border-transparent rounded-lg text-slate-200 justify-center items-center transition-all duration-300 hover:border-white bg-gradient-to-t from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500"
+                      onClick={handleUpgradeClick}
+                    >
+                      <SketchLogo className="h-5 w-5" weight="bold" />
+                      <span className="text-white text-sm font-extrabold">
+                        Upgrade
+                      </span>
+                    </button>
+                  </div>
                 </div>
-                <a
-                  href={paths.feedback()}
-                  target="_blank"
-                  className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-transparent rounded-lg text-slate-200 justify-center items-center bg-stone-800 hover:bg-stone-900"
-                >
-                  <AtSign className="h-4 w-4" />
-                  <p className="text-slate-200 text-xs leading-loose font-semibold">
-                    Feedback form
-                  </p>
-                </a>
-                <ManagedHosting />
-                <LogoutButton />
-              </div> */}
+              )}
 
               {/* Footer */}
               <div className="flex justify-center mt-2">
