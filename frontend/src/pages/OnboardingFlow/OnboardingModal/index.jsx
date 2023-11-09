@@ -51,9 +51,10 @@ const STEPS = {
       "Setup your instance to support your team by activating multi-user mode.",
     component: MultiUserSetup,
   },
-  7:{
+  7: {
     title: "Data Handling",
-    description: "We are committed to transparency and control when it comes to your personal data.",
+    description:
+      "We are committed to transparency and control when it comes to your personal data.",
     component: DataHandling,
   },
   8: {

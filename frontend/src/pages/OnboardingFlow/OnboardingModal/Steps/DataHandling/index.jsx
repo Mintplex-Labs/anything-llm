@@ -15,7 +15,7 @@ const LLM_SELECTION_PRIVACY = {
     name: "OpenAI",
     description: [
       "Your chats will not be used for training",
-      "Your text and embedding text are visible to OpenAI",
+      "Your prompts and document text used in responses are visible to OpenAI",
     ],
     logo: OpenAiLogo,
   },
@@ -23,7 +23,7 @@ const LLM_SELECTION_PRIVACY = {
     name: "Azure OpenAI",
     description: [
       "Your chats will not be used for training",
-      "Your text and embedding text are not visible to OpenAI",
+      "Your text and embedding text are not visible to OpenAI or Microsoft",
     ],
     logo: AzureOpenAiLogo,
   },
@@ -31,7 +31,7 @@ const LLM_SELECTION_PRIVACY = {
     name: "Anthropic",
     description: [
       "Your chats will not be used for training",
-      "Your text and embedding text are not visible to Anthropic",
+      "Your prompts and document text used in responses are visible to Anthropic",
     ],
     logo: AnthropicLogo,
   },
@@ -41,25 +41,24 @@ const VECTOR_DB_PRIVACY = {
   chroma: {
     name: "Chroma",
     description: [
-      "Your embedded text is available to Chroma, if using a hosted instance",
-      "Your embedded text is not available to Chroma, if using a self-hosted instance",
-      "Your data is stored on your Chroma instance",
+      "Your embedded text not visible outside of your Chroma instance",
+      "Access to your instance is managed by you",
     ],
     logo: ChromaLogo,
   },
   pinecone: {
     name: "Pinecone",
     description: [
-      "Your embedded text is available to Pinecone, but is not used by them",
-      "They manage your data on their servers",
+      "Your embedded text and vectors are visible to Pinecone, but is not accessed",
+      "They manage your data and access to their servers",
     ],
     logo: PineconeLogo,
   },
   qdrant: {
     name: "Qdrant",
     description: [
-      "Your embedded text is available to Qdrant, if using a hosted instance",
-      "Your embedded text is not available to Qdrant, if using a self-hosted instance",
+      "Your embedded text is visible to Qdrant if using a hosted instance",
+      "Your embedded text is not visible to Qdrant if using a self-hosted instance",
       "Your data is stored on your Qdrant instance",
     ],
     logo: QDrantLogo,
@@ -67,17 +66,16 @@ const VECTOR_DB_PRIVACY = {
   weaviate: {
     name: "Weaviate",
     description: [
-      "Your embedded text is available to Weaviate, if using a hosted instance",
-      "Your embedded text is not available to Weaviate, if using a self-hosted instance",
+      "Your embedded text is visible to Weaviate, if using a hosted instance",
+      "Your embedded text is not visible to Weaviate, if using a self-hosted instance",
       "Your data is stored on your Weaviate instance",
     ],
-
     logo: WeaviateLogo,
   },
   lancedb: {
     name: "LanceDB",
     description: [
-      "Your embedded text is not put anywhere else but your AnythingLLM instance",
+      "Your embedded text and vectors are only accessible by this AnythingLLM instance",
     ],
     logo: LanceDbLogo,
   },
@@ -145,13 +143,11 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
               {VECTOR_DB_PRIVACY[vectorDb].name}
             </p>
           </div>
-            <div className="flex flex-col">
-                {VECTOR_DB_PRIVACY[vectorDb].description.map((desc) => (
-                    <p className="text-white/90 text-sm">
-                        <b>•</b> {desc}
-                    </p>
-                ))}
-            </div>
+          <ul className="flex flex-col list-disc">
+            {VECTOR_DB_PRIVACY[vectorDb].description.map((desc) => (
+              <li className="text-white/90 text-sm">{desc}</li>
+            ))}
+          </ul>
         </div>
       </div>
       <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
