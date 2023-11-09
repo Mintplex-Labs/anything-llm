@@ -1,13 +1,13 @@
 import React, { memo } from "react";
 
 // How many people will be using your instance step
-function UserModeSelection({ goToStep, prevStep }) {
+function UserModeSelection({ nextStep, prevStep }) {
   const justMeClicked = () => {
-    goToStep(5);
+    nextStep("password_protection");
   };
 
   const myTeamClicked = () => {
-    goToStep(6);
+    nextStep("multi_user_mode");
   };
 
   return (

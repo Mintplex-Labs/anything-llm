@@ -9,7 +9,7 @@ import OpenAiOptions from "../../../../../components/LLMSelection/OpenAiOptions"
 import AzureAiOptions from "../../../../../components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "../../../../../components/LLMSelection/AnthropicAiOptions";
 
-function LLMSelection({ nextStep, prevStep, currentStep, goToStep }) {
+function LLMSelection({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,10 +26,10 @@ function LLMSelection({ nextStep, prevStep, currentStep, goToStep }) {
       setLoading(false);
     }
 
-    if (currentStep === 1) {
+    if (currentStep === "llm_preference") {
       fetchKeys();
     }
-  }, [currentStep]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,11 +45,10 @@ function LLMSelection({ nextStep, prevStep, currentStep, goToStep }) {
 
     switch (data.LLMProvider) {
       case "anthropic":
-        goToStep(7);
+        return nextStep("embedding_preferences");
       default:
-        nextStep();
+        return nextStep("vector_database");
     }
-    return;
   };
 
   if (loading)

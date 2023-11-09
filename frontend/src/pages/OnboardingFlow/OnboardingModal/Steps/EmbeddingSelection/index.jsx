@@ -5,7 +5,7 @@ import System from "../../../../../models/system";
 import PreLoader from "../../../../../components/Preloader";
 import LLMProviderOption from "../../../../../components/LLMSelection/LLMProviderOption";
 
-function EmbeddingSelection({ nextStep, prevStep, currentStep, goToStep }) {
+function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
   const [embeddingChoice, setEmbeddingChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +35,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep, goToStep }) {
       alert(`Failed to save LLM settings: ${error}`, "error");
       return;
     }
-    goToStep(2);
+    nextStep("vector_database");
     return;
   };
 
@@ -156,7 +156,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep, goToStep }) {
         </div>
         <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
           <button
-            onClick={() => goToStep(1)}
+            onClick={prevStep}
             type="button"
             className="px-4 py-2 rounded-lg text-white hover:bg-sidebar"
           >

@@ -33,7 +33,7 @@ function MultiUserSetup({ nextStep, prevStep }) {
     window.localStorage.setItem(AUTH_TOKEN, token);
     window.localStorage.removeItem(AUTH_TIMESTAMP);
 
-    nextStep();
+    nextStep("data_handling");
   };
 
   const setNewUsername = (e) => setUsername(e.target.value);
