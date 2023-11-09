@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { X } from "react-feather";
+import { X } from "@phosphor-icons/react";
 import Workspace from "../../models/workspace";
 
 const noop = () => false;

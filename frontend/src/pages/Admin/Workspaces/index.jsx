@@ -5,7 +5,7 @@ import Sidebar, {
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { BookOpen } from "react-feather";
+import { BookOpen } from "@phosphor-icons/react";
 import usePrefersDarkMode from "../../../hooks/usePrefersDarkMode";
 import Admin from "../../../models/admin";
 import WorkspaceRow from "./WorkspaceRow";

@@ -22,7 +22,6 @@
     "react-device-detect": "^2.2.2",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
-    "react-feather": "^2.0.10",
     "react-loading-icons": "^1.1.0",
     "react-loading-skeleton": "^3.1.0",
     "react-router-dom": "^6.3.0",

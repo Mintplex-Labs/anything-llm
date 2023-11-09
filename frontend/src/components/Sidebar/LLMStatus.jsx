@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AlertCircle, Circle } from "react-feather";
+import { WarningCircle, Circle } from "@phosphor-icons/react";
 import System from "../../models/system";
 
 export default function LLMStatus() {
@@ -31,7 +31,7 @@ export default function LLMStatus() {
         <p className="text-slate-400 leading-loose text-sm">LLM</p>
         <div className="flex items-center gap-x-1 border border-red-400 px-2 bg-red-200 rounded-full">
           <p className="text-red-700 leading-tight text-sm">offline</p>
-          <AlertCircle className="h-3 w-3 stroke-red-100 fill-red-400" />
+          <WarningCircle className="h-3 w-3 stroke-red-100 fill-red-400" />
         </div>
       </div>
     );
