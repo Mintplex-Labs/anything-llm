@@ -102,7 +102,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               name="LM Studio"
               value="lmstudio"
               link="lmstudio.ai"
-              description="Discover, download, and run local LLMs."
+              description="Discover, download, and run thousands of cutting edge LLMs in a few clicks."
               checked={llmChoice === "lmstudio"}
               image={LMStudioLogo}
               onClick={updateLLMChoice}
