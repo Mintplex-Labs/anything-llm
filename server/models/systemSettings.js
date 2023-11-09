@@ -85,6 +85,8 @@ const SystemSettings = {
       ...(llmProvider === "lmstudio"
         ? {
             LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
+            LMStudioModelPref: process.env.LMSTUDIO_MODEL_PREF,
+            LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
 
             // For embedding credentials when lmstudio is selected.
             OpenAiKey: !!process.env.OPEN_AI_KEY,

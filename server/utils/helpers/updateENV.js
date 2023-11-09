@@ -49,6 +49,14 @@ const KEY_MAPPING = {
     envKey: "LMSTUDIO_BASE_PATH",
     checks: [isNotEmpty, validLMStudioBasePath],
   },
+  LMStudioModelPref: {
+    envKey: "LMSTUDIO_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  LMStudioTokenLimit: {
+    envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
 
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
@@ -123,6 +131,11 @@ function isNotEmpty(input = "") {
   return !input || input.length === 0 ? "Value cannot be empty" : null;
 }
 
+function nonZero(input = "") {
+  if (isNaN(Number(input))) return "Value must be a number";
+  return Number(input) <= 0 ? "Value must be greater than zero" : null;
+}
+
 function isValidURL(input = "") {
   try {
     new URL(input);
@@ -146,6 +159,8 @@ function validLMStudioBasePath(input = "") {
   try {
     new URL(input);
     if (!input.includes("v1")) return "URL must include /v1";
+    if (input.split("").slice(-1)?.[0] === "/")
+      return "URL cannot end with a slash";
     return null;
   } catch {
     return "Not a valid URL";
