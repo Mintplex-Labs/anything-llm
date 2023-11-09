@@ -8,7 +8,7 @@ import showToast from "../../../utils/toast";
 import OpenAiLogo from "../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../media/llmprovider/azure.png";
 import AnthropicLogo from "../../../media/llmprovider/anthropic.png";
-import LMStudioLogo from "../../../media/llmprovider/LMStudio.png";
+import LMStudioLogo from "../../../media/llmprovider/lmstudio.png";
 import PreLoader from "../../../components/Preloader";
 import LLMProviderOption from "../../../components/LLMSelection/LLMProviderOption";
 import OpenAiOptions from "../../../components/LLMSelection/OpenAiOptions";
