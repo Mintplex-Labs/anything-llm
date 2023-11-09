@@ -1,7 +1,7 @@
 import { useRef } from "react";
-import Admin from "../../../../models/admin";
 import truncate from "truncate";
 import { X, Trash } from "@phosphor-icons/react";
+import System from "../../../../models/system";
 
 export default function ChatRow({ chat }) {
   const rowRef = useRef(null);
@@ -13,7 +13,7 @@ export default function ChatRow({ chat }) {
     )
       return false;
     rowRef?.current?.remove();
-    await Admin.deleteChat(chat.id);
+    await System.deleteChat(chat.id);
   };
 
   return (
