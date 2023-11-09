@@ -94,11 +94,8 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
 
       setLoading(false);
     }
-
-    if (currentStep === 7) {
-      fetchKeys();
-    }
-  }, [currentStep]);
+    fetchKeys();
+  }, []);
 
   if (loading)
     return (
