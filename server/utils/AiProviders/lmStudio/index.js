@@ -11,7 +11,9 @@ class LMStudioLLM {
       basePath: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
     });
     this.lmstudio = new OpenAIApi(config);
-    this.model = process.env.LMSTUDIO_MODEL_PREF;
+    // When using LMStudios inference server - the model param is not required so
+    // we can stub it here.
+    this.model = "model-placeholder";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -28,7 +30,7 @@ class LMStudioLLM {
   // Ensure the user set a value for the token limit
   // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.LMSTUDIO_MODEL_TOKEN_LIMIT;
+    const limit = process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 4096;
     if (!limit || isNaN(Number(limit)))
       throw new Error("No LMStudio token context limit was set.");
     return Number(limit);
@@ -36,6 +38,7 @@ class LMStudioLLM {
 
   async isValidChatCompletionModel(_ = "") {
     // LMStudio may be anything. The user must do it correctly.
+    // See comment about this.model declaration in constructor
     return true;
   }
 

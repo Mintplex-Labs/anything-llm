@@ -39,21 +39,6 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
         </div>
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
-            LMStudio Model name
-          </label>
-          <input
-            type="text"
-            name="LMStudioModelPref"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="mistralai/Mistral-7B-v0.1"
-            defaultValue={settings?.LMStudioBasePath}
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
             Token context window
           </label>
           <input
