@@ -1,5 +1,5 @@
 import { memo, forwardRef } from "react";
-import { AlertTriangle } from "react-feather";
+import { Warning } from "@phosphor-icons/react";
 import Jazzicon from "../../../../UserIcon";
 import renderMarkdown from "../../../../../utils/chat/markdown";
 import { userFromStorage } from "../../../../../utils/request";
@@ -42,8 +42,8 @@ const HistoricalMessage = forwardRef(
               <span
                 className={`inline-block p-2 rounded-lg bg-red-50 text-red-500`}
               >
-                <AlertTriangle className="h-4 w-4 mb-1 inline-block" /> Could
-                not respond to message.
+                <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
+                respond to message.
               </span>
             ) : (
               <span

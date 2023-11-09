@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X } from "react-feather";
+import { X } from "@phosphor-icons/react";
 
 export default function EditingChatBubble({
   message,

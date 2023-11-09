@@ -1,27 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
-import { LogOut, Menu, Package, Plus, Shield } from "react-feather";
 import {
   Wrench,
   GithubLogo,
   BookOpen,
   DiscordLogo,
   DotsThree,
+  Plus,
+  List,
 } from "@phosphor-icons/react";
-// import IndexCount from "./IndexCount";
-// import LLMStatus from "./LLMStatus";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
 import ActiveWorkspaces from "./ActiveWorkspaces";
 import paths from "../../utils/paths";
-import useUser from "../../hooks/useUser";
-import { userFromStorage } from "../../utils/request";
-import {
-  AUTH_TIMESTAMP,
-  AUTH_TOKEN,
-  AUTH_USER,
-  USER_BACKGROUND_COLOR,
-} from "../../utils/constants";
+import { USER_BACKGROUND_COLOR } from "../../utils/constants";
 import useLogo from "../../hooks/useLogo";
 
 export default function Sidebar() {
@@ -164,7 +156,7 @@ export function SidebarMobileHeader() {
           onClick={() => setShowSidebar(true)}
           className="rounded-md p-2 flex items-center justify-center text-slate-200"
         >
-          <Menu className="h-6 w-6" />
+          <List className="h-6 w-6" />
         </button>
         <div className="flex items-center justify-center flex-grow">
           <img
@@ -271,42 +263,6 @@ export function SidebarMobileHeader() {
   );
 }
 
-function AdminHome() {
-  const { user } = useUser();
-  if (!user || user?.role !== "admin") return null;
-  return (
-    <a
-      href={paths.admin.system()}
-      className="transition-all duration-300 p-2 rounded-full text-slate-400 bg-stone-800 hover:bg-slate-800 hover:text-slate-200"
-    >
-      <Shield className="h-4 w-4" />
-    </a>
-  );
-}
-
-function LogoutButton() {
-  if (!window.localStorage.getItem(AUTH_USER)) return null;
-  const user = userFromStorage();
-  if (!user.username) return null;
-
-  return (
-    <button
-      onClick={() => {
-        window.localStorage.removeItem(AUTH_USER);
-        window.localStorage.removeItem(AUTH_TOKEN);
-        window.localStorage.removeItem(AUTH_TIMESTAMP);
-        window.location.replace(paths.home());
-      }}
-      className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-transparent rounded-lg text-slate-200 justify-center items-center bg-stone-800 hover:bg-stone-900"
-    >
-      <LogOut className="h-4 w-4" />
-      <p className="text-slate-200 text-xs leading-loose font-semibold">
-        Log out of {user.username}
-      </p>
-    </button>
-  );
-}
-
 function SettingsButton() {
   return (
     <a
@@ -314,22 +270,6 @@ function SettingsButton() {
       className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
     >
       <Wrench className="h-4 w-4" weight="fill" />
-    </a>
-  );
-}
-
-function ManagedHosting() {
-  if (window.location.origin.includes(".useanything.com")) return null;
-  return (
-    <a
-      href={paths.hosting()}
-      target="_blank"
-      className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-transparent rounded-lg text-slate-200 justify-center items-center bg-stone-800 hover:bg-stone-900"
-    >
-      <Package className="h-4 w-4" />
-      <p className="text-slate-200 text-xs leading-loose font-semibold">
-        Managed cloud hosting
-      </p>
     </a>
   );
 }

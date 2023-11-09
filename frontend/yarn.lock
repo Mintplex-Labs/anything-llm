@@ -1973,7 +1973,7 @@ prettier@^2.4.1:
   resolved "https://registry.npmjs.org/prettier/-/prettier-2.8.8.tgz"
   integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
 
-prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -2015,13 +2015,6 @@ react-dropzone@^14.2.3:
     attr-accept "^2.2.2"
     file-selector "^0.6.0"
     prop-types "^15.8.1"
-
-react-feather@^2.0.10:
-  version "2.0.10"
-  resolved "https://registry.npmjs.org/react-feather/-/react-feather-2.0.10.tgz"
-  integrity sha512-BLhukwJ+Z92Nmdcs+EMw6dy1Z/VLiJTzEQACDUEnWMClhYnFykJCGWQx+NmwP/qQHGX/5CzQ+TGi8ofg2+HzVQ==
-  dependencies:
-    prop-types "^15.7.2"
 
 react-is@^16.13.1:
   version "16.13.1"

@@ -1,5 +1,5 @@
 import { memo, useState, useEffect, useRef } from "react";
-import { X } from "react-feather";
+import { X } from "@phosphor-icons/react";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
 import { CaretRight, FileText } from "@phosphor-icons/react";

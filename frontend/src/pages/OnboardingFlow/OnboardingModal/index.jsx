@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X } from "react-feather";
+import { X } from "@phosphor-icons/react";
 import LLMSelection from "./Steps/LLMSelection";
 import VectorDatabaseConnection from "./Steps/VectorDatabaseConnection";
 import AppearanceSetup from "./Steps/AppearanceSetup";
