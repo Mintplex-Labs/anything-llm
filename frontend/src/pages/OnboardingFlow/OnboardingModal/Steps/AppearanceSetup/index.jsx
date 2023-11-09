@@ -5,7 +5,7 @@ import useLogo from "../../../../../hooks/useLogo";
 import { Plus } from "@phosphor-icons/react";
 import showToast from "../../../../../utils/toast";
 
-function AppearanceSetup({ nextStep }) {
+function AppearanceSetup({ prevStep, nextStep }) {
   const { logo: _initLogo } = useLogo();
   const [logo, setLogo] = useState("");
   const [isDefaultLogo, setIsDefaultLogo] = useState(true);
@@ -57,7 +57,7 @@ function AppearanceSetup({ nextStep }) {
   };
 
   return (
-    <div>
+    <div className="w-full">
       <div className="flex flex-col w-full px-10 py-12">
         <div className="flex flex-col gap-y-2">
           <h2 className="text-white text-sm font-medium">Custom Logo</h2>
@@ -109,20 +109,23 @@ function AppearanceSetup({ nextStep }) {
         </div>
       </div>
       <div className="flex w-full justify-between items-center p-6 space-x-6 border-t rounded-b border-gray-500/50">
-        <div className="w-96 text-white text-opacity-80 text-xs font-base">
-          Want to customize the automatic messages in your chat? Find more
-          customization options on the appearance settings page.
-        </div>
+        <button
+          onClick={prevStep}
+          type="button"
+          className="px-4 py-2 rounded-lg text-white hover:bg-sidebar"
+        >
+          Back
+        </button>
         <div className="flex gap-2">
           <button
-            onClick={nextStep}
+            onClick={() => nextStep("user_mode_setup")}
             type="button"
             className="px-4 py-2 rounded-lg text-white hover:bg-sidebar"
           >
             Skip
           </button>
           <button
-            onClick={nextStep}
+            onClick={() => nextStep("user_mode_setup")}
             type="button"
             className="border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
           >

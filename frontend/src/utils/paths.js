@@ -61,6 +61,9 @@ export default {
     apiKeys: () => {
       return "/general/api-keys";
     },
+    chats: () => {
+      return "/general/workspace-chats";
+    },
   },
   admin: {
     system: () => {

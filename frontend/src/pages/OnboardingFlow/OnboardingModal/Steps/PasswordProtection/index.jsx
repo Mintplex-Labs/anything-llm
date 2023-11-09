@@ -7,7 +7,7 @@ import {
 } from "../../../../../utils/constants";
 import debounce from "lodash.debounce";
 
-function PasswordProtection({ goToStep, prevStep }) {
+function PasswordProtection({ nextStep, prevStep }) {
   const [password, setPassword] = useState("");
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,12 +32,12 @@ function PasswordProtection({ goToStep, prevStep }) {
     window.localStorage.removeItem(AUTH_TIMESTAMP);
     window.localStorage.setItem(AUTH_TOKEN, token);
 
-    goToStep(7);
+    nextStep("data_handling");
     return;
   };
 
   const handleSkip = () => {
-    goToStep(7);
+    nextStep("data_handling");
   };
 
   const setNewPassword = (e) => setPassword(e.target.value);

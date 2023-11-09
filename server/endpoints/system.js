@@ -38,6 +38,8 @@ const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
 const { ApiKey } = require("../models/apiKeys");
 const { getCustomModels } = require("../utils/helpers/customModels");
+const { WorkspaceChats } = require("../models/workspaceChats");
+const { Workspace } = require("../models/workspace");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -643,6 +645,134 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error(error);
         response.status(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/workspace-chats",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (
+          response.locals.multiUserMode &&
+          response.locals.user?.role !== "admin"
+        ) {
+          return response.sendStatus(401).end();
+        }
+
+        const { offset = 0, limit = 20 } = reqBody(request);
+        const chats = await WorkspaceChats.whereWithData(
+          {},
+          limit,
+          offset * limit,
+          { id: "desc" }
+        );
+        const totalChats = await WorkspaceChats.count();
+        const hasPages = totalChats > (offset + 1) * limit;
+
+        response.status(200).json({ chats: chats, hasPages, totalChats });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/system/workspace-chats/:id",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (
+          response.locals.multiUserMode &&
+          response.locals.user?.role !== "admin"
+        ) {
+          return response.sendStatus(401).end();
+        }
+
+        const { id } = request.params;
+        await WorkspaceChats.delete({ id: Number(id) });
+        response.status(200).json({ success, error });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/system/export-chats",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        if (
+          response.locals.multiUserMode &&
+          response.locals.user?.role !== "admin"
+        ) {
+          return response.sendStatus(401).end();
+        }
+
+        const chats = await WorkspaceChats.whereWithData({}, null, null, {
+          id: "asc",
+        });
+        const workspaceIds = [
+          ...new Set(chats.map((chat) => chat.workspaceId)),
+        ];
+
+        const workspacesWithPrompts = await Promise.all(
+          workspaceIds.map((id) => Workspace.get({ id: Number(id) }))
+        );
+
+        const workspacePromptsMap = workspacesWithPrompts.reduce(
+          (acc, workspace) => {
+            acc[workspace.id] = workspace.openAiPrompt;
+            return acc;
+          },
+          {}
+        );
+
+        const workspaceChatsMap = chats.reduce((acc, chat) => {
+          const { prompt, response, workspaceId } = chat;
+          const responseJson = JSON.parse(response);
+
+          if (!acc[workspaceId]) {
+            acc[workspaceId] = {
+              messages: [
+                {
+                  role: "system",
+                  content:
+                    workspacePromptsMap[workspaceId] ||
+                    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
+                },
+              ],
+            };
+          }
+
+          acc[workspaceId].messages.push(
+            {
+              role: "user",
+              content: prompt,
+            },
+            {
+              role: "assistant",
+              content: responseJson.text,
+            }
+          );
+
+          return acc;
+        }, {});
+
+        // Convert to JSONL
+        const jsonl = Object.values(workspaceChatsMap)
+          .map((workspaceChats) => JSON.stringify(workspaceChats))
+          .join("\n");
+
+        response.setHeader("Content-Type", "application/jsonl");
+        response.status(200).send(jsonl);
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
       }
     }
   );

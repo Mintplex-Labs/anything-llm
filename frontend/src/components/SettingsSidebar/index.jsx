@@ -91,7 +91,7 @@ export default function SettingsSidebar() {
                       icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
                     />
                     <Option
-                      href={paths.admin.chats()}
+                      href={paths.general.chats()}
                       btnText="Workspace Chat"
                       icon={
                         <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
@@ -131,6 +131,15 @@ export default function SettingsSidebar() {
                   btnText="Export or Import"
                   icon={<DownloadSimple className="h-5 w-5 flex-shrink-0" />}
                 />
+                {!user && (
+                  <Option
+                    href={paths.general.chats()}
+                    btnText="Chat History"
+                    icon={
+                      <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
+                    }
+                  />
+                )}
                 <Option
                   href={paths.general.security()}
                   btnText="Security"
@@ -292,17 +301,17 @@ export function SidebarMobileHeader() {
                         btnText="Workspaces"
                         icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
                       />
-                      <Option
-                        href={paths.admin.chats()}
-                        btnText="Workspace Chat"
-                        icon={
-                          <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
-                        }
-                      />
                     </>
                   )}
 
                   {/* General Settings */}
+                  <Option
+                    href={paths.general.chats()}
+                    btnText="Workspace Chat"
+                    icon={
+                      <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
+                    }
+                  />
                   <Option
                     href={paths.general.appearance()}
                     btnText="Appearance"

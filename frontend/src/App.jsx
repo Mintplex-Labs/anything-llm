@@ -12,8 +12,8 @@ const WorkspaceChat = lazy(() => import("./pages/WorkspaceChat"));
 const AdminUsers = lazy(() => import("./pages/Admin/Users"));
 const AdminInvites = lazy(() => import("./pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("./pages/Admin/Workspaces"));
-const AdminChats = lazy(() => import("./pages/Admin/Chats"));
 const AdminSystem = lazy(() => import("./pages/Admin/System"));
+const GeneralChats = lazy(() => import("./pages/GeneralSettings/Chats"));
 const GeneralAppearance = lazy(() =>
   import("./pages/GeneralSettings/Appearance")
 );
@@ -77,6 +77,10 @@ export default function App() {
             path="/general/api-keys"
             element={<PrivateRoute Component={GeneralApiKeys} />}
           />
+          <Route
+            path="/general/workspace-chats"
+            element={<PrivateRoute Component={GeneralChats} />}
+          />
 
           {/* Admin Routes */}
           <Route
@@ -95,11 +99,6 @@ export default function App() {
             path="/admin/workspaces"
             element={<AdminRoute Component={AdminWorkspaces} />}
           />
-          <Route
-            path="/admin/workspace-chats"
-            element={<AdminRoute Component={AdminChats} />}
-          />
-
           {/* Onboarding Flow */}
           <Route path="/onboarding" element={<OnboardingFlow />} />
         </Routes>
