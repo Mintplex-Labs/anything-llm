@@ -339,6 +339,40 @@ const System = {
         return { models: [], error: e.message };
       });
   },
+  chats: async (offset = 0) => {
+    return await fetch(`${API_BASE}/system/workspace-chats`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ offset }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  deleteChat: async (chatId) => {
+    return await fetch(`${API_BASE}/system/workspace-chats/${chatId}`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+  exportChats: async () => {
+    return await fetch(`${API_BASE}/system/export-chats`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.text())
+      .catch((e) => {
+        console.error(e);
+        return null;
+      });
+  },
 };
 
 export default System;
