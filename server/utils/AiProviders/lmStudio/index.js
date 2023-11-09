@@ -1,22 +1,37 @@
-//  hybrid of openAi embedder and openAI API for LMStudio
+const { chatPrompt } = require("../../chats");
+
+//  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
   constructor(embedder = null) {
-    if (!process.env.LMSTUDIO_BASE_APTH)
+    if (!process.env.LMSTUDIO_BASE_PATH)
       throw new Error("No LMStudio API Base Path was set.");
 
     const { Configuration, OpenAIApi } = require("openai");
-    const basePath = process.env.LMSTUDIO_BASE_APTH; // ex: "https://api.openai.com/v1"
-
     const config = new Configuration({
-      basePath: basePath.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
+      basePath: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
     });
-    this.openai = new OpenAIApi(config);
+    this.lmstudio = new OpenAIApi(config);
+    this.model = process.env.LMSTUDIO_MODEL_PREF;
+    this.limits = {
+      history: this.promptWindowLimit() * 0.15,
+      system: this.promptWindowLimit() * 0.15,
+      user: this.promptWindowLimit() * 0.7,
+    };
 
     if (!embedder)
       throw new Error(
         "INVALID LM STUDIO SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use LMStudio as your LLM."
       );
     this.embedder = embedder;
+  }
+
+  // Ensure the user set a value for the token limit
+  // and if undefined - assume 4096 window.
+  promptWindowLimit() {
+    const limit = process.env.LMSTUDIO_MODEL_TOKEN_LIMIT;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No LMStudio token context limit was set.");
+    return Number(limit);
   }
 
   async isValidChatCompletionModel(_ = "") {
@@ -33,7 +48,7 @@ class LMStudioLLM {
     const prompt = {
       role: "system",
       content: `${systemPrompt}
-    Context:
+Context:
     ${contextTexts
       .map((text, i) => {
         return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
@@ -48,23 +63,25 @@ class LMStudioLLM {
     return { safe: true, reasons: [] };
   }
 
-  async sendChat(chatHistory = [], prompt, workspace = {}) {
-    const model = "model-name-stub"; // TODO: get model name from API
-    if (!model)
+  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
+    if (!this.model)
       throw new Error(
-        `LMStudio chat: ${model} is not valid for chat completion!`
+        `LMStudio chat: ${model} is not valid or defined for chat completion!`
       );
 
-    const textResponse = await this.openai
+    const textResponse = await this.lmstudio
       .createChatCompletion({
-        model,
+        model: this.model,
         temperature: Number(workspace?.openAiTemp ?? 0.7),
         n: 1,
-        messages: [
-          { role: "system", content: "" },
-          ...chatHistory,
-          { role: "user", content: prompt },
-        ],
+        messages: await this.compressMessages(
+          {
+            systemPrompt: chatPrompt(workspace),
+            userPrompt: prompt,
+            chatHistory,
+          },
+          rawHistory
+        ),
       })
       .then((json) => {
         const res = json.data;
@@ -84,14 +101,13 @@ class LMStudioLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const model = "model-name-stub"; // TODO: get model name from API
-    if (!model)
+    if (!this.model)
       throw new Error(
-        `LMStudio chat: ${model} is not valid for chat completion!`
+        `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
-    const { data } = await this.openai.createChatCompletion({
-      model,
+    const { data } = await this.lmstudio.createChatCompletion({
+      model: this.model,
       messages,
       temperature,
     });
@@ -106,6 +122,12 @@ class LMStudioLLM {
   }
   async embedChunks(textChunks = []) {
     return await this.embedder.embedChunks(textChunks);
+  }
+
+  async compressMessages(promptArgs = {}, rawHistory = []) {
+    const { messageArrayCompressor } = require("../../helpers/chat");
+    const messageArray = this.constructPrompt(promptArgs);
+    return await messageArrayCompressor(this, messageArray, rawHistory);
   }
 }
 
