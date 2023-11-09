@@ -82,12 +82,11 @@ const SystemSettings = {
           }
         : {}),
 
-      ...(llmProvider === "localai"
+      ...(llmProvider === "lmstudio"
         ? {
-            // LocalAiApiKey: !!process.env.LOCALAI_API_KEY, // not used for now
-            LocalAiBasePath: process.env.LOCALAI_BASE_PATH,
+            LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
 
-            // For embedding credentials when localai is selected.
+            // For embedding credentials when lmstudio is selected.
             OpenAiKey: !!process.env.OPEN_AI_KEY,
             AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
             AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,

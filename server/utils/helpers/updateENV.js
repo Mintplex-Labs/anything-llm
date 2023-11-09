@@ -44,10 +44,10 @@ const KEY_MAPPING = {
     checks: [isNotEmpty, validAnthropicModel],
   },
 
-  // LocalAI Settings
-  LocalAiBasePath: {
-    envKey: "LOCALAI_BASE_PATH",
-    checks: [isNotEmpty, validLocalAiBasePath],
+  // LMStudio Settings
+  LMStudioBasePath: {
+    envKey: "LMSTUDIO_BASE_PATH",
+    checks: [isNotEmpty, validLMStudioBasePath],
   },
 
   EmbeddingEngine: {
@@ -142,10 +142,10 @@ function validAnthropicApiKey(input = "") {
     : "Anthropic Key must start with sk-ant-";
 }
 
-function validLocalAiBasePath(input = "") {
+function validLMStudioBasePath(input = "") {
   try {
     new URL(input);
-    if (!input.includes("v1")) return "URL must include v1";
+    if (!input.includes("v1")) return "URL must include /v1";
     return null;
   } catch {
     return "Not a valid URL";
@@ -153,7 +153,7 @@ function validLocalAiBasePath(input = "") {
 }
 
 function supportedLLM(input = "") {
-  return ["openai", "azure", "anthropic", "localai"].includes(input);
+  return ["openai", "azure", "anthropic", "lmstudio"].includes(input);
 }
 
 function validAnthropicModel(input = "") {

@@ -35,10 +35,10 @@ function getLLMProvider() {
       const { AnthropicLLM } = require("../AiProviders/anthropic");
       embedder = getEmbeddingEngineSelection();
       return new AnthropicLLM(embedder);
-    case "localai":
-      const { LocalAiLLM } = require("../AiProviders/localAi");
+    case "lmstudio":
+      const { LMStudioLLM } = require("../AiProviders/lmStudio");
       embedder = getEmbeddingEngineSelection();
-      return new LocalAiLLM(embedder);
+      return new LMStudioLLM(embedder);
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
   }

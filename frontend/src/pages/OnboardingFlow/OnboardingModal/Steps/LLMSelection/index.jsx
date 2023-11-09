@@ -2,14 +2,14 @@ import React, { memo, useEffect, useState } from "react";
 import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
 import AnthropicLogo from "../../../../../media/llmprovider/anthropic.png";
-import LocalAiLogo from "../../../../../media/llmprovider/localai.png";
+import LMStudioLogo from "../../../../../media/llmprovider/lmstudio.png";
 import System from "../../../../../models/system";
 import PreLoader from "../../../../../components/Preloader";
 import LLMProviderOption from "../../../../../components/LLMSelection/LLMProviderOption";
 import OpenAiOptions from "../../../../../components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "../../../../../components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "../../../../../components/LLMSelection/AnthropicAiOptions";
-import LocalAiOptions from "../../../../../components/LLMSelection/LocalAiOptions";
+import LMStudioOptions from "../../../../../components/LLMSelection/LMStudioOptions";
 
 function LLMSelection({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");
@@ -48,7 +48,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
     switch (data.LLMProvider) {
       case "anthropic":
         return nextStep("embedding_preferences");
-      case "localai":
+      case "lmstudio":
         return nextStep("embedding_preferences");
       default:
         return nextStep("vector_database");
@@ -99,12 +99,12 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               onClick={updateLLMChoice}
             />
             <LLMProviderOption
-              name="Local AI"
-              value="localai"
+              name="LM Studio"
+              value="lmstudio"
               link="lmstudio.ai"
               description="Discover, download, and run local LLMs."
-              checked={llmChoice === "localai"}
-              image={LocalAiLogo}
+              checked={llmChoice === "lmstudio"}
+              image={LMStudioLogo}
               onClick={updateLLMChoice}
             />
           </div>
@@ -114,7 +114,9 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
             {llmChoice === "anthropic" && (
               <AnthropicAiOptions settings={settings} />
             )}
-            {llmChoice === "localai" && <LocalAiOptions settings={settings} />}
+            {llmChoice === "lmstudio" && (
+              <LMStudioOptions settings={settings} />
+            )}
           </div>
         </div>
         <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
