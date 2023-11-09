@@ -161,7 +161,7 @@ const WorkspaceChats = {
         const user = await User.get({ id: res.user_id });
         res.user = user
           ? { username: user.username }
-          : { username: "deleted user" };
+          : { username: "unknown user" };
       }
 
       return results;
