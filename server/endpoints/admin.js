@@ -251,56 +251,6 @@ function adminEndpoints(app) {
     }
   );
 
-  app.post(
-    "/admin/workspace-chats",
-    [validatedRequest],
-    async (request, response) => {
-      try {
-        const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
-          response.sendStatus(401).end();
-          return;
-        }
-
-        const { offset = 0, limit = 20 } = reqBody(request);
-        const chats = await WorkspaceChats.whereWithData(
-          {},
-          limit,
-          offset * limit,
-          { id: "desc" }
-        );
-        const totalChats = await WorkspaceChats.count();
-        const hasPages = totalChats > (offset + 1) * limit;
-
-        response.status(200).json({ chats: chats, hasPages, totalChats });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.delete(
-    "/admin/workspace-chats/:id",
-    [validatedRequest],
-    async (request, response) => {
-      try {
-        const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
-          response.sendStatus(401).end();
-          return;
-        }
-
-        const { id } = request.params;
-        await WorkspaceChats.delete({ id: Number(id) });
-        response.status(200).json({ success, error });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
   app.get(
     "/admin/system-preferences",
     [validatedRequest],

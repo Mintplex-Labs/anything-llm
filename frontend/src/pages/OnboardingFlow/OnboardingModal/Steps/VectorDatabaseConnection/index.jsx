@@ -21,7 +21,7 @@ function VectorDatabaseConnection({ nextStep, prevStep, currentStep }) {
       setVectorDB(_settings?.VectorDB || "lancedb");
       setLoading(false);
     }
-    if (currentStep === 2) {
+    if (currentStep === "vector_database") {
       fetchKeys();
     }
   }, [currentStep]);
@@ -41,7 +41,7 @@ function VectorDatabaseConnection({ nextStep, prevStep, currentStep }) {
       alert(`Failed to save settings: ${error}`, "error");
       return;
     }
-    nextStep();
+    nextStep("appearance");
     return;
   };
 

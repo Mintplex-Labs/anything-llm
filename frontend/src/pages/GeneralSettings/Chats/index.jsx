@@ -5,12 +5,33 @@ import Sidebar, {
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import Admin from "../../../models/admin";
 import useQuery from "../../../hooks/useQuery";
 import ChatRow from "./ChatRow";
+import showToast from "../../../utils/toast";
+import System from "../../../models/system";
 
 const PAGE_SIZE = 20;
-export default function AdminChats() {
+export default function WorkspaceChats() {
+  const handleDumpChats = async () => {
+    const chats = await System.exportChats();
+    if (chats) {
+      const blob = new Blob([chats], { type: "application/jsonl" });
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = "chats.jsonl";
+      document.body.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(link.href);
+      document.body.removeChild(link);
+      showToast(
+        "Chats exported successfully. Note: Must have at least 10 chats to be valid for OpenAI fine tuning.",
+        "success"
+      );
+    } else {
+      showToast("Failed to export chats.", "error");
+    }
+  };
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       {!isMobile && <Sidebar />}
@@ -25,6 +46,12 @@ export default function AdminChats() {
               <p className="text-2xl font-semibold text-white">
                 Workspace Chats
               </p>
+              <button
+                onClick={handleDumpChats}
+                className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
+              >
+                Export Chats to JSONL
+              </button>
             </div>
             <p className="text-sm font-base text-white text-opacity-60">
               These are all the recorded chats and messages that have been sent
@@ -54,7 +81,7 @@ function ChatsContainer() {
 
   useEffect(() => {
     async function fetchChats() {
-      const { chats: _chats, hasPages = false } = await Admin.chats(offset);
+      const { chats: _chats, hasPages = false } = await System.chats(offset);
       setChats(_chats);
       setCanNext(hasPages);
       setLoading(false);
@@ -105,9 +132,8 @@ function ChatsContainer() {
           </tr>
         </thead>
         <tbody>
-          {chats.map((chat) => (
-            <ChatRow key={chat.id} chat={chat} />
-          ))}
+          {!!chats &&
+            chats.map((chat) => <ChatRow key={chat.id} chat={chat} />)}
         </tbody>
       </table>
       <div className="flex w-full justify-between items-center">

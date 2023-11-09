@@ -8,6 +8,7 @@ import PasswordProtection from "./Steps/PasswordProtection";
 import MultiUserSetup from "./Steps/MultiUserSetup";
 import CreateFirstWorkspace from "./Steps/CreateFirstWorkspace";
 import EmbeddingSelection from "./Steps/EmbeddingSelection";
+import DataHandling from "./Steps/DataHandling";
 
 const DIALOG_ID = "onboarding-modal";
 
@@ -16,46 +17,53 @@ function hideModal() {
 }
 
 const STEPS = {
-  1: {
+  llm_preference: {
     title: "LLM Preference",
     description:
       "These are the credentials and settings for your preferred LLM chat & embedding provider.",
     component: LLMSelection,
   },
-  2: {
+  vector_database: {
     title: "Vector Database",
     description:
       "These are the credentials and settings for how your AnythingLLM instance will function.",
     component: VectorDatabaseConnection,
   },
-  3: {
+  appearance: {
     title: "Appearance",
-    description: "Customize the appearance of your AnythingLLM instance.",
+    description:
+      "Customize the appearance of your AnythingLLM instance.\nFind more customization options on the appearance settings page.",
     component: AppearanceSetup,
   },
-  4: {
+  user_mode_setup: {
     title: "User Mode Setup",
     description: "Choose how many people will be using your instance.",
     component: UserModeSelection,
   },
-  5: {
+  password_protection: {
     title: "Password Protect",
     description:
       "Protect your instance with a password. It is important to save this password as it cannot be recovered.",
     component: PasswordProtection,
   },
-  6: {
+  multi_user_mode: {
     title: "Multi-User Mode",
     description:
       "Setup your instance to support your team by activating multi-user mode.",
     component: MultiUserSetup,
   },
-  7: {
+  data_handling: {
+    title: "Data Handling",
+    description:
+      "We are committed to transparency and control when it comes to your personal data.",
+    component: DataHandling,
+  },
+  create_workspace: {
     title: "Create Workspace",
     description: "To get started, create a new workspace.",
     component: CreateFirstWorkspace,
   },
-  8: {
+  embedding_preferences: {
     title: "Embedding Preference",
     description:
       "Due to your LLM selection you need to set up a provider for embedding files and text.",
@@ -65,19 +73,26 @@ const STEPS = {
 
 export const OnboardingModalId = DIALOG_ID;
 export default function OnboardingModal() {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState("llm_preference");
+  const [history, setHistory] = useState(["llm_preference"]);
 
-  const nextStep = () => {
-    setCurrentStep((prevStep) => prevStep + 1);
+  const nextStep = (stepKey) => {
+    setCurrentStep(stepKey);
+    setHistory([...history, stepKey]);
   };
 
   const prevStep = () => {
-    if (currentStep === 1) return hideModal();
-    setCurrentStep((prevStep) => prevStep - 1);
-  };
+    const currentStepIdx = history.indexOf(currentStep);
+    if (currentStepIdx === -1 || currentStepIdx === 0) {
+      setCurrentStep("llm_preference");
+      setHistory(["llm_preference"]);
+      return hideModal();
+    }
 
-  const goToStep = (step) => {
-    setCurrentStep(step);
+    const prevStep = history[currentStepIdx - 1];
+    const _history = [...history].slice(0, currentStepIdx);
+    setCurrentStep(prevStep);
+    setHistory(_history);
   };
 
   const { component: StepComponent, ...step } = STEPS[currentStep];
@@ -88,7 +103,7 @@ export default function OnboardingModal() {
           <div className="flex items-start justify-between p-8 border-b rounded-t border-gray-500/50">
             <div className="flex flex-col gap-2">
               <h3 className="text-xl font-semibold text-white">{step.title}</h3>
-              <p className="text-sm font-base text-white text-opacity-60">
+              <p className="text-sm font-base text-white text-opacity-60 whitespace-pre">
                 {step.description || ""}
               </p>
             </div>
@@ -106,7 +121,6 @@ export default function OnboardingModal() {
               currentStep={currentStep}
               nextStep={nextStep}
               prevStep={prevStep}
-              goToStep={goToStep}
             />
           </div>
         </div>
