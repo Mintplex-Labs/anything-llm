@@ -1,7 +1,12 @@
-import { Chats, Gear, PaperPlaneRight, Quotes } from "@phosphor-icons/react";
+import {
+  Chats,
+  CircleNotch,
+  Gear,
+  PaperPlaneRight,
+  Quotes,
+} from "@phosphor-icons/react";
 import React, { useState, useRef } from "react";
 import { isMobile } from "react-device-detect";
-import { Loader } from "react-feather";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../../Modals/MangeWorkspace";
@@ -72,7 +77,7 @@ export default function PromptInput({
                 className="inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
               >
                 {buttonDisabled ? (
-                  <Loader className="w-6 h-6 animate-spin" />
+                  <CircleNotch className="w-6 h-6 animate-spin" />
                 ) : (
                   <PaperPlaneRight className="w-7 h-7 my-3" weight="fill" />
                 )}

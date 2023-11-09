@@ -8,11 +8,13 @@ import showToast from "../../../utils/toast";
 import OpenAiLogo from "../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../media/llmprovider/azure.png";
 import AnthropicLogo from "../../../media/llmprovider/anthropic.png";
+import LMStudioLogo from "../../../media/llmprovider/LMStudio.png";
 import PreLoader from "../../../components/Preloader";
 import LLMProviderOption from "../../../components/LLMSelection/LLMProviderOption";
 import OpenAiOptions from "../../../components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "../../../components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "../../../components/LLMSelection/AnthropicAiOptions";
+import LMStudioOptions from "../../../components/LLMSelection/LMStudioOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -130,6 +132,15 @@ export default function GeneralLLMPreference() {
                   image={AnthropicLogo}
                   onClick={updateLLMChoice}
                 />
+                <LLMProviderOption
+                  name="LM Studio"
+                  value="lmstudio"
+                  link="lmstudio.ai"
+                  description="Discover, download, and run thousands of cutting edge LLMs in a few clicks."
+                  checked={llmChoice === "lmstudio"}
+                  image={LMStudioLogo}
+                  onClick={updateLLMChoice}
+                />
               </div>
               <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
                 {llmChoice === "openai" && (
@@ -140,6 +151,9 @@ export default function GeneralLLMPreference() {
                 )}
                 {llmChoice === "anthropic" && (
                   <AnthropicAiOptions settings={settings} showAlert={true} />
+                )}
+                {llmChoice === "lmstudio" && (
+                  <LMStudioOptions settings={settings} showAlert={true} />
                 )}
               </div>
             </div>

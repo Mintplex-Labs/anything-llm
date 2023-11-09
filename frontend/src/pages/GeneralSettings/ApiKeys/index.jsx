@@ -5,7 +5,7 @@ import Sidebar, {
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { PlusCircle } from "react-feather";
+import { PlusCircle } from "@phosphor-icons/react";
 import Admin from "../../../models/admin";
 import ApiKeyRow from "./ApiKeyRow";
 import NewApiKeyModal, { NewApiKeyModalId } from "./NewApiKeyModal";

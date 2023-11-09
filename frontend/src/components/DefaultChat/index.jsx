@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { GitHub, GitMerge, Mail, Plus } from "react-feather";
+import {
+  GithubLogo,
+  GitMerge,
+  EnvelopeSimple,
+  Plus,
+} from "@phosphor-icons/react";
+
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
@@ -283,14 +289,14 @@ export default function DefaultChatContainer() {
                   target="_blank"
                   className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
                 >
-                  <GitHub className="h-4 w-4" />
+                  <GithubLogo className="h-4 w-4" />
                   <p>Star on GitHub</p>
                 </a>
                 <a
                   href={paths.mailToMintplex()}
                   className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
                 >
-                  <Mail className="h-4 w-4" />
+                  <EnvelopeSimple className="h-4 w-4" />
                   <p>Contact Mintplex Labs</p>
                 </a>
               </div>
