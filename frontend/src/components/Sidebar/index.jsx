@@ -15,6 +15,7 @@ import ActiveWorkspaces from "./ActiveWorkspaces";
 import paths from "../../utils/paths";
 import { USER_BACKGROUND_COLOR } from "../../utils/constants";
 import useLogo from "../../hooks/useLogo";
+import useUser from "../../hooks/useUser";
 
 export default function Sidebar() {
   const { logo } = useLogo();
@@ -24,6 +25,7 @@ export default function Sidebar() {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
+  const { user } = useUser();
 
   return (
     <>
@@ -43,10 +45,11 @@ export default function Sidebar() {
                 style={{ objectFit: "contain" }}
               />
             </div>
-            <div className="flex gap-x-2 items-center text-slate-200">
-              {/* <AdminHome /> */}
-              <SettingsButton />
-            </div>
+            {(user?.role === "admin" || user?.role === "manager") && (
+              <div className="flex gap-x-2 items-center text-slate-200">
+                <SettingsButton />
+              </div>
+            )}
           </div>
 
           {/* Primary Body */}
