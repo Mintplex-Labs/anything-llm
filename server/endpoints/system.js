@@ -41,6 +41,8 @@ const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { Workspace } = require("../models/workspace");
 
+const ROLES = ["admin", "manager"];
+
 function systemEndpoints(app) {
   if (!app) return;
 
@@ -434,8 +436,7 @@ function systemEndpoints(app) {
       try {
         if (
           response.locals.multiUserMode &&
-          response.locals.user?.role !== "admin" &&
-          response.locals.user?.role !== "manager"
+          !ROLES.includes(response.locals.user?.role)
         ) {
           return response.sendStatus(401).end();
         }
@@ -478,8 +479,7 @@ function systemEndpoints(app) {
       try {
         if (
           response.locals.multiUserMode &&
-          response.locals.user?.role !== "admin" &&
-          response.locals.user?.role !== "manager"
+          !ROLES.includes(response.locals.user?.role)
         ) {
           return response.sendStatus(401).end();
         }
@@ -547,8 +547,7 @@ function systemEndpoints(app) {
       try {
         if (
           response.locals.multiUserMode &&
-          response.locals.user?.role !== "admin" &&
-          response.locals.user?.role !== "manager"
+          !ROLES.includes(response.locals.user?.role)
         ) {
           return response.sendStatus(401).end();
         }
@@ -659,8 +658,7 @@ function systemEndpoints(app) {
       try {
         if (
           response.locals.multiUserMode &&
-          response.locals.user?.role !== "admin" &&
-          response.locals.user?.role !== "manager"
+          !ROLES.includes(response.locals.user?.role)
         ) {
           return response.sendStatus(401).end();
         }
@@ -690,8 +688,7 @@ function systemEndpoints(app) {
       try {
         if (
           response.locals.multiUserMode &&
-          response.locals.user?.role !== "admin" &&
-          response.locals.user?.role !== "manager"
+          !ROLES.includes(response.locals.user?.role)
         ) {
           return response.sendStatus(401).end();
         }
@@ -713,8 +710,7 @@ function systemEndpoints(app) {
       try {
         if (
           response.locals.multiUserMode &&
-          response.locals.user?.role !== "admin" &&
-          response.locals.user?.role !== "manager"
+          !ROLES.includes(response.locals.user?.role)
         ) {
           return response.sendStatus(401).end();
         }
