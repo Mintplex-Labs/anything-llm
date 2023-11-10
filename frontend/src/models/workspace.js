@@ -1,5 +1,7 @@
 import { API_BASE } from "../utils/constants";
 import { baseHeaders } from "../utils/request";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { v4 } from "uuid";
 
 const Workspace = {
   new: async function (data = {}) {
@@ -56,6 +58,45 @@ const Workspace = {
       .then((res) => res.history || [])
       .catch(() => []);
     return history;
+  },
+  streamChat: async function ({ slug }, message, mode = "query", handleChat) {
+    const ctrl = new AbortController();
+    await fetchEventSource(`${API_BASE}/workspace/${slug}/stream-chat`, {
+      method: "POST",
+      body: JSON.stringify({ message, mode }),
+      headers: baseHeaders(),
+      signal: ctrl.signal,
+      async onopen(response) {
+        if (response.ok) {
+          return; // everything's good
+        } else if (
+          response.status >= 400 &&
+          response.status < 500 &&
+          response.status !== 429
+        ) {
+          throw new Error("Invalid Status code response.");
+        } else {
+          throw new Error("Unknown error");
+        }
+      },
+      async onmessage(msg) {
+        try {
+          const chatResult = JSON.parse(msg.data);
+          handleChat(chatResult);
+        } catch {}
+      },
+      onerror(err) {
+        handleChat({
+          id: v4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: `An error occurred while streaming response. ${err.message}`,
+        });
+        ctrl.abort();
+      },
+    });
   },
   sendChat: async function ({ slug }, message, mode = "query") {
     const chatResult = await fetch(`${API_BASE}/workspace/${slug}/chat`, {

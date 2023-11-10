@@ -53,8 +53,10 @@ export default function ChatHistory({ history = [], workspace }) {
     >
       {history.map((props, index) => {
         const isLastMessage = index === history.length - 1;
+        const isLastBotReply =
+          index === history.length - 1 && props.role === "assistant";
 
-        if (props.role === "assistant" && props.animate) {
+        if (isLastBotReply && props.animate) {
           return (
             <PromptReply
               key={props.uuid}

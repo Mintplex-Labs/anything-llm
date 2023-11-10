@@ -27,6 +27,10 @@ class AnthropicLLM {
     this.answerKey = v4().split("-")[0];
   }
 
+  streamingEnabled() {
+    return "streamChat" in this && "streamGetChatCompletion" in this;
+  }
+
   promptWindowLimit() {
     switch (this.model) {
       case "claude-instant-1":

@@ -12,6 +12,7 @@
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@metamask/jazzicon": "^2.0.0",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@phosphor-icons/react": "^2.0.13",
     "buffer": "^6.0.3",
     "he": "^1.2.0",
