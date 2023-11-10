@@ -14,6 +14,7 @@ function useIsAuthenticated() {
   const [isAuthd, setIsAuthed] = useState(null);
   const [shouldRedirectToOnboarding, setShouldRedirectToOnboarding] =
     useState(false);
+  const [multiUserMode, setMultiUserMode] = useState(false);
 
   useEffect(() => {
     const validateSession = async () => {
@@ -24,6 +25,8 @@ function useIsAuthenticated() {
         AnthropicApiKey = false,
         AzureOpenAiKey = false,
       } = await System.keys();
+
+      setMultiUserMode(MultiUserMode);
 
       // Check for the onboarding redirect condition
       if (
@@ -77,11 +80,11 @@ function useIsAuthenticated() {
     validateSession();
   }, []);
 
-  return { isAuthd, shouldRedirectToOnboarding };
+  return { isAuthd, shouldRedirectToOnboarding, multiUserMode };
 }
 
 export function AdminRoute({ Component }) {
-  const { isAuthd, shouldRedirectToOnboarding } = useIsAuthenticated();
+  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } = useIsAuthenticated();
   if (isAuthd === null) return <FullScreenLoader />;
 
   if (shouldRedirectToOnboarding) {
@@ -89,7 +92,7 @@ export function AdminRoute({ Component }) {
   }
 
   const user = userFromStorage();
-  return isAuthd && user?.role === "admin" ? (
+  return isAuthd && (user?.role === "admin" || !multiUserMode) ? (
     <UserMenu>
       <Component />
     </UserMenu>
@@ -99,7 +102,7 @@ export function AdminRoute({ Component }) {
 }
 
 export function ManagerRoute({ Component }) {
-  const { isAuthd, shouldRedirectToOnboarding } = useIsAuthenticated();
+  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } = useIsAuthenticated();
   if (isAuthd === null) return <FullScreenLoader />;
 
   if (shouldRedirectToOnboarding) {
@@ -107,7 +110,7 @@ export function ManagerRoute({ Component }) {
   }
 
   const user = userFromStorage();
-  return isAuthd && (user?.role === "manager" || user?.role === "admin") ? (
+  return isAuthd && ((user?.role === "manager" || user?.role === "admin") || !multiUserMode) ? (
     <UserMenu>
       <Component />
     </UserMenu>
