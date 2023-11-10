@@ -53,28 +53,28 @@ export default function App() {
 
           {/* Admin */}
           <Route
-            path="/general/llm-preference"
+            path="/settings/llm-preference"
             element={<AdminRoute Component={GeneralLLMPreference} />}
           />
           <Route
-            path="/general/embedding-preference"
+            path="/settings/embedding-preference"
             element={<AdminRoute Component={GeneralEmbeddingPreference} />}
           />
           <Route
-            path="/general/vector-database"
+            path="/settings/vector-database"
             element={<AdminRoute Component={GeneralVectorDatabase} />}
           />
           {/* Manager */}
           <Route
-            path="/general/export-import"
+            path="/settings/export-import"
             element={<ManagerRoute Component={GeneralExportImport} />}
           />
           <Route
-            path="/general/security"
+            path="/settings/security"
             element={<ManagerRoute Component={GeneralSecurity} />}
           />
           <Route
-            path="/general/appearance"
+            path="/settings/appearance"
             element={<ManagerRoute Component={GeneralAppearance} />}
           />
           <Route
@@ -82,23 +82,23 @@ export default function App() {
             element={<ManagerRoute Component={GeneralApiKeys} />}
           />
           <Route
-            path="/general/workspace-chats"
+            path="/settings/workspace-chats"
             element={<ManagerRoute Component={GeneralChats} />}
           />
           <Route
-            path="/admin/system-preferences"
+            path="/settings/system-preferences"
             element={<ManagerRoute Component={AdminSystem} />}
           />
           <Route
-            path="/admin/invites"
+            path="/settings/invites"
             element={<ManagerRoute Component={AdminInvites} />}
           />
           <Route
-            path="/admin/users"
+            path="/settings/users"
             element={<ManagerRoute Component={AdminUsers} />}
           />
           <Route
-            path="/admin/workspaces"
+            path="/settings/workspaces"
             element={<ManagerRoute Component={AdminWorkspaces} />}
           />
           {/* Onboarding Flow */}
