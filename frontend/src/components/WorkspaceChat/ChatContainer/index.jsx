@@ -6,7 +6,6 @@ import handleChat from "../../../utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
 
-const RESPONSE_MODE = "stream";
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
@@ -49,39 +48,21 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         return false;
       }
 
-      if (RESPONSE_MODE === "stream") {
-        await Workspace.streamChat(
-          workspace,
-          promptMessage.userMessage,
-          window.localStorage.getItem(
-            `workspace_chat_mode_${workspace.slug}`
-          ) ?? "chat",
-          (chatResult) =>
-            handleChat(
-              chatResult,
-              setLoadingResponse,
-              setChatHistory,
-              remHistory,
-              _chatHistory
-            )
-        );
-        return;
-      } else {
-        const chatResult = await Workspace.sendChat(
-          workspace,
-          promptMessage.userMessage,
-          window.localStorage.getItem(
-            `workspace_chat_mode_${workspace.slug}`
-          ) ?? "chat"
-        );
-        handleChat(
-          chatResult,
-          setLoadingResponse,
-          setChatHistory,
-          remHistory,
-          _chatHistory
-        );
-      }
+      await Workspace.streamChat(
+        workspace,
+        promptMessage.userMessage,
+        window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
+          "chat",
+        (chatResult) =>
+          handleChat(
+            chatResult,
+            setLoadingResponse,
+            setChatHistory,
+            remHistory,
+            _chatHistory
+          )
+      );
+      return;
     }
     loadingResponse === true && fetchReply();
   }, [loadingResponse, chatHistory, workspace]);

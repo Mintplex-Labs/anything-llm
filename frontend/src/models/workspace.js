@@ -98,20 +98,6 @@ const Workspace = {
       },
     });
   },
-  sendChat: async function ({ slug }, message, mode = "query") {
-    const chatResult = await fetch(`${API_BASE}/workspace/${slug}/chat`, {
-      method: "POST",
-      body: JSON.stringify({ message, mode }),
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return null;
-      });
-
-    return chatResult;
-  },
   all: async function () {
     const workspaces = await fetch(`${API_BASE}/workspaces`, {
       method: "GET",
@@ -151,6 +137,22 @@ const Workspace = {
 
     const data = await response.json();
     return { response, data };
+  },
+
+  // Deprecated
+  sendChat: async function ({ slug }, message, mode = "query") {
+    const chatResult = await fetch(`${API_BASE}/workspace/${slug}/chat`, {
+      method: "POST",
+      body: JSON.stringify({ message, mode }),
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return null;
+      });
+
+    return chatResult;
   },
 };
 
