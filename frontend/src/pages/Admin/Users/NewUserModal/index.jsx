@@ -94,7 +94,7 @@ export default function NewUserModal() {
                   >
                     <option value="default">Default</option>
                     <option value="manager">Manager</option>
-                    {user?.role === "admin" && (
+                    {(!user || user?.role === "admin") && (
                       <option value="admin">Administrator</option>
                     )}
                   </select>

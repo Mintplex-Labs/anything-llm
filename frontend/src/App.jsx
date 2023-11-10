@@ -78,7 +78,7 @@ export default function App() {
             element={<ManagerRoute Component={GeneralAppearance} />}
           />
           <Route
-            path="/general/api-keys"
+            path="/settings/api-keys"
             element={<ManagerRoute Component={GeneralApiKeys} />}
           />
           <Route

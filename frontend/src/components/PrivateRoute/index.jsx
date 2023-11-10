@@ -83,6 +83,8 @@ function useIsAuthenticated() {
   return { isAuthd, shouldRedirectToOnboarding, multiUserMode };
 }
 
+// Allows only admin to access the route and if in single user mode,
+// allows all users to access the route
 export function AdminRoute({ Component }) {
   const { isAuthd, shouldRedirectToOnboarding, multiUserMode } =
     useIsAuthenticated();
@@ -102,6 +104,8 @@ export function AdminRoute({ Component }) {
   );
 }
 
+// Allows manager and admin to access the route and if in single user mode,
+// allows all users to access the route
 export function ManagerRoute({ Component }) {
   const { isAuthd, shouldRedirectToOnboarding, multiUserMode } =
     useIsAuthenticated();

@@ -135,7 +135,6 @@ export default function SettingsSidebar() {
               </div>
             </div>
             <div>
-
               {/* Footer */}
               <div className="flex justify-center mt-2">
                 <div className="flex space-x-4">

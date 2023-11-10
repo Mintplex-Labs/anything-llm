@@ -10,16 +10,26 @@ const { getVectorDbClass } = require("../utils/helpers");
 const { userFromSession, reqBody } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 
+const ROLES = ["admin", "manager"];
+
 function adminEndpoints(app) {
   if (!app) return;
 
   app.get("/admin/users", [validatedRequest], async (request, response) => {
     try {
-      const user = await userFromSession(request, response);
-      if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        response.sendStatus(401).end();
-        return;
+      // const user = await userFromSession(request, response);
+      // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+      //   response.sendStatus(401).end();
+      //   return;
+      // }
+
+      if (
+        response.locals.multiUserMode &&
+        !ROLES.includes(response.locals.user?.role)
+      ) {
+        return response.sendStatus(401).end();
       }
+
       const users = (await User.where()).map((user) => {
         const { password, ...rest } = user;
         return rest;
@@ -36,10 +46,17 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
-        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          response.sendStatus(401).end();
-          return;
+        // const user = await userFromSession(request, response);
+        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+        //   response.sendStatus(401).end();
+        //   return;
+        // }
+
+        if (
+          response.locals.multiUserMode &&
+          !ROLES.includes(response.locals.user?.role)
+        ) {
+          return response.sendStatus(401).end();
         }
 
         const newUserParams = reqBody(request);
@@ -54,10 +71,17 @@ function adminEndpoints(app) {
 
   app.post("/admin/user/:id", [validatedRequest], async (request, response) => {
     try {
-      const user = await userFromSession(request, response);
-      if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        response.sendStatus(401).end();
-        return;
+      // const user = await userFromSession(request, response);
+      // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+      //   response.sendStatus(401).end();
+      //   return;
+      // }
+
+      if (
+        response.locals.multiUserMode &&
+        !ROLES.includes(response.locals.user?.role)
+      ) {
+        return response.sendStatus(401).end();
       }
 
       const { id } = request.params;
@@ -75,11 +99,19 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
-        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          response.sendStatus(401).end();
-          return;
+        // const user = await userFromSession(request, response);
+        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+        //   response.sendStatus(401).end();
+        //   return;
+        // }
+
+        if (
+          response.locals.multiUserMode &&
+          !ROLES.includes(response.locals.user?.role)
+        ) {
+          return response.sendStatus(401).end();
         }
+
         const { id } = request.params;
         await User.delete({ id: Number(id) });
         response.status(200).json({ success: true, error: null });
@@ -92,10 +124,17 @@ function adminEndpoints(app) {
 
   app.get("/admin/invites", [validatedRequest], async (request, response) => {
     try {
-      const user = await userFromSession(request, response);
-      if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        response.sendStatus(401).end();
-        return;
+      // const user = await userFromSession(request, response);
+      // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+      //   response.sendStatus(401).end();
+      //   return;
+      // }
+
+      if (
+        response.locals.multiUserMode &&
+        !ROLES.includes(response.locals.user?.role)
+      ) {
+        return response.sendStatus(401).end();
       }
 
       const invites = await Invite.whereWithUsers();
@@ -111,10 +150,17 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
-        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          response.sendStatus(401).end();
-          return;
+        // const user = await userFromSession(request, response);
+        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+        //   response.sendStatus(401).end();
+        //   return;
+        // }
+
+        if (
+          response.locals.multiUserMode &&
+          !ROLES.includes(response.locals.user?.role)
+        ) {
+          return response.sendStatus(401).end();
         }
 
         const { invite, error } = await Invite.create(user.id);
@@ -131,10 +177,17 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
-        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          response.sendStatus(401).end();
-          return;
+        // const user = await userFromSession(request, response);
+        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+        //   response.sendStatus(401).end();
+        //   return;
+        // }
+
+        if (
+          response.locals.multiUserMode &&
+          !ROLES.includes(response.locals.user?.role)
+        ) {
+          return response.sendStatus(401).end();
         }
 
         const { id } = request.params;
@@ -152,11 +205,19 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
-        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          response.sendStatus(401).end();
-          return;
+        // const user = await userFromSession(request, response);
+        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+        //   response.sendStatus(401).end();
+        //   return;
+        // }
+
+        if (
+          response.locals.multiUserMode &&
+          !ROLES.includes(response.locals.user?.role)
+        ) {
+          return response.sendStatus(401).end();
         }
+
         const workspaces = await Workspace.whereWithUsers();
         response.status(200).json({ workspaces });
       } catch (e) {
@@ -171,11 +232,19 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
-        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          response.sendStatus(401).end();
-          return;
+        // const user = await userFromSession(request, response);
+        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+        //   response.sendStatus(401).end();
+        //   return;
+        // }
+
+        if (
+          response.locals.multiUserMode &&
+          !ROLES.includes(response.locals.user?.role)
+        ) {
+          return response.sendStatus(401).end();
         }
+
         const { name } = reqBody(request);
         const { workspace, message: error } = await Workspace.new(
           name,
@@ -194,10 +263,17 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
-        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          response.sendStatus(401).end();
-          return;
+        // const user = await userFromSession(request, response);
+        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+        //   response.sendStatus(401).end();
+        //   return;
+        // }
+
+        if (
+          response.locals.multiUserMode &&
+          !ROLES.includes(response.locals.user?.role)
+        ) {
+          return response.sendStatus(401).end();
         }
 
         const { workspaceId } = request.params;
@@ -219,10 +295,17 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
-        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          response.sendStatus(401).end();
-          return;
+        // const user = await userFromSession(request, response);
+        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+        //   response.sendStatus(401).end();
+        //   return;
+        // }
+
+        if (
+          response.locals.multiUserMode &&
+          !ROLES.includes(response.locals.user?.role)
+        ) {
+          return response.sendStatus(401).end();
         }
 
         const { id } = request.params;
@@ -256,10 +339,17 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
-        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          response.sendStatus(401).end();
-          return;
+        // const user = await userFromSession(request, response);
+        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+        //   response.sendStatus(401).end();
+        //   return;
+        // }
+
+        if (
+          response.locals.multiUserMode &&
+          !ROLES.includes(response.locals.user?.role)
+        ) {
+          return response.sendStatus(401).end();
         }
 
         const settings = {
@@ -287,10 +377,11 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
-        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          response.sendStatus(401).end();
-          return;
+        if (
+          response.locals.multiUserMode &&
+          !ROLES.includes(response.locals.user?.role)
+        ) {
+          return response.sendStatus(401).end();
         }
 
         const updates = reqBody(request);
@@ -305,10 +396,11 @@ function adminEndpoints(app) {
 
   app.get("/admin/api-keys", [validatedRequest], async (request, response) => {
     try {
-      const user = await userFromSession(request, response);
-      if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        response.sendStatus(401).end();
-        return;
+      if (
+        response.locals.multiUserMode &&
+        !ROLES.includes(response.locals.user?.role)
+      ) {
+        return response.sendStatus(401).end();
       }
 
       const apiKeys = await ApiKey.whereWithUser({});
@@ -330,10 +422,11 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
-        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          response.sendStatus(401).end();
-          return;
+        if (
+          response.locals.multiUserMode &&
+          !ROLES.includes(response.locals.user?.role)
+        ) {
+          return response.sendStatus(401).end();
         }
 
         const { apiKey, error } = await ApiKey.create(user.id);
@@ -354,11 +447,14 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
-        const user = await userFromSession(request, response);
-        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          response.sendStatus(401).end();
-          return;
+
+        if (
+          response.locals.multiUserMode &&
+          !ROLES.includes(response.locals.user?.role)
+        ) {
+          return response.sendStatus(401).end();
         }
+
         await ApiKey.delete({ id: Number(id) });
         return response.status(200).end();
       } catch (e) {

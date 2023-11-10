@@ -76,5 +76,5 @@ export default {
     apiKeys: () => {
       return "/settings/api-keys";
     },
-  }
+  },
 };

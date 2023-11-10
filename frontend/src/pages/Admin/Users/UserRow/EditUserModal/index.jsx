@@ -94,7 +94,9 @@ export default function EditUserModal({ user }) {
                   >
                     <option value="default">Default</option>
                     <option value="manager">Manager</option>
-                    <option value="admin">Administrator</option>
+                    {(!user || user?.role === "admin") && (
+                      <option value="admin">Administrator</option>
+                    )}
                   </select>
                 </div>
                 {error && (
