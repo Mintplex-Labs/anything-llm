@@ -136,6 +136,7 @@ export function SidebarMobileHeader() {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
+  const { user } = useUser();
 
   useEffect(() => {
     // Darkens the rest of the screen
@@ -200,9 +201,11 @@ export function SidebarMobileHeader() {
                   style={{ objectFit: "contain" }}
                 />
               </div>
-              <div className="flex gap-x-2 items-center text-slate-500 shink-0">
-                <SettingsButton />
-              </div>
+              {(user?.role === "admin" || user?.role === "manager") && (
+                <div className="flex gap-x-2 items-center text-slate-500 shink-0">
+                  <SettingsButton />
+                </div>
+              )}
             </div>
 
             {/* Primary Body */}
@@ -269,7 +272,7 @@ export function SidebarMobileHeader() {
 function SettingsButton() {
   return (
     <a
-      href={paths.general.llmPreference()}
+      href={paths.admin.system()}
       className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
     >
       <Wrench className="h-4 w-4" weight="fill" />

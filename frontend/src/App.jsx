@@ -1,7 +1,10 @@
 import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ContextWrapper } from "./AuthContext";
-import PrivateRoute, { AdminRoute } from "./components/PrivateRoute";
+import PrivateRoute, {
+  AdminRoute,
+  ManagerRoute,
+} from "./components/PrivateRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "./pages/Login";
@@ -48,56 +51,55 @@ export default function App() {
           />
           <Route path="/accept-invite/:code" element={<InvitePage />} />
 
-          {/* General Routes */}
+          {/* Admin */}
           <Route
             path="/general/llm-preference"
-            element={<PrivateRoute Component={GeneralLLMPreference} />}
+            element={<AdminRoute Component={GeneralLLMPreference} />}
           />
           <Route
             path="/general/embedding-preference"
-            element={<PrivateRoute Component={GeneralEmbeddingPreference} />}
+            element={<AdminRoute Component={GeneralEmbeddingPreference} />}
           />
           <Route
             path="/general/vector-database"
-            element={<PrivateRoute Component={GeneralVectorDatabase} />}
+            element={<AdminRoute Component={GeneralVectorDatabase} />}
           />
+          {/* Manager */}
           <Route
             path="/general/export-import"
-            element={<PrivateRoute Component={GeneralExportImport} />}
+            element={<ManagerRoute Component={GeneralExportImport} />}
           />
           <Route
             path="/general/security"
-            element={<PrivateRoute Component={GeneralSecurity} />}
+            element={<ManagerRoute Component={GeneralSecurity} />}
           />
           <Route
             path="/general/appearance"
-            element={<PrivateRoute Component={GeneralAppearance} />}
+            element={<ManagerRoute Component={GeneralAppearance} />}
           />
           <Route
             path="/general/api-keys"
-            element={<PrivateRoute Component={GeneralApiKeys} />}
+            element={<ManagerRoute Component={GeneralApiKeys} />}
           />
           <Route
             path="/general/workspace-chats"
-            element={<PrivateRoute Component={GeneralChats} />}
+            element={<ManagerRoute Component={GeneralChats} />}
           />
-
-          {/* Admin Routes */}
           <Route
             path="/admin/system-preferences"
-            element={<AdminRoute Component={AdminSystem} />}
+            element={<ManagerRoute Component={AdminSystem} />}
           />
           <Route
             path="/admin/invites"
-            element={<AdminRoute Component={AdminInvites} />}
+            element={<ManagerRoute Component={AdminInvites} />}
           />
           <Route
             path="/admin/users"
-            element={<AdminRoute Component={AdminUsers} />}
+            element={<ManagerRoute Component={AdminUsers} />}
           />
           <Route
             path="/admin/workspaces"
-            element={<AdminRoute Component={AdminWorkspaces} />}
+            element={<ManagerRoute Component={AdminWorkspaces} />}
           />
           {/* Onboarding Flow */}
           <Route path="/onboarding" element={<OnboardingFlow />} />

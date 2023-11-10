@@ -98,6 +98,24 @@ export function AdminRoute({ Component }) {
   );
 }
 
+export function ManagerRoute({ Component }) {
+  const { isAuthd, shouldRedirectToOnboarding } = useIsAuthenticated();
+  if (isAuthd === null) return <FullScreenLoader />;
+
+  if (shouldRedirectToOnboarding) {
+    return <Navigate to={paths.onboarding()} />;
+  }
+
+  const user = userFromStorage();
+  return isAuthd && (user?.role === "manager" || user?.role === "admin") ? (
+    <UserMenu>
+      <Component />
+    </UserMenu>
+  ) : (
+    <Navigate to={paths.home()} />
+  );
+}
+
 export default function PrivateRoute({ Component }) {
   const { isAuthd, shouldRedirectToOnboarding } = useIsAuthenticated();
   if (isAuthd === null) return <FullScreenLoader />;
