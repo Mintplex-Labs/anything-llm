@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "../../../../models/admin";
+import { userFromStorage } from "../../../../utils/request";
 
 const DIALOG_ID = `new-user-modal`;
 
@@ -21,6 +22,8 @@ export default function NewUserModal() {
     if (!!user) window.location.reload();
     setError(error);
   };
+
+  const user = userFromStorage();
 
   return (
     <dialog id={DIALOG_ID} className="bg-transparent outline-none">
@@ -91,7 +94,9 @@ export default function NewUserModal() {
                   >
                     <option value="default">Default</option>
                     <option value="manager">Manager</option>
-                    <option value="admin">Administrator</option>
+                    {user?.role === "admin" && (
+                      <option value="admin">Administrator</option>
+                    )}
                   </select>
                 </div>
                 {error && (

@@ -16,7 +16,7 @@ function adminEndpoints(app) {
   app.get("/admin/users", [validatedRequest], async (request, response) => {
     try {
       const user = await userFromSession(request, response);
-      if (!user || user?.role !== "admin") {
+      if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
         response.sendStatus(401).end();
         return;
       }
@@ -37,7 +37,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
+        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
           response.sendStatus(401).end();
           return;
         }
@@ -55,7 +55,7 @@ function adminEndpoints(app) {
   app.post("/admin/user/:id", [validatedRequest], async (request, response) => {
     try {
       const user = await userFromSession(request, response);
-      if (!user || user?.role !== "admin") {
+      if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
         response.sendStatus(401).end();
         return;
       }
@@ -76,7 +76,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
+        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
           response.sendStatus(401).end();
           return;
         }
@@ -93,7 +93,7 @@ function adminEndpoints(app) {
   app.get("/admin/invites", [validatedRequest], async (request, response) => {
     try {
       const user = await userFromSession(request, response);
-      if (!user || user?.role !== "admin") {
+      if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
         response.sendStatus(401).end();
         return;
       }
@@ -112,7 +112,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
+        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
           response.sendStatus(401).end();
           return;
         }
@@ -132,7 +132,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
+        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
           response.sendStatus(401).end();
           return;
         }
@@ -153,7 +153,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
+        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
           response.sendStatus(401).end();
           return;
         }
@@ -172,7 +172,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
+        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
           response.sendStatus(401).end();
           return;
         }
@@ -195,7 +195,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
+        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
           response.sendStatus(401).end();
           return;
         }
@@ -220,7 +220,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
+        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
           response.sendStatus(401).end();
           return;
         }
@@ -257,7 +257,9 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
+        console.log("USER GET:", user);
+        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
+          console.log("ILLIGAL USER");
           response.sendStatus(401).end();
           return;
         }
@@ -288,7 +290,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
+        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
           response.sendStatus(401).end();
           return;
         }
@@ -306,7 +308,7 @@ function adminEndpoints(app) {
   app.get("/admin/api-keys", [validatedRequest], async (request, response) => {
     try {
       const user = await userFromSession(request, response);
-      if (!user || user?.role !== "admin") {
+      if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
         response.sendStatus(401).end();
         return;
       }
@@ -331,7 +333,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
+        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
           response.sendStatus(401).end();
           return;
         }
@@ -355,7 +357,7 @@ function adminEndpoints(app) {
       try {
         const { id } = request.params;
         const user = await userFromSession(request, response);
-        if (!user || user?.role !== "admin") {
+        if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
           response.sendStatus(401).end();
           return;
         }

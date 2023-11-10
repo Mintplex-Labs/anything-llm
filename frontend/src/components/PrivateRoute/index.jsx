@@ -84,7 +84,8 @@ function useIsAuthenticated() {
 }
 
 export function AdminRoute({ Component }) {
-  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } = useIsAuthenticated();
+  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } =
+    useIsAuthenticated();
   if (isAuthd === null) return <FullScreenLoader />;
 
   if (shouldRedirectToOnboarding) {
@@ -102,7 +103,8 @@ export function AdminRoute({ Component }) {
 }
 
 export function ManagerRoute({ Component }) {
-  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } = useIsAuthenticated();
+  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } =
+    useIsAuthenticated();
   if (isAuthd === null) return <FullScreenLoader />;
 
   if (shouldRedirectToOnboarding) {
@@ -110,7 +112,8 @@ export function ManagerRoute({ Component }) {
   }
 
   const user = userFromStorage();
-  return isAuthd && ((user?.role === "manager" || user?.role === "admin") || !multiUserMode) ? (
+  return isAuthd &&
+    (user?.role === "manager" || user?.role === "admin" || !multiUserMode) ? (
     <UserMenu>
       <Component />
     </UserMenu>

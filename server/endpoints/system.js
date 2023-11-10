@@ -246,7 +246,7 @@ function systemEndpoints(app) {
         // Only admins can update the ENV settings.
         if (multiUserMode(response)) {
           const user = await userFromSession(request, response);
-          if (!user || user?.role !== "admin") {
+          if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
             response.sendStatus(401).end();
             return;
           }
@@ -434,7 +434,8 @@ function systemEndpoints(app) {
       try {
         if (
           response.locals.multiUserMode &&
-          response.locals.user?.role !== "admin"
+          response.locals.user?.role !== "admin" &&
+          response.locals.user?.role !== "manager"
         ) {
           return response.sendStatus(401).end();
         }
@@ -477,7 +478,8 @@ function systemEndpoints(app) {
       try {
         if (
           response.locals.multiUserMode &&
-          response.locals.user?.role !== "admin"
+          response.locals.user?.role !== "admin" &&
+          response.locals.user?.role !== "manager"
         ) {
           return response.sendStatus(401).end();
         }
@@ -545,7 +547,8 @@ function systemEndpoints(app) {
       try {
         if (
           response.locals.multiUserMode &&
-          response.locals.user?.role !== "admin"
+          response.locals.user?.role !== "admin" &&
+          response.locals.user?.role !== "manager"
         ) {
           return response.sendStatus(401).end();
         }
@@ -656,7 +659,8 @@ function systemEndpoints(app) {
       try {
         if (
           response.locals.multiUserMode &&
-          response.locals.user?.role !== "admin"
+          response.locals.user?.role !== "admin" &&
+          response.locals.user?.role !== "manager"
         ) {
           return response.sendStatus(401).end();
         }
@@ -686,7 +690,8 @@ function systemEndpoints(app) {
       try {
         if (
           response.locals.multiUserMode &&
-          response.locals.user?.role !== "admin"
+          response.locals.user?.role !== "admin" &&
+          response.locals.user?.role !== "manager"
         ) {
           return response.sendStatus(401).end();
         }
@@ -708,7 +713,8 @@ function systemEndpoints(app) {
       try {
         if (
           response.locals.multiUserMode &&
-          response.locals.user?.role !== "admin"
+          response.locals.user?.role !== "admin" &&
+          response.locals.user?.role !== "manager"
         ) {
           return response.sendStatus(401).end();
         }
