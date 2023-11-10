@@ -7,7 +7,7 @@ const { DocumentVectors } = require("../models/vectors");
 const { Workspace } = require("../models/workspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { getVectorDbClass } = require("../utils/helpers");
-const { userFromSession, reqBody } = require("../utils/http");
+const { reqBody } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 
 const ROLES = ["admin", "manager"];
@@ -17,12 +17,6 @@ function adminEndpoints(app) {
 
   app.get("/admin/users", [validatedRequest], async (request, response) => {
     try {
-      // const user = await userFromSession(request, response);
-      // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-      //   response.sendStatus(401).end();
-      //   return;
-      // }
-
       if (
         response.locals.multiUserMode &&
         !ROLES.includes(response.locals.user?.role)
@@ -46,12 +40,6 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        // const user = await userFromSession(request, response);
-        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        //   response.sendStatus(401).end();
-        //   return;
-        // }
-
         if (
           response.locals.multiUserMode &&
           !ROLES.includes(response.locals.user?.role)
@@ -71,12 +59,6 @@ function adminEndpoints(app) {
 
   app.post("/admin/user/:id", [validatedRequest], async (request, response) => {
     try {
-      // const user = await userFromSession(request, response);
-      // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-      //   response.sendStatus(401).end();
-      //   return;
-      // }
-
       if (
         response.locals.multiUserMode &&
         !ROLES.includes(response.locals.user?.role)
@@ -99,12 +81,6 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        // const user = await userFromSession(request, response);
-        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        //   response.sendStatus(401).end();
-        //   return;
-        // }
-
         if (
           response.locals.multiUserMode &&
           !ROLES.includes(response.locals.user?.role)
@@ -124,12 +100,6 @@ function adminEndpoints(app) {
 
   app.get("/admin/invites", [validatedRequest], async (request, response) => {
     try {
-      // const user = await userFromSession(request, response);
-      // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-      //   response.sendStatus(401).end();
-      //   return;
-      // }
-
       if (
         response.locals.multiUserMode &&
         !ROLES.includes(response.locals.user?.role)
@@ -150,12 +120,6 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        // const user = await userFromSession(request, response);
-        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        //   response.sendStatus(401).end();
-        //   return;
-        // }
-
         if (
           response.locals.multiUserMode &&
           !ROLES.includes(response.locals.user?.role)
@@ -177,12 +141,6 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        // const user = await userFromSession(request, response);
-        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        //   response.sendStatus(401).end();
-        //   return;
-        // }
-
         if (
           response.locals.multiUserMode &&
           !ROLES.includes(response.locals.user?.role)
@@ -205,12 +163,6 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        // const user = await userFromSession(request, response);
-        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        //   response.sendStatus(401).end();
-        //   return;
-        // }
-
         if (
           response.locals.multiUserMode &&
           !ROLES.includes(response.locals.user?.role)
@@ -232,12 +184,6 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        // const user = await userFromSession(request, response);
-        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        //   response.sendStatus(401).end();
-        //   return;
-        // }
-
         if (
           response.locals.multiUserMode &&
           !ROLES.includes(response.locals.user?.role)
@@ -263,12 +209,6 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        // const user = await userFromSession(request, response);
-        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        //   response.sendStatus(401).end();
-        //   return;
-        // }
-
         if (
           response.locals.multiUserMode &&
           !ROLES.includes(response.locals.user?.role)
@@ -295,12 +235,6 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        // const user = await userFromSession(request, response);
-        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        //   response.sendStatus(401).end();
-        //   return;
-        // }
-
         if (
           response.locals.multiUserMode &&
           !ROLES.includes(response.locals.user?.role)
@@ -339,12 +273,6 @@ function adminEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        // const user = await userFromSession(request, response);
-        // if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-        //   response.sendStatus(401).end();
-        //   return;
-        // }
-
         if (
           response.locals.multiUserMode &&
           !ROLES.includes(response.locals.user?.role)
