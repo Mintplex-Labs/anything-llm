@@ -90,6 +90,7 @@ export default function NewUserModal() {
                     className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white border border-gray-500 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="default">Default</option>
+                    <option value="manager">Manager</option>
                     <option value="admin">Administrator</option>
                   </select>
                 </div>
