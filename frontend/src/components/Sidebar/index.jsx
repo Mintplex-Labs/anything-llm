@@ -45,7 +45,7 @@ export default function Sidebar() {
                 style={{ objectFit: "contain" }}
               />
             </div>
-            {(user?.role === "admin" || user?.role === "manager") && (
+            {(!user || (user?.role === "admin" || user?.role === "manager")) && (
               <div className="flex gap-x-2 items-center text-slate-200">
                 <SettingsButton />
               </div>
@@ -201,7 +201,7 @@ export function SidebarMobileHeader() {
                   style={{ objectFit: "contain" }}
                 />
               </div>
-              {(user?.role === "admin" || user?.role === "manager") && (
+              {(!user || (user?.role === "admin" || user?.role === "manager")) && (
                 <div className="flex gap-x-2 items-center text-slate-500 shink-0">
                   <SettingsButton />
                 </div>

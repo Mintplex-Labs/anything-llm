@@ -257,9 +257,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        console.log("USER GET:", user);
         if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-          console.log("ILLIGAL USER");
           response.sendStatus(401).end();
           return;
         }

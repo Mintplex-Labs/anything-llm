@@ -102,7 +102,7 @@ export default function SettingsSidebar() {
                   btnText="API Keys"
                   icon={<Key className="h-5 w-5 flex-shrink-0" />}
                 />
-                {user?.role === "admin" && (
+                {(!user || user?.role === "admin") && (
                   <>
                     <Option
                       href={paths.general.llmPreference()}
@@ -127,15 +127,6 @@ export default function SettingsSidebar() {
                   btnText="Export or Import"
                   icon={<DownloadSimple className="h-5 w-5 flex-shrink-0" />}
                 />
-                {!user && (
-                  <Option
-                    href={paths.general.chats()}
-                    btnText="Chat History"
-                    icon={
-                      <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
-                    }
-                  />
-                )}
                 <Option
                   href={paths.general.security()}
                   btnText="Security"
@@ -311,7 +302,7 @@ export function SidebarMobileHeader() {
                     btnText="API Keys"
                     icon={<Key className="h-5 w-5 flex-shrink-0" />}
                   />
-                  {user?.role === "admin" && (
+                  {(!user || user?.role === "admin") && (
                     <>
                       <Option
                         href={paths.general.llmPreference()}
