@@ -15,6 +15,7 @@
     "@phosphor-icons/react": "^2.0.13",
     "buffer": "^6.0.3",
     "he": "^1.2.0",
+    "highlight.js": "^11.9.0",
     "lodash.debounce": "^4.0.8",
     "markdown-it": "^13.0.1",
     "pluralize": "^8.0.0",
