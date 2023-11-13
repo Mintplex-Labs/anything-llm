@@ -48,19 +48,36 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         return false;
       }
 
-      const chatResult = await Workspace.sendChat(
+      // TODO: Delete this snippet once we have streaming stable.
+      // const chatResult = await Workspace.sendChat(
+      //   workspace,
+      //   promptMessage.userMessage,
+      //   window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
+      //   "chat",
+      // )
+      // handleChat(
+      //   chatResult,
+      //   setLoadingResponse,
+      //   setChatHistory,
+      //   remHistory,
+      //   _chatHistory
+      // )
+
+      await Workspace.streamChat(
         workspace,
         promptMessage.userMessage,
         window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
-          "chat"
+          "chat",
+        (chatResult) =>
+          handleChat(
+            chatResult,
+            setLoadingResponse,
+            setChatHistory,
+            remHistory,
+            _chatHistory
+          )
       );
-      handleChat(
-        chatResult,
-        setLoadingResponse,
-        setChatHistory,
-        remHistory,
-        _chatHistory
-      );
+      return;
     }
     loadingResponse === true && fetchReply();
   }, [loadingResponse, chatHistory, workspace]);

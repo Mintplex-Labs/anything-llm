@@ -27,6 +27,10 @@ class LMStudioLLM {
     this.embedder = embedder;
   }
 
+  streamingEnabled() {
+    return "streamChat" in this && "streamGetChatCompletion" in this;
+  }
+
   // Ensure the user set a value for the token limit
   // and if undefined - assume 4096 window.
   promptWindowLimit() {
@@ -103,6 +107,32 @@ Context:
     return textResponse;
   }
 
+  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
+    if (!this.model)
+      throw new Error(
+        `LMStudio chat: ${model} is not valid or defined for chat completion!`
+      );
+
+    const streamRequest = await this.lmstudio.createChatCompletion(
+      {
+        model: this.model,
+        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        n: 1,
+        stream: true,
+        messages: await this.compressMessages(
+          {
+            systemPrompt: chatPrompt(workspace),
+            userPrompt: prompt,
+            chatHistory,
+          },
+          rawHistory
+        ),
+      },
+      { responseType: "stream" }
+    );
+    return streamRequest;
+  }
+
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!this.model)
       throw new Error(
@@ -117,6 +147,24 @@ Context:
 
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
+  }
+
+  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+    if (!this.model)
+      throw new Error(
+        `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
+      );
+
+    const streamRequest = await this.lmstudio.createChatCompletion(
+      {
+        model: this.model,
+        stream: true,
+        messages,
+        temperature,
+      },
+      { responseType: "stream" }
+    );
+    return streamRequest;
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

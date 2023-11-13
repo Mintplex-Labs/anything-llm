@@ -72,7 +72,7 @@ const PromptReply = forwardRef(
               role="assistant"
             />
             <span
-              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+              className={`reply whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
             />
           </div>
