@@ -18,8 +18,8 @@ async function strictMultiUserRoleValid(request, response, next) {
 }
 
 // Apply role permission checks IF the current system is in multi-user mode.
-// This is relevant for paths that are shared between roles
-// requesting user has the appropriate role to modify or call the URL.
+// This is relevant for routes that are shared between MUM and single-user mode.
+// Checks if the requesting user has the appropriate role to modify or call the URL.
 async function flexUserRoleValid(request, response, next) {
   const multiUserMode =
     response.locals?.multiUserMode ?? (await SystemSettings.isMultiUserMode());

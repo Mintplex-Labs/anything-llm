@@ -69,7 +69,7 @@ export default function UserRow({ currUser, user }) {
             )}
         </td>
       </tr>
-      <EditUserModal user={user} />
+      <EditUserModal currentUser={currUser} user={user} />
     </>
   );
 }

@@ -4,7 +4,7 @@ import Admin from "../../../../../models/admin";
 
 export const EditUserModalId = (user) => `edit-user-${user.id}-modal`;
 
-export default function EditUserModal({ user }) {
+export default function EditUserModal({ currentUser, user }) {
   const [error, setError] = useState(null);
 
   const hideModal = () => {
@@ -94,7 +94,7 @@ export default function EditUserModal({ user }) {
                   >
                     <option value="default">Default</option>
                     <option value="manager">Manager</option>
-                    {(!user || user?.role === "admin") && (
+                    {currentUser?.role === "admin" && (
                       <option value="admin">Administrator</option>
                     )}
                   </select>
