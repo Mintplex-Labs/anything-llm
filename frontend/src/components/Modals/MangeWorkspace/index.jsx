@@ -122,7 +122,7 @@ export function useManageWorkspaceModal() {
   const [showing, setShowing] = useState(false);
 
   const showModal = () => {
-    if (user?.role === "admin" || user?.role === "manager") {
+    if (user?.role !== "default") {
       setShowing(true);
     }
   };

@@ -88,7 +88,7 @@ export default function PromptInput({
             </div>
             <div className="flex justify-between py-3.5">
               <div className="flex gap-2">
-                {(user?.role === "admin" || user?.role === "manager") && (
+                {user?.role !== "default" && (
                   <Gear
                     onClick={showModal}
                     className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"

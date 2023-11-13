@@ -20,7 +20,7 @@ async function validatedRequest(request, response, next) {
   }
 
   if (!process.env.AUTH_TOKEN) {
-    response.status(403).json({
+    response.status(401).json({
       error: "You need to set an AUTH_TOKEN environment variable.",
     });
     return;
@@ -30,7 +30,7 @@ async function validatedRequest(request, response, next) {
   const token = auth ? auth.split(" ")[1] : null;
 
   if (!token) {
-    response.status(403).json({
+    response.status(401).json({
       error: "No auth token found.",
     });
     return;
@@ -38,7 +38,7 @@ async function validatedRequest(request, response, next) {
 
   const { p } = decodeJWT(token);
   if (p !== process.env.AUTH_TOKEN) {
-    response.status(403).json({
+    response.status(401).json({
       error: "Invalid auth token found.",
     });
     return;
@@ -52,7 +52,7 @@ async function validateMultiUserRequest(request, response, next) {
   const token = auth ? auth.split(" ")[1] : null;
 
   if (!token) {
-    response.status(403).json({
+    response.status(401).json({
       error: "No auth token found.",
     });
     return;
@@ -60,7 +60,7 @@ async function validateMultiUserRequest(request, response, next) {
 
   const valid = decodeJWT(token);
   if (!valid || !valid.id) {
-    response.status(403).json({
+    response.status(401).json({
       error: "Invalid auth token.",
     });
     return;
@@ -68,8 +68,15 @@ async function validateMultiUserRequest(request, response, next) {
 
   const user = await User.get({ id: valid.id });
   if (!user) {
-    response.status(403).json({
+    response.status(401).json({
       error: "Invalid auth for user.",
+    });
+    return;
+  }
+
+  if (user.suspended) {
+    response.status(401).json({
+      error: "User is suspended from system",
     });
     return;
   }

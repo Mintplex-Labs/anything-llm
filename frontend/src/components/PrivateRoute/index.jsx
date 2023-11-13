@@ -116,8 +116,7 @@ export function ManagerRoute({ Component }) {
   }
 
   const user = userFromStorage();
-  return isAuthd &&
-    (user?.role === "manager" || user?.role === "admin" || !multiUserMode) ? (
+  return isAuthd && (user?.role !== "default" || !multiUserMode) ? (
     <UserMenu>
       <Component />
     </UserMenu>

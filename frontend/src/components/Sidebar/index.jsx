@@ -18,6 +18,7 @@ import useLogo from "../../hooks/useLogo";
 import useUser from "../../hooks/useUser";
 
 export default function Sidebar() {
+  const { user } = useUser();
   const { logo } = useLogo();
   const sidebarRef = useRef(null);
   const {
@@ -25,7 +26,6 @@ export default function Sidebar() {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
-  const { user } = useUser();
 
   return (
     <>
@@ -45,7 +45,7 @@ export default function Sidebar() {
                 style={{ objectFit: "contain" }}
               />
             </div>
-            {(!user || user?.role === "admin" || user?.role === "manager") && (
+            {(!user || user?.role !== "default") && (
               <div className="flex gap-x-2 items-center text-slate-200">
                 <SettingsButton />
               </div>
@@ -56,15 +56,18 @@ export default function Sidebar() {
           <div className="flex-grow flex flex-col">
             <div className="flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll">
               <div className="flex gap-x-2 items-center justify-between">
-                <button
-                  onClick={showNewWsModal}
-                  className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
-                >
-                  <Plus className="h-5 w-5" />
-                  <p className="text-sidebar text-sm font-semibold">
-                    New Workspace
-                  </p>
-                </button>
+                {!user ||
+                  (user?.role !== "default" && (
+                    <button
+                      onClick={showNewWsModal}
+                      className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                    >
+                      <Plus className="h-5 w-5" />
+                      <p className="text-sidebar text-sm font-semibold">
+                        New Workspace
+                      </p>
+                    </button>
+                  ))}
               </div>
               <ActiveWorkspaces />
             </div>
@@ -201,9 +204,7 @@ export function SidebarMobileHeader() {
                   style={{ objectFit: "contain" }}
                 />
               </div>
-              {(!user ||
-                user?.role === "admin" ||
-                user?.role === "manager") && (
+              {(!user || user?.role !== "default") && (
                 <div className="flex gap-x-2 items-center text-slate-500 shink-0">
                   <SettingsButton />
                 </div>
@@ -218,15 +219,17 @@ export function SidebarMobileHeader() {
                   className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
                 >
                   <div className="flex gap-x-2 items-center justify-between">
-                    <button
-                      onClick={showNewWsModal}
-                      className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
-                    >
-                      <Plus className="h-5 w-5" />
-                      <p className="text-sidebar text-sm font-semibold">
-                        New Workspace
-                      </p>
-                    </button>
+                    {(!user || user?.role !== "default") && (
+                      <button
+                        onClick={showNewWsModal}
+                        className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                      >
+                        <Plus className="h-5 w-5" />
+                        <p className="text-sidebar text-sm font-semibold">
+                          New Workspace
+                        </p>
+                      </button>
+                    )}
                   </div>
                   <ActiveWorkspaces />
                 </div>

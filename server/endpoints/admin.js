@@ -7,46 +7,37 @@ const { DocumentVectors } = require("../models/vectors");
 const { Workspace } = require("../models/workspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { getVectorDbClass } = require("../utils/helpers");
-const { reqBody } = require("../utils/http");
+const { reqBody, userFromSession } = require("../utils/http");
+const {
+  strictMultiUserRoleValid,
+} = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-
-const ROLES = ["admin", "manager"];
 
 function adminEndpoints(app) {
   if (!app) return;
 
-  app.get("/admin/users", [validatedRequest], async (request, response) => {
-    try {
-      if (
-        response.locals.multiUserMode &&
-        !ROLES.includes(response.locals.user?.role)
-      ) {
-        return response.sendStatus(401).end();
+  app.get(
+    "/admin/users",
+    [validatedRequest, strictMultiUserRoleValid],
+    async (_request, response) => {
+      try {
+        const users = (await User.where()).map((user) => {
+          const { password, ...rest } = user;
+          return rest;
+        });
+        response.status(200).json({ users });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
       }
-
-      const users = (await User.where()).map((user) => {
-        const { password, ...rest } = user;
-        return rest;
-      });
-      response.status(200).json({ users });
-    } catch (e) {
-      console.error(e);
-      response.sendStatus(500).end();
     }
-  });
+  );
 
   app.post(
     "/admin/users/new",
-    [validatedRequest],
+    [validatedRequest, strictMultiUserRoleValid],
     async (request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const newUserParams = reqBody(request);
         const { user: newUser, error } = await User.create(newUserParams);
         response.status(200).json({ user: newUser, error });
@@ -57,37 +48,27 @@ function adminEndpoints(app) {
     }
   );
 
-  app.post("/admin/user/:id", [validatedRequest], async (request, response) => {
-    try {
-      if (
-        response.locals.multiUserMode &&
-        !ROLES.includes(response.locals.user?.role)
-      ) {
-        return response.sendStatus(401).end();
+  app.post(
+    "/admin/user/:id",
+    [validatedRequest, strictMultiUserRoleValid],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const updates = reqBody(request);
+        const { success, error } = await User.update(id, updates);
+        response.status(200).json({ success, error });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
       }
-
-      const { id } = request.params;
-      const updates = reqBody(request);
-      const { success, error } = await User.update(id, updates);
-      response.status(200).json({ success, error });
-    } catch (e) {
-      console.error(e);
-      response.sendStatus(500).end();
     }
-  });
+  );
 
   app.delete(
     "/admin/user/:id",
-    [validatedRequest],
+    [validatedRequest, strictMultiUserRoleValid],
     async (request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const { id } = request.params;
         await User.delete({ id: Number(id) });
         response.status(200).json({ success: true, error: null });
@@ -98,35 +79,26 @@ function adminEndpoints(app) {
     }
   );
 
-  app.get("/admin/invites", [validatedRequest], async (request, response) => {
-    try {
-      if (
-        response.locals.multiUserMode &&
-        !ROLES.includes(response.locals.user?.role)
-      ) {
-        return response.sendStatus(401).end();
+  app.get(
+    "/admin/invites",
+    [validatedRequest, strictMultiUserRoleValid],
+    async (_request, response) => {
+      try {
+        const invites = await Invite.whereWithUsers();
+        response.status(200).json({ invites });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
       }
-
-      const invites = await Invite.whereWithUsers();
-      response.status(200).json({ invites });
-    } catch (e) {
-      console.error(e);
-      response.sendStatus(500).end();
     }
-  });
+  );
 
   app.get(
     "/admin/invite/new",
-    [validatedRequest],
+    [validatedRequest, strictMultiUserRoleValid],
     async (request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
+        const user = await userFromSession(request, response);
         const { invite, error } = await Invite.create(user.id);
         response.status(200).json({ invite, error });
       } catch (e) {
@@ -138,16 +110,9 @@ function adminEndpoints(app) {
 
   app.delete(
     "/admin/invite/:id",
-    [validatedRequest],
+    [validatedRequest, strictMultiUserRoleValid],
     async (request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const { id } = request.params;
         const { success, error } = await Invite.deactivate(id);
         response.status(200).json({ success, error });
@@ -160,16 +125,9 @@ function adminEndpoints(app) {
 
   app.get(
     "/admin/workspaces",
-    [validatedRequest],
-    async (request, response) => {
+    [validatedRequest, strictMultiUserRoleValid],
+    async (_request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const workspaces = await Workspace.whereWithUsers();
         response.status(200).json({ workspaces });
       } catch (e) {
@@ -181,16 +139,10 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/workspaces/new",
-    [validatedRequest],
+    [validatedRequest, strictMultiUserRoleValid],
     async (request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
+        const user = await userFromSession(request, response);
         const { name } = reqBody(request);
         const { workspace, message: error } = await Workspace.new(
           name,
@@ -206,16 +158,9 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/workspaces/:workspaceId/update-users",
-    [validatedRequest],
+    [validatedRequest, strictMultiUserRoleValid],
     async (request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const { workspaceId } = request.params;
         const { userIds } = reqBody(request);
         const { success, error } = await Workspace.updateUsers(
@@ -232,16 +177,9 @@ function adminEndpoints(app) {
 
   app.delete(
     "/admin/workspaces/:id",
-    [validatedRequest],
+    [validatedRequest, strictMultiUserRoleValid],
     async (request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const { id } = request.params;
         const VectorDb = getVectorDbClass();
         const workspace = await Workspace.get({ id: Number(id) });
@@ -270,16 +208,9 @@ function adminEndpoints(app) {
 
   app.get(
     "/admin/system-preferences",
-    [validatedRequest],
-    async (request, response) => {
+    [validatedRequest, strictMultiUserRoleValid],
+    async (_request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const settings = {
           users_can_delete_workspaces:
             (await SystemSettings.get({ label: "users_can_delete_workspaces" }))
@@ -302,16 +233,9 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/system-preferences",
-    [validatedRequest],
+    [validatedRequest, strictMultiUserRoleValid],
     async (request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const updates = reqBody(request);
         await SystemSettings.updateSettings(updates);
         response.status(200).json({ success: true, error: null });
@@ -322,41 +246,32 @@ function adminEndpoints(app) {
     }
   );
 
-  app.get("/admin/api-keys", [validatedRequest], async (request, response) => {
-    try {
-      if (
-        response.locals.multiUserMode &&
-        !ROLES.includes(response.locals.user?.role)
-      ) {
-        return response.sendStatus(401).end();
+  app.get(
+    "/admin/api-keys",
+    [validatedRequest, strictMultiUserRoleValid],
+    async (_request, response) => {
+      try {
+        const apiKeys = await ApiKey.whereWithUser({});
+        return response.status(200).json({
+          apiKeys,
+          error: null,
+        });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({
+          apiKey: null,
+          error: "Could not find an API Keys.",
+        });
       }
-
-      const apiKeys = await ApiKey.whereWithUser({});
-      return response.status(200).json({
-        apiKeys,
-        error: null,
-      });
-    } catch (error) {
-      console.error(error);
-      response.status(500).json({
-        apiKey: null,
-        error: "Could not find an API Keys.",
-      });
     }
-  });
+  );
 
   app.post(
     "/admin/generate-api-key",
-    [validatedRequest],
+    [validatedRequest, strictMultiUserRoleValid],
     async (request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
+        const user = await userFromSession(request, response);
         const { apiKey, error } = await ApiKey.create(user.id);
         return response.status(200).json({
           apiKey,
@@ -371,18 +286,10 @@ function adminEndpoints(app) {
 
   app.delete(
     "/admin/delete-api-key/:id",
-    [validatedRequest],
+    [validatedRequest, strictMultiUserRoleValid],
     async (request, response) => {
       try {
         const { id } = request.params;
-
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         await ApiKey.delete({ id: Number(id) });
         return response.status(200).end();
       } catch (e) {

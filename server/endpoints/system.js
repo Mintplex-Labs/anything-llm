@@ -40,8 +40,7 @@ const { ApiKey } = require("../models/apiKeys");
 const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { Workspace } = require("../models/workspace");
-
-const ROLES = ["admin", "manager"];
+const { flexUserRoleValid } = require("../utils/middleware/multiUserProtected");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -240,20 +239,10 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/update-env",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid],
     async (request, response) => {
       try {
         const body = reqBody(request);
-
-        // Only admins can update the ENV settings.
-        if (multiUserMode(response)) {
-          const user = await userFromSession(request, response);
-          if (!user || (user?.role !== "admin" && user?.role !== "manager")) {
-            response.sendStatus(401).end();
-            return;
-          }
-        }
-
         const { newValues, error } = updateENV(body);
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
@@ -420,7 +409,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/upload-logo",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid],
     handleLogoUploads.single("logo"),
     async (request, response) => {
       if (!request.file || !request.file.originalname) {
@@ -434,13 +423,6 @@ function systemEndpoints(app) {
       }
 
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const newFilename = await renameLogoFile(request.file.originalname);
         const existingLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(existingLogoFilename);
@@ -474,16 +456,9 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/remove-logo",
-    [validatedRequest],
-    async (request, response) => {
+    [validatedRequest, flexUserRoleValid],
+    async (_request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const currentLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(currentLogoFilename);
         const { success, error } = await SystemSettings.updateSettings({
@@ -511,7 +486,8 @@ function systemEndpoints(app) {
           return response.status(200).json({ canDelete: true });
         }
 
-        if (response.locals.user?.role === "admin") {
+        const user = await userFromSession(request, response);
+        if (["admin", "manager"].includes(user?.role)) {
           return response.status(200).json({ canDelete: true });
         }
 
@@ -542,16 +518,9 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/set-welcome-messages",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid],
     async (request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const { messages = [] } = reqBody(request);
         if (!Array.isArray(messages)) {
           return response.status(400).json({
@@ -653,16 +622,9 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/workspace-chats",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid],
     async (request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const { offset = 0, limit = 20 } = reqBody(request);
         const chats = await WorkspaceChats.whereWithData(
           {},
@@ -683,16 +645,9 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/workspace-chats/:id",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid],
     async (request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const { id } = request.params;
         await WorkspaceChats.delete({ id: Number(id) });
         response.status(200).json({ success, error });
@@ -705,16 +660,9 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/export-chats",
-    [validatedRequest],
-    async (request, response) => {
+    [validatedRequest, flexUserRoleValid],
+    async (_request, response) => {
       try {
-        if (
-          response.locals.multiUserMode &&
-          !ROLES.includes(response.locals.user?.role)
-        ) {
-          return response.sendStatus(401).end();
-        }
-
         const chats = await WorkspaceChats.whereWithData({}, null, null, {
           id: "asc",
         });
