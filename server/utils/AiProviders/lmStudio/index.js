@@ -73,7 +73,7 @@ Context:
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!this.model)
       throw new Error(
-        `LMStudio chat: ${model} is not valid or defined for chat completion!`
+        `LMStudio chat: ${this.model} is not valid or defined for chat completion!`
       );
 
     const textResponse = await this.lmstudio
@@ -110,7 +110,7 @@ Context:
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!this.model)
       throw new Error(
-        `LMStudio chat: ${model} is not valid or defined for chat completion!`
+        `LMStudio chat: ${this.model} is not valid or defined for chat completion!`
       );
 
     const streamRequest = await this.lmstudio.createChatCompletion(

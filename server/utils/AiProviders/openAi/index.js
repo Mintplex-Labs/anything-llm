@@ -11,7 +11,7 @@ class OpenAiLLM extends OpenAiEmbedder {
       apiKey: process.env.OPEN_AI_KEY,
     });
     this.openai = new OpenAIApi(config);
-    this.model = process.env.OPEN_MODEL_PREF;
+    this.model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -107,15 +107,14 @@ Context:
   }
 
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const model = process.env.OPEN_MODEL_PREF;
-    if (!(await this.isValidChatCompletionModel(model)))
+    if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${model} is not valid for chat completion!`
+        `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const textResponse = await this.openai
       .createChatCompletion({
-        model,
+        model: this.model,
         temperature: Number(workspace?.openAiTemp ?? 0.7),
         n: 1,
         messages: await this.compressMessages(
@@ -145,15 +144,14 @@ Context:
   }
 
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const model = process.env.OPEN_MODEL_PREF;
-    if (!(await this.isValidChatCompletionModel(model)))
+    if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${model} is not valid for chat completion!`
+        `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.createChatCompletion(
       {
-        model,
+        model: this.model,
         stream: true,
         temperature: Number(workspace?.openAiTemp ?? 0.7),
         n: 1,
