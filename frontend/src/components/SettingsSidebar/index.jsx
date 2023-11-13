@@ -65,96 +65,84 @@ export default function SettingsSidebar() {
           <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
             <div className="h-auto sidebar-items">
               <div className="flex flex-col gap-y-2 h-[65vh] pb-8 overflow-y-scroll no-scroll">
-                {/* Admin Settings */}
-                {user?.role === "admin" && (
+                {/* Admin/manager Multi-user Settings */}
+                {!!user && user?.role !== "default" && (
                   <>
                     <Option
-                      href={paths.admin.system()}
+                      href={paths.settings.system()}
                       btnText="System Preferences"
                       icon={<SquaresFour className="h-5 w-5 flex-shrink-0" />}
                     />
                     <Option
-                      href={paths.admin.invites()}
+                      href={paths.settings.invites()}
                       btnText="Invitation"
                       icon={
                         <EnvelopeSimple className="h-5 w-5 flex-shrink-0" />
                       }
                     />
                     <Option
-                      href={paths.admin.users()}
+                      href={paths.settings.users()}
                       btnText="Users"
                       icon={<Users className="h-5 w-5 flex-shrink-0" />}
                     />
                     <Option
-                      href={paths.admin.workspaces()}
+                      href={paths.settings.workspaces()}
                       btnText="Workspaces"
                       icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
-                    />
-                    <Option
-                      href={paths.general.chats()}
-                      btnText="Workspace Chat"
-                      icon={
-                        <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
-                      }
                     />
                   </>
                 )}
 
-                {/* General Settings */}
                 <Option
-                  href={paths.general.appearance()}
+                  href={paths.settings.chats()}
+                  btnText="Workspace Chat"
+                  icon={<ChatCenteredText className="h-5 w-5 flex-shrink-0" />}
+                />
+
+                <Option
+                  href={paths.settings.appearance()}
                   btnText="Appearance"
                   icon={<Eye className="h-5 w-5 flex-shrink-0" />}
                 />
                 <Option
-                  href={paths.general.apiKeys()}
+                  href={paths.settings.apiKeys()}
                   btnText="API Keys"
                   icon={<Key className="h-5 w-5 flex-shrink-0" />}
                 />
+
+                {(!user || user?.role === "admin") && (
+                  <>
+                    <Option
+                      href={paths.settings.llmPreference()}
+                      btnText="LLM Preference"
+                      icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
+                    />
+                    <Option
+                      href={paths.settings.embeddingPreference()}
+                      btnText="Embedding Preference"
+                      icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
+                    />
+                    <Option
+                      href={paths.settings.vectorDatabase()}
+                      btnText="Vector Database"
+                      icon={<Database className="h-5 w-5 flex-shrink-0" />}
+                    />
+                  </>
+                )}
+
                 <Option
-                  href={paths.general.llmPreference()}
-                  btnText="LLM Preference"
-                  icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.general.embeddingPreference()}
-                  btnText="Embedding Preference"
-                  icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.general.vectorDatabase()}
-                  btnText="Vector Database"
-                  icon={<Database className="h-5 w-5 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.general.exportImport()}
+                  href={paths.settings.exportImport()}
                   btnText="Export or Import"
                   icon={<DownloadSimple className="h-5 w-5 flex-shrink-0" />}
                 />
-                {!user && (
-                  <Option
-                    href={paths.general.chats()}
-                    btnText="Chat History"
-                    icon={
-                      <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
-                    }
-                  />
-                )}
                 <Option
-                  href={paths.general.security()}
+                  href={paths.settings.security()}
                   btnText="Security"
                   icon={<Lock className="h-5 w-5 flex-shrink-0" />}
                 />
               </div>
             </div>
             <div>
-              {/* <div className="flex flex-col gap-y-2">
-                <div className="w-full flex items-center justify-between">
-                  <LLMStatus />
-                  <IndexCount />
-                </div>
-              </div> */}
-
               {/* Footer */}
               <div className="flex justify-center mt-2">
                 <div className="flex space-x-4">
@@ -277,73 +265,70 @@ export function SidebarMobileHeader() {
                   style={{ height: "calc(100vw - -3rem)" }}
                   className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
                 >
-                  {user?.role === "admin" && (
-                    <>
-                      <Option
-                        href={paths.admin.system()}
-                        btnText="System Preferences"
-                        icon={<SquaresFour className="h-5 w-5 flex-shrink-0" />}
-                      />
-                      <Option
-                        href={paths.admin.invites()}
-                        btnText="Invitation"
-                        icon={
-                          <EnvelopeSimple className="h-5 w-5 flex-shrink-0" />
-                        }
-                      />
-                      <Option
-                        href={paths.admin.users()}
-                        btnText="Users"
-                        icon={<Users className="h-5 w-5 flex-shrink-0" />}
-                      />
-                      <Option
-                        href={paths.admin.workspaces()}
-                        btnText="Workspaces"
-                        icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
-                      />
-                    </>
-                  )}
-
-                  {/* General Settings */}
                   <Option
-                    href={paths.general.chats()}
+                    href={paths.settings.system()}
+                    btnText="System Preferences"
+                    icon={<SquaresFour className="h-5 w-5 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.settings.invites()}
+                    btnText="Invitation"
+                    icon={<EnvelopeSimple className="h-5 w-5 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.settings.users()}
+                    btnText="Users"
+                    icon={<Users className="h-5 w-5 flex-shrink-0" />}
+                  />
+                  <Option
+                    href={paths.settings.workspaces()}
+                    btnText="Workspaces"
+                    icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
+                  />
+
+                  <Option
+                    href={paths.settings.chats()}
                     btnText="Workspace Chat"
                     icon={
                       <ChatCenteredText className="h-5 w-5 flex-shrink-0" />
                     }
                   />
                   <Option
-                    href={paths.general.appearance()}
+                    href={paths.settings.appearance()}
                     btnText="Appearance"
                     icon={<Eye className="h-5 w-5 flex-shrink-0" />}
                   />
                   <Option
-                    href={paths.general.apiKeys()}
+                    href={paths.settings.apiKeys()}
                     btnText="API Keys"
                     icon={<Key className="h-5 w-5 flex-shrink-0" />}
                   />
+                  {(!user || user?.role === "admin") && (
+                    <>
+                      <Option
+                        href={paths.settings.llmPreference()}
+                        btnText="LLM Preference"
+                        icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
+                      />
+                      <Option
+                        href={paths.settings.embeddingPreference()}
+                        btnText="Embedding Preference"
+                        icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
+                      />
+                      <Option
+                        href={paths.settings.vectorDatabase()}
+                        btnText="Vector Database"
+                        icon={<Database className="h-5 w-5 flex-shrink-0" />}
+                      />
+                    </>
+                  )}
                   <Option
-                    href={paths.general.llmPreference()}
-                    btnText="LLM Preference"
-                    icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
-                  />
-                  <Option
-                    href={paths.general.embeddingPreference()}
-                    btnText="Embedding Preference"
-                    icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
-                  />
-                  <Option
-                    href={paths.general.vectorDatabase()}
-                    btnText="Vector Database"
-                    icon={<Database className="h-5 w-5 flex-shrink-0" />}
-                  />
-                  <Option
-                    href={paths.general.exportImport()}
+                    href={paths.settings.exportImport()}
                     btnText="Export or Import"
                     icon={<DownloadSimple className="h-5 w-5 flex-shrink-0" />}
                   />
                   <Option
-                    href={paths.general.security()}
+                    href={paths.settings.security()}
                     btnText="Security"
                     icon={<Lock className="h-5 w-5 flex-shrink-0" />}
                   />

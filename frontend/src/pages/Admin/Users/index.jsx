@@ -100,3 +100,35 @@ function UsersContainer() {
     </table>
   );
 }
+
+const ROLE_HINT = {
+  default: [
+    "Can only send chats with workspaces they are added to by admin or managers.",
+    "Cannot modify any settings at all.",
+  ],
+  manager: [
+    "Can view all workspaces and modify all settings.",
+    "Cannot modify LLM, vectorDB, embedding, or other connections.",
+  ],
+  admin: [
+    "Highest user level privilege.",
+    "Can see and do everything across the system.",
+  ],
+};
+
+export function RoleHintDisplay({ role }) {
+  return (
+    <div className="flex flex-col gap-y-1 py-1 pb-4">
+      <p className="text-white/60 font-semibold text-sm">Permissions</p>
+      <ul className="flex flex-col gap-y-1 list-disc px-4">
+        {ROLE_HINT[role ?? "default"].map((hints, i) => {
+          return (
+            <li key={i} className="text-xs text-white/60">
+              {hints}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}

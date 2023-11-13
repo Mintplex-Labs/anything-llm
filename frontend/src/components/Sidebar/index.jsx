@@ -15,8 +15,10 @@ import ActiveWorkspaces from "./ActiveWorkspaces";
 import paths from "../../utils/paths";
 import { USER_BACKGROUND_COLOR } from "../../utils/constants";
 import useLogo from "../../hooks/useLogo";
+import useUser from "../../hooks/useUser";
 
 export default function Sidebar() {
+  const { user } = useUser();
   const { logo } = useLogo();
   const sidebarRef = useRef(null);
   const {
@@ -43,25 +45,28 @@ export default function Sidebar() {
                 style={{ objectFit: "contain" }}
               />
             </div>
-            <div className="flex gap-x-2 items-center text-slate-200">
-              {/* <AdminHome /> */}
-              <SettingsButton />
-            </div>
+            {(!user || user?.role !== "default") && (
+              <div className="flex gap-x-2 items-center text-slate-200">
+                <SettingsButton />
+              </div>
+            )}
           </div>
 
           {/* Primary Body */}
           <div className="flex-grow flex flex-col">
             <div className="flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll">
               <div className="flex gap-x-2 items-center justify-between">
-                <button
-                  onClick={showNewWsModal}
-                  className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
-                >
-                  <Plus className="h-5 w-5" />
-                  <p className="text-sidebar text-sm font-semibold">
-                    New Workspace
-                  </p>
-                </button>
+                {(!user || user?.role !== "default") && (
+                  <button
+                    onClick={showNewWsModal}
+                    className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                  >
+                    <Plus className="h-5 w-5" />
+                    <p className="text-sidebar text-sm font-semibold">
+                      New Workspace
+                    </p>
+                  </button>
+                )}
               </div>
               <ActiveWorkspaces />
             </div>
@@ -133,6 +138,7 @@ export function SidebarMobileHeader() {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
+  const { user } = useUser();
 
   useEffect(() => {
     // Darkens the rest of the screen
@@ -197,9 +203,11 @@ export function SidebarMobileHeader() {
                   style={{ objectFit: "contain" }}
                 />
               </div>
-              <div className="flex gap-x-2 items-center text-slate-500 shink-0">
-                <SettingsButton />
-              </div>
+              {(!user || user?.role !== "default") && (
+                <div className="flex gap-x-2 items-center text-slate-500 shink-0">
+                  <SettingsButton />
+                </div>
+              )}
             </div>
 
             {/* Primary Body */}
@@ -210,15 +218,17 @@ export function SidebarMobileHeader() {
                   className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
                 >
                   <div className="flex gap-x-2 items-center justify-between">
-                    <button
-                      onClick={showNewWsModal}
-                      className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
-                    >
-                      <Plus className="h-5 w-5" />
-                      <p className="text-sidebar text-sm font-semibold">
-                        New Workspace
-                      </p>
-                    </button>
+                    {(!user || user?.role !== "default") && (
+                      <button
+                        onClick={showNewWsModal}
+                        className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                      >
+                        <Plus className="h-5 w-5" />
+                        <p className="text-sidebar text-sm font-semibold">
+                          New Workspace
+                        </p>
+                      </button>
+                    )}
                   </div>
                   <ActiveWorkspaces />
                 </div>
@@ -266,7 +276,7 @@ export function SidebarMobileHeader() {
 function SettingsButton() {
   return (
     <a
-      href={paths.general.llmPreference()}
+      href={paths.settings.system()}
       className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
     >
       <Wrench className="h-4 w-4" weight="fill" />

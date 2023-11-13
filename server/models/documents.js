@@ -36,7 +36,7 @@ const Document = {
 
   addDocuments: async function (workspace, additions = []) {
     const VectorDb = getVectorDbClass();
-    if (additions.length === 0) return;
+    if (additions.length === 0) return { failed: [], embedded: [] };
     const embedded = [];
     const failedToEmbed = [];
 

@@ -14,7 +14,7 @@ export default function AnthropicAiOptions({ settings, showAlert = false }) {
             </p>
           </div>
           <a
-            href={paths.general.embeddingPreference()}
+            href={paths.settings.embeddingPreference()}
             className="text-sm md:text-base my-2 underline"
           >
             Manage embedding &rarr;

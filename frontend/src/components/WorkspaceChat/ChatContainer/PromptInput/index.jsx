@@ -10,6 +10,7 @@ import { isMobile } from "react-device-detect";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../../Modals/MangeWorkspace";
+import useUser from "../../../../hooks/useUser";
 
 export default function PromptInput({
   workspace,
@@ -22,6 +23,7 @@ export default function PromptInput({
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const formRef = useRef(null);
   const [_, setFocused] = useState(false);
+  const { user } = useUser();
 
   const handleSubmit = (e) => {
     setFocused(false);
@@ -86,11 +88,14 @@ export default function PromptInput({
             </div>
             <div className="flex justify-between py-3.5">
               <div className="flex gap-2">
-                <Gear
-                  onClick={showModal}
-                  className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"
-                  weight="fill"
-                />
+                {user?.role !== "default" && (
+                  <Gear
+                    onClick={showModal}
+                    className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"
+                    weight="fill"
+                  />
+                )}
+
                 <ChatModeSelector workspace={workspace} />
                 {/* <TextT
                   className="w-7 h-7 text-white/30 cursor-not-allowed"

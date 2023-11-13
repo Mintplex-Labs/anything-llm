@@ -9,6 +9,7 @@ import paths from "../../../utils/paths";
 import { useParams } from "react-router-dom";
 import { GearSix, SquaresFour } from "@phosphor-icons/react";
 import truncate from "truncate";
+import useUser from "../../../hooks/useUser";
 
 export default function ActiveWorkspaces() {
   const { slug } = useParams();
@@ -17,6 +18,7 @@ export default function ActiveWorkspaces() {
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWs, setSelectedWs] = useState(null);
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
+  const { user } = useUser();
 
   useEffect(() => {
     async function getWorkspaces() {
@@ -90,7 +92,7 @@ export default function ActiveWorkspaces() {
                 >
                   <GearSix
                     weight={settingHover ? "fill" : "regular"}
-                    hidden={!isActive}
+                    hidden={!isActive || user?.role === "default"}
                     className="h-[20px] w-[20px] transition-all duration-300"
                   />
                 </button>
