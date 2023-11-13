@@ -65,27 +65,34 @@ export default function SettingsSidebar() {
           <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
             <div className="h-auto sidebar-items">
               <div className="flex flex-col gap-y-2 h-[65vh] pb-8 overflow-y-scroll no-scroll">
-                {/* Admin Settings */}
-                <Option
-                  href={paths.settings.system()}
-                  btnText="System Preferences"
-                  icon={<SquaresFour className="h-5 w-5 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.settings.invites()}
-                  btnText="Invitation"
-                  icon={<EnvelopeSimple className="h-5 w-5 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.settings.users()}
-                  btnText="Users"
-                  icon={<Users className="h-5 w-5 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.settings.workspaces()}
-                  btnText="Workspaces"
-                  icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
-                />
+                {/* Admin/manager Multi-user Settings */}
+                {!!user && user?.role !== "default" && (
+                  <>
+                    <Option
+                      href={paths.settings.system()}
+                      btnText="System Preferences"
+                      icon={<SquaresFour className="h-5 w-5 flex-shrink-0" />}
+                    />
+                    <Option
+                      href={paths.settings.invites()}
+                      btnText="Invitation"
+                      icon={
+                        <EnvelopeSimple className="h-5 w-5 flex-shrink-0" />
+                      }
+                    />
+                    <Option
+                      href={paths.settings.users()}
+                      btnText="Users"
+                      icon={<Users className="h-5 w-5 flex-shrink-0" />}
+                    />
+                    <Option
+                      href={paths.settings.workspaces()}
+                      btnText="Workspaces"
+                      icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
+                    />
+                  </>
+                )}
+
                 <Option
                   href={paths.settings.chats()}
                   btnText="Workspace Chat"
@@ -102,6 +109,7 @@ export default function SettingsSidebar() {
                   btnText="API Keys"
                   icon={<Key className="h-5 w-5 flex-shrink-0" />}
                 />
+
                 {(!user || user?.role === "admin") && (
                   <>
                     <Option
