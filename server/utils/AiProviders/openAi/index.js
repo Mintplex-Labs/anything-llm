@@ -109,7 +109,7 @@ Context:
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${model} is not valid for chat completion!`
+        `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const textResponse = await this.openai
@@ -144,15 +144,14 @@ Context:
   }
 
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const model = process.env.OPEN_MODEL_PREF;
-    if (!(await this.isValidChatCompletionModel(model)))
+    if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${model} is not valid for chat completion!`
+        `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.createChatCompletion(
       {
-        model,
+        model: this.model,
         stream: true,
         temperature: Number(workspace?.openAiTemp ?? 0.7),
         n: 1,
