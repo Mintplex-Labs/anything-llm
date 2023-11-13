@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
 import System from "../../../models/system";
 import { isMobile } from "react-device-detect";
+import useUser from "../../../hooks/useUser";
 
 const DocumentSettings = lazy(() => import("./Documents"));
 const WorkspaceSettings = lazy(() => import("./Settings"));
@@ -117,9 +118,13 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
 
 export default memo(ManageWorkspace);
 export function useManageWorkspaceModal() {
+  const { user } = useUser();
   const [showing, setShowing] = useState(false);
+
   const showModal = () => {
-    setShowing(true);
+    if (user?.role !== "default") {
+      setShowing(true);
+    }
   };
 
   const hideModal = () => {

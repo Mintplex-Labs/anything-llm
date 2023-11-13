@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "../../../../../models/admin";
+import { RoleHintDisplay } from "../..";
 
 export const EditUserModalId = (user) => `edit-user-${user.id}-modal`;
 
-export default function EditUserModal({ user }) {
+export default function EditUserModal({ currentUser, user }) {
+  const [role, setRole] = useState(user.role);
   const [error, setError] = useState(null);
 
   const hideModal = () => {
@@ -90,11 +92,16 @@ export default function EditUserModal({ user }) {
                     name="role"
                     required={true}
                     defaultValue={user.role}
+                    onChange={(e) => setRole(e.target.value)}
                     className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white border border-gray-500 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="default">Default</option>
-                    <option value="admin">Administrator</option>
+                    <option value="manager">Manager</option>
+                    {currentUser?.role === "admin" && (
+                      <option value="admin">Administrator</option>
+                    )}
                   </select>
+                  <RoleHintDisplay role={role} />
                 </div>
                 {error && (
                   <p className="text-red-400 text-sm">Error: {error}</p>
