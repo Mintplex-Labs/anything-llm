@@ -135,6 +135,11 @@ function systemEndpoints(app) {
           return;
         }
 
+        await Telemetry.sendTelemetry(
+          "login_event",
+          { multiUserMode: false },
+          existingUser?.id
+        );
         response.status(200).json({
           valid: true,
           user: existingUser,
@@ -156,6 +161,7 @@ function systemEndpoints(app) {
           return;
         }
 
+        await Telemetry.sendTelemetry("login_event", { multiUserMode: false });
         response.status(200).json({
           valid: true,
           token: makeJWT({ p: password }, "30d"),
@@ -316,7 +322,9 @@ function systemEndpoints(app) {
           true
         );
         if (process.env.NODE_ENV === "production") await dumpENV();
-        await Telemetry.sendTelemetry("enabled_multi_user_mode");
+        await Telemetry.sendTelemetry("enabled_multi_user_mode", {
+          multiUserMode: true,
+        });
         response.status(200).json({ success: !!user, error });
       } catch (e) {
         await User.delete({});

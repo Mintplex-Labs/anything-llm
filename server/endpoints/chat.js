@@ -64,11 +64,15 @@ function chatEndpoints(app) {
         }
 
         const result = await chatWithWorkspace(workspace, message, mode, user);
-        await Telemetry.sendTelemetry("sent_chat", {
-          multiUserMode: multiUserMode(response),
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
-          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
-        });
+        await Telemetry.sendTelemetry(
+          "sent_chat",
+          {
+            multiUserMode: multiUserMode(response),
+            LLMSelection: process.env.LLM_PROVIDER || "openai",
+            VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          },
+          user?.id
+        );
         response.status(200).json({ ...result });
       } catch (e) {
         console.error(e);
