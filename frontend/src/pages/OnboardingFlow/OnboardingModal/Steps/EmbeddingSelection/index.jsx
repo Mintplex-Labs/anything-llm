@@ -1,6 +1,7 @@
 import React, { memo, useEffect, useState } from "react";
 import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
+import LocalAiLogo from "../../../../../media/llmprovider/localai.png";
 import System from "../../../../../models/system";
 import PreLoader from "../../../../../components/Preloader";
 import LLMProviderOption from "../../../../../components/LLMSelection/LLMProviderOption";
@@ -75,6 +76,15 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
               description="The enterprise option of OpenAI hosted on Azure services. Provides both chat and embedding."
               checked={embeddingChoice === "azure"}
               image={AzureOpenAiLogo}
+              onClick={updateChoice}
+            />
+            <LLMProviderOption
+              name="LocalAI"
+              value="localai"
+              link="localai.io"
+              description="Self hosted LocalAI embedding engine."
+              checked={embeddingChoice === "localai"}
+              image={LocalAiLogo}
               onClick={updateChoice}
             />
           </div>

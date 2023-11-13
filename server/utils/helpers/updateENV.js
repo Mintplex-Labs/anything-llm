@@ -54,9 +54,18 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // Embedding Settings
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
+  },
+  EmbeddingBasePath: {
+    envKey: "EMBEDDING_BASE_PATH",
+    checks: [isNotEmpty, isValidURL],
+  },
+  EmbeddingModelPref: {
+    envKey: "EMBEDDING_MODEL_PREF",
+    checks: [isNotEmpty],
   },
 
   // Vector Database Selection Settings
@@ -175,7 +184,7 @@ function validAnthropicModel(input = "") {
 }
 
 function supportedEmbeddingModel(input = "") {
-  const supported = ["openai", "azure"];
+  const supported = ["openai", "azure", "localai"];
   return supported.includes(input)
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;

@@ -7,6 +7,7 @@ import System from "../../../models/system";
 import showToast from "../../../utils/toast";
 import OpenAiLogo from "../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../media/llmprovider/azure.png";
+import LocalAiLogo from "../../../media/llmprovider/localai.png";
 import PreLoader from "../../../components/Preloader";
 import LLMProviderOption from "../../../components/LLMSelection/LLMProviderOption";
 
@@ -136,6 +137,15 @@ export default function GeneralEmbeddingPreference() {
                       image={AzureOpenAiLogo}
                       onClick={updateChoice}
                     />
+                    <LLMProviderOption
+                      name="LocalAI"
+                      value="localai"
+                      link="localai.io"
+                      description="Self hosted LocalAI embedding engine."
+                      checked={embeddingChoice === "localai"}
+                      image={LocalAiLogo}
+                      onClick={updateChoice}
+                    />
                   </div>
                   <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
                     {embeddingChoice === "openai" && (
@@ -208,6 +218,26 @@ export default function GeneralEmbeddingPreference() {
                             defaultValue={
                               settings?.AzureOpenAiEmbeddingModelPref
                             }
+                            required={true}
+                            autoComplete="off"
+                            spellCheck={false}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {embeddingChoice === "localai" && (
+                      <>
+                        <div className="flex flex-col w-60">
+                          <label className="text-white text-sm font-semibold block mb-4">
+                            LocalAI Base URL
+                          </label>
+                          <input
+                            type="url"
+                            name="LocalAiBasePath"
+                            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                            placeholder="http://localhost:8080/v1"
+                            defaultValue={settings?.EmbeddingBasePath}
                             required={true}
                             autoComplete="off"
                             spellCheck={false}
