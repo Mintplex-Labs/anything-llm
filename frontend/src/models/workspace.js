@@ -139,7 +139,7 @@ const Workspace = {
     return { response, data };
   },
 
-  // Deprecated
+  // TODO: Deprecated and should be removed from frontend.
   sendChat: async function ({ slug }, message, mode = "query") {
     const chatResult = await fetch(`${API_BASE}/workspace/${slug}/chat`, {
       method: "POST",
