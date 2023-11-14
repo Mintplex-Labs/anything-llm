@@ -16,7 +16,7 @@ export default function NewUserModal() {
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) data[key] = value;
     const { success, error } = await Invite.acceptInvite(code, data);
-    if (!!success) {
+    if (success) {
       const { valid, user, token, message } = await System.requestToken(data);
       if (valid && !!token && !!user) {
         window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
@@ -25,6 +25,7 @@ export default function NewUserModal() {
       } else {
         setError(message);
       }
+      return;
     }
     setError(error);
   };
@@ -67,7 +68,7 @@ export default function NewUserModal() {
                   </label>
                   <input
                     name="password"
-                    type="text"
+                    type="password"
                     className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="Your password"
                     required={true}
