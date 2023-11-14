@@ -74,7 +74,7 @@ const KEY_MAPPING = {
   },
   EmbeddingBasePath: {
     envKey: "EMBEDDING_BASE_PATH",
-    checks: [isNotEmpty, isValidURL],
+    checks: [isNotEmpty, validLLMExternalBasePath],
   },
   EmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",

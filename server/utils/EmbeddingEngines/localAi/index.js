@@ -69,7 +69,7 @@ class LocalAiEmbedder {
 
     if (!!error) throw new Error(`LocalAI Failed to embed: ${error}`);
     return data.length > 0 &&
-    data.every((embd) => embd.hasOwnProperty("embedding"))
+      data.every((embd) => embd.hasOwnProperty("embedding"))
       ? data.map((embd) => embd.embedding)
       : null;
   }
