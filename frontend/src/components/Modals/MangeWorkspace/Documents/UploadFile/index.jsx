@@ -5,10 +5,16 @@ import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";
 import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
+import Workspace from "../../../../../models/workspace";
 
 export default function UploadFile({ workspace, fileTypes, fetchKeys }) {
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
+  const [link, setLink] = useState("https://en.wikipedia.org/wiki/Node.js");
+
+  const handleSendLink = async () => {
+    await Workspace.uploadLink(workspace.slug, link);
+  };
 
   const handleUploadSuccess = () => {
     fetchKeys(true);
@@ -100,6 +106,25 @@ export default function UploadFile({ workspace, fileTypes, fetchKeys }) {
             ))}
           </div>
         )}
+      </div>
+      <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2">
+        or submit a link
+      </div>
+      <div className="flex gap-x-2">
+        <input
+          className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          type="text"
+          placeholder={link}
+          onChange={(e) => {
+            setLink(e.target.value);
+          }}
+        />
+        <button
+          onClick={handleSendLink}
+          className="bg-transparent hover:bg-slate-200 hover:text-slate-800 border border-white text-sm text-white p-2.5 rounded-lg transition-all duration-300"
+        >
+          Process
+        </button>
       </div>
       <div className="mt-6 text-center text-white text-opacity-80 text-xs font-medium w-[560px]">
         These files will be uploaded to the document processor running on this

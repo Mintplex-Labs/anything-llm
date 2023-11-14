@@ -9,6 +9,7 @@ const { setupMulter } = require("../utils/files/multer");
 const {
   checkPythonAppAlive,
   processDocument,
+  processLink,
 } = require("../utils/files/documentProcessor");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
@@ -103,6 +104,38 @@ function workspaceEndpoints(app) {
         `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
       );
       await Telemetry.sendTelemetry("document_uploaded");
+      response.status(200).json({ success: true, error: null });
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/upload-link",
+    [validatedRequest],
+    async (request, response) => {
+      const { link = "" } = reqBody(request);
+      const processingOnline = await checkPythonAppAlive();
+
+      if (!processingOnline) {
+        response
+          .status(500)
+          .json({
+            success: false,
+            error: `Python processing API is not online. Link ${link} will not be processed automatically.`,
+          })
+          .end();
+        return;
+      }
+
+      const { success, reason } = await processLink(link);
+      if (!success) {
+        response.status(500).json({ success: false, error: reason }).end();
+        return;
+      }
+
+      console.log(
+        `Link ${link} uploaded processed and successfully. It is now available in documents.`
+      );
+      await Telemetry.sendTelemetry("link_uploaded");
       response.status(200).json({ success: true, error: null });
     }
   );
