@@ -25,6 +25,8 @@ const SystemSettings = {
       MultiUserMode: await this.isMultiUserMode(),
       VectorDB: vectorDB,
       EmbeddingEngine: process.env.EMBEDDING_ENGINE,
+      EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
+      EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       ...(vectorDB === "pinecone"
         ? {
             PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,

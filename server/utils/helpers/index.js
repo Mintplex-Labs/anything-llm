@@ -59,6 +59,9 @@ function getEmbeddingEngineSelection() {
         AzureOpenAiEmbedder,
       } = require("../EmbeddingEngines/azureOpenAi");
       return new AzureOpenAiEmbedder();
+    case "localai":
+      const { LocalAiEmbedder } = require("../EmbeddingEngines/localAi");
+      return new LocalAiEmbedder();
     default:
       return null;
   }
