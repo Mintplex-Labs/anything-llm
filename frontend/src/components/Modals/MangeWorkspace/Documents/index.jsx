@@ -8,7 +8,11 @@ import WorkspaceDirectory from "./WorkspaceDirectory";
 
 const COST_PER_TOKEN = 0.0004;
 
-export default function DocumentSettings({ workspace, fileTypes }) {
+export default function DocumentSettings({
+  workspace,
+  fileTypes,
+  systemSettings,
+}) {
   const [highlightWorkspace, setHighlightWorkspace] = useState(false);
   const [availableDocs, setAvailableDocs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -135,8 +139,15 @@ export default function DocumentSettings({ workspace, fileTypes }) {
       }
     });
 
-    const dollarAmount = (totalTokenCount / 1000) * COST_PER_TOKEN;
-    setEmbeddingsCost(dollarAmount);
+    // Do not do cost estimation unless the embedding engine is OpenAi.
+    if (
+      !systemSettings?.EmbeddingEngine ||
+      systemSettings.EmbeddingEngine === "openai"
+    ) {
+      const dollarAmount = (totalTokenCount / 1000) * COST_PER_TOKEN;
+      setEmbeddingsCost(dollarAmount);
+    }
+
     setMovedItems([...movedItems, ...newMovedItems]);
 
     let newAvailableDocs = JSON.parse(JSON.stringify(availableDocs));

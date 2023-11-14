@@ -22,9 +22,6 @@ class LocalAiEmbedder {
   }
 
   async embedChunks(textChunks = []) {
-    // Because there is a hard POST limit on how many chunks can be sent at once to OpenAI (~8mb)
-    // we concurrently execute each max batch of text chunks possible.
-    // Refer to constructor embeddingChunkLimit for more info.
     const embeddingRequests = [];
     for (const chunk of toChunks(textChunks, this.embeddingChunkLimit)) {
       embeddingRequests.push(

@@ -15,11 +15,14 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const [selectedTab, setSelectedTab] = useState("documents");
   const [workspace, setWorkspace] = useState(null);
   const [fileTypes, setFileTypes] = useState(null);
+  const [settings, setSettings] = useState({});
 
   useEffect(() => {
     async function checkSupportedFiletypes() {
       const acceptedTypes = await System.acceptedDocumentTypes();
+      const _settings = await System.keys();
       setFileTypes(acceptedTypes ?? {});
+      setSettings(_settings ?? {});
     }
     checkSupportedFiletypes();
   }, []);
@@ -104,7 +107,11 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
           </div>
           <Suspense fallback={<div>Loading...</div>}>
             <div className={selectedTab === "documents" ? "" : "hidden"}>
-              <DocumentSettings workspace={workspace} fileTypes={fileTypes} />
+              <DocumentSettings
+                workspace={workspace}
+                fileTypes={fileTypes}
+                systemSettings={settings}
+              />
             </div>
             <div className={selectedTab === "settings" ? "" : "hidden"}>
               <WorkspaceSettings workspace={workspace} fileTypes={fileTypes} />
