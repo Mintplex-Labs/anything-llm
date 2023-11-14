@@ -39,47 +39,42 @@ export default {
   apiDocs: () => {
     return `${API_BASE}/docs`;
   },
-  general: {
-    llmPreference: () => {
-      return "/general/llm-preference";
-    },
-    embeddingPreference: () => {
-      return "/general/embedding-preference";
-    },
-    vectorDatabase: () => {
-      return "/general/vector-database";
-    },
-    exportImport: () => {
-      return "/general/export-import";
-    },
-    security: () => {
-      return "/general/security";
-    },
-    appearance: () => {
-      return "/general/appearance";
-    },
-    apiKeys: () => {
-      return "/general/api-keys";
-    },
-    chats: () => {
-      return "/general/workspace-chats";
-    },
-  },
-  admin: {
+  settings: {
     system: () => {
-      return `/admin/system-preferences`;
+      return `/settings/system-preferences`;
     },
     users: () => {
-      return `/admin/users`;
+      return `/settings/users`;
     },
     invites: () => {
-      return `/admin/invites`;
+      return `/settings/invites`;
     },
     workspaces: () => {
-      return `/admin/workspaces`;
+      return `/settings/workspaces`;
     },
     chats: () => {
-      return "/admin/workspace-chats";
+      return "/settings/workspace-chats";
+    },
+    llmPreference: () => {
+      return "/settings/llm-preference";
+    },
+    embeddingPreference: () => {
+      return "/settings/embedding-preference";
+    },
+    vectorDatabase: () => {
+      return "/settings/vector-database";
+    },
+    exportImport: () => {
+      return "/settings/export-import";
+    },
+    security: () => {
+      return "/settings/security";
+    },
+    appearance: () => {
+      return "/settings/appearance";
+    },
+    apiKeys: () => {
+      return "/settings/api-keys";
     },
   },
 };

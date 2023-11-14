@@ -358,3 +358,24 @@ dialog::backdrop {
 .user-reply > div:first-of-type {
   border: 2px solid white;
 }
+
+.reply > *:last-child::after {
+  content: "|";
+  animation: blink 1.5s steps(1) infinite;
+  color: white;
+  font-size: 14px;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}

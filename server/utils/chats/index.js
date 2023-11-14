@@ -242,8 +242,11 @@ function chatPrompt(workspace) {
 }
 
 module.exports = {
+  recentChatHistory,
   convertToPromptHistory,
   convertToChatHistory,
   chatWithWorkspace,
   chatPrompt,
+  grepCommand,
+  VALID_COMMANDS,
 };
