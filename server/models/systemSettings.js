@@ -99,7 +99,7 @@ const SystemSettings = {
         ? {
             LocalAiBasePath: process.env.LOCAL_AI_BASE_PATH,
             LocalAiModelPref: process.env.LOCAL_AI_MODEL_PREF,
-            LocalAiTokenLimit: process.env.LOCALAI_MODEL_TOKEN_LIMIT,
+            LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
 
             // For embedding credentials when localai is selected.
             OpenAiKey: !!process.env.OPEN_AI_KEY,

@@ -59,6 +59,10 @@ const KEY_MAPPING = {
     envKey: "LOCAL_AI_BASE_PATH",
     checks: [isNotEmpty, isValidURL],
   },
+  LocalAiModelPref: {
+    envKey: "LOCAL_AI_MODEL_PREF",
+    checks: [],
+  },
   LocalAiTokenLimit: {
     envKey: "LOCAL_AI_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
@@ -174,7 +178,9 @@ function validLMStudioBasePath(input = "") {
 }
 
 function supportedLLM(input = "") {
-  return ["openai", "azure", "anthropic", "lmstudio", "localai"].includes(input);
+  return ["openai", "azure", "anthropic", "lmstudio", "localai"].includes(
+    input
+  );
 }
 
 function validAnthropicModel(input = "") {

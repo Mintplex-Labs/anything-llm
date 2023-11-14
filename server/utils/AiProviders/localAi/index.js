@@ -2,12 +2,13 @@ const { chatPrompt } = require("../../chats");
 
 class LocalAiLLM {
   constructor(embedder = null) {
-    if (!process.env.LOCAL_AI_BASE_PATH) throw new Error("No LocalAI Base Path was set.");
+    if (!process.env.LOCAL_AI_BASE_PATH)
+      throw new Error("No LocalAI Base Path was set.");
 
     const { Configuration, OpenAIApi } = require("openai");
     const config = new Configuration({
-      apiKey: 'sk-12345',
-      basePath: process.env.LOCAL_AI_BASE_PATH
+      apiKey: "sk-12345",
+      basePath: process.env.LOCAL_AI_BASE_PATH,
     });
     this.openai = new OpenAIApi(config);
     this.model = process.env.LOCAL_AI_MODEL_PREF;

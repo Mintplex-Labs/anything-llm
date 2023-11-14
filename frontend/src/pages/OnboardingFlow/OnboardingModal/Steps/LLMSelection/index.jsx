@@ -128,9 +128,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
             {llmChoice === "lmstudio" && (
               <LMStudioOptions settings={settings} />
             )}
-            {llmChoice === "localai" && (
-              <LocalAiOptions settings={settings} />
-            )}
+            {llmChoice === "localai" && <LocalAiOptions settings={settings} />}
           </div>
         </div>
         <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
