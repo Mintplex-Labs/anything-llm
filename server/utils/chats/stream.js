@@ -211,12 +211,18 @@ function handleStreamResponses(response, stream, responseProps) {
         .filter((line) => line.trim() !== "");
 
       for (const line of lines) {
+        let validJSON = false;
         const message = chunk + line.replace(/^data: /, "");
 
         // JSON chunk is incomplete and has not ended yet
         // so we need to stitch it together. You would think JSON
         // chunks would only come complete - but they don't!
-        if (message.slice(-3) !== "}]}") {
+        try {
+          JSON.parse(message);
+          validJSON = true;
+        } catch {}
+
+        if (!validJSON) {
           chunk += message;
           continue;
         } else {
@@ -234,12 +240,12 @@ function handleStreamResponses(response, stream, responseProps) {
           });
           resolve(fullText);
         } else {
-          let finishReason;
+          let finishReason = null;
           let token = "";
           try {
             const json = JSON.parse(message);
             token = json?.choices?.[0]?.delta?.content;
-            finishReason = json?.choices?.[0]?.finish_reason;
+            finishReason = json?.choices?.[0]?.finish_reason || null;
           } catch {
             continue;
           }

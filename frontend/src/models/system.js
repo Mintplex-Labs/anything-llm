@@ -319,13 +319,14 @@ const System = {
         return false;
       });
   },
-  customModels: async function (provider, apiKey) {
+  customModels: async function (provider, apiKey = null, basePath = null) {
     return fetch(`${API_BASE}/system/custom-models`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({
         provider,
         apiKey,
+        basePath,
       }),
     })
       .then((res) => {
