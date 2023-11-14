@@ -11,36 +11,40 @@ const {
   processDocument,
 } = require("../utils/files/documentProcessor");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { SystemSettings } = require("../models/systemSettings");
 const { Telemetry } = require("../models/telemetry");
+const { flexUserRoleValid } = require("../utils/middleware/multiUserProtected");
 const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
   if (!app) return;
 
-  app.post("/workspace/new", [validatedRequest], async (request, response) => {
-    try {
-      const user = await userFromSession(request, response);
-      const { name = null, onboardingComplete = false } = reqBody(request);
-      const { workspace, message } = await Workspace.new(name, user?.id);
-      await Telemetry.sendTelemetry(
-        "workspace_created",
-        {
-          multiUserMode: multiUserMode(response),
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
-          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
-        },
-        user?.id
-      );
-      if (onboardingComplete === true)
-        await Telemetry.sendTelemetry("onboarding_complete");
+  app.post(
+    "/workspace/new",
+    [validatedRequest, flexUserRoleValid],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { name = null, onboardingComplete = false } = reqBody(request);
+        const { workspace, message } = await Workspace.new(name, user?.id);
+        await Telemetry.sendTelemetry(
+          "workspace_created",
+          {
+            multiUserMode: multiUserMode(response),
+            LLMSelection: process.env.LLM_PROVIDER || "openai",
+            VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          },
+          user?.id
+        );
+        if (onboardingComplete === true)
+          await Telemetry.sendTelemetry("onboarding_complete");
 
-      response.status(200).json({ workspace, message });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+        response.status(200).json({ workspace, message });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.post(
     "/workspace/:slug/update",
@@ -142,7 +146,7 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid],
     async (request, response) => {
       try {
         const { slug = "" } = request.params;
@@ -155,16 +159,6 @@ function workspaceEndpoints(app) {
         if (!workspace) {
           response.sendStatus(400).end();
           return;
-        }
-
-        if (multiUserMode(response) && user.role !== "admin") {
-          const canDelete =
-            (await SystemSettings.get({ label: "users_can_delete_workspaces" }))
-              ?.value === "true";
-          if (!canDelete) {
-            response.sendStatus(500).end();
-            return;
-          }
         }
 
         await WorkspaceChats.delete({ workspaceId: Number(workspace.id) });

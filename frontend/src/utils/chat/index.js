@@ -19,7 +19,8 @@ export default function handleChat(
         sources,
         closed: true,
         error,
-        animate: true,
+        animate: false,
+        pending: false,
       },
     ]);
     _chatHistory.push({
@@ -29,7 +30,8 @@ export default function handleChat(
       sources,
       closed: true,
       error,
-      animate: true,
+      animate: false,
+      pending: false,
     });
   } else if (type === "textResponse") {
     setLoadingResponse(false);
@@ -42,7 +44,8 @@ export default function handleChat(
         sources,
         closed: close,
         error,
-        animate: true,
+        animate: !close,
+        pending: false,
       },
     ]);
     _chatHistory.push({
@@ -52,8 +55,36 @@ export default function handleChat(
       sources,
       closed: close,
       error,
-      animate: true,
+      animate: !close,
+      pending: false,
     });
+  } else if (type === "textResponseChunk") {
+    const chatIdx = _chatHistory.findIndex((chat) => chat.uuid === uuid);
+    if (chatIdx !== -1) {
+      const existingHistory = { ..._chatHistory[chatIdx] };
+      const updatedHistory = {
+        ...existingHistory,
+        content: existingHistory.content + textResponse,
+        sources,
+        error,
+        closed: close,
+        animate: !close,
+        pending: false,
+      };
+      _chatHistory[chatIdx] = updatedHistory;
+    } else {
+      _chatHistory.push({
+        uuid,
+        sources,
+        error,
+        content: textResponse,
+        role: "assistant",
+        closed: close,
+        animate: !close,
+        pending: false,
+      });
+    }
+    setChatHistory([..._chatHistory]);
   }
 }
 

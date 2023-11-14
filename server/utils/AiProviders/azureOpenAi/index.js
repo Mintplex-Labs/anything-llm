@@ -22,6 +22,10 @@ class AzureOpenAiLLM extends AzureOpenAiEmbedder {
     };
   }
 
+  streamingEnabled() {
+    return "streamChat" in this && "streamGetChatCompletion" in this;
+  }
+
   // Sure the user selected a proper value for the token limit
   // could be any of these https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#gpt-4-models
   // and if undefined - assume it is the lowest end.

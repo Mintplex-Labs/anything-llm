@@ -39,6 +39,10 @@ function getLLMProvider() {
       const { LMStudioLLM } = require("../AiProviders/lmStudio");
       embedder = getEmbeddingEngineSelection();
       return new LMStudioLLM(embedder);
+    case "localai":
+      const { LocalAiLLM } = require("../AiProviders/localAi");
+      embedder = getEmbeddingEngineSelection();
+      return new LocalAiLLM(embedder);
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
   }

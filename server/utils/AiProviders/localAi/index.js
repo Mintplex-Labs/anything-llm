@@ -1,58 +1,44 @@
-const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
 const { chatPrompt } = require("../../chats");
 
-class OpenAiLLM extends OpenAiEmbedder {
-  constructor() {
-    super();
-    const { Configuration, OpenAIApi } = require("openai");
-    if (!process.env.OPEN_AI_KEY) throw new Error("No OpenAI API key was set.");
+class LocalAiLLM {
+  constructor(embedder = null) {
+    if (!process.env.LOCAL_AI_BASE_PATH)
+      throw new Error("No LocalAI Base Path was set.");
 
+    const { Configuration, OpenAIApi } = require("openai");
     const config = new Configuration({
-      apiKey: process.env.OPEN_AI_KEY,
+      basePath: process.env.LOCAL_AI_BASE_PATH,
     });
     this.openai = new OpenAIApi(config);
-    this.model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
+    this.model = process.env.LOCAL_AI_MODEL_PREF;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
+
+    if (!embedder)
+      throw new Error(
+        "INVALID LOCAL AI SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use LocalAI as your LLM."
+      );
+    this.embedder = embedder;
   }
 
   streamingEnabled() {
     return "streamChat" in this && "streamGetChatCompletion" in this;
   }
 
+  // Ensure the user set a value for the token limit
+  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    switch (this.model) {
-      case "gpt-3.5-turbo":
-        return 4096;
-      case "gpt-4":
-        return 8192;
-      case "gpt-4-1106-preview":
-        return 128000;
-      case "gpt-4-32k":
-        return 32000;
-      default:
-        return 4096; // assume a fine-tune 3.5
-    }
+    const limit = process.env.LOCAL_AI_MODEL_TOKEN_LIMIT || 4096;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No LocalAi token context limit was set.");
+    return Number(limit);
   }
 
-  async isValidChatCompletionModel(modelName = "") {
-    const validModels = [
-      "gpt-4",
-      "gpt-3.5-turbo",
-      "gpt-4-1106-preview",
-      "gpt-4-32k",
-    ];
-    const isPreset = validModels.some((model) => modelName === model);
-    if (isPreset) return true;
-
-    const model = await this.openai
-      .retrieveModel(modelName)
-      .then((res) => res.data)
-      .catch(() => null);
-    return !!model;
+  async isValidChatCompletionModel(_ = "") {
+    return true;
   }
 
   constructPrompt({
@@ -74,42 +60,15 @@ Context:
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  async isSafe(input = "") {
-    const { flagged = false, categories = {} } = await this.openai
-      .createModeration({ input })
-      .then((json) => {
-        const res = json.data;
-        if (!res.hasOwnProperty("results"))
-          throw new Error("OpenAI moderation: No results!");
-        if (res.results.length === 0)
-          throw new Error("OpenAI moderation: No results length!");
-        return res.results[0];
-      })
-      .catch((error) => {
-        throw new Error(
-          `OpenAI::CreateModeration failed with: ${error.message}`
-        );
-      });
-
-    if (!flagged) return { safe: true, reasons: [] };
-    const reasons = Object.keys(categories)
-      .map((category) => {
-        const value = categories[category];
-        if (value === true) {
-          return category.replace("/", " or ");
-        } else {
-          return null;
-        }
-      })
-      .filter((reason) => !!reason);
-
-    return { safe: false, reasons };
+  async isSafe(_input = "") {
+    // Not implemented so must be stubbed
+    return { safe: true, reasons: [] };
   }
 
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
+        `LocalAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const textResponse = await this.openai
@@ -129,14 +88,14 @@ Context:
       .then((json) => {
         const res = json.data;
         if (!res.hasOwnProperty("choices"))
-          throw new Error("OpenAI chat: No results!");
+          throw new Error("LocalAI chat: No results!");
         if (res.choices.length === 0)
-          throw new Error("OpenAI chat: No results length!");
+          throw new Error("LocalAI chat: No results length!");
         return res.choices[0].message.content;
       })
       .catch((error) => {
         throw new Error(
-          `OpenAI::createChatCompletion failed with: ${error.message}`
+          `LocalAI::createChatCompletion failed with: ${error.message}`
         );
       });
 
@@ -146,7 +105,7 @@ Context:
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
+        `LocalAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.createChatCompletion(
@@ -172,7 +131,7 @@ Context:
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
+        `LocalAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const { data } = await this.openai.createChatCompletion({
@@ -188,7 +147,7 @@ Context:
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
+        `LocalAi chat: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.createChatCompletion(
@@ -203,6 +162,14 @@ Context:
     return streamRequest;
   }
 
+  // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
+  async embedTextInput(textInput) {
+    return await this.embedder.embedTextInput(textInput);
+  }
+  async embedChunks(textChunks = []) {
+    return await this.embedder.embedChunks(textChunks);
+  }
+
   async compressMessages(promptArgs = {}, rawHistory = []) {
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
@@ -211,5 +178,5 @@ Context:
 }
 
 module.exports = {
-  OpenAiLLM,
+  LocalAiLLM,
 };
