@@ -7,7 +7,6 @@ class LocalAiLLM {
 
     const { Configuration, OpenAIApi } = require("openai");
     const config = new Configuration({
-      apiKey: "sk-12345",
       basePath: process.env.LOCAL_AI_BASE_PATH,
     });
     this.openai = new OpenAIApi(config);
@@ -25,17 +24,20 @@ class LocalAiLLM {
     this.embedder = embedder;
   }
 
+  streamingEnabled() {
+    return "streamChat" in this && "streamGetChatCompletion" in this;
+  }
+
   // Ensure the user set a value for the token limit
   // and if undefined - assume 4096 window.
   promptWindowLimit() {
     const limit = process.env.LOCAL_AI_MODEL_TOKEN_LIMIT || 4096;
     if (!limit || isNaN(Number(limit)))
-      throw new Error("No LMStudio token context limit was set.");
+      throw new Error("No LocalAi token context limit was set.");
     return Number(limit);
   }
 
   async isValidChatCompletionModel(_ = "") {
-    // Not implemented so must be stubbed
     return true;
   }
 
@@ -64,15 +66,14 @@ Context:
   }
 
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const model = process.env.LOCAL_MODEL_PREF;
-    if (!(await this.isValidChatCompletionModel(model)))
+    if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `LocalAI chat: ${model} is not valid for chat completion!`
+        `LocalAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const textResponse = await this.openai
       .createChatCompletion({
-        model,
+        model: this.model,
         temperature: Number(workspace?.openAiTemp ?? 0.7),
         n: 1,
         messages: await this.compressMessages(
@@ -101,6 +102,32 @@ Context:
     return textResponse;
   }
 
+  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
+    if (!(await this.isValidChatCompletionModel(this.model)))
+      throw new Error(
+        `LocalAI chat: ${this.model} is not valid for chat completion!`
+      );
+
+    const streamRequest = await this.openai.createChatCompletion(
+      {
+        model: this.model,
+        stream: true,
+        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        n: 1,
+        messages: await this.compressMessages(
+          {
+            systemPrompt: chatPrompt(workspace),
+            userPrompt: prompt,
+            chatHistory,
+          },
+          rawHistory
+        ),
+      },
+      { responseType: "stream" }
+    );
+    return streamRequest;
+  }
+
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
@@ -115,6 +142,24 @@ Context:
 
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
+  }
+
+  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
+    if (!(await this.isValidChatCompletionModel(this.model)))
+      throw new Error(
+        `LocalAi chat: ${this.model} is not valid for chat completion!`
+      );
+
+    const streamRequest = await this.openai.createChatCompletion(
+      {
+        model: this.model,
+        stream: true,
+        messages,
+        temperature,
+      },
+      { responseType: "stream" }
+    );
+    return streamRequest;
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
