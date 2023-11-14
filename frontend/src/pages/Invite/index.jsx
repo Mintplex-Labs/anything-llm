@@ -40,7 +40,7 @@ export default function InvitePage() {
   if (result.status === "invalid") {
     return (
       <div className="w-screen h-screen overflow-hidden bg-sidebar flex items-center justify-center">
-        <p className="text-red-600 text-lg">{result.message}</p>
+        <p className="text-red-400 text-lg">{result.message}</p>
       </div>
     );
   }
