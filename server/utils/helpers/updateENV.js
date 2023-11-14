@@ -47,7 +47,7 @@ const KEY_MAPPING = {
   // LMStudio Settings
   LMStudioBasePath: {
     envKey: "LMSTUDIO_BASE_PATH",
-    checks: [isNotEmpty, validLMStudioBasePath],
+    checks: [isNotEmpty, validLLMExternalBasePath],
   },
   LMStudioTokenLimit: {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
@@ -57,7 +57,7 @@ const KEY_MAPPING = {
   // LocalAI Settings
   LocalAiBasePath: {
     envKey: "LOCAL_AI_BASE_PATH",
-    checks: [isNotEmpty, isValidURL],
+    checks: [isNotEmpty, validLLMExternalBasePath],
   },
   LocalAiModelPref: {
     envKey: "LOCAL_AI_MODEL_PREF",
@@ -165,7 +165,7 @@ function validAnthropicApiKey(input = "") {
     : "Anthropic Key must start with sk-ant-";
 }
 
-function validLMStudioBasePath(input = "") {
+function validLLMExternalBasePath(input = "") {
   try {
     new URL(input);
     if (!input.includes("v1")) return "URL must include /v1";
