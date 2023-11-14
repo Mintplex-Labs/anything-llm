@@ -17,10 +17,9 @@ def process_file():
 @api.route('/process-link', methods=['POST'])
 def process_link():
   content = request.json
-  print(content)
   url = content.get('link')
   print(f"Processing {url}")
-  success, reason, link_meta = process_single_link(url)
+  success, reason = process_single_link(url)
   return json.dumps({'url': url, 'success': success, 'reason': reason})
 
 

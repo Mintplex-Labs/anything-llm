@@ -140,6 +140,7 @@ export default function Directory({
           fileTypes={fileTypes}
           workspace={workspace}
           fetchKeys={fetchKeys}
+          setLoading={setLoading}
         />
       </div>
     </div>

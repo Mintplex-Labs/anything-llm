@@ -1,11 +1,12 @@
 import os, json, tempfile
 from urllib.parse import urlparse
-from requests_html import HTMLSession
+from requests_html import HTMLSession, AsyncHTMLSession
 from langchain.document_loaders import UnstructuredHTMLLoader
 from .link_utils import  append_meta
 from .utils import tokenize, ada_v2_cost
 import requests
 from bs4 import BeautifulSoup
+import asyncio
 
 # Example Channel URL https://tim.blog/2022/08/09/nft-insider-trading-policy/
 def link():
@@ -67,34 +68,53 @@ def link():
   exit(0)
 
 def process_single_link(url):
-    if not url:
-        return False, "Invalid URL!", None
-
     try:
-        session = HTMLSession()
+        print(f"Working on {url}...")
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        session = AsyncHTMLSession()
         req = session.get(url)
-        if not req.ok:
-            return False, "Could not reach this URL.", None
-        req.html.render()
+
+        if req:
+            return False, "Could not reach this URL."
+
+        loop.run_until_complete(req.html.render(timeout=10))
+        full_text = None
         with tempfile.NamedTemporaryFile(mode = "w") as tmp:
-            tmp.write(req.html.html)
-            tmp.seek(0)
-            loader = UnstructuredHTMLLoader(tmp.name)
-            data = loader.load()[0]
-            full_text = data.page_content
+          tmp.write(req.html.html)
+          tmp.seek(0)
+          loader = UnstructuredHTMLLoader(tmp.name)
+          data = loader.load()[0]
+          full_text = data.page_content
+          print("full text 1: ", full_text)
+          tmp.close()
+          print(full_text)
+
+        print("full text: ", full_text)
+
 
         if full_text:
             link_meta = append_meta(req, full_text, True)
-            token_count = len(tokenize(full_text))
-            link_meta['pageContent'] = full_text
-            link_meta['token_count_estimate'] = token_count
 
-            return True, None, link_meta
+            source = urlparse(req.url)
+            transaction_output_dir = "../server/storage/documents/custom-documents"
+            transaction_output_filename = f"website-{source.netloc}-{source.path.replace('/', '_')}.json"
+
+            if not os.path.isdir(transaction_output_dir):
+                os.makedirs(transaction_output_dir)
+
+            file_path = os.path.join(transaction_output_dir, transaction_output_filename)
+            with open(file_path, 'w', encoding='utf-8') as file:
+                json.dump(link_meta, file, ensure_ascii=False, indent=4)
+
+
+            return True, "Content fetched and saved."
+
         else:
-            return False, "Could not parse any meaningful data from this URL.", None
+            return False, "Could not parse any meaningful data from this URL."
 
     except Exception as e:
-        return False, str(e), None
+        return False, str(e)
 
 def crawler():
   prompt = "Paste in root URI of the pages of interest: "

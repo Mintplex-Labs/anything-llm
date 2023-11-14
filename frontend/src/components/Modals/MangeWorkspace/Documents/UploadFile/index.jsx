@@ -7,13 +7,22 @@ import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
 
-export default function UploadFile({ workspace, fileTypes, fetchKeys }) {
+export default function UploadFile({ workspace, fileTypes, fetchKeys, setLoading }) {
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
-  const [link, setLink] = useState("https://en.wikipedia.org/wiki/Node.js");
+  const [link, setLink] = useState("");
+  const [validLink, setValidLink] = useState(false);
 
   const handleSendLink = async () => {
-    await Workspace.uploadLink(workspace.slug, link);
+    setLoading(true);
+    const { response, data } = await Workspace.uploadLink(workspace.slug, link);
+    if (!response.ok) {
+      showToast(`Error uploading link: ${data.error}`, "error");
+    } else {
+      fetchKeys(true);
+      showToast("Link uploaded successfully", "success");
+    }
+    setLoading(false);
   };
 
   const handleUploadSuccess = () => {
@@ -114,7 +123,7 @@ export default function UploadFile({ workspace, fileTypes, fetchKeys }) {
         <input
           className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           type="text"
-          placeholder={link}
+          placeholder={"https://en.wikipedia.org/wiki/Node.js"}
           onChange={(e) => {
             setLink(e.target.value);
           }}
