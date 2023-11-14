@@ -25,6 +25,8 @@ const SystemSettings = {
       MultiUserMode: await this.isMultiUserMode(),
       VectorDB: vectorDB,
       EmbeddingEngine: process.env.EMBEDDING_ENGINE,
+      EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
+      EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       ...(vectorDB === "pinecone"
         ? {
             PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
@@ -88,6 +90,20 @@ const SystemSettings = {
             LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
 
             // For embedding credentials when lmstudio is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
+
+      ...(llmProvider === "localai"
+        ? {
+            LocalAiBasePath: process.env.LOCAL_AI_BASE_PATH,
+            LocalAiModelPref: process.env.LOCAL_AI_MODEL_PREF,
+            LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
+
+            // For embedding credentials when localai is selected.
             OpenAiKey: !!process.env.OPEN_AI_KEY,
             AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
             AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,

@@ -47,16 +47,38 @@ const KEY_MAPPING = {
   // LMStudio Settings
   LMStudioBasePath: {
     envKey: "LMSTUDIO_BASE_PATH",
-    checks: [isNotEmpty, validLMStudioBasePath],
+    checks: [isNotEmpty, validLLMExternalBasePath],
   },
   LMStudioTokenLimit: {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
 
+  // LocalAI Settings
+  LocalAiBasePath: {
+    envKey: "LOCAL_AI_BASE_PATH",
+    checks: [isNotEmpty, validLLMExternalBasePath],
+  },
+  LocalAiModelPref: {
+    envKey: "LOCAL_AI_MODEL_PREF",
+    checks: [],
+  },
+  LocalAiTokenLimit: {
+    envKey: "LOCAL_AI_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
+  },
+  EmbeddingBasePath: {
+    envKey: "EMBEDDING_BASE_PATH",
+    checks: [isNotEmpty, validLLMExternalBasePath],
+  },
+  EmbeddingModelPref: {
+    envKey: "EMBEDDING_MODEL_PREF",
+    checks: [isNotEmpty],
   },
 
   // Vector Database Selection Settings
@@ -151,7 +173,7 @@ function validAnthropicApiKey(input = "") {
     : "Anthropic Key must start with sk-ant-";
 }
 
-function validLMStudioBasePath(input = "") {
+function validLLMExternalBasePath(input = "") {
   try {
     new URL(input);
     if (!input.includes("v1")) return "URL must include /v1";
@@ -164,7 +186,9 @@ function validLMStudioBasePath(input = "") {
 }
 
 function supportedLLM(input = "") {
-  return ["openai", "azure", "anthropic", "lmstudio"].includes(input);
+  return ["openai", "azure", "anthropic", "lmstudio", "localai"].includes(
+    input
+  );
 }
 
 function validAnthropicModel(input = "") {
@@ -175,7 +199,7 @@ function validAnthropicModel(input = "") {
 }
 
 function supportedEmbeddingModel(input = "") {
-  const supported = ["openai", "azure"];
+  const supported = ["openai", "azure", "localai"];
   return supported.includes(input)
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;

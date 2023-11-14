@@ -12,7 +12,7 @@ class AnthropicLLM {
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
     this.anthropic = anthropic;
-    this.model = process.env.ANTHROPIC_MODEL_PREF;
+    this.model = process.env.ANTHROPIC_MODEL_PREF || "claude-2";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
