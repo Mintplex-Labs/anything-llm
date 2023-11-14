@@ -615,8 +615,12 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const { provider, apiKey } = reqBody(request);
-        const { models, error } = await getCustomModels(provider, apiKey);
+        const { provider, apiKey = null, basePath = null } = reqBody(request);
+        const { models, error } = await getCustomModels(
+          provider,
+          apiKey,
+          basePath
+        );
         return response.status(200).json({
           models,
           error,
