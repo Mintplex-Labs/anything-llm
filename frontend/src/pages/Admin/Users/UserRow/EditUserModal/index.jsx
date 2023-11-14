@@ -86,21 +86,25 @@ export default function EditUserModal({ currentUser, user }) {
                     htmlFor="role"
                     className="block mb-2 text-sm font-medium text-white"
                   >
-                    Role
+                    {currentUser?.id !== user.id && currentUser?.role
+                      ? "Role"
+                      : `Role: ${user.role}`}
                   </label>
-                  <select
-                    name="role"
-                    required={true}
-                    defaultValue={user.role}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white border border-gray-500 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="default">Default</option>
-                    <option value="manager">Manager</option>
-                    {currentUser?.role === "admin" && (
-                      <option value="admin">Administrator</option>
-                    )}
-                  </select>
+                  {currentUser?.id !== user.id && currentUser?.role && (
+                    <select
+                      name="role"
+                      required={true}
+                      defaultValue={user.role}
+                      onChange={(e) => setRole(e.target.value)}
+                      className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white border border-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="default">Default</option>
+                      <option value="manager">Manager</option>
+                      {currentUser?.role === "admin" && (
+                        <option value="admin">Administrator</option>
+                      )}
+                    </select>
+                  )}
                   <RoleHintDisplay role={role} />
                 </div>
                 {error && (
