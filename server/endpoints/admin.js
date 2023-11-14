@@ -55,6 +55,28 @@ function adminEndpoints(app) {
       try {
         const { id } = request.params;
         const updates = reqBody(request);
+        const user = await User.get({ id: Number(id) });
+
+        // Check to make sure with this update that includes a role change to
+        // something other than admin that we still have at least one admin left.
+        if (
+          updates.hasOwnProperty("role") && // has admin prop to change
+          updates.role !== "admin" && // and we are changing to non-admin
+          user.role === "admin" // and they currently are an admin
+        ) {
+          const adminCount = await User.count({ role: "admin" });
+          if (adminCount - 1 <= 0) {
+            response
+              .status(200)
+              .json({
+                success: false,
+                error:
+                  "No system admins will remain if you do this. Update failed.",
+              });
+            return;
+          }
+        }
+
         const { success, error } = await User.update(id, updates);
         response.status(200).json({ success, error });
       } catch (e) {
