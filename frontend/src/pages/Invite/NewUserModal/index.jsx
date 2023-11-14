@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import Invite from "../../../models/invite";
 import paths from "../../../utils/paths";
 import { useParams } from "react-router-dom";
+import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
+import System from "../../../models/system";
 
 export default function NewUserModal() {
   const { code } = useParams();
   const [error, setError] = useState(null);
+
   const handleCreate = async (e) => {
     setError(null);
     e.preventDefault();
@@ -13,7 +16,16 @@ export default function NewUserModal() {
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) data[key] = value;
     const { success, error } = await Invite.acceptInvite(code, data);
-    if (!!success) window.location.replace(paths.home());
+    if (!!success) {
+      const { valid, user, token, message } = await System.requestToken(data);
+      if (valid && !!token && !!user) {
+        window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
+        window.localStorage.setItem(AUTH_TOKEN, token);
+        window.location = paths.home();
+      } else {
+        setError(message);
+      }
+    }
     setError(error);
   };
 
@@ -64,9 +76,7 @@ export default function NewUserModal() {
                   />
                 </div>
                 {error && (
-                  <p className="text-red-400 text-sm">
-                    Error: {error}
-                  </p>
+                  <p className="text-red-400 text-sm">Error: {error}</p>
                 )}
                 <p className="text-slate-200 text-xs md:text-sm">
                   After creating your account you will be able to login with
