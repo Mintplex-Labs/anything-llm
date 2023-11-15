@@ -1,6 +1,7 @@
 import json, requests, os, re
 from slugify import slugify
 from dotenv import load_dotenv
+from .watch.utils import guid
 load_dotenv()
 
 def is_yt_short(videoId):
@@ -20,13 +21,13 @@ def get_channel_id(channel_link):
     if(response.ok == False):
       print("Handle => ChannelId mapping endpoint is too slow - use regular youtube.com/channel URL")
       return None
-  
+
     json_data = response.json()
     return json_data.get('items')[0].get('id')
   else:
     pattern = r"youtube\.com/channel/([\w-]+)"
     match = re.search(pattern, channel_link)
-    return match.group(1) if match else None 
+    return match.group(1) if match else None
 
 
 def clean_text(text):
@@ -34,6 +35,7 @@ def clean_text(text):
 
 def append_meta(video, duration, text):
   meta = {
+    'id': guid(),
     'youtubeURL': f"https://youtube.com/watch?v={video.get('id')}",
     'thumbnail': video.get('thumbnail'),
     'description': video.get('description'),
@@ -63,7 +65,7 @@ def fetch_channel_video_information(channel_id, windowSize = 50):
     if(os.getenv('GOOGLE_APIS_KEY') == None):
         print("GOOGLE_APIS_KEY env variable not set!")
         exit(1)
-    
+
     done = False
     currentPage = None
     pageTokens = []
@@ -93,7 +95,7 @@ def fetch_channel_video_information(channel_id, windowSize = 50):
 
         for item in response.get('items'):
           if 'id' in item and 'videoId' in item.get('id'):
-            if is_yt_short(item.get('id').get('videoId')): 
+            if is_yt_short(item.get('id').get('videoId')):
               print(f"Filtering out YT Short {item.get('id').get('videoId')}")
               continue
 
@@ -109,12 +111,12 @@ def fetch_channel_video_information(channel_id, windowSize = 50):
               'published': item.get('snippet').get('publishTime'),
             }
             items.append(newItem)
-        
+
         pageTokens.append(currentPage)
 
     data['items'] = items
     with open(file_path, 'w+', encoding='utf-8') as json_file:
       json.dump(data, json_file, ensure_ascii=True, indent=2)
       print(f"{len(items)} videos found for channel {data.get('channelTitle')}. Saved to channel-logs/channel-{channel_id}.json")
-    
+
     return data
