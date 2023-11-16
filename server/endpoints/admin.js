@@ -66,13 +66,11 @@ function adminEndpoints(app) {
         ) {
           const adminCount = await User.count({ role: "admin" });
           if (adminCount - 1 <= 0) {
-            response
-              .status(200)
-              .json({
-                success: false,
-                error:
-                  "No system admins will remain if you do this. Update failed.",
-              });
+            response.status(200).json({
+              success: false,
+              error:
+                "No system admins will remain if you do this. Update failed.",
+            });
             return;
           }
         }
