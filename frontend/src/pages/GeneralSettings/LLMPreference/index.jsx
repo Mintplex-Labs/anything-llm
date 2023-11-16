@@ -17,6 +17,7 @@ import AzureAiOptions from "../../../components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "../../../components/LLMSelection/AnthropicAiOptions";
 import LMStudioOptions from "../../../components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "../../../components/LLMSelection/LocalAiOptions";
+import { Warning } from "@phosphor-icons/react";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -25,20 +26,33 @@ export default function GeneralLLMPreference() {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    if (llmChoice !== settings?.LLMProvider && hasChanges) {
+      document.getElementById("confirmation-modal")?.showModal();
+    } else {
+      handleSaveSettings();
+    }
+  };
+
+  const handleSaveSettings = async () => {
     setSaving(true);
-    const data = {};
-    const form = new FormData(e.target);
-    for (var [key, value] of form.entries()) data[key] = value;
-    const { error } = await System.updateSystem(data);
+    const data = new FormData(document.getElementById("llm-form"));
+    const settingsData = {};
+    for (let [key, value] of data.entries()) {
+      settingsData[key] = value;
+    }
+
+    const { error } = await System.updateSystem(settingsData);
     if (error) {
       showToast(`Failed to save LLM settings: ${error}`, "error");
+      setHasChanges(true);
     } else {
       showToast("LLM preferences saved successfully.", "success");
+      setHasChanges(false);
     }
     setSaving(false);
-    setHasChanges(!!error);
+    document.getElementById("confirmation-modal")?.close();
   };
 
   const updateLLMChoice = (selection) => {
@@ -58,6 +72,10 @@ export default function GeneralLLMPreference() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+      <ConfirmationModal
+        onClose={() => document.getElementById("confirmation-modal")?.close()}
+        onConfirm={handleSaveSettings}
+      />
       {!isMobile && <Sidebar />}
       {loading ? (
         <div
@@ -75,6 +93,7 @@ export default function GeneralLLMPreference() {
         >
           {isMobile && <SidebarMobileHeader />}
           <form
+            id="llm-form"
             onSubmit={handleSubmit}
             onChange={() => setHasChanges(true)}
             className="flex w-full"
@@ -177,3 +196,46 @@ export default function GeneralLLMPreference() {
     </div>
   );
 }
+
+const ConfirmationModal = ({ onClose, onConfirm }) => (
+  <dialog id="confirmation-modal" className="bg-transparent outline-none">
+    <div className="relative w-full max-w-2xl max-h-full">
+      <div className="relative bg-main-gradient rounded-lg shadow">
+        <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
+          <div className="flex items-center gap-2">
+            <Warning
+              className="text-yellow-300 text-lg w-6 h-6"
+              weight="fill"
+            />
+            <h3 className="text-xl font-semibold text-yellow-300">Warning</h3>
+          </div>
+        </div>
+        <div className="w-[550px] p-6 text-white">
+          <p>
+            Switching the LLM provider may affect querying documents and
+            similarity search results.
+            <br />
+            <br />
+            Are you sure you want to proceed?
+          </p>
+        </div>
+
+        <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+          <button
+            onClick={onClose}
+            type="button"
+            className="px-4 py-2 rounded-lg text-white hover:bg-red-500 transition-all duration-300"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+);
