@@ -113,6 +113,19 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
                     spellCheck={false}
                   />
                 </div>
+                <div className="flex flex-col w-60">
+                  <label className="text-white text-sm font-semibold block mb-4">
+                    Model Preference
+                  </label>
+                  <select
+                    disabled={true}
+                    className="cursor-not-allowed bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+                  >
+                    <option disabled={true} selected={true}>
+                      text-embedding-ada-002
+                    </option>
+                  </select>
+                </div>
               </>
             )}
 

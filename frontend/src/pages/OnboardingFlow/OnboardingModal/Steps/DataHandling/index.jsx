@@ -152,8 +152,8 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
 
   return (
     <div className="max-w-[750px]">
-      <div className="p-8 flex gap-x-16">
-        <div className="flex flex-col gap-y-3.5">
+      <div className="p-8 flex flex-col gap-8">
+        <div className="flex flex-col gap-y-3.5 border-b border-zinc-500/50 pb-8">
           <div className="text-white text-base font-bold">LLM Selection</div>
           <div className="flex items-center gap-2.5">
             <img
@@ -174,7 +174,28 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-y-3.5">
+        <div className="flex flex-col gap-y-3.5 border-b border-zinc-500/50 pb-8">
+          <div className="text-white text-base font-bold">Embedding Engine</div>
+          <div className="flex items-center gap-2.5">
+            <img
+              src={EMBEDDING_ENGINE_PRIVACY[embeddingEngine].logo}
+              alt="Vector DB Logo"
+              className="w-8 h-8 rounded"
+            />
+            <p className="text-white text-sm font-bold">
+              {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].name}
+            </p>
+          </div>
+          <ul className="flex flex-col list-disc">
+            {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].description.map(
+              (desc) => (
+                <li className="text-white/90 text-sm">{desc}</li>
+              )
+            )}
+          </ul>
+        </div>
+
+        <div className="flex flex-col gap-y-3.5 ">
           <div className="text-white text-base font-bold">Vector Database</div>
           <div className="flex items-center gap-2.5">
             <img
@@ -192,30 +213,6 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
             ))}
           </ul>
         </div>
-        {llmChoice !== embeddingEngine && (
-          <div className="flex flex-col gap-y-3.5">
-            <div className="text-white text-base font-bold">
-              Embedding Engine
-            </div>
-            <div className="flex items-center gap-2.5">
-              <img
-                src={EMBEDDING_ENGINE_PRIVACY[embeddingEngine].logo}
-                alt="Vector DB Logo"
-                className="w-8 h-8 rounded"
-              />
-              <p className="text-white text-sm font-bold">
-                {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].name}
-              </p>
-            </div>
-            <ul className="flex flex-col list-disc">
-              {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].description.map(
-                (desc) => (
-                  <li className="text-white/90 text-sm">{desc}</li>
-                )
-              )}
-            </ul>
-          </div>
-        )}
       </div>
       <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
         <button
