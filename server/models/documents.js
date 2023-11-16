@@ -109,6 +109,19 @@ const Document = {
     });
     return true;
   },
+
+  count: async function (clause = {}, limit = null) {
+    try {
+      const count = await prisma.workspace_documents.count({
+        where: clause,
+        ...(limit !== null ? { take: limit } : {}),
+      });
+      return count;
+    } catch (error) {
+      console.error("FAILED TO COUNT DOCUMENTS.", error.message);
+      return 0;
+    }
+  },
 };
 
 module.exports = { Document };

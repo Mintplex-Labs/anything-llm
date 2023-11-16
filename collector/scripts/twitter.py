@@ -7,13 +7,14 @@ import os, time
 import pandas as pd
 import json
 from .utils import tokenize, ada_v2_cost
+from .watch.utils import guid
 
 def twitter():
     #get user and number of tweets to read
     username = input("user timeline to read from (blank to ignore): ")
     searchQuery = input("Search term, or leave blank to get user tweets (blank to ignore): ")
     tweetCount = input("Gather the last number of tweets: ")
-    
+
     # Read your API keys to call the API.
     consumer_key = os.environ.get("TW_CONSUMER_KEY")
     consumer_secret = os.environ.get("TW_CONSUMER_SECRET")
@@ -43,7 +44,7 @@ def twitter():
             [tweet.id, tweet.user.screen_name, tweet.created_at, tweet.favorite_count, tweet.source, tweet.full_text]
             for tweet in tweets
         ]
-        
+
         # Creation of column list to rename the columns in the dataframe
         columns = ["id", "Screen Name", "Date Created", "Number of Likes", "Source of Tweet", "Tweet"]
 
@@ -76,7 +77,7 @@ def twitter():
 
             with open(f"{transaction_output_dir}/{transaction_output_filename}", 'w', encoding='utf-8') as file:
                 json.dump(meta_link, file, ensure_ascii=True, indent=4)
-            
+
             # print(f"{transaction_output_dir}/{transaction_output_filename}")
 
         print(f"{tokenCount} tokens written over {tweets_df.shape[0]} records.")
@@ -92,6 +93,7 @@ def twitter_meta(row, metadata_only = False):
   url = f"http://twitter.com/anyuser/status/{row['id']}"
   title = f"Tweet {row['id']}"
   meta = {
+    'id': guid(),
     'url': url,
     'title':  title,
     'description': 'Tweet from ' + row["Screen Name"],

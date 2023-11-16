@@ -24,6 +24,7 @@ const SystemSettings = {
       StorageDir: process.env.STORAGE_DIR,
       MultiUserMode: await this.isMultiUserMode(),
       VectorDB: vectorDB,
+      HasExistingEmbeddings: await this.hasEmbeddings(),
       EmbeddingEngine: process.env.EMBEDDING_ENGINE,
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
@@ -185,6 +186,17 @@ const SystemSettings = {
     try {
       const setting = await this.get({ label: "users_can_delete_workspaces" });
       return setting?.value === "true";
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+
+  hasEmbeddings: async function () {
+    try {
+      const { Document } = require("./documents");
+      const count = await Document.count({}, 1);
+      return count > 0;
     } catch (error) {
       console.error(error.message);
       return false;
