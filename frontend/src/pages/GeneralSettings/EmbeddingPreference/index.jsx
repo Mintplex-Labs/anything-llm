@@ -10,11 +10,12 @@ import AzureOpenAiLogo from "../../../media/llmprovider/azure.png";
 import LocalAiLogo from "../../../media/llmprovider/localai.png";
 import PreLoader from "../../../components/Preloader";
 import LLMProviderOption from "../../../components/LLMSelection/LLMProviderOption";
-import { Warning } from "@phosphor-icons/react";
+import ChangeWarningModal from "../../../components/ChangeWarning";
 
 export default function GeneralEmbeddingPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [hasEmbeddings, setHasEmbeddings] = useState(false);
   const [embeddingChoice, setEmbeddingChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +24,11 @@ export default function GeneralEmbeddingPreference() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (embeddingChoice !== settings?.EmbeddingEngine && hasChanges) {
+    if (
+      embeddingChoice !== settings?.EmbeddingEngine &&
+      hasChanges &&
+      hasEmbeddings
+    ) {
       document.getElementById("confirmation-modal")?.showModal();
     } else {
       await handleSaveSettings();
@@ -66,6 +71,7 @@ export default function GeneralEmbeddingPreference() {
       setEmbeddingChoice(_settings?.EmbeddingEngine || "openai");
       setBasePath(_settings?.EmbeddingBasePath || "");
       setBasePathValue(_settings?.EmbeddingBasePath || "");
+      setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
       setLoading(false);
     }
     fetchKeys();
@@ -73,7 +79,8 @@ export default function GeneralEmbeddingPreference() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      <ConfirmationModal
+      <ChangeWarningModal
+        warningText=" Switching the embedder may affect previously embedded documents and future similarity search results."
         onClose={() => document.getElementById("confirmation-modal")?.close()}
         onConfirm={handleSaveSettings}
       />
@@ -358,46 +365,3 @@ function LocalAIModelSelection({ settings, basePath = null }) {
     </div>
   );
 }
-
-const ConfirmationModal = ({ onClose, onConfirm }) => (
-  <dialog id="confirmation-modal" className="bg-transparent outline-none">
-    <div className="relative w-full max-w-2xl max-h-full">
-      <div className="relative bg-main-gradient rounded-lg shadow">
-        <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
-          <div className="flex items-center gap-2">
-            <Warning
-              className="text-yellow-300 text-lg w-6 h-6"
-              weight="fill"
-            />
-            <h3 className="text-xl font-semibold text-yellow-300">Warning</h3>
-          </div>
-        </div>
-        <div className="w-[550px] p-6 text-white">
-          <p>
-            Switching the embedder may affect querying documents and similarity
-            search results.
-            <br />
-            <br />
-            Are you sure you want to proceed?
-          </p>
-        </div>
-
-        <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
-          <button
-            onClick={onClose}
-            type="button"
-            className="px-4 py-2 rounded-lg text-white hover:bg-red-500 transition-all duration-300"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-          >
-            Confirm
-          </button>
-        </div>
-      </div>
-    </div>
-  </dialog>
-);
