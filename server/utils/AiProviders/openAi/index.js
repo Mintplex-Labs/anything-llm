@@ -1,9 +1,8 @@
 const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
 const { chatPrompt } = require("../../chats");
 
-class OpenAiLLM extends OpenAiEmbedder {
-  constructor() {
-    super();
+class OpenAiLLM {
+  constructor(embedder = null) {
     const { Configuration, OpenAIApi } = require("openai");
     if (!process.env.OPEN_AI_KEY) throw new Error("No OpenAI API key was set.");
 
@@ -17,6 +16,12 @@ class OpenAiLLM extends OpenAiEmbedder {
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
+
+    if (!embedder)
+      console.warn(
+        "No embedding provider defined for OpenAiLLM - falling back to OpenAiEmbedder for embedding!"
+      );
+    this.embedder = !embedder ? new OpenAiEmbedder() : embedder;
   }
 
   streamingEnabled() {
@@ -201,6 +206,14 @@ Context:
       { responseType: "stream" }
     );
     return streamRequest;
+  }
+
+  // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
+  async embedTextInput(textInput) {
+    return await this.embedder.embedTextInput(textInput);
+  }
+  async embedChunks(textChunks = []) {
+    return await this.embedder.embedChunks(textChunks);
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {

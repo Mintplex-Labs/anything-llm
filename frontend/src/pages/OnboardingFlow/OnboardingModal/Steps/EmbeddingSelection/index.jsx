@@ -1,15 +1,18 @@
 import React, { memo, useEffect, useState } from "react";
 import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
+import LocalAiLogo from "../../../../../media/llmprovider/localai.png";
 import System from "../../../../../models/system";
 import PreLoader from "../../../../../components/Preloader";
 import LLMProviderOption from "../../../../../components/LLMSelection/LLMProviderOption";
+import OpenAiOptions from "../../../../../components/EmbeddingSelection/OpenAiOptions";
+import AzureAiOptions from "../../../../../components/EmbeddingSelection/AzureAiOptions";
+import LocalAiOptions from "../../../../../components/EmbeddingSelection/LocalAiOptions";
 
 function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
   const [embeddingChoice, setEmbeddingChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const updateChoice = (selection) => {
     setEmbeddingChoice(selection);
   };
@@ -77,80 +80,25 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
               image={AzureOpenAiLogo}
               onClick={updateChoice}
             />
+            <LLMProviderOption
+              name="LocalAI"
+              value="localai"
+              link="localai.io"
+              description="Self hosted LocalAI embedding engine."
+              checked={embeddingChoice === "localai"}
+              image={LocalAiLogo}
+              onClick={updateChoice}
+            />
           </div>
           <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
             {embeddingChoice === "openai" && (
-              <>
-                <div className="flex flex-col w-60">
-                  <label className="text-white text-sm font-semibold block mb-4">
-                    API Key
-                  </label>
-                  <input
-                    type="password"
-                    name="OpenAiKey"
-                    className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                    placeholder="OpenAI API Key"
-                    defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
-                    required={true}
-                    autoComplete="off"
-                    spellCheck={false}
-                  />
-                </div>
-              </>
+              <OpenAiOptions settings={settings} />
             )}
-
             {embeddingChoice === "azure" && (
-              <>
-                <div className="flex flex-col w-60">
-                  <label className="text-white text-sm font-semibold block mb-4">
-                    Azure Service Endpoint
-                  </label>
-                  <input
-                    type="url"
-                    name="AzureOpenAiEndpoint"
-                    className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                    placeholder="https://my-azure.openai.azure.com"
-                    defaultValue={settings?.AzureOpenAiEndpoint}
-                    required={true}
-                    autoComplete="off"
-                    spellCheck={false}
-                  />
-                </div>
-
-                <div className="flex flex-col w-60">
-                  <label className="text-white text-sm font-semibold block mb-4">
-                    API Key
-                  </label>
-                  <input
-                    type="password"
-                    name="AzureOpenAiKey"
-                    className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                    placeholder="Azure OpenAI API Key"
-                    defaultValue={
-                      settings?.AzureOpenAiKey ? "*".repeat(20) : ""
-                    }
-                    required={true}
-                    autoComplete="off"
-                    spellCheck={false}
-                  />
-                </div>
-
-                <div className="flex flex-col w-60">
-                  <label className="text-white text-sm font-semibold block mb-4">
-                    Embedding Deployment Name
-                  </label>
-                  <input
-                    type="text"
-                    name="AzureOpenAiEmbeddingModelPref"
-                    className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                    placeholder="Azure OpenAI embedding model deployment name"
-                    defaultValue={settings?.AzureOpenAiEmbeddingModelPref}
-                    required={true}
-                    autoComplete="off"
-                    spellCheck={false}
-                  />
-                </div>
-              </>
+              <AzureAiOptions settings={settings} />
+            )}
+            {embeddingChoice === "localai" && (
+              <LocalAiOptions settings={settings} />
             )}
           </div>
         </div>

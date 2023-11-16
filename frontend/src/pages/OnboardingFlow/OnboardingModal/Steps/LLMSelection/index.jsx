@@ -46,15 +46,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
       alert(`Failed to save LLM settings: ${error}`, "error");
       return;
     }
-
-    switch (data.LLMProvider) {
-      case "anthropic":
-      case "lmstudio":
-      case "localai":
-        return nextStep("embedding_preferences");
-      default:
-        return nextStep("vector_database");
-    }
+    nextStep("embedding_preferences");
   };
 
   if (loading)

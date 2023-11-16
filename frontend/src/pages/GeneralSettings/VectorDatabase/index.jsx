@@ -12,10 +12,12 @@ import WeaviateLogo from "../../../media/vectordbs/weaviate.png";
 import QDrantLogo from "../../../media/vectordbs/qdrant.png";
 import PreLoader from "../../../components/Preloader";
 import VectorDBOption from "../../../components/VectorDBOption";
+import ChangeWarningModal from "../../../components/ChangeWarning";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [hasEmbeddings, setHasEmbeddings] = useState(false);
   const [vectorDB, setVectorDB] = useState("lancedb");
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
@@ -25,6 +27,7 @@ export default function GeneralVectorDatabase() {
       const _settings = await System.keys();
       setSettings(_settings);
       setVectorDB(_settings?.VectorDB || "lancedb");
+      setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
       setLoading(false);
     }
     fetchKeys();
@@ -37,22 +40,40 @@ export default function GeneralVectorDatabase() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
-    const data = {};
-    const form = new FormData(e.target);
-    for (var [key, value] of form.entries()) data[key] = value;
-    const { error } = await System.updateSystem(data);
-    if (error) {
-      showToast(`Failed to save settings: ${error}`, "error");
+    if (vectorDB !== settings?.VectorDB && hasChanges && hasEmbeddings) {
+      document.getElementById("confirmation-modal")?.showModal();
     } else {
-      showToast("Settings saved successfully.", "success");
+      await handleSaveSettings();
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    setSaving(true);
+    const data = new FormData(document.getElementById("vectordb-form"));
+    const settingsData = {};
+    for (let [key, value] of data.entries()) {
+      settingsData[key] = value;
+    }
+
+    const { error } = await System.updateSystem(settingsData);
+    if (error) {
+      showToast(`Failed to save LLM settings: ${error}`, "error");
+      setHasChanges(true);
+    } else {
+      showToast("LLM preferences saved successfully.", "success");
+      setHasChanges(false);
     }
     setSaving(false);
-    setHasChanges(!!error);
+    document.getElementById("confirmation-modal")?.close();
   };
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+      <ChangeWarningModal
+        warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. They will need to be re-added to each workspace."
+        onClose={() => document.getElementById("confirmation-modal")?.close()}
+        onConfirm={handleSaveSettings}
+      />
       {!isMobile && <Sidebar />}
       {loading ? (
         <div
@@ -70,6 +91,7 @@ export default function GeneralVectorDatabase() {
         >
           {isMobile && <SidebarMobileHeader />}
           <form
+            id="vectordb-form"
             onSubmit={handleSubmit}
             onChange={() => setHasChanges(true)}
             className="flex w-full"

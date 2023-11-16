@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from .watch.utils import guid
 from dotenv import load_dotenv
+from .watch.utils import guid
 from .utils import tokenize
 load_dotenv()
 
@@ -17,6 +18,6 @@ def append_meta(request, text, metadata_only = False):
     'published':request.html.find('meta[property="article:published_time"]', first=True).attrs.get('content') if request.html.find('meta[property="article:published_time"]', first=True) != None else datetime.today().strftime('%Y-%m-%d %H:%M:%S'),
     'wordCount': len(text.split(' ')),
     'pageContent': text,
-    'token_count_estimate': len(tokenize(text))
+    'token_count_estimate':len(tokenize(text)),
   }
   return "Article JSON Metadata:\n"+json.dumps(meta)+"\n\n\nText Content:\n" + text if metadata_only == False else meta

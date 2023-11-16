@@ -97,7 +97,9 @@ export default function UploadFile({ workspace, fileTypes, fetchKeys, setLoading
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
               Supported file extensions are{" "}
-              {Object.values(fileTypes).flat().join(" ")}
+              {Object.values(fileTypes ?? [])
+                .flat()
+                .join(" ")}
             </div>
           </div>
         ) : (
