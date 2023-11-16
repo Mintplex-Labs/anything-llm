@@ -10,10 +10,12 @@ import AzureOpenAiLogo from "../../../media/llmprovider/azure.png";
 import LocalAiLogo from "../../../media/llmprovider/localai.png";
 import PreLoader from "../../../components/Preloader";
 import LLMProviderOption from "../../../components/LLMSelection/LLMProviderOption";
+import ChangeWarningModal from "../../../components/ChangeWarning";
 
 export default function GeneralEmbeddingPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [hasEmbeddings, setHasEmbeddings] = useState(false);
   const [embeddingChoice, setEmbeddingChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,18 +24,35 @@ export default function GeneralEmbeddingPreference() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
-    const data = {};
-    const form = new FormData(e.target);
-    for (var [key, value] of form.entries()) data[key] = value;
-    const { error } = await System.updateSystem(data);
-    if (error) {
-      showToast(`Failed to save embedding preferences: ${error}`, "error");
+    if (
+      embeddingChoice !== settings?.EmbeddingEngine &&
+      hasChanges &&
+      hasEmbeddings
+    ) {
+      document.getElementById("confirmation-modal")?.showModal();
     } else {
-      showToast("Embedding preferences saved successfully.", "success");
+      await handleSaveSettings();
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    setSaving(true);
+    const data = new FormData(document.getElementById("embedding-form"));
+    const settingsData = {};
+    for (let [key, value] of data.entries()) {
+      settingsData[key] = value;
+    }
+
+    const { error } = await System.updateSystem(settingsData);
+    if (error) {
+      showToast(`Failed to save LLM settings: ${error}`, "error");
+      setHasChanges(true);
+    } else {
+      showToast("LLM preferences saved successfully.", "success");
+      setHasChanges(false);
     }
     setSaving(false);
-    setHasChanges(!!error);
+    document.getElementById("confirmation-modal")?.close();
   };
 
   const updateChoice = (selection) => {
@@ -52,6 +71,7 @@ export default function GeneralEmbeddingPreference() {
       setEmbeddingChoice(_settings?.EmbeddingEngine || "openai");
       setBasePath(_settings?.EmbeddingBasePath || "");
       setBasePathValue(_settings?.EmbeddingBasePath || "");
+      setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
       setLoading(false);
     }
     fetchKeys();
@@ -59,6 +79,11 @@ export default function GeneralEmbeddingPreference() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+      <ChangeWarningModal
+        warningText=" Switching the embedder may affect previously embedded documents and future similarity search results."
+        onClose={() => document.getElementById("confirmation-modal")?.close()}
+        onConfirm={handleSaveSettings}
+      />
       {!isMobile && <Sidebar />}
       {loading ? (
         <div
@@ -76,6 +101,7 @@ export default function GeneralEmbeddingPreference() {
         >
           {isMobile && <SidebarMobileHeader />}
           <form
+            id="embedding-form"
             onSubmit={handleSubmit}
             onChange={() => setHasChanges(true)}
             className="flex w-full"
