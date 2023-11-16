@@ -65,8 +65,7 @@ const STEPS = {
   },
   embedding_preferences: {
     title: "Embedding Preference",
-    description:
-      "Due to your LLM selection you need to set up a provider for embedding files and text.",
+    description: "Choose a provider for embedding files and text.",
     component: EmbeddingSelection,
   },
 };
