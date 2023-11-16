@@ -77,6 +77,11 @@ if (process.env.NODE_ENV !== "development") {
   app.use("/", function (_, response) {
     response.sendFile(path.join(__dirname, "public", "index.html"));
   });
+
+  app.get("/robots.txt", function (_, response) {
+    response.type("text/plain");
+    response.send("User-agent: *\nDisallow: /").end();
+  });
 }
 
 app.use(

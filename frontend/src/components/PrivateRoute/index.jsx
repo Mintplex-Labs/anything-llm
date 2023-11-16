@@ -14,6 +14,7 @@ function useIsAuthenticated() {
   const [isAuthd, setIsAuthed] = useState(null);
   const [shouldRedirectToOnboarding, setShouldRedirectToOnboarding] =
     useState(false);
+  const [multiUserMode, setMultiUserMode] = useState(false);
 
   useEffect(() => {
     const validateSession = async () => {
@@ -24,6 +25,8 @@ function useIsAuthenticated() {
         AnthropicApiKey = false,
         AzureOpenAiKey = false,
       } = await System.keys();
+
+      setMultiUserMode(MultiUserMode);
 
       // Check for the onboarding redirect condition
       if (
@@ -77,11 +80,14 @@ function useIsAuthenticated() {
     validateSession();
   }, []);
 
-  return { isAuthd, shouldRedirectToOnboarding };
+  return { isAuthd, shouldRedirectToOnboarding, multiUserMode };
 }
 
+// Allows only admin to access the route and if in single user mode,
+// allows all users to access the route
 export function AdminRoute({ Component }) {
-  const { isAuthd, shouldRedirectToOnboarding } = useIsAuthenticated();
+  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } =
+    useIsAuthenticated();
   if (isAuthd === null) return <FullScreenLoader />;
 
   if (shouldRedirectToOnboarding) {
@@ -89,7 +95,28 @@ export function AdminRoute({ Component }) {
   }
 
   const user = userFromStorage();
-  return isAuthd && user?.role === "admin" ? (
+  return isAuthd && (user?.role === "admin" || !multiUserMode) ? (
+    <UserMenu>
+      <Component />
+    </UserMenu>
+  ) : (
+    <Navigate to={paths.home()} />
+  );
+}
+
+// Allows manager and admin to access the route and if in single user mode,
+// allows all users to access the route
+export function ManagerRoute({ Component }) {
+  const { isAuthd, shouldRedirectToOnboarding, multiUserMode } =
+    useIsAuthenticated();
+  if (isAuthd === null) return <FullScreenLoader />;
+
+  if (shouldRedirectToOnboarding) {
+    return <Navigate to={paths.onboarding()} />;
+  }
+
+  const user = userFromStorage();
+  return isAuthd && (user?.role !== "default" || !multiUserMode) ? (
     <UserMenu>
       <Component />
     </UserMenu>

@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
 import System from "../../../models/system";
 import { isMobile } from "react-device-detect";
+import useUser from "../../../hooks/useUser";
 
 const DocumentSettings = lazy(() => import("./Documents"));
 const WorkspaceSettings = lazy(() => import("./Settings"));
@@ -14,11 +15,14 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const [selectedTab, setSelectedTab] = useState("documents");
   const [workspace, setWorkspace] = useState(null);
   const [fileTypes, setFileTypes] = useState(null);
+  const [settings, setSettings] = useState({});
 
   useEffect(() => {
     async function checkSupportedFiletypes() {
       const acceptedTypes = await System.acceptedDocumentTypes();
+      const _settings = await System.keys();
       setFileTypes(acceptedTypes ?? {});
+      setSettings(_settings ?? {});
     }
     checkSupportedFiletypes();
   }, []);
@@ -103,7 +107,11 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
           </div>
           <Suspense fallback={<div>Loading...</div>}>
             <div className={selectedTab === "documents" ? "" : "hidden"}>
-              <DocumentSettings workspace={workspace} fileTypes={fileTypes} />
+              <DocumentSettings
+                workspace={workspace}
+                fileTypes={fileTypes}
+                systemSettings={settings}
+              />
             </div>
             <div className={selectedTab === "settings" ? "" : "hidden"}>
               <WorkspaceSettings workspace={workspace} fileTypes={fileTypes} />
@@ -117,9 +125,13 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
 
 export default memo(ManageWorkspace);
 export function useManageWorkspaceModal() {
+  const { user } = useUser();
   const [showing, setShowing] = useState(false);
+
   const showModal = () => {
-    setShowing(true);
+    if (user?.role !== "default") {
+      setShowing(true);
+    }
   };
 
   const hideModal = () => {

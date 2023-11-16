@@ -3,6 +3,8 @@ import System from "../../../../../models/system";
 import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
 import AnthropicLogo from "../../../../../media/llmprovider/anthropic.png";
+import LMStudioLogo from "../../../../../media/llmprovider/lmstudio.png";
+import LocalAiLogo from "../../../../../media/llmprovider/localai.png";
 import ChromaLogo from "../../../../../media/vectordbs/chroma.png";
 import PineconeLogo from "../../../../../media/vectordbs/pinecone.png";
 import LanceDbLogo from "../../../../../media/vectordbs/lancedb.png";
@@ -34,6 +36,20 @@ const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in responses are visible to Anthropic",
     ],
     logo: AnthropicLogo,
+  },
+  lmstudio: {
+    name: "LMStudio",
+    description: [
+      "Your model and chats are only accessible on the server running LMStudio",
+    ],
+    logo: LMStudioLogo,
+  },
+  localai: {
+    name: "LocalAI",
+    description: [
+      "Your model and chats are only accessible on the server running LocalAI",
+    ],
+    logo: LocalAiLogo,
   },
 };
 
