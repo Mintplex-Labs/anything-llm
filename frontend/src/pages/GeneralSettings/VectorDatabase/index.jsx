@@ -83,7 +83,7 @@ export default function GeneralVectorDatabase() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-            <ConfirmationModal
+      <ConfirmationModal
         onClose={() => document.getElementById("confirmation-modal")?.close()}
         onConfirm={handleSaveSettings}
       />
@@ -388,8 +388,8 @@ const ConfirmationModal = ({ onClose, onConfirm }) => (
         </div>
         <div className="w-[550px] p-6 text-white">
           <p>
-            Switching the vector database may affect querying documents and similarity
-            search results.
+            Switching the vector database may affect querying documents and
+            similarity search results.
             <br />
             <br />
             Are you sure you want to proceed?
