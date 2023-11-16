@@ -133,161 +133,161 @@ export default function GeneralEmbeddingPreference() {
                 </p>
               </div>
 
-              {["openai", "azure"].includes(settings.LLMProvider) ? (
-                <div className="w-full h-20 items-center justify-center flex">
-                  <p className="text-gray-800 dark:text-slate-400 text-center">
-                    Your current LLM preference does not require you to set up
-                    this part of AnythingLLM.
-                    <br />
-                    Embedding is being automatically managed by AnythingLLM.
-                  </p>
+              <>
+                <div className="text-white text-sm font-medium py-4">
+                  Embedding Providers
                 </div>
-              ) : (
-                <>
-                  <div className="text-white text-sm font-medium py-4">
-                    Embedding Providers
-                  </div>
-                  <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
-                    <input
-                      hidden={true}
-                      name="EmbeddingEngine"
-                      value={embeddingChoice}
-                    />
-                    <LLMProviderOption
-                      name="OpenAI"
-                      value="openai"
-                      link="openai.com"
-                      description="Use OpenAI's text-embedding-ada-002 embedding model."
-                      checked={embeddingChoice === "openai"}
-                      image={OpenAiLogo}
-                      onClick={updateChoice}
-                    />
-                    <LLMProviderOption
-                      name="Azure OpenAI"
-                      value="azure"
-                      link="azure.microsoft.com"
-                      description="The enterprise option of OpenAI hosted on Azure services."
-                      checked={embeddingChoice === "azure"}
-                      image={AzureOpenAiLogo}
-                      onClick={updateChoice}
-                    />
-                    <LLMProviderOption
-                      name="LocalAI"
-                      value="localai"
-                      link="localai.io"
-                      description="Self hosted LocalAI embedding engine."
-                      checked={embeddingChoice === "localai"}
-                      image={LocalAiLogo}
-                      onClick={updateChoice}
-                    />
-                  </div>
-                  <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
-                    {embeddingChoice === "openai" && (
-                      <>
-                        <div className="flex flex-col w-60">
-                          <label className="text-white text-sm font-semibold block mb-4">
-                            API Key
-                          </label>
-                          <input
-                            type="text"
-                            name="OpenAiKey"
-                            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                            placeholder="OpenAI API Key"
-                            defaultValue={
-                              settings?.OpenAiKey ? "*".repeat(20) : ""
-                            }
-                            required={true}
-                            autoComplete="off"
-                            spellCheck={false}
-                          />
-                        </div>
-                      </>
-                    )}
-
-                    {embeddingChoice === "azure" && (
-                      <>
-                        <div className="flex flex-col w-60">
-                          <label className="text-white text-sm font-semibold block mb-4">
-                            Azure Service Endpoint
-                          </label>
-                          <input
-                            type="url"
-                            name="AzureOpenAiEndpoint"
-                            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                            placeholder="https://my-azure.openai.azure.com"
-                            defaultValue={settings?.AzureOpenAiEndpoint}
-                            required={true}
-                            autoComplete="off"
-                            spellCheck={false}
-                          />
-                        </div>
-
-                        <div className="flex flex-col w-60">
-                          <label className="text-white text-sm font-semibold block mb-4">
-                            API Key
-                          </label>
-                          <input
-                            type="password"
-                            name="AzureOpenAiKey"
-                            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                            placeholder="Azure OpenAI API Key"
-                            defaultValue={
-                              settings?.AzureOpenAiKey ? "*".repeat(20) : ""
-                            }
-                            required={true}
-                            autoComplete="off"
-                            spellCheck={false}
-                          />
-                        </div>
-
-                        <div className="flex flex-col w-60">
-                          <label className="text-white text-sm font-semibold block mb-4">
-                            Embedding Deployment Name
-                          </label>
-                          <input
-                            type="text"
-                            name="AzureOpenAiEmbeddingModelPref"
-                            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                            placeholder="Azure OpenAI embedding model deployment name"
-                            defaultValue={
-                              settings?.AzureOpenAiEmbeddingModelPref
-                            }
-                            required={true}
-                            autoComplete="off"
-                            spellCheck={false}
-                          />
-                        </div>
-                      </>
-                    )}
-
-                    {embeddingChoice === "localai" && (
-                      <>
-                        <div className="flex flex-col w-60">
-                          <label className="text-white text-sm font-semibold block mb-4">
-                            LocalAI Base URL
-                          </label>
-                          <input
-                            type="url"
-                            name="EmbeddingBasePath"
-                            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                            placeholder="http://localhost:8080/v1"
-                            defaultValue={settings?.EmbeddingBasePath}
-                            onChange={(e) => setBasePathValue(e.target.value)}
-                            onBlur={updateBasePath}
-                            required={true}
-                            autoComplete="off"
-                            spellCheck={false}
-                          />
-                        </div>
-                        <LocalAIModelSelection
-                          settings={settings}
-                          basePath={basePath}
+                <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
+                  <input
+                    hidden={true}
+                    name="EmbeddingEngine"
+                    value={embeddingChoice}
+                  />
+                  <LLMProviderOption
+                    name="OpenAI"
+                    value="openai"
+                    link="openai.com"
+                    description="Use OpenAI's text-embedding-ada-002 embedding model."
+                    checked={embeddingChoice === "openai"}
+                    image={OpenAiLogo}
+                    onClick={updateChoice}
+                  />
+                  <LLMProviderOption
+                    name="Azure OpenAI"
+                    value="azure"
+                    link="azure.microsoft.com"
+                    description="The enterprise option of OpenAI hosted on Azure services."
+                    checked={embeddingChoice === "azure"}
+                    image={AzureOpenAiLogo}
+                    onClick={updateChoice}
+                  />
+                  <LLMProviderOption
+                    name="LocalAI"
+                    value="localai"
+                    link="localai.io"
+                    description="Self hosted LocalAI embedding engine."
+                    checked={embeddingChoice === "localai"}
+                    image={LocalAiLogo}
+                    onClick={updateChoice}
+                  />
+                </div>
+                <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
+                  {embeddingChoice === "openai" && (
+                    <>
+                      <div className="flex flex-col w-60">
+                        <label className="text-white text-sm font-semibold block mb-4">
+                          API Key
+                        </label>
+                        <input
+                          type="text"
+                          name="OpenAiKey"
+                          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                          placeholder="OpenAI API Key"
+                          defaultValue={
+                            settings?.OpenAiKey ? "*".repeat(20) : ""
+                          }
+                          required={true}
+                          autoComplete="off"
+                          spellCheck={false}
                         />
-                      </>
-                    )}
-                  </div>
-                </>
-              )}
+                      </div>
+                      <div className="flex flex-col w-60">
+                        <label className="text-white text-sm font-semibold block mb-4">
+                          Model Preference
+                        </label>
+                        <select
+                          disabled={true}
+                          className="cursor-not-allowed bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+                        >
+                          <option disabled={true} selected={true}>
+                            text-embedding-ada-002
+                          </option>
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  {embeddingChoice === "azure" && (
+                    <>
+                      <div className="flex flex-col w-60">
+                        <label className="text-white text-sm font-semibold block mb-4">
+                          Azure Service Endpoint
+                        </label>
+                        <input
+                          type="url"
+                          name="AzureOpenAiEndpoint"
+                          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                          placeholder="https://my-azure.openai.azure.com"
+                          defaultValue={settings?.AzureOpenAiEndpoint}
+                          required={true}
+                          autoComplete="off"
+                          spellCheck={false}
+                        />
+                      </div>
+
+                      <div className="flex flex-col w-60">
+                        <label className="text-white text-sm font-semibold block mb-4">
+                          API Key
+                        </label>
+                        <input
+                          type="password"
+                          name="AzureOpenAiKey"
+                          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                          placeholder="Azure OpenAI API Key"
+                          defaultValue={
+                            settings?.AzureOpenAiKey ? "*".repeat(20) : ""
+                          }
+                          required={true}
+                          autoComplete="off"
+                          spellCheck={false}
+                        />
+                      </div>
+
+                      <div className="flex flex-col w-60">
+                        <label className="text-white text-sm font-semibold block mb-4">
+                          Embedding Deployment Name
+                        </label>
+                        <input
+                          type="text"
+                          name="AzureOpenAiEmbeddingModelPref"
+                          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                          placeholder="Azure OpenAI embedding model deployment name"
+                          defaultValue={settings?.AzureOpenAiEmbeddingModelPref}
+                          required={true}
+                          autoComplete="off"
+                          spellCheck={false}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {embeddingChoice === "localai" && (
+                    <>
+                      <div className="flex flex-col w-60">
+                        <label className="text-white text-sm font-semibold block mb-4">
+                          LocalAI Base URL
+                        </label>
+                        <input
+                          type="url"
+                          name="EmbeddingBasePath"
+                          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                          placeholder="http://localhost:8080/v1"
+                          defaultValue={settings?.EmbeddingBasePath}
+                          onChange={(e) => setBasePathValue(e.target.value)}
+                          onBlur={updateBasePath}
+                          required={true}
+                          autoComplete="off"
+                          spellCheck={false}
+                        />
+                      </div>
+                      <LocalAIModelSelection
+                        settings={settings}
+                        basePath={basePath}
+                      />
+                    </>
+                  )}
+                </div>
+              </>
             </div>
           </form>
         </div>

@@ -23,25 +23,22 @@ function getVectorDbClass() {
 
 function getLLMProvider() {
   const vectorSelection = process.env.LLM_PROVIDER || "openai";
-  let embedder = null;
+  const embedder = getEmbeddingEngineSelection();
   switch (vectorSelection) {
     case "openai":
       const { OpenAiLLM } = require("../AiProviders/openAi");
-      return new OpenAiLLM();
+      return new OpenAiLLM(embedder);
     case "azure":
       const { AzureOpenAiLLM } = require("../AiProviders/azureOpenAi");
-      return new AzureOpenAiLLM();
+      return new AzureOpenAiLLM(embedder);
     case "anthropic":
       const { AnthropicLLM } = require("../AiProviders/anthropic");
-      embedder = getEmbeddingEngineSelection();
       return new AnthropicLLM(embedder);
     case "lmstudio":
       const { LMStudioLLM } = require("../AiProviders/lmStudio");
-      embedder = getEmbeddingEngineSelection();
       return new LMStudioLLM(embedder);
     case "localai":
       const { LocalAiLLM } = require("../AiProviders/localAi");
-      embedder = getEmbeddingEngineSelection();
       return new LocalAiLLM(embedder);
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
