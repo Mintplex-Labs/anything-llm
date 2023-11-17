@@ -15,14 +15,14 @@ services:
       context: ../.
       dockerfile: ./docker/Dockerfile
       args:
-        ARG_UID: ${UID}
-        ARG_GID: ${GID}
+        ARG_UID: ${UID:-1000}
+        ARG_GID: ${GID:-1000}
     volumes:
       - "./.env:/app/server/.env"
       - "../server/storage:/app/server/storage"
       - "../collector/hotdir/:/app/collector/hotdir"
       - "../collector/outputs/:/app/collector/outputs"
-    user: "${UID}:${GID}"
+    user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "3001:3001"
     env_file:

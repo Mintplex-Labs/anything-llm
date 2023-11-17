@@ -11,5 +11,6 @@ collector/outputs/**
 **/__pycache__/
 **/.env
 **/.env.*
+**/bundleinspector.html
 !docker/.env.example
 !frontend/.env.production
