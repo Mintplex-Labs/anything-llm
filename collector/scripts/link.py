@@ -83,12 +83,7 @@ async def process_single_link(url):
           loader = UnstructuredHTMLLoader(tmp.name)
           data = loader.load()[0]
           full_text = data.page_content
-          print("full text 1: ", full_text)
           tmp.close()
-          print(full_text)
-
-        print("full text: ", full_text)
-
 
         if full_text:
             link_meta = append_meta(req, full_text, True)
