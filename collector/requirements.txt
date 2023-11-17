@@ -5,6 +5,7 @@ alive-progress==3.1.2
 anyio==3.7.0
 appdirs==1.4.4
 argilla==1.8.0
+asgiref==3.7.2
 async-timeout==4.0.2
 attrs==23.1.0
 backoff==2.2.1

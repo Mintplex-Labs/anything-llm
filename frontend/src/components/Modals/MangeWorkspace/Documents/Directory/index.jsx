@@ -3,6 +3,7 @@ import PreLoader from "../../../../Preloader";
 import { useEffect, useState } from "react";
 import FolderRow from "./FolderRow";
 import pluralize from "pluralize";
+import Workspace from "../../../../../models/workspace";
 
 export default function Directory({
   files,
@@ -139,6 +140,7 @@ export default function Directory({
           fileTypes={fileTypes}
           workspace={workspace}
           fetchKeys={fetchKeys}
+          setLoading={setLoading}
         />
       </div>
     </div>

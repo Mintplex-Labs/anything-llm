@@ -39,8 +39,29 @@ async function processDocument(filename = "") {
     });
 }
 
+async function processLink(link = "") {
+  if (!link) return false;
+  return await fetch(`${PYTHON_API}/process-link`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ link }),
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Response could not be completed");
+      return res.json();
+    })
+    .then((res) => res)
+    .catch((e) => {
+      console.log(e.message);
+      return { success: false, reason: e.message };
+    });
+}
+
 module.exports = {
   checkPythonAppAlive,
   processDocument,
+  processLink,
   acceptedFileTypes,
 };
