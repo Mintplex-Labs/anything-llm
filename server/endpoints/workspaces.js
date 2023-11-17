@@ -135,7 +135,9 @@ function workspaceEndpoints(app) {
       console.log(
         `Link ${link} uploaded processed and successfully. It is now available in documents.`
       );
-      await Telemetry.sendTelemetry("link_uploaded");
+      await Telemetry.sendTelemetry("link_uploaded", {
+        link,
+      });
       response.status(200).json({ success: true, error: null });
     }
   );
