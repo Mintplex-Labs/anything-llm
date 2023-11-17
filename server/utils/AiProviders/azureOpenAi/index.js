@@ -1,9 +1,8 @@
 const { AzureOpenAiEmbedder } = require("../../EmbeddingEngines/azureOpenAi");
 const { chatPrompt } = require("../../chats");
 
-class AzureOpenAiLLM extends AzureOpenAiEmbedder {
-  constructor() {
-    super();
+class AzureOpenAiLLM {
+  constructor(embedder = null) {
     const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
@@ -20,6 +19,12 @@ class AzureOpenAiLLM extends AzureOpenAiEmbedder {
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
+
+    if (!embedder)
+      console.warn(
+        "No embedding provider defined for AzureOpenAiLLM - falling back to AzureOpenAiEmbedder for embedding!"
+      );
+    this.embedder = !embedder ? new AzureOpenAiEmbedder() : embedder;
   }
 
   streamingEnabled() {
@@ -112,6 +117,14 @@ Context:
     });
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
+  }
+
+  // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
+  async embedTextInput(textInput) {
+    return await this.embedder.embedTextInput(textInput);
+  }
+  async embedChunks(textChunks = []) {
+    return await this.embedder.embedChunks(textChunks);
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {

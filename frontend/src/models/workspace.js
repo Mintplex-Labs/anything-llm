@@ -138,6 +138,16 @@ const Workspace = {
     const data = await response.json();
     return { response, data };
   },
+  uploadLink: async function (slug, link) {
+    const response = await fetch(`${API_BASE}/workspace/${slug}/upload-link`, {
+      method: "POST",
+      body: JSON.stringify({ link }),
+      headers: baseHeaders(),
+    });
+
+    const data = await response.json();
+    return { response, data };
+  },
 
   // TODO: Deprecated and should be removed from frontend.
   sendChat: async function ({ slug }, message, mode = "query") {

@@ -1,13 +1,14 @@
 import os, json, requests, tempfile
 from requests_html import HTMLSession
 from langchain.document_loaders import UnstructuredHTMLLoader
+from .watch.utils import guid
 
 def fetch_all_publications(subdomain):
   file_path = f"./outputs/substack-logs/substack-{subdomain}.json"
 
   if os.path.isdir("./outputs/substack-logs") == False:
     os.makedirs("./outputs/substack-logs")
-  
+
   if os.path.exists(file_path):
     with open(file_path, "r") as file:
       print(f"Returning cached data for substack {subdomain}.substack.com. If you do not wish to use stored data then delete the file for this newsletter to allow refetching.")
@@ -24,7 +25,7 @@ def fetch_all_publications(subdomain):
       print("Bad response - exiting collection")
       collecting = False
       continue
-    
+
     data = response.json()
 
     if(len(data) ==0 ):
@@ -34,11 +35,11 @@ def fetch_all_publications(subdomain):
     for publication in data:
       publications.append(publication)
     offset = len(publications)
-  
+
   with open(file_path, 'w+', encoding='utf-8') as json_file:
     json.dump(publications, json_file, ensure_ascii=True, indent=2)
     print(f"{len(publications)} publications found for author {subdomain}.substack.com. Saved to substack-logs/channel-{subdomain}.json")
-  
+
   return publications
 
 def only_valid_publications(publications= []):
@@ -60,7 +61,7 @@ def get_content(article_link):
   if(req.ok == False):
     print("Could not reach this url!")
     return None
-  
+
   req.html.render()
 
   full_text = None
@@ -75,6 +76,7 @@ def get_content(article_link):
 
 def append_meta(publication, text):
   meta = {
+    'id': guid(),
     'url': publication.get('canonical_url'),
     'thumbnail': publication.get('cover_image'),
     'title': publication.get('title'),

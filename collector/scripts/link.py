@@ -2,13 +2,14 @@ import os, json, tempfile
 from urllib.parse import urlparse
 from requests_html import HTMLSession
 from langchain.document_loaders import UnstructuredHTMLLoader
-from .link_utils import append_meta
+from .link_utils import append_meta, AsyncHTMLSessionFixed
 from .utils import tokenize, ada_v2_cost
 import requests
 from bs4 import BeautifulSoup
-    
+
 # Example Channel URL https://tim.blog/2022/08/09/nft-insider-trading-policy/
 def link():
+  totalTokens = 0
   print("[NOTICE]: The first time running this process it will download supporting libraries.\n\n")
   fqdn_link = input("Paste in the URL of an online article or blog: ")
   if(len(fqdn_link) == 0):
@@ -20,7 +21,7 @@ def link():
   if(req.ok == False):
     print("Could not reach this url!")
     exit(1)
-  
+
   req.html.render()
   full_text = None
   with tempfile.NamedTemporaryFile(mode = "w") as tmp:
@@ -30,15 +31,16 @@ def link():
     data = loader.load()[0]
     full_text = data.page_content
     tmp.close()
-  
+
   link = append_meta(req, full_text, True)
   if(len(full_text) > 0):
+    totalTokens += len(tokenize(full_text))
     source = urlparse(req.url)
     output_filename = f"website-{source.netloc}-{source.path.replace('/','_')}.json"
     output_path = f"./outputs/website-logs"
 
-    transaction_output_filename = f"article-{source.path.replace('/','_')}.json"
-    transaction_output_dir = f"../server/storage/documents/website-{source.netloc}"
+    transaction_output_filename = f"website-{source.path.replace('/','_')}.json"
+    transaction_output_dir = f"../server/storage/documents/custom-documents"
 
     if os.path.isdir(output_path) == False:
       os.makedirs(output_path)
@@ -58,9 +60,55 @@ def link():
 
   print(f"\n\n[Success]: article or link content fetched!")
   print(f"////////////////////////////")
-  print(f"Your estimated cost to embed this data using OpenAI's text-embedding-ada-002 model at $0.0004 / 1K tokens will cost {ada_v2_cost(tokenCount)} using {tokenCount} tokens.")
+  print(f"Your estimated cost to embed this data using OpenAI's text-embedding-ada-002 model at $0.0004 / 1K tokens will cost {ada_v2_cost(totalTokens)} using {totalTokens} tokens.")
   print(f"////////////////////////////")
   exit(0)
+
+async def process_single_link(url):
+    session = None
+    try:
+        print(f"Working on {url}...")
+        session = AsyncHTMLSessionFixed()
+        req = await session.get(url)
+        await req.html.arender()
+        await session.close()
+
+        if not req.ok:
+            return False, "Could not reach this URL."
+
+        full_text = None
+        with tempfile.NamedTemporaryFile(mode = "w") as tmp:
+          tmp.write(req.html.html)
+          tmp.seek(0)
+          loader = UnstructuredHTMLLoader(tmp.name)
+          data = loader.load()[0]
+          full_text = data.page_content
+          tmp.close()
+
+        if full_text:
+            link_meta = append_meta(req, full_text, True)
+
+            source = urlparse(req.url)
+            transaction_output_dir = "../server/storage/documents/custom-documents"
+            transaction_output_filename = f"website-{source.netloc}-{source.path.replace('/', '_')}.json"
+
+            if not os.path.isdir(transaction_output_dir):
+                os.makedirs(transaction_output_dir)
+
+            file_path = os.path.join(transaction_output_dir, transaction_output_filename)
+            with open(file_path, 'w', encoding='utf-8') as file:
+                json.dump(link_meta, file, ensure_ascii=False, indent=4)
+
+
+            return True, "Content fetched and saved."
+
+        else:
+            return False, "Could not parse any meaningful data from this URL."
+
+    except Exception as e:
+        if session is not None:
+           session.close() # Kill hanging session.
+        return False, str(e)
 
 def crawler():
   prompt = "Paste in root URI of the pages of interest: "
@@ -89,17 +137,17 @@ def crawler():
           print (data + " does not apply for linking...")
       except:
         print (data + " does not apply for linking...")
-  #parse the links found  
+  #parse the links found
   parse_links(links)
 
 def links():
   links = []
   prompt = "Paste in the URL of an online article or blog: "
   done = False
-  
+
   while(done == False):
     new_link = input(prompt)
-    if(len(new_link) == 0): 
+    if(len(new_link) == 0):
       done = True
       links = [*set(links)]
       continue
@@ -117,17 +165,17 @@ def links():
 # parse links from array
 def parse_links(links):
     totalTokens = 0
-    for link in links:               
+    for link in links:
         print(f"Working on {link}...")
         session = HTMLSession()
-        
-        req = session.get(link, timeout=20) 
+
+        req = session.get(link, timeout=20)
 
         if not req.ok:
             print(f"Could not reach {link} - skipping!")
             continue
-        
-        req.html.render(timeout=10)    
+
+        req.html.render(timeout=10)
 
         full_text = None
         with tempfile.NamedTemporaryFile(mode="w") as tmp:
@@ -137,15 +185,15 @@ def parse_links(links):
             data = loader.load()[0]
             full_text = data.page_content
             tmp.close()
-        
+
         link = append_meta(req, full_text, True)
         if len(full_text) > 0:
             source = urlparse(req.url)
             output_filename = f"website-{source.netloc}-{source.path.replace('/','_')}.json"
             output_path = f"./outputs/website-logs"
 
-            transaction_output_filename = f"article-{source.path.replace('/','_')}.json"
-            transaction_output_dir = f"../server/storage/documents/website-{source.netloc}"
+            transaction_output_filename = f"website-{source.path.replace('/','_')}.json"
+            transaction_output_dir = f"../server/storage/documents/custom-documents"
 
             if not os.path.isdir(output_path):
                 os.makedirs(output_path)
@@ -166,7 +214,7 @@ def parse_links(links):
             req.session.close()
         else:
             print(f"Could not parse any meaningful data from {link}.")
-            continue    
+            continue
 
     print(f"\n\n[Success]: {len(links)} article or link contents fetched!")
     print(f"////////////////////////////")

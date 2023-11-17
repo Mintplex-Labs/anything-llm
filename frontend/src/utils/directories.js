@@ -8,8 +8,7 @@ export function formatDate(dateString) {
 }
 
 export function getFileExtension(path) {
-  const match = path.match(/[^\/\\&\?]+\.\w{1,4}(?=([\?&].*$|$))/);
-  return match ? match[0].split(".").pop() : "file";
+  return path?.split(".")?.slice(-1)?.[0] || "file";
 }
 
 export function truncate(str, n) {
