@@ -1,12 +1,11 @@
 import os, json, tempfile
 from urllib.parse import urlparse
-from requests_html import HTMLSession, AsyncHTMLSession
+from requests_html import HTMLSession
 from langchain.document_loaders import UnstructuredHTMLLoader
-from .link_utils import append_meta
+from .link_utils import append_meta, AsyncHTMLSessionFixed
 from .utils import tokenize, ada_v2_cost
 import requests
 from bs4 import BeautifulSoup
-import asyncio
 
 # Example Channel URL https://tim.blog/2022/08/09/nft-insider-trading-policy/
 def link():
@@ -65,18 +64,18 @@ def link():
   print(f"////////////////////////////")
   exit(0)
 
-def process_single_link(url):
+async def process_single_link(url):
+    session = None
     try:
         print(f"Working on {url}...")
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        session = AsyncHTMLSession()
-        req = session.get(url)
+        session = AsyncHTMLSessionFixed()
+        req = await session.get(url)
+        await req.html.arender()
+        await session.close()
 
-        if req:
+        if not req.ok:
             return False, "Could not reach this URL."
 
-        loop.run_until_complete(req.html.render(timeout=10))
         full_text = None
         with tempfile.NamedTemporaryFile(mode = "w") as tmp:
           tmp.write(req.html.html)
@@ -112,6 +111,8 @@ def process_single_link(url):
             return False, "Could not parse any meaningful data from this URL."
 
     except Exception as e:
+        if session is not None:
+           session.close() # Kill hanging session.
         return False, str(e)
 
 def crawler():

@@ -15,11 +15,11 @@ def process_file():
   return json.dumps({'filename': target_filename, 'success': success, 'reason': reason})
 
 @api.route('/process-link', methods=['POST'])
-def process_link():
+async def process_link():
   content = request.json
   url = content.get('link')
   print(f"Processing {url}")
-  success, reason = process_single_link(url)
+  success, reason = await process_single_link(url)
   return json.dumps({'url': url, 'success': success, 'reason': reason})
 
 

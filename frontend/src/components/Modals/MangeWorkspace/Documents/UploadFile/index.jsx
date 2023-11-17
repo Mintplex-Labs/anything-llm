@@ -7,22 +7,35 @@ import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
 
-export default function UploadFile({ workspace, fileTypes, fetchKeys, setLoading }) {
+export default function UploadFile({
+  workspace,
+  fileTypes,
+  fetchKeys,
+  setLoading,
+}) {
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
-  const [link, setLink] = useState("");
-  const [validLink, setValidLink] = useState(false);
+  const [fetchingUrl, setFetchingUrl] = useState(false);
 
-  const handleSendLink = async () => {
+  const handleSendLink = async (e) => {
+    e.preventDefault();
     setLoading(true);
-    const { response, data } = await Workspace.uploadLink(workspace.slug, link);
+    setFetchingUrl(true);
+    const formEl = e.target;
+    const form = new FormData(formEl);
+    const { response, data } = await Workspace.uploadLink(
+      workspace.slug,
+      form.get("link")
+    );
     if (!response.ok) {
       showToast(`Error uploading link: ${data.error}`, "error");
     } else {
       fetchKeys(true);
       showToast("Link uploaded successfully", "success");
+      formEl.reset();
     }
     setLoading(false);
+    setFetchingUrl(false);
   };
 
   const handleUploadSuccess = () => {
@@ -121,22 +134,22 @@ export default function UploadFile({ workspace, fileTypes, fetchKeys, setLoading
       <div className="text-center text-white text-opacity-50 text-xs font-medium w-[560px] py-2">
         or submit a link
       </div>
-      <div className="flex gap-x-2">
+      <form onSubmit={handleSendLink} className="flex gap-x-2">
         <input
-          className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          type="text"
-          placeholder={"https://en.wikipedia.org/wiki/Node.js"}
-          onChange={(e) => {
-            setLink(e.target.value);
-          }}
+          disabled={fetchingUrl}
+          name="link"
+          type="url"
+          className="disabled:bg-zinc-600 disabled:text-slate-300 bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5"
+          placeholder={"https://example.com"}
         />
         <button
-          onClick={handleSendLink}
-          className="bg-transparent hover:bg-slate-200 hover:text-slate-800 border border-white text-sm text-white p-2.5 rounded-lg transition-all duration-300"
+          disabled={fetchingUrl}
+          type="submit"
+          className="disabled:bg-white/20 disabled:text-slate-300 disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-slate-200 hover:text-slate-800 w-auto border border-white text-sm text-white p-2.5 rounded-lg transition-all duration-300"
         >
-          Process
+          {fetchingUrl ? "Fetching..." : "Fetch website"}
         </button>
-      </div>
+      </form>
       <div className="mt-6 text-center text-white text-opacity-80 text-xs font-medium w-[560px]">
         These files will be uploaded to the document processor running on this
         AnythingLLM instance. These files are not sent or shared with a third
