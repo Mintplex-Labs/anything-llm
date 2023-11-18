@@ -79,8 +79,11 @@ This monorepo consists of three main sections:
 *AnythingLLM by default uses a built-in vector db called LanceDB.
 
 ## How to get started (Docker - simple setup)
-[Get up and running in minutes with Docker](./docker/HOW_TO_USE_DOCKER.md)
+`docker pull mintplexlabs/anythingllm:master`
+`docker run -d -p 3001:3001 mintplexlabs/anythingllm:master`
 
+Go to `http://localhost:3001` and you are now using AnythingLLm!
+[More about running AnythingLLM with Docker](./docker/HOW_TO_USE_DOCKER.md)
 
 ### How to get started (Development environment)
 - `yarn setup` from the project root directory.

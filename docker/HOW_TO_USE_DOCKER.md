@@ -5,7 +5,13 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 ## Requirements
 - Install [Docker](https://www.docker.com/) on your computer or machine.
 
-## How to install & run locally
+## Pull from Docker
+`docker pull mintplexlabs/anythingllm:master`
+`docker run -d -p 3001:3001 mintplexlabs/anythingllm:master`
+
+Go to `http://localhost:3001` and you are now using AnythingLLm!
+
+## Build locally from source
 - `git clone` this repo and `cd anything-llm` to get to the root directory.
 - `touch server/storage/anythingllm.db` to create empty SQLite DB file.
 - `cd docker/`
