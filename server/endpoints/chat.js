@@ -172,6 +172,17 @@ function chatEndpoints(app) {
       }
     }
   );
+
+  // endpoint for embedded chat (unprotected)
+  app.post("/workspace/:id/embedded-chat", async (request, response) => {
+    const { id } = request.params;
+    const { message } = request.body;
+
+    console.log("EMBEDDED CHAT MESSAGE: ", message);
+    console.log("EMBEDDED CHAT ID: ", id);
+
+    response.status(200).json({ id: id, message });
+  });
 }
 
 module.exports = { chatEndpoints };
