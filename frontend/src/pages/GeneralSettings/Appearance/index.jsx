@@ -184,7 +184,7 @@ export default function Appearance() {
           </div>
           <div className="mb-6">
             <div className="flex flex-col gap-y-2">
-              <h2 className="leading-tight font-medium text-black dark:text-white">
+              <h2 className="leading-tight font-medium text-white">
                 Custom Messages
               </h2>
               <p className="text-sm font-base text-white/60">
