@@ -2,8 +2,8 @@
 FROM ubuntu:jammy-20230522 AS base
 
 # Build arguments
-ARG ARG_UID
-ARG ARG_GID
+ARG ARG_UID=1000
+ARG ARG_GID=1000
 
 # Install system dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
