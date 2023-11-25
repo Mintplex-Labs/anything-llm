@@ -34,6 +34,28 @@
       "program": "${workspaceFolder}/collector/watch.py",
       "console": "integratedTerminal"
     },
+    {
+      "name": "Python Debugger: Collector run",
+      "type": "python",
+
+      "cwd": "${workspaceFolder}/collector",
+      "request": "launch",
+      "env": {
+        "FLASK_ENV": "development",
+        "FLASK_APP": "wsgi.py"
+      },
+      "program": "${workspaceFolder}/collector/v-env/bin/gunicorn",
+      "args": [
+        "--timeout",
+        "300",
+        "--workers",
+        "1",
+        "--bind",
+        "0.0.0.0:8888",
+        "wsgi:api"
+      ],
+      "console": "integratedTerminal"
+    },
     // {
     //   "name": "Launch Vite",
     //   "program": "${workspaceFolder}/frontend/node_modules/.bin/vite",

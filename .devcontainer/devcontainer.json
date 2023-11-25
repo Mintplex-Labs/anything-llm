@@ -17,6 +17,7 @@
     "ghcr.io/devcontainers-contrib/features/pandoc:1": {
       "version": "3.1.3"
     },
+    "ghcr.io/devcontainers/features/terraform:1": {},
     "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
       "packages": [
         "curl",
@@ -67,6 +68,7 @@
         "exiasr.hadolint",
         "flowtype.flow-for-vscode",
         "gamunu.vscode-yarn",
+        "hashicorp.terraform",
         "mariusschulz.yarn-lock-syntax",
         "ms-azuretools.vscode-docker",
         "ms-python.python",
