@@ -54,12 +54,12 @@ export default function Sidebar() {
 
           {/* Primary Body */}
           <div className="flex-grow flex flex-col">
-            <div className="flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll">
+            <div className="flex flex-col gap-y-2 pb-8 overflow-y-scroll no-scroll">
               <div className="flex gap-x-2 items-center justify-between">
                 {(!user || user?.role !== "default") && (
                   <button
                     onClick={showNewWsModal}
-                    className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                    className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 mb-2 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
                   >
                     <Plus className="h-5 w-5" />
                     <p className="text-sidebar text-sm font-semibold">
@@ -114,9 +114,9 @@ export default function Sidebar() {
                       className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
                     />
                   </a>
-                  <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
+                  {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
                     <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>

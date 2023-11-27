@@ -45,7 +45,7 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR} md:mt-0 mt-[40px]`}
       >
         <div
-          className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`pt-10 pb-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
         >
           <div className="flex gap-x-5">
             <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
@@ -69,7 +69,7 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`pb-4 pt-2 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
         >
           <div className="flex gap-x-5">
             <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
@@ -92,7 +92,7 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`pt-2 pb-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
         >
           <div className="flex gap-x-5">
             <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
@@ -126,7 +126,7 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
         >
           <div className="flex gap-x-5">
             <Jazzicon
@@ -150,7 +150,7 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
         >
           <div className="flex gap-x-5">
             <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
@@ -185,7 +185,7 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
         >
           <div className="flex gap-x-5">
             <Jazzicon
@@ -210,7 +210,7 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
         >
           <div className="flex gap-x-5">
             <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
@@ -248,7 +248,7 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
         >
           <div className="flex gap-x-5">
             <Jazzicon
@@ -272,7 +272,7 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-10 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
         >
           <div className="flex gap-x-5">
             <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
@@ -335,7 +335,7 @@ export default function DefaultChatContainer() {
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full md:min-w-[82%] h-full overflow-y-scroll"
+      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
     >
       {isMobile && <SidebarMobileHeader />}
       {fetchedMessages.length === 0
