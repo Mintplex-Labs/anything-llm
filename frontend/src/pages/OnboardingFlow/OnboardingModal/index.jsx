@@ -12,10 +12,6 @@ import DataHandling from "./Steps/DataHandling";
 
 const DIALOG_ID = "onboarding-modal";
 
-function hideModal() {
-  document.getElementById(DIALOG_ID)?.close();
-}
-
 const STEPS = {
   llm_preference: {
     title: "LLM Preference",
@@ -71,9 +67,13 @@ const STEPS = {
 };
 
 export const OnboardingModalId = DIALOG_ID;
-export default function OnboardingModal() {
+export default function OnboardingModal({ setModalVisible }) {
   const [currentStep, setCurrentStep] = useState("llm_preference");
   const [history, setHistory] = useState(["llm_preference"]);
+
+  function hideModal() {
+    setModalVisible(false);
+  }
 
   const nextStep = (stepKey) => {
     setCurrentStep(stepKey);
