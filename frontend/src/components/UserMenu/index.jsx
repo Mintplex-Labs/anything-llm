@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { isMobile } from 'react-device-detect';
-import paths from '../../utils/paths';
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from '../../utils/constants';
-import { Person, SignOut } from '@phosphor-icons/react';
-import { userFromStorage } from '../../utils/request';
+import React, { useState, useEffect, useRef } from "react";
+import { isMobile } from "react-device-detect";
+import paths from "../../utils/paths";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
+import { Person, SignOut } from "@phosphor-icons/react";
+import { userFromStorage } from "../../utils/request";
 
 export default function UserMenu({ children }) {
   if (isMobile) return <>{children}</>;
@@ -20,14 +20,14 @@ function useLoginMode() {
   const user = !!window.localStorage.getItem(AUTH_USER);
   const token = !!window.localStorage.getItem(AUTH_TOKEN);
 
-  if (user && token) return 'multi';
-  if (!user && token) return 'single';
+  if (user && token) return "multi";
+  if (!user && token) return "single";
   return null;
 }
 
 function userDisplay() {
   const user = userFromStorage();
-  return user?.username?.slice(0, 2) || 'AA';
+  return user?.username?.slice(0, 2) || "AA";
 }
 
 function UserButton() {
@@ -47,9 +47,9 @@ function UserButton() {
 
   useEffect(() => {
     if (showMenu) {
-      document.addEventListener('mousedown', handleClose);
+      document.addEventListener("mousedown", handleClose);
     }
-    return () => document.removeEventListener('mousedown', handleClose);
+    return () => document.removeEventListener("mousedown", handleClose);
   }, [showMenu]);
 
   if (mode === null) return null;
@@ -62,7 +62,7 @@ function UserButton() {
         type="button"
         className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient justify-center text-white p-2 hover:border-slate-100 hover:border-opacity-50 border-transparent border"
       >
-        {mode === 'multi' ? userDisplay() : <Person size={14} />}
+        {mode === "multi" ? userDisplay() : <Person size={14} />}
       </button>
 
       {showMenu && (

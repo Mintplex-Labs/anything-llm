@@ -52,11 +52,11 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
   return (
     <div className="w-full">
       <form onSubmit={handleSubmit} className="flex flex-col w-full">
-        <div className="flex flex-col w-full px-1 md:px-8 py-12">
+        <div className="flex flex-col w-full px-1 md:px-8 py-4">
           <div className="text-white text-sm font-medium pb-4">
             Embedding Provider
           </div>
-          <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
+          <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[752px]">
             <input
               hidden={true}
               name="EmbeddingEngine"
@@ -90,7 +90,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
               onClick={updateChoice}
             />
           </div>
-          <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
+          <div className="mt-4 flex flex-wrap gap-4 max-w-[752px]">
             {embeddingChoice === "openai" && (
               <OpenAiOptions settings={settings} />
             )}
@@ -102,7 +102,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
             )}
           </div>
         </div>
-        <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+        <div className="flex w-full justify-between items-center px-6 py-4 space-x-2 border-t rounded-b border-gray-500/50">
           <button
             onClick={prevStep}
             type="button"

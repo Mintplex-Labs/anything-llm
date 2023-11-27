@@ -153,7 +153,7 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
   return (
     <div className="max-w-[750px]">
       <div className="p-8 flex flex-col gap-8">
-        <div className="flex flex-col gap-y-3.5 border-b border-zinc-500/50 pb-8">
+        <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
           <div className="text-white text-base font-bold">LLM Selection</div>
           <div className="flex items-center gap-2.5">
             <img
@@ -173,48 +173,51 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
             ))}
           </div>
         </div>
-
-        <div className="flex flex-col gap-y-3.5 border-b border-zinc-500/50 pb-8">
+        <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
           <div className="text-white text-base font-bold">Embedding Engine</div>
           <div className="flex items-center gap-2.5">
             <img
               src={EMBEDDING_ENGINE_PRIVACY[embeddingEngine].logo}
-              alt="Vector DB Logo"
+              alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
             <p className="text-white text-sm font-bold">
               {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].name}
             </p>
           </div>
-          <ul className="flex flex-col list-disc">
+          <div className="flex flex-col">
             {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].description.map(
               (desc) => (
-                <li className="text-white/90 text-sm">{desc}</li>
+                <p className="text-white/90 text-sm">
+                  <b>•</b> {desc}
+                </p>
               )
             )}
-          </ul>
+          </div>
         </div>
 
-        <div className="flex flex-col gap-y-3.5 ">
+        <div className="flex flex-col gap-y-2 pb-4">
           <div className="text-white text-base font-bold">Vector Database</div>
           <div className="flex items-center gap-2.5">
             <img
               src={VECTOR_DB_PRIVACY[vectorDb].logo}
-              alt="Vector DB Logo"
+              alt="LLM Logo"
               className="w-8 h-8 rounded"
             />
             <p className="text-white text-sm font-bold">
               {VECTOR_DB_PRIVACY[vectorDb].name}
             </p>
           </div>
-          <ul className="flex flex-col list-disc">
+          <div className="flex flex-col">
             {VECTOR_DB_PRIVACY[vectorDb].description.map((desc) => (
-              <li className="text-white/90 text-sm">{desc}</li>
+              <p className="text-white/90 text-sm">
+                <b>•</b> {desc}
+              </p>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
-      <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+      <div className="flex w-[650px] justify-between items-center px-6 py-4 space-x-2 border-t rounded-b border-gray-500/50">
         <button
           onClick={prevStep}
           type="button"
