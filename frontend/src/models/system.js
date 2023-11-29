@@ -170,6 +170,21 @@ const System = {
         return { success: false, error: e.message };
       });
   },
+  uploadPfp: async function (formData) {
+    return await fetch(`${API_BASE}/system/upload-pfp`, {
+      method: "POST",
+      body: formData,
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error uploading pfp.");
+        return { success: true, error: null };
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
   uploadLogo: async function (formData) {
     return await fetch(`${API_BASE}/system/upload-logo`, {
       method: "POST",

@@ -16,7 +16,11 @@ const {
   userFromSession,
   multiUserMode,
 } = require("../utils/http");
-const { setupDataImports, setupLogoUploads, setupPfpUploads } = require("../utils/files/multer");
+const {
+  setupDataImports,
+  setupLogoUploads,
+  setupPfpUploads,
+} = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
@@ -419,19 +423,19 @@ function systemEndpoints(app) {
 
   // Upload a pfp
   app.post(
-    "/system/pfp/:id",
+    "/system/upload-pfp",
     [validatedRequest, flexUserRoleValid],
-    handlePfpUploads.single("pfp"),
+    handlePfpUploads.single("file"),
     async function (request, response) {
       try {
-        const { id } = request.params;
+        const user = await userFromSession(request, response);
         const { buffer, size, mime } = fetchPfp(
-          path.resolve(__dirname, `../../storage/assets/pfp/${id}`)
+          path.resolve(__dirname, `../../storage/assets/pfp/${user.id}`)
         );
         response.writeHead(200, {
           "Content-Type": mime || "image/png",
           "Content-Disposition": `attachment; filename=${path.basename(
-            id
+            user.id
           )}.png`,
           "Content-Length": size,
         });

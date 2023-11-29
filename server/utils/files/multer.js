@@ -65,7 +65,7 @@ function setupPfpUploads() {
     },
   });
 
-  return { handleLogoUploads: multer({ storage }) };
+  return { handlePfpUploads: multer({ storage }) };
 }
 
 module.exports = {
