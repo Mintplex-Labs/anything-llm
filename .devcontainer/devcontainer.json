@@ -3,6 +3,15 @@
 {
   "name": "Node.js",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  // "build": {
+  //   "args": {
+  //     "ARG_UID": "1000",
+  //     "ARG_GID": "1000"
+  //   },
+  //   "dockerfile": "Dockerfile"
+  // },
+  // "containerUser": "anythingllm",
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
   "image": "mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm",
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
@@ -19,16 +28,53 @@
     },
     "ghcr.io/devcontainers/features/terraform:1": {},
     "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+      // Dependencies copied from ../docker/Dockerfile // something is needed to make web collector to work
       "packages": [
         "curl",
         "gnupg",
         "less",
         "locales",
         "procps",
-        "tzdata"
+        "tzdata",
+        "libgfortran5",
+        "libasound2",
+        "libatk1.0-0",
+        "libc6",
+        "libcairo2",
+        "libcups2",
+        "libdbus-1-3",
+        "libexpat1",
+        "libfontconfig1",
+        "libgcc1",
+        "libglib2.0-0",
+        "libgtk-3-0",
+        "libnspr4",
+        "libpango-1.0-0",
+        "libx11-6",
+        "libx11-xcb1",
+        "libxcb1",
+        "libxcomposite1",
+        "libxcursor1",
+        "libxdamage1",
+        "libxext6",
+        "libxfixes3",
+        "libxi6",
+        "libxrandr2",
+        "libxrender1",
+        "libxss1",
+        "libxtst6",
+        "ca-certificates",
+        "fonts-liberation",
+        "libappindicator1",
+        "libnss3",
+        "lsb-release",
+        "xdg-utils"
       ]
     }
   },
+  "onCreateCommand": "cd collector && virtualenv v-env",
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "yarn run setup",
   "portsAttributes": {
     "3001": {
       "label": "Backend",
@@ -43,9 +89,7 @@
     "NODE_ENV": "development",
     "ESLINT_USE_FLAT_CONFIG": "true"
   },
-  "onCreateCommand": "cd collector && virtualenv v-env",
-  // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "yarn run setup",
+  "shutdownAction": "stopContainer",
   // Configure tool-specific properties.
   "customizations": {
     "codespaces": {
