@@ -57,7 +57,7 @@ export default function ActiveWorkspaces() {
               href={isActive ? null : paths.workspace.chat(workspace.slug)}
               className={`
               transition-all duration-[200ms]
-                flex flex-grow w-[75%] gap-x-2 py-[9px] px-[12px] rounded-lg text-slate-200 justify-start items-center border
+                flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-lg text-slate-200 justify-start items-center border
                 hover:bg-workspace-item-selected-gradient hover:border-slate-100 hover:border-opacity-50
                 ${
                   isActive
