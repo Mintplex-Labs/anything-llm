@@ -52,8 +52,25 @@ function setupLogoUploads() {
   return { handleLogoUploads: multer({ storage }) };
 }
 
+function setupPfpUploads() {
+  // Handle pfp uploads.
+  const storage = multer.diskStorage({
+    destination: function (_, _, cb) {
+      const uploadOutput = path.resolve(__dirname, `../../storage/assets/pfp`);
+      fs.mkdirSync(uploadOutput, { recursive: true });
+      return cb(null, uploadOutput);
+    },
+    filename: function (_, file, cb) {
+      cb(null, file.originalname);
+    },
+  });
+
+  return { handleLogoUploads: multer({ storage }) };
+}
+
 module.exports = {
   setupMulter,
   setupDataImports,
   setupLogoUploads,
+  setupPfpUploads,
 };

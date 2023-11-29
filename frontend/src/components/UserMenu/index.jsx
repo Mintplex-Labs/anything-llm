@@ -4,6 +4,7 @@ import paths from "../../utils/paths";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
 import { Person, SignOut } from "@phosphor-icons/react";
 import { userFromStorage } from "../../utils/request";
+import useUser from "../../hooks/useUser";
 
 export default function UserMenu({ children }) {
   if (isMobile) return <>{children}</>;
@@ -19,6 +20,8 @@ export default function UserMenu({ children }) {
 function useLoginMode() {
   const user = !!window.localStorage.getItem(AUTH_USER);
   const token = !!window.localStorage.getItem(AUTH_TOKEN);
+
+  console.log(useUser());
 
   if (user && token) return "multi";
   if (!user && token) return "single";
@@ -76,6 +79,12 @@ function UserButton() {
               className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
             >
               Support
+            </a>
+            <a
+              href={paths.mailToMintplex()}
+              className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+            >
+              Account
             </a>
             <button
               onClick={() => {

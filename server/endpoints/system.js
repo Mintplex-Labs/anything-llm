@@ -16,13 +16,14 @@ const {
   userFromSession,
   multiUserMode,
 } = require("../utils/http");
-const { setupDataImports, setupLogoUploads } = require("../utils/files/multer");
+const { setupDataImports, setupLogoUploads, setupPfpUploads } = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { handleImports } = setupDataImports();
 const { handleLogoUploads } = setupLogoUploads();
+const { handlePfpUploads } = setupPfpUploads();
 const fs = require("fs");
 const path = require("path");
 const {
@@ -41,6 +42,7 @@ const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { Workspace } = require("../models/workspace");
 const { flexUserRoleValid } = require("../utils/middleware/multiUserProtected");
+const { fetchPfp } = require("../utils/files/pfp");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -414,6 +416,33 @@ function systemEndpoints(app) {
       response.status(500).json({ message: "Internal server error" });
     }
   });
+
+  // Upload a pfp
+  app.post(
+    "/system/pfp/:id",
+    [validatedRequest, flexUserRoleValid],
+    handlePfpUploads.single("pfp"),
+    async function (request, response) {
+      try {
+        const { id } = request.params;
+        const { buffer, size, mime } = fetchPfp(
+          path.resolve(__dirname, `../../storage/assets/pfp/${id}`)
+        );
+        response.writeHead(200, {
+          "Content-Type": mime || "image/png",
+          "Content-Disposition": `attachment; filename=${path.basename(
+            id
+          )}.png`,
+          "Content-Length": size,
+        });
+        response.end(Buffer.from(buffer, "base64"));
+        return;
+      } catch (error) {
+        console.error("Error processing the logo request:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
 
   app.post(
     "/system/upload-logo",
