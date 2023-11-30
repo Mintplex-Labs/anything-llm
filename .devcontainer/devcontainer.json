@@ -75,8 +75,7 @@
   "onCreateCommand": "cd collector && virtualenv v-env",
   "updateContentCommand": {
     "collector": "./collector/v-env/bin/pip3 install --no-cache-dir -r ./collector/requirements.txt",
-    "server": "cd server && yarn",
-    "frontend": "cd frontend && yarn",
+    "yarn": "yarn setup",
     "envs": "yarn setup:envs",
     "prisma": "yarn prisma:setup"
   },
@@ -100,10 +99,16 @@
   // Configure tool-specific properties.
   "customizations": {
     "codespaces": {
-      "openFiles": ["README.md", ".devcontainer/README.md"]
+      "openFiles": [
+        "README.md",
+        ".devcontainer/README.md"
+      ]
     },
     "vscode": {
-      "openFiles": ["README.md", ".devcontainer/README.md"],
+      "openFiles": [
+        "README.md",
+        ".devcontainer/README.md"
+      ],
       "extensions": [
         "bierner.github-markdown-preview",
         "bradlc.vscode-tailwindcss",
@@ -182,7 +187,10 @@
         "python.analysis.useLibraryCodeForTypes": true,
         "python.analysis.autoFormatStrings": true,
         "python.analysis.inlayHints.callArgumentNames": "partial",
-        "pylint.args": ["--rcfile", "${workspaceFolder}/collector/.pylintrc"],
+        "pylint.args": [
+          "--rcfile",
+          "${workspaceFolder}/collector/.pylintrc"
+        ],
         "pylint.importStrategy": "useBundled",
         "eslint.debug": true,
         "eslint.enable": true,
