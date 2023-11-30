@@ -130,7 +130,7 @@ function UserButton() {
 
 function AccountModal() {
   const { user } = useUser();
-  const { pfp } = usePfp();
+  const { pfp, setPfp } = usePfp();
   const hideModal = () => {
     document.getElementById("account-modal")?.close();
   };
@@ -147,6 +147,9 @@ function AccountModal() {
       return;
     }
 
+    const pfpUrl = await System.fetchPfp(user.id);
+    setPfp(pfpUrl);
+
     showToast("Profile picture uploaded successfully.", "success");
   };
 
@@ -157,6 +160,7 @@ function AccountModal() {
       return;
     }
 
+    setPfp(null);
     showToast("Profile picture removed successfully.", "success");
   };
 

@@ -8,6 +8,7 @@ import PrivateRoute, {
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "./pages/Login";
+import { PfpProvider } from "./PfpContext";
 
 const Main = lazy(() => import("./pages/Main"));
 const InvitePage = lazy(() => import("./pages/Invite"));
@@ -42,6 +43,7 @@ export default function App() {
   return (
     <Suspense fallback={<div />}>
       <ContextWrapper>
+        <PfpProvider>
         <Routes>
           <Route path="/" element={<PrivateRoute Component={Main} />} />
           <Route path="/login" element={<Login />} />
@@ -105,6 +107,7 @@ export default function App() {
           <Route path="/onboarding" element={<OnboardingFlow />} />
         </Routes>
         <ToastContainer />
+        </PfpProvider>
       </ContextWrapper>
     </Suspense>
   );
