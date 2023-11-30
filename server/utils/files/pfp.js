@@ -1,30 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const { getType } = require("mime");
-const { v4 } = require("uuid");
-const { SystemSettings } = require("../../models/systemSettings");
-const LOGO_FILENAME = "anything-llm.png";
-
-function validFilename(newFilename = "") {
-  return ![LOGO_FILENAME].includes(newFilename);
-}
-
-function getDefaultFilename() {
-  return LOGO_FILENAME;
-}
-
-async function determineLogoFilepath(defaultFilename = LOGO_FILENAME) {
-  const currentLogoFilename = await SystemSettings.currentLogoFilename();
-  const basePath = path.join(__dirname, "../../storage/assets");
-  const defaultFilepath = path.join(basePath, defaultFilename);
-
-  if (currentLogoFilename && validFilename(currentLogoFilename)) {
-    customLogoPath = path.join(basePath, currentLogoFilename);
-    return fs.existsSync(customLogoPath) ? customLogoPath : defaultFilepath;
-  }
-
-  return defaultFilepath;
-}
+const { User } = require("../../models/user");
 
 function fetchPfp(pfpPath) {
   const mime = getType(pfpPath);
@@ -36,35 +13,22 @@ function fetchPfp(pfpPath) {
   };
 }
 
-async function renameLogoFile(originalFilename = null) {
-  const extname = path.extname(originalFilename) || ".png";
-  const newFilename = `${v4()}${extname}`;
-  const originalFilepath = path.join(
-    __dirname,
-    `../../storage/assets/${originalFilename}`
-  );
-  const outputFilepath = path.join(
-    __dirname,
-    `../../storage/assets/${newFilename}`
-  );
+async function determinePfpFilepath(id) {
+  const numberId = Number(id);
+  const user = await User.get({ id: numberId });
+  const pfpFilename = user.pfpFilename;
+  if (!pfpFilename) return null;
+  const basePath = path.join(__dirname, "../../storage/assets/pfp");
+  const pfpFilepath = path.join(basePath, pfpFilename);
 
-  fs.renameSync(originalFilepath, outputFilepath);
-  return newFilename;
-}
+  if (pfpFilename && fs.existsSync(pfpFilepath)) {
+    return pfpFilepath;
+  }
 
-async function removeCustomLogo(logoFilename = LOGO_FILENAME) {
-  if (!logoFilename || !validFilename(logoFilename)) return false;
-  const logoPath = path.join(__dirname, `../../storage/assets/${logoFilename}`);
-  if (fs.existsSync(logoPath)) fs.unlinkSync(logoPath);
-  return true;
+  return null;
 }
 
 module.exports = {
   fetchPfp,
-  renameLogoFile,
-  removeCustomLogo,
-  validFilename,
-  getDefaultFilename,
-  determineLogoFilepath,
-  LOGO_FILENAME,
+  determinePfpFilepath,
 };

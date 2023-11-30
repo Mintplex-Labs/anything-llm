@@ -215,6 +215,39 @@ const System = {
         return null;
       });
   },
+  fetchPfp: async function (id) {
+    return await fetch(`${API_BASE}/system/pfp/${id}`, {
+      method: "GET",
+      cache: "no-cache",
+    })
+      .then((res) => {
+        if (res.ok) {
+          if (res.status === 204) return null;
+          return res.blob();
+        }
+        throw new Error("Failed to fetch pfp.");
+      })
+      .then((blob) => (blob ? URL.createObjectURL(blob) : null))
+      .catch((e) => {
+        console.log(e);
+        return null;
+      });
+  },
+  removePfp: async function (id) {
+    return await fetch(`${API_BASE}/system/remove-pfp`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (res.ok) return { success: true, error: null };
+        throw new Error("Failed to remove pfp.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
+
   isDefaultLogo: async function () {
     return await fetch(`${API_BASE}/system/is-default-logo`, {
       method: "GET",
@@ -389,6 +422,18 @@ const System = {
         return null;
       });
   },
+  updateUser: async (data) => {
+    return await fetch(`${API_BASE}/system/user`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  }
 };
 
 export default System;

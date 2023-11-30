@@ -7,6 +7,7 @@ import { userFromStorage } from "../../utils/request";
 import useUser from "../../hooks/useUser";
 import System from "../../models/system";
 import showToast from "../../utils/toast";
+import usePfp from "../../hooks/usePfp";
 
 export default function UserMenu({ children }) {
   if (isMobile) return <>{children}</>;
@@ -23,15 +24,27 @@ function useLoginMode() {
   const user = !!window.localStorage.getItem(AUTH_USER);
   const token = !!window.localStorage.getItem(AUTH_TOKEN);
 
-  console.log(useUser());
-
   if (user && token) return "multi";
   if (!user && token) return "single";
   return null;
 }
 
 function userDisplay() {
+  const { pfp } = usePfp();
   const user = userFromStorage();
+
+  if (pfp) {
+    return (
+      <div className="w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden transition-all duration-300 bg-gray-100 hover:border-slate-100 hover:border-opacity-50 border-transparent border hover:opacity-60">
+        <img
+          src={pfp}
+          alt="User profile picture"
+          className="w-full h-full object-cover"
+        />
+      </div>
+    );
+  }
+
   return user?.username?.slice(0, 2) || "AA";
 }
 
@@ -87,12 +100,14 @@ function UserButton() {
             >
               Support
             </a>
-            <button
-              onClick={handleOpenAccountModal}
-              className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
-            >
-              Account
-            </button>
+            {mode === "multi" && (
+              <button
+                onClick={handleOpenAccountModal}
+                className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+              >
+                Account
+              </button>
+            )}
             <button
               onClick={() => {
                 window.localStorage.removeItem(AUTH_USER);
@@ -114,7 +129,8 @@ function UserButton() {
 }
 
 function AccountModal() {
-  const {user} = useUser();
+  const { user } = useUser();
+  const { pfp } = usePfp();
   const hideModal = () => {
     document.getElementById("account-modal")?.close();
   };
@@ -134,118 +150,147 @@ function AccountModal() {
     showToast("Profile picture uploaded successfully.", "success");
   };
 
+  const handleRemovePfp = async () => {
+    const { success, error } = await System.removePfp();
+    if (!success) {
+      showToast(`Failed to remove profile picture: ${error}`, "error");
+      return;
+    }
+
+    showToast("Profile picture removed successfully.", "success");
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    const data = {};
+    const form = new FormData(e.target);
+    for (var [key, value] of form.entries()) {
+      if (!value || value === null) continue;
+      data[key] = value;
+    }
+
+    console.log(data);
+    const { success, error } = await System.updateUser(data);
+
+    if (success) {
+      let storedUser = JSON.parse(localStorage.getItem(AUTH_USER));
+
+      if (storedUser) {
+        storedUser.username = data.username;
+        localStorage.setItem(AUTH_USER, JSON.stringify(storedUser));
+      }
+      window.location.reload();
+    } else {
+      showToast(`Failed to update user: ${error}`, "error");
+    }
+};
+
+
   return (
     <dialog id="account-modal" className="bg-transparent outline-none">
-      <div className="relative w-[500px] max-w-2xl max-h-full">
-        <div className="relative bg-main-gradient rounded-lg shadow">
-          <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
-            <h3 className="text-xl font-semibold text-white">Edit Account</h3>
+      <div className="relative w-[500px] max-w-2xl max-h-full bg-main-gradient rounded-lg shadow">
+        <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
+          <h3 className="text-xl font-semibold text-white">Edit Account</h3>
+          <button
+            onClick={hideModal}
+            type="button"
+            className="text-gray-400 bg-transparent hover:border-white/60 rounded-lg p-1.5 ml-auto inline-flex items-center hover:bg-menu-item-selected-gradient hover:border-slate-100 border-transparent"
+          >
+            <X className="text-lg" />
+          </button>
+        </div>
+        <form onSubmit={handleUpdate} className="space-y-6">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+            <div className="flex flex-col items-center">
+              <label className="w-48 h-48 flex flex-col items-center justify-center bg-zinc-900/50 transition-all duration-300 rounded-full mt-8 border-2 border-dashed border-white border-opacity-60 cursor-pointer hover:opacity-60">
+                <input
+                  id="logo-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+                {pfp ? (
+                  <img
+                    src={pfp}
+                    alt="User profile picture"
+                    className="w-48 h-48 rounded-full object-cover bg-white"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center p-3">
+                    <Plus className="w-8 h-8 text-white/80 m-2" />
+                    <span className="text-white text-opacity-80 text-sm font-semibold">
+                      Profile Picture
+                    </span>
+                    <span className="text-white text-opacity-60 text-xs">
+                      800 x 800
+                    </span>
+                  </div>
+                )}
+              </label>
+              {pfp && (
+                <button
+                  type="button"
+                  onClick={handleRemovePfp}
+                  className="mt-3 text-white text-opacity-60 text-sm font-medium hover:underline"
+                >
+                  Remove Profile Picture
+                </button>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col gap-y-4 px-6">
+            <div>
+              <label
+                htmlFor="username"
+                className="block mb-2 text-sm font-medium text-white"
+              >
+                Username
+              </label>
+              <input
+                name="username"
+                type="text"
+                className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+                placeholder="User's username"
+                minLength={2}
+                defaultValue={user.username}
+                required
+                autoComplete="off"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="password"
+                className="block mb-2 text-sm font-medium text-white"
+              >
+                New Password
+              </label>
+              <input
+                name="password"
+                type="text"
+                className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+                placeholder={`${user.username}'s new password`}
+                minLength={8}
+              />
+            </div>
+          </div>
+          <div className="flex justify-between items-center border-t border-gray-500/50 pt-4 p-6">
             <button
               onClick={hideModal}
               type="button"
-              className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-              data-modal-hide="staticModal"
+              className="px-4 py-2 rounded-lg text-white bg-transparent hover:bg-stone-900"
             >
-              <X className="text-gray-300 text-lg" />
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-lg text-white bg-transparent border border-slate-200 hover:bg-slate-200 hover:text-slate-800"
+            >
+              Update Account
             </button>
           </div>
-          <form onSubmit={() => console.log("submitted")}>
-            <div className="p-6 space-y-6 flex h-full w-full">
-              <div className="flex md:flex-row flex-col items-center">
-                <div className="flex flex-row gap-x-8">
-                  <div>
-                  <label
-                  className="mt-5 transition-all duration-300 hover:opacity-60"
-                >
-                  <input
-                    id="logo-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                  />
-                    <div
-                      className="w-36 h-36 py-4 bg-zinc-900/50 rounded-2xl border-2 border-dashed border-white border-opacity-60 justify-center items-center inline-flex cursor-pointer"
-                      htmlFor="logo-upload"
-                    >
-                      <div className="flex flex-col items-center justify-center p-3">
-                        <div className="rounded-full bg-white/40">
-                          <Plus className="w-6 h-6 text-black/80 m-2" />
-                        </div>
-                        <div className="text-white text-opacity-80 text-sm font-semibold py-1 mt-3">
-                          Profile Picture
-                        </div>
-                        <div className="text-white text-opacity-60 text-xs font-medium py-1">
-                          800 x 800
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                  <button
-                    // onClick={handleRemoveLogo}
-                    className="text-white text-base font-medium hover:text-opacity-60 ml-4"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-              </div>
-            </div>
-            <div className="p-6 space-y-6 flex h-full w-full">
-              <div className="w-full flex flex-col gap-y-4">
-                <div>
-                  <label
-                    htmlFor="username"
-                    className="block mb-2 text-sm font-medium text-white"
-                  >
-                    Username
-                  </label>
-                  <input
-                    name="username"
-                    type="text"
-                    className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    placeholder="User's username"
-                    minLength={2}
-                    defaultValue={user.username}
-                    required={true}
-                    autoComplete="off"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="password"
-                    className="block mb-2 text-sm font-medium text-white"
-                  >
-                    New Password
-                  </label>
-                  <input
-                    name="password"
-                    type="text"
-                    className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    placeholder={`${user.username}'s new password`}
-                    minLength={8}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
-              <button
-                onClick={hideModal}
-                type="button"
-                className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              >
-                Update Account
-              </button>
-            </div>
-          </form>
-        </div>
+        </form>
       </div>
     </dialog>
   );

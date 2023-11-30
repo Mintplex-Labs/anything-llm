@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import System from "../models/system";
-import AnythingLLM from "../media/logo/anything-llm.png";
+import useUser from "./useUser";
 
-export default function useLogo() {
-  const [logo, setLogo] = useState("");
+export default function usePfp() {
+  const [pfp, setPfp] = useState(null);
+  const { user } = useUser();
 
   useEffect(() => {
-    async function fetchInstanceLogo() {
+    async function fetchPfp() {
       try {
-        const logoURL = await System.fetchLogo();
-        logoURL ? setLogo(logoURL) : setLogo(AnythingLLM);
+        const pfpUrl = await System.fetchPfp(user.id);
+        setPfp(pfpUrl);
       } catch (err) {
-        setLogo(AnythingLLM);
-        console.error("Failed to fetch logo:", err);
+        setPfp(null);
+        console.error("Failed to fetch pfp:", err);
       }
     }
-    fetchInstanceLogo();
+    fetchPfp();
   }, []);
 
-  return { logo };
+  return { pfp };
 }

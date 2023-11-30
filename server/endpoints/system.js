@@ -46,7 +46,7 @@ const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { Workspace } = require("../models/workspace");
 const { flexUserRoleValid } = require("../utils/middleware/multiUserProtected");
-const { fetchPfp } = require("../utils/files/pfp");
+const { fetchPfp, determinePfpFilepath } = require("../utils/files/pfp");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -421,7 +421,31 @@ function systemEndpoints(app) {
     }
   });
 
-  // Upload a pfp
+  app.get("/system/pfp/:id", async function (request, response) {
+    try {
+      const { id } = request.params;
+      const pfpPath = await determinePfpFilepath(id);
+
+      if (!pfpPath) {
+        response.status(204).end();
+        return;
+      }
+
+      const { buffer, size, mime } = fetchPfp(pfpPath);
+
+      response.writeHead(200, {
+        "Content-Type": mime || "image/png",
+        "Content-Disposition": `attachment; filename=${path.basename(pfpPath)}`,
+        "Content-Length": size,
+      });
+      response.end(Buffer.from(buffer, "base64"));
+      return;
+    } catch (error) {
+      console.error("Error processing the logo request:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.post(
     "/system/upload-pfp",
     [validatedRequest, flexUserRoleValid],
@@ -429,20 +453,69 @@ function systemEndpoints(app) {
     async function (request, response) {
       try {
         const user = await userFromSession(request, response);
-        const { buffer, size, mime } = fetchPfp(
-          path.resolve(__dirname, `../../storage/assets/pfp/${user.id}`)
-        );
-        response.writeHead(200, {
-          "Content-Type": mime || "image/png",
-          "Content-Disposition": `attachment; filename=${path.basename(
-            user.id
-          )}.png`,
-          "Content-Length": size,
+        const uploadedFileName = request.randomFileName;
+
+        if (!uploadedFileName) {
+          return response.status(400).json({ message: "File upload failed." });
+        }
+
+        const userRecord = await User.get({ id: user.id });
+        const oldPfpFilename = userRecord.pfpFilename;
+        console.log("oldPfpFilename", oldPfpFilename);
+        if (oldPfpFilename) {
+          const oldPfpPath = path.join(
+            __dirname,
+            `../storage/assets/pfp/${oldPfpFilename}`
+          );
+
+          if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
+        }
+
+        const { success, error } = await User.update(user.id, {
+          pfpFilename: uploadedFileName,
         });
-        response.end(Buffer.from(buffer, "base64"));
-        return;
+
+        return response.status(success ? 200 : 500).json({
+          message: success
+            ? "Profile picture uploaded successfully."
+            : error || "Failed to update with new profile picture.",
+        });
       } catch (error) {
-        console.error("Error processing the logo request:", error);
+        console.error("Error processing the profile picture upload:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.delete(
+    "/system/remove-pfp",
+    [validatedRequest, flexUserRoleValid],
+    async function (request, response) {
+      try {
+        const user = await userFromSession(request, response);
+        const userRecord = await User.get({ id: user.id });
+        const oldPfpFilename = userRecord.pfpFilename;
+        console.log("oldPfpFilename", oldPfpFilename);
+        if (oldPfpFilename) {
+          const oldPfpPath = path.join(
+            __dirname,
+            `../storage/assets/pfp/${oldPfpFilename}`
+          );
+
+          if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
+        }
+
+        const { success, error } = await User.update(user.id, {
+          pfpFilename: null,
+        });
+
+        return response.status(success ? 200 : 500).json({
+          message: success
+            ? "Profile picture removed successfully."
+            : error || "Failed to remove profile picture.",
+        });
+      } catch (error) {
+        console.error("Error processing the profile picture removal:", error);
         response.status(500).json({ message: "Internal server error" });
       }
     }
@@ -771,6 +844,44 @@ function systemEndpoints(app) {
       }
     }
   );
+
+
+  app.post(
+    "/system/user",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const sessionUser = await userFromSession(request, response);
+        const { username, password } = reqBody(request);
+        const id = Number(sessionUser.id);
+
+        if (!id) {
+          response.status(400).json({ success: false, error: "Invalid user ID" });
+          return;
+        }
+
+        const updates = {};
+        if (username) {
+          updates.username = username;
+        }
+        if (password) {
+          updates.password = password;
+        }
+
+        if (Object.keys(updates).length === 0) {
+          response.status(400).json({ success: false, error: "No updates provided" });
+          return;
+        }
+
+        const { success, error } = await User.update(id, updates);
+        response.status(200).json({ success, error });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
 }
 
 module.exports = { systemEndpoints };
