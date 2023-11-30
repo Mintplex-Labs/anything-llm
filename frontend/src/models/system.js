@@ -433,7 +433,7 @@ const System = {
         console.error(e);
         return { success: false, error: e.message };
       });
-  }
+  },
 };
 
 export default System;

@@ -188,8 +188,7 @@ function AccountModal() {
     } else {
       showToast(`Failed to update user: ${error}`, "error");
     }
-};
-
+  };
 
   return (
     <dialog id="account-modal" className="bg-transparent outline-none">

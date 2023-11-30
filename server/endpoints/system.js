@@ -845,43 +845,39 @@ function systemEndpoints(app) {
     }
   );
 
+  app.post("/system/user", [validatedRequest], async (request, response) => {
+    try {
+      const sessionUser = await userFromSession(request, response);
+      const { username, password } = reqBody(request);
+      const id = Number(sessionUser.id);
 
-  app.post(
-    "/system/user",
-    [validatedRequest],
-    async (request, response) => {
-      try {
-        const sessionUser = await userFromSession(request, response);
-        const { username, password } = reqBody(request);
-        const id = Number(sessionUser.id);
-
-        if (!id) {
-          response.status(400).json({ success: false, error: "Invalid user ID" });
-          return;
-        }
-
-        const updates = {};
-        if (username) {
-          updates.username = username;
-        }
-        if (password) {
-          updates.password = password;
-        }
-
-        if (Object.keys(updates).length === 0) {
-          response.status(400).json({ success: false, error: "No updates provided" });
-          return;
-        }
-
-        const { success, error } = await User.update(id, updates);
-        response.status(200).json({ success, error });
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
+      if (!id) {
+        response.status(400).json({ success: false, error: "Invalid user ID" });
+        return;
       }
-    }
-  );
 
+      const updates = {};
+      if (username) {
+        updates.username = username;
+      }
+      if (password) {
+        updates.password = password;
+      }
+
+      if (Object.keys(updates).length === 0) {
+        response
+          .status(400)
+          .json({ success: false, error: "No updates provided" });
+        return;
+      }
+
+      const { success, error } = await User.update(id, updates);
+      response.status(200).json({ success, error });
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
+    }
+  });
 }
 
 module.exports = { systemEndpoints };

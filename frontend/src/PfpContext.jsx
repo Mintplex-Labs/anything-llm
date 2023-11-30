@@ -1,7 +1,6 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import useUser from './hooks/useUser';
-import System from './models/system';
-
+import React, { createContext, useState, useContext, useEffect } from "react";
+import useUser from "./hooks/useUser";
+import System from "./models/system";
 
 export const PfpContext = createContext();
 
