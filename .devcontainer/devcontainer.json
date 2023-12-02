@@ -73,12 +73,7 @@
     }
   },
   "onCreateCommand": "cd collector && virtualenv v-env",
-  "updateContentCommand": {
-    "collector": "./collector/v-env/bin/pip3 install --no-cache-dir -r ./collector/requirements.txt",
-    "yarn": "yarn setup",
-    "envs": "yarn setup:envs",
-    "prisma": "yarn prisma:setup"
-  },
+  "updateContentCommand": "yarn setup && yarn setup:envs && yarn prisma:setup && ./collector/v-env/bin/pip3 install --no-cache-dir -r ./collector/requirements.txt",
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "if [ \"${CODESPACES}\" = \"true\" ]; then echo 'VITE_API_BASE=\"https://$CODESPACE_NAME-3001.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN/api\"' > ./frontend/.env; fi",
   "portsAttributes": {
