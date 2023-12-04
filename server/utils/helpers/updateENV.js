@@ -67,6 +67,10 @@ const KEY_MAPPING = {
     envKey: "LOCAL_AI_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  LocalAiApiKey: {
+    envKey: "LOCAL_AI_API_KEY",
+    checks: [],
+  },
 
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",

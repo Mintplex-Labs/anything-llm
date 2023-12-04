@@ -165,13 +165,11 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
               {LLM_SELECTION_PRIVACY[llmChoice].name}
             </p>
           </div>
-          <div className="flex flex-col">
+          <ul className="flex flex-col list-disc ml-4">
             {LLM_SELECTION_PRIVACY[llmChoice].description.map((desc) => (
-              <p className="text-white/90 text-sm">
-                <b>•</b> {desc}
-              </p>
+              <li className="text-white/90 text-sm">{desc}</li>
             ))}
-          </div>
+          </ul>
         </div>
         <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
           <div className="text-white text-base font-bold">Embedding Engine</div>
@@ -185,15 +183,13 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
               {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].name}
             </p>
           </div>
-          <div className="flex flex-col">
+          <ul className="flex flex-col list-disc ml-4">
             {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].description.map(
               (desc) => (
-                <p className="text-white/90 text-sm">
-                  <b>•</b> {desc}
-                </p>
+                <li className="text-white/90 text-sm">{desc}</li>
               )
             )}
-          </div>
+          </ul>
         </div>
 
         <div className="flex flex-col gap-y-2 pb-4">
@@ -208,13 +204,11 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
               {VECTOR_DB_PRIVACY[vectorDb].name}
             </p>
           </div>
-          <div className="flex flex-col">
+          <ul className="flex flex-col list-disc ml-4">
             {VECTOR_DB_PRIVACY[vectorDb].description.map((desc) => (
-              <p className="text-white/90 text-sm">
-                <b>•</b> {desc}
-              </p>
+              <li className="text-white/90 text-sm">{desc}</li>
             ))}
-          </div>
+          </ul>
         </div>
       </div>
       <div className="flex w-[650px] justify-between items-center px-6 py-4 space-x-2 border-t rounded-b border-gray-500/50">

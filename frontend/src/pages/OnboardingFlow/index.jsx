@@ -26,8 +26,8 @@ export default function OnboardingFlow() {
           </div>
           <img src={logo} alt="logo" className="w-80 mx-auto m-3 mb-11" />
           <div className="flex justify-center items-center">
-            <p className="text-white text-xl italic text-center">
-              Please use a desktop browser to continue.
+            <p className="text-white text-sm italic text-center">
+              Please use a desktop browser to continue onboarding.
             </p>
           </div>
         </div>
