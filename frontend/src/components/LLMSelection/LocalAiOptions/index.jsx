@@ -6,9 +6,8 @@ import System from "../../../models/system";
 export default function LocalAiOptions({ settings, showAlert = false }) {
   const [basePathValue, setBasePathValue] = useState(settings?.LocalAiBasePath);
   const [basePath, setBasePath] = useState(settings?.LocalAiBasePath);
-  function updateBasePath() {
-    setBasePath(basePathValue);
-  }
+  const [apiKeyValue, setApiKeyValue] = useState(settings?.LocalAiApiKey);
+  const [apiKey, setApiKey] = useState(settings?.LocalAiApiKey);
 
   return (
     <div className="w-full flex flex-col gap-y-4">
@@ -44,10 +43,14 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             autoComplete="off"
             spellCheck={false}
             onChange={(e) => setBasePathValue(e.target.value)}
-            onBlur={updateBasePath}
+            onBlur={() => setBasePath(basePathValue)}
           />
         </div>
-        <LocalAIModelSelection settings={settings} basePath={basePath} />
+        <LocalAIModelSelection
+          settings={settings}
+          basePath={basePath}
+          apiKey={apiKey}
+        />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
             Token context window
@@ -84,8 +87,8 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
             autoComplete="off"
             spellCheck={false}
-            onChange={(e) => setBasePathValue(e.target.value)}
-            onBlur={updateBasePath}
+            onChange={(e) => setApiKeyValue(e.target.value)}
+            onBlur={() => setApiKey(apiKeyValue)}
           />
         </div>
       </div>
@@ -93,7 +96,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
   );
 }
 
-function LocalAIModelSelection({ settings, basePath = null }) {
+function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -105,12 +108,12 @@ function LocalAIModelSelection({ settings, basePath = null }) {
         return;
       }
       setLoading(true);
-      const { models } = await System.customModels("localai", null, basePath);
+      const { models } = await System.customModels("localai", apiKey, basePath);
       setCustomModels(models || []);
       setLoading(false);
     }
     findCustomModels();
-  }, [basePath]);
+  }, [basePath, apiKey]);
 
   if (loading || customModels.length == 0) {
     return (
