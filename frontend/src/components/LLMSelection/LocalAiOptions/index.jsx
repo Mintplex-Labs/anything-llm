@@ -11,7 +11,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
   }
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col gap-y-4">
       {showAlert && (
         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-6 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
@@ -62,6 +62,30 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             defaultValue={settings?.LocalAiTokenLimit}
             required={true}
             autoComplete="off"
+          />
+        </div>
+      </div>
+      <div className="w-full flex items-center gap-4">
+        <div className="flex flex-col w-60">
+          <div className="flex flex-col gap-y-1 mb-4">
+            <label className="text-white text-sm font-semibold block">
+              Local AI API Key
+            </label>
+            <p className="text-xs italic text-white/60">
+              optional API key to use if running LocalAI with API keys.
+            </p>
+          </div>
+
+          <input
+            type="password"
+            name="LocalAiApiKey"
+            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            placeholder="sk-mysecretkey"
+            defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
+            autoComplete="off"
+            spellCheck={false}
+            onChange={(e) => setBasePathValue(e.target.value)}
+            onBlur={updateBasePath}
           />
         </div>
       </div>

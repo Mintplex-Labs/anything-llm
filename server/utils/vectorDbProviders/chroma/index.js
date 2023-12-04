@@ -15,10 +15,10 @@ const Chroma = {
       ...(!!process.env.CHROMA_API_HEADER && !!process.env.CHROMA_API_KEY
         ? {
             fetchOptions: {
-              headers: {
-                [process.env.CHROMA_API_HEADER || "X-Api-Key"]:
-                  process.env.CHROMA_API_KEY,
-              },
+              headers: parseAuthHeader(
+                process.env.CHROMA_API_HEADER || "X-Api-Key",
+                process.env.CHROMA_API_KEY
+              ),
             },
           }
         : {}),
