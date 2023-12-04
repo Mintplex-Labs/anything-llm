@@ -52,6 +52,13 @@ function multiUserMode(response) {
   return response?.locals?.multiUserMode;
 }
 
+function parseAuthHeader(headerValue = null, apiKey = null) {
+  if (headerValue === null || apiKey === null) return {};
+  if (headerValue === "Authorization")
+    return { Authorization: `Bearer ${apiKey}` };
+  return { [headerValue]: apiKey };
+}
+
 module.exports = {
   reqBody,
   multiUserMode,
@@ -59,4 +66,5 @@ module.exports = {
   makeJWT,
   decodeJWT,
   userFromSession,
+  parseAuthHeader,
 };

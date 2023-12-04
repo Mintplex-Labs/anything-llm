@@ -8,7 +8,7 @@ const {
   acceptedFileTypes,
 } = require("../utils/files/documentProcessor");
 const { purgeDocument } = require("../utils/files/purgeDocument");
-const { getVectorDbClass, getLLMProvider } = require("../utils/helpers");
+const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
 const {
   reqBody,
