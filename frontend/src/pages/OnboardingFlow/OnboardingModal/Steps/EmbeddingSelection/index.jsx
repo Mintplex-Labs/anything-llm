@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
+import AnythingLLMIcon from "../../../../../media/logo/anything-llm-icon.png";
 import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
 import LocalAiLogo from "../../../../../media/llmprovider/localai.png";
@@ -10,7 +11,7 @@ import AzureAiOptions from "../../../../../components/EmbeddingSelection/AzureAi
 import LocalAiOptions from "../../../../../components/EmbeddingSelection/LocalAiOptions";
 
 function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
-  const [embeddingChoice, setEmbeddingChoice] = useState("openai");
+  const [embeddingChoice, setEmbeddingChoice] = useState("native");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const updateChoice = (selection) => {
@@ -21,7 +22,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setEmbeddingChoice(_settings?.EmbeddingEngine || "openai");
+      setEmbeddingChoice(_settings?.EmbeddingEngine || "native");
       setLoading(false);
     }
     fetchKeys();
@@ -63,6 +64,14 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
               value={embeddingChoice}
             />
             <LLMProviderOption
+              name="AnythingLLM Embedder"
+              value="native"
+              description="Use the built-in embedding engine for AnythingLLM. Zero setup!"
+              checked={embeddingChoice === "native"}
+              image={AnythingLLMIcon}
+              onClick={updateChoice}
+            />
+            <LLMProviderOption
               name="OpenAI"
               value="openai"
               link="openai.com"
@@ -91,6 +100,14 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
             />
           </div>
           <div className="mt-4 flex flex-wrap gap-4 max-w-[752px]">
+            {embeddingChoice === "native" && (
+              <div className="w-full h-20 items-center justify-center flex">
+                <p className="text-sm font-base text-white text-opacity-60">
+                  There is no configuration needed when using AnythingLLM's
+                  native embedding engine.
+                </p>
+              </div>
+            )}
             {embeddingChoice === "openai" && (
               <OpenAiOptions settings={settings} />
             )}
