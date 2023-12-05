@@ -19,6 +19,7 @@ export default function ActiveWorkspaces() {
   const [selectedWs, setSelectedWs] = useState(null);
   const [hoverStates, setHoverStates] = useState({});
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
+  const { user } = useUser();
 
   useEffect(() => {
     async function getWorkspaces() {
@@ -113,7 +114,7 @@ export default function ActiveWorkspaces() {
                 >
                   <GearSix
                     weight={isGearHovered ? "fill" : "regular"}
-                    hidden={!isActive && !isHovered}
+                    hidden={(!isActive && !isHovered) || user?.role === "default"}
                     className="h-[20px] w-[20px] transition-all duration-300"
                   />
                 </button>
