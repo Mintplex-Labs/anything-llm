@@ -77,7 +77,6 @@ export default function EditUserModal({ currentUser, user }) {
                     type="text"
                     className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder={`${user.username}'s new password`}
-                    minLength={8}
                     autoComplete="off"
                   />
                 </div>

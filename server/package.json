@@ -36,6 +36,8 @@
     "express": "^4.18.2",
     "extract-zip": "^2.0.1",
     "graphql": "^16.7.1",
+    "joi": "^17.11.0",
+    "joi-password-complexity": "^5.2.0",
     "js-tiktoken": "^1.0.7",
     "jsonwebtoken": "^8.5.1",
     "langchain": "^0.0.90",

@@ -77,7 +77,6 @@ export default function NewUserModal() {
                     className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="User's initial password"
                     required={true}
-                    minLength={8}
                     autoComplete="off"
                   />
                 </div>

@@ -286,6 +286,14 @@ async function dumpENV() {
     "CACHE_VECTORS",
     "STORAGE_DIR",
     "SERVER_PORT",
+    // Password Schema Keys if present.
+    "PASSWORDMINCHAR",
+    "PASSWORDMAXCHAR",
+    "PASSWORDLOWERCASE",
+    "PASSWORDUPPERCASE",
+    "PASSWORDNUMERIC",
+    "PASSWORDSYMBOL",
+    "PASSWORDREQUIREMENTS",
   ];
 
   for (const key of protectedKeys) {
