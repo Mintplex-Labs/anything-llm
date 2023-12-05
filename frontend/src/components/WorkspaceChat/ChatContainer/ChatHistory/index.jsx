@@ -26,7 +26,7 @@ export default function ChatHistory({ history = [], workspace }) {
   const debouncedScroll = debounce(handleScroll, 100);
 
   useEffect(() => {
-    if(!chatHistoryRef.current) return null;
+    if (!chatHistoryRef.current) return null;
     const chatHistoryElement = chatHistoryRef.current;
     chatHistoryElement.addEventListener("scroll", debouncedScroll);
 
