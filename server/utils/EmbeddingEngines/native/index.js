@@ -27,12 +27,19 @@ class NativeEmbedder {
       );
     }
 
-    // Convert ESM to CommonJS via import so we can load this library.
-    const pipeline = (...args) =>
-      import("@xenova/transformers").then(({ pipeline }) => pipeline(...args));
-    return await pipeline("feature-extraction", this.model, {
-      cache_dir: this.cacheDir,
-    });
+    try {
+      // Convert ESM to CommonJS via import so we can load this library.
+      const pipeline = (...args) =>
+        import("@xenova/transformers").then(({ pipeline }) =>
+          pipeline(...args)
+        );
+      return await pipeline("feature-extraction", this.model, {
+        cache_dir: this.cacheDir,
+      });
+    } catch (error) {
+      console.error("Failed to load the native embedding model:", error);
+      throw error;
+    }
   }
 
   async embedTextInput(textInput) {
