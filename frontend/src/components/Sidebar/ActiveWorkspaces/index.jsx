@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Workspace from "../../../models/workspace";
@@ -30,21 +30,21 @@ export default function ActiveWorkspaces() {
     getWorkspaces();
   }, []);
 
-  const handleMouseEnter = (workspaceId) => {
+  const handleMouseEnter = useCallback((workspaceId) => {
     setHoverStates((prev) => ({ ...prev, [workspaceId]: true }));
-  };
+  }, []);
 
-  const handleMouseLeave = (workspaceId) => {
+  const handleMouseLeave = useCallback((workspaceId) => {
     setHoverStates((prev) => ({ ...prev, [workspaceId]: false }));
-  };
+  }, []);
 
-  const handleGearMouseEnter = (workspaceId) => {
+  const handleGearMouseEnter = useCallback((workspaceId) => {
     setSettingHover((prev) => ({ ...prev, [workspaceId]: true }));
-  };
+  }, []);
 
-  const handleGearMouseLeave = (workspaceId) => {
+  const handleGearMouseLeave = useCallback((workspaceId) => {
     setSettingHover((prev) => ({ ...prev, [workspaceId]: false }));
-  };
+  }, []);
 
   if (loading) {
     return (
@@ -103,6 +103,7 @@ export default function ActiveWorkspaces() {
                   </p>
                 </div>
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.preventDefault();
                     setSelectedWs(workspace);
@@ -114,7 +115,9 @@ export default function ActiveWorkspaces() {
                 >
                   <GearSix
                     weight={isGearHovered ? "fill" : "regular"}
-                    hidden={(!isActive && !isHovered) || user?.role === "default"}
+                    hidden={
+                      (!isActive && !isHovered) || user?.role === "default"
+                    }
                     className="h-[20px] w-[20px] transition-all duration-300"
                   />
                 </button>
