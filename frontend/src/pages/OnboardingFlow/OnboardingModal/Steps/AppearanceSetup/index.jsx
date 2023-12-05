@@ -58,7 +58,7 @@ function AppearanceSetup({ prevStep, nextStep }) {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col w-full px-10 py-12">
+      <div className="flex flex-col w-full px-8 py-4">
         <div className="flex flex-col gap-y-2">
           <h2 className="text-white text-sm font-medium">Custom Logo</h2>
           <p className="text-sm font-base text-white/60">
@@ -108,7 +108,7 @@ function AppearanceSetup({ prevStep, nextStep }) {
           </div>
         </div>
       </div>
-      <div className="flex w-full justify-between items-center p-6 space-x-6 border-t rounded-b border-gray-500/50">
+      <div className="flex w-full justify-between items-center px-6 py-4 space-x-6 border-t rounded-b border-gray-500/50">
         <button
           onClick={prevStep}
           type="button"

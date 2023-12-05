@@ -1,20 +1,49 @@
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useManageWorkspaceModal } from "../../../Modals/MangeWorkspace";
 import ManageWorkspace from "../../../Modals/MangeWorkspace";
+import { ArrowDown } from "@phosphor-icons/react";
+import debounce from "lodash.debounce";
 
 export default function ChatHistory({ history = [], workspace }) {
   const replyRef = useRef(null);
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const chatHistoryRef = useRef(null);
 
   useEffect(() => {
-    if (replyRef.current) {
-      setTimeout(() => {
-        replyRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-      }, 700);
-    }
+    scrollToBottom();
   }, [history]);
+
+  const handleScroll = () => {
+    const isBottom =
+      chatHistoryRef.current.scrollHeight - chatHistoryRef.current.scrollTop ===
+      chatHistoryRef.current.clientHeight;
+    setIsAtBottom(isBottom);
+  };
+
+  const debouncedScroll = debounce(handleScroll, 100);
+
+  useEffect(() => {
+    if(!chatHistoryRef.current) return null;
+    const chatHistoryElement = chatHistoryRef.current;
+    chatHistoryElement.addEventListener("scroll", debouncedScroll);
+
+    return () => {
+      chatHistoryElement.removeEventListener("scroll", debouncedScroll);
+      debouncedScroll.cancel();
+    };
+  }, []);
+
+  const scrollToBottom = () => {
+    if (chatHistoryRef.current) {
+      chatHistoryRef.current.scrollTo({
+        top: chatHistoryRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
 
   if (history.length === 0) {
     return (
@@ -50,6 +79,7 @@ export default function ChatHistory({ history = [], workspace }) {
     <div
       className="h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
       id="chat-history"
+      ref={chatHistoryRef}
     >
       {history.map((props, index) => {
         const isLastMessage = index === history.length - 1;
@@ -87,6 +117,19 @@ export default function ChatHistory({ history = [], workspace }) {
 
       {showing && (
         <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
+      )}
+      {!isAtBottom && (
+        <div className="fixed bottom-40 right-10 md:right-20 z-50 cursor-pointer animate-pulse">
+          <div className="flex flex-col items-center">
+            <div className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white">
+              <ArrowDown
+                weight="bold"
+                className="text-white/60 w-5 h-5"
+                onClick={scrollToBottom}
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -12,10 +12,6 @@ import DataHandling from "./Steps/DataHandling";
 
 const DIALOG_ID = "onboarding-modal";
 
-function hideModal() {
-  document.getElementById(DIALOG_ID)?.close();
-}
-
 const STEPS = {
   llm_preference: {
     title: "LLM Preference",
@@ -71,9 +67,13 @@ const STEPS = {
 };
 
 export const OnboardingModalId = DIALOG_ID;
-export default function OnboardingModal() {
+export default function OnboardingModal({ setModalVisible }) {
   const [currentStep, setCurrentStep] = useState("llm_preference");
   const [history, setHistory] = useState(["llm_preference"]);
+
+  function hideModal() {
+    setModalVisible(false);
+  }
 
   const nextStep = (stepKey) => {
     setCurrentStep(stepKey);
@@ -99,7 +99,7 @@ export default function OnboardingModal() {
     <dialog id={DIALOG_ID} className="bg-transparent outline-none">
       <div className="relative max-h-full">
         <div className="relative bg-main-gradient rounded-2xl shadow border-2 border-slate-300/10">
-          <div className="flex items-start justify-between p-8 border-b rounded-t border-gray-500/50">
+          <div className="flex items-start justify-between px-6 py-4 border-b rounded-t border-gray-500/50">
             <div className="flex flex-col gap-2">
               <h3 className="text-xl font-semibold text-white">{step.title}</h3>
               <p className="text-sm font-base text-white text-opacity-60 whitespace-pre">

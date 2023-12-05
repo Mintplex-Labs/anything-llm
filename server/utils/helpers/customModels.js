@@ -35,10 +35,11 @@ async function openAiModels(apiKey = null) {
   return { models, error: null };
 }
 
-async function localAIModels(basePath = null) {
+async function localAIModels(basePath = null, apiKey = null) {
   const { Configuration, OpenAIApi } = require("openai");
   const config = new Configuration({
     basePath,
+    ...(!!apiKey ? { apiKey } : {}),
   });
   const openai = new OpenAIApi(config);
   const models = await openai
