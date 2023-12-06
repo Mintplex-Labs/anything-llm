@@ -5,6 +5,7 @@ import Sidebar, {
 import { isMobile } from "react-device-detect";
 import System from "../../../models/system";
 import showToast from "../../../utils/toast";
+import AnythingLLMIcon from "../../../media/logo/anything-llm-icon.png";
 import OpenAiLogo from "../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../media/llmprovider/azure.png";
 import AnthropicLogo from "../../../media/llmprovider/anthropic.png";
@@ -17,6 +18,7 @@ import AzureAiOptions from "../../../components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "../../../components/LLMSelection/AnthropicAiOptions";
 import LMStudioOptions from "../../../components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "../../../components/LLMSelection/LocalAiOptions";
+import NativeLLMOptions from "../../../components/LLMSelection/NativeLLMOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -152,6 +154,14 @@ export default function GeneralLLMPreference() {
                   image={LocalAiLogo}
                   onClick={updateLLMChoice}
                 />
+                <LLMProviderOption
+                  name="Custom Llama Model"
+                  value="native"
+                  description="Use a downloaded custom Llama model for chatting on this AnythingLLM instance."
+                  checked={llmChoice === "native"}
+                  image={AnythingLLMIcon}
+                  onClick={updateLLMChoice}
+                />
               </div>
               <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
                 {llmChoice === "openai" && (
@@ -168,6 +178,9 @@ export default function GeneralLLMPreference() {
                 )}
                 {llmChoice === "localai" && (
                   <LocalAiOptions settings={settings} showAlert={true} />
+                )}
+                {llmChoice === "native" && (
+                  <NativeLLMOptions settings={settings} showAlert={true} />
                 )}
               </div>
             </div>
