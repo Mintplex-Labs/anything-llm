@@ -264,6 +264,7 @@ function isDownloadedModel(input = "") {
       ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
       : path.resolve(__dirname, `../../storage/models/downloaded`)
   );
+  if (!fs.existsSync(storageDir)) return false;
 
   const files = fs
     .readdirSync(storageDir)

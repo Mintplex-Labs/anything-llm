@@ -32,6 +32,8 @@ class NativeLLM {
     process.env.NODE_LLAMA_CPP_METAL = os
       .cpus()
       .some((cpu) => cpu.model.includes("Apple"));
+
+    // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
   }
 

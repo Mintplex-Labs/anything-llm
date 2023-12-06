@@ -63,6 +63,8 @@ function nativeLLMModels() {
       ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
       : path.resolve(__dirname, `../../storage/models/downloaded`)
   );
+  if (!fs.existsSync(storageDir))
+    return { models: [], error: "No model/downloaded storage folder found." };
 
   const files = fs
     .readdirSync(storageDir)
