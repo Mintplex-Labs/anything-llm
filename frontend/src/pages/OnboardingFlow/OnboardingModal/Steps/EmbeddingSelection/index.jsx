@@ -9,6 +9,7 @@ import LLMProviderOption from "../../../../../components/LLMSelection/LLMProvide
 import OpenAiOptions from "../../../../../components/EmbeddingSelection/OpenAiOptions";
 import AzureAiOptions from "../../../../../components/EmbeddingSelection/AzureAiOptions";
 import LocalAiOptions from "../../../../../components/EmbeddingSelection/LocalAiOptions";
+import NativeEmbeddingOptions from "../../../../../components/EmbeddingSelection/NativeEmbeddingOptions";
 
 function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
   const [embeddingChoice, setEmbeddingChoice] = useState("native");

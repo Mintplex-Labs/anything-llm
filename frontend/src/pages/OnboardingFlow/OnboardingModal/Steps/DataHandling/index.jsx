@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useState } from "react";
 import System from "../../../../../models/system";
+import AnythingLLMIcon from "../../../../../media/logo/anything-llm-icon.png";
 import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
 import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
 import AnthropicLogo from "../../../../../media/llmprovider/anthropic.png";
@@ -57,7 +58,7 @@ const VECTOR_DB_PRIVACY = {
   chroma: {
     name: "Chroma",
     description: [
-      "Your embedded text not visible outside of your Chroma instance",
+      "Your vectors and document text are stored on your Chroma instance",
       "Access to your instance is managed by you",
     ],
     logo: ChromaLogo,
@@ -65,43 +66,46 @@ const VECTOR_DB_PRIVACY = {
   pinecone: {
     name: "Pinecone",
     description: [
-      "Your embedded text and vectors are visible to Pinecone, but is not accessed",
-      "They manage your data and access to their servers",
+      "Your vectors and document text are stored on Pinecone's servers",
+      "Access to your data is managed by Pinecone",
     ],
     logo: PineconeLogo,
   },
   qdrant: {
     name: "Qdrant",
     description: [
-      "Your embedded text is visible to Qdrant if using a hosted instance",
-      "Your embedded text is not visible to Qdrant if using a self-hosted instance",
-      "Your data is stored on your Qdrant instance",
+      "Your vectors and document text are stored on your Qdrant instance (cloud or self-hosted)",
     ],
     logo: QDrantLogo,
   },
   weaviate: {
     name: "Weaviate",
     description: [
-      "Your embedded text is visible to Weaviate, if using a hosted instance",
-      "Your embedded text is not visible to Weaviate, if using a self-hosted instance",
-      "Your data is stored on your Weaviate instance",
+      "Your vectors and document text are stored on your Weaviate instance (cloud or self-hosted)",
     ],
     logo: WeaviateLogo,
   },
   lancedb: {
     name: "LanceDB",
     description: [
-      "Your embedded text and vectors are only accessible by this AnythingLLM instance",
+      "Your vectors and document text are stored privately on this instance of AnythingLLM",
     ],
     logo: LanceDbLogo,
   },
 };
 
 const EMBEDDING_ENGINE_PRIVACY = {
+  native: {
+    name: "AnythingLLM Embedder",
+    description: [
+      "Your document text is embedded privately on this instance of AnythingLLM",
+    ],
+    logo: AnythingLLMIcon,
+  },
   openai: {
     name: "OpenAI",
     description: [
-      "Your documents are visible to OpenAI",
+      "Your document text is sent to OpenAI servers",
       "Your documents are not used for training",
     ],
     logo: OpenAiLogo,
@@ -109,15 +113,15 @@ const EMBEDDING_ENGINE_PRIVACY = {
   azure: {
     name: "Azure OpenAI",
     description: [
-      "Your documents are not visible to OpenAI or Microsoft",
-      "Your documents not used for training",
+      "Your document text is sent to your Microsoft Azure service",
+      "Your documents are not used for training",
     ],
     logo: AzureOpenAiLogo,
   },
   localai: {
     name: "LocalAI",
     description: [
-      "Your documents are only accessible on the server running LocalAI",
+      "Your document text is embedded privately on the server running LocalAI",
     ],
     logo: LocalAiLogo,
   },
