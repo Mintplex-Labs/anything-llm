@@ -10,18 +10,17 @@ class NativeEmbedder {
         ? path.resolve(process.env.STORAGE_DIR, `models`)
         : path.resolve(__dirname, `../../../storage/models`)
     );
+    this.modelPath = path.resolve(this.cacheDir, "Xenova", "all-MiniLM-L6-v2");
+
     // Limit the number of chunks to send per loop to not overload compute.
     this.embeddingChunkLimit = 16;
 
     // Make directory when it does not exist in existing installations
-    if (!fs.existsSync(path.resolve(this.cacheDir)))
-      fs.mkdirSync(this.cacheDir);
+    if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
   }
 
   async embedderClient() {
-    if (
-      !fs.existsSync(path.resolve(this.cacheDir, "Xenova", "all-MiniLM-L6-v2"))
-    ) {
+    if (!fs.existsSync(this.modelPath)) {
       console.log(
         "\x1b[34m[INFO]\x1b[0m The native embedding model has never been run and will be downloaded right now. Subsequent runs will be faster. (~23MB)\n\n"
       );
@@ -35,14 +34,19 @@ class NativeEmbedder {
         );
       return await pipeline("feature-extraction", this.model, {
         cache_dir: this.cacheDir,
-        progress_callback: (data) => {
-          if (!data.hasOwnProperty("progress")) return;
-          console.log(
-            `\x1b[34m[Embedding - Downloading Model Files]\x1b[0m ${
-              data.file
-            } ${~~data?.progress}%`
-          );
-        },
+        ...(!fs.existsSync(this.modelPath)
+          ? {
+              // Show download progress if we need to download any files
+              progress_callback: (data) => {
+                if (!data.hasOwnProperty("progress")) return;
+                console.log(
+                  `\x1b[34m[Embedding - Downloading Model Files]\x1b[0m ${
+                    data.file
+                  } ${~~data?.progress}%`
+                );
+              },
+            }
+          : {}),
       });
     } catch (error) {
       console.error("Failed to load the native embedding model:", error);
