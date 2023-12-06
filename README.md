@@ -40,22 +40,30 @@ Anything LLM is a full-stack product that you can run locally as well as host re
 AnythingLLM divides your documents into objects called `workspaces`. A Workspace functions a lot like a thread, but with the addition of containerization of your documents. Workspaces can share documents, but they do not talk to each other so you can keep your context for each workspace clean.
 
 Some cool features of AnythingLLM
-- Multi-user instance support and oversight
+- **Multi-user instance support and permissioning**
 - Atomically manage documents in your vector database from a simple UI
 - Two chat modes `conversation` and `query`. Conversation retains previous questions and amendments. Query is simple QA against your documents
-- Each chat response contains a citation that is linked to the original content
+- Each chat response contains a citation that is linked to the original document source
 - Simple technology stack for fast iteration
 - 100% Cloud deployment ready.
 - "Bring your own LLM" model.
 - Extremely efficient cost-saving measures for managing very large documents. You'll never pay to embed a massive document or transcript more than once. 90% more cost effective than other document chatbot solutions.
 - Full Developer API for custom integrations!
 
-### Supported LLMs and Vector Databases
+### Supported LLMs, Embedders, and Vector Databases
 **Supported LLMs:**
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Anthropic ClaudeV2](https://www.anthropic.com/)
 - [LM Studio (all models)](https://lmstudio.ai)
+- [LocalAi (all models)](https://localai.io/)
+
+**Supported Embedding models:**
+- [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
+- [OpenAI](https://openai.com)
+- [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+- [LM Studio (all)](https://lmstudio.ai)
+- [LocalAi (all)](https://localai.io/)
 
 **Supported Vector Databases:**
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
@@ -70,13 +78,16 @@ This monorepo consists of three main sections:
 - `collector`: Python tools that enable you to quickly convert online resources or local documents into LLM useable format.
 - `frontend`: A viteJS + React frontend that you can run to easily create and manage all your content the LLM can use.
 - `server`: A nodeJS + express server to handle all the interactions and do all the vectorDB management and LLM interactions.
+- `docker`: Docker instructions and build process + information for building from source.
 
 ### Requirements
 - `yarn` and `node` on your machine
 - `python` 3.9+ for running scripts in `collector/`.
-- access to an LLM service like `GPT-3.5`, `GPT-4`, `Mistral`, `LLama`, etc.
+- access to an LLM running locally or remotely.
 - (optional) a vector database like Pinecone, qDrant, Weaviate, or Chroma*.
-*AnythingLLM by default uses a built-in vector db called LanceDB.
+
+*AnythingLLM by default uses a built-in vector database powered by [LanceDB](https://github.com/lancedb/lancedb)
+*AnythingLLM by default embeds text on instance privately [Learn More](/server/storage/models/README.md)
 
 ## Recommended usage with Docker (easy!)
 > [!TIP]
@@ -87,7 +98,7 @@ This monorepo consists of three main sections:
 
 ```shell
 STORAGE_LOCATION="/var/lib/anythingllm" \
-mkdir "$STORAGE_LOCATION" && \
+mkdir -p "$STORAGE_LOCATION" && \
 touch "$STORAGE_LOCATION/.env" && \
 docker run -d -p 3001:3001 \
 -v ${STORAGE_LOCATION}:/app/server/storage \
@@ -104,7 +115,7 @@ container rebuilds or pulls from Docker Hub.
 ### How to get started (Development environment)
 - `yarn setup` from the project root directory.
   - This will fill in the required `.env` files you'll need in each of the application sections. Go fill those out before proceeding or else things won't work right.
-- `cd frontend && yarn install && cd ../server && yarn install` from the project root directory.
+- `yarn prisma:setup` To build the Prisma client and migrate the database.
 
 To boot the server locally (run commands from root of repo):
 - ensure `server/.env.development` is set and filled out.
@@ -115,13 +126,15 @@ To boot the frontend locally (run commands from root of repo):
 - ensure `VITE_API_BASE="http://localhost:3001/api"`
 `yarn dev:frontend`
 
-Next, you will need some content to embed. This could be a Youtube Channel, Medium articles, local text files, word documents, and the list goes on. This is where you will use the `collector/` part of the repo.
-
-[Go set up and run collector scripts](./collector/README.md)
-
 [Learn about documents](./server/storage/documents/DOCUMENTS.md)
 
 [Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
+
+## Standalone scripts
+
+This repo contains standlone scripts you can run to collect data from a Youtube Channel, Medium articles, local text files, word documents, and the list goes on. This is where you will use the `collector/` part of the repo.
+
+[Go set up and run collector scripts](./collector/README.md)
 
 ## Contributing
 - create issue

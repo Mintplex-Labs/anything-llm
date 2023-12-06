@@ -14,7 +14,7 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 
 ```shell
 STORAGE_LOCATION="/var/lib/anythingllm" \
-mkdir "$STORAGE_LOCATION" && \
+mkdir -p "$STORAGE_LOCATION" && \
 touch "$STORAGE_LOCATION/.env" && \
 docker run -d -p 3001:3001 \
 -v ${STORAGE_LOCATION}:/app/server/storage \
