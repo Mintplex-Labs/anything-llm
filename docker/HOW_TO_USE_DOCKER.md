@@ -23,7 +23,7 @@ docker run -d -p 3001:3001 \
 mintplexlabs/anythingllm:master
 ```
 
-Go to `http://localhost:3001` and you are now using AnythingLLm! All your data and progress will persist between
+Go to `http://localhost:3001` and you are now using AnythingLLM! All your data and progress will persist between
 container rebuilds or pulls from Docker Hub.
 
 ## Build locally from source
