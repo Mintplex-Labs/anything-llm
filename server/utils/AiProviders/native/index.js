@@ -1,4 +1,5 @@
 const os = require("os");
+const fs = require("fs");
 const path = require("path");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { HumanMessage, SystemMessage, AIMessage } = require("langchain/schema");
@@ -10,7 +11,10 @@ const ChatLlamaCpp = (...args) =>
 
 class NativeLLM {
   constructor(embedder = null) {
-    this.model = process.env.NATIVE_LLM_MODEL_PREF;
+    if (!process.env.NATIVE_LLM_MODEL_PREF)
+      throw new Error("No local Llama model was set.");
+
+    this.model = process.env.NATIVE_LLM_MODEL_PREF || null;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -28,11 +32,18 @@ class NativeLLM {
     process.env.NODE_LLAMA_CPP_METAL = os
       .cpus()
       .some((cpu) => cpu.model.includes("Apple"));
+    if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
   }
 
   async llamaClient({ temperature = 0.7 }) {
+    const modelPath = path.join(this.cacheDir, this.model);
+    if (!fs.existsSync(modelPath))
+      throw new Error(
+        `Local Llama model ${this.mode} was not found in storage!`
+      );
+
     return ChatLlamaCpp({
-      modelPath: path.join(this.cacheDir, this.model),
+      modelPath,
       temperature,
     });
   }

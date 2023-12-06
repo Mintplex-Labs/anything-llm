@@ -10,8 +10,7 @@ export default function NativeLLMOptions({ settings, showAlert = false }) {
           <div className="gap-x-2 flex items-center">
             <Flask size={18} />
             <p className="text-sm md:text-base">
-              Using a locally hosted LLM is extremely experimental. Proceed with
-              caution.
+              Using a locally hosted LLM is experimental. Use with caution.
             </p>
           </div>
         </div>
