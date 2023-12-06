@@ -154,7 +154,7 @@ export default function GeneralLLMPreference() {
                   image={LocalAiLogo}
                   onClick={updateLLMChoice}
                 />
-                {!window.location.hostname.includes('useanything.com') && (
+                {!window.location.hostname.includes("useanything.com") && (
                   <LLMProviderOption
                     name="Custom Llama Model"
                     value="native"

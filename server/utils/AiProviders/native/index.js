@@ -72,10 +72,10 @@ class NativeLLM {
       content: `${systemPrompt}
 Context:
     ${contextTexts
-          .map((text, i) => {
-            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-          })
-          .join("")}`,
+      .map((text, i) => {
+        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+      })
+      .join("")}`,
     };
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
