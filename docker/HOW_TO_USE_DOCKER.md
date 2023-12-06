@@ -5,11 +5,26 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 ## Requirements
 - Install [Docker](https://www.docker.com/) on your computer or machine.
 
-## Pull from Docker
-`docker pull mintplexlabs/anythingllm:master`
-`docker run -d -p 3001:3001 mintplexlabs/anythingllm:master`
+## Recommend way to run dockerized AnythingLLM!
+> [!TIP]
+> It is best to mount the containers storage volume to a folder on your host machine
+> so that you can pull in future updates without deleting your existing data!
 
-Go to `http://localhost:3001` and you are now using AnythingLLm!
+`docker pull mintplexlabs/anythingllm:master`
+
+```shell
+STORAGE_LOCATION="/var/lib/anythingllm" \
+mkdir "$STORAGE_LOCATION" && \
+touch "$STORAGE_LOCATION/.env" && \
+docker run -d -p 3001:3001 \
+-v ${STORAGE_LOCATION}:/app/server/storage \
+-v ${STORAGE_LOCATION}/.env:/app/server/.env \
+-e STORAGE_DIR="/app/server/storage" \
+mintplexlabs/anythingllm:master
+```
+
+Go to `http://localhost:3001` and you are now using AnythingLLM! All your data and progress will persist between
+container rebuilds or pulls from Docker Hub.
 
 ## Build locally from source
 - `git clone` this repo and `cd anything-llm` to get to the root directory.

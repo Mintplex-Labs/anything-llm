@@ -78,12 +78,28 @@ This monorepo consists of three main sections:
 - (optional) a vector database like Pinecone, qDrant, Weaviate, or Chroma*.
 *AnythingLLM by default uses a built-in vector db called LanceDB.
 
-## How to get started (Docker - simple setup)
-`docker pull mintplexlabs/anythingllm:master`
-`docker run -d -p 3001:3001 mintplexlabs/anythingllm:master`
+## Recommended usage with Docker (easy!)
+> [!TIP]
+> It is best to mount the containers storage volume to a folder on your host machine
+> so that you can pull in future updates without deleting your existing data!
 
-Go to `http://localhost:3001` and you are now using AnythingLLm!
-[More about running AnythingLLM with Docker](./docker/HOW_TO_USE_DOCKER.md)
+`docker pull mintplexlabs/anythingllm:master`
+
+```shell
+STORAGE_LOCATION="/var/lib/anythingllm" \
+mkdir "$STORAGE_LOCATION" && \
+touch "$STORAGE_LOCATION/.env" && \
+docker run -d -p 3001:3001 \
+-v ${STORAGE_LOCATION}:/app/server/storage \
+-v ${STORAGE_LOCATION}/.env:/app/server/.env \
+-e STORAGE_DIR="/app/server/storage" \
+mintplexlabs/anythingllm:master
+```
+
+Go to `http://localhost:3001` and you are now using AnythingLLM! All your data and progress will persist between
+container rebuilds or pulls from Docker Hub.
+
+[Learn more about running AnythingLLM with Docker](./docker/HOW_TO_USE_DOCKER.md)
 
 ### How to get started (Development environment)
 - `yarn setup` from the project root directory.
