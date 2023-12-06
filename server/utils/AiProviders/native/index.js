@@ -39,7 +39,7 @@ class NativeLLM {
     const modelPath = path.join(this.cacheDir, this.model);
     if (!fs.existsSync(modelPath))
       throw new Error(
-        `Local Llama model ${this.mode} was not found in storage!`
+        `Local Llama model ${this.model} was not found in storage!`
       );
 
     return ChatLlamaCpp({
@@ -72,10 +72,10 @@ class NativeLLM {
       content: `${systemPrompt}
 Context:
     ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+          .map((text, i) => {
+            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+          })
+          .join("")}`,
     };
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
