@@ -26,6 +26,7 @@
     "@pinecone-database/pinecone": "^0.1.6",
     "@prisma/client": "5.3.0",
     "@qdrant/js-client-rest": "^1.4.0",
+    "@xenova/transformers": "^2.10.0",
     "archiver": "^5.3.1",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",

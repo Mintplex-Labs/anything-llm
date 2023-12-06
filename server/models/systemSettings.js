@@ -15,7 +15,7 @@ const SystemSettings = {
   ],
   currentSettings: async function () {
     const llmProvider = process.env.LLM_PROVIDER || "openai";
-    const vectorDB = process.env.VECTOR_DB || "pinecone";
+    const vectorDB = process.env.VECTOR_DB || "lancedb";
     return {
       CanDebug: !!!process.env.NO_DEBUG,
       RequiresAuth: !!process.env.AUTH_TOKEN,
