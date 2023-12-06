@@ -100,14 +100,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
             />
           </div>
           <div className="mt-4 flex flex-wrap gap-4 max-w-[752px]">
-            {embeddingChoice === "native" && (
-              <div className="w-full h-20 items-center justify-center flex">
-                <p className="text-sm font-base text-white text-opacity-60">
-                  There is no configuration needed when using AnythingLLM's
-                  native embedding engine.
-                </p>
-              </div>
-            )}
+            {embeddingChoice === "native" && <NativeEmbeddingOptions />}
             {embeddingChoice === "openai" && (
               <OpenAiOptions settings={settings} />
             )}

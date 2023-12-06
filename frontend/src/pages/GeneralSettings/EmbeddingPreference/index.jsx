@@ -15,6 +15,7 @@ import ChangeWarningModal from "../../../components/ChangeWarning";
 import OpenAiOptions from "../../../components/EmbeddingSelection/OpenAiOptions";
 import AzureAiOptions from "../../../components/EmbeddingSelection/AzureAiOptions";
 import LocalAiOptions from "../../../components/EmbeddingSelection/LocalAiOptions";
+import NativeEmbeddingOptions from "../../../components/EmbeddingSelection/NativeEmbeddingOptions";
 
 export default function GeneralEmbeddingPreference() {
   const [saving, setSaving] = useState(false);
@@ -176,14 +177,7 @@ export default function GeneralEmbeddingPreference() {
                   />
                 </div>
                 <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
-                  {embeddingChoice === "native" && (
-                    <div className="w-full h-20 items-center justify-center flex">
-                      <p className="text-sm font-base text-white text-opacity-60">
-                        There is no configuration needed when using
-                        AnythingLLM's native embedding engine.
-                      </p>
-                    </div>
-                  )}
+                  {embeddingChoice === "native" && <NativeEmbeddingOptions />}
                   {embeddingChoice === "openai" && (
                     <OpenAiOptions settings={settings} />
                   )}
