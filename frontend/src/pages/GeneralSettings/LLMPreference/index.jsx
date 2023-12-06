@@ -154,14 +154,16 @@ export default function GeneralLLMPreference() {
                   image={LocalAiLogo}
                   onClick={updateLLMChoice}
                 />
-                <LLMProviderOption
-                  name="Custom Llama Model"
-                  value="native"
-                  description="Use a downloaded custom Llama model for chatting on this AnythingLLM instance."
-                  checked={llmChoice === "native"}
-                  image={AnythingLLMIcon}
-                  onClick={updateLLMChoice}
-                />
+                {!window.location.hostname.includes('useanything.com') && (
+                  <LLMProviderOption
+                    name="Custom Llama Model"
+                    value="native"
+                    description="Use a downloaded custom Llama model for chatting on this AnythingLLM instance."
+                    checked={llmChoice === "native"}
+                    image={AnythingLLMIcon}
+                    onClick={updateLLMChoice}
+                  />
+                )}
               </div>
               <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
                 {llmChoice === "openai" && (
