@@ -66,6 +66,7 @@ const Workspace = {
       body: JSON.stringify({ message, mode }),
       headers: baseHeaders(),
       signal: ctrl.signal,
+      openWhenHidden: true,
       async onopen(response) {
         if (response.ok) {
           return; // everything's good
@@ -74,8 +75,26 @@ const Workspace = {
           response.status < 500 &&
           response.status !== 429
         ) {
+          handleChat({
+            id: v4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `An error occurred while streaming response. Code ${response.status}`,
+          });
+          ctrl.abort();
           throw new Error("Invalid Status code response.");
         } else {
+          handleChat({
+            id: v4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `An error occurred while streaming response. Unknown Error.`,
+          });
+          ctrl.abort();
           throw new Error("Unknown error");
         }
       },
@@ -95,6 +114,7 @@ const Workspace = {
           error: `An error occurred while streaming response. ${err.message}`,
         });
         ctrl.abort();
+        throw new Error();
       },
     });
   },
