@@ -35,6 +35,14 @@ class NativeEmbedder {
         );
       return await pipeline("feature-extraction", this.model, {
         cache_dir: this.cacheDir,
+        progress_callback: (data) => {
+          if (!data.hasOwnProperty("progress")) return;
+          console.log(
+            `\x1b[34m[Embedding - Downloading Model Files]\x1b[0m ${
+              data.file
+            } ${~~data?.progress}%`
+          );
+        },
       });
     } catch (error) {
       console.error("Failed to load the native embedding model:", error);
