@@ -25,6 +25,7 @@
 A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use as well as supporting multi-user management and permissions.
 
 ![Chatting](/images/screenshots/chatting.gif)
+
 [view more screenshots](/images/screenshots/SCREENSHOTS.md)
 
 ### Watch the demo!
@@ -91,6 +92,7 @@ This monorepo consists of three main sections:
 - access to an LLM running locally or remotely.
 
 *AnythingLLM by default uses a built-in vector database powered by [LanceDB](https://github.com/lancedb/lancedb)
+
 *AnythingLLM by default embeds text on instance privately [Learn More](/server/storage/models/README.md)
 
 ## Recommended usage with Docker (easy!)
