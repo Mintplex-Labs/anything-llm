@@ -39,17 +39,27 @@ class NativeLLM {
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
   }
 
-  async llamaClient({ temperature = 0.7 }) {
+  async #initializeLlamaModel(temperature = 0.7) {
     const modelPath = path.join(this.cacheDir, this.model);
     if (!fs.existsSync(modelPath))
       throw new Error(
         `Local Llama model ${this.model} was not found in storage!`
       );
 
-    return ChatLlamaCpp({
+    global.llamaModelInstance = await ChatLlamaCpp({
       modelPath,
       temperature,
+      useMlock: true,
     });
+  }
+
+  // If the model has been loaded once, it is in the memory now
+  // so we can skip  re-loading it and instead go straight to inference.
+  // Note: this will break temperature setting hopping between workspaces with different temps.
+  async llamaClient({ temperature = 0.7 }) {
+    if (global.llamaModelInstance) return global.llamaModelInstance;
+    await this.#initializeLlamaModel(temperature);
+    return global.llamaModelInstance;
   }
 
   streamingEnabled() {
