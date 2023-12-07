@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { useNavigate } from "react-router-dom";
-import paths from "../../../../../utils/paths";
-import Workspace from "../../../../../models/workspace";
+import paths from "@/utils/paths";
+import Workspace from "@/models/workspace";
 
 function CreateFirstWorkspace() {
   const navigate = useNavigate();

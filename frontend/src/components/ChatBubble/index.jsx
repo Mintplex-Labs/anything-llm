@@ -1,10 +1,7 @@
 import React from "react";
 import Jazzicon from "../UserIcon";
-import { userFromStorage } from "../../utils/request";
-import {
-  AI_BACKGROUND_COLOR,
-  USER_BACKGROUND_COLOR,
-} from "../../utils/constants";
+import { userFromStorage } from "@/utils/request";
+import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 
 export default function ChatBubble({ message, type, popMsg }) {
   const isUser = type === "user";

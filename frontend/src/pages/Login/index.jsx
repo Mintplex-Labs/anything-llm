@@ -1,8 +1,6 @@
 import React from "react";
-import PasswordModal, {
-  usePasswordModal,
-} from "../../components/Modals/Password";
-import { FullScreenLoader } from "../../components/Preloader";
+import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
+import { FullScreenLoader } from "@/components/Preloader";
 
 export default function Login() {
   const { loading, mode } = usePasswordModal();

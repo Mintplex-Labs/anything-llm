@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { FullScreenLoader } from "../Preloader";
-import validateSessionTokenForUser from "../../utils/session";
-import paths from "../../utils/paths";
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
-import { userFromStorage } from "../../utils/request";
-import System from "../../models/system";
+import validateSessionTokenForUser from "@/utils/session";
+import paths from "@/utils/paths";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import { userFromStorage } from "@/utils/request";
+import System from "@/models/system";
 import UserMenu from "../UserMenu";
 
 // Used only for Multi-user mode only as we permission specific pages based on auth role.

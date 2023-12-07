@@ -1,19 +1,19 @@
 import React, { memo, useEffect, useState } from "react";
-import AnythingLLMIcon from "../../../../../media/logo/anything-llm-icon.png";
-import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
-import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
-import AnthropicLogo from "../../../../../media/llmprovider/anthropic.png";
-import LMStudioLogo from "../../../../../media/llmprovider/lmstudio.png";
-import LocalAiLogo from "../../../../../media/llmprovider/localai.png";
-import System from "../../../../../models/system";
-import PreLoader from "../../../../../components/Preloader";
-import LLMProviderOption from "../../../../../components/LLMSelection/LLMProviderOption";
-import OpenAiOptions from "../../../../../components/LLMSelection/OpenAiOptions";
-import AzureAiOptions from "../../../../../components/LLMSelection/AzureAiOptions";
-import AnthropicAiOptions from "../../../../../components/LLMSelection/AnthropicAiOptions";
-import LMStudioOptions from "../../../../../components/LLMSelection/LMStudioOptions";
-import LocalAiOptions from "../../../../../components/LLMSelection/LocalAiOptions";
-import NativeLLMOptions from "../../../../../components/LLMSelection/NativeLLMOptions";
+import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import OpenAiLogo from "@/media/llmprovider/openai.png";
+import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
+import AnthropicLogo from "@/media/llmprovider/anthropic.png";
+import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
+import LocalAiLogo from "@/media/llmprovider/localai.png";
+import System from "@/models/system";
+import PreLoader from "@/components/Preloader";
+import LLMProviderOption from "@/components/LLMSelection/LLMProviderOption";
+import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
+import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
+import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
+import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
+import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
+import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 
 function LLMSelection({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");

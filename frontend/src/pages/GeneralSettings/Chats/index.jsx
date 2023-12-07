@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
-import Sidebar, {
-  SidebarMobileHeader,
-} from "../../../components/SettingsSidebar";
+import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import useQuery from "../../../hooks/useQuery";
+import useQuery from "@/hooks/useQuery";
 import ChatRow from "./ChatRow";
-import showToast from "../../../utils/toast";
-import System from "../../../models/system";
+import showToast from "@/utils/toast";
+import System from "@/models/system";
 
 const PAGE_SIZE = 20;
 export default function WorkspaceChats() {

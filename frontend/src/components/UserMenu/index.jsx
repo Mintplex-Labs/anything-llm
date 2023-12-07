@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { isMobile } from "react-device-detect";
-import paths from "../../utils/paths";
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
+import paths from "@/utils/paths";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import { Person, SignOut } from "@phosphor-icons/react";
-import { userFromStorage } from "../../utils/request";
+import { userFromStorage } from "@/utils/request";
 
 export default function UserMenu({ children }) {
   if (isMobile) return <>{children}</>;

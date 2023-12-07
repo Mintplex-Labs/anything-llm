@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 // import IndexCount from "../Sidebar/IndexCount";
 // import LLMStatus from "../Sidebar/LLMStatus";
-import paths from "../../utils/paths";
-import useLogo from "../../hooks/useLogo";
+import paths from "@/utils/paths";
+import useLogo from "@/hooks/useLogo";
 import {
   DiscordLogo,
   EnvelopeSimple,
@@ -23,8 +23,8 @@ import {
   List,
   FileCode,
 } from "@phosphor-icons/react";
-import useUser from "../../hooks/useUser";
-import { USER_BACKGROUND_COLOR } from "../../utils/constants";
+import useUser from "@/hooks/useUser";
+import { USER_BACKGROUND_COLOR } from "@/utils/constants";
 
 export default function SettingsSidebar() {
   const { logo } = useLogo();
