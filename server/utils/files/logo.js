@@ -41,6 +41,7 @@ function fetchLogo(logoPath) {
   const mime = getType(logoPath);
   const buffer = fs.readFileSync(logoPath);
   return {
+    found: true,
     buffer,
     size: buffer.length,
     mime,

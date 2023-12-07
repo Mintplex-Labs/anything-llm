@@ -206,7 +206,7 @@ const System = {
       cache: "no-cache",
     })
       .then((res) => {
-        if (res.ok) return res.blob();
+        if (res.ok && res.status !== 204) return res.blob();
         throw new Error("Failed to fetch logo!");
       })
       .then((blob) => URL.createObjectURL(blob))
@@ -221,10 +221,7 @@ const System = {
       cache: "no-cache",
     })
       .then((res) => {
-        if (res.ok) {
-          if (res.status === 204) return null;
-          return res.blob();
-        }
+        if (res.ok && res.status !== 204) return res.blob();
         throw new Error("Failed to fetch pfp.");
       })
       .then((blob) => (blob ? URL.createObjectURL(blob) : null))

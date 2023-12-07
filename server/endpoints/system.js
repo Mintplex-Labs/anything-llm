@@ -405,7 +405,12 @@ function systemEndpoints(app) {
     try {
       const defaultFilename = getDefaultFilename();
       const logoPath = await determineLogoFilepath(defaultFilename);
-      const { buffer, size, mime } = fetchLogo(logoPath);
+      const { found, buffer, size, mime } = fetchLogo(logoPath);
+      if (!found) {
+        response.sendStatus(204).end();
+        return;
+      }
+
       response.writeHead(200, {
         "Content-Type": mime || "image/png",
         "Content-Disposition": `attachment; filename=${path.basename(
@@ -427,11 +432,15 @@ function systemEndpoints(app) {
       const pfpPath = await determinePfpFilepath(id);
 
       if (!pfpPath) {
-        response.status(204).end();
+        response.sendStatus(204).end();
         return;
       }
 
-      const { buffer, size, mime } = fetchPfp(pfpPath);
+      const { found, buffer, size, mime } = fetchPfp(pfpPath);
+      if (!found) {
+        response.sendStatus(204).end();
+        return;
+      }
 
       response.writeHead(200, {
         "Content-Type": mime || "image/png",
