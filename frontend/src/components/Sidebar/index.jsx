@@ -12,10 +12,10 @@ import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
 import ActiveWorkspaces from "./ActiveWorkspaces";
-import paths from "../../utils/paths";
-import { USER_BACKGROUND_COLOR } from "../../utils/constants";
-import useLogo from "../../hooks/useLogo";
-import useUser from "../../hooks/useUser";
+import paths from "@/utils/paths";
+import { USER_BACKGROUND_COLOR } from "@/utils/constants";
+import useLogo from "@/hooks/useLogo";
+import useUser from "@/hooks/useUser";
 
 export default function Sidebar() {
   const { user } = useUser();

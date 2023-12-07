@@ -203,7 +203,7 @@ function validAnthropicModel(input = "") {
 }
 
 function supportedEmbeddingModel(input = "") {
-  const supported = ["openai", "azure", "localai"];
+  const supported = ["openai", "azure", "localai", "native"];
   return supported.includes(input)
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;
@@ -286,6 +286,14 @@ async function dumpENV() {
     "CACHE_VECTORS",
     "STORAGE_DIR",
     "SERVER_PORT",
+    // Password Schema Keys if present.
+    "PASSWORDMINCHAR",
+    "PASSWORDMAXCHAR",
+    "PASSWORDLOWERCASE",
+    "PASSWORDUPPERCASE",
+    "PASSWORDNUMERIC",
+    "PASSWORDSYMBOL",
+    "PASSWORDREQUIREMENTS",
   ];
 
   for (const key of protectedKeys) {

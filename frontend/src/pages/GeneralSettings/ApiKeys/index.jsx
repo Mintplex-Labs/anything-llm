@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
-import Sidebar, {
-  SidebarMobileHeader,
-} from "../../../components/SettingsSidebar";
+import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { PlusCircle } from "@phosphor-icons/react";
-import Admin from "../../../models/admin";
+import Admin from "@/models/admin";
 import ApiKeyRow from "./ApiKeyRow";
 import NewApiKeyModal, { NewApiKeyModalId } from "./NewApiKeyModal";
-import paths from "../../../utils/paths";
-import { userFromStorage } from "../../../utils/request";
-import System from "../../../models/system";
+import paths from "@/utils/paths";
+import { userFromStorage } from "@/utils/request";
+import System from "@/models/system";
 
 export default function AdminApiKeys() {
   return (

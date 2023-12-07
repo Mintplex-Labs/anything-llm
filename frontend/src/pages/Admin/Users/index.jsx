@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
-import Sidebar, {
-  SidebarMobileHeader,
-} from "../../../components/SettingsSidebar";
+import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { UserPlus } from "@phosphor-icons/react";
-import Admin from "../../../models/admin";
+import Admin from "@/models/admin";
 import UserRow from "./UserRow";
-import useUser from "../../../hooks/useUser";
+import useUser from "@/hooks/useUser";
 import NewUserModal, { NewUserModalId } from "./NewUserModal";
 
 export default function AdminUsers() {

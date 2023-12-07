@@ -117,7 +117,7 @@
     "AnythingLLMInstanceSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "AnythingLLm Instance Security Group",
+        "GroupDescription": "AnythingLLM Instance Security Group",
         "SecurityGroupIngress": [
           {
             "IpProtocol": "tcp",

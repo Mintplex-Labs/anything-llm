@@ -1,16 +1,18 @@
 import React, { memo, useEffect, useState } from "react";
-import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
-import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
-import LocalAiLogo from "../../../../../media/llmprovider/localai.png";
-import System from "../../../../../models/system";
-import PreLoader from "../../../../../components/Preloader";
-import LLMProviderOption from "../../../../../components/LLMSelection/LLMProviderOption";
-import OpenAiOptions from "../../../../../components/EmbeddingSelection/OpenAiOptions";
-import AzureAiOptions from "../../../../../components/EmbeddingSelection/AzureAiOptions";
-import LocalAiOptions from "../../../../../components/EmbeddingSelection/LocalAiOptions";
+import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import OpenAiLogo from "@/media/llmprovider/openai.png";
+import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
+import LocalAiLogo from "@/media/llmprovider/localai.png";
+import System from "@/models/system";
+import PreLoader from "@/components/Preloader";
+import LLMProviderOption from "@/components/LLMSelection/LLMProviderOption";
+import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
+import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
+import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
+import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
 
 function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
-  const [embeddingChoice, setEmbeddingChoice] = useState("openai");
+  const [embeddingChoice, setEmbeddingChoice] = useState("native");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const updateChoice = (selection) => {
@@ -21,7 +23,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setEmbeddingChoice(_settings?.EmbeddingEngine || "openai");
+      setEmbeddingChoice(_settings?.EmbeddingEngine || "native");
       setLoading(false);
     }
     fetchKeys();
@@ -63,6 +65,14 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
               value={embeddingChoice}
             />
             <LLMProviderOption
+              name="AnythingLLM Embedder"
+              value="native"
+              description="Use the built-in embedding engine for AnythingLLM. Zero setup!"
+              checked={embeddingChoice === "native"}
+              image={AnythingLLMIcon}
+              onClick={updateChoice}
+            />
+            <LLMProviderOption
               name="OpenAI"
               value="openai"
               link="openai.com"
@@ -91,6 +101,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
             />
           </div>
           <div className="mt-4 flex flex-wrap gap-4 max-w-[752px]">
+            {embeddingChoice === "native" && <NativeEmbeddingOptions />}
             {embeddingChoice === "openai" && (
               <OpenAiOptions settings={settings} />
             )}

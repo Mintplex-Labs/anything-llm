@@ -1,5 +1,5 @@
-import { API_BASE, AUTH_TIMESTAMP } from "../utils/constants";
-import { baseHeaders } from "../utils/request";
+import { API_BASE, AUTH_TIMESTAMP } from "@/utils/constants";
+import { baseHeaders } from "@/utils/request";
 
 const System = {
   ping: async function () {

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { X } from "@phosphor-icons/react";
-import Admin from "../../../../models/admin";
-import paths from "../../../../utils/paths";
-import { userFromStorage } from "../../../../utils/request";
-import System from "../../../../models/system";
+import Admin from "@/models/admin";
+import paths from "@/utils/paths";
+import { userFromStorage } from "@/utils/request";
+import System from "@/models/system";
 
 const DIALOG_ID = `new-api-key-modal`;
 

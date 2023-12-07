@@ -74,6 +74,7 @@ const Document = {
 
     await Telemetry.sendTelemetry("documents_embedded_in_workspace", {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
+      Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "pinecone",
     });
     return { failed: failedToEmbed, embedded };
@@ -105,6 +106,7 @@ const Document = {
 
     await Telemetry.sendTelemetry("documents_removed_in_workspace", {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
+      Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "pinecone",
     });
     return true;

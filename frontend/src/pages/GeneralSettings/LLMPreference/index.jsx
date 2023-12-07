@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from "react";
-import Sidebar, {
-  SidebarMobileHeader,
-} from "../../../components/SettingsSidebar";
+import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import System from "../../../models/system";
-import showToast from "../../../utils/toast";
-import OpenAiLogo from "../../../media/llmprovider/openai.png";
-import AzureOpenAiLogo from "../../../media/llmprovider/azure.png";
-import AnthropicLogo from "../../../media/llmprovider/anthropic.png";
-import LMStudioLogo from "../../../media/llmprovider/lmstudio.png";
-import LocalAiLogo from "../../../media/llmprovider/localai.png";
-import PreLoader from "../../../components/Preloader";
-import LLMProviderOption from "../../../components/LLMSelection/LLMProviderOption";
-import OpenAiOptions from "../../../components/LLMSelection/OpenAiOptions";
-import AzureAiOptions from "../../../components/LLMSelection/AzureAiOptions";
-import AnthropicAiOptions from "../../../components/LLMSelection/AnthropicAiOptions";
-import LMStudioOptions from "../../../components/LLMSelection/LMStudioOptions";
-import LocalAiOptions from "../../../components/LLMSelection/LocalAiOptions";
+import System from "@/models/system";
+import showToast from "@/utils/toast";
+import OpenAiLogo from "@/media/llmprovider/openai.png";
+import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
+import AnthropicLogo from "@/media/llmprovider/anthropic.png";
+import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
+import LocalAiLogo from "@/media/llmprovider/localai.png";
+import PreLoader from "@/components/Preloader";
+import LLMProviderOption from "@/components/LLMSelection/LLMProviderOption";
+import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
+import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
+import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
+import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
+import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);

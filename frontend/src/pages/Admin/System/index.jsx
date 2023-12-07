@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import Sidebar, {
-  SidebarMobileHeader,
-} from "../../../components/SettingsSidebar";
+import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import Admin from "../../../models/admin";
-import showToast from "../../../utils/toast";
+import Admin from "@/models/admin";
+import showToast from "@/utils/toast";
 
 export default function AdminSystem() {
   const [saving, setSaving] = useState(false);

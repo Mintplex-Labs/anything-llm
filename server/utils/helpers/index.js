@@ -59,6 +59,9 @@ function getEmbeddingEngineSelection() {
     case "localai":
       const { LocalAiEmbedder } = require("../EmbeddingEngines/localAi");
       return new LocalAiEmbedder();
+    case "native":
+      const { NativeEmbedder } = require("../EmbeddingEngines/native");
+      return new NativeEmbedder();
     default:
       return null;
   }

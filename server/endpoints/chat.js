@@ -77,6 +77,7 @@ function chatEndpoints(app) {
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
         response.end();
@@ -154,6 +155,7 @@ function chatEndpoints(app) {
           {
             multiUserMode: multiUserMode(response),
             LLMSelection: process.env.LLM_PROVIDER || "openai",
+            Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "pinecone",
           },
           user?.id

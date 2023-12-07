@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import System from "../../../models/system";
+import System from "@/models/system";
 
 export default function LocalAiOptions({ settings }) {
   const [basePathValue, setBasePathValue] = useState(
