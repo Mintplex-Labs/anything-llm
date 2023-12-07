@@ -62,7 +62,7 @@ RUN cd ./server/ && yarn install --production && yarn cache clean && \
 
 # Compile Llama.cpp bindings for node-llama-cpp for this operating system.
 USER root
-RUN cd ./server && npx --no node-llama-cpp download --no-metal
+RUN cd ./server && npx --no node-llama-cpp download
 USER anythingllm
 
 # Build the frontend
