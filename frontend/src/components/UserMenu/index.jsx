@@ -49,7 +49,9 @@ function userDisplay() {
 }
 
 function UserButton() {
+  const { user } = useUser();
   const [showMenu, setShowMenu] = useState(false);
+  const [showAccountSettings, setShowAccountSettings] = useState(false);
   const mode = useLoginMode();
   const menuRef = useRef();
   const buttonRef = useRef();
@@ -64,7 +66,7 @@ function UserButton() {
   };
 
   const handleOpenAccountModal = () => {
-    document.getElementById("account-modal")?.showModal();
+    setShowAccountSettings(true);
     setShowMenu(false);
   };
 
@@ -94,13 +96,7 @@ function UserButton() {
           className="w-fit rounded-lg absolute top-12 right-0 bg-sidebar p-4 flex items-center-justify-center"
         >
           <div className="flex flex-col gap-y-2">
-            <a
-              href={paths.mailToMintplex()}
-              className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
-            >
-              Support
-            </a>
-            {mode === "multi" && (
+            {mode === "multi" && !!user && (
               <button
                 onClick={handleOpenAccountModal}
                 className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
@@ -108,6 +104,12 @@ function UserButton() {
                 Account
               </button>
             )}
+            <a
+              href={paths.mailToMintplex()}
+              className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+            >
+              Support
+            </a>
             <button
               onClick={() => {
                 window.localStorage.removeItem(AUTH_USER);
@@ -123,18 +125,18 @@ function UserButton() {
           </div>
         </div>
       )}
-      <AccountModal />
+      {user && showAccountSettings && (
+        <AccountModal
+          user={user}
+          hideModal={() => setShowAccountSettings(false)}
+        />
+      )}
     </div>
   );
 }
 
-function AccountModal() {
-  const { user } = useUser();
+function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
-  const hideModal = () => {
-    document.getElementById("account-modal")?.close();
-  };
-
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return false;
@@ -174,9 +176,7 @@ function AccountModal() {
       data[key] = value;
     }
 
-    console.log(data);
     const { success, error } = await System.updateUser(data);
-
     if (success) {
       let storedUser = JSON.parse(localStorage.getItem(AUTH_USER));
 
@@ -191,7 +191,10 @@ function AccountModal() {
   };
 
   return (
-    <dialog id="account-modal" className="bg-transparent outline-none">
+    <div
+      id="account-modal"
+      className="bg-black/20 fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center"
+    >
       <div className="relative w-[500px] max-w-2xl max-h-full bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
           <h3 className="text-xl font-semibold text-white">Edit Account</h3>
@@ -271,10 +274,9 @@ function AccountModal() {
               </label>
               <input
                 name="password"
-                type="text"
+                type="password"
                 className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
                 placeholder={`${user.username}'s new password`}
-                minLength={8}
               />
             </div>
           </div>
@@ -295,6 +297,6 @@ function AccountModal() {
           </div>
         </form>
       </div>
-    </dialog>
+    </div>
   );
 }

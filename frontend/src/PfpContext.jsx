@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import useUser from "./hooks/useUser";
 import System from "./models/system";
 
@@ -10,6 +10,7 @@ export function PfpProvider({ children }) {
 
   useEffect(() => {
     async function fetchPfp() {
+      if (!user?.id) return;
       try {
         const pfpUrl = await System.fetchPfp(user.id);
         setPfp(pfpUrl);
@@ -19,7 +20,7 @@ export function PfpProvider({ children }) {
       }
     }
     fetchPfp();
-  }, [user.id]);
+  }, [user?.id]);
 
   return (
     <PfpContext.Provider value={{ pfp, setPfp }}>
