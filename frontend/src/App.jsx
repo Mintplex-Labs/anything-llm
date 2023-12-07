@@ -8,6 +8,8 @@ import PrivateRoute, {
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "@/pages/Login";
+import { PfpProvider } from "./PfpContext";
+import { LogoProvider } from "./LogoContext";
 
 const Main = lazy(() => import("@/pages/Main"));
 const InvitePage = lazy(() => import("@/pages/Invite"));
@@ -40,69 +42,73 @@ export default function App() {
   return (
     <Suspense fallback={<div />}>
       <ContextWrapper>
-        <Routes>
-          <Route path="/" element={<PrivateRoute Component={Main} />} />
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/workspace/:slug"
-            element={<PrivateRoute Component={WorkspaceChat} />}
-          />
-          <Route path="/accept-invite/:code" element={<InvitePage />} />
+        <LogoProvider>
+          <PfpProvider>
+            <Routes>
+              <Route path="/" element={<PrivateRoute Component={Main} />} />
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/workspace/:slug"
+                element={<PrivateRoute Component={WorkspaceChat} />}
+              />
+              <Route path="/accept-invite/:code" element={<InvitePage />} />
 
-          {/* Admin */}
-          <Route
-            path="/settings/llm-preference"
-            element={<AdminRoute Component={GeneralLLMPreference} />}
-          />
-          <Route
-            path="/settings/embedding-preference"
-            element={<AdminRoute Component={GeneralEmbeddingPreference} />}
-          />
-          <Route
-            path="/settings/vector-database"
-            element={<AdminRoute Component={GeneralVectorDatabase} />}
-          />
-          {/* Manager */}
-          <Route
-            path="/settings/export-import"
-            element={<ManagerRoute Component={GeneralExportImport} />}
-          />
-          <Route
-            path="/settings/security"
-            element={<ManagerRoute Component={GeneralSecurity} />}
-          />
-          <Route
-            path="/settings/appearance"
-            element={<ManagerRoute Component={GeneralAppearance} />}
-          />
-          <Route
-            path="/settings/api-keys"
-            element={<ManagerRoute Component={GeneralApiKeys} />}
-          />
-          <Route
-            path="/settings/workspace-chats"
-            element={<ManagerRoute Component={GeneralChats} />}
-          />
-          <Route
-            path="/settings/system-preferences"
-            element={<ManagerRoute Component={AdminSystem} />}
-          />
-          <Route
-            path="/settings/invites"
-            element={<ManagerRoute Component={AdminInvites} />}
-          />
-          <Route
-            path="/settings/users"
-            element={<ManagerRoute Component={AdminUsers} />}
-          />
-          <Route
-            path="/settings/workspaces"
-            element={<ManagerRoute Component={AdminWorkspaces} />}
-          />
-          {/* Onboarding Flow */}
-          <Route path="/onboarding" element={<OnboardingFlow />} />
-        </Routes>
-        <ToastContainer />
+              {/* Admin */}
+              <Route
+                path="/settings/llm-preference"
+                element={<AdminRoute Component={GeneralLLMPreference} />}
+              />
+              <Route
+                path="/settings/embedding-preference"
+                element={<AdminRoute Component={GeneralEmbeddingPreference} />}
+              />
+              <Route
+                path="/settings/vector-database"
+                element={<AdminRoute Component={GeneralVectorDatabase} />}
+              />
+              {/* Manager */}
+              <Route
+                path="/settings/export-import"
+                element={<ManagerRoute Component={GeneralExportImport} />}
+              />
+              <Route
+                path="/settings/security"
+                element={<ManagerRoute Component={GeneralSecurity} />}
+              />
+              <Route
+                path="/settings/appearance"
+                element={<ManagerRoute Component={GeneralAppearance} />}
+              />
+              <Route
+                path="/settings/api-keys"
+                element={<ManagerRoute Component={GeneralApiKeys} />}
+              />
+              <Route
+                path="/settings/workspace-chats"
+                element={<ManagerRoute Component={GeneralChats} />}
+              />
+              <Route
+                path="/settings/system-preferences"
+                element={<ManagerRoute Component={AdminSystem} />}
+              />
+              <Route
+                path="/settings/invites"
+                element={<ManagerRoute Component={AdminInvites} />}
+              />
+              <Route
+                path="/settings/users"
+                element={<ManagerRoute Component={AdminUsers} />}
+              />
+              <Route
+                path="/settings/workspaces"
+                element={<ManagerRoute Component={AdminWorkspaces} />}
+              />
+              {/* Onboarding Flow */}
+              <Route path="/onboarding" element={<OnboardingFlow />} />
+            </Routes>
+            <ToastContainer />
+          </PfpProvider>
+        </LogoProvider>
       </ContextWrapper>
     </Suspense>
   );

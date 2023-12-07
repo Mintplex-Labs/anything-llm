@@ -6,7 +6,7 @@ import { Plus } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 
 function AppearanceSetup({ prevStep, nextStep }) {
-  const { logo: _initLogo } = useLogo();
+  const { logo: _initLogo, setLogo: _setLogo } = useLogo();
   const [logo, setLogo] = useState("");
   const [isDefaultLogo, setIsDefaultLogo] = useState(true);
 
@@ -35,6 +35,9 @@ function AppearanceSetup({ prevStep, nextStep }) {
       return;
     }
 
+    const logoURL = await System.fetchLogo();
+    _setLogo(logoURL);
+
     showToast("Image uploaded successfully.", "success");
     setIsDefaultLogo(false);
   };
@@ -52,6 +55,9 @@ function AppearanceSetup({ prevStep, nextStep }) {
       setIsDefaultLogo(false);
       return;
     }
+
+    const logoURL = await System.fetchLogo();
+    _setLogo(logoURL);
 
     showToast("Image successfully removed.", "success");
   };
