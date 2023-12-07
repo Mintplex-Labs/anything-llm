@@ -4,6 +4,8 @@ const path = require("path");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { HumanMessage, SystemMessage, AIMessage } = require("langchain/schema");
 const { chatPrompt } = require("../../chats");
+
+// Docs: https://api.js.langchain.com/classes/chat_models_llama_cpp.ChatLlamaCpp.html
 const ChatLlamaCpp = (...args) =>
   import("langchain/chat_models/llama_cpp").then(
     ({ ChatLlamaCpp }) => new ChatLlamaCpp(...args)
