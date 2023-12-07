@@ -1,4 +1,4 @@
-const SUPPORT_CUSTOM_MODELS = ["openai", "localai"];
+const SUPPORT_CUSTOM_MODELS = ["openai", "localai", "native-llm"];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
   if (!SUPPORT_CUSTOM_MODELS.includes(provider))
@@ -9,6 +9,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await openAiModels(apiKey);
     case "localai":
       return await localAIModels(basePath);
+    case "native-llm":
+      return nativeLLMModels();
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -51,6 +53,26 @@ async function localAIModels(basePath = null, apiKey = null) {
     });
 
   return { models, error: null };
+}
+
+function nativeLLMModels() {
+  const fs = require("fs");
+  const path = require("path");
+  const storageDir = path.resolve(
+    process.env.STORAGE_DIR
+      ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
+      : path.resolve(__dirname, `../../storage/models/downloaded`)
+  );
+  if (!fs.existsSync(storageDir))
+    return { models: [], error: "No model/downloaded storage folder found." };
+
+  const files = fs
+    .readdirSync(storageDir)
+    .filter((file) => file.toLowerCase().includes(".gguf"))
+    .map((file) => {
+      return { id: file, name: file };
+    });
+  return { models: files, error: null };
 }
 
 module.exports = {

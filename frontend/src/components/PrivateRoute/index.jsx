@@ -21,9 +21,8 @@ function useIsAuthenticated() {
       const {
         MultiUserMode,
         RequiresAuth,
-        OpenAiKey = false,
-        AnthropicApiKey = false,
-        AzureOpenAiKey = false,
+        LLMProvider = null,
+        VectorDB = null,
       } = await System.keys();
 
       setMultiUserMode(MultiUserMode);
@@ -32,9 +31,8 @@ function useIsAuthenticated() {
       if (
         !MultiUserMode &&
         !RequiresAuth && // Not in Multi-user AND no password set.
-        !OpenAiKey &&
-        !AnthropicApiKey &&
-        !AzureOpenAiKey // AND no LLM API Key set at all.
+        !LLMProvider &&
+        !VectorDB
       ) {
         setShouldRedirectToOnboarding(true);
         setIsAuthed(true);

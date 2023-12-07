@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
+import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
@@ -12,6 +13,7 @@ import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
 import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
+import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 
 function LLMSelection({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");
@@ -110,6 +112,14 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               image={LocalAiLogo}
               onClick={updateLLMChoice}
             />
+            <LLMProviderOption
+              name="Custom Llama Model"
+              value="native"
+              description="Use a downloaded custom Llama model for chatting on this AnythingLLM instance."
+              checked={llmChoice === "native"}
+              image={AnythingLLMIcon}
+              onClick={updateLLMChoice}
+            />
           </div>
           <div className="mt-4 flex flex-wrap gap-4 max-w-[752px]">
             {llmChoice === "openai" && <OpenAiOptions settings={settings} />}
@@ -121,6 +131,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               <LMStudioOptions settings={settings} />
             )}
             {llmChoice === "localai" && <LocalAiOptions settings={settings} />}
+            {llmChoice === "native" && <NativeLLMOptions settings={settings} />}
           </div>
         </div>
         <div className="flex w-full justify-between items-center px-6 py-4 space-x-2 border-t rounded-b border-gray-500/50">

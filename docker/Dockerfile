@@ -13,7 +13,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libx11-6 libx11-xcb1 libxcb1 \
         libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 \
         libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release \
-        xdg-utils && \
+        xdg-utils git build-essential && \
     mkdir -p /etc/apt/keyrings && \
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
     echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
@@ -59,6 +59,11 @@ COPY ./server/package.json ./server/yarn.lock ./server/
 RUN cd ./server/ && yarn install --production && yarn cache clean && \
     rm /app/server/node_modules/vectordb/x86_64-apple-darwin.node && \
     rm /app/server/node_modules/vectordb/aarch64-apple-darwin.node
+
+# Compile Llama.cpp bindings for node-llama-cpp for this operating system.
+USER root
+RUN cd ./server && npx --no node-llama-cpp download
+USER anythingllm
 
 # Build the frontend
 FROM frontend-deps as build-stage

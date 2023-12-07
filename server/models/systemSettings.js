@@ -14,8 +14,8 @@ const SystemSettings = {
     "telemetry_id",
   ],
   currentSettings: async function () {
-    const llmProvider = process.env.LLM_PROVIDER || "openai";
-    const vectorDB = process.env.VECTOR_DB || "lancedb";
+    const llmProvider = process.env.LLM_PROVIDER;
+    const vectorDB = process.env.VECTOR_DB;
     return {
       RequiresAuth: !!process.env.AUTH_TOKEN,
       AuthToken: !!process.env.AUTH_TOKEN,
@@ -109,6 +109,11 @@ const SystemSettings = {
             AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
             AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
+      ...(llmProvider === "native"
+        ? {
+            NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
           }
         : {}),
     };

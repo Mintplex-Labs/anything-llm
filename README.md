@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-    <b>AnythingLLM: A document chatbot to chat with <i>anything!</i></b>. <br />
+    <b>AnythingLLM: A private ChatGPT to chat with <i>anything!</i></b>. <br />
     An efficient, customizable, and open-source enterprise-ready document chatbot solution.
 </p>
 
@@ -22,10 +22,9 @@
   </a>
 </p>
 
-A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use.
+A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use as well as supporting multi-user management and permissions.
 
 ![Chatting](/images/screenshots/chatting.gif)
-[view more screenshots](/images/screenshots/SCREENSHOTS.md)
 
 ### Watch the demo!
 
@@ -33,17 +32,16 @@ A full-stack application that enables you to turn any document, resource, or pie
 
 
 ### Product Overview
-AnythingLLM aims to be a full-stack application where you can use commercial off-the-shelf LLMs or popular open source LLMs and vectorDB solutions.
-
-Anything LLM is a full-stack product that you can run locally as well as host remotely and be able to chat intelligently with any documents you provide it.
+AnythingLLM is a full-stack application where you can use commercial off-the-shelf LLMs or popular open source LLMs and vectorDB solutions to build a private ChatGPT with no compromises that you can run locally as well as host remotely and be able to chat intelligently with any documents you provide it.
 
 AnythingLLM divides your documents into objects called `workspaces`. A Workspace functions a lot like a thread, but with the addition of containerization of your documents. Workspaces can share documents, but they do not talk to each other so you can keep your context for each workspace clean.
 
 Some cool features of AnythingLLM
 - **Multi-user instance support and permissioning**
-- Atomically manage documents in your vector database from a simple UI
+- Multiple document type support (PDF, TXT, DOCX, etc)
+- Manage documents in your vector database from a simple UI
 - Two chat modes `conversation` and `query`. Conversation retains previous questions and amendments. Query is simple QA against your documents
-- Each chat response contains a citation that is linked to the original document source
+- In-chat citations linked to the original document source and text
 - Simple technology stack for fast iteration
 - 100% Cloud deployment ready.
 - "Bring your own LLM" model.
@@ -52,6 +50,7 @@ Some cool features of AnythingLLM
 
 ### Supported LLMs, Embedders, and Vector Databases
 **Supported LLMs:**
+- [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Anthropic ClaudeV2](https://www.anthropic.com/)
@@ -80,13 +79,18 @@ This monorepo consists of three main sections:
 - `server`: A nodeJS + express server to handle all the interactions and do all the vectorDB management and LLM interactions.
 - `docker`: Docker instructions and build process + information for building from source.
 
-### Requirements
+### Minimum Requirements
+> [!TIP]
+> Running AnythingLLM on AWS/GCP/Azure? 
+> You should aim for at least 2GB of RAM. Disk storage is proprotional to however much data
+> you will be storing (documents, vectors, models, etc). Minimum 10GB recommended.
+
 - `yarn` and `node` on your machine
 - `python` 3.9+ for running scripts in `collector/`.
 - access to an LLM running locally or remotely.
-- (optional) a vector database like Pinecone, qDrant, Weaviate, or Chroma*.
 
 *AnythingLLM by default uses a built-in vector database powered by [LanceDB](https://github.com/lancedb/lancedb)
+
 *AnythingLLM by default embeds text on instance privately [Learn More](/server/storage/models/README.md)
 
 ## Recommended usage with Docker (easy!)
@@ -107,8 +111,8 @@ docker run -d -p 3001:3001 \
 mintplexlabs/anythingllm:master
 ```
 
-Go to `http://localhost:3001` and you are now using AnythingLLM! All your data and progress will persist between
-container rebuilds or pulls from Docker Hub.
+Open [http://localhost:3001](http://localhost:3001) and you are now using AnythingLLM! 
+All your data and progress will now persist between container rebuilds or pulls from Docker Hub.
 
 [Learn more about running AnythingLLM with Docker](./docker/HOW_TO_USE_DOCKER.md)
 

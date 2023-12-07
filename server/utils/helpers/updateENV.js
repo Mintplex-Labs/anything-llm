@@ -72,6 +72,12 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Native LLM Settings
+  NativeLLMModelPref: {
+    envKey: "NATIVE_LLM_MODEL_PREF",
+    checks: [isDownloadedModel],
+  },
+
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
@@ -190,9 +196,14 @@ function validLLMExternalBasePath(input = "") {
 }
 
 function supportedLLM(input = "") {
-  return ["openai", "azure", "anthropic", "lmstudio", "localai"].includes(
-    input
-  );
+  return [
+    "openai",
+    "azure",
+    "anthropic",
+    "lmstudio",
+    "localai",
+    "native",
+  ].includes(input);
 }
 
 function validAnthropicModel(input = "") {
@@ -243,6 +254,22 @@ function validOpenAiTokenLimit(input = "") {
 
 function requiresForceMode(_, forceModeEnabled = false) {
   return forceModeEnabled === true ? null : "Cannot set this setting.";
+}
+
+function isDownloadedModel(input = "") {
+  const fs = require("fs");
+  const path = require("path");
+  const storageDir = path.resolve(
+    process.env.STORAGE_DIR
+      ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
+      : path.resolve(__dirname, `../../storage/models/downloaded`)
+  );
+  if (!fs.existsSync(storageDir)) return false;
+
+  const files = fs
+    .readdirSync(storageDir)
+    .filter((file) => file.includes(".gguf"));
+  return files.includes(input);
 }
 
 // This will force update .env variables which for any which reason were not able to be parsed or

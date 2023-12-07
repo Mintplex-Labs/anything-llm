@@ -40,6 +40,9 @@ function getLLMProvider() {
     case "localai":
       const { LocalAiLLM } = require("../AiProviders/localAi");
       return new LocalAiLLM(embedder);
+    case "native":
+      const { NativeLLM } = require("../AiProviders/native");
+      return new NativeLLM(embedder);
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
   }
