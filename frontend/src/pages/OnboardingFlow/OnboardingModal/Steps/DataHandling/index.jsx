@@ -52,6 +52,13 @@ const LLM_SELECTION_PRIVACY = {
     ],
     logo: LocalAiLogo,
   },
+  native: {
+    name: "Custom Llama Model",
+    description: [
+      "Your model and chats are only accessible on this AnythingLLM instance",
+    ],
+    logo: AnythingLLMIcon,
+  },
 };
 
 const VECTOR_DB_PRIVACY = {

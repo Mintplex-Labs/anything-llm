@@ -2,19 +2,17 @@ import { useEffect, useState } from "react";
 import { Flask } from "@phosphor-icons/react";
 import System from "../../../models/system";
 
-export default function NativeLLMOptions({ settings, showAlert = false }) {
+export default function NativeLLMOptions({ settings }) {
   return (
     <div className="w-full flex flex-col gap-y-4">
-      {showAlert && (
-        <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-orange-800/30 w-fit rounded-lg px-4 py-2">
-          <div className="gap-x-2 flex items-center">
-            <Flask size={18} />
-            <p className="text-sm md:text-base">
-              Using a locally hosted LLM is experimental. Use with caution.
-            </p>
-          </div>
+      <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-orange-800/30 w-fit rounded-lg px-4 py-2">
+        <div className="gap-x-2 flex items-center">
+          <Flask size={18} />
+          <p className="text-sm md:text-base">
+            Using a locally hosted LLM is experimental. Use with caution.
+          </p>
         </div>
-      )}
+      </div>
       <div className="w-full flex items-center gap-4">
         <NativeModelSelection settings={settings} />
       </div>

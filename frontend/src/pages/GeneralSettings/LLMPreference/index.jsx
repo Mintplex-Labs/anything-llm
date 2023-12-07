@@ -182,7 +182,7 @@ export default function GeneralLLMPreference() {
                   <LocalAiOptions settings={settings} showAlert={true} />
                 )}
                 {llmChoice === "native" && (
-                  <NativeLLMOptions settings={settings} showAlert={true} />
+                  <NativeLLMOptions settings={settings} />
                 )}
               </div>
             </div>
