@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { fileURLToPath, URL } from "url";
 import postcss from './postcss.config.js'
 import react from '@vitejs/plugin-react'
 import dns from 'dns'
@@ -8,6 +9,8 @@ dns.setDefaultResultOrder('verbatim')
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  alias: {
+  },
   server: {
     port: 3000,
     host: 'localhost'
@@ -30,6 +33,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: [
+      { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
       {
         process: "process/browser",
         stream: "stream-browserify",

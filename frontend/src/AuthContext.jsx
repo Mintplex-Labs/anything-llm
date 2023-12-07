@@ -1,5 +1,5 @@
 import React, { useState, createContext } from "react";
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "./utils/constants";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 
 export const AuthContext = createContext(null);
 export function ContextWrapper(props) {

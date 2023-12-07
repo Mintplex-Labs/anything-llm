@@ -1,10 +1,6 @@
 import React, { memo, useState } from "react";
-import System from "../../../../../models/system";
-import {
-  AUTH_TIMESTAMP,
-  AUTH_TOKEN,
-  AUTH_USER,
-} from "../../../../../utils/constants";
+import System from "@/models/system";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import debounce from "lodash.debounce";
 
 function PasswordProtection({ nextStep, prevStep }) {

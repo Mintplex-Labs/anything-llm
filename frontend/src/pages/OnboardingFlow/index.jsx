@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import OnboardingModal, { OnboardingModalId } from "./OnboardingModal";
-import useLogo from "../../hooks/useLogo";
+import useLogo from "@/hooks/useLogo";
 import { isMobile } from "react-device-detect";
 
 export default function OnboardingFlow() {

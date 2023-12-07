@@ -1,13 +1,13 @@
 import React, { memo, useEffect, useState } from "react";
 
-import VectorDBOption from "../../../../../components/VectorDBOption";
-import ChromaLogo from "../../../../../media/vectordbs/chroma.png";
-import PineconeLogo from "../../../../../media/vectordbs/pinecone.png";
-import LanceDbLogo from "../../../../../media/vectordbs/lancedb.png";
-import WeaviateLogo from "../../../../../media/vectordbs/weaviate.png";
-import QDrantLogo from "../../../../../media/vectordbs/qdrant.png";
-import System from "../../../../../models/system";
-import PreLoader from "../../../../../components/Preloader";
+import VectorDBOption from "@/components/VectorDBOption";
+import ChromaLogo from "@/media/vectordbs/chroma.png";
+import PineconeLogo from "@/media/vectordbs/pinecone.png";
+import LanceDbLogo from "@/media/vectordbs/lancedb.png";
+import WeaviateLogo from "@/media/vectordbs/weaviate.png";
+import QDrantLogo from "@/media/vectordbs/qdrant.png";
+import System from "@/models/system";
+import PreLoader from "@/components/Preloader";
 
 function VectorDatabaseConnection({ nextStep, prevStep, currentStep }) {
   const [vectorDB, setVectorDB] = useState("lancedb");

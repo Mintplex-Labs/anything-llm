@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
-import Sidebar, {
-  SidebarMobileHeader,
-} from "../../../components/SettingsSidebar";
+import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import System from "../../../models/system";
-import showToast from "../../../utils/toast";
-import ChromaLogo from "../../../media/vectordbs/chroma.png";
-import PineconeLogo from "../../../media/vectordbs/pinecone.png";
-import LanceDbLogo from "../../../media/vectordbs/lancedb.png";
-import WeaviateLogo from "../../../media/vectordbs/weaviate.png";
-import QDrantLogo from "../../../media/vectordbs/qdrant.png";
-import PreLoader from "../../../components/Preloader";
-import VectorDBOption from "../../../components/VectorDBOption";
-import ChangeWarningModal from "../../../components/ChangeWarning";
+import System from "@/models/system";
+import showToast from "@/utils/toast";
+import ChromaLogo from "@/media/vectordbs/chroma.png";
+import PineconeLogo from "@/media/vectordbs/pinecone.png";
+import LanceDbLogo from "@/media/vectordbs/lancedb.png";
+import WeaviateLogo from "@/media/vectordbs/weaviate.png";
+import QDrantLogo from "@/media/vectordbs/qdrant.png";
+import PreLoader from "@/components/Preloader";
+import VectorDBOption from "@/components/VectorDBOption";
+import ChangeWarningModal from "@/components/ChangeWarning";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);

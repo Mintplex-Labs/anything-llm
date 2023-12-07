@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Sidebar, {
-  SidebarMobileHeader,
-} from "../../../components/SettingsSidebar";
+import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import Admin from "../../../models/admin";
-import AnythingLLM from "../../../media/logo/anything-llm.png";
-import useLogo from "../../../hooks/useLogo";
-import System from "../../../models/system";
-import EditingChatBubble from "../../../components/EditingChatBubble";
-import showToast from "../../../utils/toast";
+import Admin from "@/models/admin";
+import AnythingLLM from "@/media/logo/anything-llm.png";
+import useLogo from "@/hooks/useLogo";
+import System from "@/models/system";
+import EditingChatBubble from "@/components/EditingChatBubble";
+import showToast from "@/utils/toast";
 import { Plus } from "@phosphor-icons/react";
 
 export default function Appearance() {

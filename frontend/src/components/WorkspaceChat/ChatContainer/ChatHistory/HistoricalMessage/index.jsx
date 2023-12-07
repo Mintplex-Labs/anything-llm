@@ -1,13 +1,10 @@
 import { memo, forwardRef } from "react";
 import { Warning } from "@phosphor-icons/react";
 import Jazzicon from "../../../../UserIcon";
-import renderMarkdown from "../../../../../utils/chat/markdown";
-import { userFromStorage } from "../../../../../utils/request";
+import renderMarkdown from "@/utils/chat/markdown";
+import { userFromStorage } from "@/utils/request";
 import Citations from "../Citation";
-import {
-  AI_BACKGROUND_COLOR,
-  USER_BACKGROUND_COLOR,
-} from "../../../../../utils/constants";
+import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { v4 } from "uuid";
 
 const HistoricalMessage = forwardRef(

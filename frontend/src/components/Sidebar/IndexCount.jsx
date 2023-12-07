@@ -1,7 +1,7 @@
 import pluralize from "pluralize";
 import React, { useEffect, useState } from "react";
-import System from "../../models/system";
-import { numberWithCommas } from "../../utils/numbers";
+import System from "@/models/system";
+import { numberWithCommas } from "@/utils/numbers";
 
 export default function IndexCount() {
   const [indexes, setIndexes] = useState(null);

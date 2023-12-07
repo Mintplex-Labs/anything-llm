@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import ChatHistory from "./ChatHistory";
 import PromptInput from "./PromptInput";
-import Workspace from "../../../models/workspace";
-import handleChat from "../../../utils/chat";
+import Workspace from "@/models/workspace";
+import handleChat from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
 

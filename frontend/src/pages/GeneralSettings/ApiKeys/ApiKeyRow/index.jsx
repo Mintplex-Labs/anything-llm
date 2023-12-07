@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import Admin from "../../../../models/admin";
-import showToast from "../../../../utils/toast";
+import Admin from "@/models/admin";
+import showToast from "@/utils/toast";
 import { Trash } from "@phosphor-icons/react";
-import { userFromStorage } from "../../../../utils/request";
-import System from "../../../../models/system";
+import { userFromStorage } from "@/utils/request";
+import System from "@/models/system";
 
 export default function ApiKeyRow({ apiKey }) {
   const rowRef = useRef(null);

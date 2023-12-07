@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Info } from "@phosphor-icons/react";
-import paths from "../../../utils/paths";
-import System from "../../../models/system";
+import paths from "@/utils/paths";
+import System from "@/models/system";
 
 export default function LocalAiOptions({ settings, showAlert = false }) {
   const [basePathValue, setBasePathValue] = useState(settings?.LocalAiBasePath);

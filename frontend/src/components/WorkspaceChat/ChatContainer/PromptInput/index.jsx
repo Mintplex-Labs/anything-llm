@@ -10,7 +10,7 @@ import { isMobile } from "react-device-detect";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../../Modals/MangeWorkspace";
-import useUser from "../../../../hooks/useUser";
+import useUser from "@/hooks/useUser";
 
 export default function PromptInput({
   workspace,

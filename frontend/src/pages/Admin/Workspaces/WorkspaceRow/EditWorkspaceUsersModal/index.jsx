@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
-import Admin from "../../../../../models/admin";
+import Admin from "@/models/admin";
 import { titleCase } from "text-case";
 
 export const EditWorkspaceUsersModalId = (workspace) =>
