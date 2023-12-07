@@ -17,7 +17,6 @@ const SystemSettings = {
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
     return {
-      CanDebug: !!!process.env.NO_DEBUG,
       RequiresAuth: !!process.env.AUTH_TOKEN,
       AuthToken: !!process.env.AUTH_TOKEN,
       JWTSecret: !!process.env.JWT_SECRET,

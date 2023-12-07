@@ -170,6 +170,21 @@ const System = {
         return { success: false, error: e.message };
       });
   },
+  uploadPfp: async function (formData) {
+    return await fetch(`${API_BASE}/system/upload-pfp`, {
+      method: "POST",
+      body: formData,
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error uploading pfp.");
+        return { success: true, error: null };
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
   uploadLogo: async function (formData) {
     return await fetch(`${API_BASE}/system/upload-logo`, {
       method: "POST",
@@ -191,7 +206,7 @@ const System = {
       cache: "no-cache",
     })
       .then((res) => {
-        if (res.ok) return res.blob();
+        if (res.ok && res.status !== 204) return res.blob();
         throw new Error("Failed to fetch logo!");
       })
       .then((blob) => URL.createObjectURL(blob))
@@ -200,6 +215,36 @@ const System = {
         return null;
       });
   },
+  fetchPfp: async function (id) {
+    return await fetch(`${API_BASE}/system/pfp/${id}`, {
+      method: "GET",
+      cache: "no-cache",
+    })
+      .then((res) => {
+        if (res.ok && res.status !== 204) return res.blob();
+        throw new Error("Failed to fetch pfp.");
+      })
+      .then((blob) => (blob ? URL.createObjectURL(blob) : null))
+      .catch((e) => {
+        console.log(e);
+        return null;
+      });
+  },
+  removePfp: async function (id) {
+    return await fetch(`${API_BASE}/system/remove-pfp`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (res.ok) return { success: true, error: null };
+        throw new Error("Failed to remove pfp.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
+
   isDefaultLogo: async function () {
     return await fetch(`${API_BASE}/system/is-default-logo`, {
       method: "GET",
@@ -372,6 +417,18 @@ const System = {
       .catch((e) => {
         console.error(e);
         return null;
+      });
+  },
+  updateUser: async (data) => {
+    return await fetch(`${API_BASE}/system/user`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
       });
   },
 };
