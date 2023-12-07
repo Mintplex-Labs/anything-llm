@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import Workspace from "../../../models/workspace";
+import Workspace from "@/models/workspace";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../Modals/MangeWorkspace";
-import paths from "../../../utils/paths";
+import paths from "@/utils/paths";
 import { useParams } from "react-router-dom";
 import { GearSix, SquaresFour } from "@phosphor-icons/react";
 import truncate from "truncate";
-import useUser from "../../../hooks/useUser";
+import useUser from "@/hooks/useUser";
 
 export default function ActiveWorkspaces() {
   const { slug } = useParams();

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Workspace from "../../models/workspace";
+import Workspace from "@/models/workspace";
 import LoadingChat from "./LoadingChat";
 import ChatContainer from "./ChatContainer";
-import paths from "../../utils/paths";
+import paths from "@/utils/paths";
 
 export default function WorkspaceChat({ loading, workspace }) {
   const [history, setHistory] = useState([]);

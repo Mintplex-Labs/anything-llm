@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { WarningCircle, Circle } from "@phosphor-icons/react";
-import System from "../../models/system";
+import System from "@/models/system";
 
 export default function LLMStatus() {
   const [status, setStatus] = useState(null);

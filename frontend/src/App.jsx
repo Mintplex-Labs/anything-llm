@@ -1,42 +1,40 @@
 import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import { ContextWrapper } from "./AuthContext";
+import { ContextWrapper } from "@/AuthContext";
 import PrivateRoute, {
   AdminRoute,
   ManagerRoute,
-} from "./components/PrivateRoute";
+} from "@/components/PrivateRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Login from "./pages/Login";
+import Login from "@/pages/Login";
 
-const Main = lazy(() => import("./pages/Main"));
-const InvitePage = lazy(() => import("./pages/Invite"));
-const WorkspaceChat = lazy(() => import("./pages/WorkspaceChat"));
-const AdminUsers = lazy(() => import("./pages/Admin/Users"));
-const AdminInvites = lazy(() => import("./pages/Admin/Invitations"));
-const AdminWorkspaces = lazy(() => import("./pages/Admin/Workspaces"));
-const AdminSystem = lazy(() => import("./pages/Admin/System"));
-const GeneralChats = lazy(() => import("./pages/GeneralSettings/Chats"));
+const Main = lazy(() => import("@/pages/Main"));
+const InvitePage = lazy(() => import("@/pages/Invite"));
+const WorkspaceChat = lazy(() => import("@/pages/WorkspaceChat"));
+const AdminUsers = lazy(() => import("@/pages/Admin/Users"));
+const AdminInvites = lazy(() => import("@/pages/Admin/Invitations"));
+const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
+const AdminSystem = lazy(() => import("@/pages/Admin/System"));
+const GeneralChats = lazy(() => import("@/pages/GeneralSettings/Chats"));
 const GeneralAppearance = lazy(() =>
-  import("./pages/GeneralSettings/Appearance")
+  import("@/pages/GeneralSettings/Appearance")
 );
-const GeneralApiKeys = lazy(() => import("./pages/GeneralSettings/ApiKeys"));
-
+const GeneralApiKeys = lazy(() => import("@/pages/GeneralSettings/ApiKeys"));
 const GeneralLLMPreference = lazy(() =>
-  import("./pages/GeneralSettings/LLMPreference")
+  import("@/pages/GeneralSettings/LLMPreference")
 );
 const GeneralEmbeddingPreference = lazy(() =>
-  import("./pages/GeneralSettings/EmbeddingPreference")
+  import("@/pages/GeneralSettings/EmbeddingPreference")
 );
 const GeneralVectorDatabase = lazy(() =>
-  import("./pages/GeneralSettings/VectorDatabase")
+  import("@/pages/GeneralSettings/VectorDatabase")
 );
 const GeneralExportImport = lazy(() =>
-  import("./pages/GeneralSettings/ExportImport")
+  import("@/pages/GeneralSettings/ExportImport")
 );
-const GeneralSecurity = lazy(() => import("./pages/GeneralSettings/Security"));
-
-const OnboardingFlow = lazy(() => import("./pages/OnboardingFlow"));
+const GeneralSecurity = lazy(() => import("@/pages/GeneralSettings/Security"));
+const OnboardingFlow = lazy(() => import("@/pages/OnboardingFlow"));
 
 export default function App() {
   return (

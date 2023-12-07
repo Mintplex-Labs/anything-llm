@@ -1,5 +1,5 @@
-import { API_BASE } from "../utils/constants";
-import { baseHeaders } from "../utils/request";
+import { API_BASE } from "@/utils/constants";
+import { baseHeaders } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { v4 } from "uuid";
 

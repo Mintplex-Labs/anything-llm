@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { X } from "@phosphor-icons/react";
-import Workspace from "../../models/workspace";
-import paths from "../../utils/paths";
+import Workspace from "@/models/workspace";
+import paths from "@/utils/paths";
 
 const noop = () => false;
 export default function NewWorkspaceModal({ hideModal = noop }) {

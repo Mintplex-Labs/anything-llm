@@ -1,15 +1,15 @@
 import React, { memo, useEffect, useState } from "react";
-import AnythingLLMIcon from "../../../../../media/logo/anything-llm-icon.png";
-import OpenAiLogo from "../../../../../media/llmprovider/openai.png";
-import AzureOpenAiLogo from "../../../../../media/llmprovider/azure.png";
-import LocalAiLogo from "../../../../../media/llmprovider/localai.png";
-import System from "../../../../../models/system";
-import PreLoader from "../../../../../components/Preloader";
-import LLMProviderOption from "../../../../../components/LLMSelection/LLMProviderOption";
-import OpenAiOptions from "../../../../../components/EmbeddingSelection/OpenAiOptions";
-import AzureAiOptions from "../../../../../components/EmbeddingSelection/AzureAiOptions";
-import LocalAiOptions from "../../../../../components/EmbeddingSelection/LocalAiOptions";
-import NativeEmbeddingOptions from "../../../../../components/EmbeddingSelection/NativeEmbeddingOptions";
+import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import OpenAiLogo from "@/media/llmprovider/openai.png";
+import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
+import LocalAiLogo from "@/media/llmprovider/localai.png";
+import System from "@/models/system";
+import PreLoader from "@/components/Preloader";
+import LLMProviderOption from "@/components/LLMSelection/LLMProviderOption";
+import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
+import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
+import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
+import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
 
 function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
   const [embeddingChoice, setEmbeddingChoice] = useState("native");

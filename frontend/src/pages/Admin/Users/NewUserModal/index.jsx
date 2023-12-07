@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
-import Admin from "../../../../models/admin";
-import { userFromStorage } from "../../../../utils/request";
+import Admin from "@/models/admin";
+import { userFromStorage } from "@/utils/request";
 import { RoleHintDisplay } from "..";
 
 const DIALOG_ID = `new-user-modal`;

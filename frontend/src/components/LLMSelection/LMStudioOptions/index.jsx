@@ -1,5 +1,5 @@
 import { Info } from "@phosphor-icons/react";
-import paths from "../../../utils/paths";
+import paths from "@/utils/paths";
 
 export default function LMStudioOptions({ settings, showAlert = false }) {
   return (

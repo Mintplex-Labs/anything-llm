@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import Admin from "../../../../models/admin";
-import paths from "../../../../utils/paths";
+import Admin from "@/models/admin";
+import paths from "@/utils/paths";
 import EditWorkspaceUsersModal, {
   EditWorkspaceUsersModalId,
 } from "./EditWorkspaceUsersModal";

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Invite from "../../../models/invite";
-import paths from "../../../utils/paths";
+import Invite from "@/models/invite";
+import paths from "@/utils/paths";
 import { useParams } from "react-router-dom";
-import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
-import System from "../../../models/system";
+import { AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import System from "@/models/system";
 
 export default function NewUserModal() {
   const { code } = useParams();

@@ -5,21 +5,17 @@ import {
   EnvelopeSimple,
   Plus,
 } from "@phosphor-icons/react";
-
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
-import paths from "../../utils/paths";
+import paths from "@/utils/paths";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../Sidebar";
 import ChatBubble from "../ChatBubble";
-import System from "../../models/system";
+import System from "@/models/system";
 import Jazzicon from "../UserIcon";
-import { userFromStorage } from "../../utils/request";
-import {
-  AI_BACKGROUND_COLOR,
-  USER_BACKGROUND_COLOR,
-} from "../../utils/constants";
+import { userFromStorage } from "@/utils/request";
+import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 
 export default function DefaultChatContainer() {
   const [mockMsgs, setMockMessages] = useState([]);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import System from "../../../models/system";
+import System from "@/models/system";
 
 export default function OpenAiOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.OpenAiKey);

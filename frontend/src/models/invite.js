@@ -1,4 +1,4 @@
-import { API_BASE } from "../utils/constants";
+import { API_BASE } from "@/utils/constants";
 
 const Invite = {
   checkInvite: async (inviteCode) => {

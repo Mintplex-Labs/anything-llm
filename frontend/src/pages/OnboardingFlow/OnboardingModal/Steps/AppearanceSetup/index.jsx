@@ -1,9 +1,9 @@
 import React, { memo, useEffect, useState } from "react";
-import System from "../../../../../models/system";
-import AnythingLLM from "../../../../../media/logo/anything-llm.png";
-import useLogo from "../../../../../hooks/useLogo";
+import System from "@/models/system";
+import AnythingLLM from "@/media/logo/anything-llm.png";
+import useLogo from "@/hooks/useLogo";
 import { Plus } from "@phosphor-icons/react";
-import showToast from "../../../../../utils/toast";
+import showToast from "@/utils/toast";
 
 function AppearanceSetup({ prevStep, nextStep }) {
   const { logo: _initLogo } = useLogo();

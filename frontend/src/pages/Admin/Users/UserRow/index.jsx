@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { titleCase } from "text-case";
-import Admin from "../../../../models/admin";
+import Admin from "@/models/admin";
 import EditUserModal, { EditUserModalId } from "./EditUserModal";
 import { DotsThreeOutline } from "@phosphor-icons/react";
 

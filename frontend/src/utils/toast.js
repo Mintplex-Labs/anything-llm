@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import usePrefersDarkMode from "../hooks/usePrefersDarkMode";
+import usePrefersDarkMode from "@/hooks/usePrefersDarkMode";
 
 // Additional Configs (opts)
 // You can also pass valid ReactToast params to override the defaults.
