@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Flask } from "@phosphor-icons/react";
-import System from "../../../models/system";
+import System from "@/models/system";
 
 export default function NativeLLMOptions({ settings }) {
   return (
