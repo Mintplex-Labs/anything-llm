@@ -2,7 +2,6 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { v4 } = require("uuid");
-const { userFromSession } = require("../http");
 
 function setupMulter() {
   // Handle File uploads for auto-uploading.
@@ -42,7 +41,10 @@ function setupLogoUploads() {
   // Handle Logo uploads.
   const storage = multer.diskStorage({
     destination: function (_, _, cb) {
-      const uploadOutput = path.resolve(__dirname, `../../storage/assets`);
+      const uploadOutput =
+        process.env.NODE_ENV === "development"
+          ? path.resolve(__dirname, `../../storage/assets`)
+          : path.resolve(process.env.STORAGE_DIR, "assets");
       fs.mkdirSync(uploadOutput, { recursive: true });
       return cb(null, uploadOutput);
     },
@@ -57,7 +59,10 @@ function setupLogoUploads() {
 function setupPfpUploads() {
   const storage = multer.diskStorage({
     destination: function (_, _, cb) {
-      const uploadOutput = path.resolve(__dirname, `../../storage/assets/pfp`);
+      const uploadOutput =
+        process.env.NODE_ENV === "development"
+          ? path.resolve(__dirname, `../../storage/assets/pfp`)
+          : path.resolve(process.env.STORAGE_DIR, "assets/pfp");
       fs.mkdirSync(uploadOutput, { recursive: true });
       return cb(null, uploadOutput);
     },
