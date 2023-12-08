@@ -4,6 +4,7 @@ const { toChunks } = require("../../helpers");
 
 class NativeEmbedder {
   constructor() {
+    // Model Card: https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
     this.model = "Xenova/all-MiniLM-L6-v2";
     this.cacheDir = path.resolve(
       process.env.STORAGE_DIR
@@ -12,8 +13,8 @@ class NativeEmbedder {
     );
     this.modelPath = path.resolve(this.cacheDir, "Xenova", "all-MiniLM-L6-v2");
 
-    // Limit the number of chunks to send per loop to not overload compute.
-    this.embeddingChunkLimit = 16;
+    // Arbitrary limit of string size in chars to ensure we stay within reasonable POST request size.
+    this.embeddingMaxChunkLength = 1_000;
 
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
@@ -62,7 +63,7 @@ class NativeEmbedder {
   async embedChunks(textChunks = []) {
     const Embedder = await this.embedderClient();
     const embeddingResults = [];
-    for (const chunk of toChunks(textChunks, this.embeddingChunkLimit)) {
+    for (const chunk of toChunks(textChunks, this.embeddingMaxChunkLength)) {
       const output = await Embedder(chunk, {
         pooling: "mean",
         normalize: true,

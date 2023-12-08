@@ -90,6 +90,10 @@ const KEY_MAPPING = {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  EmbeddingModelMaxChunkLength: {
+    envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
+    checks: [nonZero],
+  },
 
   // Vector Database Selection Settings
   VectorDB: {
