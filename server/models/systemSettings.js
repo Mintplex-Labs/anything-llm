@@ -27,6 +27,8 @@ const SystemSettings = {
       EmbeddingEngine: process.env.EMBEDDING_ENGINE,
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+      EmbeddingModelMaxChunkLength:
+        process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       ...(vectorDB === "pinecone"
         ? {
             PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,

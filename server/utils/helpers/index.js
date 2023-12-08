@@ -70,6 +70,20 @@ function getEmbeddingEngineSelection() {
   }
 }
 
+// Some models have lower restrictions on chars that can be encoded in a single pass
+// and by default we assume it can handle 1,000 chars, but some models use work with smaller
+// chars so here we can override that value when embedding information.
+function maximumChunkLength() {
+  if (
+    !!process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH &&
+    !isNaN(process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH) &&
+    Number(process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH) > 1
+  )
+    return Number(process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH);
+
+  return 1_000;
+}
+
 function toChunks(arr, size) {
   return Array.from({ length: Math.ceil(arr.length / size) }, (_v, i) =>
     arr.slice(i * size, i * size + size)
@@ -78,6 +92,7 @@ function toChunks(arr, size) {
 
 module.exports = {
   getEmbeddingEngineSelection,
+  maximumChunkLength,
   getVectorDbClass,
   getLLMProvider,
   toChunks,

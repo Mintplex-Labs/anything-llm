@@ -1,4 +1,4 @@
-const { toChunks } = require("../../helpers");
+const { toChunks, maximumChunkLength } = require("../../helpers");
 
 class LocalAiEmbedder {
   constructor() {
@@ -12,8 +12,8 @@ class LocalAiEmbedder {
     });
     this.openai = new OpenAIApi(config);
 
-    // Arbitrary limit to ensure we stay within reasonable POST request size.
-    this.embeddingChunkLimit = 1_000;
+    // Arbitrary limit of string size in chars to ensure we stay within reasonable POST request size.
+    this.embeddingMaxChunkLength = maximumChunkLength();
   }
 
   async embedTextInput(textInput) {
@@ -23,7 +23,7 @@ class LocalAiEmbedder {
 
   async embedChunks(textChunks = []) {
     const embeddingRequests = [];
-    for (const chunk of toChunks(textChunks, this.embeddingChunkLimit)) {
+    for (const chunk of toChunks(textChunks, this.embeddingMaxChunkLength)) {
       embeddingRequests.push(
         new Promise((resolve) => {
           this.openai

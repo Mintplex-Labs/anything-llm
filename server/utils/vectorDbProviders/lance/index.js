@@ -1,5 +1,9 @@
 const lancedb = require("vectordb");
-const { toChunks, getLLMProvider } = require("../../helpers");
+const {
+  toChunks,
+  getLLMProvider,
+  getEmbeddingEngineSelection,
+} = require("../../helpers");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
@@ -176,7 +180,8 @@ const LanceDb = {
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
       const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1000,
+        chunkSize:
+          getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1_000,
         chunkOverlap: 20,
       });
       const textChunks = await textSplitter.splitText(pageContent);
