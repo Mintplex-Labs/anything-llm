@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import Sidebar, {
-  SidebarMobileHeader,
-} from "../../../components/SettingsSidebar";
+import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { EnvelopeSimple } from "@phosphor-icons/react";
-import usePrefersDarkMode from "../../../hooks/usePrefersDarkMode";
-import Admin from "../../../models/admin";
+import usePrefersDarkMode from "@/hooks/usePrefersDarkMode";
+import Admin from "@/models/admin";
 import InviteRow from "./InviteRow";
 import NewInviteModal, { NewInviteModalId } from "./NewInviteModal";
 

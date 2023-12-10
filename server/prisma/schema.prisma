@@ -57,6 +57,7 @@ model users {
   id              Int               @id @default(autoincrement())
   username        String?           @unique
   password        String
+  pfpFilename     String?
   role            String            @default("default")
   suspended       Int               @default(0)
   createdAt       DateTime          @default(now())

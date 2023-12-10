@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { FullScreenLoader } from "../Preloader";
-import validateSessionTokenForUser from "../../utils/session";
-import paths from "../../utils/paths";
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
-import { userFromStorage } from "../../utils/request";
-import System from "../../models/system";
+import validateSessionTokenForUser from "@/utils/session";
+import paths from "@/utils/paths";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import { userFromStorage } from "@/utils/request";
+import System from "@/models/system";
 import UserMenu from "../UserMenu";
 
 // Used only for Multi-user mode only as we permission specific pages based on auth role.
@@ -21,9 +21,8 @@ function useIsAuthenticated() {
       const {
         MultiUserMode,
         RequiresAuth,
-        OpenAiKey = false,
-        AnthropicApiKey = false,
-        AzureOpenAiKey = false,
+        LLMProvider = null,
+        VectorDB = null,
       } = await System.keys();
 
       setMultiUserMode(MultiUserMode);
@@ -32,9 +31,8 @@ function useIsAuthenticated() {
       if (
         !MultiUserMode &&
         !RequiresAuth && // Not in Multi-user AND no password set.
-        !OpenAiKey &&
-        !AnthropicApiKey &&
-        !AzureOpenAiKey // AND no LLM API Key set at all.
+        !LLMProvider &&
+        !VectorDB
       ) {
         setShouldRedirectToOnboarding(true);
         setIsAuthed(true);

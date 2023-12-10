@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
-import Sidebar, {
-  SidebarMobileHeader,
-} from "../../../components/SettingsSidebar";
+import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import showToast from "../../../utils/toast";
-import System from "../../../models/system";
-import paths from "../../../utils/paths";
-import {
-  AUTH_TIMESTAMP,
-  AUTH_TOKEN,
-  AUTH_USER,
-} from "../../../utils/constants";
-import PreLoader from "../../../components/Preloader";
+import showToast from "@/utils/toast";
+import System from "@/models/system";
+import paths from "@/utils/paths";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import PreLoader from "@/components/Preloader";
 
 export default function GeneralSecurity() {
   return (

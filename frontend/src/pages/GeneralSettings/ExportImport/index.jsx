@@ -1,14 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import Sidebar, {
-  SidebarMobileHeader,
-} from "../../../components/SettingsSidebar";
+import { useRef, useState } from "react";
+import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import Admin from "../../../models/admin";
-import showToast from "../../../utils/toast";
+import showToast from "@/utils/toast";
 import { CloudArrowUp, DownloadSimple } from "@phosphor-icons/react";
-import System from "../../../models/system";
-import { API_BASE } from "../../../utils/constants";
-import paths from "../../../utils/paths";
+import System from "@/models/system";
+import { API_BASE } from "@/utils/constants";
+import paths from "@/utils/paths";
 
 export default function GeneralExportImport() {
   const hostname = window?.location?.hostname;
