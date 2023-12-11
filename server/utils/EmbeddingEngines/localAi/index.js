@@ -9,6 +9,11 @@ class LocalAiEmbedder {
       throw new Error("No embedding model was set.");
     const config = new Configuration({
       basePath: process.env.EMBEDDING_BASE_PATH,
+      ...(!!process.env.LOCAL_AI_API_KEY
+        ? {
+            apiKey: process.env.LOCAL_AI_API_KEY,
+          }
+        : {}),
     });
     this.openai = new OpenAIApi(config);
 
