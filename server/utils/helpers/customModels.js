@@ -8,7 +8,7 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "openai":
       return await openAiModels(apiKey);
     case "localai":
-      return await localAIModels(basePath);
+      return await localAIModels(basePath, apiKey);
     case "native-llm":
       return nativeLLMModels();
     default:
