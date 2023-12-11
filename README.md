@@ -136,7 +136,7 @@ To boot the frontend locally (run commands from root of repo):
 
 ## Standalone scripts
 
-This repo contains standlone scripts you can run to collect data from a Youtube Channel, Medium articles, local text files, word documents, and the list goes on. This is where you will use the `collector/` part of the repo.
+This repo contains standalone scripts you can run to collect data from a Youtube Channel, Medium articles, local text files, word documents, and the list goes on. This is where you will use the `collector/` part of the repo.
 
 [Go set up and run collector scripts](./collector/README.md)
 
