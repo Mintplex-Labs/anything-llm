@@ -379,3 +379,9 @@ dialog::backdrop {
     opacity: 0;
   }
 }
+
+@layer components {
+  .radio-container:has(input:checked) {
+    @apply border-blue-500 bg-blue-400/10 text-blue-800;
+  }
+}

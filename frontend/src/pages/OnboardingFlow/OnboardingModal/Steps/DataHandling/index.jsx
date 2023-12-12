@@ -231,7 +231,7 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
           Back
         </button>
         <button
-          onClick={() => nextStep("create_workspace")}
+          onClick={() => nextStep("user_questionnaire")}
           className="border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
         >
           Continue

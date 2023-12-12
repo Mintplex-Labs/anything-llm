@@ -28,7 +28,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setLLMChoice(_settings?.LLMProvider);
+      setLLMChoice(_settings?.LLMProvider || "openai");
       setLoading(false);
     }
 

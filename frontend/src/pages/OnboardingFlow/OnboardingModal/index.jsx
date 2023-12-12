@@ -9,6 +9,7 @@ import MultiUserSetup from "./Steps/MultiUserSetup";
 import CreateFirstWorkspace from "./Steps/CreateFirstWorkspace";
 import EmbeddingSelection from "./Steps/EmbeddingSelection";
 import DataHandling from "./Steps/DataHandling";
+import UserQuestionnaire from "./Steps/UserQuestionnaire";
 
 const DIALOG_ID = "onboarding-modal";
 
@@ -18,6 +19,11 @@ const STEPS = {
     description:
       "These are the credentials and settings for your preferred LLM chat & embedding provider.",
     component: LLMSelection,
+  },
+  embedding_preferences: {
+    title: "Embedding Preference",
+    description: "Choose a provider for embedding files and text.",
+    component: EmbeddingSelection,
   },
   vector_database: {
     title: "Vector Database",
@@ -54,15 +60,16 @@ const STEPS = {
       "We are committed to transparency and control when it comes to your personal data.",
     component: DataHandling,
   },
+  user_questionnaire: {
+    title: "A little about yourself",
+    description:
+      "We use information about how you use AnythingLLM to make our product better.",
+    component: UserQuestionnaire,
+  },
   create_workspace: {
     title: "Create Workspace",
     description: "To get started, create a new workspace.",
     component: CreateFirstWorkspace,
-  },
-  embedding_preferences: {
-    title: "Embedding Preference",
-    description: "Choose a provider for embedding files and text.",
-    component: EmbeddingSelection,
   },
 };
 
