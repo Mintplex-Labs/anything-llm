@@ -28,12 +28,13 @@ function UserQuestionnaire({ nextStep, prevStep }) {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
+    nextStep("create_workspace");
+
     await sendQuestionnaire({
       email: formData.get("email"),
       useCase: formData.get("use_case") || "other",
       comment: formData.get("comment") || null,
     });
-    nextStep("create_workspace");
     return;
   };
 
