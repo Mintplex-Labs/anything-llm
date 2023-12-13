@@ -12,7 +12,7 @@ const ACCEPTED_MIMES = {
 const SUPPORTED_FILETYPE_CONVERTERS = {
   '.txt': './convert/asTxt.js',
   // '.md': './convert/asTxt.js',
-  // '.pdf': './convert/asTxt.js',
+  '.pdf': './convert/asPDF.js',
   // '.docx': './convert/asTxt.js',
   // '.odt': './convert/asTxt.js',
   // '.mbox': './convert/asTxt.js',
