@@ -6,7 +6,7 @@ const { v4 } = require("uuid");
 function setupMulter() {
   // Handle File uploads for auto-uploading.
   const storage = multer.diskStorage({
-    destination: function (_, _, cb) {
+    destination: function (_, __, cb) {
       const uploadOutput =
         process.env.NODE_ENV === "development"
           ? path.resolve(__dirname, `../../../collector/hotdir`)
@@ -14,6 +14,9 @@ function setupMulter() {
       cb(null, uploadOutput);
     },
     filename: function (_, file, cb) {
+      file.originalname = Buffer.from(file.originalname, "latin1").toString(
+        "utf8"
+      );
       cb(null, file.originalname);
     },
   });
@@ -24,7 +27,7 @@ function setupMulter() {
 function setupDataImports() {
   // Handle File uploads for auto-uploading.
   const storage = multer.diskStorage({
-    destination: function (_, _, cb) {
+    destination: function (_, __, cb) {
       const uploadOutput = path.resolve(__dirname, `../../storage/imports`);
       fs.mkdirSync(uploadOutput, { recursive: true });
       return cb(null, uploadOutput);
@@ -40,7 +43,7 @@ function setupDataImports() {
 function setupLogoUploads() {
   // Handle Logo uploads.
   const storage = multer.diskStorage({
-    destination: function (_, _, cb) {
+    destination: function (_, __, cb) {
       const uploadOutput =
         process.env.NODE_ENV === "development"
           ? path.resolve(__dirname, `../../storage/assets`)
@@ -49,6 +52,9 @@ function setupLogoUploads() {
       return cb(null, uploadOutput);
     },
     filename: function (_, file, cb) {
+      file.originalname = Buffer.from(file.originalname, "latin1").toString(
+        "utf8"
+      );
       cb(null, file.originalname);
     },
   });
@@ -58,7 +64,7 @@ function setupLogoUploads() {
 
 function setupPfpUploads() {
   const storage = multer.diskStorage({
-    destination: function (_, _, cb) {
+    destination: function (_, __, cb) {
       const uploadOutput =
         process.env.NODE_ENV === "development"
           ? path.resolve(__dirname, `../../storage/assets/pfp`)

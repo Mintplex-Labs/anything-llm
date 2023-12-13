@@ -29,6 +29,7 @@ const SystemSettings = {
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
+      LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
       ...(vectorDB === "pinecone"
         ? {
             PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
@@ -98,13 +99,11 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
-
       ...(llmProvider === "localai"
         ? {
             LocalAiBasePath: process.env.LOCAL_AI_BASE_PATH,
             LocalAiModelPref: process.env.LOCAL_AI_MODEL_PREF,
             LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
-            LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
 
             // For embedding credentials when localai is selected.
             OpenAiKey: !!process.env.OPEN_AI_KEY,
