@@ -3,7 +3,6 @@ from langchain.document_loaders import PyMuPDFLoader # better UTF support and me
 from slugify import slugify
 from ..utils import guid, file_creation_time, write_to_server_documents, move_source
 from ...utils import tokenize
-from unidecode import unidecode
 
 # Process all PDF-related documents.
 def as_pdf(**kwargs):
@@ -29,7 +28,7 @@ def as_pdf(**kwargs):
   page_content = ''
   for page in fitz.open(fullpath):
     print(f"-- Parsing content from pg {page.number} --")
-    page_content += unidecode(page.get_text('text'))
+    page_content += str(page.get_text('text'))
 
   if len(page_content) == 0:
     print(f"Resulting page content was empty - no text could be extracted from the document.")
