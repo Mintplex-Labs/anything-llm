@@ -260,7 +260,7 @@ function handleStreamResponses(response, stream, responseProps) {
           try {
             chunk += message;
           } catch (e) {
-            console.log(`Chunk appending error`, e.message);
+            console.error(`Chunk appending error`, e.message);
             chunk = "";
           }
           continue;
