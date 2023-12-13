@@ -6,6 +6,13 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 - Install [Docker](https://www.docker.com/) on your computer or machine.
 
 ## Recommend way to run dockerized AnythingLLM!
+> [!IMPORTANT]
+> If you are running another service on localhost like Chroma, LocalAi, or LMStudio
+> you will need to use http://host.docker.internal:xxxx to access the service from within
+> the docker container using AnythingLLM as `localhost:xxxx` will not resolve for the host system.
+> eg: Chroma host URL running on localhost:8000 on host machine needs to be http://host.docker.internal:8000
+> when used in AnythingLLM.
+
 > [!TIP]
 > It is best to mount the containers storage volume to a folder on your host machine
 > so that you can pull in future updates without deleting your existing data!

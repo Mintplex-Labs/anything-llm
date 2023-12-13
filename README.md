@@ -94,6 +94,13 @@ This monorepo consists of three main sections:
 *AnythingLLM by default embeds text on instance privately [Learn More](/server/storage/models/README.md)
 
 ## Recommended usage with Docker (easy!)
+> [!IMPORTANT]
+> If you are running another service on localhost like Chroma, LocalAi, or LMStudio
+> you will need to use http://host.docker.internal:xxxx to access the service from within
+> the docker container using AnythingLLM as `localhost:xxxx` will not resolve for the host system.
+> eg: Chroma host URL running on localhost:8000 on host machine needs to be http://host.docker.internal:8000
+> when used in AnythingLLM.
+
 > [!TIP]
 > It is best to mount the containers storage volume to a folder on your host machine
 > so that you can pull in future updates without deleting your existing data!
