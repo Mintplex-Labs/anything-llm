@@ -5,55 +5,16 @@ sudo apt-get update
 sudo apt-get install -y docker.io  
 sudo usermod -a -G docker ubuntu
   
-curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose  
-sudo chmod +x /usr/local/bin/docker-compose  
-sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose  
-  
 sudo systemctl enable docker  
 sudo systemctl start docker  
   
-sudo apt-get install -y git  
+mkdir -p /home/anythingllm
+touch /home/anythingllm/.env
   
-git clone https://github.com/Mintplex-Labs/anything-llm.git /home/anything-llm  
-cd /home/anything-llm/docker  
-  
-cat >> .env << END
-${env_content}
-UID="1000"  
-GID="1000"  
-NO_DEBUG="true"  
-END
-  
-echo "Set .env file"  
-  
-cd ../frontend
-sudo rm -rf .env.production  
-  
-sudo cat >> .env.production << END
-GENERATE_SOURCEMAP=true  
-VITE_API_BASE="/api"  
-END
-  
-echo "Set .env.production file"  
-  
-cd ../docker  
-sudo docker-compose up -d --build  
+sudo docker pull mintplexlabs/anythingllm:master
+sudo docker run -d -p 3001:3001 -v /home/anythingllm:/app/server/storage -v /home/anythingllm/.env:/app/server/.env -e STORAGE_DIR="/app/server/storage" mintplexlabs/anythingllm:master
 echo "Container ID: $(sudo docker ps --latest --quiet)"  
-  
-sudo docker container exec -u 0 -t $(sudo docker ps --latest --quiet) mkdir -p /app/server/storage /app/server/storage/documents /app/server/storage/vector-cache /app/server/storage/lancedb  
-echo "Placeholder folders in storage created."  
-  
-sudo docker container exec -u 0 -t $(sudo docker ps --latest --quiet) touch /app/server/storage/anythingllm.db  
-echo "SQLite DB placeholder set."  
-  
-sudo docker container exec -u 0 -t $(sudo docker ps --latest --quiet) chown -R anythingllm:anythingllm /app/collector /app/server  
-echo "File permissions corrected."  
   
 export ONLINE=$(curl -Is http://localhost:3001/api/ping | head -n 1|cut -d$' ' -f2)  
 echo "Health check: $ONLINE"  
-  
-if [ "$ONLINE" = 200 ]; then  
-  echo "Running migrations..." && curl -Is http://localhost:3001/api/migrate | head -n 1 | cut -d$' ' -f2  
-fi  
-  
 echo "Setup complete! AnythingLLM instance is now online!"  
