@@ -97,7 +97,7 @@ app
   .listen(process.env.SERVER_PORT || 3001, async () => {
     await setupTelemetry();
     console.log(
-      `Example app listening on port ${process.env.SERVER_PORT || 3001}`
+      `Primary server listening on port ${process.env.SERVER_PORT || 3001}`
     );
   })
   .on("error", function (err) {
