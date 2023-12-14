@@ -2,15 +2,15 @@
 // of docker this endpoint is not exposed so it is only on the Docker instances internal network
 // so no additional security is needed on the endpoint directly. Auth is done however by the express
 // middleware prior to leaving the node-side of the application so that is good enough >:)
-const PYTHON_API = "http://0.0.0.0:8888";
-async function checkPythonAppAlive() {
-  return await fetch(`${PYTHON_API}`)
+const PROCESSOR_API = "http://0.0.0.0:8888";
+async function checkProcessorAlive() {
+  return await fetch(`${PROCESSOR_API}`)
     .then((res) => res.ok)
     .catch((e) => false);
 }
 
 async function acceptedFileTypes() {
-  return await fetch(`${PYTHON_API}/accepts`)
+  return await fetch(`${PROCESSOR_API}/accepts`)
     .then((res) => {
       if (!res.ok) throw new Error("Could not reach");
       return res.json();
@@ -21,7 +21,7 @@ async function acceptedFileTypes() {
 
 async function processDocument(filename = "") {
   if (!filename) return false;
-  return await fetch(`${PYTHON_API}/process`, {
+  return await fetch(`${PROCESSOR_API}/process`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +41,7 @@ async function processDocument(filename = "") {
 
 async function processLink(link = "") {
   if (!link) return false;
-  return await fetch(`${PYTHON_API}/process-link`, {
+  return await fetch(`${PROCESSOR_API}/process-link`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -60,7 +60,7 @@ async function processLink(link = "") {
 }
 
 module.exports = {
-  checkPythonAppAlive,
+  checkProcessorAlive,
   processDocument,
   processLink,
   acceptedFileTypes,
