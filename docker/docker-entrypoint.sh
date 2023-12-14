@@ -4,8 +4,6 @@
   npx prisma migrate deploy --schema=./prisma/schema.prisma &&\
   node /app/server/index.js
 } &
-{ cd /app/collector/ &&\
-  node /app/server/index.js
- } &
+{ node /app/collector/index.js; } &
 wait -n
 exit $?

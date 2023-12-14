@@ -22,28 +22,40 @@ app.use(
 );
 
 app.post("/process", async function (request, response) {
+  const { filename } = reqBody(request);
   try {
-    const { filename } = reqBody(request);
     const targetFilename = path
       .normalize(filename)
       .replace(/^(\.\.(\/|\\|$))+/, "");
     const { success, reason } = await processSingleFile(targetFilename);
     response.status(200).json({ filename: targetFilename, success, reason });
   } catch (e) {
-    console.error(e)
-    response.status(200).json({ filename: link, success: false, reason: 'A processing error occured.' });
+    console.error(e);
+    response
+      .status(200)
+      .json({
+        filename: filename,
+        success: false,
+        reason: "A processing error occurred.",
+      });
   }
   return;
 });
 
 app.post("/process-link", async function (request, response) {
+  const { link } = reqBody(request);
   try {
-    const { link } = reqBody(request);
     const { success, reason } = await processLink(link);
     response.status(200).json({ url: link, success, reason });
   } catch (e) {
-    console.error(e)
-    response.status(200).json({ url: link, success: false, reason: 'A processing error occured.' });
+    console.error(e);
+    response
+      .status(200)
+      .json({
+        url: link,
+        success: false,
+        reason: "A processing error occurred.",
+      });
   }
   return;
 });
@@ -57,13 +69,10 @@ app.all("*", function (_, response) {
 });
 
 app
-  .listen(process.env.SERVER_PORT || 8888, async () => {
-    console.log(
-      `Document processor app listening on port ${process.env.SERVER_PORT || 8888
-      }`
-    );
+  .listen(8888, async () => {
+    console.log(`Document processor app listening on port 8888`);
   })
-  .on("error", function (err) {
+  .on("error", function (_) {
     process.once("SIGUSR2", function () {
       process.kill(process.pid, "SIGUSR2");
     });
