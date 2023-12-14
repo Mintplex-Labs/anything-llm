@@ -31,13 +31,11 @@ app.post("/process", async function (request, response) {
     response.status(200).json({ filename: targetFilename, success, reason });
   } catch (e) {
     console.error(e);
-    response
-      .status(200)
-      .json({
-        filename: filename,
-        success: false,
-        reason: "A processing error occurred.",
-      });
+    response.status(200).json({
+      filename: filename,
+      success: false,
+      reason: "A processing error occurred.",
+    });
   }
   return;
 });
@@ -49,13 +47,11 @@ app.post("/process-link", async function (request, response) {
     response.status(200).json({ url: link, success, reason });
   } catch (e) {
     console.error(e);
-    response
-      .status(200)
-      .json({
-        url: link,
-        success: false,
-        reason: "A processing error occurred.",
-      });
+    response.status(200).json({
+      url: link,
+      success: false,
+      reason: "A processing error occurred.",
+    });
   }
   return;
 });

@@ -10,7 +10,7 @@ function trashFile(filepath) {
 function createdDate(filepath) {
   try {
     const { birthtimeMs, birthtime } = fs.statSync(filepath);
-    if (birthtimeMs === 0) throw new Error('Invalid stat for file!')
+    if (birthtimeMs === 0) throw new Error("Invalid stat for file!");
     return birthtime.toLocaleString();
   } catch {
     return "unknown";
@@ -25,9 +25,9 @@ function writeToServerDocuments(
   const destination = destinationOverride
     ? path.resolve(destinationOverride)
     : path.resolve(
-      __dirname,
-      "../../../server/storage/documents/custom-documents"
-    );
+        __dirname,
+        "../../../server/storage/documents/custom-documents"
+      );
   if (!fs.existsSync(destination))
     fs.mkdirSync(destination, { recursive: true });
   const destinationFilePath = path.resolve(destination, filename);
