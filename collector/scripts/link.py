@@ -6,6 +6,7 @@ from .link_utils import append_meta, AsyncHTMLSessionFixed
 from .utils import tokenize, ada_v2_cost
 import requests
 from bs4 import BeautifulSoup
+import { GithubRepoLoader } from "langchain/document_loaders/web/github";
 
 # Example Channel URL https://tim.blog/2022/08/09/nft-insider-trading-policy/
 def link():
