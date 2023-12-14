@@ -22,6 +22,13 @@ async function processSingleFile(targetFilename) {
     };
 
   const fileExtension = path.extname(fullFilePath).toLowerCase();
+  if (!fileExtension) {
+    return {
+      success: false,
+      reason: `No file extension found. This file cannot be processed.`,
+    };
+  }
+
   if (!Object.keys(SUPPORTED_FILETYPE_CONVERTERS).includes(fileExtension)) {
     trashFile(fullFilePath);
     return {

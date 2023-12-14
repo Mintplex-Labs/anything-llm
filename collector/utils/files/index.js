@@ -3,6 +3,14 @@ const path = require("path");
 
 function trashFile(filepath) {
   if (!fs.existsSync(filepath)) return;
+
+  try {
+    const isDir = fs.lstatSync(filepath).isDirectory();
+    if (isDir) return;
+  } catch {
+    return;
+  }
+
   fs.rmSync(filepath);
   return;
 }
