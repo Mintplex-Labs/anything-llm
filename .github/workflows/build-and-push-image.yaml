@@ -2,7 +2,7 @@ name: Publish Docker image and Github Registry
 
 on:
   push:
-    branches: ['master', 'collector-refactor']
+    branches: ['master']
 
 jobs:
   push_to_registries:

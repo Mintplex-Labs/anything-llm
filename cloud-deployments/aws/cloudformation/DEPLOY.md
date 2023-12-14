@@ -1,6 +1,6 @@
 # How to deploy a private AnythingLLM instance on AWS
 
-With an AWS account you can easily deploy a private AnythingLLM instance on AWS. This will create a url that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys and they will not be exposed - however if you want your instance to be protected it is highly recommend that you set the `AUTH_TOKEN` and `JWT_SECRET` variables in the `docker/` ENV.
+With an AWS account you can easily deploy a private AnythingLLM instance on AWS. This will create a url that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys and they will not be exposed - however if you want your instance to be protected it is highly recommend that you set a password one setup is complete.
 
 **Quick Launch (EASY)**
 1. Log in to your AWS account
@@ -30,12 +30,11 @@ The output of this cloudformation stack will be:
 
 **Requirements**
 - An AWS account with billing information.
-  - AnythingLLM (GUI + document processor) must use a t2.small minimum and 10Gib SSD hard disk volume
 
 ## Please read this notice before submitting issues about your deployment
 
 **Note:** 
-Your instance will not be available instantly. Depending on the instance size you launched with it can take varying amounts of time to fully boot up.
+Your instance will not be available instantly. Depending on the instance size you launched with it can take 5-10 minutes to fully boot up.
 
 If you want to check the instance's progress, navigate to [your deployed EC2 instances](https://us-west-1.console.aws.amazon.com/ec2/home) and connect to your instance via SSH in browser.
 

@@ -1,8 +1,6 @@
 # How to deploy a private AnythingLLM instance on DigitalOcean using Terraform
 
-With a DigitalOcean account, you can easily deploy a private AnythingLLM instance using Terraform. This will create a URL that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys, and they will not be exposed. However, if you want your instance to be protected, it is highly recommended that you set the `AUTH_TOKEN` and `JWT_SECRET` variables in the `docker/` ENV.
-
-[Refer to .env.example](../../../docker/HOW_TO_USE_DOCKER.md) for data format.
+With a DigitalOcean account, you can easily deploy a private AnythingLLM instance using Terraform. This will create a URL that you can access from any browser over HTTP (HTTPS not supported). This single instance will run on your own keys, and they will not be exposed. However, if you want your instance to be protected, it is highly recommended that you set a password one setup is complete.
 
 The output of this Terraform configuration will be:
 - 1 DigitalOcean Droplet
@@ -12,8 +10,6 @@ The output of this Terraform configuration will be:
 - An DigitalOcean  account with billing information
 - Terraform installed on your local machine
   - Follow the instructions in the [official Terraform documentation](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) for your operating system.
-- `.env` file that is filled out with your settings and set up in the `docker/` folder
-
 
 ## How to deploy on DigitalOcean
 Open your terminal and navigate to the `digitalocean/terraform` folder
@@ -36,7 +32,7 @@ terraform destroy
 ## Please read this notice before submitting issues about your deployment
 
 **Note:** 
-Your instance will not be available instantly. Depending on the instance size you launched with it can take anywhere from 10-20 minutes to fully boot up.
+Your instance will not be available instantly. Depending on the instance size you launched with it can take anywhere from 5-10 minutes to fully boot up.
 
 If you want to check the instances progress, navigate to [your deployed instances](https://cloud.digitalocean.com/droplets) and connect to your instance via SSH in browser.
 
