@@ -37,8 +37,6 @@ COPY --chown=anythingllm:anythingllm ./docker/.env.example /app/server/.env
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-healthcheck.sh
 
-RUN echo 'kernel.unprivileged_userns_clone=1' > /etc/sysctl.d/userns.conf
-
 USER anythingllm
 
 WORKDIR /app
