@@ -30,4 +30,8 @@ If you would like to use a local Llama compatible LLM model for chatting you can
 > If running in Docker you should be running the container to a mounted storage location on the host machine so you
 > can update the storage files directly without having to re-download or re-build your docker container. [See suggested Docker config](../../../README.md#recommended-usage-with-docker-easy)
 
-All local models you want to have available for LLM selection should be placed in the `storage/models/downloaded` folder. Only `.gguf` files will be allowed to be selected from the UI.
+> [!NOTE]
+> `/server/storage/models/downloaded` is the default location that your model files should be at. 
+> Your storage directory may differ if you changed the STORAGE_DIR environment variable.
+
+All local models you want to have available for LLM selection should be placed in the `server/storage/models/downloaded` folder. Only `.gguf` files will be allowed to be selected from the UI.
