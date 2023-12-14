@@ -7,7 +7,7 @@ const { convertToChatHistory } = require("../utils/chats");
 const { getVectorDbClass } = require("../utils/helpers");
 const { setupMulter } = require("../utils/files/multer");
 const {
-  checkPythonAppAlive,
+  checkProcessorAlive,
   processDocument,
   processLink,
 } = require("../utils/files/documentProcessor");
@@ -82,14 +82,14 @@ function workspaceEndpoints(app) {
     handleUploads.single("file"),
     async function (request, response) {
       const { originalname } = request.file;
-      const processingOnline = await checkPythonAppAlive();
+      const processingOnline = await checkProcessorAlive();
 
       if (!processingOnline) {
         response
           .status(500)
           .json({
             success: false,
-            error: `Python processing API is not online. Document ${originalname} will not be processed automatically.`,
+            error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
           })
           .end();
         return;
@@ -114,14 +114,14 @@ function workspaceEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       const { link = "" } = reqBody(request);
-      const processingOnline = await checkPythonAppAlive();
+      const processingOnline = await checkProcessorAlive();
 
       if (!processingOnline) {
         response
           .status(500)
           .json({
             success: false,
-            error: `Python processing API is not online. Link ${link} will not be processed automatically.`,
+            error: `Document processing API is not online. Link ${link} will not be processed automatically.`,
           })
           .end();
         return;

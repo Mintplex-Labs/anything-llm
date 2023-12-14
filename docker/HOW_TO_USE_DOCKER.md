@@ -24,6 +24,7 @@ export STORAGE_LOCATION="/var/lib/anythingllm" && \
 mkdir -p $STORAGE_LOCATION && \
 touch "$STORAGE_LOCATION/.env" && \
 docker run -d -p 3001:3001 \
+--cap-add SYS_ADMIN \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
@@ -44,16 +45,6 @@ Your docker host will show the image as online once the build process is complet
 
 ## How to use the user interface
 - To access the full application, visit `http://localhost:3001` in your browser.
-
-## How to add files to my system using the standalone scripts
-- Upload files from the UI in your Workspace settings
-
-- To run the collector scripts to grab external data (articles, URLs, etc.)
-  - `docker exec -it --workdir=/app/collector anything-llm python main.py`
-
-- To run the collector watch script to process files from the hotdir
-  - `docker exec -it --workdir=/app/collector anything-llm python watch.py`
-  - Upload [compliant files](../collector/hotdir/__HOTDIR__.md) to `./collector/hotdir` and they will be processed and made available in the UI.
 
 ## About UID and GID in the ENV
 - The UID and GID are set to 1000 by default. This is the default user in the Docker container and on most host operating systems. If there is a mismatch between your host user UID and GID and what is set in the `.env` file, you may experience permission issues.

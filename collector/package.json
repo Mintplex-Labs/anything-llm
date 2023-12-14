@@ -1,0 +1,42 @@
+{
+  "name": "anything-llm-document-collector",
+  "version": "0.2.0",
+  "description": "Document collector server endpoints",
+  "main": "index.js",
+  "author": "Timothy Carambat (Mintplex Labs)",
+  "license": "MIT",
+  "private": false,
+  "engines": {
+    "node": ">=18.12.1"
+  },
+  "scripts": {
+    "dev": "NODE_ENV=development nodemon --trace-warnings index.js",
+    "start": "NODE_ENV=production node index.js",
+    "lint": "yarn prettier --write ./processSingleFile ./processLink ./utils index.js"
+  },
+  "dependencies": {
+    "@googleapis/youtube": "^9.0.0",
+    "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "extract-zip": "^2.0.1",
+    "js-tiktoken": "^1.0.8",
+    "langchain": "0.0.201",
+    "mammoth": "^1.6.0",
+    "mbox-parser": "^1.0.1",
+    "mime": "^3.0.0",
+    "moment": "^2.29.4",
+    "multer": "^1.4.5-lts.1",
+    "officeparser": "^4.0.5",
+    "pdf-parse": "^1.1.1",
+    "puppeteer": "^21.6.1",
+    "slugify": "^1.6.6",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "prettier": "^2.4.1"
+  }
+}

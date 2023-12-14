@@ -4,6 +4,6 @@
   npx prisma migrate deploy --schema=./prisma/schema.prisma &&\
   node /app/server/index.js
 } &
-{ FLASK_ENV=production FLASK_APP=wsgi.py cd collector && gunicorn --timeout 300 --workers 4 --bind 0.0.0.0:8888 wsgi:api; } &
+{ node /app/collector/index.js; } &
 wait -n
 exit $?

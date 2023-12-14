@@ -8,7 +8,7 @@ ARG ARG_GID=1000
 # Install system dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-        curl gnupg libgfortran5 python3 python3-pip tzdata netcat \
+        curl gnupg libgfortran5 libgbm1 tzdata netcat \
         libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 \
         libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libx11-6 libx11-xcb1 libxcb1 \
         libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 \
@@ -21,13 +21,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -yq --no-install-recommends nodejs && \
     curl -LO https://github.com/yarnpkg/yarn/releases/download/v1.22.19/yarn_1.22.19_all.deb \
         && dpkg -i yarn_1.22.19_all.deb \
-        && rm yarn_1.22.19_all.deb && \
-    curl -LO https://github.com/jgm/pandoc/releases/download/3.1.3/pandoc-3.1.3-1-amd64.deb \
-        && dpkg -i pandoc-3.1.3-1-amd64.deb \
-        && rm pandoc-3.1.3-1-amd64.deb && \
-    rm -rf /var/lib/apt/lists/* /usr/share/icons && \
-    dpkg-reconfigure -f noninteractive tzdata && \
-    python3 -m pip install --no-cache-dir virtualenv
+        && rm yarn_1.22.19_all.deb
 
 # Create a group and user with specific UID and GID
 RUN groupadd -g $ARG_GID anythingllm && \
@@ -81,10 +75,7 @@ COPY --from=build-stage /app/frontend/dist ./server/public
 COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
 
 # Install collector dependencies
-RUN cd /app/collector && \
-    python3 -m virtualenv v-env && \
-    . v-env/bin/activate && \
-    pip install --no-cache-dir -r requirements.txt
+RUN cd /app/collector && yarn install --production && yarn cache clean
 
 # Migrate and Run Prisma against known schema
 RUN cd ./server && npx prisma generate --schema=./prisma/schema.prisma
@@ -92,7 +83,6 @@ RUN cd ./server && npx prisma migrate deploy --schema=./prisma/schema.prisma
 
 # Setup the environment
 ENV NODE_ENV=production
-ENV PATH=/app/collector/v-env/bin:$PATH
 
 # Expose the server port
 EXPOSE 3001
