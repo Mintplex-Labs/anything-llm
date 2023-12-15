@@ -14,7 +14,17 @@ async function asAudio({ fullFilePath = "", filename = "" }) {
   const whisper = new LocalWhisper();
 
   console.log(`-- Working ${filename} --`);
-  const audioData = await convertToWavAudioData(fullFilePath);
+  const transcriberPromise = new Promise((resolve) =>
+    whisper.client().then((client) => resolve(client))
+  );
+  const audioDataPromise = new Promise((resolve) =>
+    convertToWavAudioData(fullFilePath).then((audioData) => resolve(audioData))
+  );
+  const [audioData, transcriber] = await Promise.all([
+    audioDataPromise,
+    transcriberPromise,
+  ]);
+
   if (!audioData) {
     console.error(`Failed to parse content from ${filename}.`);
     trashFile(fullFilePath);
@@ -24,7 +34,7 @@ async function asAudio({ fullFilePath = "", filename = "" }) {
     };
   }
 
-  const transcriber = await whisper.client();
+  console.log(`[Model Working]: Transcribing audio data to text`);
   const { text: content } = await transcriber(audioData, {
     chunk_length_s: 30,
     stride_length_s: 5,
@@ -95,10 +105,17 @@ async function convertToWavAudioData(sourcePath) {
         throw new Error(
           "[Conversion Failed]: Could not convert file to .wav format!"
         );
-      buffer = Buffer.from(fs.readFileSync(outputFile));
+
+      const chunks = [];
+      const stream = fs.createReadStream(outputFile);
+      for await (let chunk of stream) chunks.push(chunk);
+      buffer = Buffer.concat(chunks);
       fs.rmSync(outputFile);
     } else {
-      buffer = Buffer.from(fs.readFileSync(sourcePath));
+      const chunks = [];
+      const stream = fs.createReadStream(sourcePath);
+      for await (let chunk of stream) chunks.push(chunk);
+      buffer = Buffer.concat(chunks);
     }
 
     const wavFile = new wavefile.WaveFile(buffer);
