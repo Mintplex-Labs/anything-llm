@@ -21,7 +21,7 @@ class LocalWhisper {
   async client() {
     if (!fs.existsSync(this.modelPath)) {
       console.log(
-        "\x1b[34m[INFO]\x1b[0m The native whisper model has never been run and will be downloaded right now. Subsequent runs will be faster. (~2GB)\n\n"
+        "\x1b[34m[INFO]\x1b[0m The native whisper model has never been run and will be downloaded right now. Subsequent runs will be faster. (~250MB)\n\n"
       );
     }
 
