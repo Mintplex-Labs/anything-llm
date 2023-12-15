@@ -1,5 +1,5 @@
 import { CloudArrowUp } from "@phosphor-icons/react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import showToast from "../../../../../utils/toast";
 import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";
@@ -109,7 +109,6 @@ export default function UploadFile({
               Click to upload or drag and drop
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
-              Supported file extensions are{" "}
               {Object.values(fileTypes ?? [])
                 .flat()
                 .join(" ")}

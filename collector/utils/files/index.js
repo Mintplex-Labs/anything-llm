@@ -48,8 +48,48 @@ function writeToServerDocuments(
   return;
 }
 
+// When required we can wipe the entire collector hotdir and tmp storage in case
+// there were some large file failures that we unable to be removed a reboot will
+// force remove them.
+async function wipeCollectorStorage() {
+  const cleanHotDir = new Promise((resolve) => {
+    const directory = path.resolve(__dirname, "../../hotdir");
+    fs.readdir(directory, (err, files) => {
+      if (err) resolve();
+
+      for (const file of files) {
+        if (file === "__HOTDIR__.md") continue;
+        try {
+          fs.rmSync(path.join(directory, file));
+        } catch {}
+      }
+      resolve();
+    });
+  });
+
+  const cleanTmpDir = new Promise((resolve) => {
+    const directory = path.resolve(__dirname, "../../storage/tmp");
+    fs.readdir(directory, (err, files) => {
+      if (err) resolve();
+
+      for (const file of files) {
+        if (file === ".placeholder") continue;
+        try {
+          fs.rmSync(path.join(directory, file));
+        } catch {}
+      }
+      resolve();
+    });
+  });
+
+  await Promise.all([cleanHotDir, cleanTmpDir]);
+  console.log(`Collector hot directory and tmp storage wiped!`);
+  return;
+}
+
 module.exports = {
   trashFile,
   createdDate,
   writeToServerDocuments,
+  wipeCollectorStorage,
 };

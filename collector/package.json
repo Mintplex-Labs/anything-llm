@@ -10,18 +10,20 @@
     "node": ">=18.12.1"
   },
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --trace-warnings index.js",
+    "dev": "NODE_ENV=development nodemon --ignore hotdir --ignore storage --trace-warnings index.js",
     "start": "NODE_ENV=production node index.js",
     "lint": "yarn prettier --write ./processSingleFile ./processLink ./utils index.js"
   },
   "dependencies": {
     "@googleapis/youtube": "^9.0.0",
+    "@xenova/transformers": "^2.11.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "extract-zip": "^2.0.1",
+    "fluent-ffmpeg": "^2.1.2",
     "js-tiktoken": "^1.0.8",
     "langchain": "0.0.201",
     "mammoth": "^1.6.0",
@@ -33,7 +35,8 @@
     "pdf-parse": "^1.1.1",
     "puppeteer": "^21.6.1",
     "slugify": "^1.6.6",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "wavefile": "^11.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",
