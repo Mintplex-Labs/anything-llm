@@ -21,6 +21,7 @@ const ACCEPTED_MIMES = {
   "audio/mpeg": [".mp3"],
 
   "video/mp4": [".mp4"],
+  "video/mpeg": [".mpeg"],
 };
 
 const SUPPORTED_FILETYPE_CONVERTERS = {
@@ -40,6 +41,7 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".mp3": "./convert/asAudio.js",
   ".wav": "./convert/asAudio.js",
   ".mp4": "./convert/asAudio.js",
+  '.mpeg': "./convert/asAudio.js",
 };
 
 module.exports = {
