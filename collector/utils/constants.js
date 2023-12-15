@@ -16,6 +16,11 @@ const ACCEPTED_MIMES = {
 
   "application/pdf": [".pdf"],
   "application/mbox": [".mbox"],
+
+  "audio/wav": [".wav"],
+  "audio/mpeg": [".mp3"],
+
+  "video/mp4": [".mp4"],
 };
 
 const SUPPORTED_FILETYPE_CONVERTERS = {
@@ -31,6 +36,10 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".odp": "./convert/asOfficeMime.js",
 
   ".mbox": "./convert/asMbox.js",
+
+  ".mp3": "./convert/asAudio.js",
+  ".wav": "./convert/asAudio.js",
+  ".mp4": "./convert/asAudio.js",
 };
 
 module.exports = {
