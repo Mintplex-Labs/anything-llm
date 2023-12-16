@@ -20,7 +20,7 @@ async function loadGithubRepo(args) {
     `-- Working Github ${repo.author}/${repo.project}:${repo.branch} --`
   );
   const docs = await repo.recursiveLoader();
-  console.log(`Found ${docs.length} source files. Saving...`);
+  console.log(`[Github Loader]: Found ${docs.length} source files. Saving...`);
 
   const outFolder = slugify(
     `${repo.author}-${repo.project}-${repo.branch}-${v4().slice(0, 4)}`
@@ -45,7 +45,9 @@ async function loadGithubRepo(args) {
       pageContent: doc.pageContent,
       token_count_estimate: tokenizeString(doc.pageContent).length,
     };
-    console.log(`Saving ${doc.metadata.source} to ${outFolder}`);
+    console.log(
+      `[Github Loader]: Saving ${doc.metadata.source} to ${outFolder}`
+    );
     writeToServerDocuments(
       data,
       `${slugify(doc.metadata.source)}-${data.id}`,

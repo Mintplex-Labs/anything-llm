@@ -3,6 +3,7 @@ class RepoLoader {
     this.ready = false;
     this.repo = args?.repo;
     this.branch = args?.branch;
+    this.apiKey = args?.apiKey || null;
 
     this.author = null;
     this.project = null;
@@ -26,9 +27,11 @@ class RepoLoader {
     await this.getRepoBranches();
     if (!!this.branch && this.branches.includes(this.branch)) return;
 
-    console.log("Branch not set! Auto-assigning to a default branch.");
+    console.log(
+      "[Github Loader]: Branch not set! Auto-assigning to a default branch."
+    );
     this.branch = this.branches.includes("main") ? "main" : "master";
-    console.log(`Branch auto-assigned to ${this.branch}.`);
+    console.log(`[Github Loader]: Branch auto-assigned to ${this.branch}.`);
     return;
   }
 
@@ -40,14 +43,19 @@ class RepoLoader {
   }
 
   async recursiveLoader() {
-    if (!this.ready) throw new Error("RepoLoader is not in ready state!");
+    if (!this.ready) throw new Error("[Github Loader]: not in ready state!");
     const {
       GithubRepoLoader: LCGithubLoader,
     } = require("langchain/document_loaders/web/github");
 
+    if (this.apiKey)
+      console.log(
+        `[Github Loader]: Access key set! Recursive loading enabled!`
+      );
     const loader = new LCGithubLoader(this.repo, {
+      accessToken: this.apiKey,
       branch: this.branch,
-      recursive: false,
+      recursive: !!this.apiKey, // Recursive will hit rate limits.
       maxConcurrency: 5,
       unknown: "ignore",
     });
@@ -61,7 +69,14 @@ class RepoLoader {
   async getRepoBranches() {
     if (!this.#validGithubUrl() || !this.author || !this.project) return [];
     await fetch(
-      `https://api.github.com/repos/${this.author}/${this.project}/branches`
+      `https://api.github.com/repos/${this.author}/${this.project}/branches`,
+      {
+        method: "GET",
+        headers: {
+          ...(this.apiKey ? { Authorization: `Bearer ${this.apiKey}` } : {}),
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      }
     )
       .then((res) => {
         if (res.ok) return res.json();
