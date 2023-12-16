@@ -33,7 +33,7 @@ export default function FileRow({
     try {
       setLoading(true);
       setLoadingMessage("This may take a while for large documents");
-      await System.deleteDocument(`${folderName}/${item.name}`, item);
+      await System.deleteDocument(`${folderName}/${item.name}`);
       await fetchKeys(true);
     } catch (error) {
       console.error("Failed to delete the document:", error);
@@ -60,7 +60,7 @@ export default function FileRow({
         selected ? "bg-sky-500/20" : ""
       } ${expanded ? "bg-sky-500/10" : ""}`}`}
     >
-      <div className="col-span-4 flex gap-x-[4px] items-center">
+      <div className="pl-4 col-span-4 flex gap-x-[4px] items-center">
         <div
           className="w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
           role="checkbox"
