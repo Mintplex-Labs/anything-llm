@@ -4,9 +4,6 @@ import System from "@/models/system";
 export default function OpenAiOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.OpenAiKey);
   const [openAIKey, setOpenAIKey] = useState(settings?.OpenAiKey);
-  function updateOpenAiKey() {
-    setOpenAIKey(inputValue);
-  }
 
   return (
     <>
@@ -24,7 +21,7 @@ export default function OpenAiOptions({ settings }) {
           autoComplete="off"
           spellCheck={false}
           onChange={(e) => setInputValue(e.target.value)}
-          onBlur={updateOpenAiKey}
+          onBlur={() => setOpenAIKey(inputValue)}
         />
       </div>
       <OpenAIModelSelection settings={settings} apiKey={openAIKey} />
