@@ -82,7 +82,7 @@ This monorepo consists of three main sections:
 ### Minimum Requirements
 > [!TIP]
 > Running AnythingLLM on AWS/GCP/Azure? 
-> You should aim for at least 2GB of RAM. Disk storage is proprotional to however much data
+> You should aim for at least 2GB of RAM. Disk storage is proportional to however much data
 > you will be storing (documents, vectors, models, etc). Minimum 10GB recommended.
 
 - `yarn` and `node` on your machine
