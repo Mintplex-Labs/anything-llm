@@ -2,8 +2,8 @@ import { useState } from "react";
 import {
   formatDate,
   getFileExtension,
-  truncate,
 } from "../../../../../../utils/directories";
+import truncate from "truncate";
 import { ArrowUUpLeft, File } from "@phosphor-icons/react";
 import Workspace from "../../../../../../models/workspace";
 import debounce from "lodash.debounce";

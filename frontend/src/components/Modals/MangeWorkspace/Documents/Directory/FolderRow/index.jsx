@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FileRow from "../FileRow";
 import { CaretDown, FolderNotch } from "@phosphor-icons/react";
-import { truncate } from "../../../../../../utils/directories";
+import truncate from "truncate";
 
 export default function FolderRow({
   item,

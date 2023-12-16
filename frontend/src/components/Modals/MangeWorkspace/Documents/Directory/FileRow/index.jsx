@@ -2,8 +2,8 @@ import { useState } from "react";
 import {
   formatDate,
   getFileExtension,
-  truncate,
 } from "../../../../../../utils/directories";
+import truncate from "truncate";
 import { File, Trash } from "@phosphor-icons/react";
 import System from "../../../../../../models/system";
 import debounce from "lodash.debounce";
