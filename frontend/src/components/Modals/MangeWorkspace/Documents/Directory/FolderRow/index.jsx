@@ -82,10 +82,12 @@ export default function FolderRow({
         <p className="col-span-2 pl-3" />
         <p className="col-span-2 pl-2" />
         <div className="col-span-2 flex justify-end items-center">
-          <Trash
-            onClick={onTrashClick}
-            className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
-          />
+          {item.name !== "custom-documents" && (
+            <Trash
+              onClick={onTrashClick}
+              className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
+            />
+          )}
         </div>
       </div>
       {expanded && (
