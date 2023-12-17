@@ -5,6 +5,19 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Collector debug",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/collector",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "runtimeArgs": ["index.js"],
+      // not using yarn/nodemon because it doesn't work with breakpoints
+      // "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    },
+    {
       "name": "Server debug",
       "request": "launch",
       "cwd": "${workspaceFolder}/server",
@@ -25,36 +38,6 @@
       "runtimeExecutable": "yarn",
       "skipFiles": ["<node_internals>/**"],
       "type": "node"
-    },
-    {
-      "name": "Python Debugger: Collector watch",
-      "type": "python",
-      "cwd": "${workspaceFolder}/collector",
-      "request": "launch",
-      "program": "${workspaceFolder}/collector/watch.py",
-      "console": "integratedTerminal"
-    },
-    {
-      "name": "Python Debugger: Collector run",
-      "type": "python",
-
-      "cwd": "${workspaceFolder}/collector",
-      "request": "launch",
-      "env": {
-        "FLASK_ENV": "development",
-        "FLASK_APP": "wsgi.py"
-      },
-      "program": "${workspaceFolder}/collector/v-env/bin/gunicorn",
-      "args": [
-        "--timeout",
-        "300",
-        "--workers",
-        "1",
-        "--bind",
-        "0.0.0.0:8888",
-        "wsgi:api"
-      ],
-      "console": "integratedTerminal"
     },
     // {
     //   "name": "Launch Vite",

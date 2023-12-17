@@ -15,17 +15,17 @@
   "image": "mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm",
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
-    "ghcr.io/devcontainers/features/python:1": {
-      "installTools": true,
-      "version": "3.11" // PEP 664 - https://www.python.org/dev/peps/pep-0664/
-    },
+    // "ghcr.io/devcontainers/features/python:1": {
+    //   "installTools": true,
+    //   "version": "3.11" // PEP 664 - https://www.python.org/dev/peps/pep-0664/
+    // },
     "ghcr.io/devcontainers-contrib/features/tailscale:1": {},
     "ghcr.io/dhoeric/features/hadolint:1": {
       "version": "latest"
     },
-    "ghcr.io/devcontainers-contrib/features/pandoc:1": {
-      "version": "3.1.3"
-    },
+    // "ghcr.io/devcontainers-contrib/features/pandoc:1": {
+    //   "version": "3.1.3"
+    // },
     "ghcr.io/devcontainers/features/terraform:1": {},
     "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
       // Dependencies copied from ../docker/Dockerfile // something is needed to make web collector to work
@@ -37,6 +37,7 @@
         "procps",
         "tzdata",
         "libgfortran5",
+        "libgbm1",
         "libasound2",
         "libatk1.0-0",
         "libc6",
@@ -68,12 +69,15 @@
         "libappindicator1",
         "libnss3",
         "lsb-release",
-        "xdg-utils"
+        "xdg-utils",
+        "git",
+        "build-essential",
+        "ffmpeg"
       ]
     }
   },
-  "onCreateCommand": "cd collector && virtualenv v-env",
-  "updateContentCommand": "yarn setup && yarn setup:envs && yarn prisma:setup && ./collector/v-env/bin/pip3 install --no-cache-dir -r ./collector/requirements.txt",
+  // "onCreateCommand": "cd collector && virtualenv v-env",
+  "updateContentCommand": "yarn setup && yarn setup:envs && yarn prisma:setup",
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "if [ \"${CODESPACES}\" = \"true\" ]; then echo 'VITE_API_BASE=\"https://$CODESPACE_NAME-3001.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN/api\"' > ./frontend/.env; fi",
   "portsAttributes": {
@@ -116,15 +120,15 @@
         "hashicorp.terraform",
         "mariusschulz.yarn-lock-syntax",
         "ms-azuretools.vscode-docker",
-        "ms-python.python",
+        // "ms-python.python",
         "streetsidesoftware.code-spell-checker",
         "actboy168.tasks",
         "tombonnike.vscode-status-bar-format-toggle",
-        "ms-vscode.js-debug",
-        "ms-python.vscode-pylance",
-        "ms-python.black-formatter",
-        "ms-python.debugpy",
-        "ms-python.pylint"
+        "ms-vscode.js-debug"
+        // "ms-python.vscode-pylance",
+        // "ms-python.black-formatter",
+        // "ms-python.debugpy",
+        // "ms-python.pylint"
       ],
       "settings": {
         "[css]": {
@@ -160,33 +164,33 @@
         "[toml]": {
           "editor.defaultFormatter": "tamasfe.even-better-toml"
         },
-        "[python]": {
-          "editor.defaultFormatter": "ms-python.black-formatter"
-        },
-        "black-formatter.args": [
-          "--config",
-          "${workspaceFolder}/collector/pyproject.toml"
-        ],
-        "python.envFile": "${workspaceFolder}/collector/.env",
-        "python.defaultInterpreterPath": "${workspaceFolder}/collector/v-env/bin/python",
-        "python.languageServer": "Pylance",
-        "python.missingPackage.severity": "Hint",
-        "python.createEnvironment.trigger": "prompt",
-        "python.createEnvironment.contentButton": "show",
-        "python.analysis.diagnosticMode": "openFilesOnly",
-        "python.analysis.enablePytestExtra": false,
-        "python.analysis.enableSyncServer": false,
-        "python.analysis.inlayHints.functionReturnTypes": true,
-        "python.analysis.inlayHints.variableTypes": true,
-        "python.analysis.typeCheckingMode": "basic",
-        "python.analysis.useLibraryCodeForTypes": true,
-        "python.analysis.autoFormatStrings": true,
-        "python.analysis.inlayHints.callArgumentNames": "partial",
-        "pylint.args": [
-          "--rcfile",
-          "${workspaceFolder}/collector/.pylintrc"
-        ],
-        "pylint.importStrategy": "useBundled",
+        // "[python]": {
+        //   "editor.defaultFormatter": "ms-python.black-formatter"
+        // },
+        // "black-formatter.args": [
+        //   "--config",
+        //   "${workspaceFolder}/collector/pyproject.toml"
+        // ],
+        // "python.envFile": "${workspaceFolder}/collector/.env",
+        // "python.defaultInterpreterPath": "${workspaceFolder}/collector/v-env/bin/python",
+        // "python.languageServer": "Pylance",
+        // "python.missingPackage.severity": "Hint",
+        // "python.createEnvironment.trigger": "prompt",
+        // "python.createEnvironment.contentButton": "show",
+        // "python.analysis.diagnosticMode": "openFilesOnly",
+        // "python.analysis.enablePytestExtra": false,
+        // "python.analysis.enableSyncServer": false,
+        // "python.analysis.inlayHints.functionReturnTypes": true,
+        // "python.analysis.inlayHints.variableTypes": true,
+        // "python.analysis.typeCheckingMode": "basic",
+        // "python.analysis.useLibraryCodeForTypes": true,
+        // "python.analysis.autoFormatStrings": true,
+        // "python.analysis.inlayHints.callArgumentNames": "partial",
+        // "pylint.args": [
+        //   "--rcfile",
+        //   "${workspaceFolder}/collector/.pylintrc"
+        // ],
+        // "pylint.importStrategy": "useBundled",
         "eslint.debug": true,
         "eslint.enable": true,
         "eslint.experimental.useFlatConfig": true,

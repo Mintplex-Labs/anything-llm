@@ -9,72 +9,17 @@
         "cwd": "${workspaceFolder}/collector",
         "statusbar": {
           "color": "#ffea00",
-          "detail": "Watch the hotdir",
-          "label": "Collector: $(play) watch",
-          "running": {
-            "color": "#ffea00",
-            "label": "Collector: $(gear~spin) watching"
-          }
-        }
-      },
-      "command": "source ${workspaceFolder}/collector/v-env/bin/activate && cd ${workspaceFolder}/collector/ && python watch.py",
-      "label": "Collector: watch"
-    },
-    {
-      "type": "shell",
-      "options": {
-        "cwd": "${workspaceFolder}/collector",
-        "statusbar": {
-          "color": "#ffea00",
           "detail": "Runs the collector",
-          "label": "$(play) run",
+          "label": "Collector: $(play) run",
           "running": {
             "color": "#ffea00",
-            "label": "$(gear~spin) running"
+            "label": "Collector: $(gear~spin) running"
           }
         }
       },
-      "command": "source ${workspaceFolder}/collector/v-env/bin/activate && cd ${workspaceFolder}/collector/ && FLASK_ENV=development FLASK_APP=wsgi.py gunicorn --timeout 300 --workers 4 --bind 0.0.0.0:8888 wsgi:api",
+      "command": "cd ${workspaceFolder}/collector/ && yarn dev",
       "label": "Collector: run"
-    },
-    {
-      "dependsOn": "Collector: create env",
-      "type": "process",
-      "options": {
-        "cwd": "${workspaceFolder}/collector/v-env",
-        "statusbar": {
-          "color": "#ffea00",
-          "filePattern": "collector/*",
-          "detail": "Creates and updates the python virtual environment for the collector",
-          "label": "$(package) install deps",
-          "running": {
-            "color": "#ffea00",
-            "label": "$(sync~spin) installing"
-          }
-        }
-      },
-      "command": "${workspaceFolder}/collector/v-env/bin/pip",
-      "args": [
-        "install",
-        "--no-cache-dir",
-        "-r",
-        "${workspaceFolder}/collector/requirements.txt"
-      ],
-      "label": "Collector: install deps"
-    },
-    {
-      "type": "process",
-      "hide": true,
-      "command": "virtualenv",
-      "args": ["v-env"],
-      "options": {
-        "cwd": "${workspaceFolder}/collector",
-        "statusbar": {
-          "hide": true
-        }
-      },
-      "label": "Collector: create env"
-    },
+    }
     {
       "type": "shell",
       "options": {

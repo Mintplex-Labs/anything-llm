@@ -13,11 +13,10 @@ Welcome to the AnythingLLM development container configuration, designed to crea
 ## Features
 
 - **Base Image**: Built on `mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm`, thus Node.JS LTS v18.
-- **Python**: Comes with Python 3.11 (aligned with PEP 664) and related tools.
-- **Additional Tools**: Includes `tailscale`, `hadolint`, `pandoc`, and essential apt-packages such as `curl`, `gnupg`, and more.
+- **Additional Tools**: Includes `tailscale`, `hadolint`, and essential apt-packages such as `curl`, `gnupg`, and more.
 - **Ports**: Configured to auto-forward ports `3000` (Frontend) and `3001` (Backend).
 - **Environment Variables**: Sets `NODE_ENV` to `development` and `ESLINT_USE_FLAT_CONFIG` to `true`.
-- **VS Code Extensions**: A suite of extensions such as `Prettier`, `Docker`, `Python`, `Pylance`, `ESLint`, and more are automatically installed. Please revise if you do not agree with any of these extensions. AI-powered extensions and time trackers are (for now) not included to avoid any privacy concerns, but you can install them later in your own environment.
+- **VS Code Extensions**: A suite of extensions such as `Prettier`, `Docker`, `ESLint`, and more are automatically installed. Please revise if you do not agree with any of these extensions. AI-powered extensions and time trackers are (for now) not included to avoid any privacy concerns, but you can install them later in your own environment.
 
 ## Getting Started
 
