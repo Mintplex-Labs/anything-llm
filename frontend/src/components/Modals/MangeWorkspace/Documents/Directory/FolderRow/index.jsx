@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FileRow from "../FileRow";
 import { CaretDown, FolderNotch } from "@phosphor-icons/react";
-import { truncate } from "../../../../../../utils/directories";
+import { middleTruncate } from "@/utils/directories";
 
 export default function FolderRow({
   item,
@@ -50,7 +50,7 @@ export default function FolderRow({
             weight="fill"
           />
           <p className="whitespace-nowrap overflow-show">
-            {truncate(item.name, 40)}
+            {middleTruncate(item.name, 40)}
           </p>
         </div>
         <p className="col-span-2 pl-3.5" />
