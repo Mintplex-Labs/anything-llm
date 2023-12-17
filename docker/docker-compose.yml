@@ -17,6 +17,8 @@ services:
       args:
         ARG_UID: ${UID:-1000}
         ARG_GID: ${GID:-1000}
+    cap_add:
+      - SYS_ADMIN
     volumes:
       - "./.env:/app/server/.env"
       - "../server/storage:/app/server/storage"

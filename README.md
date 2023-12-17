@@ -74,10 +74,10 @@ Some cool features of AnythingLLM
 
 ### Technical Overview
 This monorepo consists of three main sections:
-- `collector`: Python tools that enable you to quickly convert online resources or local documents into LLM useable format.
 - `frontend`: A viteJS + React frontend that you can run to easily create and manage all your content the LLM can use.
-- `server`: A nodeJS + express server to handle all the interactions and do all the vectorDB management and LLM interactions.
+- `server`: A NodeJS express server to handle all the interactions and do all the vectorDB management and LLM interactions.
 - `docker`: Docker instructions and build process + information for building from source.
+- `collector`: NodeJS express server that process and parses documents from the UI.
 
 ### Minimum Requirements
 > [!TIP]
@@ -86,7 +86,6 @@ This monorepo consists of three main sections:
 > you will be storing (documents, vectors, models, etc). Minimum 10GB recommended.
 
 - `yarn` and `node` on your machine
-- `python` 3.9+ for running scripts in `collector/`.
 - access to an LLM running locally or remotely.
 
 *AnythingLLM by default uses a built-in vector database powered by [LanceDB](https://github.com/lancedb/lancedb)
@@ -94,6 +93,13 @@ This monorepo consists of three main sections:
 *AnythingLLM by default embeds text on instance privately [Learn More](/server/storage/models/README.md)
 
 ## Recommended usage with Docker (easy!)
+> [!IMPORTANT]
+> If you are running another service on localhost like Chroma, LocalAi, or LMStudio
+> you will need to use http://host.docker.internal:xxxx to access the service from within
+> the docker container using AnythingLLM as `localhost:xxxx` will not resolve for the host system.
+> eg: Chroma host URL running on localhost:8000 on host machine needs to be http://host.docker.internal:8000
+> when used in AnythingLLM.
+
 > [!TIP]
 > It is best to mount the containers storage volume to a folder on your host machine
 > so that you can pull in future updates without deleting your existing data!
@@ -105,6 +111,7 @@ export STORAGE_LOCATION="/var/lib/anythingllm" && \
 mkdir -p $STORAGE_LOCATION && \
 touch "$STORAGE_LOCATION/.env" && \
 docker run -d -p 3001:3001 \
+--cap-add SYS_ADMIN \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
@@ -133,12 +140,6 @@ To boot the frontend locally (run commands from root of repo):
 [Learn about documents](./server/storage/documents/DOCUMENTS.md)
 
 [Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
-
-## Standalone scripts
-
-This repo contains standalone scripts you can run to collect data from a Youtube Channel, Medium articles, local text files, word documents, and the list goes on. This is where you will use the `collector/` part of the repo.
-
-[Go set up and run collector scripts](./collector/README.md)
 
 ## Contributing
 - create issue

@@ -9,6 +9,11 @@ When your embedding engine preference is `native` we will use the ONNX **all-Min
 
 If you are using the `native` embedding engine your vector database should be configured to accept 384-dimension models if that parameter is directly editable (Pinecone only).
 
+## Audio/Video transcription
+AnythingLLM allows you to upload various audio and video formats as source documents. In all cases the audio tracks will be transcribed by a locally running ONNX model **whisper-small** built by [Xenova on HuggingFace.co](https://huggingface.co/Xenova/whisper-small). The model is a smaller version of the OpenAI Whisper model. Given the model runs locally on CPU, larger files will result in longer transcription times.
+
+Once transcribed you can embed these transcriptions into your workspace like you would any other file! 
+
 ## Text generation (LLM selection)
 > [!IMPORTANT]
 > Use of a locally running LLM model is **experimental** and may behave unexpectedly, crash, or not function at all.
@@ -30,4 +35,8 @@ If you would like to use a local Llama compatible LLM model for chatting you can
 > If running in Docker you should be running the container to a mounted storage location on the host machine so you
 > can update the storage files directly without having to re-download or re-build your docker container. [See suggested Docker config](../../../README.md#recommended-usage-with-docker-easy)
 
-All local models you want to have available for LLM selection should be placed in the `storage/models/downloaded` folder. Only `.gguf` files will be allowed to be selected from the UI.
+> [!NOTE]
+> `/server/storage/models/downloaded` is the default location that your model files should be at. 
+> Your storage directory may differ if you changed the STORAGE_DIR environment variable.
+
+All local models you want to have available for LLM selection should be placed in the `server/storage/models/downloaded` folder. Only `.gguf` files will be allowed to be selected from the UI.

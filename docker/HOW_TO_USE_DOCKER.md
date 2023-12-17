@@ -7,6 +7,13 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 - Install [Docker:link:](https://www.docker.com/) on your computer or machine.
 
 ## Recommend way to run dockerized AnythingLLM!
+> [!IMPORTANT]
+> If you are running another service on localhost like Chroma, LocalAi, or LMStudio
+> you will need to use http://host.docker.internal:xxxx to access the service from within
+> the docker container using AnythingLLM as `localhost:xxxx` will not resolve for the host system.
+> eg: Chroma host URL running on localhost:8000 on host machine needs to be http://host.docker.internal:8000
+> when used in AnythingLLM.
+
 > [!TIP]
 > It is best to mount the containers storage volume to a folder on your host machine
 > so that you can pull in future updates without deleting your existing data!
@@ -18,6 +25,7 @@ export STORAGE_LOCATION="/var/lib/anythingllm" && \
 mkdir -p $STORAGE_LOCATION && \
 touch "$STORAGE_LOCATION/.env" && \
 docker run -d -p 3001:3001 \
+--cap-add SYS_ADMIN \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
@@ -39,17 +47,6 @@ Your docker host will show the image as online once the build process is complet
 ## How to use the user interface
 
 - To access the full application, visit `http://localhost:3001` in your browser.
-
-## How to add files to my system using the standalone scripts
-- Upload files from the UI in your Workspace settings
-
-- To run the collector scripts to grab external data (articles, URLs, etc.)
-
-  - `docker exec -it --workdir=/app/collector anything-llm python main.py`
-
-- To run the collector watch script to process files from the hotdir
-  - `docker exec -it --workdir=/app/collector anything-llm python watch.py`
-  - Upload [compliant files](../collector/hotdir/__HOTDIR__.md) to `./collector/hotdir` and they will be processed and made available in the UI.
 
 ## About UID and GID in the ENV
 

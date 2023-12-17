@@ -94,16 +94,12 @@ app.all("*", function (_, response) {
 });
 
 app
-  .listen(
-    process.env.SERVER_PORT || 3001,
-    process.env.SERVER_ADDRESS || null,
-    async () => {
-      await setupTelemetry();
-      console.log(
-        `Example app listening on port ${process.env.SERVER_PORT || 3001}`
-      );
-    }
-  )
+  .listen(process.env.SERVER_PORT || 3001, async () => {
+    await setupTelemetry();
+    console.log(
+      `Primary server listening on port ${process.env.SERVER_PORT || 3001}`
+    );
+  })
   .on("error", function (err) {
     process.once("SIGUSR2", function () {
       Telemetry.flush();
