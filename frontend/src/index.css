@@ -385,3 +385,7 @@ dialog::backdrop {
     @apply border-blue-500 bg-blue-400/10 text-blue-800;
   }
 }
+
+.rti--container {
+  @apply !bg-zinc-900 !text-white !placeholder-white !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
+}

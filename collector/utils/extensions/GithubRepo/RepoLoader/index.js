@@ -4,6 +4,7 @@ class RepoLoader {
     this.repo = args?.repo;
     this.branch = args?.branch;
     this.accessToken = args?.accessToken || null;
+    this.ignorePaths = args?.ignorePaths || [];
 
     this.author = null;
     this.project = null;
@@ -78,12 +79,14 @@ class RepoLoader {
       console.log(
         `[Github Loader]: Access token set! Recursive loading enabled!`
       );
+
     const loader = new LCGithubLoader(this.repo, {
       accessToken: this.accessToken,
       branch: this.branch,
       recursive: !!this.accessToken, // Recursive will hit rate limits.
       maxConcurrency: 5,
       unknown: "ignore",
+      ignorePaths: this.ignorePaths,
     });
 
     const docs = [];

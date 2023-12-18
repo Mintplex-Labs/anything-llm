@@ -20,8 +20,14 @@ async function loadGithubRepo(args) {
     `-- Working Github ${repo.author}/${repo.project}:${repo.branch} --`
   );
   const docs = await repo.recursiveLoader();
-  console.log(`[Github Loader]: Found ${docs.length} source files. Saving...`);
+  if (!docs.length) {
+    return {
+      success: false,
+      reason: "No files were found for those settings.",
+    };
+  }
 
+  console.log(`[Github Loader]: Found ${docs.length} source files. Saving...`);
   const outFolder = slugify(
     `${repo.author}-${repo.project}-${repo.branch}-${v4().slice(0, 4)}`
   ).toLowerCase();
@@ -32,6 +38,7 @@ async function loadGithubRepo(args) {
   fs.mkdirSync(outFolderPath);
 
   for (const doc of docs) {
+    if (!doc.pageContent) continue;
     const data = {
       id: v4(),
       url: "github://" + doc.metadata.source,

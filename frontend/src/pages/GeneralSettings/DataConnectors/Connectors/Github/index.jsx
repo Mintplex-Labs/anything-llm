@@ -6,6 +6,7 @@ import System from "@/models/system";
 import { Info } from "@phosphor-icons/react/dist/ssr";
 import showToast from "@/utils/toast";
 import pluralize from "pluralize";
+import { TagsInput } from "react-tag-input-component";
 
 const DEFAULT_BRANCHES = ["main", "master"];
 export default function GithubConnectorSetup() {
@@ -13,6 +14,8 @@ export default function GithubConnectorSetup() {
   const [loading, setLoading] = useState(false);
   const [repo, setRepo] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
+  const [ignores, setIgnores] = useState([]);
+
   const [settings, setSettings] = useState({
     repo: null,
     accessToken: null,
@@ -33,6 +36,7 @@ export default function GithubConnectorSetup() {
         repo: form.get("repo"),
         accessToken: form.get("accessToken"),
         branch: form.get("branch"),
+        ignorePaths: ignores,
       });
 
       if (!!error) {
@@ -115,56 +119,81 @@ export default function GithubConnectorSetup() {
                 </div>
               )}
 
-              <div className="w-full flex items-center gap-4 py-2">
-                <div className="flex flex-col w-60">
-                  <div className="flex flex-col gap-y-1 mb-4">
-                    <label className="text-white text-sm font-semibold block">
-                      GitHub Repo URL
-                    </label>
-                    <p className="text-xs text-zinc-300">
-                      Url of the GitHub repo you wish to collect.
-                    </p>
+              <div className="w-full flex flex-col py-2">
+                <div className="w-full flex items-center gap-4">
+                  <div className="flex flex-col w-60">
+                    <div className="flex flex-col gap-y-1 mb-4">
+                      <label className="text-white text-sm font-semibold block">
+                        GitHub Repo URL
+                      </label>
+                      <p className="text-xs text-zinc-300">
+                        Url of the GitHub repo you wish to collect.
+                      </p>
+                    </div>
+                    <input
+                      type="url"
+                      name="repo"
+                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      placeholder="https://github.com/Mintplex-Labs/anything-llm"
+                      required={true}
+                      autoComplete="off"
+                      onChange={(e) => setRepo(e.target.value)}
+                      onBlur={() => setSettings({ ...settings, repo })}
+                      spellCheck={false}
+                    />
                   </div>
-                  <input
-                    type="url"
-                    name="repo"
-                    className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                    placeholder="https://github.com/Mintplex-Labs/anything-llm"
-                    required={true}
-                    autoComplete="off"
-                    onChange={(e) => setRepo(e.target.value)}
-                    onBlur={() => setSettings({ ...settings, repo })}
-                    spellCheck={false}
+                  <div className="flex flex-col w-60">
+                    <div className="flex flex-col gap-y-1 mb-4">
+                      <label className="text-white text-sm block flex gap-x-2 items-center">
+                        <p className="font-semibold ">Github Access Token</p>{" "}
+                        <p className="text-xs text-zinc-300 font-base!">
+                          <i>optional</i>
+                        </p>
+                      </label>
+                      <p className="text-xs text-zinc-300 flex gap-x-2">
+                        Access Token to prevent rate limiting.
+                      </p>
+                    </div>
+                    <input
+                      type="text"
+                      name="accessToken"
+                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      placeholder="github_pat_1234_abcdefg"
+                      required={false}
+                      autoComplete="off"
+                      spellCheck={false}
+                      onChange={(e) => setAccessToken(e.target.value)}
+                      onBlur={() => setSettings({ ...settings, accessToken })}
+                    />
+                  </div>
+                  <GitHubBranchSelection
+                    repo={settings.repo}
+                    accessToken={settings.accessToken}
                   />
                 </div>
-                <div className="flex flex-col w-60">
+
+                <div className="flex flex-col w-1/2 py-4">
                   <div className="flex flex-col gap-y-1 mb-4">
                     <label className="text-white text-sm block flex gap-x-2 items-center">
-                      <p className="font-semibold ">Github Access Token</p>{" "}
-                      <p className="text-xs text-zinc-300 font-base!">
-                        <i>optional</i>
-                      </p>
+                      <p className="font-semibold ">File Ignores</p>
                     </label>
                     <p className="text-xs text-zinc-300 flex gap-x-2">
-                      Access Token to prevent rate limiting.
+                      Comma-separated list in .gitignore format to ignore
+                      specific files during collection.
                     </p>
                   </div>
-                  <input
-                    type="text"
-                    name="accessToken"
-                    className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                    placeholder="github_pat_1234_abcdefg"
-                    required={false}
-                    autoComplete="off"
-                    spellCheck={false}
-                    onChange={(e) => setAccessToken(e.target.value)}
-                    onBlur={() => setSettings({ ...settings, accessToken })}
+                  <TagsInput
+                    value={ignores}
+                    onChange={setIgnores}
+                    name="ignores"
+                    placeholder="!*.js, images/*, .DS_Store, bin/*"
+                    classNames={{
+                      tag: "bg-blue-300/10 text-zinc-800 m-1",
+                      input:
+                        "flex bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white p-2.5",
+                    }}
                   />
                 </div>
-                <GitHubBranchSelection
-                  repo={settings.repo}
-                  accessToken={settings.accessToken}
-                />
               </div>
 
               <div className="flex flex-col gap-y-2 w-fit">

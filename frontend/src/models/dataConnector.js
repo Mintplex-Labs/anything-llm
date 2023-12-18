@@ -25,11 +25,11 @@ const DataConnector = {
           return { branches: [], error: e.message };
         });
     },
-    collect: async function ({ repo, accessToken, branch }) {
+    collect: async function ({ repo, accessToken, branch, ignorePaths = [] }) {
       return await fetch(`${API_BASE}/ext/github/repo`, {
         method: "POST",
         headers: baseHeaders(),
-        body: JSON.stringify({ repo, accessToken, branch }),
+        body: JSON.stringify({ repo, accessToken, branch, ignorePaths }),
       })
         .then((res) => res.json())
         .then((res) => {
