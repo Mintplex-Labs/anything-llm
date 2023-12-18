@@ -5,7 +5,7 @@ const { purgeVectorCache, purgeSourceDocument } = require(".");
 const { Document } = require("../../models/documents");
 const { Workspace } = require("../../models/workspace");
 
-async function purgeDocument(filename, _meta) {
+async function purgeDocument(filename) {
   const workspaces = await Workspace.where();
   for (const workspace of workspaces) {
     await Document.removeDocuments(workspace, [filename]);
@@ -15,7 +15,7 @@ async function purgeDocument(filename, _meta) {
   return;
 }
 
-async function purgeFolder(folderName, _meta) {
+async function purgeFolder(folderName) {
   if (folderName === "custom-documents") return;
   const documentsFolder =
     process.env.NODE_ENV === "development"
