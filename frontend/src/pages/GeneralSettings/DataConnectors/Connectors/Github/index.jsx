@@ -178,8 +178,8 @@ export default function GithubConnectorSetup() {
                       <p className="font-semibold ">File Ignores</p>
                     </label>
                     <p className="text-xs text-zinc-300 flex gap-x-2">
-                      Comma-separated list in .gitignore format to ignore
-                      specific files during collection.
+                      List in .gitignore format to ignore specific files during
+                      collection. Press enter after each entry you want to save.
                     </p>
                   </div>
                   <TagsInput
