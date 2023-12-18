@@ -6,7 +6,6 @@ const { Document } = require("../../models/documents");
 const { Workspace } = require("../../models/workspace");
 
 async function purgeDocument(filename, _meta) {
-  console.log(filename);
   const workspaces = await Workspace.where();
   for (const workspace of workspaces) {
     await Document.removeDocuments(workspace, [filename]);
@@ -17,6 +16,7 @@ async function purgeDocument(filename, _meta) {
 }
 
 async function purgeFolder(folderName, _meta) {
+  if (folderName === "custom-documents") return;
   const documentsFolder =
     process.env.NODE_ENV === "development"
       ? path.resolve(__dirname, `../../storage/documents`)
