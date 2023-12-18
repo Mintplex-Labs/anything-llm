@@ -2,10 +2,10 @@ import { useState } from "react";
 import {
   formatDate,
   getFileExtension,
-  truncate,
-} from "../../../../../../utils/directories";
+  middleTruncate,
+} from "@/utils/directories";
 import { ArrowUUpLeft, File } from "@phosphor-icons/react";
-import Workspace from "../../../../../../models/workspace";
+import Workspace from "@/models/workspace";
 import debounce from "lodash.debounce";
 
 export default function WorkspaceFileRow({
@@ -65,7 +65,7 @@ export default function WorkspaceFileRow({
           onMouseLeave={handleMouseLeave}
         >
           <p className="whitespace-nowrap overflow-hidden">
-            {truncate(item.title, 17)}
+            {middleTruncate(item.title, 17)}
           </p>
           {showTooltip && (
             <div className="absolute left-0 bg-white text-black p-1.5 rounded shadow-lg whitespace-nowrap">

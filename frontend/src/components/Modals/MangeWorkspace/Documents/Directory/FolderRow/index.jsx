@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FileRow from "../FileRow";
 import { CaretDown, FolderNotch, Trash } from "@phosphor-icons/react";
-import { truncate } from "../../../../../../utils/directories";
+import { middleTruncate } from "@/utils/directories";
 import System from "@/models/system";
 
 export default function FolderRow({
@@ -49,9 +49,8 @@ export default function FolderRow({
     <>
       <div
         onClick={onRowClick}
-        className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer w-full ${
-          selected ? "bg-sky-500/20" : ""
-        }`}
+        className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer w-full ${selected ? "bg-sky-500/20" : ""
+          }`}
       >
         <div className="col-span-4 flex gap-x-[4px] items-center">
           <div
@@ -64,9 +63,8 @@ export default function FolderRow({
           </div>
           <div
             onClick={handleExpandClick}
-            className={`transform transition-transform duration-200 ${
-              expanded ? "rotate-360" : " rotate-270"
-            }`}
+            className={`transform transition-transform duration-200 ${expanded ? "rotate-360" : " rotate-270"
+              }`}
           >
             <CaretDown className="text-base font-bold w-4 h-4" />
           </div>
@@ -75,7 +73,7 @@ export default function FolderRow({
             weight="fill"
           />
           <p className="whitespace-nowrap overflow-show">
-            {truncate(item.name, 40)}
+            {middleTruncate(item.name, 40)}
           </p>
         </div>
         <p className="col-span-2 pl-3.5" />

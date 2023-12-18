@@ -1,9 +1,8 @@
 import UploadFile from "../UploadFile";
-import PreLoader from "../../../../Preloader";
+import PreLoader from "@/components/Preloader";
 import { useEffect, useState } from "react";
 import FolderRow from "./FolderRow";
 import pluralize from "pluralize";
-import Workspace from "../../../../../models/workspace";
 
 export default function Directory({
   files,

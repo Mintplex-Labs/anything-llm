@@ -20,7 +20,7 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 `docker pull mintplexlabs/anythingllm:master`
 
 ```shell
-export STORAGE_LOCATION="/var/lib/anythingllm" && \
+export STORAGE_LOCATION=$HOME/anythingllm && \
 mkdir -p $STORAGE_LOCATION && \
 touch "$STORAGE_LOCATION/.env" && \
 docker run -d -p 3001:3001 \
