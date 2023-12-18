@@ -11,6 +11,7 @@ const { reqBody } = require("./utils/http");
 const { processSingleFile } = require("./processSingleFile");
 const { processLink } = require("./processLink");
 const { wipeCollectorStorage } = require("./utils/files");
+const extensions = require("./extensions");
 const app = express();
 
 app.use(cors({ origin: true }));
@@ -56,6 +57,8 @@ app.post("/process-link", async function (request, response) {
   }
   return;
 });
+
+extensions(app);
 
 app.get("/accepts", function (_, response) {
   response.status(200).json(ACCEPTED_MIMES);

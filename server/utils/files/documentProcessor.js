@@ -59,9 +59,32 @@ async function processLink(link = "") {
     });
 }
 
+// We will not ever expose the document processor to the frontend API so instead we relay
+// all requests through the server. You can use this function to directly expose a specific endpoint
+// on the document processor.
+async function forwardExtensionRequest({ endpoint, method, body }) {
+  return await fetch(`${PROCESSOR_API}${endpoint}`, {
+    method,
+    body, // Stringified JSON!
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error("Response could not be completed");
+      return res.json();
+    })
+    .then((res) => res)
+    .catch((e) => {
+      console.log(e.message);
+      return { success: false, data: {}, reason: e.message };
+    });
+}
+
 module.exports = {
   checkProcessorAlive,
   processDocument,
   processLink,
   acceptedFileTypes,
+  forwardExtensionRequest,
 };

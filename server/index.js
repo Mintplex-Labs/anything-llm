@@ -18,6 +18,7 @@ const { utilEndpoints } = require("./endpoints/utils");
 const { Telemetry } = require("./models/telemetry");
 const { developerEndpoints } = require("./endpoints/api");
 const setupTelemetry = require("./utils/telemetry");
+const { extensionEndpoints } = require("./endpoints/extensions");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -34,6 +35,7 @@ app.use(
 
 app.use("/api", apiRouter);
 systemEndpoints(apiRouter);
+extensionEndpoints(apiRouter);
 workspaceEndpoints(apiRouter);
 chatEndpoints(apiRouter);
 adminEndpoints(apiRouter);

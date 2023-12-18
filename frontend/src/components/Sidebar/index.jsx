@@ -71,25 +71,6 @@ export default function Sidebar() {
               <ActiveWorkspaces />
             </div>
             <div className="flex flex-col flex-grow justify-end mb-2">
-              {/* <div className="flex flex-col gap-y-2">
-                <div className="w-full flex items-center justify-between">
-                  <LLMStatus />
-                  <IndexCount />
-                </div>
-                <a
-                  href={paths.feedback()}
-                  target="_blank"
-                  className="flex flex-grow w-[100%] h-[36px] gap-x-2 py-[5px] px-4 border border-transparent rounded-lg text-slate-200 justify-center items-center bg-stone-800 hover:bg-stone-900"
-                >
-                  <AtSign className="h-4 w-4" />
-                  <p className="text-slate-200 text-xs leading-loose font-semibold">
-                    Feedback form
-                  </p>
-                </a>
-                <ManagedHosting />
-                <LogoutButton />
-              </div> */}
-
               {/* Footer */}
               <div className="flex justify-center mt-2">
                 <div className="flex space-x-4">

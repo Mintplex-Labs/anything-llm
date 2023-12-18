@@ -76,5 +76,13 @@ export default {
     apiKeys: () => {
       return "/settings/api-keys";
     },
+    dataConnectors: {
+      list: () => {
+        return "/settings/data-connectors";
+      },
+      github: () => {
+        return "/settings/data-connectors/github";
+      },
+    },
   },
 };

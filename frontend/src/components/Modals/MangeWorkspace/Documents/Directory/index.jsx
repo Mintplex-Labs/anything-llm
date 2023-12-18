@@ -106,6 +106,7 @@ export default function Directory({
                       isSelected={isSelected}
                       setLoading={setLoading}
                       setLoadingMessage={setLoadingMessage}
+                      autoExpanded={index === 0}
                     />
                   )
               )
