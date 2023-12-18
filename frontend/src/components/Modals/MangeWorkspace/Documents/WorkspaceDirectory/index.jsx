@@ -1,5 +1,5 @@
-import PreLoader from "../../../../Preloader";
-import { dollarFormat } from "../../../../../utils/numbers";
+import PreLoader from "@/components/Preloader";
+import { dollarFormat } from "@/utils/numbers";
 import WorkspaceFileRow from "./WorkspaceFileRow";
 
 export default function WorkspaceDirectory({
