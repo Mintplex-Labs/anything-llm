@@ -55,7 +55,17 @@ async function loadGithubRepo(args) {
     );
   }
 
-  return { success: true, reason: "test" };
+  return {
+    success: true,
+    reason: null,
+    data: {
+      author: repo.author,
+      repo: repo.project,
+      branch: repo.branch,
+      files: docs.length,
+      destination: outFolder,
+    },
+  };
 }
 
 module.exports = loadGithubRepo;
