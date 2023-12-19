@@ -89,19 +89,20 @@ MintplexLabs & the community maintain a number of deployment methods, scripts, a
 | [![Deploy on Docker][docker-btn]][docker-deploy] |  [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy]  | [![Deploy on DigitalOcean][do-btn]][aws-deploy]  |  [![Deploy on Render.com][render-btn]][render-deploy] |
 
 
-### How to get started (Development environment)
+## How to setup for development
 - `yarn setup` from the project root directory.
   - This will fill in the required `.env` files you'll need in each of the application sections. Go fill those out before proceeding or else things won't work right.
 - `yarn prisma:setup` To build the Prisma client and migrate the database.
 
-To boot the server locally (run commands from root of repo):
+To boot the server locally (from root of repo):
 - ensure `server/.env.development` is set and filled out.
 `yarn dev:server`
  
-To boot the frontend locally (run commands from root of repo):
-- ensure `frontend/.env` is set and filled out.
-- ensure `VITE_API_BASE="http://localhost:3001/api"`
+To boot the frontend locally (from root of repo):
 `yarn dev:frontend`
+
+To then run the document collector (from root of repo)
+`yarn dev:collector`
 
 [Learn about documents](./server/storage/documents/DOCUMENTS.md)
 
