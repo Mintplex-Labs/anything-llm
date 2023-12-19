@@ -84,10 +84,6 @@ COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
 # Install collector dependencies
 RUN cd /app/collector && yarn install --production && yarn cache clean
 
-# Migrate and Run Prisma against known schema
-RUN cd ./server && npx prisma generate --schema=./prisma/schema.prisma
-RUN cd ./server && npx prisma migrate deploy --schema=./prisma/schema.prisma
-
 # Setup the environment
 ENV NODE_ENV=production
 ENV STORAGE_DIR=$STORAGE_DIR
