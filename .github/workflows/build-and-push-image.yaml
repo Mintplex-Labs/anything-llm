@@ -3,6 +3,11 @@ name: Publish Docker image and Github Registry
 on:
   push:
     branches: ['master']
+     paths-ignore:
+      - '*.md'
+      - 'cloud-deployments/*'
+      - 'images/*'
+      - '.vscode/*'
 
 jobs:
   push_to_registries:
