@@ -1,0 +1,27 @@
+# Will create a Standard AnythingLLM docker container
+# with a 10GB storage disk mounted to /storage
+# See Standard compute tier  pricing costs: https://render.com/pricing
+# Standard tier will give the best performance, anything lower do not
+# expect fast chats, embeddings, or other functionality.
+
+services:
+  - type: web
+    name: anythingllm
+    runtime: docker
+    repo: https://github.com/Mintplex-Labs/anything-llm # optional
+    region: oregon # optional (defaults to oregon)
+    plan: standard # optional (defaults to starter instance type)
+    branch: render # optional (defaults to master)
+    numInstances: 1 # optional (defaults to 1)
+    dockerfilePath: './docker/render.Dockerfile'
+    healthCheckPath: /api/ping
+    autoDeploy: false
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: STORAGE_DIR
+        value: '/storage'
+    disk:
+      name: AnythingLLM Storage
+      mountPath: /storage
+      sizeGB: 10
