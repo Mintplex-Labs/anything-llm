@@ -83,6 +83,9 @@ export default {
       github: () => {
         return "/settings/data-connectors/github";
       },
+      youtubeTranscript: () => {
+        return "/settings/data-connectors/youtube-transcript";
+      },
     },
   },
 };

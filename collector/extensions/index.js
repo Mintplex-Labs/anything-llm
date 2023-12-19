@@ -47,6 +47,25 @@ function extensions(app) {
     }
     return;
   });
+
+  app.post("/ext/youtube-transcript", async function (request, response) {
+    try {
+      const loadYouTubeTranscript = require("../utils/extensions/YoutubeTranscript");
+      const { success, reason, data } = await loadYouTubeTranscript(reqBody(request));
+      response.status(200).json({ success, reason, data });
+    } catch (e) {
+      console.error(e);
+      response.status(400).json({
+        success: false,
+        reason: e.message,
+        data: {
+          title: null,
+          author: null
+        }
+      });
+    }
+    return;
+  });
 }
 
 module.exports = extensions;
