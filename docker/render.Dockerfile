@@ -36,12 +36,12 @@ RUN groupadd -g $ARG_GID anythingllm && \
     mkdir -p /app/frontend/ /app/server/ /app/collector/ && chown -R anythingllm:anythingllm /app
 
 # Copy docker helper scripts
-COPY ./docker/docker-entrypoint.sh /usr/local/bin/
+COPY ./docker/render-entrypoint.sh /usr/local/bin/
 COPY ./docker/docker-healthcheck.sh /usr/local/bin/
 COPY --chown=anythingllm:anythingllm ./docker/.env.example /app/server/.env
 
 # Ensure the scripts are executable
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
+RUN chmod +x /usr/local/bin/render-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-healthcheck.sh
 
 USER anythingllm
