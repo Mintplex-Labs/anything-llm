@@ -7,13 +7,13 @@
 services:
   - type: web
     name: anythingllm
-    runtime: docker
-    repo: https://github.com/Mintplex-Labs/anything-llm # optional
+    runtime: image
+    image: 
+      url: docker.io/mintplexlabs/anythingllm:render
     region: oregon # optional (defaults to oregon)
     plan: standard # optional (defaults to starter instance type)
     branch: render # optional (defaults to master)
     numInstances: 1 # optional (defaults to 1)
-    dockerfilePath: './docker/render.Dockerfile'
     healthCheckPath: /api/ping
     autoDeploy: false
     envVars:
