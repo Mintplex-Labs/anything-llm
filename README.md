@@ -86,12 +86,7 @@ This monorepo consists of three main sections:
 MintplexLabs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
 | Docker                                 | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----:|-----|---------------|------------|
-| 
-[![Deploy on Docker](./images/deployBtns/docker.png)](./docker/HOW_TO_USE_DOCKER.md) |  
-[![Deploy on AWS](./images/deployBtns/aws.png)](./cloud-deployments/aws/cloudformation/DEPLOY.md) | 
-[![Deploy on GCP](./images/deployBtns/aws.png)](./cloud-deployments/gcp/deployment/DEPLOY.md) |               
-[![Deploy on DigitalOcean](./images/deployBtns/aws.png)](./cloud-deployments/digitalocean/terraform/DEPLOY.md) |            
-[![Deploy on Render.com](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render) |
+| [![Deploy on Docker][docker-btn]](./docker/HOW_TO_USE_DOCKER.md) |  [![Deploy on AWS][aws-btn]](./cloud-deployments/aws/cloudformation/DEPLOY.md) | [![Deploy on GCP][aws-btn]](./cloud-deployments/gcp/deployment/DEPLOY.md) | [![Deploy on DigitalOcean][aws-btn]](./cloud-deployments/digitalocean/terraform/DEPLOY.md) |  [![Deploy on Render.com][render-btn]](https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render) |
 
 
 ### How to get started (Development environment)
@@ -145,12 +140,6 @@ You can verify these claims by finding all locations `Telemetry.sendTelemetry` i
 
 </details>
 
-<div align="right">
-
-[![][back-to-top]](#readme-top)
-
-</div>
-
 ## 🔗 More Products
 
 - **[VectorAdmin][vector-admin]:** An all-in-one GUI & tool-suite for managing vector databases.
@@ -172,3 +161,8 @@ This project is [MIT](./LICENSE) licensed.
 [profile-link]: https://github.com/mintplex-labs
 [vector-admin]: https://github.com/mintplex-labs/vector-admin
 [assistant-swarm]: https://github.com/Mintplex-Labs/openai-assistant-swarm
+[docker-btn]: ./images/deployBtns/docker.png
+[aws-btn]: ./images/deployBtns/aws.png
+[gcp-btn]: ./images/deployBtns/gcp.png
+[do-btn]: ./images/deployBtns/do.png
+[render-btn]: https://render.com/images/deploy-to-render-button.svg
