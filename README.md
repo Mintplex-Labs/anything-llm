@@ -83,7 +83,7 @@ This monorepo consists of three main sections:
 - `collector`: NodeJS express server that process and parses documents from the UI.
 
 ## 🛳 Self Hosting
-MintplexLabs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
+Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
 | Docker                                 | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----:|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] |  [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy]  | [![Deploy on DigitalOcean][do-btn]][aws-deploy]  |  [![Deploy on Render.com][render-btn]][render-deploy] |
