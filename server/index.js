@@ -1,12 +1,16 @@
+const path = require("path");
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
-  : require("dotenv").config();
+  : require("dotenv").config({
+      path: process.env.STORAGE_DIR
+        ? path.resolve(process.env.STORAGE_DIR, ".env")
+        : path.resolve(__dirname, ".env"),
+    });
 
 const express = require("express");
 const bodyParser = require("body-parser");
 const serveIndex = require("serve-index");
 const cors = require("cors");
-const path = require("path");
 const { reqBody } = require("./utils/http");
 const { systemEndpoints } = require("./endpoints/system");
 const { workspaceEndpoints } = require("./endpoints/workspaces");

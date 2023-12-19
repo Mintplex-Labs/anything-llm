@@ -4,7 +4,7 @@
 
 # Copy pre-built assets into storage dir.
 cp -r /app/server/storage/assets/ "$STORAGE_DIR/assets"
-mkdir -p "$STORAGE_DIR/documents"
+mkdir -p "$STORAGE_DIR/documents/custom-documents"
 mkdir -p "$STORAGE_DIR/models"
 mkdir -p "$STORAGE_DIR/vector-cache"
 mkdir -p "$STORAGE_DIR/assets"

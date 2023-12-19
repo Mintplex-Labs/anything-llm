@@ -1,5 +1,9 @@
 const fs = require("fs");
 const path = require("path");
+const documentsFolder =
+  process.env.NODE_ENV === "production"
+    ? path.resolve("/storage/documents") // hardcoded to Render storage mount.
+    : path.resolve(__dirname, "../../../server/storage/documents");
 
 function trashFile(filepath) {
   if (!fs.existsSync(filepath)) return;
@@ -32,10 +36,8 @@ function writeToServerDocuments(
 ) {
   const destination = destinationOverride
     ? path.resolve(destinationOverride)
-    : path.resolve(
-        __dirname,
-        "../../../server/storage/documents/custom-documents"
-      );
+    : path.resolve(documentsFolder, "custom-documents");
+
   if (!fs.existsSync(destination))
     fs.mkdirSync(destination, { recursive: true });
   const destinationFilePath = path.resolve(destination, filename);
@@ -88,6 +90,7 @@ async function wipeCollectorStorage() {
 }
 
 module.exports = {
+  documentsFolder,
   trashFile,
   createdDate,
   writeToServerDocuments,

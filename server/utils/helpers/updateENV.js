@@ -340,7 +340,9 @@ async function dumpENV() {
     })
     .join("\n");
 
-  const envPath = path.join(__dirname, "../../.env");
+  const envPath = process.env.STORAGE_DIR
+    ? path.join(process.env.STORAGE_DIR, ".env")
+    : path.join(__dirname, "../../.env");
   fs.writeFileSync(envPath, envResult, { encoding: "utf8", flag: "w" });
   return true;
 }

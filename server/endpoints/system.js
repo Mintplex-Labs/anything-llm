@@ -1,6 +1,12 @@
+const path = require("path");
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
-  : require("dotenv").config();
+  : require("dotenv").config({
+      path: process.env.STORAGE_DIR
+        ? path.resolve(process.env.STORAGE_DIR, ".env")
+        : path.resolve(__dirname, ".env"),
+    });
+
 const { viewLocalFiles } = require("../utils/files");
 const { exportData, unpackAndOverwriteImport } = require("../utils/files/data");
 const {
@@ -29,7 +35,6 @@ const { handleImports } = setupDataImports();
 const { handleLogoUploads } = setupLogoUploads();
 const { handlePfpUploads } = setupPfpUploads();
 const fs = require("fs");
-const path = require("path");
 const {
   getDefaultFilename,
   determineLogoFilepath,

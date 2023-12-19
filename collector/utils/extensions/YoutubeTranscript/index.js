@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
-const { writeToServerDocuments } = require("../../files");
+const { writeToServerDocuments, documentsFolder } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 
 function validYoutubeVideoUrl(url) {
@@ -55,10 +55,7 @@ async function loadYouTubeTranscript({ url }) {
   const outFolder = slugify(
     `${metadata.author} YouTube transcripts`
   ).toLowerCase();
-  const outFolderPath = path.resolve(
-    __dirname,
-    `../../../../server/storage/documents/${outFolder}`
-  );
+  const outFolderPath = path.resolve(documentsFolder, outFolder);
   if (!fs.existsSync(outFolderPath)) fs.mkdirSync(outFolderPath);
 
   const data = {

@@ -1,8 +1,12 @@
+const path = require("path");
+const prisma = require("../utils/prisma");
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
-  : require("dotenv").config();
-
-const prisma = require("../utils/prisma");
+  : require("dotenv").config({
+      path: process.env.STORAGE_DIR
+        ? path.resolve(process.env.STORAGE_DIR, ".env")
+        : path.resolve(__dirname, ".env"),
+    });
 
 const SystemSettings = {
   supportedFields: [

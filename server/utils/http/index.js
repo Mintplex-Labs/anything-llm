@@ -1,6 +1,11 @@
+const path = require("path");
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
-  : require("dotenv").config();
+  : require("dotenv").config({
+      path: process.env.STORAGE_DIR
+        ? path.resolve(process.env.STORAGE_DIR, ".env")
+        : path.resolve(__dirname, ".env"),
+    });
 const JWT = require("jsonwebtoken");
 const { User } = require("../../models/user");
 
