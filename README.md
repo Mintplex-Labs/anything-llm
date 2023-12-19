@@ -26,9 +26,12 @@ A full-stack application that enables you to turn any document, resource, or pie
 
 ![Chatting](/images/screenshots/chatting.gif)
 
-### Watch the demo!
+<details>
+<summary><kbd>Watch the demo!</kbd></summary>
 
 [![Watch the video](/images/youtube.png)](https://youtu.be/f95rGD9trL0)
+
+</details>
 
 
 ### Product Overview
@@ -79,63 +82,27 @@ This monorepo consists of three main sections:
 - `docker`: Docker instructions and build process + information for building from source.
 - `collector`: NodeJS express server that process and parses documents from the UI.
 
-### Minimum Requirements
-> [!TIP]
-> Running AnythingLLM on AWS/GCP/Azure? 
-> You should aim for at least 2GB of RAM. Disk storage is proportional to however much data
-> you will be storing (documents, vectors, models, etc). Minimum 10GB recommended.
+## 🛳 Self Hosting
+Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
+| Docker                                 | AWS | GCP | Digital Ocean | Render.com |
+|----------------------------------------|----:|-----|---------------|------------|
+| [![Deploy on Docker][docker-btn]][docker-deploy] |  [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy]  | [![Deploy on DigitalOcean][do-btn]][aws-deploy]  |  [![Deploy on Render.com][render-btn]][render-deploy] |
 
-- `yarn` and `node` on your machine
-- access to an LLM running locally or remotely.
 
-*AnythingLLM by default uses a built-in vector database powered by [LanceDB](https://github.com/lancedb/lancedb)
-
-*AnythingLLM by default embeds text on instance privately [Learn More](/server/storage/models/README.md)
-
-## Recommended usage with Docker (easy!)
-> [!IMPORTANT]
-> If you are running another service on localhost like Chroma, LocalAi, or LMStudio
-> you will need to use http://host.docker.internal:xxxx to access the service from within
-> the docker container using AnythingLLM as `localhost:xxxx` will not resolve for the host system.
-> eg: Chroma host URL running on localhost:8000 on host machine needs to be http://host.docker.internal:8000
-> when used in AnythingLLM.
-
-> [!TIP]
-> It is best to mount the containers storage volume to a folder on your host machine
-> so that you can pull in future updates without deleting your existing data!
-
-`docker pull mintplexlabs/anythingllm:master`
-
-```shell
-export STORAGE_LOCATION=$HOME/anythingllm && \
-mkdir -p $STORAGE_LOCATION && \
-touch "$STORAGE_LOCATION/.env" && \
-docker run -d -p 3001:3001 \
---cap-add SYS_ADMIN \
--v ${STORAGE_LOCATION}:/app/server/storage \
--v ${STORAGE_LOCATION}/.env:/app/server/.env \
--e STORAGE_DIR="/app/server/storage" \
-mintplexlabs/anythingllm:master
-```
-
-Open [http://localhost:3001](http://localhost:3001) and you are now using AnythingLLM! 
-All your data and progress will now persist between container rebuilds or pulls from Docker Hub.
-
-[Learn more about running AnythingLLM with Docker](./docker/HOW_TO_USE_DOCKER.md)
-
-### How to get started (Development environment)
+## How to setup for development
 - `yarn setup` from the project root directory.
   - This will fill in the required `.env` files you'll need in each of the application sections. Go fill those out before proceeding or else things won't work right.
 - `yarn prisma:setup` To build the Prisma client and migrate the database.
 
-To boot the server locally (run commands from root of repo):
+To boot the server locally (from root of repo):
 - ensure `server/.env.development` is set and filled out.
 `yarn dev:server`
  
-To boot the frontend locally (run commands from root of repo):
-- ensure `frontend/.env` is set and filled out.
-- ensure `VITE_API_BASE="http://localhost:3001/api"`
+To boot the frontend locally (from root of repo):
 `yarn dev:frontend`
+
+To then run the document collector (from root of repo)
+`yarn dev:collector`
 
 [Learn about documents](./server/storage/documents/DOCUMENTS.md)
 
@@ -145,6 +112,9 @@ To boot the frontend locally (run commands from root of repo):
 - create issue
 - create PR with branch name format of `<issue number>-<short name>`
 - yee haw let's merge
+
+<details>
+<summary><kbd>Telemetry for AnythingLLM</kbd></summary>
 
 ## Telemetry
 AnythingLLM by Mintplex Labs Inc contains a telemetry feature that collects anonymous usage information.
@@ -168,3 +138,37 @@ We will only track usage details that help us make product and roadmap decisions
 - Chat is sent. This is the most regular "event" and gives us an idea of the daily-activity of this project across all installations. Again, only the event is sent - we have no information on the nature or content of the chat itself.
 
 You can verify these claims by finding all locations `Telemetry.sendTelemetry` is called. Additionally these events are written to the output log so you can also see the specific data which was sent - if enabled. No IP or other identifying information is collected. The Telemetry provider is [PostHog](https://posthog.com/) - an open-source telemetry collection service.
+
+</details>
+
+## 🔗 More Products
+
+- **[VectorAdmin][vector-admin]:** An all-in-one GUI & tool-suite for managing vector databases.
+- **[OpenAI Assistant Swarm][assistant-swarm]:** Turn your entire library of OpenAI assistants into one single army commanded from a single agent.
+
+<div align="right">
+
+[![][back-to-top]](#readme-top)
+
+</div>
+
+---
+
+Copyright © 2023 [Mintplex Labs][profile-link]. <br />
+This project is [MIT](./LICENSE) licensed.
+
+<!-- LINK GROUP -->
+[back-to-top]: https://img.shields.io/badge/-BACK_TO_TOP-222628?style=flat-square
+[profile-link]: https://github.com/mintplex-labs
+[vector-admin]: https://github.com/mintplex-labs/vector-admin
+[assistant-swarm]: https://github.com/Mintplex-Labs/openai-assistant-swarm
+[docker-btn]: ./images/deployBtns/docker.png
+[docker-deploy]: ./docker/HOW_TO_USE_DOCKER.md
+[aws-btn]: ./images/deployBtns/aws.png
+[aws-deploy]: ./cloud-deployments/aws/cloudformation/DEPLOY.md
+[gcp-btn]: https://deploy.cloud.run/button.svg
+[gcp-deploy]: ./cloud-deployments/gcp/deployment/DEPLOY.md
+[do-btn]: https://www.deploytodo.com/do-btn-blue.svg
+[do-deploy]: ./cloud-deployments/digitalocean/terraform/DEPLOY.md
+[render-btn]: https://render.com/images/deploy-to-render-button.svg
+[render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
