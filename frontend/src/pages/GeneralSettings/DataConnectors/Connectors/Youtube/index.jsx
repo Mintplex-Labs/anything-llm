@@ -5,7 +5,7 @@ import { DATA_CONNECTORS } from "@/components/DataConnectorOption";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 
-export default function GithubConnectorSetup() {
+export default function YouTubeTranscriptConnectorSetup() {
   const { image } = DATA_CONNECTORS["youtube-transcript"];
   const [loading, setLoading] = useState(false);
   const handleSubmit = async (e) => {
@@ -54,7 +54,7 @@ export default function GithubConnectorSetup() {
         <div className="flex w-full">
           <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
             <div className="flex w-full gap-x-4 items-center  pb-6 border-white border-b-2 border-opacity-10">
-              <img src={image} alt="Github" className="rounded-lg h-16 w-16" />
+              <img src={image} alt="YouTube" className="rounded-lg h-16 w-16" />
               <div className="w-full flex flex-col gap-y-1">
                 <div className="items-center flex gap-x-4">
                   <p className="text-2xl font-semibold text-white">
