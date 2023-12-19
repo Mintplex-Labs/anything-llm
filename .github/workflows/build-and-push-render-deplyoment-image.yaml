@@ -8,6 +8,8 @@ jobs:
   push_to_registries:
     name: Push Docker image to DockerHub for use on Render.com deployments
     runs-on: ubuntu-latest
+    env:
+      STORAGE_DIR: /storage
     permissions:
       packages: write
       contents: read
