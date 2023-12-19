@@ -18,7 +18,7 @@ async function scrapeGenericUrl(link) {
   const url = new URL(link);
   const filename = (url.host + "-" + url.pathname).replace(".", "_");
 
-  data = {
+  const data = {
     id: v4(),
     url: "file://" + slugify(filename) + ".html",
     title: slugify(filename) + ".html",
@@ -43,6 +43,7 @@ async function getPageContent(link) {
     const loader = new PuppeteerWebBaseLoader(link, {
       launchOptions: {
         headless: "new",
+        args: ["--disable-sandbox", "--disable-setuid-sandbox"],
       },
       gotoOptions: {
         waitUntil: "domcontentloaded",

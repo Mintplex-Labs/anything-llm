@@ -39,6 +39,7 @@
         "libgfortran5",
         "libgbm1",
         "libasound2",
+        "libatk-bridge2.0-0",
         "libatk1.0-0",
         "libc6",
         "libcairo2",
@@ -51,6 +52,8 @@
         "libgtk-3-0",
         "libnspr4",
         "libpango-1.0-0",
+        "libpangocairo-1.0-0",
+        "libstdc++6",
         "libx11-6",
         "libx11-xcb1",
         "libxcb1",
@@ -71,6 +74,7 @@
         "lsb-release",
         "xdg-utils",
         "git",
+        "wget",
         "build-essential",
         "ffmpeg"
       ]
@@ -98,16 +102,10 @@
   // Configure tool-specific properties.
   "customizations": {
     "codespaces": {
-      "openFiles": [
-        "README.md",
-        ".devcontainer/README.md"
-      ]
+      "openFiles": ["README.md", ".devcontainer/README.md"]
     },
     "vscode": {
-      "openFiles": [
-        "README.md",
-        ".devcontainer/README.md"
-      ],
+      "openFiles": ["README.md", ".devcontainer/README.md"],
       "extensions": [
         "bierner.github-markdown-preview",
         "bradlc.vscode-tailwindcss",
