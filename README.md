@@ -86,7 +86,7 @@ This monorepo consists of three main sections:
 MintplexLabs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
 | Docker                                 | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----:|-----|---------------|------------|
-| [![Deploy on Docker][docker-btn]](./docker/HOW_TO_USE_DOCKER.md) |  [![Deploy on AWS][aws-btn]](./cloud-deployments/aws/cloudformation/DEPLOY.md) | [![Deploy on GCP][aws-btn]](./cloud-deployments/gcp/deployment/DEPLOY.md) | [![Deploy on DigitalOcean][aws-btn]](./cloud-deployments/digitalocean/terraform/DEPLOY.md) |  [![Deploy on Render.com][render-btn]](https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render) |
+| [![Deploy on Docker][docker-btn]][docker-deploy] |  [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy]  | [![Deploy on DigitalOcean][do-btn]][aws-deploy]  |  [![Deploy on Render.com][render-btn]][render-deploy] |
 
 
 ### How to get started (Development environment)
@@ -162,7 +162,12 @@ This project is [MIT](./LICENSE) licensed.
 [vector-admin]: https://github.com/mintplex-labs/vector-admin
 [assistant-swarm]: https://github.com/Mintplex-Labs/openai-assistant-swarm
 [docker-btn]: ./images/deployBtns/docker.png
+[docker-deploy]: ./docker/HOW_TO_USE_DOCKER.md
 [aws-btn]: ./images/deployBtns/aws.png
-[gcp-btn]: ./images/deployBtns/gcp.png
-[do-btn]: ./images/deployBtns/do.png
+[aws-deploy]: ./cloud-deployments/aws/cloudformation/DEPLOY.md
+[gcp-btn]: https://deploy.cloud.run/button.svg
+[gcp-deploy]: ./cloud-deployments/gcp/deployment/DEPLOY.md
+[do-btn]: https://www.deploytodo.com/do-btn-blue.svg
+[do-deploy]: ./cloud-deployments/digitalocean/terraform/DEPLOY.md
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
+[render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
