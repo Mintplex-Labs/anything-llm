@@ -1,3 +1,4 @@
+const loadYouTubeTranscript = require("../utils/extensions/YoutubTranscript");
 const { reqBody } = require("../utils/http");
 
 function extensions(app) {
@@ -42,6 +43,24 @@ function extensions(app) {
         reason: e.message,
         data: {
           branches: []
+        }
+      });
+    }
+    return;
+  });
+
+  app.post("/ext/youtube-transcript", async function (request, response) {
+    try {
+      const { success, reason, data } = await loadYouTubeTranscript(reqBody(request));
+      response.status(200).json({ success, reason, data });
+    } catch (e) {
+      console.error(e);
+      response.status(400).json({
+        success: false,
+        reason: e.message,
+        data: {
+          title: null,
+          author: null
         }
       });
     }

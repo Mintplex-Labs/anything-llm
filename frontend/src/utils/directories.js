@@ -13,7 +13,7 @@ export function getFileExtension(path) {
 
 export function middleTruncate(str, n) {
   const fileExtensionPattern = /([^.]*)$/;
-  const extensionMatch = str.match(fileExtensionPattern);
+  const extensionMatch = str.includes(".") && str.match(fileExtensionPattern);
 
   if (str.length <= n) return str;
 

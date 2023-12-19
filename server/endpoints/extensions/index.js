@@ -48,6 +48,27 @@ function extensionEndpoints(app) {
       }
     }
   );
+
+  app.post(
+    "/ext/youtube/transcript",
+    [validatedRequest, flexUserRoleValid],
+    async (request, response) => {
+      try {
+        const responseFromProcessor = await forwardExtensionRequest({
+          endpoint: "/ext/youtube-transcript",
+          method: "POST",
+          body: request.body,
+        });
+        await Telemetry.sendTelemetry("extension_invoked", {
+          type: "youtube_transcript",
+        });
+        response.status(200).json(responseFromProcessor);
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { extensionEndpoints };

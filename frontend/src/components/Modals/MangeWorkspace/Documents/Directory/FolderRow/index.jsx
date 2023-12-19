@@ -53,7 +53,7 @@ export default function FolderRow({
           selected ? "bg-sky-500/20" : ""
         }`}
       >
-        <div className="col-span-4 flex gap-x-[4px] items-center">
+        <div className="col-span-6 flex gap-x-[4px] items-center">
           <div
             className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
             role="checkbox"
@@ -79,7 +79,6 @@ export default function FolderRow({
           </p>
         </div>
         <p className="col-span-2 pl-3.5" />
-        <p className="col-span-2 pl-3" />
         <p className="col-span-2 pl-2" />
         <div className="col-span-2 flex justify-end items-center">
           {item.name !== "custom-documents" && (
