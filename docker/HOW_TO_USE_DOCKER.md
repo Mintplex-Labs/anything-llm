@@ -31,7 +31,9 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 
 `docker pull mintplexlabs/anythingllm:master`
 
-```shell
+| Linux/MacOs  | Windows Powershell |
+|--------------|--------------------|
+| ```shell
 export STORAGE_LOCATION=$HOME/anythingllm && \
 mkdir -p $STORAGE_LOCATION && \
 touch "$STORAGE_LOCATION/.env" && \
@@ -41,7 +43,17 @@ docker run -d -p 3001:3001 \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
 mintplexlabs/anythingllm:master
-```
+``` | ```shell
+export STORAGE_LOCATION=$HOME/anythingllm && \
+mkdir -p $STORAGE_LOCATION && \
+touch "$STORAGE_LOCATION/.env" && \
+docker run -d -p 3001:3001 \
+--cap-add SYS_ADMIN \
+-v ${STORAGE_LOCATION}:/app/server/storage \
+-v ${STORAGE_LOCATION}/.env:/app/server/.env \
+-e STORAGE_DIR="/app/server/storage" \
+mintplexlabs/anythingllm:master
+``` |
 
 Go to `http://localhost:3001` and you are now using AnythingLLM! All your data and progress will persist between
 container rebuilds or pulls from Docker Hub.
