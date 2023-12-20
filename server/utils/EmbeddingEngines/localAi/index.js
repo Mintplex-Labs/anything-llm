@@ -17,7 +17,7 @@ class LocalAiEmbedder {
     });
     this.openai = new OpenAIApi(config);
 
-    // Arbitrary limit of string size in chars to ensure we stay within reasonable POST request size.
+    // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.embeddingMaxChunkLength = maximumChunkLength();
   }
 

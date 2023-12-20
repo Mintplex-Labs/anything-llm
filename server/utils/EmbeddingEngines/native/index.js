@@ -13,8 +13,8 @@ class NativeEmbedder {
     );
     this.modelPath = path.resolve(this.cacheDir, "Xenova", "all-MiniLM-L6-v2");
 
-    // Arbitrary limit of string size in chars to ensure we stay within reasonable POST request size.
-    this.embeddingMaxChunkLength = 1_000;
+    // Limit of how many strings we can process in a single pass to stay with resource or network limits
+    this.embeddingMaxChunkLength = 50;
 
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);

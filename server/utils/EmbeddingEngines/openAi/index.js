@@ -10,7 +10,7 @@ class OpenAiEmbedder {
     const openai = new OpenAIApi(config);
     this.openai = openai;
 
-    // Arbitrary limit of string size in chars to ensure we stay within reasonable POST request size.
+    // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.embeddingMaxChunkLength = 1_000;
   }
 

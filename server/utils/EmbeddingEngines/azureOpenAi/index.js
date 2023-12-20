@@ -14,7 +14,7 @@ class AzureOpenAiEmbedder {
     );
     this.openai = openai;
 
-    // The maximum amount of "inputs" that OpenAI API can process in a single call.
+    // Limit of how many strings we can process in a single pass to stay with resource or network limits
     // https://learn.microsoft.com/en-us/azure/ai-services/openai/faq#i-am-trying-to-use-embeddings-and-received-the-error--invalidrequesterror--too-many-inputs--the-max-number-of-inputs-is-1---how-do-i-fix-this-:~:text=consisting%20of%20up%20to%2016%20inputs%20per%20API%20request
     this.embeddingMaxChunkLength = 16;
   }
