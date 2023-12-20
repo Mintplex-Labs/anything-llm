@@ -32,42 +32,42 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 `docker pull mintplexlabs/anythingllm:master`
 
 <table>
-  <tr>
-    <th>Linux/MacOs</th>
-    <th>Windows Powershell</th>
-  </tr>
-  <tr>
-    <td>
+<tr>
+<th>Linux/MacOs</th>
+<th>Windows Powershell</th>
+</tr>
+<tr>
+<td>
 
-      ```shell
-      export STORAGE_LOCATION=$HOME/anythingllm && \
-      mkdir -p $STORAGE_LOCATION && \
-      touch "$STORAGE_LOCATION/.env" && \
-      docker run -d -p 3001:3001 \
-      --cap-add SYS_ADMIN \
-      -v ${STORAGE_LOCATION}:/app/server/storage \
-      -v ${STORAGE_LOCATION}/.env:/app/server/.env \
-      -e STORAGE_DIR="/app/server/storage" \
-      mintplexlabs/anythingllm:master
-      ```
+```shell
+export STORAGE_LOCATION=$HOME/anythingllm && \
+mkdir -p $STORAGE_LOCATION && \
+touch "$STORAGE_LOCATION/.env" && \
+docker run -d -p 3001:3001 \
+--cap-add SYS_ADMIN \
+-v ${STORAGE_LOCATION}:/app/server/storage \
+-v ${STORAGE_LOCATION}/.env:/app/server/.env \
+-e STORAGE_DIR="/app/server/storage" \
+mintplexlabs/anythingllm:master
+```
 
-    </td>
-    <td>
+</td>
+<td>
 
-      ```shell
-      export STORAGE_LOCATION=$HOME/anythingllm && \
-      mkdir -p $STORAGE_LOCATION && \
-      touch "$STORAGE_LOCATION/.env" && \
-      docker run -d -p 3001:3001 \
-      --cap-add SYS_ADMIN \
-      -v ${STORAGE_LOCATION}:/app/server/storage \
-      -v ${STORAGE_LOCATION}/.env:/app/server/.env \
-      -e STORAGE_DIR="/app/server/storage" \
-      mintplexlabs/anythingllm:master
-      ```
-      
-    </td>
-  </tr>
+```shell
+export STORAGE_LOCATION=$HOME/anythingllm && \
+mkdir -p $STORAGE_LOCATION && \
+touch "$STORAGE_LOCATION/.env" && \
+docker run -d -p 3001:3001 \
+--cap-add SYS_ADMIN \
+-v ${STORAGE_LOCATION}:/app/server/storage \
+-v ${STORAGE_LOCATION}/.env:/app/server/.env \
+-e STORAGE_DIR="/app/server/storage" \
+mintplexlabs/anythingllm:master
+```
+
+</td>
+</tr>
 </table>
 
 Go to `http://localhost:3001` and you are now using AnythingLLM! All your data and progress will persist between
