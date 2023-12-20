@@ -55,9 +55,9 @@ mintplexlabs/anythingllm:master
 <td>
 
 ```powershell
-$env:STORAGE_LOCATION="$HOME\Documents\anythingllm";
-If(!(Test-Path $env:STORAGE_LOCATION)) {New-Item $env:STORAGE_LOCATION -ItemType Directory};
-If(!(Test-Path "$env:STORAGE_LOCATION\.env")) {New-Item "$env:STORAGE_LOCATION\.env"};
+$env:STORAGE_LOCATION="$HOME\Documents\anythingllm"; `
+If(!(Test-Path $env:STORAGE_LOCATION)) {New-Item $env:STORAGE_LOCATION -ItemType Directory}; `
+If(!(Test-Path "$env:STORAGE_LOCATION\.env")) {New-Item "$env:STORAGE_LOCATION\.env"}; `
 docker run -d -p 3001:3001 `
 --cap-add SYS_ADMIN `
 -v "$env:STORAGE_LOCATION`:/app/server/storage" `
