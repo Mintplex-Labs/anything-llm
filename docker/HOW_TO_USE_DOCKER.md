@@ -38,6 +38,7 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
   </tr>
   <tr>
     <td>
+
       ```shell
       export STORAGE_LOCATION=$HOME/anythingllm && \
       mkdir -p $STORAGE_LOCATION && \
@@ -49,8 +50,10 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
       -e STORAGE_DIR="/app/server/storage" \
       mintplexlabs/anythingllm:master
       ```
+
     </td>
     <td>
+
       ```shell
       export STORAGE_LOCATION=$HOME/anythingllm && \
       mkdir -p $STORAGE_LOCATION && \
@@ -62,6 +65,7 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
       -e STORAGE_DIR="/app/server/storage" \
       mintplexlabs/anythingllm:master
       ```
+      
     </td>
   </tr>
 </table>
