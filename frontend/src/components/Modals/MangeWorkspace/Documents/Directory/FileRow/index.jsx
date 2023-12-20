@@ -60,7 +60,7 @@ export default function FileRow({
         selected ? "bg-sky-500/20" : ""
       } ${expanded ? "bg-sky-500/10" : ""}`}`}
     >
-      <div className="pl-2 col-span-6 flex gap-x-[4px] items-center">
+      <div className="pl-2 col-span-5 flex gap-x-[4px] items-center">
         <div
           className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
           role="checkbox"
@@ -88,10 +88,12 @@ export default function FileRow({
           )}
         </div>
       </div>
-      <p className="col-span-2 pl-3.5 whitespace-nowrap">
+      <p className="col-span-3 pl-3.5 whitespace-nowrap">
         {formatDate(item?.published)}
       </p>
-      <p className="col-span-2 pl-2 uppercase">{getFileExtension(item.url)}</p>
+      <p className="col-span-2 pl-2 uppercase overflow-x-hidden">
+        {getFileExtension(item.url)}
+      </p>
       <div className="col-span-2 flex justify-end items-center">
         {item?.cached && (
           <div className="bg-white/10 rounded-3xl">
