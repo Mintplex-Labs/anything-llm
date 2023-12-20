@@ -2,8 +2,20 @@
 
 Use the Dockerized version of AnythingLLM for a much faster and complete startup of AnythingLLM.
 
-## Requirements
-- Install [Docker](https://www.docker.com/) on your computer or machine.
+
+### Minimum Requirements
+> [!TIP]
+> Running AnythingLLM on AWS/GCP/Azure? 
+> You should aim for at least 2GB of RAM. Disk storage is proportional to however much data
+> you will be storing (documents, vectors, models, etc). Minimum 10GB recommended.
+
+- `docker` installed on your machine
+- `yarn` and `node` on your machine
+- access to an LLM running locally or remotely
+
+*AnythingLLM by default uses a built-in vector database powered by [LanceDB](https://github.com/lancedb/lancedb)
+
+*AnythingLLM by default embeds text on instance privately [Learn More](../server/storage/models/README.md)
 
 ## Recommend way to run dockerized AnythingLLM!
 > [!IMPORTANT]
@@ -34,7 +46,13 @@ mintplexlabs/anythingllm:master
 Go to `http://localhost:3001` and you are now using AnythingLLM! All your data and progress will persist between
 container rebuilds or pulls from Docker Hub.
 
-## Build locally from source
+## How to use the user interface
+- To access the full application, visit `http://localhost:3001` in your browser.
+
+## About UID and GID in the ENV
+- The UID and GID are set to 1000 by default. This is the default user in the Docker container and on most host operating systems. If there is a mismatch between your host user UID and GID and what is set in the `.env` file, you may experience permission issues.
+
+## Build locally from source _not recommended for casual use_
 - `git clone` this repo and `cd anything-llm` to get to the root directory.
 - `touch server/storage/anythingllm.db` to create empty SQLite DB file.
 - `cd docker/`
@@ -42,12 +60,6 @@ container rebuilds or pulls from Docker Hub.
 - `docker-compose up -d --build` to build the image - this will take a few moments.
 
 Your docker host will show the image as online once the build process is completed. This will build the app to `http://localhost:3001`.
-
-## How to use the user interface
-- To access the full application, visit `http://localhost:3001` in your browser.
-
-## About UID and GID in the ENV
-- The UID and GID are set to 1000 by default. This is the default user in the Docker container and on most host operating systems. If there is a mismatch between your host user UID and GID and what is set in the `.env` file, you may experience permission issues.
 
 ## ⚠️ Vector DB support ⚠️
 Out of the box, all vector databases are supported. Any vector databases requiring special configuration are listed below.
@@ -81,5 +93,3 @@ For example, if the docker instance is available on `192.186.1.222` your `VITE_A
 
 ### Still not working?
 [Ask for help on Discord](https://discord.gg/6UyHPeGZAC)
-
-
