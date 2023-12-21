@@ -69,9 +69,9 @@ app.all("*", function (_, response) {
 });
 
 app
-  .listen(8888, async () => {
+  .listen(process.env.COLLECTOR_PORT || 8888, async () => {
     await wipeCollectorStorage();
-    console.log(`Document processor app listening on port 8888`);
+    console.log(`[${process.env.NODE_ENV || 'development'}] AnythingLLM Standalone Document processor listening on port ${process.env.COLLECTOR_PORT || 8888}`);
   })
   .on("error", function (_) {
     process.once("SIGUSR2", function () {

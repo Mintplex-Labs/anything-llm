@@ -108,7 +108,6 @@ export default function UploadFile({
               Click to upload or drag and drop
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
-              Supported file extensions are{" "}
               {Object.values(fileTypes ?? [])
                 .flat()
                 .join(" ")}

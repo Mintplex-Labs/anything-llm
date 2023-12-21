@@ -35,7 +35,7 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
       `-- Working on message "${mail.subject || "Unknown subject"}" --`
     );
 
-    data = {
+    const data = {
       id: v4(),
       url: "file://" + fullFilePath,
       title: mail?.subject

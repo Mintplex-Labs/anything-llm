@@ -18,8 +18,7 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
   const docs = await pdfLoader.load();
   for (const doc of docs) {
     console.log(
-      `-- Parsing content from pg ${
-        doc.metadata?.loc?.pageNumber || "unknown"
+      `-- Parsing content from pg ${doc.metadata?.loc?.pageNumber || "unknown"
       } --`
     );
     if (!doc.pageContent.length) continue;
@@ -33,7 +32,7 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
   }
 
   const content = pageContent.join("");
-  data = {
+  const data = {
     id: v4(),
     url: "file://" + fullFilePath,
     title: docs[0]?.metadata?.pdf?.info?.Title || filename,

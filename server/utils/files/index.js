@@ -99,8 +99,6 @@ async function viewLocalFiles() {
 // Searches the vector-cache folder for existing information so we dont have to re-embed a
 // document and can instead push directly to vector db.
 async function cachedVectorInformation(filename = null, checkOnly = false) {
-  if (!process.env.CACHE_VECTORS)
-    return checkOnly ? false : { exists: false, chunks: [] };
   if (!filename) return checkOnly ? false : { exists: false, chunks: [] };
 
   const digest = uuidv5(filename, uuidv5.URL);
@@ -123,7 +121,6 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
 // vectorData: pre-chunked vectorized data for a given file that includes the proper metadata and chunk-size limit so it can be iterated and dumped into Pinecone, etc
 // filename is the fullpath to the doc so we can compare by filename to find cached matches.
 async function storeVectorResult(vectorData = [], filename = null) {
-  if (!process.env.CACHE_VECTORS) return;
   if (!filename) return;
   console.log(
     `Caching vectorized results of ${filename} to prevent duplicated embedding.`

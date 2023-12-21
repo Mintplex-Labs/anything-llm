@@ -9,7 +9,7 @@ function setupMulter() {
       const uploadOutput =
         process.env.NODE_ENV === "development"
           ? path.resolve(__dirname, `../../../collector/hotdir`)
-          : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
+          : path.resolve(process.env.STORAGE_DIR, `hotdir`);
       cb(null, uploadOutput);
     },
     filename: function (_, file, cb) {

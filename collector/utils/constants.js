@@ -1,4 +1,7 @@
-const WATCH_DIRECTORY = require("path").resolve(__dirname, "../hotdir");
+const path = require('path');
+const WATCH_DIRECTORY = process.env.NODE_ENV === "development"
+  ? path.resolve(__dirname, `../../hotdir`)
+  : path.resolve(process.env.STORAGE_DIR, `hotdir`);
 
 const ACCEPTED_MIMES = {
   "text/plain": [".txt", ".md"],
@@ -24,24 +27,31 @@ const ACCEPTED_MIMES = {
   "video/mpeg": [".mpeg"],
 };
 
+const asText = require('../processSingleFile/convert/asTxt.js')
+const asPdf = require('../processSingleFile/convert/asPDF.js')
+const asDocx = require('../processSingleFile/convert/asDocx.js')
+const asOfficeMime = require('../processSingleFile/convert/asOfficeMime.js')
+const asMbox = require('../processSingleFile/convert/asMbox.js')
+const asAudio = require('../processSingleFile/convert/asAudio.js')
+
 const SUPPORTED_FILETYPE_CONVERTERS = {
-  ".txt": "./convert/asTxt.js",
-  ".md": "./convert/asTxt.js",
-  ".html": "./convert/asTxt.js",
-  ".pdf": "./convert/asPDF.js",
+  ".txt": asText,
+  ".md": asText,
+  ".html": asText,
+  ".pdf": asPdf,
 
-  ".docx": "./convert/asDocx.js",
-  ".pptx": "./convert/asOfficeMime.js",
+  ".docx": asDocx,
+  ".pptx": asOfficeMime,
 
-  ".odt": "./convert/asOfficeMime.js",
-  ".odp": "./convert/asOfficeMime.js",
+  ".odt": asOfficeMime,
+  ".odp": asOfficeMime,
 
-  ".mbox": "./convert/asMbox.js",
+  ".mbox": asMbox,
 
-  ".mp3": "./convert/asAudio.js",
-  ".wav": "./convert/asAudio.js",
-  ".mp4": "./convert/asAudio.js",
-  ".mpeg": "./convert/asAudio.js",
+  ".mp3": asAudio,
+  ".wav": asAudio,
+  ".mp4": asAudio,
+  ".mpeg": asAudio,
 };
 
 module.exports = {

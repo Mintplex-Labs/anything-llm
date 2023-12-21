@@ -46,7 +46,7 @@ async function asAudio({ fullFilePath = "", filename = "" }) {
     return { success: false, reason: `No text content found in ${filename}.` };
   }
 
-  data = {
+  const data = {
     id: v4(),
     url: "file://" + fullFilePath,
     title: filename,
@@ -73,7 +73,10 @@ async function convertToWavAudioData(sourcePath) {
     let buffer;
     const wavefile = require("wavefile");
     const ffmpeg = require("fluent-ffmpeg");
-    const outFolder = path.resolve(__dirname, `../../storage/tmp`);
+    const outFolder = process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, `../../storage/tmp`)
+      : path.resolve(process.env.STORAGE_DIR, `tmp`);
+
     if (!fs.existsSync(outFolder)) fs.mkdirSync(outFolder, { recursive: true });
 
     const fileExtension = path.extname(sourcePath).toLowerCase();

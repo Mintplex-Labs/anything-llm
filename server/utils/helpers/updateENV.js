@@ -279,9 +279,9 @@ async function dumpENV() {
   const frozenEnvs = {};
   const protectedKeys = [
     ...Object.values(KEY_MAPPING).map((values) => values.envKey),
-    "CACHE_VECTORS",
     "STORAGE_DIR",
     "SERVER_PORT",
+    "COLLECTOR_PORT",
   ];
 
   for (const key of protectedKeys) {

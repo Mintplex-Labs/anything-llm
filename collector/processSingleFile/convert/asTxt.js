@@ -23,7 +23,7 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
   }
 
   console.log(`-- Working ${filename} --`);
-  data = {
+  const data = {
     id: v4(),
     url: "file://" + fullFilePath,
     title: filename,

@@ -2,7 +2,7 @@
 // of docker this endpoint is not exposed so it is only on the Docker instances internal network
 // so no additional security is needed on the endpoint directly. Auth is done however by the express
 // middleware prior to leaving the node-side of the application so that is good enough >:)
-const PROCESSOR_API = "http://0.0.0.0:8888";
+const PROCESSOR_API = `http://0.0.0.0:${process.env.COLLECTOR_PORT || 8888}`;
 async function checkProcessorAlive() {
   return await fetch(`${PROCESSOR_API}`)
     .then((res) => res.ok)

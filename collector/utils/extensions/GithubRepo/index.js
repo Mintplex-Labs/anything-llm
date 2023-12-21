@@ -31,10 +31,10 @@ async function loadGithubRepo(args) {
   const outFolder = slugify(
     `${repo.author}-${repo.project}-${repo.branch}-${v4().slice(0, 4)}`
   ).toLowerCase();
-  const outFolderPath = path.resolve(
-    __dirname,
-    `../../../../server/storage/documents/${outFolder}`
-  );
+
+  const outFolderPath = process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../../../server/storage/documents/${outFolder}`)
+    : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
   fs.mkdirSync(outFolderPath);
 
   for (const doc of docs) {

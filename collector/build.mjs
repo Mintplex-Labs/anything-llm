@@ -9,10 +9,8 @@ await esbuild.build({
   outfile: 'dist/index.js',
   platform: 'node',
   format: 'esm',
-  packages: 'external'
+  packages: 'external',
 })
 fs.cpSync('./package.json', 'dist/package.json');
 fs.cpSync('./yarn.lock', 'dist/yarn.lock');
-fs.cpSync('./storage', 'dist/storage', { recursive: true });
-fs.mkdirSync('dist/hotdir', { recursive: true })
 execSync('cd dist && yarn install --prod=true');
