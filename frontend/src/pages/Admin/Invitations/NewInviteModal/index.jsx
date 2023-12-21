@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { X } from "@phosphor-icons/react";
-import Admin from "@/models/admin";
+import Admin from "../../../../models/admin";
 
 const DIALOG_ID = `new-invite-modal`;
 
@@ -39,7 +39,7 @@ export default function NewInviteModal() {
   }, [copied]);
 
   return (
-    <dialog id={DIALOG_ID} className="bg-transparent outline-none">
+    <dialog id={DIALOG_ID} className="border-none bg-transparent outline-none">
       <div className="relative w-[500px] max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">

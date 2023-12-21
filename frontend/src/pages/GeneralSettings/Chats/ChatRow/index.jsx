@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import truncate from "truncate";
 import { X, Trash } from "@phosphor-icons/react";
-import System from "@/models/system";
+import System from "../../../../models/system";
 
 export default function ChatRow({ chat }) {
   const rowRef = useRef(null);
@@ -33,7 +33,7 @@ export default function ChatRow({ chat }) {
           onClick={() => {
             document.getElementById(`chat-${chat.id}-prompt`)?.showModal();
           }}
-          className="px-6 py-4 border-transparent cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+          className="px-6 py-4 border-transparent cursor-pointer transform transition-transform duration-200 hover:scale-105"
         >
           {truncate(chat.prompt, 40)}
         </td>
@@ -41,7 +41,7 @@ export default function ChatRow({ chat }) {
           onClick={() => {
             document.getElementById(`chat-${chat.id}-response`)?.showModal();
           }}
-          className="px-6 py-4 cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+          className="px-6 py-4 cursor-pointer transform transition-transform duration-200 hover:scale-105"
         >
           {truncate(JSON.parse(chat.response)?.text, 40)}
         </td>
@@ -49,7 +49,7 @@ export default function ChatRow({ chat }) {
         <td className="px-6 py-4 flex items-center gap-x-6">
           <button
             onClick={handleDelete}
-            className="font-medium text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
+            className="border-none font-medium text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
           >
             <Trash className="h-5 w-5" />
           </button>
@@ -70,7 +70,7 @@ function hideModal(modalName) {
 
 const TextPreview = ({ text, modalName }) => {
   return (
-    <dialog id={modalName} className="bg-transparent outline-none w-full">
+    <dialog id={modalName} className="bg-transparent outline-none border-none w-full">
       <div className="relative w-full md:max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-600">

@@ -1,9 +1,9 @@
-import { API_BASE } from "./constants";
+import { API_BASE } from "./api";
 import { baseHeaders } from "./request";
 
 // Checks current localstorage and validates the session based on that.
 export default async function validateSessionTokenForUser() {
-  const isValidSession = await fetch(`${API_BASE}/system/check-token`, {
+  const isValidSession = await fetch(`${API_BASE()}/system/check-token`, {
     method: "GET",
     cache: "default",
     headers: baseHeaders(),

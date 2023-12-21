@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Workspace from "@/models/workspace";
+import Workspace from "../../models/workspace";
 import LoadingChat from "./LoadingChat";
 import ChatContainer from "./ChatContainer";
-import paths from "@/utils/paths";
+import paths from "../../utils/paths";
+import { Link } from "react-router-dom";
 
 export default function WorkspaceChat({ loading, workspace }) {
   const [history, setHistory] = useState([]);
@@ -31,7 +32,7 @@ export default function WorkspaceChat({ loading, workspace }) {
           <dialog
             open={true}
             style={{ zIndex: 100 }}
-            className="fixed top-0 flex bg-black bg-opacity-50 w-full md:w-[100vw] h-full items-center justify-center"
+            className="border-none fixed top-0 flex bg-black bg-opacity-50 w-full md:w-[100vw] h-auto items-center justify-center"
           >
             <div className="relative w-full md:max-w-2xl max-h-full bg-main-gradient rounded-lg shadow p-4">
               <div className="flex flex-col gap-y-4 w-full p-6 text-center">
@@ -43,12 +44,12 @@ export default function WorkspaceChat({ loading, workspace }) {
                 </p>
 
                 <div className="flex w-full justify-center items-center mt-4">
-                  <a
-                    href={paths.home()}
+                  <Link
+                    to={paths.home()}
                     className="border border-slate-200 text-white hover:bg-slate-200 hover:text-slate-800 px-4 py-2 rounded-lg text-sm items-center flex gap-x-2 transition-all duration-300"
                   >
                     Go back to homepage
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { FullScreenLoader } from "../Preloader";
-import validateSessionTokenForUser from "@/utils/session";
-import paths from "@/utils/paths";
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
-import { userFromStorage } from "@/utils/request";
-import System from "@/models/system";
-import UserMenu from "../UserMenu";
+import validateSessionTokenForUser from "../../utils/session";
+import paths from "../../utils/paths";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
+import { userFromStorage } from "../../utils/request";
+import System from "../../models/system";
+import AppLayout from "../../layout/AppLayout";
 
 // Used only for Multi-user mode only as we permission specific pages based on auth role.
 // When in single user mode we just bypass any authchecks.
@@ -21,8 +21,9 @@ function useIsAuthenticated() {
       const {
         MultiUserMode,
         RequiresAuth,
-        LLMProvider = null,
-        VectorDB = null,
+        OpenAiKey = false,
+        AnthropicApiKey = false,
+        AzureOpenAiKey = false,
       } = await System.keys();
 
       setMultiUserMode(MultiUserMode);
@@ -31,8 +32,9 @@ function useIsAuthenticated() {
       if (
         !MultiUserMode &&
         !RequiresAuth && // Not in Multi-user AND no password set.
-        !LLMProvider &&
-        !VectorDB
+        !OpenAiKey &&
+        !AnthropicApiKey &&
+        !AzureOpenAiKey // AND no LLM API Key set at all.
       ) {
         setShouldRedirectToOnboarding(true);
         setIsAuthed(true);
@@ -94,9 +96,9 @@ export function AdminRoute({ Component }) {
 
   const user = userFromStorage();
   return isAuthd && (user?.role === "admin" || !multiUserMode) ? (
-    <UserMenu>
+    <AppLayout>
       <Component />
-    </UserMenu>
+    </AppLayout>
   ) : (
     <Navigate to={paths.home()} />
   );
@@ -115,9 +117,9 @@ export function ManagerRoute({ Component }) {
 
   const user = userFromStorage();
   return isAuthd && (user?.role !== "default" || !multiUserMode) ? (
-    <UserMenu>
+    <AppLayout>
       <Component />
-    </UserMenu>
+    </AppLayout>
   ) : (
     <Navigate to={paths.home()} />
   );
@@ -132,9 +134,9 @@ export default function PrivateRoute({ Component }) {
   }
 
   return isAuthd ? (
-    <UserMenu>
+    <AppLayout>
       <Component />
-    </UserMenu>
+    </AppLayout>
   ) : (
     <Navigate to={paths.login()} />
   );

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
-import Admin from "@/models/admin";
+import Admin from "../../../../../models/admin";
 import { titleCase } from "text-case";
 
 export const EditWorkspaceUsersModalId = (workspace) =>
@@ -37,7 +37,7 @@ export default function EditWorkspaceUsersModal({ workspace, users }) {
   return (
     <dialog
       id={EditWorkspaceUsersModalId(workspace)}
-      className="bg-transparent outline-none"
+      className="border-none bg-transparent outline-none"
     >
       <div className="relative w-[500px] max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">

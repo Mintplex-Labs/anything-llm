@@ -1,17 +1,14 @@
 import React from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
+import Sidebar from "@/components/SettingsSidebar";
 import DataConnectorOption from "@/components/DataConnectorOption";
 
 export default function DataConnectors() {
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      {!isMobile && <Sidebar />}
+    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+      <Sidebar />
       <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
       >
-        {isMobile && <SidebarMobileHeader />}
         <div className="flex w-full">
           <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
             <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">

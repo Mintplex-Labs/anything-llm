@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
-import Admin from "@/models/admin";
-import showToast from "@/utils/toast";
+import Sidebar, {
+} from "../../../components/SettingsSidebar";
+import Admin from "../../../models/admin";
+import showToast from "../../../utils/toast";
 
 export default function AdminSystem() {
   const [saving, setSaving] = useState(false);
@@ -39,13 +39,11 @@ export default function AdminSystem() {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      {!isMobile && <Sidebar />}
+    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+      <Sidebar />
       <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+        className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
       >
-        {isMobile && <SidebarMobileHeader />}
         <form
           onSubmit={handleSubmit}
           onChange={() => setHasChanges(true)}
@@ -144,7 +142,7 @@ export default function AdminSystem() {
                     value={messageLimit.limit}
                     min={1}
                     max={300}
-                    className="w-1/3 my-2 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-gray-800 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                    className="mt-2 w-1/3 border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
                   />
                 </div>
               </div>

@@ -1,18 +1,16 @@
 import React, { memo, useEffect, useState } from "react";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
-import OpenAiLogo from "@/media/llmprovider/openai.png";
-import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
-import LocalAiLogo from "@/media/llmprovider/localai.png";
-import System from "@/models/system";
-import PreLoader from "@/components/Preloader";
-import LLMProviderOption from "@/components/LLMSelection/LLMProviderOption";
-import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
-import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
-import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
-import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
+import OpenAiLogo from "../../../../../assets/llmprovider/openai.png";
+import AzureOpenAiLogo from "../../../../../assets/llmprovider/azure.png";
+import LocalAiLogo from "../../../../../assets/llmprovider/localai.png";
+import System from "../../../../../models/system";
+import PreLoader from "../../../../../components/Preloader";
+import LLMProviderOption from "../../../../../components/LLMSelection/LLMProviderOption";
+import OpenAiOptions from "../../../../../components/EmbeddingSelection/OpenAiOptions";
+import AzureAiOptions from "../../../../../components/EmbeddingSelection/AzureAiOptions";
+import LocalAiOptions from "../../../../../components/EmbeddingSelection/LocalAiOptions";
 
 function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
-  const [embeddingChoice, setEmbeddingChoice] = useState("native");
+  const [embeddingChoice, setEmbeddingChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const updateChoice = (selection) => {
@@ -23,7 +21,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setEmbeddingChoice(_settings?.EmbeddingEngine || "native");
+      setEmbeddingChoice(_settings?.EmbeddingEngine || "openai");
       setLoading(false);
     }
     fetchKeys();
@@ -54,23 +52,15 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
   return (
     <div className="w-full">
       <form onSubmit={handleSubmit} className="flex flex-col w-full">
-        <div className="flex flex-col w-full px-1 md:px-8 py-4">
+        <div className="flex flex-col w-full px-1 md:px-8 py-12">
           <div className="text-white text-sm font-medium pb-4">
             Embedding Provider
           </div>
-          <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[752px]">
+          <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
             <input
               hidden={true}
               name="EmbeddingEngine"
               value={embeddingChoice}
-            />
-            <LLMProviderOption
-              name="AnythingLLM Embedder"
-              value="native"
-              description="Use the built-in embedding engine for AnythingLLM. Zero setup!"
-              checked={embeddingChoice === "native"}
-              image={AnythingLLMIcon}
-              onClick={updateChoice}
             />
             <LLMProviderOption
               name="OpenAI"
@@ -100,8 +90,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
               onClick={updateChoice}
             />
           </div>
-          <div className="mt-4 flex flex-wrap gap-4 max-w-[752px]">
-            {embeddingChoice === "native" && <NativeEmbeddingOptions />}
+          <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
             {embeddingChoice === "openai" && (
               <OpenAiOptions settings={settings} />
             )}
@@ -113,7 +102,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
             )}
           </div>
         </div>
-        <div className="flex w-full justify-between items-center px-6 py-4 space-x-2 border-t rounded-b border-gray-500/50">
+        <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
           <button
             onClick={prevStep}
             type="button"

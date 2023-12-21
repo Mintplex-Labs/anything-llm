@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
-import System from "@/models/system";
-import showToast from "@/utils/toast";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
-import OpenAiLogo from "@/media/llmprovider/openai.png";
-import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
-import AnthropicLogo from "@/media/llmprovider/anthropic.png";
-import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
-import LocalAiLogo from "@/media/llmprovider/localai.png";
-import PreLoader from "@/components/Preloader";
-import LLMProviderOption from "@/components/LLMSelection/LLMProviderOption";
-import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
-import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
-import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
-import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
-import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
-import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
+import Sidebar, {
+} from "../../../components/SettingsSidebar";
+import System from "../../../models/system";
+import showToast from "../../../utils/toast";
+import OpenAiLogo from "../../../assets/llmprovider/openai.png";
+import AzureOpenAiLogo from "../../../assets/llmprovider/azure.png";
+import AnthropicLogo from "../../../assets/llmprovider/anthropic.png";
+import LMStudioLogo from "../../../assets/llmprovider/lmstudio.png";
+import LocalAiLogo from "../../../assets/llmprovider/localai.png";
+import PreLoader from "../../../components/Preloader";
+import LLMProviderOption from "../../../components/LLMSelection/LLMProviderOption";
+import OpenAiOptions from "../../../components/LLMSelection/OpenAiOptions";
+import AzureAiOptions from "../../../components/LLMSelection/AzureAiOptions";
+import AnthropicAiOptions from "../../../components/LLMSelection/AnthropicAiOptions";
+import LMStudioOptions from "../../../components/LLMSelection/LMStudioOptions";
+import LocalAiOptions from "../../../components/LLMSelection/LocalAiOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -57,12 +55,11 @@ export default function GeneralLLMPreference() {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      {!isMobile && <Sidebar />}
+    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+      <Sidebar />
       {loading ? (
         <div
-          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient p-[18px] h-full overflow-y-scroll animate-pulse border-4 border-accent"
+          className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient p-[18px] h-full overflow-y-scroll animate-pulse border-4 border-accent"
         >
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
@@ -70,10 +67,8 @@ export default function GeneralLLMPreference() {
         </div>
       ) : (
         <div
-          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+          className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
         >
-          {isMobile && <SidebarMobileHeader />}
           <form
             onSubmit={handleSubmit}
             onChange={() => setHasChanges(true)}
@@ -152,16 +147,6 @@ export default function GeneralLLMPreference() {
                   image={LocalAiLogo}
                   onClick={updateLLMChoice}
                 />
-                {!window.location.hostname.includes("useanything.com") && (
-                  <LLMProviderOption
-                    name="Custom Llama Model"
-                    value="native"
-                    description="Use a downloaded custom Llama model for chatting on this AnythingLLM instance."
-                    checked={llmChoice === "native"}
-                    image={AnythingLLMIcon}
-                    onClick={updateLLMChoice}
-                  />
-                )}
               </div>
               <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
                 {llmChoice === "openai" && (
@@ -178,9 +163,6 @@ export default function GeneralLLMPreference() {
                 )}
                 {llmChoice === "localai" && (
                   <LocalAiOptions settings={settings} showAlert={true} />
-                )}
-                {llmChoice === "native" && (
-                  <NativeLLMOptions settings={settings} />
                 )}
               </div>
             </div>

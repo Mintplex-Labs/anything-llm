@@ -1,6 +1,10 @@
 import React, { memo, useState } from "react";
-import System from "@/models/system";
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import System from "../../../../../models/system";
+import {
+  AUTH_TIMESTAMP,
+  AUTH_TOKEN,
+  AUTH_USER,
+} from "../../../../../utils/constants";
 import debounce from "lodash.debounce";
 
 function PasswordProtection({ nextStep, prevStep }) {
@@ -41,7 +45,7 @@ function PasswordProtection({ nextStep, prevStep }) {
   return (
     <div className="w-full">
       <form className="flex flex-col w-full" onSubmit={handleSubmit}>
-        <div className="flex flex-col w-full px-1 md:px-8 py-4">
+        <div className="flex flex-col w-full px-1 md:px-8 py-12">
           <div className="w-full flex flex-col gap-y-2 my-5">
             <div className="w-80">
               <div className="flex flex-col mb-3 ">
@@ -59,7 +63,7 @@ function PasswordProtection({ nextStep, prevStep }) {
                 onChange={handlePasswordChange}
                 name="password"
                 type="text"
-                className="bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
+                className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
                 placeholder="Your Instance Password"
                 minLength={8}
                 required={true}
@@ -68,7 +72,7 @@ function PasswordProtection({ nextStep, prevStep }) {
             </div>
           </div>
         </div>
-        <div className="flex w-full justify-between items-center px-6 py-4 space-x-2 border-t rounded-b border-gray-500/50">
+        <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
           <button
             onClick={prevStep}
             type="button"
@@ -88,7 +92,7 @@ function PasswordProtection({ nextStep, prevStep }) {
             <button
               type="submit"
               disabled={!password}
-              className="border px-4 py-2 rounded-lg text-sm items-center flex gap-x-2
+              className="border px-4 py-2 rounded-lg text-sm items-center flex gap-x-2 
               border-slate-200 text-slate-800 bg-slate-200 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow
               disabled:border-gray-400 disabled:text-slate-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function VectorDBOption({
   name,
@@ -27,12 +28,12 @@ export default function VectorDBOption({
         <div className="mt-2 text-xs font-base text-white tracking-wide">
           {description}
         </div>
-        <a
-          href={`https://${link}`}
+        <Link
+          to={`https://${link}`}
           className="mt-2 text-xs text-white font-medium underline"
         >
           {link}
-        </a>
+        </Link>
       </label>
     </div>
   );

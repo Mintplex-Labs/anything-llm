@@ -1,11 +1,11 @@
-import { API_BASE } from "@/utils/constants";
-import { baseHeaders } from "@/utils/request";
+import { API_BASE } from "../utils/api";
+import { baseHeaders } from "../utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { v4 } from "uuid";
 
 const Workspace = {
   new: async function (data = {}) {
-    const { workspace, message } = await fetch(`${API_BASE}/workspace/new`, {
+    const { workspace, message } = await fetch(`${API_BASE()}/workspace/new`, {
       method: "POST",
       body: JSON.stringify(data),
       headers: baseHeaders(),
@@ -19,7 +19,7 @@ const Workspace = {
   },
   update: async function (slug, data = {}) {
     const { workspace, message } = await fetch(
-      `${API_BASE}/workspace/${slug}/update`,
+      `${API_BASE()}/workspace/${slug}/update`,
       {
         method: "POST",
         body: JSON.stringify(data),
@@ -35,7 +35,7 @@ const Workspace = {
   },
   modifyEmbeddings: async function (slug, changes = {}) {
     const { workspace, message } = await fetch(
-      `${API_BASE}/workspace/${slug}/update-embeddings`,
+      `${API_BASE()}/workspace/${slug}/update-embeddings`,
       {
         method: "POST",
         body: JSON.stringify(changes), // contains 'adds' and 'removes' keys that are arrays of filepaths
@@ -50,7 +50,7 @@ const Workspace = {
     return { workspace, message };
   },
   chatHistory: async function (slug) {
-    const history = await fetch(`${API_BASE}/workspace/${slug}/chats`, {
+    const history = await fetch(`${API_BASE()}/workspace/${slug}/chats`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -61,12 +61,11 @@ const Workspace = {
   },
   streamChat: async function ({ slug }, message, mode = "query", handleChat) {
     const ctrl = new AbortController();
-    await fetchEventSource(`${API_BASE}/workspace/${slug}/stream-chat`, {
+    await fetchEventSource(`${API_BASE()}/workspace/${slug}/stream-chat`, {
       method: "POST",
       body: JSON.stringify({ message, mode }),
       headers: baseHeaders(),
       signal: ctrl.signal,
-      openWhenHidden: true,
       async onopen(response) {
         if (response.ok) {
           return; // everything's good
@@ -75,26 +74,8 @@ const Workspace = {
           response.status < 500 &&
           response.status !== 429
         ) {
-          handleChat({
-            id: v4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `An error occurred while streaming response. Code ${response.status}`,
-          });
-          ctrl.abort();
           throw new Error("Invalid Status code response.");
         } else {
-          handleChat({
-            id: v4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `An error occurred while streaming response. Unknown Error.`,
-          });
-          ctrl.abort();
           throw new Error("Unknown error");
         }
       },
@@ -102,7 +83,7 @@ const Workspace = {
         try {
           const chatResult = JSON.parse(msg.data);
           handleChat(chatResult);
-        } catch {}
+        } catch { }
       },
       onerror(err) {
         handleChat({
@@ -114,12 +95,11 @@ const Workspace = {
           error: `An error occurred while streaming response. ${err.message}`,
         });
         ctrl.abort();
-        throw new Error();
       },
     });
   },
   all: async function () {
-    const workspaces = await fetch(`${API_BASE}/workspaces`, {
+    const workspaces = await fetch(`${API_BASE()}/workspaces`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -130,7 +110,7 @@ const Workspace = {
     return workspaces;
   },
   bySlug: async function (slug = "") {
-    const workspace = await fetch(`${API_BASE}/workspace/${slug}`, {
+    const workspace = await fetch(`${API_BASE()}/workspace/${slug}`, {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
@@ -139,7 +119,7 @@ const Workspace = {
     return workspace;
   },
   delete: async function (slug) {
-    const result = await fetch(`${API_BASE}/workspace/${slug}`, {
+    const result = await fetch(`${API_BASE()}/workspace/${slug}`, {
       method: "DELETE",
       headers: baseHeaders(),
     })
@@ -149,7 +129,7 @@ const Workspace = {
     return result;
   },
   uploadFile: async function (slug, formData) {
-    const response = await fetch(`${API_BASE}/workspace/${slug}/upload`, {
+    const response = await fetch(`${API_BASE()}/workspace/${slug}/upload`, {
       method: "POST",
       body: formData,
       headers: baseHeaders(),
@@ -159,7 +139,7 @@ const Workspace = {
     return { response, data };
   },
   uploadLink: async function (slug, link) {
-    const response = await fetch(`${API_BASE}/workspace/${slug}/upload-link`, {
+    const response = await fetch(`${API_BASE()}/workspace/${slug}/upload-link`, {
       method: "POST",
       body: JSON.stringify({ link }),
       headers: baseHeaders(),
@@ -171,7 +151,7 @@ const Workspace = {
 
   // TODO: Deprecated and should be removed from frontend.
   sendChat: async function ({ slug }, message, mode = "query") {
-    const chatResult = await fetch(`${API_BASE}/workspace/${slug}/chat`, {
+    const chatResult = await fetch(`${API_BASE()}/workspace/${slug}/chat`, {
       method: "POST",
       body: JSON.stringify({ message, mode }),
       headers: baseHeaders(),

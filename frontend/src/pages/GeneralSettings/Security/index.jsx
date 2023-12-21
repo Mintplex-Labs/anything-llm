@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
-import showToast from "@/utils/toast";
-import System from "@/models/system";
-import paths from "@/utils/paths";
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
-import PreLoader from "@/components/Preloader";
+import Sidebar, {
+} from "../../../components/SettingsSidebar";
+import showToast from "../../../utils/toast";
+import System from "../../../models/system";
+import paths from "../../../utils/paths";
+import {
+  AUTH_TIMESTAMP,
+  AUTH_TOKEN,
+  AUTH_USER,
+} from "../../../utils/constants";
+import PreLoader from "../../../components/Preloader";
 
 export default function GeneralSecurity() {
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      {!isMobile && <Sidebar />}
+    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+      <Sidebar />
       <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+        className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
       >
-        {isMobile && <SidebarMobileHeader />}
         <MultiUserMode />
         <PasswordProtection />
       </div>
@@ -49,7 +51,7 @@ function MultiUserMode() {
           window.localStorage.removeItem(AUTH_USER);
           window.localStorage.removeItem(AUTH_TOKEN);
           window.localStorage.removeItem(AUTH_TIMESTAMP);
-          window.location = paths.settings.users();
+          window.location.hash = paths.settings.users();
         }, 2_000);
         return;
       }
@@ -142,7 +144,7 @@ function MultiUserMode() {
                       <input
                         name="username"
                         type="text"
-                        className="bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
+                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
                         placeholder="Your admin username"
                         minLength={2}
                         required={true}
@@ -161,7 +163,7 @@ function MultiUserMode() {
                       <input
                         name="password"
                         type="text"
-                        className="bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
+                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
                         placeholder="Your admin password"
                         minLength={8}
                         required={true}
@@ -304,7 +306,7 @@ function PasswordProtection() {
                       <input
                         name="password"
                         type="text"
-                        className="bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
+                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
                         placeholder="Your Instance Password"
                         minLength={8}
                         required={true}

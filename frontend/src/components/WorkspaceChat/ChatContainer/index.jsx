@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
 import ChatHistory from "./ChatHistory";
 import PromptInput from "./PromptInput";
-import Workspace from "@/models/workspace";
-import handleChat from "@/utils/chat";
-import { isMobile } from "react-device-detect";
-import { SidebarMobileHeader } from "../../Sidebar";
+import Workspace from "../../../models/workspace";
+import handleChat from "../../../utils/chat";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
-  const [chatHistory, setChatHistory] = useState(knownHistory);
+  const [chatHistory, setChatHistory] = useState([]);
 
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
@@ -35,6 +33,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     setMessage("");
     setLoadingResponse(true);
   };
+
+  useEffect(() => {
+    setChatHistory(knownHistory)
+  }, [knownHistory])
 
   useEffect(() => {
     async function fetchReply() {
@@ -67,7 +69,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         workspace,
         promptMessage.userMessage,
         window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
-          "chat",
+        "chat",
         (chatResult) =>
           handleChat(
             chatResult,
@@ -84,10 +86,8 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
   return (
     <div
-      style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+      className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
     >
-      {isMobile && <SidebarMobileHeader />}
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
         <ChatHistory history={chatHistory} workspace={workspace} />
         <PromptInput

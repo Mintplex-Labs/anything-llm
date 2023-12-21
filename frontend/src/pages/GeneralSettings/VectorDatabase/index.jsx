@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
-import System from "@/models/system";
-import showToast from "@/utils/toast";
-import ChromaLogo from "@/media/vectordbs/chroma.png";
-import PineconeLogo from "@/media/vectordbs/pinecone.png";
-import LanceDbLogo from "@/media/vectordbs/lancedb.png";
-import WeaviateLogo from "@/media/vectordbs/weaviate.png";
-import QDrantLogo from "@/media/vectordbs/qdrant.png";
-import PreLoader from "@/components/Preloader";
-import VectorDBOption from "@/components/VectorDBOption";
-import ChangeWarningModal from "@/components/ChangeWarning";
+import Sidebar, {
+} from "../../../components/SettingsSidebar";
+import System from "../../../models/system";
+import showToast from "../../../utils/toast";
+import ChromaLogo from "../../../assets/vectordbs/chroma.png";
+import PineconeLogo from "../../../assets/vectordbs/pinecone.png";
+import LanceDbLogo from "../../../assets/vectordbs/lancedb.png";
+import WeaviateLogo from "../../../assets/vectordbs/weaviate.png";
+import QDrantLogo from "../../../assets/vectordbs/qdrant.png";
+import PreLoader from "../../../components/Preloader";
+import VectorDBOption from "../../../components/VectorDBOption";
+import ChangeWarningModal from "../../../components/ChangeWarning";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -66,17 +66,16 @@ export default function GeneralVectorDatabase() {
   };
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
       <ChangeWarningModal
         warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. They will need to be re-added to each workspace."
         onClose={() => document.getElementById("confirmation-modal")?.close()}
         onConfirm={handleSaveSettings}
       />
-      {!isMobile && <Sidebar />}
+      <Sidebar />
       {loading ? (
         <div
-          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent animate-pulse"
+          className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
         >
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
@@ -84,10 +83,8 @@ export default function GeneralVectorDatabase() {
         </div>
       ) : (
         <div
-          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+          className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
         >
-          {isMobile && <SidebarMobileHeader />}
           <form
             id="vectordb-form"
             onSubmit={handleSubmit}
@@ -177,7 +174,7 @@ export default function GeneralVectorDatabase() {
                       <input
                         type="password"
                         name="PineConeKey"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                        className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="Pinecone API Key"
                         defaultValue={
                           settings?.PineConeKey ? "*".repeat(20) : ""
@@ -195,7 +192,7 @@ export default function GeneralVectorDatabase() {
                       <input
                         type="text"
                         name="PineConeEnvironment"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                        className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="us-gcp-west-1"
                         defaultValue={settings?.PineConeEnvironment}
                         required={true}
@@ -211,7 +208,7 @@ export default function GeneralVectorDatabase() {
                       <input
                         type="text"
                         name="PineConeIndex"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                        className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="my-index"
                         defaultValue={settings?.PineConeIndex}
                         required={true}
@@ -231,7 +228,7 @@ export default function GeneralVectorDatabase() {
                       <input
                         type="url"
                         name="ChromaEndpoint"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                        className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="http://localhost:8000"
                         defaultValue={settings?.ChromaEndpoint}
                         required={true}
@@ -249,7 +246,7 @@ export default function GeneralVectorDatabase() {
                         autoComplete="off"
                         type="text"
                         defaultValue={settings?.ChromaApiHeader}
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                        className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="X-Api-Key"
                       />
                     </div>
@@ -265,7 +262,7 @@ export default function GeneralVectorDatabase() {
                         defaultValue={
                           settings?.ChromaApiKey ? "*".repeat(20) : ""
                         }
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                        className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="sk-myApiKeyToAccessMyChromaInstance"
                       />
                     </div>
@@ -289,7 +286,7 @@ export default function GeneralVectorDatabase() {
                       <input
                         type="url"
                         name="QdrantEndpoint"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                        className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="http://localhost:6633"
                         defaultValue={settings?.QdrantEndpoint}
                         required={true}
@@ -305,7 +302,7 @@ export default function GeneralVectorDatabase() {
                       <input
                         type="password"
                         name="QdrantApiKey"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                        className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="wOeqxsYP4....1244sba"
                         defaultValue={settings?.QdrantApiKey}
                         autoComplete="off"
@@ -324,7 +321,7 @@ export default function GeneralVectorDatabase() {
                       <input
                         type="url"
                         name="WeaviateEndpoint"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                        className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="http://localhost:8080"
                         defaultValue={settings?.WeaviateEndpoint}
                         required={true}
@@ -340,7 +337,7 @@ export default function GeneralVectorDatabase() {
                       <input
                         type="password"
                         name="WeaviateApiKey"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                        className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                         placeholder="sk-123Abcweaviate"
                         defaultValue={settings?.WeaviateApiKey}
                         autoComplete="off"

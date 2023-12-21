@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { X } from "@phosphor-icons/react";
-import Workspace from "@/models/workspace";
-import paths from "@/utils/paths";
+import Workspace from "../../models/workspace";
+import paths from "../../utils/paths";
 
 const noop = () => false;
 export default function NewWorkspaceModal({ hideModal = noop }) {
@@ -15,7 +15,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
     for (var [key, value] of form.entries()) data[key] = value;
     const { workspace, message } = await Workspace.new(data);
     if (!!workspace) {
-      window.location.href = paths.workspace.chat(workspace.slug);
+      window.location.hash = paths.workspace.chat(workspace.slug)
     }
     setError(message);
   };
@@ -29,7 +29,9 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
       <div className="relative w-[500px] max-h-full">
         <div className="relative bg-modal-gradient rounded-lg shadow-md border-2 border-accent">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-white/10">
-            <h3 className="text-xl font-semibold text-white">New Workspace</h3>
+            <h3 className="text-xl font-semibold text-white">
+              New Workspace
+            </h3>
             <button
               onClick={hideModal}
               type="button"
@@ -52,14 +54,16 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                     name="name"
                     type="text"
                     id="name"
-                    className="bg-zinc-900 w-full text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                    className="border-none bg-zinc-900 w-full text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                     placeholder="My Workspace"
                     required={true}
                     autoComplete="off"
                   />
                 </div>
                 {error && (
-                  <p className="text-red-400 text-sm">Error: {error}</p>
+                  <p className="text-red-400 text-sm">
+                    Error: {error}
+                  </p>
                 )}
               </div>
             </div>

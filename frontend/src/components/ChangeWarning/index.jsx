@@ -6,7 +6,7 @@ export default function ChangeWarningModal({
   onConfirm,
 }) {
   return (
-    <dialog id="confirmation-modal" className="bg-transparent outline-none">
+    <dialog id="confirmation-modal" className="bg-transparent outline-none border-none">
       <div className="relative w-full max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">

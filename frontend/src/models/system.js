@@ -1,16 +1,16 @@
-import { API_BASE, AUTH_TIMESTAMP } from "@/utils/constants";
-import { baseHeaders } from "@/utils/request";
-import DataConnector from "./dataConnector";
+import { AUTH_TIMESTAMP } from "../utils/constants";
+import { API_BASE } from "../utils/api";
+import { baseHeaders } from "../utils/request";
 
 const System = {
   ping: async function () {
-    return await fetch(`${API_BASE}/ping`)
+    return await fetch(`${API_BASE()}/ping`)
       .then((res) => res.json())
       .then((res) => res?.online || false)
       .catch(() => false);
   },
   totalIndexes: async function () {
-    return await fetch(`${API_BASE}/system/system-vectors`, {
+    return await fetch(`${API_BASE()}/system/system-vectors`, {
       headers: baseHeaders(),
     })
       .then((res) => {
@@ -21,7 +21,7 @@ const System = {
       .catch(() => 0);
   },
   keys: async function () {
-    return await fetch(`${API_BASE}/setup-complete`)
+    return await fetch(`${API_BASE()}/setup-complete`)
       .then((res) => {
         if (!res.ok) throw new Error("Could not find setup information.");
         return res.json();
@@ -30,7 +30,7 @@ const System = {
       .catch(() => null);
   },
   localFiles: async function () {
-    return await fetch(`${API_BASE}/system/local-files`, {
+    return await fetch(`${API_BASE()}/system/local-files`, {
       headers: baseHeaders(),
     })
       .then((res) => {
@@ -48,7 +48,7 @@ const System = {
   },
 
   checkAuth: async function (currentToken = null) {
-    const valid = await fetch(`${API_BASE}/system/check-token`, {
+    const valid = await fetch(`${API_BASE()}/system/check-token`, {
       headers: baseHeaders(currentToken),
     })
       .then((res) => res.ok)
@@ -58,7 +58,7 @@ const System = {
     return valid;
   },
   requestToken: async function (body) {
-    return await fetch(`${API_BASE}/request-token`, {
+    return await fetch(`${API_BASE()}/request-token`, {
       method: "POST",
       body: JSON.stringify({ ...body }),
     })
@@ -72,14 +72,14 @@ const System = {
       });
   },
   checkDocumentProcessorOnline: async () => {
-    return await fetch(`${API_BASE}/system/document-processing-status`, {
+    return await fetch(`${API_BASE()}/system/document-processing-status`, {
       headers: baseHeaders(),
     })
       .then((res) => res.ok)
       .catch(() => false);
   },
   acceptedDocumentTypes: async () => {
-    return await fetch(`${API_BASE}/system/accepted-document-types`, {
+    return await fetch(`${API_BASE()}/system/accepted-document-types`, {
       headers: baseHeaders(),
     })
       .then((res) => res.json())
@@ -87,7 +87,7 @@ const System = {
       .catch(() => null);
   },
   updateSystem: async (data) => {
-    return await fetch(`${API_BASE}/system/update-env`, {
+    return await fetch(`${API_BASE()}/system/update-env`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),
@@ -99,7 +99,7 @@ const System = {
       });
   },
   updateSystemPassword: async (data) => {
-    return await fetch(`${API_BASE}/system/update-password`, {
+    return await fetch(`${API_BASE()}/system/update-password`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),
@@ -111,7 +111,7 @@ const System = {
       });
   },
   setupMultiUser: async (data) => {
-    return await fetch(`${API_BASE}/system/enable-multi-user`, {
+    return await fetch(`${API_BASE()}/system/enable-multi-user`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),
@@ -123,7 +123,7 @@ const System = {
       });
   },
   isMultiUserMode: async () => {
-    return await fetch(`${API_BASE}/system/multi-user-mode`, {
+    return await fetch(`${API_BASE()}/system/multi-user-mode`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -134,72 +134,20 @@ const System = {
         return false;
       });
   },
-  deleteDocument: async (name) => {
-    return await fetch(`${API_BASE}/system/remove-document`, {
+  deleteDocument: async (name, meta) => {
+    return await fetch(`${API_BASE()}/system/remove-document`, {
       method: "DELETE",
       headers: baseHeaders(),
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, meta }),
     })
       .then((res) => res.ok)
       .catch((e) => {
         console.error(e);
         return false;
-      });
-  },
-  deleteFolder: async (name) => {
-    return await fetch(`${API_BASE}/system/remove-folder`, {
-      method: "DELETE",
-      headers: baseHeaders(),
-      body: JSON.stringify({ name }),
-    })
-      .then((res) => res.ok)
-      .catch((e) => {
-        console.error(e);
-        return false;
-      });
-  },
-  dataExport: async () => {
-    return await fetch(`${API_BASE}/system/data-export`, {
-      method: "GET",
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .then((res) => res)
-      .catch((e) => {
-        console.error(e);
-        return { filename: null, error: e.message };
-      });
-  },
-  importData: async (formData) => {
-    return await fetch(`${API_BASE}/system/data-import`, {
-      method: "POST",
-      body: formData,
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .then((res) => res)
-      .catch((e) => {
-        console.error(e);
-        return { success: false, error: e.message };
-      });
-  },
-  uploadPfp: async function (formData) {
-    return await fetch(`${API_BASE}/system/upload-pfp`, {
-      method: "POST",
-      body: formData,
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Error uploading pfp.");
-        return { success: true, error: null };
-      })
-      .catch((e) => {
-        console.log(e);
-        return { success: false, error: e.message };
       });
   },
   uploadLogo: async function (formData) {
-    return await fetch(`${API_BASE}/system/upload-logo`, {
+    return await fetch(`${API_BASE()}/system/upload-logo`, {
       method: "POST",
       body: formData,
       headers: baseHeaders(),
@@ -214,52 +162,26 @@ const System = {
       });
   },
   fetchLogo: async function () {
-    return await fetch(`${API_BASE}/system/logo`, {
+    return await fetch(`${API_BASE()}/system/logo`, {
       method: "GET",
       cache: "no-cache",
     })
       .then((res) => {
-        if (res.ok && res.status !== 204) return res.blob();
+        if (res.status === 204) return null;
+        if (res.ok) return res.blob();
         throw new Error("Failed to fetch logo!");
       })
-      .then((blob) => URL.createObjectURL(blob))
+      .then((blob) => {
+        if (!blob) return null;
+        return URL.createObjectURL(blob)
+      })
       .catch((e) => {
         console.log(e);
         return null;
       });
   },
-  fetchPfp: async function (id) {
-    return await fetch(`${API_BASE}/system/pfp/${id}`, {
-      method: "GET",
-      cache: "no-cache",
-    })
-      .then((res) => {
-        if (res.ok && res.status !== 204) return res.blob();
-        throw new Error("Failed to fetch pfp.");
-      })
-      .then((blob) => (blob ? URL.createObjectURL(blob) : null))
-      .catch((e) => {
-        console.log(e);
-        return null;
-      });
-  },
-  removePfp: async function (id) {
-    return await fetch(`${API_BASE}/system/remove-pfp`, {
-      method: "DELETE",
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (res.ok) return { success: true, error: null };
-        throw new Error("Failed to remove pfp.");
-      })
-      .catch((e) => {
-        console.log(e);
-        return { success: false, error: e.message };
-      });
-  },
-
   isDefaultLogo: async function () {
-    return await fetch(`${API_BASE}/system/is-default-logo`, {
+    return await fetch(`${API_BASE()}/system/is-default-logo`, {
       method: "GET",
       cache: "no-cache",
     })
@@ -274,7 +196,7 @@ const System = {
       });
   },
   removeCustomLogo: async function () {
-    return await fetch(`${API_BASE}/system/remove-logo`, {
+    return await fetch(`${API_BASE()}/system/remove-logo`, {
       headers: baseHeaders(),
     })
       .then((res) => {
@@ -287,7 +209,7 @@ const System = {
       });
   },
   getCanDeleteWorkspaces: async function () {
-    return await fetch(`${API_BASE}/system/can-delete-workspaces`, {
+    return await fetch(`${API_BASE()}/system/can-delete-workspaces`, {
       method: "GET",
       cache: "no-cache",
       headers: baseHeaders(),
@@ -303,7 +225,7 @@ const System = {
       });
   },
   getWelcomeMessages: async function () {
-    return await fetch(`${API_BASE}/system/welcome-messages`, {
+    return await fetch(`${API_BASE()}/system/welcome-messages`, {
       method: "GET",
       cache: "no-cache",
     })
@@ -318,7 +240,7 @@ const System = {
       });
   },
   setWelcomeMessages: async function (messages) {
-    return fetch(`${API_BASE}/system/set-welcome-messages`, {
+    return fetch(`${API_BASE()}/system/set-welcome-messages`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({ messages }),
@@ -335,7 +257,7 @@ const System = {
       });
   },
   getApiKeys: async function () {
-    return fetch(`${API_BASE}/system/api-keys`, {
+    return fetch(`${API_BASE()}/system/api-keys`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -351,7 +273,7 @@ const System = {
       });
   },
   generateApiKey: async function () {
-    return fetch(`${API_BASE}/system/generate-api-key`, {
+    return fetch(`${API_BASE()}/system/generate-api-key`, {
       method: "POST",
       headers: baseHeaders(),
     })
@@ -367,7 +289,7 @@ const System = {
       });
   },
   deleteApiKey: async function () {
-    return fetch(`${API_BASE}/system/api-key`, {
+    return fetch(`${API_BASE()}/system/api-key`, {
       method: "DELETE",
       headers: baseHeaders(),
     })
@@ -378,7 +300,7 @@ const System = {
       });
   },
   customModels: async function (provider, apiKey = null, basePath = null) {
-    return fetch(`${API_BASE}/system/custom-models`, {
+    return fetch(`${API_BASE()}/system/custom-models`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({
@@ -399,7 +321,7 @@ const System = {
       });
   },
   chats: async (offset = 0) => {
-    return await fetch(`${API_BASE}/system/workspace-chats`, {
+    return await fetch(`${API_BASE()}/system/workspace-chats`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({ offset }),
@@ -411,7 +333,7 @@ const System = {
       });
   },
   deleteChat: async (chatId) => {
-    return await fetch(`${API_BASE}/system/workspace-chats/${chatId}`, {
+    return await fetch(`${API_BASE()}/system/workspace-chats/${chatId}`, {
       method: "DELETE",
       headers: baseHeaders(),
     })
@@ -422,7 +344,7 @@ const System = {
       });
   },
   exportChats: async () => {
-    return await fetch(`${API_BASE}/system/export-chats`, {
+    return await fetch(`${API_BASE()}/system/export-chats`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -432,19 +354,6 @@ const System = {
         return null;
       });
   },
-  updateUser: async (data) => {
-    return await fetch(`${API_BASE}/system/user`, {
-      method: "POST",
-      headers: baseHeaders(),
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return { success: false, error: e.message };
-      });
-  },
-  dataConnectors: DataConnector,
 };
 
 export default System;

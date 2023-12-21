@@ -6,11 +6,10 @@ import {
   Quotes,
 } from "@phosphor-icons/react";
 import React, { useState, useRef } from "react";
-import { isMobile } from "react-device-detect";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../../Modals/MangeWorkspace";
-import useUser from "@/hooks/useUser";
+import useUser from "../../../../hooks/useUser";
 
 export default function PromptInput({
   workspace,
@@ -39,7 +38,6 @@ export default function PromptInput({
   };
 
   const adjustTextArea = (event) => {
-    if (isMobile) return false;
     const element = event.target;
     element.style.height = "1px";
     element.style.height =
@@ -52,11 +50,11 @@ export default function PromptInput({
     <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center overflow-hidden">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl"
+        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl border-none"
       >
         <div className="flex items-center rounded-lg md:mb-4">
-          <div className="w-[600px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
-            <div className="flex items-center w-full border-b-2 border-gray-500/50">
+          <div className="border-none w-[600px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+            <div className="flex items-center w-full border-none">
               <textarea
                 onKeyUp={adjustTextArea}
                 onKeyDown={captureEnter}
@@ -69,14 +67,14 @@ export default function PromptInput({
                   adjustTextArea(e);
                 }}
                 value={message}
-                className="cursor-text max-h-[100px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
+                className="font-normal border-none cursor-text max-h-[100px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
                 placeholder={"Send a message"}
               />
               <button
                 ref={formRef}
                 type="submit"
                 disabled={buttonDisabled}
-                className="inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
+                className="border-none inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
               >
                 {buttonDisabled ? (
                   <CircleNotch className="w-6 h-6 animate-spin" />
@@ -132,7 +130,6 @@ function ChatModeSelector({ workspace }) {
   }
 
   function handleMouseEnter() {
-    if (isMobile) return false;
     setDelayHandler(
       setTimeout(() => {
         setShowTooltip(true);
@@ -152,10 +149,10 @@ function ChatModeSelector({ workspace }) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={cleanupTooltipListener}
     >
+      <i className="hidden opacity-1 opacity-0" />
       <div
-        className={`opacity-${
-          showToolTip ? 1 : 0
-        } pointer-events-none transition-all duration-300 tip absolute bottom-10 z-99 left-0 bg-white/50 text-gray-200 text-xs p-1.5 rounded shadow-lg whitespace-nowrap`}
+        className={`opacity-${showToolTip ? 1 : 0
+          } pointer-events-none transition-all duration-300 tip absolute bottom-10 z-99 left-0 bg-white/50 text-gray-200 text-xs p-1.5 rounded shadow-lg whitespace-nowrap`}
       >
         You are currently in {chatMode} mode. Click to switch to{" "}
         {chatMode === "chat" ? "query" : "chat"} mode.

@@ -5,7 +5,7 @@ import showToast from "@/utils/toast";
 const DataConnector = {
   github: {
     branches: async ({ repo, accessToken }) => {
-      return await fetch(`${API_BASE}/ext/github/branches`, {
+      return await fetch(`${API_BASE()}/ext/github/branches`, {
         method: "POST",
         headers: baseHeaders(),
         cache: "force-cache",
@@ -26,7 +26,7 @@ const DataConnector = {
         });
     },
     collect: async function ({ repo, accessToken, branch, ignorePaths = [] }) {
-      return await fetch(`${API_BASE}/ext/github/repo`, {
+      return await fetch(`${API_BASE()}/ext/github/repo`, {
         method: "POST",
         headers: baseHeaders(),
         body: JSON.stringify({ repo, accessToken, branch, ignorePaths }),
@@ -44,7 +44,7 @@ const DataConnector = {
   },
   youtube: {
     transcribe: async ({ url }) => {
-      return await fetch(`${API_BASE}/ext/youtube/transcript`, {
+      return await fetch(`${API_BASE()}/ext/youtube/transcript`, {
         method: "POST",
         headers: baseHeaders(),
         body: JSON.stringify({ url }),

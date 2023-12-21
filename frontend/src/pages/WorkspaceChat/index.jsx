@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { default as WorkspaceChatContainer } from "@/components/WorkspaceChat";
-import Sidebar from "@/components/Sidebar";
+import { default as WorkspaceChatContainer } from "../../components/WorkspaceChat";
+import Sidebar from "../../components/Sidebar";
 import { useParams } from "react-router-dom";
-import Workspace from "@/models/workspace";
-import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
-import { isMobile } from "react-device-detect";
-import { FullScreenLoader } from "@/components/Preloader";
+import Workspace from "../../models/workspace";
+import PasswordModal, {
+  usePasswordModal,
+} from "../../components/Modals/Password";
+
+import { FullScreenLoader } from "../../components/Preloader";
 
 export default function WorkspaceChat() {
   const { loading, requiresAuth, mode } = usePasswordModal();
@@ -31,11 +33,11 @@ function ShowWorkspaceChat() {
       setLoading(false);
     }
     getWorkspace();
-  }, []);
+  }, [slug]);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      {!isMobile && <Sidebar />}
+    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+      <Sidebar />
       <WorkspaceChatContainer loading={loading} workspace={workspace} />
     </div>
   );

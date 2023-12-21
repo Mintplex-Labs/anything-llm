@@ -8,7 +8,7 @@ export default function OpenAiOptions({ settings }) {
         <input
           type="password"
           name="OpenAiKey"
-          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
           placeholder="OpenAI API Key"
           defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
           required={true}

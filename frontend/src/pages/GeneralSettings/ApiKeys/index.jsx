@@ -1,25 +1,24 @@
 import { useEffect, useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
+import Sidebar, {
+} from "../../../components/SettingsSidebar";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { PlusCircle } from "@phosphor-icons/react";
-import Admin from "@/models/admin";
+import Admin from "../../../models/admin";
 import ApiKeyRow from "./ApiKeyRow";
 import NewApiKeyModal, { NewApiKeyModalId } from "./NewApiKeyModal";
-import paths from "@/utils/paths";
-import { userFromStorage } from "@/utils/request";
-import System from "@/models/system";
+import paths from "../../../utils/paths";
+import { userFromStorage } from "../../../utils/request";
+import System from "../../../models/system";
+import { Link } from "react-router-dom";
 
 export default function AdminApiKeys() {
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      {!isMobile && <Sidebar />}
+    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+      <Sidebar />
       <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+        className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
       >
-        {isMobile && <SidebarMobileHeader />}
         <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
@@ -37,13 +36,13 @@ export default function AdminApiKeys() {
               API keys allow the holder to programmatically access and manage
               this AnythingLLM instance.
             </p>
-            <a
-              href={paths.apiDocs()}
+            <Link
+              to={paths.apiDocs()}
               target="_blank"
               className="text-sm font-base text-blue-300 hover:underline"
             >
               Read the API documentation &rarr;
-            </a>
+            </Link>
           </div>
           <ApiKeysContainer />
         </div>

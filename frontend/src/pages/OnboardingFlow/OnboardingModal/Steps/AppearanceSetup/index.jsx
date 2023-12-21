@@ -1,12 +1,12 @@
 import React, { memo, useEffect, useState } from "react";
-import System from "@/models/system";
-import AnythingLLM from "@/media/logo/anything-llm.png";
-import useLogo from "@/hooks/useLogo";
+import System from "../../../../../models/system";
+import AnythingLLM from "../../../../../assets/logo/anything-llm.png";
+import useLogo from "../../../../../hooks/useLogo";
 import { Plus } from "@phosphor-icons/react";
-import showToast from "@/utils/toast";
+import showToast from "../../../../../utils/toast";
 
 function AppearanceSetup({ prevStep, nextStep }) {
-  const { logo: _initLogo, setLogo: _setLogo } = useLogo();
+  const { logo: _initLogo } = useLogo();
   const [logo, setLogo] = useState("");
   const [isDefaultLogo, setIsDefaultLogo] = useState(true);
 
@@ -35,9 +35,6 @@ function AppearanceSetup({ prevStep, nextStep }) {
       return;
     }
 
-    const logoURL = await System.fetchLogo();
-    _setLogo(logoURL);
-
     showToast("Image uploaded successfully.", "success");
     setIsDefaultLogo(false);
   };
@@ -56,15 +53,12 @@ function AppearanceSetup({ prevStep, nextStep }) {
       return;
     }
 
-    const logoURL = await System.fetchLogo();
-    _setLogo(logoURL);
-
     showToast("Image successfully removed.", "success");
   };
 
   return (
     <div className="w-full">
-      <div className="flex flex-col w-full px-8 py-4">
+      <div className="flex flex-col w-full px-10 py-12">
         <div className="flex flex-col gap-y-2">
           <h2 className="text-white text-sm font-medium">Custom Logo</h2>
           <p className="text-sm font-base text-white/60">
@@ -107,14 +101,14 @@ function AppearanceSetup({ prevStep, nextStep }) {
             </label>
             <button
               onClick={handleRemoveLogo}
-              className="text-white text-base font-medium hover:text-opacity-60"
+              className="border-none text-white text-base font-medium hover:text-opacity-60"
             >
               Delete
             </button>
           </div>
         </div>
       </div>
-      <div className="flex w-full justify-between items-center px-6 py-4 space-x-6 border-t rounded-b border-gray-500/50">
+      <div className="flex w-full justify-between items-center p-6 space-x-6 border-t rounded-b border-gray-500/50">
         <button
           onClick={prevStep}
           type="button"

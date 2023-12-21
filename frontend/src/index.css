@@ -21,13 +21,43 @@ a {
   box-sizing: border-box;
 }
 
+.border-b,
+.border-b-2 {
+  border-bottom-style: solid;
+}
+
+.border-t,
+.border-5-2 {
+  border-top-style: solid;
+}
+
+div.border,
+div.border-2,
+div.border-4 {
+  border-style: solid;
+}
+
+input,
+textarea {
+  font-family: 'plus-jakarta-sans';
+}
+
+button {
+  background: transparent;
+  border-style: solid;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 .g327 {
   border-color: #302f30;
 }
 
 @font-face {
   font-family: "plus-jakarta-sans";
-  src: url("../public/fonts/PlusJakartaSans.ttf");
+  src: url("../../public/fonts/PlusJakartaSans.ttf");
   font-display: swap;
 }
 
@@ -122,21 +152,17 @@ a {
 
 @media (prefers-color-scheme: light) {
   .fade-up-border {
-    background: linear-gradient(
-      to bottom,
-      rgba(220, 221, 223, 10%),
-      rgb(220, 221, 223) 89%
-    );
+    background: linear-gradient(to bottom,
+        rgba(220, 221, 223, 10%),
+        rgb(220, 221, 223) 89%);
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .fade-up-border {
-    background: linear-gradient(
-      to bottom,
-      rgba(41, 37, 36, 50%),
-      rgb(41 37 36) 90%
-    );
+    background: linear-gradient(to bottom,
+        rgba(41, 37, 36, 50%),
+        rgb(41 37 36) 90%);
   }
 }
 
@@ -263,7 +289,7 @@ a {
   height: 100px !important;
 }
 
-.grid-loader > circle {
+.grid-loader>circle {
   fill: #008eff;
 }
 
@@ -326,11 +352,9 @@ dialog::backdrop {
 }
 
 .login-input-gradient {
-  background: linear-gradient(
-    180deg,
-    rgba(61, 65, 71, 0.3) 0%,
-    rgba(44, 47, 53, 0.3) 100%
-  ) !important;
+  background: linear-gradient(180deg,
+      rgba(61, 65, 71, 0.3) 0%,
+      rgba(44, 47, 53, 0.3) 100%) !important;
   box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.25);
 }
 
@@ -355,11 +379,11 @@ dialog::backdrop {
   top: 100%;
 }
 
-.user-reply > div:first-of-type {
+.user-reply>div:first-of-type {
   border: 2px solid white;
 }
 
-.reply > *:last-child::after {
+.reply>*:last-child::after {
   content: "|";
   animation: blink 1.5s steps(1) infinite;
   color: white;
@@ -380,12 +404,19 @@ dialog::backdrop {
   }
 }
 
-@layer components {
-  .radio-container:has(input:checked) {
-    @apply border-blue-500 bg-blue-400/10 text-blue-800;
-  }
+.h-button {
+  height: 50px;
 }
 
-.rti--container {
-  @apply !bg-zinc-900 !text-white !placeholder-white !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
+p {
+  margin: 0px;
+}
+
+.frame-header {
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
+}
+
+.frame-header-action {
+  -webkit-app-region: no-drag !important;
 }

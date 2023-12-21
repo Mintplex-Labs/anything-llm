@@ -19,7 +19,7 @@ export default function SingleUserAuth() {
     const { valid, token, message } = await System.requestToken(data);
     if (valid && !!token) {
       window.localStorage.setItem(AUTH_TOKEN, token);
-      window.location = paths.home();
+      window.location.hash = paths.home();
     } else {
       setError(message);
       setLoading(false);
@@ -44,7 +44,7 @@ export default function SingleUserAuth() {
                 name="password"
                 type="password"
                 placeholder="Password"
-                className="bg-neutral-800 bg-opacity-40 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-[#222628] dark:bg-opacity-40 dark:placeholder-[#FFFFFF99] dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="border-none bg-neutral-800 bg-opacity-40 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-[#222628] dark:bg-opacity-40 dark:placeholder-[#FFFFFF99] dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required={true}
                 autoComplete="off"
               />

@@ -1,10 +1,10 @@
-import { API_BASE } from "@/utils/constants";
-import { baseHeaders } from "@/utils/request";
+import { API_BASE } from "../utils/api";
+import { baseHeaders } from "../utils/request";
 
 const Admin = {
   // User Management
   users: async () => {
-    return await fetch(`${API_BASE}/admin/users`, {
+    return await fetch(`${API_BASE()}/admin/users`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -16,7 +16,7 @@ const Admin = {
       });
   },
   newUser: async (data) => {
-    return await fetch(`${API_BASE}/admin/users/new`, {
+    return await fetch(`${API_BASE()}/admin/users/new`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),
@@ -28,7 +28,7 @@ const Admin = {
       });
   },
   updateUser: async (userId, data) => {
-    return await fetch(`${API_BASE}/admin/user/${userId}`, {
+    return await fetch(`${API_BASE()}/admin/user/${userId}`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),
@@ -40,7 +40,7 @@ const Admin = {
       });
   },
   deleteUser: async (userId) => {
-    return await fetch(`${API_BASE}/admin/user/${userId}`, {
+    return await fetch(`${API_BASE()}/admin/user/${userId}`, {
       method: "DELETE",
       headers: baseHeaders(),
     })
@@ -53,7 +53,7 @@ const Admin = {
 
   // Invitations
   invites: async () => {
-    return await fetch(`${API_BASE}/admin/invites`, {
+    return await fetch(`${API_BASE()}/admin/invites`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -65,7 +65,7 @@ const Admin = {
       });
   },
   newInvite: async () => {
-    return await fetch(`${API_BASE}/admin/invite/new`, {
+    return await fetch(`${API_BASE()}/admin/invite/new`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -76,7 +76,7 @@ const Admin = {
       });
   },
   disableInvite: async (inviteId) => {
-    return await fetch(`${API_BASE}/admin/invite/${inviteId}`, {
+    return await fetch(`${API_BASE()}/admin/invite/${inviteId}`, {
       method: "DELETE",
       headers: baseHeaders(),
     })
@@ -89,7 +89,7 @@ const Admin = {
 
   // Workspaces Mgmt
   workspaces: async () => {
-    return await fetch(`${API_BASE}/admin/workspaces`, {
+    return await fetch(`${API_BASE()}/admin/workspaces`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -101,7 +101,7 @@ const Admin = {
       });
   },
   newWorkspace: async (name) => {
-    return await fetch(`${API_BASE}/admin/workspaces/new`, {
+    return await fetch(`${API_BASE()}/admin/workspaces/new`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({ name }),
@@ -114,7 +114,7 @@ const Admin = {
   },
   updateUsersInWorkspace: async (workspaceId, userIds = []) => {
     return await fetch(
-      `${API_BASE}/admin/workspaces/${workspaceId}/update-users`,
+      `${API_BASE()}/admin/workspaces/${workspaceId}/update-users`,
       {
         method: "POST",
         headers: baseHeaders(),
@@ -128,7 +128,7 @@ const Admin = {
       });
   },
   deleteWorkspace: async (workspaceId) => {
-    return await fetch(`${API_BASE}/admin/workspaces/${workspaceId}`, {
+    return await fetch(`${API_BASE()}/admin/workspaces/${workspaceId}`, {
       method: "DELETE",
       headers: baseHeaders(),
     })
@@ -141,7 +141,7 @@ const Admin = {
 
   // System Preferences
   systemPreferences: async () => {
-    return await fetch(`${API_BASE}/admin/system-preferences`, {
+    return await fetch(`${API_BASE()}/admin/system-preferences`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -152,7 +152,7 @@ const Admin = {
       });
   },
   updateSystemPreferences: async (updates = {}) => {
-    return await fetch(`${API_BASE}/admin/system-preferences`, {
+    return await fetch(`${API_BASE()}/admin/system-preferences`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(updates),
@@ -166,7 +166,7 @@ const Admin = {
 
   // API Keys
   getApiKeys: async function () {
-    return fetch(`${API_BASE}/admin/api-keys`, {
+    return fetch(`${API_BASE()}/admin/api-keys`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -182,7 +182,7 @@ const Admin = {
       });
   },
   generateApiKey: async function () {
-    return fetch(`${API_BASE}/admin/generate-api-key`, {
+    return fetch(`${API_BASE()}/admin/generate-api-key`, {
       method: "POST",
       headers: baseHeaders(),
     })
@@ -198,7 +198,7 @@ const Admin = {
       });
   },
   deleteApiKey: async function (apiKeyId = "") {
-    return fetch(`${API_BASE}/admin/delete-api-key/${apiKeyId}`, {
+    return fetch(`${API_BASE()}/admin/delete-api-key/${apiKeyId}`, {
       method: "DELETE",
       headers: baseHeaders(),
     })

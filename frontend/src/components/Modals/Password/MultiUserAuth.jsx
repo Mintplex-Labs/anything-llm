@@ -20,7 +20,7 @@ export default function MultiUserAuth() {
     if (valid && !!token && !!user) {
       window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
       window.localStorage.setItem(AUTH_TOKEN, token);
-      window.location = paths.home();
+      window.location.hash = paths.home();
     } else {
       setError(message);
       setLoading(false);
@@ -45,7 +45,7 @@ export default function MultiUserAuth() {
                 name="username"
                 type="text"
                 placeholder="Username"
-                className="bg-opacity-40 border-gray-300 text-sm rounded-lg block w-full p-2.5 bg-[#222628] placeholder-[#FFFFFF99] text-white focus:ring-blue-500 focus:border-blue-500"
+                className="border-none bg-opacity-40 border-gray-300 text-sm rounded-lg block w-full p-2.5 bg-[#222628] placeholder-[#FFFFFF99] text-white focus:ring-blue-500 focus:border-blue-500"
                 required={true}
                 autoComplete="off"
               />
@@ -56,7 +56,7 @@ export default function MultiUserAuth() {
                 name="password"
                 type="password"
                 placeholder="Password"
-                className="bg-opacity-40 border-gray-300 text-sm rounded-lg block w-full p-2.5 bg-[#222628] placeholder-[#FFFFFF99] text-white focus:ring-blue-500 focus:border-blue-500"
+                className="border-none bg-opacity-40 border-gray-300 text-sm rounded-lg block w-full p-2.5 bg-[#222628] placeholder-[#FFFFFF99] text-white focus:ring-blue-500 focus:border-blue-500"
                 required={true}
                 autoComplete="off"
               />

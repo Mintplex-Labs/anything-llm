@@ -1,10 +1,11 @@
 import { useRef } from "react";
-import Admin from "@/models/admin";
-import paths from "@/utils/paths";
+import Admin from "../../../../models/admin";
+import paths from "../../../../utils/paths";
 import EditWorkspaceUsersModal, {
   EditWorkspaceUsersModalId,
 } from "./EditWorkspaceUsersModal";
 import { DotsThreeOutline, LinkSimple, Trash } from "@phosphor-icons/react";
+import { Link } from "react-router-dom";
 
 export default function WorkspaceRow({ workspace, users }) {
   const rowRef = useRef(null);
@@ -29,13 +30,13 @@ export default function WorkspaceRow({ workspace, users }) {
           {workspace.name}
         </th>
         <td className="px-6 py-4 flex items-center">
-          <a
-            href={paths.workspace.chat(workspace.slug)}
+          <Link
+            to={paths.workspace.chat(workspace.slug)}
             target="_blank"
             className="text-white flex items-center hover:underline"
           >
             <LinkSimple className="mr-2 w-5 h-5" /> {workspace.slug}
-          </a>
+          </Link>
         </td>
         <td className="px-6 py-4">{workspace.userIds?.length}</td>
         <td className="px-6 py-4">{workspace.createdAt}</td>
@@ -46,7 +47,7 @@ export default function WorkspaceRow({ workspace, users }) {
                 ?.getElementById(EditWorkspaceUsersModalId(workspace))
                 ?.showModal()
             }
-            className="font-medium rounded-lg hover:text-white hover:text-opacity-60 px-2 py-1 hover:bg-white hover:bg-opacity-10"
+            className="border border-slate-200 px-2 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:bg-opacity-10"
           >
             <DotsThreeOutline weight="fill" className="h-5 w-5" />
           </button>

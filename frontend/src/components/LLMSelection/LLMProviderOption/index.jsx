@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function LLMProviderOption({
   name,
   link,
@@ -25,12 +27,13 @@ export default function LLMProviderOption({
         <div className="mt-2 text-xs font-base text-white tracking-wide">
           {description}
         </div>
-        <a
-          href={`https://${link}`}
+        <Link
+          target="_blank"
+          to={`https://${link}`}
           className="mt-2 text-xs text-white font-medium underline"
         >
           {link}
-        </a>
+        </Link>
       </label>
     </div>
   );

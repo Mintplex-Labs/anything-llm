@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
-import Admin from "@/models/admin";
+import Admin from "../../../../../models/admin";
 import { RoleHintDisplay } from "../..";
 
 export const EditUserModalId = (user) => `edit-user-${user.id}-modal`;
@@ -28,7 +28,7 @@ export default function EditUserModal({ currentUser, user }) {
   };
 
   return (
-    <dialog id={EditUserModalId(user)} className="bg-transparent outline-none">
+    <dialog id={EditUserModalId(user)} className="border-none bg-transparent outline-none">
       <div className="relative w-[500px] max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
@@ -57,7 +57,7 @@ export default function EditUserModal({ currentUser, user }) {
                   <input
                     name="username"
                     type="text"
-                    className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="User's username"
                     minLength={2}
                     defaultValue={user.username}
@@ -75,8 +75,9 @@ export default function EditUserModal({ currentUser, user }) {
                   <input
                     name="password"
                     type="text"
-                    className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder={`${user.username}'s new password`}
+                    minLength={8}
                     autoComplete="off"
                   />
                 </div>

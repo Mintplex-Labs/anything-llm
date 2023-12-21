@@ -1,42 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import OnboardingModal, { OnboardingModalId } from "./OnboardingModal";
-import useLogo from "@/hooks/useLogo";
-import { isMobile } from "react-device-detect";
+import useLogo from "../../hooks/useLogo";
 
 export default function OnboardingFlow() {
   const { logo } = useLogo();
-  const [modalVisible, setModalVisible] = useState(false);
-
-  useEffect(() => {
-    if (modalVisible) {
-      document.getElementById(OnboardingModalId)?.showModal();
-    }
-  }, [modalVisible]);
 
   function showModal() {
-    setModalVisible(true);
-  }
-
-  if (isMobile) {
-    return (
-      <div className="w-screen h-full bg-sidebar flex items-center justify-center">
-        <div className="w-fit p-20 py-24 border-2 border-slate-300/10 rounded-2xl bg-main-gradient shadow-lg">
-          <div className="text-white text-2xl font-base text-center">
-            Welcome to
-          </div>
-          <img src={logo} alt="logo" className="w-80 mx-auto m-3 mb-11" />
-          <div className="flex justify-center items-center">
-            <p className="text-white text-sm italic text-center">
-              Please use a desktop browser to continue onboarding.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+    document?.getElementById(OnboardingModalId)?.showModal();
   }
 
   return (
-    <div className="w-screen h-full bg-sidebar flex items-center justify-center">
+    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex items-center justify-center">
       <div className="w-fit p-20 py-24 border-2 border-slate-300/10 rounded-2xl bg-main-gradient shadow-lg">
         <div className="text-white text-2xl font-base text-center">
           Welcome to
@@ -51,7 +25,7 @@ export default function OnboardingFlow() {
           </button>
         </div>
       </div>
-      {modalVisible && <OnboardingModal setModalVisible={setModalVisible} />}
+      <OnboardingModal />
     </div>
   );
 }

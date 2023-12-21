@@ -3,13 +3,12 @@ import { X } from "@phosphor-icons/react";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
 import System from "../../../models/system";
-import { isMobile } from "react-device-detect";
 import useUser from "../../../hooks/useUser";
 
 const DocumentSettings = lazy(() => import("./Documents"));
 const WorkspaceSettings = lazy(() => import("./Settings"));
 
-const noop = () => {};
+const noop = () => { };
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const { slug } = useParams();
   const [selectedTab, setSelectedTab] = useState("documents");
@@ -37,36 +36,6 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
 
   if (!workspace) return null;
 
-  if (isMobile) {
-    return (
-      <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center z-99">
-        <div className="backdrop h-full w-full absolute top-0 z-10" />
-        <div className={`absolute max-h-full transition duration-300 z-20`}>
-          <div className="relative max-w-lg mx-auto bg-main-gradient rounded-[12px] shadow border-2 border-slate-300/10">
-            <div className="p-6">
-              <h1 className="text-white text-lg font-semibold">
-                Editing "{workspace.name}"
-              </h1>
-              <p className="text-white mt-4">
-                Editing these settings are only available on a desktop device.
-                Please access this page on your desktop to continue.
-              </p>
-              <div className="mt-6 flex justify-end">
-                <button
-                  onClick={hideModal}
-                  type="button"
-                  className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center z-99">
       <div className="backdrop h-full w-full absolute top-0 z-10" />
@@ -76,21 +45,19 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             <div className="flex gap-x-1">
               <button
                 onClick={() => setSelectedTab("documents")}
-                className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
-                  selectedTab === "documents"
-                    ? "bg-switch-selected shadow-md"
-                    : "bg-sidebar-button"
-                }`}
+                className={`border-none px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${selectedTab === "documents"
+                  ? "bg-switch-selected shadow-md"
+                  : "bg-sidebar-button"
+                  }`}
               >
                 Documents
               </button>
               <button
                 onClick={() => setSelectedTab("settings")}
-                className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
-                  selectedTab === "settings"
-                    ? "bg-switch-selected shadow-md"
-                    : "bg-sidebar-button"
-                }`}
+                className={`border-none px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${selectedTab === "settings"
+                  ? "bg-switch-selected shadow-md"
+                  : "bg-sidebar-button"
+                  }`}
               >
                 Settings
               </button>

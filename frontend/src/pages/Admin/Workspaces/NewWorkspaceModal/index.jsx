@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
-import Admin from "@/models/admin";
+import Admin from "../../../../models/admin";
 const DIALOG_ID = `new-workspace-modal`;
 
 function hideModal() {
@@ -20,7 +20,7 @@ export default function NewWorkspaceModal() {
   };
 
   return (
-    <dialog id={DIALOG_ID} className="bg-transparent outline-none">
+    <dialog id={DIALOG_ID} className="border-none bg-transparent outline-none">
       <div className="relative w-[500px] max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-600">
@@ -49,7 +49,7 @@ export default function NewWorkspaceModal() {
                   <input
                     name="name"
                     type="text"
-                    className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="My workspace"
                     minLength={4}
                     required={true}

@@ -1,5 +1,5 @@
 import { CloudArrowUp } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import showToast from "../../../../../utils/toast";
 import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";
@@ -85,9 +85,8 @@ export default function UploadFile({
   return (
     <div>
       <div
-        className={`transition-all duration-300 w-[560px] border-2 border-dashed rounded-2xl bg-zinc-900/50 p-3 ${
-          ready ? "cursor-pointer" : "cursor-not-allowed"
-        } hover:bg-zinc-900/90`}
+        className={`transition-all duration-300 w-[560px] border-2 border-dashed rounded-2xl bg-zinc-900/50 p-3 ${ready ? "cursor-pointer" : "cursor-not-allowed"
+          } hover:bg-zinc-900/90`}
         {...getRootProps()}
       >
         <input {...getInputProps()} />
@@ -109,6 +108,7 @@ export default function UploadFile({
               Click to upload or drag and drop
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
+              Supported file extensions are{" "}
               {Object.values(fileTypes ?? [])
                 .flat()
                 .join(" ")}
@@ -138,7 +138,7 @@ export default function UploadFile({
           disabled={fetchingUrl}
           name="link"
           type="url"
-          className="disabled:bg-zinc-600 disabled:text-slate-300 bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5"
+          className="border-none disabled:bg-zinc-600 disabled:text-slate-300 bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5"
           placeholder={"https://example.com"}
           autoComplete="off"
         />

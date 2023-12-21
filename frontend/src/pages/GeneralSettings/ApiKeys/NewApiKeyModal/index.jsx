@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { X } from "@phosphor-icons/react";
-import Admin from "@/models/admin";
-import paths from "@/utils/paths";
-import { userFromStorage } from "@/utils/request";
-import System from "@/models/system";
+import Admin from "../../../../models/admin";
+import paths from "../../../../utils/paths";
+import { userFromStorage } from "../../../../utils/request";
+import System from "../../../../models/system";
+import { Link } from "react-router-dom";
 
 const DIALOG_ID = `new-api-key-modal`;
 
@@ -43,7 +44,7 @@ export default function NewApiKeyModal() {
   }, [copied]);
 
   return (
-    <dialog id={DIALOG_ID} className="bg-transparent outline-none">
+    <dialog id={DIALOG_ID} className="border-none bg-transparent outline-none">
       <div className="relative w-[500px] max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
@@ -77,13 +78,13 @@ export default function NewApiKeyModal() {
                   Once created the API key can be used to programmatically
                   access and configure this AnythingLLM instance.
                 </p>
-                <a
-                  href={paths.apiDocs()}
+                <Link
+                  to={paths.apiDocs()}
                   target="_blank"
                   className="text-blue-400 hover:underline"
                 >
                   Read the API documentation &rarr;
-                </a>
+                </Link>
               </div>
             </div>
             <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">

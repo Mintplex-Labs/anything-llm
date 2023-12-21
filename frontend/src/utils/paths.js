@@ -1,4 +1,4 @@
-import { API_BASE } from "./constants";
+import { API_BASE } from "./api";
 
 export default {
   home: () => {
@@ -22,22 +22,13 @@ export default {
   mailToMintplex: () => {
     return "mailto:team@mintplexlabs.com";
   },
-  hosting: () => {
-    return "https://my.mintplexlabs.com/aio-checkout?product=anythingllm";
-  },
-  feedback: () => {
-    return "https://mintplexlabs.typeform.com/to/i0KE3aEW";
-  },
   workspace: {
     chat: (slug) => {
       return `/workspace/${slug}`;
     },
   },
-  exports: () => {
-    return `${API_BASE.replace("/api", "")}/system/data-exports`;
-  },
   apiDocs: () => {
-    return `${API_BASE}/docs`;
+    return `${API_BASE()}/docs`;
   },
   settings: {
     system: () => {

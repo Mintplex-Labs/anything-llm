@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import Admin from "@/models/admin";
-import showToast from "@/utils/toast";
+import Admin from "../../../../models/admin";
+import showToast from "../../../../utils/toast";
 import { Trash } from "@phosphor-icons/react";
-import { userFromStorage } from "@/utils/request";
-import System from "@/models/system";
+import { userFromStorage } from "../../../../utils/request";
+import System from "../../../../models/system";
 
 export default function ApiKeyRow({ apiKey }) {
   const rowRef = useRef(null);
@@ -59,13 +59,13 @@ export default function ApiKeyRow({ apiKey }) {
           <button
             onClick={copyApiKey}
             disabled={copied}
-            className="font-medium text-blue-300 rounded-lg hover:text-white hover:text-opacity-60 hover:underline"
+            className="border-none font-medium text-blue-300 rounded-lg hover:text-white hover:text-opacity-60 hover:underline"
           >
             {copied ? "Copied" : "Copy API Key"}
           </button>
           <button
             onClick={handleDelete}
-            className="font-medium text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
+            className="border-none font-medium text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
           >
             <Trash className="h-5 w-5" />
           </button>

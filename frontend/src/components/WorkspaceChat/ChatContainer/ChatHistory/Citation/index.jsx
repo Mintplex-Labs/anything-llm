@@ -28,15 +28,13 @@ export default function Citations({ sources = [] }) {
     <div className="flex flex-col mt-4 justify-left">
       <button
         onClick={() => setOpen(!open)}
-        className={`text-white/50 font-medium italic text-sm text-left ml-14 pt-2 ${
-          open ? "pb-2" : ""
-        } hover:text-white/75 transition-all duration-300`}
+        className={`border-none text-white/50 font-medium italic text-sm text-left ml-14 pt-2 ${open ? "pb-2" : ""
+          } hover:text-white/75 transition-all duration-300`}
       >
         {open ? "Hide Citations" : "Show Citations"}
         <CaretRight
-          className={`w-3.5 h-3.5 inline-block ml-1 transform transition-transform duration-300 ${
-            open ? "rotate-90" : ""
-          }`}
+          className={`w-3.5 h-3.5 inline-block ml-1 transform transition-transform duration-300 ${open ? "rotate-90" : ""
+            }`}
         />
       </button>
       {open && (
@@ -116,7 +114,7 @@ function CitationDetailModal({ source, onClose }) {
   return (
     <dialog
       ref={dialogRef}
-      className="bg-transparent outline-none fixed top-0 left-0 w-full h-full flex items-center justify-center z-10"
+      className="border-none bg-transparent outline-none fixed top-0 left-0 w-full h-full flex items-center justify-center z-10"
     >
       <div className="relative w-full max-w-2xl bg-main-gradient rounded-lg shadow border border-white/10 overflow-hidden">
         <div className="flex items-start justify-between p-6 border-b rounded-t border-gray-500/50">

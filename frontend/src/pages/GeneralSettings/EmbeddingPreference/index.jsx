@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
-import System from "@/models/system";
-import showToast from "@/utils/toast";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
-import OpenAiLogo from "@/media/llmprovider/openai.png";
-import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
-import LocalAiLogo from "@/media/llmprovider/localai.png";
-import PreLoader from "@/components/Preloader";
-import LLMProviderOption from "@/components/LLMSelection/LLMProviderOption";
-import ChangeWarningModal from "@/components/ChangeWarning";
-import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
-import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
-import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
-import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
+import Sidebar, {
+} from "../../../components/SettingsSidebar";
+import System from "../../../models/system";
+import showToast from "../../../utils/toast";
+import OpenAiLogo from "../../../assets/llmprovider/openai.png";
+import AzureOpenAiLogo from "../../../assets/llmprovider/azure.png";
+import LocalAiLogo from "../../../assets/llmprovider/localai.png";
+import PreLoader from "../../../components/Preloader";
+import LLMProviderOption from "../../../components/LLMSelection/LLMProviderOption";
+import ChangeWarningModal from "../../../components/ChangeWarning";
+import OpenAiOptions from "../../../components/EmbeddingSelection/OpenAiOptions";
+import AzureAiOptions from "../../../components/EmbeddingSelection/AzureAiOptions";
+import LocalAiOptions from "../../../components/EmbeddingSelection/LocalAiOptions";
 
 export default function GeneralEmbeddingPreference() {
   const [saving, setSaving] = useState(false);
@@ -73,17 +71,16 @@ export default function GeneralEmbeddingPreference() {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
       <ChangeWarningModal
         warningText=" Switching the embedder may affect previously embedded documents and future similarity search results."
         onClose={() => document.getElementById("confirmation-modal")?.close()}
         onConfirm={handleSaveSettings}
       />
-      {!isMobile && <Sidebar />}
+      <Sidebar />
       {loading ? (
         <div
-          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient p-[18px] h-full overflow-y-scroll animate-pulse border-4 border-accent"
+          className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient p-[18px] h-full overflow-y-scroll animate-pulse border-4 border-accent"
         >
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
@@ -91,10 +88,8 @@ export default function GeneralEmbeddingPreference() {
         </div>
       ) : (
         <div
-          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+          className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
         >
-          {isMobile && <SidebarMobileHeader />}
           <form
             id="embedding-form"
             onSubmit={handleSubmit}
@@ -139,14 +134,6 @@ export default function GeneralEmbeddingPreference() {
                     value={embeddingChoice}
                   />
                   <LLMProviderOption
-                    name="AnythingLLM Embedder"
-                    value="native"
-                    description="Use the built-in embedding engine for AnythingLLM. Zero setup!"
-                    checked={embeddingChoice === "native"}
-                    image={AnythingLLMIcon}
-                    onClick={updateChoice}
-                  />
-                  <LLMProviderOption
                     name="OpenAI"
                     value="openai"
                     link="openai.com"
@@ -175,7 +162,6 @@ export default function GeneralEmbeddingPreference() {
                   />
                 </div>
                 <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
-                  {embeddingChoice === "native" && <NativeEmbeddingOptions />}
                   {embeddingChoice === "openai" && (
                     <OpenAiOptions settings={settings} />
                   )}

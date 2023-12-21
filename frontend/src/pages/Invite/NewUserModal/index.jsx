@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Invite from "@/models/invite";
-import paths from "@/utils/paths";
+import Invite from "../../../models/invite";
+import paths from "../../../utils/paths";
 import { useParams } from "react-router-dom";
-import { AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
-import System from "@/models/system";
+import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
+import System from "../../../models/system";
 
 export default function NewUserModal() {
   const { code } = useParams();
@@ -21,7 +21,7 @@ export default function NewUserModal() {
       if (valid && !!token && !!user) {
         window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
         window.localStorage.setItem(AUTH_TOKEN, token);
-        window.location = paths.home();
+        window.location.hash = paths.home();
       } else {
         setError(message);
       }
@@ -31,7 +31,7 @@ export default function NewUserModal() {
   };
 
   return (
-    <dialog open={true} className="bg-transparent outline-none">
+    <dialog open={true} className="border-none bg-transparent outline-none">
       <div className="relative w-full max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
@@ -52,7 +52,7 @@ export default function NewUserModal() {
                   <input
                     name="username"
                     type="text"
-                    className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="My username"
                     minLength={2}
                     required={true}
@@ -69,7 +69,7 @@ export default function NewUserModal() {
                   <input
                     name="password"
                     type="password"
-                    className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="Your password"
                     required={true}
                     minLength={8}

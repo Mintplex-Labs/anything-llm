@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
 import { Info } from "@phosphor-icons/react";
-import paths from "@/utils/paths";
-import System from "@/models/system";
+import paths from "../../../utils/paths";
+import System from "../../../models/system";
+import { Link } from "react-router-dom";
 
 export default function LocalAiOptions({ settings, showAlert = false }) {
   const [basePathValue, setBasePathValue] = useState(settings?.LocalAiBasePath);
   const [basePath, setBasePath] = useState(settings?.LocalAiBasePath);
-  const [apiKeyValue, setApiKeyValue] = useState(settings?.LocalAiApiKey);
-  const [apiKey, setApiKey] = useState(settings?.LocalAiApiKey);
+  function updateBasePath() {
+    setBasePath(basePathValue);
+  }
 
   return (
-    <div className="w-full flex flex-col gap-y-4">
+    <div className="w-full flex flex-col">
       {showAlert && (
         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-6 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
@@ -20,12 +22,12 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
               use.
             </p>
           </div>
-          <a
-            href={paths.settings.embeddingPreference()}
+          <Link
+            to={paths.settings.embeddingPreference()}
             className="text-sm md:text-base my-2 underline"
           >
             Manage embedding &rarr;
-          </a>
+          </Link>
         </div>
       )}
       <div className="w-full flex items-center gap-4">
@@ -36,21 +38,17 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
           <input
             type="url"
             name="LocalAiBasePath"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="http://localhost:1234/v1"
             defaultValue={settings?.LocalAiBasePath}
             required={true}
             autoComplete="off"
             spellCheck={false}
             onChange={(e) => setBasePathValue(e.target.value)}
-            onBlur={() => setBasePath(basePathValue)}
+            onBlur={updateBasePath}
           />
         </div>
-        <LocalAIModelSelection
-          settings={settings}
-          basePath={basePath}
-          apiKey={apiKey}
-        />
+        <LocalAIModelSelection settings={settings} basePath={basePath} />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
             Token context window
@@ -58,7 +56,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
           <input
             type="number"
             name="LocalAiTokenLimit"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="4096"
             min={1}
             onScroll={(e) => e.target.blur()}
@@ -68,35 +66,11 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
           />
         </div>
       </div>
-      <div className="w-full flex items-center gap-4">
-        <div className="flex flex-col w-60">
-          <div className="flex flex-col gap-y-1 mb-4">
-            <label className="text-white text-sm font-semibold block">
-              Local AI API Key
-            </label>
-            <p className="text-xs italic text-white/60">
-              optional API key to use if running LocalAI with API keys.
-            </p>
-          </div>
-
-          <input
-            type="password"
-            name="LocalAiApiKey"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="sk-mysecretkey"
-            defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
-            autoComplete="off"
-            spellCheck={false}
-            onChange={(e) => setApiKeyValue(e.target.value)}
-            onBlur={() => setApiKey(apiKeyValue)}
-          />
-        </div>
-      </div>
     </div>
   );
 }
 
-function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
+function LocalAIModelSelection({ settings, basePath = null }) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -108,16 +82,12 @@ function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
         return;
       }
       setLoading(true);
-      const { models } = await System.customModels(
-        "localai",
-        typeof apiKey === "boolean" ? null : apiKey,
-        basePath
-      );
+      const { models } = await System.customModels("localai", null, basePath);
       setCustomModels(models || []);
       setLoading(false);
     }
     findCustomModels();
-  }, [basePath, apiKey]);
+  }, [basePath]);
 
   if (loading || customModels.length == 0) {
     return (

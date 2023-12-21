@@ -2,10 +2,10 @@ import { useState } from "react";
 import {
   formatDate,
   getFileExtension,
-  middleTruncate,
-} from "@/utils/directories";
+  truncate,
+} from "../../../../../../utils/directories";
 import { File, Trash } from "@phosphor-icons/react";
-import System from "@/models/system";
+import System from "../../../../../../models/system";
 import debounce from "lodash.debounce";
 
 export default function FileRow({
@@ -33,7 +33,7 @@ export default function FileRow({
     try {
       setLoading(true);
       setLoadingMessage("This may take a while for large documents");
-      await System.deleteDocument(`${folderName}/${item.name}`);
+      await System.deleteDocument(`${folderName}/${item.name}`, item);
       await fetchKeys(true);
     } catch (error) {
       console.error("Failed to delete the document:", error);
@@ -56,30 +56,26 @@ export default function FileRow({
   return (
     <div
       onClick={() => toggleSelection(item)}
-      className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer ${`${
-        selected ? "bg-sky-500/20" : ""
-      } ${expanded ? "bg-sky-500/10" : ""}`}`}
+      className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer ${`${selected ? "bg-sky-500/20" : ""
+        } ${expanded ? "bg-sky-500/10" : ""}`}`}
     >
-      <div className="pl-2 col-span-5 flex gap-x-[4px] items-center">
+      <div className="col-span-4 flex gap-x-[4px] items-center">
         <div
-          className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
+          className="w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
           role="checkbox"
           aria-checked={selected}
           tabIndex={0}
         >
           {selected && <div className="w-2 h-2 bg-white rounded-[2px]" />}
         </div>
-        <File
-          className="shrink-0 text-base font-bold w-4 h-4 mr-[3px]"
-          weight="fill"
-        />
+        <File className="text-base font-bold w-4 h-4 mr-[3px]" weight="fill" />
         <div
           className="relative"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           <p className="whitespace-nowrap overflow-hidden">
-            {middleTruncate(item.title, 17)}
+            {truncate(item.title, 17)}
           </p>
           {showTooltip && (
             <div className="absolute left-0 bg-white text-black p-1.5 rounded shadow-lg whitespace-nowrap">
@@ -88,12 +84,11 @@ export default function FileRow({
           )}
         </div>
       </div>
-      <p className="col-span-3 pl-3.5 whitespace-nowrap">
+      <p className="col-span-2 pl-3.5 whitespace-nowrap">
         {formatDate(item?.published)}
       </p>
-      <p className="col-span-2 pl-2 uppercase overflow-x-hidden">
-        {getFileExtension(item.url)}
-      </p>
+      <p className="col-span-2 pl-3">{item?.size || "---"}</p>
+      <p className="col-span-2 pl-2 uppercase">{getFileExtension(item.url)}</p>
       <div className="col-span-2 flex justify-end items-center">
         {item?.cached && (
           <div className="bg-white/10 rounded-3xl">
@@ -102,7 +97,7 @@ export default function FileRow({
         )}
         <Trash
           onClick={onTrashClick}
-          className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
+          className="hover:text-red-300 text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
         />
       </div>
     </div>

@@ -1,6 +1,10 @@
 import React, { useState, memo } from "react";
-import System from "@/models/system";
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import System from "../../../../../models/system";
+import {
+  AUTH_TIMESTAMP,
+  AUTH_TOKEN,
+  AUTH_USER,
+} from "../../../../../utils/constants";
 import debounce from "lodash.debounce";
 
 // Multi-user mode step
@@ -39,7 +43,7 @@ function MultiUserSetup({ nextStep, prevStep }) {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-col w-full md:px-8 py-4">
+        <div className="flex flex-col w-full md:px-8 py-12">
           <div className="space-y-6 flex h-full w-96">
             <div className="w-full flex flex-col gap-y-4">
               <div>
@@ -52,7 +56,7 @@ function MultiUserSetup({ nextStep, prevStep }) {
                 <input
                   name="username"
                   type="text"
-                  className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder="Your admin username"
                   minLength={6}
                   required={true}
@@ -70,7 +74,7 @@ function MultiUserSetup({ nextStep, prevStep }) {
                 <input
                   name="password"
                   type="password"
-                  className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder="Your admin password"
                   minLength={8}
                   required={true}
@@ -85,7 +89,7 @@ function MultiUserSetup({ nextStep, prevStep }) {
             </div>
           </div>
         </div>
-        <div className="flex w-full justify-between items-center px-6 py-4 space-x-6 border-t rounded-b border-gray-500/50">
+        <div className="flex w-full justify-between items-center p-6 space-x-6 border-t rounded-b border-gray-500/50">
           <div className="w-96 text-white text-opacity-80 text-xs font-base">
             By default, you will be the only admin. As an admin you will need to
             create accounts for all new users or admins. Do not lose your
@@ -101,7 +105,7 @@ function MultiUserSetup({ nextStep, prevStep }) {
             </button>
             <button
               type="submit"
-              className="border px-4 py-2 rounded-lg text-sm items-center flex gap-x-2
+              className="border px-4 py-2 rounded-lg text-sm items-center flex gap-x-2 
               border-slate-200 text-slate-800 bg-slate-200 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow
               disabled:border-gray-400 disabled:text-slate-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
               disabled={!(!!username && !!password)}
