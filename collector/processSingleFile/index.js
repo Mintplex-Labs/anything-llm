@@ -5,8 +5,7 @@ const {
   SUPPORTED_FILETYPE_CONVERTERS,
 } = require("../utils/constants");
 const { trashFile } = require("../utils/files");
-
-RESERVED_FILES = ["__HOTDIR__.md"];
+const RESERVED_FILES = ["__HOTDIR__.md"];
 
 async function processSingleFile(targetFilename) {
   const fullFilePath = path.resolve(WATCH_DIRECTORY, targetFilename);

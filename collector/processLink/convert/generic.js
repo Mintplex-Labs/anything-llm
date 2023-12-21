@@ -18,7 +18,7 @@ async function scrapeGenericUrl(link) {
   const url = new URL(link);
   const filename = (url.host + "-" + url.pathname).replace(".", "_");
 
-  data = {
+  const data = {
     id: v4(),
     url: "file://" + slugify(filename) + ".html",
     title: slugify(filename) + ".html",
