@@ -7,7 +7,7 @@ require("dotenv").config({
 
 const { viewLocalFiles } = require("../utils/files");
 const {
-  checkPythonAppAlive,
+  checkProcessorAlive,
   acceptedFileTypes,
 } = require("../utils/files/documentProcessor");
 const { purgeDocument } = require("../utils/files/purgeDocument");
@@ -207,7 +207,7 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (_, response) => {
       try {
-        const online = await checkPythonAppAlive();
+        const online = await checkProcessorAlive();
         response.sendStatus(online ? 200 : 503);
       } catch (e) {
         console.log(e.message, e);

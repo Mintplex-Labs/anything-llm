@@ -12,7 +12,8 @@
   "scripts": {
     "dev": "NODE_ENV=development nodemon --ignore hotdir --ignore storage --trace-warnings index.js",
     "start": "NODE_ENV=production node index.js",
-    "lint": "yarn prettier --write ./processSingleFile ./processLink ./utils index.js"
+    "lint": "yarn prettier --write ./processSingleFile ./processLink ./utils index.js",
+    "build": "node build.mjs"
   },
   "dependencies": {
     "@googleapis/youtube": "^9.0.0",
@@ -43,6 +44,7 @@
     "youtubei.js": "^8.0.0"
   },
   "devDependencies": {
+    "esbuild": "^0.19.8",
     "nodemon": "^2.0.22",
     "prettier": "^2.4.1"
   }
