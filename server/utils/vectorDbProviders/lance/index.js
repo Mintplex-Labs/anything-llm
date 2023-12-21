@@ -1,3 +1,8 @@
+const path = require("path");
+const LANCE_STORAGE = process.env.STORAGE_DIR
+  ? path.resolve(process.env.STORAGE_DIR, "lancedb")
+  : path.resolve(__dirname, "../../../lancedb");
+
 const lancedb = require("vectordb");
 const { toChunks, getLLMProvider } = require("../../helpers");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
@@ -6,9 +11,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 
 const LanceDb = {
-  uri: `${
-    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
-  }lancedb`,
+  uri: LANCE_STORAGE,
   name: "LanceDb",
   connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
