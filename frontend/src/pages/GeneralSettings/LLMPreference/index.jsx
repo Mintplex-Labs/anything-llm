@@ -59,7 +59,7 @@ export default function GeneralLLMPreference() {
       <Sidebar />
       {loading ? (
         <div
-          className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient p-[18px] h-full overflow-y-scroll animate-pulse border-4 border-accent"
+          className="relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient p-[18px] h-full overflow-y-scroll animate-pulse border-4 border-accent"
         >
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
@@ -67,7 +67,7 @@ export default function GeneralLLMPreference() {
         </div>
       ) : (
         <div
-          className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
+          className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
         >
           <form
             onSubmit={handleSubmit}

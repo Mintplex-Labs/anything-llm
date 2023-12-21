@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
-import Sidebar, {
-} from "../../../components/SettingsSidebar";
-import AnythingLLM from "../../../assets/logo/anything-llm.png";
-import useLogo from "../../../hooks/useLogo";
-import System from "../../../models/system";
-import EditingChatBubble from "../../../components/EditingChatBubble";
-import showToast from "../../../utils/toast";
+import Sidebar from "@/components/SettingsSidebar";
+import AnythingLLM from "@/assets/logo/anything-llm.png";
+import useLogo from "@/hooks/useLogo";
+import System from "@/models/system";
+import EditingChatBubble from "@/components/EditingChatBubble";
+import showToast from "@/utils/toast";
 import { Plus } from "@phosphor-icons/react";
 
 export default function Appearance() {
-  const { logo: _initLogo } = useLogo();
+  const { logo: _initLogo, setLogo: _setLogo } = useLogo();
   const [logo, setLogo] = useState("");
   const [hasChanges, setHasChanges] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -48,6 +47,9 @@ export default function Appearance() {
       return;
     }
 
+    const logoURL = await System.fetchLogo();
+    _setLogo(logoURL);
+
     showToast("Image uploaded successfully.", "success");
     setIsDefaultLogo(false);
   };
@@ -65,6 +67,9 @@ export default function Appearance() {
       setIsDefaultLogo(false);
       return;
     }
+
+    const logoURL = await System.fetchLogo();
+    _setLogo(logoURL);
 
     showToast("Image successfully removed.", "success");
   };
@@ -170,7 +175,7 @@ export default function Appearance() {
                 </label>
                 <button
                   onClick={handleRemoveLogo}
-                  className="border-none text-white text-base font-medium hover:text-opacity-60"
+                  className="text-white text-base font-medium hover:text-opacity-60 border-none"
                 >
                   Delete
                 </button>
@@ -211,7 +216,7 @@ export default function Appearance() {
               ))}
               <div className="flex gap-4 mt-12 justify-between pb-7">
                 <button
-                  className="border-none self-end text-white hover:text-white/60 transition"
+                  className="self-end text-white hover:text-white/60 transition border-none"
                   onClick={() => addMessage("response")}
                 >
                   <div className="flex items-center justify-start">
@@ -220,7 +225,7 @@ export default function Appearance() {
                   </div>
                 </button>
                 <button
-                  className="border-none self-end text-sky-400 hover:text-sky-400/60 transition"
+                  className="self-end text-sky-400 hover:text-sky-400/60 transition border-none"
                   onClick={() => addMessage("user")}
                 >
                   <div className="flex items-center">
@@ -246,3 +251,5 @@ export default function Appearance() {
     </div>
   );
 }
+
+

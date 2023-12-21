@@ -57,7 +57,7 @@ button {
 
 @font-face {
   font-family: "plus-jakarta-sans";
-  src: url("../../public/fonts/PlusJakartaSans.ttf");
+  src: url("../../../public/fonts/PlusJakartaSans.ttf");
   font-display: swap;
 }
 

@@ -1,18 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import {
   Wrench,
   GithubLogo,
   BookOpen,
   DiscordLogo,
   Plus,
-  List,
 } from "@phosphor-icons/react";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
 import ActiveWorkspaces from "./ActiveWorkspaces";
 import paths from "@/utils/paths";
-import { USER_BACKGROUND_COLOR } from "@/utils/constants";
 import useLogo from "@/hooks/useLogo";
 import useUser from "@/hooks/useUser";
 import { Link } from "react-router-dom";
@@ -31,7 +29,7 @@ export default function Sidebar() {
     <>
       <div
         ref={sidebarRef}
-        style={{ height: "calc(100% - 32px)" }}
+        style={{ height: "calc(100vh - 70px)" }}
         className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px]"
       >
         <div className="flex flex-col h-full overflow-x-hidden">
