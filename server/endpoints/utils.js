@@ -1,17 +1,5 @@
 const { SystemSettings } = require("../models/systemSettings");
 
-function getGitVersion() {
-  try {
-    return require("child_process")
-      .execSync("git rev-parse HEAD")
-      .toString()
-      .trim();
-  } catch (e) {
-    console.error("getGitVersion", e.message);
-    return "--";
-  }
-}
-
 function byteToGigaByte(n) {
   return n / Math.pow(10, 9);
 }
@@ -39,7 +27,6 @@ function utilEndpoints(app) {
     try {
       const metrics = {
         online: true,
-        version: getGitVersion(),
         mode: (await SystemSettings.isMultiUserMode())
           ? "multi-user"
           : "single-user",
@@ -54,4 +41,4 @@ function utilEndpoints(app) {
   });
 }
 
-module.exports = { utilEndpoints, getGitVersion };
+module.exports = { utilEndpoints };

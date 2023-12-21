@@ -67,16 +67,6 @@ const KEY_MAPPING = {
     envKey: "LOCAL_AI_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
-  LocalAiApiKey: {
-    envKey: "LOCAL_AI_API_KEY",
-    checks: [],
-  },
-
-  // Native LLM Settings
-  NativeLLMModelPref: {
-    envKey: "NATIVE_LLM_MODEL_PREF",
-    checks: [isDownloadedModel],
-  },
 
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
@@ -89,10 +79,6 @@ const KEY_MAPPING = {
   EmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
-  },
-  EmbeddingModelMaxChunkLength: {
-    envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
-    checks: [nonZero],
   },
 
   // Vector Database Selection Settings
@@ -200,14 +186,9 @@ function validLLMExternalBasePath(input = "") {
 }
 
 function supportedLLM(input = "") {
-  return [
-    "openai",
-    "azure",
-    "anthropic",
-    "lmstudio",
-    "localai",
-    "native",
-  ].includes(input);
+  return ["openai", "azure", "anthropic", "lmstudio", "localai"].includes(
+    input
+  );
 }
 
 function validAnthropicModel(input = "") {
@@ -218,7 +199,7 @@ function validAnthropicModel(input = "") {
 }
 
 function supportedEmbeddingModel(input = "") {
-  const supported = ["openai", "azure", "localai", "native"];
+  const supported = ["openai", "azure", "localai"];
   return supported.includes(input)
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;
@@ -260,22 +241,6 @@ function requiresForceMode(_, forceModeEnabled = false) {
   return forceModeEnabled === true ? null : "Cannot set this setting.";
 }
 
-function isDownloadedModel(input = "") {
-  const fs = require("fs");
-  const path = require("path");
-  const storageDir = path.resolve(
-    process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
-      : path.resolve(__dirname, `../../storage/models/downloaded`)
-  );
-  if (!fs.existsSync(storageDir)) return false;
-
-  const files = fs
-    .readdirSync(storageDir)
-    .filter((file) => file.includes(".gguf"));
-  return files.includes(input);
-}
-
 // This will force update .env variables which for any which reason were not able to be parsed or
 // read from an ENV file as this seems to be a complicating step for many so allowing people to write
 // to the process will at least alleviate that issue. It does not perform comprehensive validity checks or sanity checks
@@ -314,16 +279,9 @@ async function dumpENV() {
   const frozenEnvs = {};
   const protectedKeys = [
     ...Object.values(KEY_MAPPING).map((values) => values.envKey),
+    "CACHE_VECTORS",
     "STORAGE_DIR",
     "SERVER_PORT",
-    // Password Schema Keys if present.
-    "PASSWORDMINCHAR",
-    "PASSWORDMAXCHAR",
-    "PASSWORDLOWERCASE",
-    "PASSWORDUPPERCASE",
-    "PASSWORDNUMERIC",
-    "PASSWORDSYMBOL",
-    "PASSWORDREQUIREMENTS",
   ];
 
   for (const key of protectedKeys) {
@@ -339,7 +297,7 @@ async function dumpENV() {
     })
     .join("\n");
 
-  const envPath = path.join(__dirname, "../../.env");
+  const envPath = process.env.STORAGE_DIR ? path.join(process.env.STORAGE_DIR, ".env") : path.join(__dirname, "../../.env");
   fs.writeFileSync(envPath, envResult, { encoding: "utf8", flag: "w" });
   return true;
 }

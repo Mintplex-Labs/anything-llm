@@ -1,9 +1,11 @@
-process.env.NODE_ENV === "development"
-  ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
-  : require("dotenv").config();
+const path = require('path');
+require("dotenv").config({
+  path: process.env.STORAGE_DIR ?
+    `${path.join(process.env.STORAGE_DIR, '.env')}` :
+    `${path.join(__dirname, '.env')}`
+})
 
 const prisma = require("../utils/prisma");
-
 const SystemSettings = {
   supportedFields: [
     "multi_user_mode",
@@ -14,9 +16,10 @@ const SystemSettings = {
     "telemetry_id",
   ],
   currentSettings: async function () {
-    const llmProvider = process.env.LLM_PROVIDER;
-    const vectorDB = process.env.VECTOR_DB;
+    const llmProvider = process.env.LLM_PROVIDER || "openai";
+    const vectorDB = process.env.VECTOR_DB || "pinecone";
     return {
+      CanDebug: !!!process.env.NO_DEBUG,
       RequiresAuth: !!process.env.AUTH_TOKEN,
       AuthToken: !!process.env.AUTH_TOKEN,
       JWTSecret: !!process.env.JWT_SECRET,
@@ -27,95 +30,88 @@ const SystemSettings = {
       EmbeddingEngine: process.env.EMBEDDING_ENGINE,
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-      EmbeddingModelMaxChunkLength:
-        process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
-      LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
       ...(vectorDB === "pinecone"
         ? {
-            PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
-            PineConeKey: !!process.env.PINECONE_API_KEY,
-            PineConeIndex: process.env.PINECONE_INDEX,
-          }
+          PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
+          PineConeKey: !!process.env.PINECONE_API_KEY,
+          PineConeIndex: process.env.PINECONE_INDEX,
+        }
         : {}),
       ...(vectorDB === "chroma"
         ? {
-            ChromaEndpoint: process.env.CHROMA_ENDPOINT,
-            ChromaApiHeader: process.env.CHROMA_API_HEADER,
-            ChromaApiKey: !!process.env.CHROMA_API_KEY,
-          }
+          ChromaEndpoint: process.env.CHROMA_ENDPOINT,
+          ChromaApiHeader: process.env.CHROMA_API_HEADER,
+          ChromaApiKey: !!process.env.CHROMA_API_KEY,
+        }
         : {}),
       ...(vectorDB === "weaviate"
         ? {
-            WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
-            WeaviateApiKey: process.env.WEAVIATE_API_KEY,
-          }
+          WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
+          WeaviateApiKey: process.env.WEAVIATE_API_KEY,
+        }
         : {}),
       ...(vectorDB === "qdrant"
         ? {
-            QdrantEndpoint: process.env.QDRANT_ENDPOINT,
-            QdrantApiKey: process.env.QDRANT_API_KEY,
-          }
+          QdrantEndpoint: process.env.QDRANT_ENDPOINT,
+          QdrantApiKey: process.env.QDRANT_API_KEY,
+        }
         : {}),
       LLMProvider: llmProvider,
       ...(llmProvider === "openai"
         ? {
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
-          }
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
+        }
         : {}),
 
       ...(llmProvider === "azure"
         ? {
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-            AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
-          }
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
+        }
         : {}),
 
       ...(llmProvider === "anthropic"
         ? {
-            AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
-            AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
+          AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
+          AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
 
-            // For embedding credentials when Anthropic is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when Anthropic is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
 
       ...(llmProvider === "lmstudio"
         ? {
-            LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
-            LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
+          LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
+          LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
 
-            // For embedding credentials when lmstudio is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when lmstudio is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
+
       ...(llmProvider === "localai"
         ? {
-            LocalAiBasePath: process.env.LOCAL_AI_BASE_PATH,
-            LocalAiModelPref: process.env.LOCAL_AI_MODEL_PREF,
-            LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
+          LocalAiBasePath: process.env.LOCAL_AI_BASE_PATH,
+          LocalAiModelPref: process.env.LOCAL_AI_MODEL_PREF,
+          LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
 
-            // For embedding credentials when localai is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
-        : {}),
-      ...(llmProvider === "native"
-        ? {
-            NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
-          }
+          // For embedding credentials when localai is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
     };
   },

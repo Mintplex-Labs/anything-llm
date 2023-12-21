@@ -2,7 +2,7 @@ const { Telemetry } = require("../../../models/telemetry");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { setupMulter } = require("../../../utils/files/multer");
 const {
-  checkProcessorAlive,
+  checkPythonAppAlive,
   acceptedFileTypes,
   processDocument,
 } = require("../../../utils/files/documentProcessor");
@@ -60,14 +60,14 @@ function apiDocumentEndpoints(app) {
     */
       try {
         const { originalname } = request.file;
-        const processingOnline = await checkProcessorAlive();
+        const processingOnline = await checkPythonAppAlive();
 
         if (!processingOnline) {
           response
             .status(500)
             .json({
               success: false,
-              error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
+              error: `Python processing API is not online. Document ${originalname} will not be processed automatically.`,
             })
             .end();
         }

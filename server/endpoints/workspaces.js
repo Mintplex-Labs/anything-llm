@@ -7,7 +7,7 @@ const { convertToChatHistory } = require("../utils/chats");
 const { getVectorDbClass } = require("../utils/helpers");
 const { setupMulter } = require("../utils/files/multer");
 const {
-  checkProcessorAlive,
+  checkPythonAppAlive,
   processDocument,
   processLink,
 } = require("../utils/files/documentProcessor");
@@ -32,7 +32,6 @@ function workspaceEndpoints(app) {
           {
             multiUserMode: multiUserMode(response),
             LLMSelection: process.env.LLM_PROVIDER || "openai",
-            Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "pinecone",
           },
           user?.id
@@ -82,14 +81,14 @@ function workspaceEndpoints(app) {
     handleUploads.single("file"),
     async function (request, response) {
       const { originalname } = request.file;
-      const processingOnline = await checkProcessorAlive();
+      const processingOnline = await checkPythonAppAlive();
 
       if (!processingOnline) {
         response
           .status(500)
           .json({
             success: false,
-            error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
+            error: `Python processing API is not online. Document ${originalname} will not be processed automatically.`,
           })
           .end();
         return;
@@ -114,14 +113,14 @@ function workspaceEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       const { link = "" } = reqBody(request);
-      const processingOnline = await checkProcessorAlive();
+      const processingOnline = await checkPythonAppAlive();
 
       if (!processingOnline) {
         response
           .status(500)
           .json({
             success: false,
-            error: `Document processing API is not online. Link ${link} will not be processed automatically.`,
+            error: `Python processing API is not online. Link ${link} will not be processed automatically.`,
           })
           .end();
         return;

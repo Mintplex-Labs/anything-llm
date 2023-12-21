@@ -1,4 +1,3 @@
-const { getGitVersion } = require("../../endpoints/utils");
 const { Telemetry } = require("../../models/telemetry");
 
 function checkColumnTemplate(tablename = null, column = null) {
@@ -104,7 +103,7 @@ async function setupTelemetry() {
   );
   await Telemetry.findOrCreateId();
   await Telemetry.sendTelemetry("server_boot", {
-    commit: getGitVersion(),
+    mode: 'desktop_application',
   });
   return;
 }

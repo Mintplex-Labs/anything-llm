@@ -99,6 +99,8 @@ async function viewLocalFiles() {
 // Searches the vector-cache folder for existing information so we dont have to re-embed a
 // document and can instead push directly to vector db.
 async function cachedVectorInformation(filename = null, checkOnly = false) {
+  if (!process.env.CACHE_VECTORS)
+    return checkOnly ? false : { exists: false, chunks: [] };
   if (!filename) return checkOnly ? false : { exists: false, chunks: [] };
 
   const digest = uuidv5(filename, uuidv5.URL);
@@ -121,6 +123,7 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
 // vectorData: pre-chunked vectorized data for a given file that includes the proper metadata and chunk-size limit so it can be iterated and dumped into Pinecone, etc
 // filename is the fullpath to the doc so we can compare by filename to find cached matches.
 async function storeVectorResult(vectorData = [], filename = null) {
+  if (!process.env.CACHE_VECTORS) return;
   if (!filename) return;
   console.log(
     `Caching vectorized results of ${filename} to prevent duplicated embedding.`
@@ -141,14 +144,18 @@ async function storeVectorResult(vectorData = [], filename = null) {
 // Purges a file from the documents/ folder.
 async function purgeSourceDocument(filename = null) {
   if (!filename) return;
-  console.log(`Purging source document of ${filename}.`);
+  console.log(`Purging document of ${filename}.`);
 
   const filePath =
     process.env.NODE_ENV === "development"
       ? path.resolve(__dirname, `../../storage/documents`, filename)
       : path.resolve(process.env.STORAGE_DIR, `documents`, filename);
 
-  if (!fs.existsSync(filePath)) return;
+  if (!fs.existsSync(filePath)) {
+    console.log(`Could not located cachefile for ${filename}`, filePath);
+    return;
+  }
+
   fs.rmSync(filePath);
   return;
 }
@@ -156,7 +163,7 @@ async function purgeSourceDocument(filename = null) {
 // Purges a vector-cache file from the vector-cache/ folder.
 async function purgeVectorCache(filename = null) {
   if (!filename) return;
-  console.log(`Purging vector-cache of ${filename}.`);
+  console.log(`Purging cached vectorized results of ${filename}.`);
 
   const digest = uuidv5(filename, uuidv5.URL);
   const filePath =
@@ -164,7 +171,11 @@ async function purgeVectorCache(filename = null) {
       ? path.resolve(__dirname, `../../storage/vector-cache`, `${digest}.json`)
       : path.resolve(process.env.STORAGE_DIR, `vector-cache`, `${digest}.json`);
 
-  if (!fs.existsSync(filePath)) return;
+  if (!fs.existsSync(filePath)) {
+    console.log(`Could not located cache file for ${filename}`, filePath);
+    return;
+  }
+
   fs.rmSync(filePath);
   return;
 }

@@ -1,18 +1,1 @@
-.env.production
-.env.development
-storage/assets/*
-!storage/assets/anything-llm.png
-storage/documents/*
-storage/vector-cache/*.json
-storage/exports
-storage/imports
-!storage/documents/DOCUMENTS.md
-logs/server.log
-*.db
-storage/lancedb
-public/
-
-# For legacy copies of repo
-documents
-vector-cache
-yarn-error.log
+storage

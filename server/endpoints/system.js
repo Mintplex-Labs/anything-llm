@@ -1,13 +1,16 @@
-process.env.NODE_ENV === "development"
-  ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
-  : require("dotenv").config();
+const path = require('path');
+require("dotenv").config({
+  path: process.env.STORAGE_DIR ?
+    `${path.join(process.env.STORAGE_DIR, '.env')}` :
+    `${path.join(__dirname, '.env')}`
+})
+
 const { viewLocalFiles } = require("../utils/files");
-const { exportData, unpackAndOverwriteImport } = require("../utils/files/data");
 const {
-  checkProcessorAlive,
+  checkPythonAppAlive,
   acceptedFileTypes,
 } = require("../utils/files/documentProcessor");
-const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
+const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
 const {
@@ -16,20 +19,12 @@ const {
   userFromSession,
   multiUserMode,
 } = require("../utils/http");
-const {
-  setupDataImports,
-  setupLogoUploads,
-  setupPfpUploads,
-} = require("../utils/files/multer");
+const { setupLogoUploads } = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { handleImports } = setupDataImports();
 const { handleLogoUploads } = setupLogoUploads();
-const { handlePfpUploads } = setupPfpUploads();
-const fs = require("fs");
-const path = require("path");
 const {
   getDefaultFilename,
   determineLogoFilepath,
@@ -46,21 +41,12 @@ const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { Workspace } = require("../models/workspace");
 const { flexUserRoleValid } = require("../utils/middleware/multiUserProtected");
-const { fetchPfp, determinePfpFilepath } = require("../utils/files/pfp");
 
 function systemEndpoints(app) {
   if (!app) return;
 
   app.get("/ping", (_, response) => {
     response.status(200).json({ online: true });
-  });
-
-  app.get("/migrate", async (_, response) => {
-    const execSync = require("child_process").execSync;
-    execSync("npx prisma migrate deploy --schema=./prisma/schema.prisma", {
-      stdio: "inherit",
-    });
-    response.sendStatus(200);
   });
 
   app.get("/env-dump", async (_, response) => {
@@ -196,23 +182,8 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const { name } = reqBody(request);
-        await purgeDocument(name);
-        response.sendStatus(200).end();
-      } catch (e) {
-        console.log(e.message, e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.delete(
-    "/system/remove-folder",
-    [validatedRequest],
-    async (request, response) => {
-      try {
-        const { name } = reqBody(request);
-        await purgeFolder(name);
+        const { name, meta } = reqBody(request);
+        await purgeDocument(name, meta);
         response.sendStatus(200).end();
       } catch (e) {
         console.log(e.message, e);
@@ -236,7 +207,7 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (_, response) => {
       try {
-        const online = await checkProcessorAlive();
+        const online = await checkPythonAppAlive();
         response.sendStatus(online ? 200 : 503);
       } catch (e) {
         console.log(e.message, e);
@@ -271,7 +242,7 @@ function systemEndpoints(app) {
       try {
         const body = reqBody(request);
         const { newValues, error } = updateENV(body);
-        if (process.env.NODE_ENV === "production") await dumpENV();
+        await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
         console.log(e.message, e);
@@ -299,7 +270,7 @@ function systemEndpoints(app) {
           },
           true
         );
-        if (process.env.NODE_ENV === "production") await dumpENV();
+        await dumpENV();
         response.status(200).json({ success: !error, error });
       } catch (e) {
         console.log(e.message, e);
@@ -342,7 +313,7 @@ function systemEndpoints(app) {
           },
           true
         );
-        if (process.env.NODE_ENV === "production") await dumpENV();
+        await dumpENV();
         await Telemetry.sendTelemetry("enabled_multi_user_mode", {
           multiUserMode: true,
         });
@@ -369,53 +340,6 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/data-export", [validatedRequest], async (_, response) => {
-    try {
-      const { filename, error } = await exportData();
-      response.status(200).json({ filename, error });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
-    }
-  });
-
-  app.get("/system/data-exports/:filename", (request, response) => {
-    const exportLocation = __dirname + "/../storage/exports/";
-    const sanitized = path
-      .normalize(request.params.filename)
-      .replace(/^(\.\.(\/|\\|$))+/, "");
-    const finalDestination = path.join(exportLocation, sanitized);
-
-    if (!fs.existsSync(finalDestination)) {
-      response.status(404).json({
-        error: 404,
-        msg: `File ${request.params.filename} does not exist in exports.`,
-      });
-      return;
-    }
-
-    response.download(finalDestination, request.params.filename, (err) => {
-      if (err) {
-        response.send({
-          error: err,
-          msg: "Problem downloading the file",
-        });
-      }
-      // delete on download because endpoint is not authenticated.
-      fs.rmSync(finalDestination);
-    });
-  });
-
-  app.post(
-    "/system/data-import",
-    handleImports.single("file"),
-    async function (request, response) {
-      const { originalname } = request.file;
-      const { success, error } = await unpackAndOverwriteImport(originalname);
-      response.status(200).json({ success, error });
-    }
-  );
-
   app.get("/system/logo", async function (request, response) {
     try {
       const defaultFilename = getDefaultFilename();
@@ -440,110 +364,6 @@ function systemEndpoints(app) {
       response.status(500).json({ message: "Internal server error" });
     }
   });
-
-  app.get("/system/pfp/:id", async function (request, response) {
-    try {
-      const { id } = request.params;
-      const pfpPath = await determinePfpFilepath(id);
-
-      if (!pfpPath) {
-        response.sendStatus(204).end();
-        return;
-      }
-
-      const { found, buffer, size, mime } = fetchPfp(pfpPath);
-      if (!found) {
-        response.sendStatus(204).end();
-        return;
-      }
-
-      response.writeHead(200, {
-        "Content-Type": mime || "image/png",
-        "Content-Disposition": `attachment; filename=${path.basename(pfpPath)}`,
-        "Content-Length": size,
-      });
-      response.end(Buffer.from(buffer, "base64"));
-      return;
-    } catch (error) {
-      console.error("Error processing the logo request:", error);
-      response.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  app.post(
-    "/system/upload-pfp",
-    [validatedRequest, flexUserRoleValid],
-    handlePfpUploads.single("file"),
-    async function (request, response) {
-      try {
-        const user = await userFromSession(request, response);
-        const uploadedFileName = request.randomFileName;
-
-        if (!uploadedFileName) {
-          return response.status(400).json({ message: "File upload failed." });
-        }
-
-        const userRecord = await User.get({ id: user.id });
-        const oldPfpFilename = userRecord.pfpFilename;
-        console.log("oldPfpFilename", oldPfpFilename);
-        if (oldPfpFilename) {
-          const oldPfpPath = path.join(
-            __dirname,
-            `../storage/assets/pfp/${oldPfpFilename}`
-          );
-
-          if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
-        }
-
-        const { success, error } = await User.update(user.id, {
-          pfpFilename: uploadedFileName,
-        });
-
-        return response.status(success ? 200 : 500).json({
-          message: success
-            ? "Profile picture uploaded successfully."
-            : error || "Failed to update with new profile picture.",
-        });
-      } catch (error) {
-        console.error("Error processing the profile picture upload:", error);
-        response.status(500).json({ message: "Internal server error" });
-      }
-    }
-  );
-
-  app.delete(
-    "/system/remove-pfp",
-    [validatedRequest, flexUserRoleValid],
-    async function (request, response) {
-      try {
-        const user = await userFromSession(request, response);
-        const userRecord = await User.get({ id: user.id });
-        const oldPfpFilename = userRecord.pfpFilename;
-        console.log("oldPfpFilename", oldPfpFilename);
-        if (oldPfpFilename) {
-          const oldPfpPath = path.join(
-            __dirname,
-            `../storage/assets/pfp/${oldPfpFilename}`
-          );
-
-          if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
-        }
-
-        const { success, error } = await User.update(user.id, {
-          pfpFilename: null,
-        });
-
-        return response.status(success ? 200 : 500).json({
-          message: success
-            ? "Profile picture removed successfully."
-            : error || "Failed to remove profile picture.",
-        });
-      } catch (error) {
-        console.error("Error processing the profile picture removal:", error);
-        response.status(500).json({ message: "Internal server error" });
-      }
-    }
-  );
 
   app.post(
     "/system/upload-logo",
@@ -868,40 +688,6 @@ function systemEndpoints(app) {
       }
     }
   );
-
-  app.post("/system/user", [validatedRequest], async (request, response) => {
-    try {
-      const sessionUser = await userFromSession(request, response);
-      const { username, password } = reqBody(request);
-      const id = Number(sessionUser.id);
-
-      if (!id) {
-        response.status(400).json({ success: false, error: "Invalid user ID" });
-        return;
-      }
-
-      const updates = {};
-      if (username) {
-        updates.username = username;
-      }
-      if (password) {
-        updates.password = password;
-      }
-
-      if (Object.keys(updates).length === 0) {
-        response
-          .status(400)
-          .json({ success: false, error: "No updates provided" });
-        return;
-      }
-
-      const { success, error } = await User.update(id, updates);
-      response.status(200).json({ success, error });
-    } catch (e) {
-      console.error(e);
-      response.sendStatus(500).end();
-    }
-  });
 }
 
 module.exports = { systemEndpoints };

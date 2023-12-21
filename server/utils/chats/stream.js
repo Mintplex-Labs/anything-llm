@@ -201,36 +201,6 @@ async function streamEmptyEmbeddingChat({
 
 function handleStreamResponses(response, stream, responseProps) {
   const { uuid = uuidv4(), sources = [] } = responseProps;
-
-  // If stream is not a regular OpenAI Stream (like if using native model)
-  // we can just iterate the stream content instead.
-  if (!stream.hasOwnProperty("data")) {
-    return new Promise(async (resolve) => {
-      let fullText = "";
-      for await (const chunk of stream) {
-        fullText += chunk.content;
-        writeResponseChunk(response, {
-          uuid,
-          sources: [],
-          type: "textResponseChunk",
-          textResponse: chunk.content,
-          close: false,
-          error: false,
-        });
-      }
-
-      writeResponseChunk(response, {
-        uuid,
-        sources,
-        type: "textResponseChunk",
-        textResponse: "",
-        close: true,
-        error: false,
-      });
-      resolve(fullText);
-    });
-  }
-
   return new Promise((resolve) => {
     let fullText = "";
     let chunk = "";
@@ -253,16 +223,7 @@ function handleStreamResponses(response, stream, responseProps) {
         } catch {}
 
         if (!validJSON) {
-          // It can be possible that the chunk decoding is running away
-          // and the message chunk fails to append due to string length.
-          // In this case abort the chunk and reset so we can continue.
-          // ref: https://github.com/Mintplex-Labs/anything-llm/issues/416
-          try {
-            chunk += message;
-          } catch (e) {
-            console.error(`Chunk appending error`, e);
-            chunk = "";
-          }
+          chunk += message;
           continue;
         } else {
           chunk = "";

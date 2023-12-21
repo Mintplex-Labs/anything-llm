@@ -14,10 +14,9 @@ class AzureOpenAiEmbedder {
     );
     this.openai = openai;
 
-    // Limit of how many strings we can process in a single pass to stay with resource or network limits
+    // The maximum amount of "inputs" that OpenAI API can process in a single call.
     // https://learn.microsoft.com/en-us/azure/ai-services/openai/faq#i-am-trying-to-use-embeddings-and-received-the-error--invalidrequesterror--too-many-inputs--the-max-number-of-inputs-is-1---how-do-i-fix-this-:~:text=consisting%20of%20up%20to%2016%20inputs%20per%20API%20request
-    this.maxConcurrentChunks = 16;
-    this.embeddingMaxChunkLength = 1_000;
+    this.embeddingChunkLimit = 16;
   }
 
   async embedTextInput(textInput) {
@@ -35,9 +34,9 @@ class AzureOpenAiEmbedder {
 
     // Because there is a limit on how many chunks can be sent at once to Azure OpenAI
     // we concurrently execute each max batch of text chunks possible.
-    // Refer to constructor maxConcurrentChunks for more info.
+    // Refer to constructor embeddingChunkLimit for more info.
     const embeddingRequests = [];
-    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
+    for (const chunk of toChunks(textChunks, this.embeddingChunkLimit)) {
       embeddingRequests.push(
         new Promise((resolve) => {
           this.openai

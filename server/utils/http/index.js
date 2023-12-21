@@ -1,6 +1,10 @@
-process.env.NODE_ENV === "development"
-  ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
-  : require("dotenv").config();
+const path = require('path');
+require("dotenv").config({
+  path: process.env.STORAGE_DIR ?
+    `${path.join(process.env.STORAGE_DIR, '.env')}` :
+    `${path.join(__dirname, '.env')}`
+})
+
 const JWT = require("jsonwebtoken");
 const { User } = require("../../models/user");
 
@@ -44,19 +48,12 @@ async function userFromSession(request, response = null) {
 function decodeJWT(jwtToken) {
   try {
     return JWT.verify(jwtToken, process.env.JWT_SECRET);
-  } catch {}
+  } catch { }
   return { p: null, id: null, username: null };
 }
 
 function multiUserMode(response) {
   return response?.locals?.multiUserMode;
-}
-
-function parseAuthHeader(headerValue = null, apiKey = null) {
-  if (headerValue === null || apiKey === null) return {};
-  if (headerValue === "Authorization")
-    return { Authorization: `Bearer ${apiKey}` };
-  return { [headerValue]: apiKey };
 }
 
 module.exports = {
@@ -66,5 +63,4 @@ module.exports = {
   makeJWT,
   decodeJWT,
   userFromSession,
-  parseAuthHeader,
 };

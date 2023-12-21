@@ -2,11 +2,7 @@ const { ChromaClient } = require("chromadb");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
-const {
-  toChunks,
-  getLLMProvider,
-  getEmbeddingEngineSelection,
-} = require("../../helpers");
+const { toChunks, getLLMProvider } = require("../../helpers");
 
 const Chroma = {
   name: "Chroma",
@@ -19,10 +15,10 @@ const Chroma = {
       ...(!!process.env.CHROMA_API_HEADER && !!process.env.CHROMA_API_KEY
         ? {
             fetchOptions: {
-              headers: parseAuthHeader(
-                process.env.CHROMA_API_HEADER || "X-Api-Key",
-                process.env.CHROMA_API_KEY
-              ),
+              headers: {
+                [process.env.CHROMA_API_HEADER || "X-Api-Key"]:
+                  process.env.CHROMA_API_KEY,
+              },
             },
           }
         : {}),
@@ -179,8 +175,7 @@ const Chroma = {
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
       const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize:
-          getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1_000,
+        chunkSize: 1000,
         chunkOverlap: 20,
       });
       const textChunks = await textSplitter.splitText(pageContent);
