@@ -9,7 +9,7 @@ import PrivateRoute, {
 import { ToastContainer } from "react-toastify";
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
-import AnythingLLMLogo from './assets/logo/anything-llm.png'
+import AnythingLLMLogo from "./assets/logo/anything-llm.png";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
@@ -19,11 +19,11 @@ import AdminInvites from "./pages/Admin/Invitations";
 import AdminWorkspaces from "./pages/Admin/Workspaces";
 import AdminSystem from "./pages/Admin/System";
 import GeneralChats from "./pages/GeneralSettings/Chats";
-import GeneralAppearance from "./pages/GeneralSettings/Appearance"
+import GeneralAppearance from "./pages/GeneralSettings/Appearance";
 import GeneralApiKeys from "./pages/GeneralSettings/ApiKeys";
-import GeneralLLMPreference from "./pages/GeneralSettings/LLMPreference"
-import GeneralEmbeddingPreference from "./pages/GeneralSettings/EmbeddingPreference"
-import GeneralVectorDatabase from "./pages/GeneralSettings/VectorDatabase"
+import GeneralLLMPreference from "./pages/GeneralSettings/LLMPreference";
+import GeneralEmbeddingPreference from "./pages/GeneralSettings/EmbeddingPreference";
+import GeneralVectorDatabase from "./pages/GeneralSettings/VectorDatabase";
 import GeneralSecurity from "./pages/GeneralSettings/Security";
 import OnboardingFlow from "./pages/OnboardingFlow";
 import DataConnectors from "./pages/GeneralSettings/DataConnectors";
@@ -31,7 +31,7 @@ import DataConnectorSetup from "./pages/GeneralSettings/DataConnectors/Connector
 
 export default function App() {
   return (
-    <BootLoader >
+    <BootLoader>
       <Suspense fallback={<div />}>
         <ContextWrapper>
           <LogoProvider>
@@ -52,7 +52,9 @@ export default function App() {
                 />
                 <Route
                   path="/settings/embedding-preference"
-                  element={<AdminRoute Component={GeneralEmbeddingPreference} />}
+                  element={
+                    <AdminRoute Component={GeneralEmbeddingPreference} />
+                  }
                 />
                 <Route
                   path="/settings/vector-database"
@@ -114,18 +116,18 @@ export default function App() {
 
 function BootLoader({ children }) {
   const [ready, setReady] = useState(false);
-  window.addEventListener(READY_EVENT_NAME, () => setReady(true))
+  window.addEventListener(READY_EVENT_NAME, () => setReady(true));
 
   if (ready) return <>{children}</>;
   return (
-    <div
-      className="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-sidebar"
-    >
+    <div className="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-sidebar">
       <div className="flex flex-col gap-y-1 items-center">
         <img src={AnythingLLMLogo} className="w-[50%]" />
         <p className="text-xs text-white">by Mintplex Labs Inc</p>
-        <p className="text-xs text-gray-400 mt-4  animate-pulse">connecting to server...</p>
+        <p className="text-xs text-gray-400 mt-4  animate-pulse">
+          connecting to server...
+        </p>
       </div>
     </div>
-  )
+  );
 }

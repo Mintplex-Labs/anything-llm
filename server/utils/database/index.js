@@ -103,7 +103,7 @@ async function setupTelemetry() {
   );
   await Telemetry.findOrCreateId();
   await Telemetry.sendTelemetry("server_boot", {
-    mode: 'desktop_application',
+    mode: "desktop_application",
   });
   return;
 }

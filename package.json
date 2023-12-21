@@ -1,0 +1,15 @@
+{
+  "name": "anything-llm",
+  "version": "0.2.0",
+  "description": "The best solution for turning private documents into a chat bot using off-the-shelf tools and commercially viable AI technologies.",
+  "main": "index.js",
+  "author": "Timothy Carambat (Mintplex Labs)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "lint": "cd server && yarn lint && cd ../frontend && yarn lint && cd ../collector && yarn lint"
+  },
+  "private": false
+}

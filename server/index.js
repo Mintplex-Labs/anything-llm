@@ -1,9 +1,9 @@
-const path = require('path');
+const path = require("path");
 require("dotenv").config({
-  path: process.env.STORAGE_DIR ?
-    `${path.join(process.env.STORAGE_DIR, '.env')}` :
-    `${path.join(__dirname, '.env')}`
-})
+  path: process.env.STORAGE_DIR
+    ? `${path.join(process.env.STORAGE_DIR, ".env")}`
+    : `${path.join(__dirname, ".env")}`,
+});
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -17,7 +17,7 @@ const { utilEndpoints } = require("./endpoints/utils");
 const { Telemetry } = require("./models/telemetry");
 const { developerEndpoints } = require("./endpoints/api");
 const setupTelemetry = require("./utils/telemetry");
-const { extensionEndpoints } = require('./endpoints/extensions');
+const { extensionEndpoints } = require("./endpoints/extensions");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -49,18 +49,22 @@ app
   .listen(process.env.SERVER_PORT || 3001, async () => {
     await setupTelemetry();
     console.log(
-      `[${process.env.NODE_ENV || 'development'}] AnythingLLM Standalone Backend listening on port ${process.env.SERVER_PORT || 3001}`
+      `[${
+        process.env.NODE_ENV || "development"
+      }] AnythingLLM Standalone Backend listening on port ${
+        process.env.SERVER_PORT || 3001
+      }`
     );
   })
   .on("error", function (err) {
     process.once("SIGUSR2", function () {
       Telemetry.flush();
-      console.error(err)
+      console.error(err);
       process.kill(process.pid, "SIGUSR2");
     });
     process.on("SIGINT", function () {
       Telemetry.flush();
-      console.log('SIGINT')
+      console.log("SIGINT");
       process.kill(process.pid, "SIGINT");
     });
   });

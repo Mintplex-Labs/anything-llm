@@ -1,7 +1,8 @@
-const path = require('path');
-const WATCH_DIRECTORY = process.env.NODE_ENV === "development"
-  ? path.resolve(__dirname, `../../hotdir`)
-  : path.resolve(process.env.STORAGE_DIR, `hotdir`);
+const path = require("path");
+const WATCH_DIRECTORY =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../hotdir`)
+    : path.resolve(process.env.STORAGE_DIR, `hotdir`);
 
 const ACCEPTED_MIMES = {
   "text/plain": [".txt", ".md"],
@@ -27,12 +28,12 @@ const ACCEPTED_MIMES = {
   "video/mpeg": [".mpeg"],
 };
 
-const asText = require('../processSingleFile/convert/asTxt.js')
-const asPdf = require('../processSingleFile/convert/asPDF.js')
-const asDocx = require('../processSingleFile/convert/asDocx.js')
-const asOfficeMime = require('../processSingleFile/convert/asOfficeMime.js')
-const asMbox = require('../processSingleFile/convert/asMbox.js')
-const asAudio = require('../processSingleFile/convert/asAudio.js')
+const asText = require("../processSingleFile/convert/asTxt.js");
+const asPdf = require("../processSingleFile/convert/asPDF.js");
+const asDocx = require("../processSingleFile/convert/asDocx.js");
+const asOfficeMime = require("../processSingleFile/convert/asOfficeMime.js");
+const asMbox = require("../processSingleFile/convert/asMbox.js");
+const asAudio = require("../processSingleFile/convert/asAudio.js");
 
 const SUPPORTED_FILETYPE_CONVERTERS = {
   ".txt": asText,

@@ -36,7 +36,10 @@ function ShowWorkspaceChat() {
   }, [slug]);
 
   return (
-    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+    <div
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex"
+    >
       <Sidebar />
       <WorkspaceChatContainer loading={loading} workspace={workspace} />
     </div>

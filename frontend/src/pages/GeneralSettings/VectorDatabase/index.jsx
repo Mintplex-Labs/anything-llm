@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Sidebar, {
-} from "../../../components/SettingsSidebar";
+import Sidebar from "../../../components/SettingsSidebar";
 import System from "../../../models/system";
 import showToast from "../../../utils/toast";
 import ChromaLogo from "../../../assets/vectordbs/chroma.png";
@@ -66,7 +65,10 @@ export default function GeneralVectorDatabase() {
   };
 
   return (
-    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+    <div
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex"
+    >
       <ChangeWarningModal
         warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. They will need to be re-added to each workspace."
         onClose={() => document.getElementById("confirmation-modal")?.close()}
@@ -74,17 +76,13 @@ export default function GeneralVectorDatabase() {
       />
       <Sidebar />
       {loading ? (
-        <div
-          className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
-        >
+        <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
           </div>
         </div>
       ) : (
-        <div
-          className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
-        >
+        <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
           <form
             id="vectordb-form"
             onSubmit={handleSubmit}

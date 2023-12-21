@@ -10,7 +10,10 @@ export default function OnboardingFlow() {
   }
 
   return (
-    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex items-center justify-center">
+    <div
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex items-center justify-center"
+    >
       <div className="w-fit p-20 py-24 border-2 border-slate-300/10 rounded-2xl bg-main-gradient shadow-lg">
         <div className="text-white text-2xl font-base text-center">
           Welcome to

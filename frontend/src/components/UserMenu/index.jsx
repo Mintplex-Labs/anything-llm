@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useRef } from 'react';
-import paths from '../../utils/paths';
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from '../../utils/constants';
-import { Person } from '@phosphor-icons/react';
-import { userFromStorage } from '../../utils/request';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from "react";
+import paths from "../../utils/paths";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
+import { Person } from "@phosphor-icons/react";
+import { userFromStorage } from "../../utils/request";
+import { Link } from "react-router-dom";
 
 function useLoginMode() {
   const user = !!window.localStorage.getItem(AUTH_USER);
   const token = !!window.localStorage.getItem(AUTH_TOKEN);
 
-  if (user && token) return 'multi';
-  if (!user && token) return 'single';
+  if (user && token) return "multi";
+  if (!user && token) return "single";
   return null;
 }
 
 function userDisplay() {
   const user = userFromStorage();
-  return user?.username?.slice(0, 2) || 'AA';
+  return user?.username?.slice(0, 2) || "AA";
 }
 
 export default function UserButton() {
@@ -36,22 +36,22 @@ export default function UserButton() {
 
   useEffect(() => {
     if (showMenu) {
-      document.addEventListener('mousedown', handleClose);
+      document.addEventListener("mousedown", handleClose);
     }
-    return () => document.removeEventListener('mousedown', handleClose);
+    return () => document.removeEventListener("mousedown", handleClose);
   }, [showMenu]);
 
   if (mode === null) return null;
 
   return (
-    <div className='frame-header-action relative'>
+    <div className="frame-header-action relative">
       <button
         ref={buttonRef}
         onClick={() => setShowMenu(!showMenu)}
         type="button"
         className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center hover:bg-menu-item-selected-gradient justify-center text-white hover:border-slate-100 hover:border-opacity-50 border-transparent border"
       >
-        {mode === 'multi' ? userDisplay() : <Person size={14} />}
+        {mode === "multi" ? userDisplay() : <Person size={14} />}
       </button>
 
       {showMenu && (

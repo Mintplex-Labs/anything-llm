@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Sidebar, {
-} from "../../../components/SettingsSidebar";
+import Sidebar from "../../../components/SettingsSidebar";
 import System from "../../../models/system";
 import showToast from "../../../utils/toast";
 import OpenAiLogo from "../../../assets/llmprovider/openai.png";
@@ -71,7 +70,10 @@ export default function GeneralEmbeddingPreference() {
   }, []);
 
   return (
-    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+    <div
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex"
+    >
       <ChangeWarningModal
         warningText=" Switching the embedder may affect previously embedded documents and future similarity search results."
         onClose={() => document.getElementById("confirmation-modal")?.close()}
@@ -79,17 +81,13 @@ export default function GeneralEmbeddingPreference() {
       />
       <Sidebar />
       {loading ? (
-        <div
-          className="relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient p-[18px] h-full overflow-y-scroll animate-pulse border-4 border-accent"
-        >
+        <div className="relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient p-[18px] h-full overflow-y-scroll animate-pulse border-4 border-accent">
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
           </div>
         </div>
       ) : (
-        <div
-          className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
-        >
+        <div className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
           <form
             id="embedding-form"
             onSubmit={handleSubmit}

@@ -10,7 +10,7 @@ import { useParams } from "react-router-dom";
 import { GearSix, SquaresFour } from "@phosphor-icons/react";
 import truncate from "truncate";
 import useUser from "../../../hooks/useUser";
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 export default function ActiveWorkspaces() {
   const { slug } = useParams();
@@ -46,7 +46,6 @@ export default function ActiveWorkspaces() {
   const handleGearMouseLeave = useCallback((workspaceId) => {
     setSettingHover((prev) => ({ ...prev, [workspaceId]: false }));
   }, []);
-
 
   if (loading) {
     return (
@@ -84,9 +83,10 @@ export default function ActiveWorkspaces() {
               transition-all duration-[200ms]
                 flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-lg text-slate-200 justify-start items-center border
                 hover:bg-workspace-item-selected-gradient hover:border-slate-100 hover:border-opacity-50
-                ${isActive
-                  ? "bg-workspace-item-selected-gradient border-slate-100 border-opacity-50"
-                  : "bg-workspace-item-gradient bg-opacity-60 border-transparent"
+                ${
+                  isActive
+                    ? "bg-workspace-item-selected-gradient border-slate-100 border-opacity-50"
+                    : "bg-workspace-item-gradient bg-opacity-60 border-transparent"
                 }`}
             >
               <div className="flex flex-row justify-between w-full">
@@ -96,8 +96,9 @@ export default function ActiveWorkspaces() {
                     className="h-5 w-5 flex-shrink-0"
                   />
                   <p
-                    className={`text-white text-sm leading-loose font-medium whitespace-nowrap overflow-hidden ${isActive ? "" : "text-opacity-80"
-                      }`}
+                    className={`text-white text-sm leading-loose font-medium whitespace-nowrap overflow-hidden ${
+                      isActive ? "" : "text-opacity-80"
+                    }`}
                   >
                     {isActive
                       ? truncate(workspace.name, 17)

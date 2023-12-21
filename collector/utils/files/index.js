@@ -32,11 +32,12 @@ function writeToServerDocuments(
 ) {
   const destination = destinationOverride
     ? path.resolve(destinationOverride)
-    : (
-      process.env.NODE_ENV === "development"
-        ? path.resolve(__dirname, `../../../../server/storage/documents/custom-documents`)
-        : path.resolve(process.env.STORAGE_DIR, `documents/custom-documents`)
-    )
+    : process.env.NODE_ENV === "development"
+    ? path.resolve(
+        __dirname,
+        `../../../server/storage/documents/custom-documents`
+      )
+    : path.resolve(process.env.STORAGE_DIR, `documents/custom-documents`);
 
   if (!fs.existsSync(destination))
     fs.mkdirSync(destination, { recursive: true });
@@ -55,9 +56,10 @@ function writeToServerDocuments(
 // force remove them.
 async function wipeCollectorStorage() {
   const cleanHotDir = new Promise((resolve) => {
-    const directory = process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../hotdir`)
-      : path.resolve(process.env.STORAGE_DIR, `hotdir`);
+    const directory =
+      process.env.NODE_ENV === "development"
+        ? path.resolve(__dirname, `../../hotdir`)
+        : path.resolve(process.env.STORAGE_DIR, `hotdir`);
 
     fs.readdir(directory, (err, files) => {
       if (err) resolve();
@@ -66,16 +68,17 @@ async function wipeCollectorStorage() {
         if (file === "__HOTDIR__.md") continue;
         try {
           fs.rmSync(path.join(directory, file));
-        } catch { }
+        } catch {}
       }
       resolve();
     });
   });
 
   const cleanTmpDir = new Promise((resolve) => {
-    const directory = process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../storage/tmp`)
-      : path.resolve(process.env.STORAGE_DIR, `tmp`);
+    const directory =
+      process.env.NODE_ENV === "development"
+        ? path.resolve(__dirname, `../../storage/tmp`)
+        : path.resolve(process.env.STORAGE_DIR, `tmp`);
 
     fs.readdir(directory, (err, files) => {
       if (err) resolve();
@@ -84,7 +87,7 @@ async function wipeCollectorStorage() {
         if (file === ".placeholder") continue;
         try {
           fs.rmSync(path.join(directory, file));
-        } catch { }
+        } catch {}
       }
       resolve();
     });

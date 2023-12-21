@@ -186,7 +186,7 @@ const System = {
       })
       .then((blob) => {
         if (!blob) return null;
-        return URL.createObjectURL(blob)
+        return URL.createObjectURL(blob);
       })
       .catch((e) => {
         console.log(e);

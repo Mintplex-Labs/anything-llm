@@ -83,7 +83,7 @@ const Workspace = {
         try {
           const chatResult = JSON.parse(msg.data);
           handleChat(chatResult);
-        } catch { }
+        } catch {}
       },
       onerror(err) {
         handleChat({
@@ -139,11 +139,14 @@ const Workspace = {
     return { response, data };
   },
   uploadLink: async function (slug, link) {
-    const response = await fetch(`${API_BASE()}/workspace/${slug}/upload-link`, {
-      method: "POST",
-      body: JSON.stringify({ link }),
-      headers: baseHeaders(),
-    });
+    const response = await fetch(
+      `${API_BASE()}/workspace/${slug}/upload-link`,
+      {
+        method: "POST",
+        body: JSON.stringify({ link }),
+        headers: baseHeaders(),
+      }
+    );
 
     const data = await response.json();
     return { response, data };

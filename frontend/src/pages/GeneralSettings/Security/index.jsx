@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import Sidebar, {
-} from "../../../components/SettingsSidebar";
+import Sidebar from "../../../components/SettingsSidebar";
 import showToast from "../../../utils/toast";
 import System from "../../../models/system";
 import paths from "../../../utils/paths";
@@ -13,11 +12,12 @@ import PreLoader from "../../../components/Preloader";
 
 export default function GeneralSecurity() {
   return (
-    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+    <div
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex"
+    >
       <Sidebar />
-      <div
-        className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
-      >
+      <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
         <MultiUserMode />
         <PasswordProtection />
       </div>

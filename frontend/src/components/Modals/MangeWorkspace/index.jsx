@@ -8,7 +8,7 @@ import useUser from "@/hooks/useUser";
 const DocumentSettings = lazy(() => import("./Documents"));
 const WorkspaceSettings = lazy(() => import("./Settings"));
 
-const noop = () => { };
+const noop = () => {};
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const { slug } = useParams();
   const [selectedTab, setSelectedTab] = useState("documents");
@@ -45,19 +45,21 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
             <div className="flex gap-x-1">
               <button
                 onClick={() => setSelectedTab("documents")}
-                className={`border-none px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${selectedTab === "documents"
-                  ? "bg-switch-selected shadow-md"
-                  : "bg-sidebar-button"
-                  }`}
+                className={`border-none px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
+                  selectedTab === "documents"
+                    ? "bg-switch-selected shadow-md"
+                    : "bg-sidebar-button"
+                }`}
               >
                 Documents
               </button>
               <button
                 onClick={() => setSelectedTab("settings")}
-                className={`border-none px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${selectedTab === "settings"
-                  ? "bg-switch-selected shadow-md"
-                  : "bg-sidebar-button"
-                  }`}
+                className={`border-none px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
+                  selectedTab === "settings"
+                    ? "bg-switch-selected shadow-md"
+                    : "bg-sidebar-button"
+                }`}
               >
                 Settings
               </button>

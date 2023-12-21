@@ -85,8 +85,9 @@ export default function UploadFile({
   return (
     <div>
       <div
-        className={`transition-all duration-300 w-[560px] border-2 border-dashed rounded-2xl bg-zinc-900/50 p-3 ${ready ? "cursor-pointer" : "cursor-not-allowed"
-          } hover:bg-zinc-900/90`}
+        className={`transition-all duration-300 w-[560px] border-2 border-dashed rounded-2xl bg-zinc-900/50 p-3 ${
+          ready ? "cursor-pointer" : "cursor-not-allowed"
+        } hover:bg-zinc-900/90`}
         {...getRootProps()}
       >
         <input {...getInputProps()} />

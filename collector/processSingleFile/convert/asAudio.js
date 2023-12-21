@@ -73,9 +73,10 @@ async function convertToWavAudioData(sourcePath) {
     let buffer;
     const wavefile = require("wavefile");
     const ffmpeg = require("fluent-ffmpeg");
-    const outFolder = process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../storage/tmp`)
-      : path.resolve(process.env.STORAGE_DIR, `tmp`);
+    const outFolder =
+      process.env.NODE_ENV === "development"
+        ? path.resolve(__dirname, `../../storage/tmp`)
+        : path.resolve(process.env.STORAGE_DIR, `tmp`);
 
     if (!fs.existsSync(outFolder)) fs.mkdirSync(outFolder, { recursive: true });
 

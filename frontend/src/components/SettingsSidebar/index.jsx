@@ -178,7 +178,7 @@ export default function SettingsSidebar() {
 }
 
 const Option = ({ btnText, icon, href }) => {
-  const isActive = window.location.hash?.replace('#', '') === href;
+  const isActive = window.location.hash?.replace("#", "") === href;
   return (
     <div className="flex gap-x-2 items-center justify-between text-white">
       <Link
@@ -186,9 +186,10 @@ const Option = ({ btnText, icon, href }) => {
         className={`
           transition-all duration-[200ms]
           flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 rounded justify-start items-center border
-          ${isActive
-            ? "bg-menu-item-selected-gradient border-slate-100 border-opacity-50 font-medium"
-            : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
+          ${
+            isActive
+              ? "bg-menu-item-selected-gradient border-slate-100 border-opacity-50 font-medium"
+              : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
           }
         `}
       >

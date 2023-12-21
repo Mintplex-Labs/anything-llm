@@ -35,8 +35,8 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   };
 
   useEffect(() => {
-    setChatHistory(knownHistory)
-  }, [knownHistory])
+    setChatHistory(knownHistory);
+  }, [knownHistory]);
 
   useEffect(() => {
     async function fetchReply() {
@@ -69,7 +69,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         workspace,
         promptMessage.userMessage,
         window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
-        "chat",
+          "chat",
         (chatResult) =>
           handleChat(
             chatResult,
@@ -85,9 +85,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   }, [loadingResponse, chatHistory, workspace]);
 
   return (
-    <div
-      className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
-    >
+    <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
         <ChatHistory history={chatHistory} workspace={workspace} />
         <PromptInput

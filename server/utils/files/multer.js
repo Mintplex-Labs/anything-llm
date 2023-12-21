@@ -24,7 +24,9 @@ function setupLogoUploads() {
   // Handle Logo uploads.
   const storage = multer.diskStorage({
     destination: function (_, __, cb) {
-      const uploadOutput = process.env.STORAGE_DIR ? path.resolve(process.env.STORAGE_DIR, `assets`) : path.resolve(__dirname, `../../storage/assets`);
+      const uploadOutput = process.env.STORAGE_DIR
+        ? path.resolve(process.env.STORAGE_DIR, `assets`)
+        : path.resolve(__dirname, `../../storage/assets`);
       fs.mkdirSync(uploadOutput, { recursive: true });
       return cb(null, uploadOutput);
     },

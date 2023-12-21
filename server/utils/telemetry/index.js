@@ -10,7 +10,7 @@ async function setupTelemetry() {
   );
   await Telemetry.findOrCreateId();
   await Telemetry.sendTelemetry("server_boot", {
-    mode: 'desktop_app',
+    mode: "desktop_app",
   });
   return;
 }

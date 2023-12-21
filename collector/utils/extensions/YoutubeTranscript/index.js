@@ -55,9 +55,13 @@ async function loadYouTubeTranscript({ url }) {
   const outFolder = slugify(
     `${metadata.author} YouTube transcripts`
   ).toLowerCase();
-  const outFolderPath = process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../../../server/storage/documents/${outFolder}`)
-    : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
+  const outFolderPath =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(
+          __dirname,
+          `../../../../server/storage/documents/${outFolder}`
+        )
+      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 
   if (!fs.existsSync(outFolderPath)) fs.mkdirSync(outFolderPath);
 

@@ -1,4 +1,4 @@
-import { _API_BASE_URL } from './constants';
+import { _API_BASE_URL } from "./constants";
 export function API_BASE() {
-  return _API_BASE_URL.value
+  return _API_BASE_URL.value;
 }

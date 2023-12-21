@@ -5,9 +5,7 @@ export default function LoadingChat() {
   const highlightColor = "#3D4147";
   const baseColor = "#2C2F35";
   return (
-    <div
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll"
-    >
+    <div className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll">
       <Skeleton.default
         height="100px"
         width="100%"

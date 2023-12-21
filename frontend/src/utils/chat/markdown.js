@@ -8,7 +8,7 @@ const markdown = markdownIt({
   html: true,
   typographer: true,
   highlight: function (str, lang) {
-    const uuid = v4()
+    const uuid = v4();
     if (lang && hljs.getLanguage(lang)) {
       try {
         return (
@@ -16,7 +16,7 @@ const markdown = markdownIt({
           hljs.highlight(lang, str, true).value +
           "</pre></div>"
         );
-      } catch (__) { }
+      } catch (__) {}
     }
 
     return (
@@ -27,10 +27,12 @@ const markdown = markdownIt({
   },
 });
 
-window.copySnippet = function (uuid = '') {
-  const target = document.getElementById(`code-${uuid}`)
+window.copySnippet = function (uuid = "") {
+  const target = document.getElementById(`code-${uuid}`);
   const markdown =
-    target.parentElement?.parentElement?.querySelector("pre:first-of-type")?.innerText;
+    target.parentElement?.parentElement?.querySelector(
+      "pre:first-of-type"
+    )?.innerText;
   if (!markdown) return false;
 
   window.navigator.clipboard.writeText(markdown);

@@ -70,7 +70,10 @@ function hideModal(modalName) {
 
 const TextPreview = ({ text, modalName }) => {
   return (
-    <dialog id={modalName} className="bg-transparent outline-none border-none w-full">
+    <dialog
+      id={modalName}
+      className="bg-transparent outline-none border-none w-full"
+    >
       <div className="relative w-full md:max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-600">
