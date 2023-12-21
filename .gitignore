@@ -9,3 +9,7 @@ v-env
 aws_cf_deploy_anything_llm.json
 yarn.lock
 server/dist
+.env.development
+dist
+bundleinspector.html
+*.log
