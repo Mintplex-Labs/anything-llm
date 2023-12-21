@@ -2,10 +2,10 @@ import { useState } from "react";
 import {
   formatDate,
   getFileExtension,
-  truncate,
-} from "../../../../../../utils/directories";
+  middleTruncate,
+} from "@/utils/directories";
 import { ArrowUUpLeft, File } from "@phosphor-icons/react";
-import Workspace from "../../../../../../models/workspace";
+import Workspace from "@/models/workspace";
 import debounce from "lodash.debounce";
 
 export default function WorkspaceFileRow({
@@ -54,7 +54,7 @@ export default function WorkspaceFileRow({
       className={`items-center transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer
           ${isMovedItem ? "bg-green-800/40" : ""}`}
     >
-      <div className="col-span-4 flex gap-x-[4px] items-center">
+      <div className="col-span-5 flex gap-x-[4px] items-center">
         <File
           className="text-base font-bold w-4 h-4 ml-3 mr-[3px]"
           weight="fill"
@@ -65,7 +65,7 @@ export default function WorkspaceFileRow({
           onMouseLeave={handleMouseLeave}
         >
           <p className="whitespace-nowrap overflow-hidden">
-            {truncate(item.title, 17)}
+            {middleTruncate(item.title, 17)}
           </p>
           {showTooltip && (
             <div className="absolute left-0 bg-white text-black p-1.5 rounded shadow-lg whitespace-nowrap">
@@ -74,11 +74,12 @@ export default function WorkspaceFileRow({
           )}
         </div>
       </div>
-      <p className="col-span-2 pl-3.5 whitespace-nowrap">
+      <p className="col-span-3 pl-3.5 whitespace-nowrap">
         {formatDate(item?.published)}
       </p>
-      <p className="col-span-2 pl-3">{item?.size || "---"}</p>
-      <p className="col-span-2 pl-2 uppercase">{getFileExtension(item.url)}</p>
+      <p className="col-span-2 pl-2 uppercase overflow-x-hidden">
+        {getFileExtension(item.url)}
+      </p>
       <div className="col-span-2 flex justify-end items-center">
         {item?.cached && (
           <div className="bg-white/10 rounded-3xl">

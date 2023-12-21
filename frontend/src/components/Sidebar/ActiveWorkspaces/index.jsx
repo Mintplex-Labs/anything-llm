@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Workspace from "../../../models/workspace";
@@ -18,6 +18,7 @@ export default function ActiveWorkspaces() {
   const [settingHover, setSettingHover] = useState(false);
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWs, setSelectedWs] = useState(null);
+  const [hoverStates, setHoverStates] = useState({});
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const { user } = useUser();
 
@@ -29,6 +30,23 @@ export default function ActiveWorkspaces() {
     }
     getWorkspaces();
   }, []);
+
+  const handleMouseEnter = useCallback((workspaceId) => {
+    setHoverStates((prev) => ({ ...prev, [workspaceId]: true }));
+  }, []);
+
+  const handleMouseLeave = useCallback((workspaceId) => {
+    setHoverStates((prev) => ({ ...prev, [workspaceId]: false }));
+  }, []);
+
+  const handleGearMouseEnter = useCallback((workspaceId) => {
+    setSettingHover((prev) => ({ ...prev, [workspaceId]: true }));
+  }, []);
+
+  const handleGearMouseLeave = useCallback((workspaceId) => {
+    setSettingHover((prev) => ({ ...prev, [workspaceId]: false }));
+  }, []);
+
 
   if (loading) {
     return (
@@ -49,10 +67,15 @@ export default function ActiveWorkspaces() {
     <>
       {workspaces.map((workspace) => {
         const isActive = workspace.slug === slug;
+        const isHovered = hoverStates[workspace.id];
+        const isGearHovered = settingHover[workspace.id];
+
         return (
           <div
             key={workspace.id}
             className="flex gap-x-2 items-center justify-between"
+            onMouseEnter={() => handleMouseEnter(workspace.id)}
+            onMouseLeave={() => handleMouseLeave(workspace.id)}
           >
             <Link
               to={isActive ? null : paths.workspace.chat(workspace.slug)}
@@ -68,10 +91,10 @@ export default function ActiveWorkspaces() {
             >
               <div className="flex flex-row justify-between w-full">
                 <div className="flex items-center space-x-2">
-                  {/* <SquaresFour
+                  <SquaresFour
                     weight={isActive ? "fill" : "regular"}
                     className="h-5 w-5 flex-shrink-0"
-                  /> */}
+                  />
                   <p
                     className={`text-white text-sm leading-loose font-medium whitespace-nowrap overflow-hidden ${isActive ? "" : "text-opacity-80"
                       }`}
@@ -81,24 +104,25 @@ export default function ActiveWorkspaces() {
                       : truncate(workspace.name, 20)}
                   </p>
                 </div>
-                <div hidden={!isActive || user?.role === "default"}>
-                  <div className="flex items-center h-full">
-                    <button
-                      onMouseEnter={() => setSettingHover(true)}
-                      onMouseLeave={() => setSettingHover(false)}
-                      onClick={() => {
-                        setSelectedWs(workspace);
-                        showModal();
-                      }}
-                      className="border-none rounded-md flex items-center justify-center text-white ml-auto"
-                    >
-                      <GearSix
-                        weight={settingHover ? "fill" : "regular"}
-                        className="h-[20px] w-[20px] transition-all duration-300"
-                      />
-                    </button>
-                  </div>
-                </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedWs(workspace);
+                    showModal();
+                  }}
+                  onMouseEnter={() => handleGearMouseEnter(workspace.id)}
+                  onMouseLeave={() => handleGearMouseLeave(workspace.id)}
+                  className="border-none rounded-md flex items-center justify-center text-white ml-auto"
+                >
+                  <GearSix
+                    weight={isGearHovered ? "fill" : "regular"}
+                    hidden={
+                      (!isActive && !isHovered) || user?.role === "default"
+                    }
+                    className="h-[20px] w-[20px] transition-all duration-300"
+                  />
+                </button>
               </div>
             </Link>
           </div>

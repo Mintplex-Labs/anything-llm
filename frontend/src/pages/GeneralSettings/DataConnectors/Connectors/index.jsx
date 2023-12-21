@@ -12,7 +12,7 @@ const CONNECTORS = {
 export default function DataConnectorSetup() {
   const { connector } = useParams();
   if (!connector || !CONNECTORS.hasOwnProperty(connector)) {
-    window.location = paths.home();
+    window.location.hash = paths.home();
     return;
   }
 

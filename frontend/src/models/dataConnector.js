@@ -1,4 +1,4 @@
-import { API_BASE } from "@/utils/constants";
+import { API_BASE } from "@/utils/api";
 import { baseHeaders } from "@/utils/request";
 import showToast from "@/utils/toast";
 

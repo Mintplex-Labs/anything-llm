@@ -73,7 +73,7 @@ export default function WorkspaceSettings({ workspace }) {
       return false;
     await Workspace.delete(workspace.slug);
     workspace.slug === slug
-      ? window.location.hash = paths.home()
+      ? (window.location = paths.home())
       : window.location.reload();
   };
 
@@ -133,7 +133,7 @@ export default function WorkspaceSettings({ workspace }) {
                     minLength={2}
                     maxLength={80}
                     defaultValue={workspace?.name}
-                    className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="My Workspace"
                     required={true}
                     autoComplete="off"
@@ -167,7 +167,7 @@ export default function WorkspaceSettings({ workspace }) {
                     step={0.1}
                     onWheel={(e) => e.target.blur()}
                     defaultValue={workspace?.openAiTemp ?? 0.7}
-                    className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="0.7"
                     required={true}
                     autoComplete="off"
@@ -199,7 +199,7 @@ export default function WorkspaceSettings({ workspace }) {
                     step={1}
                     onWheel={(e) => e.target.blur()}
                     defaultValue={workspace?.openAiHistory ?? 20}
-                    className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="20"
                     required={true}
                     autoComplete="off"
@@ -229,7 +229,7 @@ export default function WorkspaceSettings({ workspace }) {
                   name="openAiPrompt"
                   rows={5}
                   defaultValue={chatPrompt(workspace)}
-                  className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder="Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
                   required={true}
                   wrap="soft"

@@ -1,6 +1,7 @@
 import { AUTH_TIMESTAMP } from "../utils/constants";
 import { API_BASE } from "../utils/api";
 import { baseHeaders } from "../utils/request";
+import DataConnector from "./dataConnector";
 
 const System = {
   ping: async function () {
@@ -134,11 +135,23 @@ const System = {
         return false;
       });
   },
-  deleteDocument: async (name, meta) => {
+  deleteDocument: async (name) => {
     return await fetch(`${API_BASE()}/system/remove-document`, {
       method: "DELETE",
       headers: baseHeaders(),
-      body: JSON.stringify({ name, meta }),
+      body: JSON.stringify({ name }),
+    })
+      .then((res) => res.ok)
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
+  deleteFolder: async (name) => {
+    return await fetch(`${API_BASE()}/system/remove-folder`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ name }),
     })
       .then((res) => res.ok)
       .catch((e) => {
@@ -354,6 +367,7 @@ const System = {
         return null;
       });
   },
+  dataConnectors: DataConnector,
 };
 
 export default System;

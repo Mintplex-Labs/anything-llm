@@ -1,9 +1,9 @@
 import React, { useState, useEffect, lazy, Suspense, memo } from "react";
 import { X } from "@phosphor-icons/react";
 import { useParams } from "react-router-dom";
-import Workspace from "../../../models/workspace";
-import System from "../../../models/system";
-import useUser from "../../../hooks/useUser";
+import Workspace from "@/models/workspace";
+import System from "@/models/system";
+import useUser from "@/hooks/useUser";
 
 const DocumentSettings = lazy(() => import("./Documents"));
 const WorkspaceSettings = lazy(() => import("./Settings"));

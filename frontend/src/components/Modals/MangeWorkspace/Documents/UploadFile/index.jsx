@@ -1,5 +1,5 @@
 import { CloudArrowUp } from "@phosphor-icons/react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import showToast from "../../../../../utils/toast";
 import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";

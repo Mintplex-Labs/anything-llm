@@ -1,5 +1,5 @@
-import PreLoader from "../../../../Preloader";
-import { dollarFormat } from "../../../../../utils/numbers";
+import PreLoader from "@/components/Preloader";
+import { dollarFormat } from "@/utils/numbers";
 import WorkspaceFileRow from "./WorkspaceFileRow";
 
 export default function WorkspaceDirectory({
@@ -26,9 +26,8 @@ export default function WorkspaceDirectory({
         </div>
         <div className="relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5">
           <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20">
-            <p className="col-span-4">Name</p>
-            <p className="col-span-2">Date</p>
-            <p className="col-span-2">Size</p>
+            <p className="col-span-5">Name</p>
+            <p className="col-span-3">Date</p>
             <p className="col-span-2">Kind</p>
             <p className="col-span-2">Cached</p>
           </div>
@@ -56,9 +55,8 @@ export default function WorkspaceDirectory({
         }`}
       >
         <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 bg-zinc-900 sticky top-0 z-10">
-          <p className="col-span-4">Name</p>
-          <p className="col-span-2">Date</p>
-          <p className="col-span-2">Size</p>
+          <p className="col-span-5">Name</p>
+          <p className="col-span-3">Date</p>
           <p className="col-span-2">Kind</p>
           <p className="col-span-2">Cached</p>
         </div>

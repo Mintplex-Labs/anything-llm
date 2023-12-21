@@ -10,7 +10,7 @@
     "node": ">=18.12.1"
   },
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --ignore swagger --trace-warnings index.js",
+    "dev": "NODE_ENV=development nodemon --ignore swagger --ignore storage --trace-warnings index.js",
     "start": "NODE_ENV=production node index.js",
     "lint": "yarn prettier --write ./endpoints ./models ./utils index.js",
     "swagger": "node ./swagger/init.js",
