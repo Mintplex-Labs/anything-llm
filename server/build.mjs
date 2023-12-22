@@ -19,4 +19,5 @@ fs.cpSync('./swagger/dark-swagger.css', 'dist/dark-swagger.css', { recursive: tr
 fs.cpSync('./node_modules/.prisma', 'dist/node_modules/.prisma', { recursive: true });
 fs.cpSync('./prisma/migrations', 'dist/prisma/migrations', { recursive: true });
 fs.cpSync('./prisma/schema.prisma', 'dist/prisma/schema.prisma', { recursive: true });
-execSync('cd dist && yarn install --prod=true');
+execSync('cd dist && yarn install --prod=true', { stdio: 'inherit' });
+execSync('cp ../prune.sh dist/prune.sh && cd dist && bash prune.sh', { stdio: 'inherit' });

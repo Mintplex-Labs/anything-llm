@@ -13,4 +13,5 @@ await esbuild.build({
 })
 fs.cpSync('./package.json', 'dist/package.json');
 fs.cpSync('./yarn.lock', 'dist/yarn.lock');
-execSync('cd dist && yarn install --prod=true');
+execSync('cd dist && yarn install --prod=true', { stdio: 'inherit' });
+execSync('cp ../prune.sh dist/prune.sh && cd dist && bash prune.sh', { stdio: 'inherit' });
