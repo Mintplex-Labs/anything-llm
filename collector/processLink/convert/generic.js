@@ -43,7 +43,7 @@ async function getPageContent(link) {
     const loader = new PuppeteerWebBaseLoader(link, {
       launchOptions: {
         headless: "new",
-        args: ["--disable-sandbox", "--disable-setuid-sandbox"],
+        // args: ["--disable-sandbox", "--disable-setuid-sandbox"],
       },
       gotoOptions: {
         waitUntil: "domcontentloaded",
