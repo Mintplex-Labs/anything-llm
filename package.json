@@ -10,7 +10,11 @@
   },
   "scripts": {
     "build": "node combineModules.mjs",
-    "lint": "cd server && yarn lint && cd ../frontend && yarn lint && cd ../collector && yarn lint"
+    "lint": "cd server && yarn lint && cd ../frontend && yarn lint && cd ../collector && yarn lint",
+    "setup": "yarn setup:server && yarn setup:frontend && yarn setup:collector",
+    "setup:server": "cd server && cp .env.example .env && mkdir -p storage && touch storage/anythingllm.db && yarn && yarn prisma:generate && yarn prisma:migrate && cd ..",
+    "setup:frontend": "cd frontend && yarn && cd ..",
+    "setup:collector": "cd collector && yarn && cd .."
   },
   "private": false
 }
