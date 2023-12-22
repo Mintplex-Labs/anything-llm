@@ -1,9 +1,9 @@
 import React, { memo } from "react";
 import { useNavigate } from "react-router-dom";
-import paths from "../../../../../utils/paths";
-import Workspace from "../../../../../models/workspace";
+import paths from "@/utils/paths";
+import Workspace from "@/models/workspace";
 
-function CreateFirstWorkspace() {
+function CreateFirstWorkspace({ prevStep }) {
   const navigate = useNavigate();
 
   const handleCreate = async (e) => {
@@ -46,7 +46,14 @@ function CreateFirstWorkspace() {
             </div>
           </div>
         </div>
-        <div className="flex w-full justify-end items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+        <div className="flex w-full justify-end items-center px-6 py-4 space-x-2 border-t rounded-b border-gray-500/50">
+          <button
+            onClick={prevStep}
+            type="button"
+            className="px-4 py-2 rounded-lg text-white hover:bg-sidebar"
+          >
+            Back
+          </button>
           <button
             type="submit"
             className="border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"

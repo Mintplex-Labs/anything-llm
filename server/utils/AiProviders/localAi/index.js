@@ -8,6 +8,11 @@ class LocalAiLLM {
     const { Configuration, OpenAIApi } = require("openai");
     const config = new Configuration({
       basePath: process.env.LOCAL_AI_BASE_PATH,
+      ...(!!process.env.LOCAL_AI_API_KEY
+        ? {
+            apiKey: process.env.LOCAL_AI_API_KEY,
+          }
+        : {}),
     });
     this.openai = new OpenAIApi(config);
     this.model = process.env.LOCAL_AI_MODEL_PREF;

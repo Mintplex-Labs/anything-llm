@@ -1,17 +1,19 @@
 import React, { memo, useEffect, useState } from "react";
-import OpenAiLogo from "../../../../../assets/llmprovider/openai.png";
-import AzureOpenAiLogo from "../../../../../assets/llmprovider/azure.png";
-import AnthropicLogo from "../../../../../assets/llmprovider/anthropic.png";
-import LMStudioLogo from "../../../../../assets/llmprovider/lmstudio.png";
-import LocalAiLogo from "../../../../../assets/llmprovider/localai.png";
-import System from "../../../../../models/system";
-import PreLoader from "../../../../../components/Preloader";
-import LLMProviderOption from "../../../../../components/LLMSelection/LLMProviderOption";
-import OpenAiOptions from "../../../../../components/LLMSelection/OpenAiOptions";
-import AzureAiOptions from "../../../../../components/LLMSelection/AzureAiOptions";
-import AnthropicAiOptions from "../../../../../components/LLMSelection/AnthropicAiOptions";
-import LMStudioOptions from "../../../../../components/LLMSelection/LMStudioOptions";
-import LocalAiOptions from "../../../../../components/LLMSelection/LocalAiOptions";
+import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
+import OpenAiLogo from "@/assets/llmprovider/openai.png";
+import AzureOpenAiLogo from "@/assets/llmprovider/azure.png";
+import AnthropicLogo from "@/assets/llmprovider/anthropic.png";
+import LMStudioLogo from "@/assets/llmprovider/lmstudio.png";
+import LocalAiLogo from "@/assets/llmprovider/localai.png";
+import System from "@/models/system";
+import PreLoader from "@/components/Preloader";
+import LLMProviderOption from "@/components/LLMSelection/LLMProviderOption";
+import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
+import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
+import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
+import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
+import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
+import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 
 function LLMSelection({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");
@@ -26,7 +28,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setLLMChoice(_settings?.LLMProvider);
+      setLLMChoice(_settings?.LLMProvider || "openai");
       setLoading(false);
     }
 
@@ -59,11 +61,11 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
   return (
     <div>
       <form onSubmit={handleSubmit} className="flex flex-col w-full">
-        <div className="flex flex-col w-full px-1 md:px-8 py-12">
+        <div className="flex flex-col w-full px-1 md:px-8 py-4">
           <div className="text-white text-sm font-medium pb-4">
             LLM Providers
           </div>
-          <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
+          <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[752px]">
             <input hidden={true} name="LLMProvider" value={llmChoice} />
             <LLMProviderOption
               name="OpenAI"
@@ -110,8 +112,16 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               image={LocalAiLogo}
               onClick={updateLLMChoice}
             />
+            <LLMProviderOption
+              name="Custom Llama Model"
+              value="native"
+              description="Use a downloaded custom Llama model for chatting on this AnythingLLM instance."
+              checked={llmChoice === "native"}
+              image={AnythingLLMIcon}
+              onClick={updateLLMChoice}
+            />
           </div>
-          <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
+          <div className="mt-4 flex flex-wrap gap-4 max-w-[752px]">
             {llmChoice === "openai" && <OpenAiOptions settings={settings} />}
             {llmChoice === "azure" && <AzureAiOptions settings={settings} />}
             {llmChoice === "anthropic" && (
@@ -121,9 +131,10 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               <LMStudioOptions settings={settings} />
             )}
             {llmChoice === "localai" && <LocalAiOptions settings={settings} />}
+            {llmChoice === "native" && <NativeLLMOptions settings={settings} />}
           </div>
         </div>
-        <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+        <div className="flex w-full justify-between items-center px-6 py-4 space-x-2 border-t rounded-b border-gray-500/50">
           <button
             onClick={prevStep}
             type="button"

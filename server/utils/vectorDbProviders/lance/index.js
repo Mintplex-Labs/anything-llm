@@ -1,17 +1,18 @@
-const path = require("path");
-const LANCE_STORAGE = process.env.STORAGE_DIR
-  ? path.resolve(process.env.STORAGE_DIR, "lancedb")
-  : path.resolve(__dirname, "../../../lancedb");
-
 const lancedb = require("vectordb");
-const { toChunks, getLLMProvider } = require("../../helpers");
+const {
+  toChunks,
+  getLLMProvider,
+  getEmbeddingEngineSelection,
+} = require("../../helpers");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 
 const LanceDb = {
-  uri: LANCE_STORAGE,
+  uri: `${
+    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
+  }lancedb`,
   name: "LanceDb",
   connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
@@ -179,7 +180,8 @@ const LanceDb = {
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
       const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1000,
+        chunkSize:
+          getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1_000,
         chunkOverlap: 20,
       });
       const textChunks = await textSplitter.splitText(pageContent);

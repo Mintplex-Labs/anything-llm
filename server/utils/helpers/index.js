@@ -40,6 +40,9 @@ function getLLMProvider() {
     case "localai":
       const { LocalAiLLM } = require("../AiProviders/localAi");
       return new LocalAiLLM(embedder);
+    case "native":
+      const { NativeLLM } = require("../AiProviders/native");
+      return new NativeLLM(embedder);
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
   }
@@ -59,9 +62,26 @@ function getEmbeddingEngineSelection() {
     case "localai":
       const { LocalAiEmbedder } = require("../EmbeddingEngines/localAi");
       return new LocalAiEmbedder();
+    case "native":
+      const { NativeEmbedder } = require("../EmbeddingEngines/native");
+      return new NativeEmbedder();
     default:
       return null;
   }
+}
+
+// Some models have lower restrictions on chars that can be encoded in a single pass
+// and by default we assume it can handle 1,000 chars, but some models use work with smaller
+// chars so here we can override that value when embedding information.
+function maximumChunkLength() {
+  if (
+    !!process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH &&
+    !isNaN(process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH) &&
+    Number(process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH) > 1
+  )
+    return Number(process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH);
+
+  return 1_000;
 }
 
 function toChunks(arr, size) {
@@ -72,6 +92,7 @@ function toChunks(arr, size) {
 
 module.exports = {
   getEmbeddingEngineSelection,
+  maximumChunkLength,
   getVectorDbClass,
   getLLMProvider,
   toChunks,

@@ -9,12 +9,9 @@ import MultiUserSetup from "./Steps/MultiUserSetup";
 import CreateFirstWorkspace from "./Steps/CreateFirstWorkspace";
 import EmbeddingSelection from "./Steps/EmbeddingSelection";
 import DataHandling from "./Steps/DataHandling";
+import UserQuestionnaire from "./Steps/UserQuestionnaire";
 
 const DIALOG_ID = "onboarding-modal";
-
-function hideModal() {
-  document.getElementById(DIALOG_ID)?.close();
-}
 
 const STEPS = {
   llm_preference: {
@@ -22,6 +19,11 @@ const STEPS = {
     description:
       "These are the credentials and settings for your preferred LLM chat & embedding provider.",
     component: LLMSelection,
+  },
+  embedding_preferences: {
+    title: "Embedding Preference",
+    description: "Choose a provider for embedding files and text.",
+    component: EmbeddingSelection,
   },
   vector_database: {
     title: "Vector Database",
@@ -58,22 +60,27 @@ const STEPS = {
       "We are committed to transparency and control when it comes to your personal data.",
     component: DataHandling,
   },
+  user_questionnaire: {
+    title: "A little about yourself",
+    description:
+      "We use information about how you use AnythingLLM to make our product better.",
+    component: UserQuestionnaire,
+  },
   create_workspace: {
     title: "Create Workspace",
     description: "To get started, create a new workspace.",
     component: CreateFirstWorkspace,
   },
-  embedding_preferences: {
-    title: "Embedding Preference",
-    description: "Choose a provider for embedding files and text.",
-    component: EmbeddingSelection,
-  },
 };
 
 export const OnboardingModalId = DIALOG_ID;
-export default function OnboardingModal() {
+export default function OnboardingModal({ setModalVisible }) {
   const [currentStep, setCurrentStep] = useState("llm_preference");
   const [history, setHistory] = useState(["llm_preference"]);
+
+  function hideModal() {
+    setModalVisible(false);
+  }
 
   const nextStep = (stepKey) => {
     setCurrentStep(stepKey);
@@ -96,10 +103,10 @@ export default function OnboardingModal() {
 
   const { component: StepComponent, ...step } = STEPS[currentStep];
   return (
-    <dialog id={DIALOG_ID} className="border-none bg-transparent outline-none">
+    <dialog id={DIALOG_ID} className="bg-transparent outline-none">
       <div className="relative max-h-full">
         <div className="relative bg-main-gradient rounded-2xl shadow border-2 border-slate-300/10">
-          <div className="flex items-start justify-between p-8 border-b rounded-t border-gray-500/50">
+          <div className="flex items-start justify-between px-6 py-4 border-b rounded-t border-gray-500/50">
             <div className="flex flex-col gap-2">
               <h3 className="text-xl font-semibold text-white">{step.title}</h3>
               <p className="text-sm font-base text-white text-opacity-60 whitespace-pre">

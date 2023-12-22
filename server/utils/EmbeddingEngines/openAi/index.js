@@ -10,8 +10,9 @@ class OpenAiEmbedder {
     const openai = new OpenAIApi(config);
     this.openai = openai;
 
-    // Arbitrary limit to ensure we stay within reasonable POST request size.
-    this.embeddingChunkLimit = 1_000;
+    // Limit of how many strings we can process in a single pass to stay with resource or network limits
+    this.maxConcurrentChunks = 500;
+    this.embeddingMaxChunkLength = 1_000;
   }
 
   async embedTextInput(textInput) {
@@ -22,9 +23,9 @@ class OpenAiEmbedder {
   async embedChunks(textChunks = []) {
     // Because there is a hard POST limit on how many chunks can be sent at once to OpenAI (~8mb)
     // we concurrently execute each max batch of text chunks possible.
-    // Refer to constructor embeddingChunkLimit for more info.
+    // Refer to constructor maxConcurrentChunks for more info.
     const embeddingRequests = [];
-    for (const chunk of toChunks(textChunks, this.embeddingChunkLimit)) {
+    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
           this.openai

@@ -16,10 +16,9 @@ const SystemSettings = {
     "telemetry_id",
   ],
   currentSettings: async function () {
-    const llmProvider = process.env.LLM_PROVIDER || "openai";
-    const vectorDB = process.env.VECTOR_DB || "pinecone";
+    const llmProvider = process.env.LLM_PROVIDER;
+    const vectorDB = process.env.VECTOR_DB;
     return {
-      CanDebug: !!!process.env.NO_DEBUG,
       RequiresAuth: !!process.env.AUTH_TOKEN,
       AuthToken: !!process.env.AUTH_TOKEN,
       JWTSecret: !!process.env.JWT_SECRET,
@@ -30,6 +29,9 @@ const SystemSettings = {
       EmbeddingEngine: process.env.EMBEDDING_ENGINE,
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+      EmbeddingModelMaxChunkLength:
+        process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
+      LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
       ...(vectorDB === "pinecone"
         ? {
             PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
@@ -99,7 +101,6 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
-
       ...(llmProvider === "localai"
         ? {
             LocalAiBasePath: process.env.LOCAL_AI_BASE_PATH,
@@ -111,6 +112,11 @@ const SystemSettings = {
             AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
             AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
+      ...(llmProvider === "native"
+        ? {
+            NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
           }
         : {}),
     };
