@@ -46,7 +46,7 @@ async function asAudio({ fullFilePath = "", filename = "" }) {
     return { success: false, reason: `No text content found in ${filename}.` };
   }
 
-  data = {
+  const data = {
     id: v4(),
     url: "file://" + fullFilePath,
     title: filename,

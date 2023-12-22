@@ -7,7 +7,7 @@ const {
   checkProcessorAlive,
   acceptedFileTypes,
 } = require("../utils/files/documentProcessor");
-const { purgeDocument } = require("../utils/files/purgeDocument");
+const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
 const {
@@ -196,8 +196,23 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const { name, meta } = reqBody(request);
-        await purgeDocument(name, meta);
+        const { name } = reqBody(request);
+        await purgeDocument(name);
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/system/remove-folder",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { name } = reqBody(request);
+        await purgeFolder(name);
         response.sendStatus(200).end();
       } catch (e) {
         console.log(e.message, e);
@@ -777,7 +792,7 @@ function systemEndpoints(app) {
       try {
         const { id } = request.params;
         await WorkspaceChats.delete({ id: Number(id) });
-        response.status(200).json({ success, error });
+        response.sendStatus(200).end();
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

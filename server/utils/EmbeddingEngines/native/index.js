@@ -13,7 +13,8 @@ class NativeEmbedder {
     );
     this.modelPath = path.resolve(this.cacheDir, "Xenova", "all-MiniLM-L6-v2");
 
-    // Arbitrary limit of string size in chars to ensure we stay within reasonable POST request size.
+    // Limit of how many strings we can process in a single pass to stay with resource or network limits
+    this.maxConcurrentChunks = 50;
     this.embeddingMaxChunkLength = 1_000;
 
     // Make directory when it does not exist in existing installations
@@ -63,7 +64,7 @@ class NativeEmbedder {
   async embedChunks(textChunks = []) {
     const Embedder = await this.embedderClient();
     const embeddingResults = [];
-    for (const chunk of toChunks(textChunks, this.embeddingMaxChunkLength)) {
+    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       const output = await Embedder(chunk, {
         pooling: "mean",
         normalize: true,

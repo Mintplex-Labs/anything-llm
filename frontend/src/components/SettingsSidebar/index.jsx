@@ -22,6 +22,7 @@ import {
   X,
   List,
   FileCode,
+  Plugs,
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
@@ -126,6 +127,11 @@ export default function SettingsSidebar() {
                       href={paths.settings.vectorDatabase()}
                       btnText="Vector Database"
                       icon={<Database className="h-5 w-5 flex-shrink-0" />}
+                    />
+                    <Option
+                      href={paths.settings.dataConnectors.list()}
+                      btnText="Data Connectors"
+                      icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
                     />
                   </>
                 )}

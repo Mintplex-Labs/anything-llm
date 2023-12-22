@@ -36,6 +36,12 @@ const GeneralExportImport = lazy(() =>
   import("@/pages/GeneralSettings/ExportImport")
 );
 const GeneralSecurity = lazy(() => import("@/pages/GeneralSettings/Security"));
+const DataConnectors = lazy(() =>
+  import("@/pages/GeneralSettings/DataConnectors")
+);
+const DataConnectorSetup = lazy(() =>
+  import("@/pages/GeneralSettings/DataConnectors/Connectors")
+);
 const OnboardingFlow = lazy(() => import("@/pages/OnboardingFlow"));
 
 export default function App() {
@@ -103,6 +109,15 @@ export default function App() {
                 path="/settings/workspaces"
                 element={<ManagerRoute Component={AdminWorkspaces} />}
               />
+              <Route
+                path="/settings/data-connectors"
+                element={<ManagerRoute Component={DataConnectors} />}
+              />
+              <Route
+                path="/settings/data-connectors/:connector"
+                element={<ManagerRoute Component={DataConnectorSetup} />}
+              />
+
               {/* Onboarding Flow */}
               <Route path="/onboarding" element={<OnboardingFlow />} />
             </Routes>
