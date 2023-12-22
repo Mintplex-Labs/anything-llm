@@ -9,6 +9,7 @@
     "node": ">=18"
   },
   "scripts": {
+    "build": "node combineModules.mjs",
     "lint": "cd server && yarn lint && cd ../frontend && yarn lint && cd ../collector && yarn lint"
   },
   "private": false
