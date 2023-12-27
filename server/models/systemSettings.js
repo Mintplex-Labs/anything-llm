@@ -87,6 +87,20 @@ const SystemSettings = {
           }
         : {}),
 
+      ...(llmProvider === "gemini"
+        ? {
+            GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
+            GeminiLLMModelPref:
+              process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro",
+
+            // For embedding credentials when Gemini is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
+
       ...(llmProvider === "lmstudio"
         ? {
             LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,

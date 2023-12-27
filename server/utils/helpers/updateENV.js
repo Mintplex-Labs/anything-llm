@@ -44,6 +44,15 @@ const KEY_MAPPING = {
     checks: [isNotEmpty, validAnthropicModel],
   },
 
+  GeminiLLMApiKey: {
+    envKey: "GEMINI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  GeminiLLMModelPref: {
+    envKey: "GEMINI_LLM_MODEL_PREF",
+    checks: [isNotEmpty, validGeminiModel],
+  },
+
   // LMStudio Settings
   LMStudioBasePath: {
     envKey: "LMSTUDIO_BASE_PATH",
@@ -204,10 +213,18 @@ function supportedLLM(input = "") {
     "openai",
     "azure",
     "anthropic",
+    "gemini",
     "lmstudio",
     "localai",
     "native",
   ].includes(input);
+}
+
+function validGeminiModel(input = "") {
+  const validModels = ["gemini-pro"];
+  return validModels.includes(input)
+    ? null
+    : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
 }
 
 function validAnthropicModel(input = "") {

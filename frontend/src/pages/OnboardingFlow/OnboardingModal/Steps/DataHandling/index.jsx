@@ -4,6 +4,7 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
+import GeminiLogo from "@/media/llmprovider/gemini.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
@@ -37,6 +38,14 @@ const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in responses are visible to Anthropic",
     ],
     logo: AnthropicLogo,
+  },
+  gemini: {
+    name: "Google Gemini",
+    description: [
+      "Your chats are de-identified and used in training",
+      "Your prompts and document text are visible in responses to Google",
+    ],
+    logo: GeminiLogo,
   },
   lmstudio: {
     name: "LMStudio",

@@ -55,10 +55,10 @@ export default function GeneralVectorDatabase() {
 
     const { error } = await System.updateSystem(settingsData);
     if (error) {
-      showToast(`Failed to save LLM settings: ${error}`, "error");
+      showToast(`Failed to save vector database settings: ${error}`, "error");
       setHasChanges(true);
     } else {
-      showToast("LLM preferences saved successfully.", "success");
+      showToast("Vector database preferences saved successfully.", "success");
       setHasChanges(false);
     }
     setSaving(false);
