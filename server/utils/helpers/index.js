@@ -34,6 +34,9 @@ function getLLMProvider() {
     case "anthropic":
       const { AnthropicLLM } = require("../AiProviders/anthropic");
       return new AnthropicLLM(embedder);
+    case "gemini":
+      const { GeminiLLM } = require("../AiProviders/gemini");
+      return new GeminiLLM(embedder);
     case "lmstudio":
       const { LMStudioLLM } = require("../AiProviders/lmStudio");
       return new LMStudioLLM(embedder);
