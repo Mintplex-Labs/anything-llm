@@ -322,8 +322,8 @@ function validDockerizedUrl(input = "") {
   if (process.env.ANYTHING_LLM_RUNTIME !== "docker") return null;
   try {
     const { hostname } = new URL(input);
-    if (["localhost", "127.0.0.1"].includes(hostname.toLowerCase()))
-      return "Localhost or 127.0.0.1 origins cannot be reached from inside the AnythingLLM container. Please use host.docker.internal or a real machine ip to connect to your external service.";
+    if (["localhost", "127.0.0.1", "0.0.0.0"].includes(hostname.toLowerCase()))
+      return "Localhost, 127.0.0.1, or 0.0.0.0 origins cannot be reached from inside the AnythingLLM container. Please use host.docker.internal or a real machine ip to connect to your external service.";
     return null;
   } catch {}
   return null;
