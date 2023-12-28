@@ -40,22 +40,31 @@ class OllamaAILLM {
       AIMessage,
     } = require("langchain/schema");
     const langchainChats = [];
+    const roleToMessageMap = {
+      system: SystemMessage,
+      user: HumanMessage,
+      assistant: AIMessage,
+    };
+
     for (const chat of chats) {
-      switch (chat.role) {
-        case "system":
-          langchainChats.push(new SystemMessage({ content: chat.content }));
-          break;
-        case "user":
-          langchainChats.push(new HumanMessage({ content: chat.content }));
-          break;
-        case "assistant":
-          langchainChats.push(new AIMessage({ content: chat.content }));
-          break;
-        default:
-          break;
-      }
+      if (!roleToMessageMap.hasOwnProperty(chat.role)) continue;
+      const MessageClass = roleToMessageMap[chat.role];
+      langchainChats.push(new MessageClass({ content: chat.content }));
     }
+
     return langchainChats;
+  }
+
+  #appendContext(contextTexts = []) {
+    if (!contextTexts || !contextTexts.length) return "";
+    return (
+      "\nContext:\n" +
+      contextTexts
+        .map((text, i) => {
+          return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+        })
+        .join("")
+    );
   }
 
   streamingEnabled() {
@@ -83,13 +92,7 @@ class OllamaAILLM {
   }) {
     const prompt = {
       role: "system",
-      content: `${systemPrompt}
-Context:
-    ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }

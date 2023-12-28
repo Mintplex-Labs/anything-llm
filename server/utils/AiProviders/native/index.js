@@ -1,8 +1,6 @@
-const os = require("os");
 const fs = require("fs");
 const path = require("path");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
-const { HumanMessage, SystemMessage, AIMessage } = require("langchain/schema");
 const { chatPrompt } = require("../../chats");
 
 // Docs: https://api.js.langchain.com/classes/chat_models_llama_cpp.ChatLlamaCpp.html
@@ -29,12 +27,6 @@ class NativeLLM {
         : path.resolve(__dirname, `../../../storage/models/downloaded`)
     );
 
-    // Set ENV for if llama.cpp needs to rebuild at runtime and machine is not
-    // running Apple Silicon.
-    process.env.NODE_LLAMA_CPP_METAL = os
-      .cpus()
-      .some((cpu) => cpu.model.includes("Apple"));
-
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
   }
@@ -56,10 +48,44 @@ class NativeLLM {
   // If the model has been loaded once, it is in the memory now
   // so we can skip  re-loading it and instead go straight to inference.
   // Note: this will break temperature setting hopping between workspaces with different temps.
-  async llamaClient({ temperature = 0.7 }) {
+  async #llamaClient({ temperature = 0.7 }) {
     if (global.llamaModelInstance) return global.llamaModelInstance;
     await this.#initializeLlamaModel(temperature);
     return global.llamaModelInstance;
+  }
+
+  #convertToLangchainPrototypes(chats = []) {
+    const {
+      HumanMessage,
+      SystemMessage,
+      AIMessage,
+    } = require("langchain/schema");
+    const langchainChats = [];
+    const roleToMessageMap = {
+      system: SystemMessage,
+      user: HumanMessage,
+      assistant: AIMessage,
+    };
+
+    for (const chat of chats) {
+      if (!roleToMessageMap.hasOwnProperty(chat.role)) continue;
+      const MessageClass = roleToMessageMap[chat.role];
+      langchainChats.push(new MessageClass({ content: chat.content }));
+    }
+
+    return langchainChats;
+  }
+
+  #appendContext(contextTexts = []) {
+    if (!contextTexts || !contextTexts.length) return "";
+    return (
+      "\nContext:\n" +
+      contextTexts
+        .map((text, i) => {
+          return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+        })
+        .join("")
+    );
   }
 
   streamingEnabled() {
@@ -84,13 +110,7 @@ class NativeLLM {
   }) {
     const prompt = {
       role: "system",
-      content: `${systemPrompt}
-Context:
-    ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
@@ -111,7 +131,7 @@ Context:
         rawHistory
       );
 
-      const model = await this.llamaClient({
+      const model = await this.#llamaClient({
         temperature: Number(workspace?.openAiTemp ?? 0.7),
       });
       const response = await model.call(messages);
@@ -124,7 +144,7 @@ Context:
   }
 
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const model = await this.llamaClient({
+    const model = await this.#llamaClient({
       temperature: Number(workspace?.openAiTemp ?? 0.7),
     });
     const messages = await this.compressMessages(
@@ -140,13 +160,13 @@ Context:
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const model = await this.llamaClient({ temperature });
+    const model = await this.#llamaClient({ temperature });
     const response = await model.call(messages);
     return response.content;
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const model = await this.llamaClient({ temperature });
+    const model = await this.#llamaClient({ temperature });
     const responseStream = await model.stream(messages);
     return responseStream;
   }
@@ -167,27 +187,7 @@ Context:
       messageArray,
       rawHistory
     );
-    return this.convertToLangchainPrototypes(compressedMessages);
-  }
-
-  convertToLangchainPrototypes(chats = []) {
-    const langchainChats = [];
-    for (const chat of chats) {
-      switch (chat.role) {
-        case "system":
-          langchainChats.push(new SystemMessage({ content: chat.content }));
-          break;
-        case "user":
-          langchainChats.push(new HumanMessage({ content: chat.content }));
-          break;
-        case "assistant":
-          langchainChats.push(new AIMessage({ content: chat.content }));
-          break;
-        default:
-          break;
-      }
-    }
-    return langchainChats;
+    return this.#convertToLangchainPrototypes(compressedMessages);
   }
 }
 

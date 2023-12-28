@@ -1,4 +1,3 @@
-const { v4 } = require("uuid");
 const { chatPrompt } = require("../../chats");
 
 class GeminiLLM {
@@ -22,7 +21,18 @@ class GeminiLLM {
         "INVALID GEMINI LLM SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Gemini as your LLM."
       );
     this.embedder = embedder;
-    this.answerKey = v4().split("-")[0];
+  }
+
+  #appendContext(contextTexts = []) {
+    if (!contextTexts || !contextTexts.length) return "";
+    return (
+      "\nContext:\n" +
+      contextTexts
+        .map((text, i) => {
+          return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+        })
+        .join("")
+    );
   }
 
   streamingEnabled() {
@@ -57,13 +67,7 @@ class GeminiLLM {
   }) {
     const prompt = {
       role: "system",
-      content: `${systemPrompt}
-Context:
-    ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [
       prompt,
