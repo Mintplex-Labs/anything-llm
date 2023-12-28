@@ -7,8 +7,13 @@ export default {
   login: () => {
     return "/login";
   },
-  onboarding: () => {
-    return "/onboarding";
+  onboarding: {
+    home: () => {
+      return "/onboarding";
+    },
+    llmPreference: () => {
+      return "/onboarding/llm-preference";
+    },
   },
   github: () => {
     return "https://github.com/Mintplex-Labs/anything-llm";
