@@ -7,6 +7,8 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
+import GeminiLogo from "@/media/llmprovider/gemini.png";
+import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import PreLoader from "@/components/Preloader";
@@ -17,6 +19,8 @@ import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
 import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
+import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
+import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -105,13 +109,13 @@ export default function GeneralLLMPreference() {
               <div className="text-white text-sm font-medium py-4">
                 LLM Providers
               </div>
-              <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
+              <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4">
                 <input hidden={true} name="LLMProvider" value={llmChoice} />
                 <LLMProviderOption
                   name="OpenAI"
                   value="openai"
                   link="openai.com"
-                  description="The standard option for most non-commercial use. Provides both chat and embedding."
+                  description="The standard option for most non-commercial use."
                   checked={llmChoice === "openai"}
                   image={OpenAiLogo}
                   onClick={updateLLMChoice}
@@ -120,7 +124,7 @@ export default function GeneralLLMPreference() {
                   name="Azure OpenAI"
                   value="azure"
                   link="azure.microsoft.com"
-                  description="The enterprise option of OpenAI hosted on Azure services. Provides both chat and embedding."
+                  description="The enterprise option of OpenAI hosted on Azure services."
                   checked={llmChoice === "azure"}
                   image={AzureOpenAiLogo}
                   onClick={updateLLMChoice}
@@ -129,9 +133,18 @@ export default function GeneralLLMPreference() {
                   name="Anthropic Claude 2"
                   value="anthropic"
                   link="anthropic.com"
-                  description="A friendly AI Assistant hosted by Anthropic. Provides chat services only!"
+                  description="A friendly AI Assistant hosted by Anthropic."
                   checked={llmChoice === "anthropic"}
                   image={AnthropicLogo}
+                  onClick={updateLLMChoice}
+                />
+                <LLMProviderOption
+                  name="Google Gemini"
+                  value="gemini"
+                  link="ai.google.dev"
+                  description="Google's largest and most capable AI model"
+                  checked={llmChoice === "gemini"}
+                  image={GeminiLogo}
                   onClick={updateLLMChoice}
                 />
                 <LLMProviderOption
@@ -150,6 +163,15 @@ export default function GeneralLLMPreference() {
                   description="Run LLMs locally on your own machine."
                   checked={llmChoice === "localai"}
                   image={LocalAiLogo}
+                  onClick={updateLLMChoice}
+                />
+                <LLMProviderOption
+                  name="Ollama"
+                  value="ollama"
+                  link="ollama.ai"
+                  description="Run LLMs locally on your own machine."
+                  checked={llmChoice === "ollama"}
+                  image={OllamaLogo}
                   onClick={updateLLMChoice}
                 />
                 {!window.location.hostname.includes("useanything.com") && (
@@ -173,11 +195,17 @@ export default function GeneralLLMPreference() {
                 {llmChoice === "anthropic" && (
                   <AnthropicAiOptions settings={settings} showAlert={true} />
                 )}
+                {llmChoice === "gemini" && (
+                  <GeminiLLMOptions settings={settings} />
+                )}
                 {llmChoice === "lmstudio" && (
                   <LMStudioOptions settings={settings} showAlert={true} />
                 )}
                 {llmChoice === "localai" && (
                   <LocalAiOptions settings={settings} showAlert={true} />
+                )}
+                {llmChoice === "ollama" && (
+                  <OllamaLLMOptions settings={settings} />
                 )}
                 {llmChoice === "native" && (
                   <NativeLLMOptions settings={settings} />

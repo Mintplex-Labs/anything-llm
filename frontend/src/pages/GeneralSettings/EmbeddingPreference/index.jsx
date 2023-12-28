@@ -46,10 +46,10 @@ export default function GeneralEmbeddingPreference() {
 
     const { error } = await System.updateSystem(settingsData);
     if (error) {
-      showToast(`Failed to save LLM settings: ${error}`, "error");
+      showToast(`Failed to save embedding settings: ${error}`, "error");
       setHasChanges(true);
     } else {
-      showToast("LLM preferences saved successfully.", "success");
+      showToast("Embedding preferences saved successfully.", "success");
       setHasChanges(false);
     }
     setSaving(false);
@@ -132,7 +132,7 @@ export default function GeneralEmbeddingPreference() {
                 <div className="text-white text-sm font-medium py-4">
                   Embedding Providers
                 </div>
-                <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
+                <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4">
                   <input
                     hidden={true}
                     name="EmbeddingEngine"
@@ -174,7 +174,7 @@ export default function GeneralEmbeddingPreference() {
                     onClick={updateChoice}
                   />
                 </div>
-                <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
+                <div className="mt-10 flex flex-wrap gap-4">
                   {embeddingChoice === "native" && <NativeEmbeddingOptions />}
                   {embeddingChoice === "openai" && (
                     <OpenAiOptions settings={settings} />
