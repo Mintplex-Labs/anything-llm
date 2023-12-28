@@ -4,6 +4,7 @@ import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
+import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import System from "@/models/system";
@@ -16,6 +17,7 @@ import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
+import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 
 function LLMSelection({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");
@@ -124,13 +126,24 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               onClick={updateLLMChoice}
             />
             <LLMProviderOption
-              name="Custom Llama Model"
-              value="native"
-              description="Use a downloaded custom Llama model for chatting on this AnythingLLM instance."
-              checked={llmChoice === "native"}
-              image={AnythingLLMIcon}
+              name="Ollama"
+              value="ollama"
+              link="ollama.ai"
+              description="Run LLMs locally on your own machine."
+              checked={llmChoice === "ollama"}
+              image={OllamaLogo}
               onClick={updateLLMChoice}
             />
+            {!window.location.hostname.includes("useanything.com") && (
+              <LLMProviderOption
+                name="Custom Llama Model"
+                value="native"
+                description="Use a downloaded custom Llama model for chatting on this AnythingLLM instance."
+                checked={llmChoice === "native"}
+                image={AnythingLLMIcon}
+                onClick={updateLLMChoice}
+              />
+            )}
           </div>
           <div className="mt-4 flex flex-wrap gap-4 max-w-[752px]">
             {llmChoice === "openai" && <OpenAiOptions settings={settings} />}
@@ -143,6 +156,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               <LMStudioOptions settings={settings} />
             )}
             {llmChoice === "localai" && <LocalAiOptions settings={settings} />}
+            {llmChoice === "ollama" && <OllamaLLMOptions settings={settings} />}
             {llmChoice === "native" && <NativeLLMOptions settings={settings} />}
           </div>
         </div>

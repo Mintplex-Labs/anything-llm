@@ -5,6 +5,7 @@ import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
+import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
@@ -60,6 +61,13 @@ const LLM_SELECTION_PRIVACY = {
       "Your model and chats are only accessible on the server running LocalAI",
     ],
     logo: LocalAiLogo,
+  },
+  ollama: {
+    name: "Ollama",
+    description: [
+      "Your model and chats are only accessible on the machine running Ollama models",
+    ],
+    logo: OllamaLogo,
   },
   native: {
     name: "Custom Llama Model",

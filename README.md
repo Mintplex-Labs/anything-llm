@@ -59,6 +59,7 @@ Some cool features of AnythingLLM
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Anthropic ClaudeV2](https://www.anthropic.com/)
 - [Google Gemini Pro](https://ai.google.dev/)
+- [Ollama (chat models)](https://ollama.ai/)
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAi (all models)](https://localai.io/)
 

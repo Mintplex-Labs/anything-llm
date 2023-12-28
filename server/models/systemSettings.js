@@ -126,6 +126,20 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
+
+      ...(llmProvider === "ollama"
+        ? {
+            OllamaLLMBasePath: process.env.OLLAMA_BASE_PATH,
+            OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
+            OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
+
+            // For embedding credentials when ollama is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
       ...(llmProvider === "native"
         ? {
             NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
