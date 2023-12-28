@@ -8,6 +8,7 @@ import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
+import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import PreLoader from "@/components/Preloader";
@@ -19,6 +20,7 @@ import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
+import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -163,6 +165,15 @@ export default function GeneralLLMPreference() {
                   image={LocalAiLogo}
                   onClick={updateLLMChoice}
                 />
+                <LLMProviderOption
+                  name="Ollama"
+                  value="ollama"
+                  link="ollama.ai"
+                  description="Run LLMs locally on your own machine."
+                  checked={llmChoice === "ollama"}
+                  image={OllamaLogo}
+                  onClick={updateLLMChoice}
+                />
                 {!window.location.hostname.includes("useanything.com") && (
                   <LLMProviderOption
                     name="Custom Llama Model"
@@ -192,6 +203,9 @@ export default function GeneralLLMPreference() {
                 )}
                 {llmChoice === "localai" && (
                   <LocalAiOptions settings={settings} showAlert={true} />
+                )}
+                {llmChoice === "ollama" && (
+                  <OllamaLLMOptions settings={settings} />
                 )}
                 {llmChoice === "native" && (
                   <NativeLLMOptions settings={settings} />

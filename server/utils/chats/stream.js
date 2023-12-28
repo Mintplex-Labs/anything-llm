@@ -199,6 +199,7 @@ async function streamEmptyEmbeddingChat({
   return;
 }
 
+// TODO: Refactor this implementation
 function handleStreamResponses(response, stream, responseProps) {
   const { uuid = uuidv4(), sources = [] } = responseProps;
 
@@ -214,6 +215,34 @@ function handleStreamResponses(response, stream, responseProps) {
           sources: [],
           type: "textResponseChunk",
           textResponse: chunk.text(),
+          close: false,
+          error: false,
+        });
+      }
+
+      writeResponseChunk(response, {
+        uuid,
+        sources,
+        type: "textResponseChunk",
+        textResponse: "",
+        close: true,
+        error: false,
+      });
+      resolve(fullText);
+    });
+  }
+
+  if (stream?.type === "ollamaStream") {
+    return new Promise(async (resolve) => {
+      let fullText = "";
+      for await (const dataChunk of stream.response.body) {
+        const chunk = JSON.parse(Buffer.from(dataChunk).toString());
+        fullText += chunk.message.content;
+        writeResponseChunk(response, {
+          uuid,
+          sources: [],
+          type: "textResponseChunk",
+          textResponse: chunk.message.content,
           close: false,
           error: false,
         });

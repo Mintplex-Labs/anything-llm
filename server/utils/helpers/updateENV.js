@@ -81,6 +81,19 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  OllamaLLMBasePath: {
+    envKey: "OLLAMA_BASE_PATH",
+    checks: [isNotEmpty, validOllamaLLMBasePath],
+  },
+  OllamaLLMModelPref: {
+    envKey: "OLLAMA_MODEL_PREF",
+    checks: [],
+  },
+  OllamaLLMTokenLimit: {
+    envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   // Native LLM Settings
   NativeLLMModelPref: {
     envKey: "NATIVE_LLM_MODEL_PREF",
@@ -208,6 +221,17 @@ function validLLMExternalBasePath(input = "") {
   }
 }
 
+function validOllamaLLMBasePath(input = "") {
+  try {
+    new URL(input);
+    if (input.split("").slice(-1)?.[0] === "/")
+      return "URL cannot end with a slash";
+    return null;
+  } catch {
+    return "Not a valid URL";
+  }
+}
+
 function supportedLLM(input = "") {
   return [
     "openai",
@@ -216,6 +240,7 @@ function supportedLLM(input = "") {
     "gemini",
     "lmstudio",
     "localai",
+    "ollama",
     "native",
   ].includes(input);
 }
