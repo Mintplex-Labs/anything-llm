@@ -40,7 +40,7 @@ export function OnboardingLayout({ children }) {
         )}
       </div>
 
-      <div className="w-full md:w-3/5 relative h-full py-10">
+      <div className="w-full md:w-3/5 relative h-full py-10 flex">
         <div className="flex flex-col w-fit mx-auto gap-y-1 mb-[55px]">
           <h1 className="text-white font-semibold text-center text-2xl">
             {header.title}
