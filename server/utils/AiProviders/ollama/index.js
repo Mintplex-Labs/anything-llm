@@ -40,21 +40,18 @@ class OllamaAILLM {
       AIMessage,
     } = require("langchain/schema");
     const langchainChats = [];
+    const roleToMessageMap = {
+      system: SystemMessage,
+      user: HumanMessage,
+      assistant: AIMessage,
+    };
+
     for (const chat of chats) {
-      switch (chat.role) {
-        case "system":
-          langchainChats.push(new SystemMessage({ content: chat.content }));
-          break;
-        case "user":
-          langchainChats.push(new HumanMessage({ content: chat.content }));
-          break;
-        case "assistant":
-          langchainChats.push(new AIMessage({ content: chat.content }));
-          break;
-        default:
-          break;
-      }
+      if (!roleToMessageMap.hasOwnProperty(chat.role)) continue;
+      const MessageClass = roleToMessageMap[chat.role];
+      langchainChats.push(new MessageClass({ content: chat.content }));
     }
+
     return langchainChats;
   }
 
