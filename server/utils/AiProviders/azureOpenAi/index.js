@@ -27,6 +27,18 @@ class AzureOpenAiLLM {
     this.embedder = !embedder ? new AzureOpenAiEmbedder() : embedder;
   }
 
+  #appendContext(contextTexts = []) {
+    if (!contextTexts || !contextTexts.length) return "";
+    return (
+      "\nContext:\n" +
+      contextTexts
+        .map((text, i) => {
+          return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+        })
+        .join("")
+    );
+  }
+
   streamingEnabled() {
     return "streamChat" in this && "streamGetChatCompletion" in this;
   }
@@ -55,13 +67,7 @@ class AzureOpenAiLLM {
   }) {
     const prompt = {
       role: "system",
-      content: `${systemPrompt}
-Context:
-    ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
