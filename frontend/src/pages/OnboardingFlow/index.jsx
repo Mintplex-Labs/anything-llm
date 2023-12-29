@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 export default function OnboardingFlow() {
   const { step } = useParams();
   const StepPage = OnboardingSteps[step || "home"];
-  if (step === "home") return <StepPage />;
+  if (step === "home" || !step) return <StepPage />;
 
   return (
     <OnboardingLayout>

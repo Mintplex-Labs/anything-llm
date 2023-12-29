@@ -6,7 +6,7 @@ import AnythingLLMLogo from "@/media/logo/anything-llm.png";
 export default function OnboardingHome() {
   return (
     <>
-      <div className="relative w-screen h-screen flex overflow-hidden">
+      <div className="relative w-screen h-screen flex overflow-hidden bg-main-gradient">
         <div
           className="hidden md:block fixed bottom-10 left-10 w-[320px] h-[320px] bg-no-repeat bg-contain"
           style={{ backgroundImage: `url(${LGroupImg})` }}
