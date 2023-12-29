@@ -18,8 +18,20 @@
         }
       },
       "command": "cd ${workspaceFolder}/collector/ && yarn dev",
+      "runOptions": {
+        "instanceLimit": 1,
+        "reevaluateOnRerun": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
       "label": "Collector: run"
-    }
+    },
     {
       "type": "shell",
       "options": {
@@ -35,6 +47,18 @@
         }
       },
       "command": "cd ${workspaceFolder}/server/ && yarn dev",
+      "runOptions": {
+        "instanceLimit": 1,
+        "reevaluateOnRerun": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
       "label": "Server: run"
     },
     {
@@ -52,6 +76,18 @@
         }
       },
       "command": "cd ${workspaceFolder}/frontend/ && yarn dev",
+      "runOptions": {
+        "instanceLimit": 1,
+        "reevaluateOnRerun": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
       "label": "Frontend: run"
     }
   ]

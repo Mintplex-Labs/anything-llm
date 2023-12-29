@@ -11,10 +11,14 @@
       "env": {
         "NODE_ENV": "development"
       },
-      "runtimeArgs": ["index.js"],
+      "runtimeArgs": [
+        "index.js"
+      ],
       // not using yarn/nodemon because it doesn't work with breakpoints
       // "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "type": "node"
     },
     {
@@ -24,32 +28,34 @@
       "env": {
         "NODE_ENV": "development"
       },
-      "runtimeArgs": ["index.js"],
+      "runtimeArgs": [
+        "index.js"
+      ],
       // not using yarn/nodemon because it doesn't work with breakpoints
       // "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "type": "node"
     },
     {
       "name": "Frontend debug",
       "request": "launch",
-      "cwd": "${workspaceFolder}",
-      "runtimeArgs": ["dev:frontend"],
-      "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**"],
+      "cwd": "${workspaceFolder}/frontend",
+      "env": {
+        "NODE_ENV": "development",
+      },
+      "runtimeExecutable": "${workspaceFolder}/frontend/node_modules/.bin/vite",
+      "runtimeArgs": [
+        "--debug",
+        "--host=0.0.0.0"
+      ],
+      // "runtimeExecutable": "yarn",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "type": "node"
     },
-    // {
-    //   "name": "Launch Vite",
-    //   "program": "${workspaceFolder}/frontend/node_modules/.bin/vite",
-    //   "args": ["--debug", "--host=0.0.0.0"],
-    //   "request": "launch",
-    //   "cwd": "${workspaceFolder}/frontend",
-    //   "env": {
-    //     "VITE_API_BASE": "http://localhost:3001/api"
-    //   },
-    //   "type": "node"
-    // },
     {
       "name": "Launch Edge",
       "request": "launch",
