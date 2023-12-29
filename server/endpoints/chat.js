@@ -1,33 +1,38 @@
 const { v4: uuidv4 } = require("uuid");
 const { reqBody, userFromSession, multiUserMode } = require("../utils/http");
 const { Workspace } = require("../models/workspace");
-const { chatWithWorkspace } = require("../utils/chats");
+const { chatWithWorkspace, convertToChatHistory} = require("../utils/chats");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { WorkspaceChats } = require("../models/workspaceChats");
+const { ThreadChats } = require("../models/threadChats");
 const { SystemSettings } = require("../models/systemSettings");
 const { Telemetry } = require("../models/telemetry");
 const {
   streamChatWithWorkspace,
   writeResponseChunk,
 } = require("../utils/chats/stream");
+const {Threads} = require("../models/threads");
 
 function chatEndpoints(app) {
   if (!app) return;
 
   app.post(
-    "/workspace/:slug/stream-chat",
+    "/workspace/:slug/thread/:threadId/stream-chat",
     [validatedRequest],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { slug } = request.params;
+        const { slug, threadId } = request.params;
         const { message, mode = "query" } = reqBody(request);
 
         const workspace = multiUserMode(response)
           ? await Workspace.getWithUser(user, { slug })
           : await Workspace.get({ slug });
 
-        if (!workspace) {
+        const thread = multiUserMode(response)
+          ? await Threads.get({ id: Number(threadId), workspace_id: workspace.id, user_id: user.id })
+          : await Threads.get({ id: Number(threadId), workspace_id: workspace.id });
+
+        if (!workspace || !thread) {
           response.sendStatus(400).end();
           return;
         }
@@ -51,8 +56,8 @@ function chatEndpoints(app) {
             const systemLimit = Number(messageLimitSetting?.value);
 
             if (!!systemLimit) {
-              const currentChatCount = await WorkspaceChats.count({
-                user_id: user.id,
+              const currentChatCount = await ThreadChats.count({
+                thread_id: thread.id,
                 createdAt: {
                   gte: new Date(new Date() - 24 * 60 * 60 * 1000),
                 },
@@ -73,7 +78,7 @@ function chatEndpoints(app) {
           }
         }
 
-        await streamChatWithWorkspace(response, workspace, message, mode, user);
+        await streamChatWithWorkspace(response, workspace, thread, message, mode, user);
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
@@ -97,19 +102,23 @@ function chatEndpoints(app) {
   );
 
   app.post(
-    "/workspace/:slug/chat",
+    "/workspace/:slug/thread/:threadId/chat",
     [validatedRequest],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { slug } = request.params;
+        const { slug, threadId } = request.params;
         const { message, mode = "query" } = reqBody(request);
 
         const workspace = multiUserMode(response)
           ? await Workspace.getWithUser(user, { slug })
           : await Workspace.get({ slug });
 
-        if (!workspace) {
+        const thread = multiUserMode(response)
+          ? await Threads.get({ id: Number(threadId), workspace_id: workspace.id, user_id: user.id })
+          : await Threads.get({ id: Number(threadId), workspace_id: workspace.id });
+
+        if (!workspace || !thread) {
           response.sendStatus(400).end();
           return;
         }
@@ -127,8 +136,8 @@ function chatEndpoints(app) {
             const systemLimit = Number(messageLimitSetting?.value);
 
             if (!!systemLimit) {
-              const currentChatCount = await WorkspaceChats.count({
-                user_id: user.id,
+              const currentChatCount = await ThreadChats.count({
+                thread_id: thread.id,
                 createdAt: {
                   gte: new Date(new Date() - 24 * 60 * 60 * 1000),
                 },
@@ -149,7 +158,7 @@ function chatEndpoints(app) {
           }
         }
 
-        const result = await chatWithWorkspace(workspace, message, mode, user);
+        const result = await chatWithWorkspace(workspace, thread, message, mode, user);
         await Telemetry.sendTelemetry(
           "sent_chat",
           {
@@ -171,6 +180,34 @@ function chatEndpoints(app) {
           close: true,
           error: e.message,
         });
+      }
+    }
+  );
+
+  app.get(
+    "/workspace/:slug/thread/:threadId/chat",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { slug, threadId } = request.params;
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const history = multiUserMode(response)
+          ? await ThreadChats.forWorkspaceByThread(workspace.id, threadId)
+          : await ThreadChats.forWorkspace(workspace.id);
+
+        response.status(200).json({ history: convertToChatHistory(history) });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
       }
     }
   );

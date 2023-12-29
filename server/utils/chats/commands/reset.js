@@ -1,7 +1,7 @@
-const { WorkspaceChats } = require("../../../models/workspaceChats");
+const { ThreadChats } = require("../../../models/threadChats");
 
-async function resetMemory(workspace, _message, msgUUID, user = null) {
-  await WorkspaceChats.markHistoryInvalid(workspace.id, user);
+async function resetMemory(workspace, thread, _message, msgUUID, user = null) {
+  await ThreadChats.markHistoryInvalid(workspace.id, thread);
   return {
     uuid: msgUUID,
     type: "textResponse",

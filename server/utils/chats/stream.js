@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
-const { WorkspaceChats } = require("../../models/workspaceChats");
+const { ThreadChats } = require("../../models/threadChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const {
   grepCommand,
@@ -16,6 +16,7 @@ function writeResponseChunk(response, data) {
 async function streamChatWithWorkspace(
   response,
   workspace,
+  thread,
   message,
   chatMode = "chat",
   user = null
@@ -24,7 +25,7 @@ async function streamChatWithWorkspace(
   const command = grepCommand(message);
 
   if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
-    const data = await VALID_COMMANDS[command](workspace, message, uuid, user);
+    const data = await VALID_COMMANDS[command](workspace, thread, message, uuid, user);
     writeResponseChunk(response, data);
     return;
   }
@@ -54,9 +55,9 @@ async function streamChatWithWorkspace(
     return await streamEmptyEmbeddingChat({
       response,
       uuid,
-      user,
       message,
       workspace,
+      thread,
       messageLimit,
       LLMConnector,
     });
@@ -64,8 +65,8 @@ async function streamChatWithWorkspace(
 
   let completeText;
   const { rawHistory, chatHistory } = await recentChatHistory(
-    user,
     workspace,
+    thread,
     messageLimit,
     chatMode
   );
@@ -132,11 +133,11 @@ async function streamChatWithWorkspace(
     });
   }
 
-  await WorkspaceChats.new({
+  await ThreadChats.new({
     workspaceId: workspace.id,
+    threadId: thread.id,
     prompt: message,
     response: { text: completeText, sources, type: chatMode },
-    user,
   });
   return;
 }
@@ -144,16 +145,16 @@ async function streamChatWithWorkspace(
 async function streamEmptyEmbeddingChat({
   response,
   uuid,
-  user,
   message,
   workspace,
+  thread,
   messageLimit,
   LLMConnector,
 }) {
   let completeText;
   const { rawHistory, chatHistory } = await recentChatHistory(
-    user,
     workspace,
+    thread,
     messageLimit
   );
 
@@ -190,11 +191,11 @@ async function streamEmptyEmbeddingChat({
     });
   }
 
-  await WorkspaceChats.new({
+  await ThreadChats.new({
     workspaceId: workspace.id,
+    threadId: thread.id,
     prompt: message,
     response: { text: completeText, sources: [], type: "chat" },
-    user,
   });
   return;
 }

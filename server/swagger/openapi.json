@@ -1371,7 +1371,7 @@
         "tags": [
           "Workspaces"
         ],
-        "description": "Get a workspaces chats regardless of user by its unique slug.",
+        "description": "Get a workspaces chats regardless of user and thread by its unique slug.",
         "parameters": [
           {
             "name": "slug",
@@ -1381,6 +1381,92 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "history": [
+                      {
+                        "role": "user",
+                        "content": "What is AnythingLLM?",
+                        "sentAt": 1692851630
+                      },
+                      {
+                        "role": "assistant",
+                        "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                        "sources": [
+                          {
+                            "source": "object about source document and snippets used"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/workspace/{slug}/threads/{threadId}/chat": {
+      "get": {
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Get a workspaces chats regardless of user and by its unique workspace slug and thread id.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace to find"
+          },
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique id of thread to find"
           },
           {
             "name": "Authorization",

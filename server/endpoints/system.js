@@ -43,7 +43,7 @@ const { Telemetry } = require("../models/telemetry");
 const { WelcomeMessages } = require("../models/welcomeMessages");
 const { ApiKey } = require("../models/apiKeys");
 const { getCustomModels } = require("../utils/helpers/customModels");
-const { WorkspaceChats } = require("../models/workspaceChats");
+const { ThreadChats } = require("../models/threadChats");
 const { Workspace } = require("../models/workspace");
 const { flexUserRoleValid } = require("../utils/middleware/multiUserProtected");
 const { fetchPfp, determinePfpFilepath } = require("../utils/files/pfp");
@@ -768,13 +768,13 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { offset = 0, limit = 20 } = reqBody(request);
-        const chats = await WorkspaceChats.whereWithData(
+        const chats = await ThreadChats.whereWithData(
           {},
           limit,
           offset * limit,
           { id: "desc" }
         );
-        const totalChats = await WorkspaceChats.count();
+        const totalChats = await ThreadChats.count();
         const hasPages = totalChats > (offset + 1) * limit;
 
         response.status(200).json({ chats: chats, hasPages, totalChats });
@@ -791,7 +791,7 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
-        await WorkspaceChats.delete({ id: Number(id) });
+        await ThreadChats.delete({ id: Number(id) });
         response.sendStatus(200).end();
       } catch (e) {
         console.error(e);
@@ -805,7 +805,7 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid],
     async (_request, response) => {
       try {
-        const chats = await WorkspaceChats.whereWithData({}, null, null, {
+        const chats = await ThreadChats.whereWithData({}, null, null, {
           id: "asc",
         });
         const workspaceIds = [

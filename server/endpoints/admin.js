@@ -5,13 +5,14 @@ const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
 const { DocumentVectors } = require("../models/vectors");
 const { Workspace } = require("../models/workspace");
-const { WorkspaceChats } = require("../models/workspaceChats");
+const { ThreadChats } = require("../models/threadChats");
 const { getVectorDbClass } = require("../utils/helpers");
 const { reqBody, userFromSession } = require("../utils/http");
 const {
   strictMultiUserRoleValid,
 } = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
+const {Threads} = require("../models/threads");
 
 function adminEndpoints(app) {
   if (!app) return;
@@ -208,7 +209,8 @@ function adminEndpoints(app) {
           return;
         }
 
-        await WorkspaceChats.delete({ workspaceId: Number(workspace.id) });
+        await ThreadChats.delete({ workspace_id: Number(workspace.id) });
+        await Threads.delete({ workspace_id: Number(workspace.id) })
         await DocumentVectors.deleteForWorkspace(Number(workspace.id));
         await Document.delete({ workspaceId: Number(workspace.id) });
         await Workspace.delete({ id: Number(workspace.id) });

@@ -3,7 +3,7 @@ const { Document } = require("../../../models/documents");
 const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
-const { WorkspaceChats } = require("../../../models/workspaceChats");
+const { ThreadChats } = require("../../../models/threadChats");
 const {
   convertToChatHistory,
   chatWithWorkspace,
@@ -11,6 +11,7 @@ const {
 const { getVectorDbClass } = require("../../../utils/helpers");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const { Threads} = require("../../../models/threads");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -196,7 +197,8 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        await WorkspaceChats.delete({ workspaceId: Number(workspace.id) });
+        await ThreadChats.delete({ workspace_id: Number(workspace.id) });
+        await Threads.delete({ workspace_id: Number(workspace.id) })
         await DocumentVectors.deleteForWorkspace(Number(workspace.id));
         await Document.delete({ workspaceId: Number(workspace.id) });
         await Workspace.delete({ id: Number(workspace.id) });
@@ -299,7 +301,7 @@ function apiWorkspaceEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Workspaces']
-    #swagger.description = 'Get a workspaces chats regardless of user by its unique slug.'
+    #swagger.description = 'Get a workspaces chats regardless of user and thread by its unique slug.'
     #swagger.path = '/v1/workspace/{slug}/chats'
     #swagger.parameters['slug'] = {
         in: 'path',
@@ -345,7 +347,78 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        const history = await WorkspaceChats.forWorkspace(workspace.id);
+        const history = await ThreadChats.forWorkspace(workspace.id);
+        response.status(200).json({ history: convertToChatHistory(history) });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/v1/workspace/:slug/threads/:threadId/chat",
+    [validApiKey],
+    async (request, response) => {
+      /*
+    #swagger.tags = ['Workspaces']
+    #swagger.description = 'Get a workspaces chats regardless of user and  by its unique workspace slug and thread id.'
+    #swagger.path = '/v1/workspace/{slug}/threads/{threadId}/chat'
+    #swagger.parameters['slug'] = {
+        in: 'path',
+        description: 'Unique slug of workspace to find',
+        required: true,
+        type: 'string'
+    }
+    #swagger.parameters['threadId'] = {
+        in: 'path',
+        description: 'Unique id of thread to find',
+        required: true,
+        type: 'number'
+    }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              history: [
+                {
+                  "role": "user",
+                  "content": "What is AnythingLLM?",
+                  "sentAt": 1692851630
+                },
+                {
+                  "role": "assistant",
+                  "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                  "sources": [{"source": "object about source document and snippets used"}]
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+    */
+      try {
+        const { slug, threadId } = request.params;
+        const workspace = await Workspace.get({ slug, threadId });
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+        const thread = await Threads.get({ id: Number(threadId), workspace_id: workspace.id })
+        if (!thread) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const history = await ThreadChats.forWorkspaceByThread(workspace.id, thread.id);
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
         console.log(e.message, e);

@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
-const { WorkspaceChats } = require("../../models/workspaceChats");
+const { ThreadChats } = require("../../models/threadChats");
 const { resetMemory } = require("./commands/reset");
 const moment = require("moment");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
@@ -60,6 +60,7 @@ function grepCommand(message) {
 
 async function chatWithWorkspace(
   workspace,
+  thread,
   message,
   chatMode = "chat",
   user = null
@@ -68,7 +69,7 @@ async function chatWithWorkspace(
   const command = grepCommand(message);
 
   if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
-    return await VALID_COMMANDS[command](workspace, message, uuid, user);
+    return await VALID_COMMANDS[command](workspace, thread, message, uuid, user);
   }
 
   const LLMConnector = getLLMProvider();
@@ -94,17 +95,17 @@ async function chatWithWorkspace(
     // If there are no embeddings - chat like a normal LLM chat interface.
     return await emptyEmbeddingChat({
       uuid,
-      user,
       message,
       workspace,
+      thread,
       messageLimit,
       LLMConnector,
     });
   }
 
   const { rawHistory, chatHistory } = await recentChatHistory(
-    user,
     workspace,
+    thread,
     messageLimit,
     chatMode
   );
@@ -159,8 +160,9 @@ async function chatWithWorkspace(
     };
   }
 
-  await WorkspaceChats.new({
+  await ThreadChats.new({
     workspaceId: workspace.id,
+    threadId: thread.id,
     prompt: message,
     response: { text: textResponse, sources, type: chatMode },
     user,
@@ -178,38 +180,34 @@ async function chatWithWorkspace(
 // On query we dont return message history. All other chat modes and when chatting
 // with no embeddings we return history.
 async function recentChatHistory(
-  user = null,
   workspace,
+  thread,
   messageLimit = 20,
   chatMode = null
 ) {
   if (chatMode === "query") return [];
   const rawHistory = (
-    user
-      ? await WorkspaceChats.forWorkspaceByUser(
-          workspace.id,
-          user.id,
-          messageLimit,
-          { id: "desc" }
-        )
-      : await WorkspaceChats.forWorkspace(workspace.id, messageLimit, {
-          id: "desc",
-        })
+    await ThreadChats.forWorkspaceByThread(
+      workspace.id,
+      thread.id,
+      messageLimit,
+      { id: "desc" }
+    )
   ).reverse();
   return { rawHistory, chatHistory: convertToPromptHistory(rawHistory) };
 }
 
 async function emptyEmbeddingChat({
   uuid,
-  user,
   message,
   workspace,
+  thread,
   messageLimit,
   LLMConnector,
 }) {
   const { rawHistory, chatHistory } = await recentChatHistory(
-    user,
     workspace,
+    thread,
     messageLimit
   );
   const textResponse = await LLMConnector.sendChat(
@@ -218,11 +216,11 @@ async function emptyEmbeddingChat({
     workspace,
     rawHistory
   );
-  await WorkspaceChats.new({
+  await ThreadChats.new({
     workspaceId: workspace.id,
+    threadId: thread.id,
     prompt: message,
     response: { text: textResponse, sources: [], type: "chat" },
-    user,
   });
   return {
     id: uuid,

@@ -2,7 +2,7 @@ const { Invite } = require("../../../models/invite");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { User } = require("../../../models/user");
 const { Workspace } = require("../../../models/workspace");
-const { WorkspaceChats } = require("../../../models/workspaceChats");
+const { ThreadChats } = require("../../../models/threadChats");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 
@@ -535,14 +535,14 @@ function apiAdminEndpoints(app) {
         }
         const pgSize = 20;
         const { offset = 0 } = reqBody(request);
-        const chats = await WorkspaceChats.whereWithData(
+        const chats = await ThreadChats.whereWithData(
           {},
           pgSize,
           offset * pgSize,
           { id: "desc" }
         );
 
-        const hasPages = (await WorkspaceChats.count()) > (offset + 1) * pgSize;
+        const hasPages = (await ThreadChats.count()) > (offset + 1) * pgSize;
         response.status(200).json({ chats: chats, hasPages });
       } catch (e) {
         console.error(e);
