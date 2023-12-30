@@ -4,19 +4,19 @@ import LoadingChat from "./LoadingChat";
 import ChatContainer from "./ChatContainer";
 import paths from "@/utils/paths";
 
-export default function WorkspaceChat({ loading, workspace }) {
+export default function ThreadChat({ loading, workspace, thread }) {
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
   useEffect(() => {
     async function getHistory() {
       if (loading) return;
-      if (!workspace?.slug) {
+      if (!workspace?.slug || !thread?.id) {
         setLoadingHistory(false);
         return false;
       }
 
-      const chatHistory = await Workspace.chatHistory(workspace.slug);
+      const chatHistory = await Workspace.chatHistory(workspace.slug, thread.id);
       setHistory(chatHistory);
       setLoadingHistory(false);
     }
@@ -59,5 +59,5 @@ export default function WorkspaceChat({ loading, workspace }) {
     );
   }
 
-  return <ChatContainer workspace={workspace} knownHistory={history} />;
+  return <ChatContainer workspace={workspace} thread={thread} knownHistory={history} />;
 }

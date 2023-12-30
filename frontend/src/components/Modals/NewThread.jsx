@@ -4,7 +4,7 @@ import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 
 const noop = () => false;
-export default function NewWorkspaceModal({ hideModal = noop }) {
+export default function NewThreadModal({ hideModal = noop, workspace }) {
   const formEl = useRef(null);
   const [error, setError] = useState(null);
   const handleCreate = async (e) => {
@@ -13,10 +13,10 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
     const data = {};
     const form = new FormData(formEl.current);
     for (var [key, value] of form.entries()) data[key] = value;
-    const { workspace, message } = await Workspace.new(data);
-    if (!!workspace && !!workspace.threads && workspace.threads.length > 0) {
-      const threadId = workspace.threads[0].id;
-      window.location.href = paths.workspace.thread(workspace.slug, threadId);
+    // change to create thread
+    const { thread, message } = await Workspace.newThread(workspace, data);
+    if (!!thread) {
+      window.location.href = paths.workspace.thread(workspace, thread.id);
     }
     setError(message);
   };
@@ -30,7 +30,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
       <div className="relative w-[500px] max-h-full">
         <div className="relative bg-modal-gradient rounded-lg shadow-md border-2 border-accent">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-white/10">
-            <h3 className="text-xl font-semibold text-white">New Workspace</h3>
+            <h3 className="text-xl font-semibold text-white">New Thread</h3>
             <button
               onClick={hideModal}
               type="button"
@@ -47,14 +47,14 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                     htmlFor="name"
                     className="block mb-2 text-sm font-medium text-white"
                   >
-                    Workspace Name
+                    Thread Name
                   </label>
                   <input
                     name="name"
                     type="text"
                     id="name"
                     className="bg-zinc-900 w-full text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                    placeholder="My Workspace"
+                    placeholder="New thread"
                     required={true}
                     autoComplete="off"
                   />
@@ -79,14 +79,17 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
   );
 }
 
-export function useNewWorkspaceModal() {
+export function useNewThreadModal() {
   const [showing, setShowing] = useState(false);
-  const showModal = () => {
+  const [workspace, setWorkspace] = useState(null);
+  const showModal = (workspace) => {
     setShowing(true);
+    setWorkspace(workspace);
   };
   const hideModal = () => {
     setShowing(false);
+    setWorkspace(null);
   };
 
-  return { showing, showModal, hideModal };
+  return { showing, workspace, showModal, hideModal };
 }

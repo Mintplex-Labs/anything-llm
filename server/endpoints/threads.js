@@ -25,9 +25,9 @@ function threadEndpoints(app) {
         }
 
         const { name = null } = reqBody(request);
-        const thread = await Threads.new({
+        const { thread, message } = await Threads.new({
           workspaceId: workspace.id,
-          userId: user.id,
+          userId: user?.id,
           name: name,
         });
 
@@ -41,7 +41,7 @@ function threadEndpoints(app) {
           },
           user?.id
         );
-        response.status(201).json(thread);
+        response.status(201).json({ thread, message });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();

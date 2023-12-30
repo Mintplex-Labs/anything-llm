@@ -2,6 +2,7 @@ const prisma = require("../utils/prisma");
 const slugify = require("slugify");
 const { Document } = require("./documents");
 const { WorkspaceUser } = require("./workspaceUsers");
+const {Threads} = require("./threads");
 
 const Workspace = {
   writable: [
@@ -27,15 +28,24 @@ const Workspace = {
     }
 
     try {
-      const workspace = await prisma.workspaces.create({
-        data: { name, slug },
-      });
+      return await prisma.$transaction(async (prisma) => {
+        const workspace = await prisma.workspaces.create({
+          data: { name, slug },
+        });
 
-      // If created with a user then we need to create the relationship as well.
-      // If creating with an admin User it wont change anything because admins can
-      // view all workspaces anyway.
-      if (!!creatorId) await WorkspaceUser.create(creatorId, workspace.id);
-      return { workspace, message: null };
+        // If created with a user then we need to create the relationship as well.
+        // If creating with an admin User it wont change anything because admins can
+        // view all workspaces anyway.
+        if (!!creatorId) await WorkspaceUser.create(creatorId, workspace.id, prisma);
+
+        const { thread, message } = await Threads.new({
+          workspaceId: workspace.id,
+          userId: creatorId,
+          name: "Default",
+        }, prisma);
+        workspace.threads = [thread];
+        return { workspace, message: message };
+      });
     } catch (error) {
       console.error(error.message);
       return { workspace: null, message: error.message };
@@ -79,6 +89,11 @@ const Workspace = {
         include: {
           workspace_users: true,
           documents: true,
+          threads: {
+            where: {
+              user_id: user?.id,
+            },
+          },
         },
       });
 
@@ -100,6 +115,7 @@ const Workspace = {
         where: clause,
         include: {
           documents: true,
+          threads: true,
         },
       });
 
@@ -122,12 +138,29 @@ const Workspace = {
     }
   },
 
-  where: async function (clause = {}, limit = null, orderBy = null) {
+  where: async function (clause = {}, user = null, limit = null, orderBy = null) {
     try {
       const results = await prisma.workspaces.findMany({
         where: clause,
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
+        include: {
+          threads: {
+            ...(
+              user
+                ? {
+                  where: {
+                    user_id: user.id,
+                  },
+                }
+                : {}
+            ),
+            select: {
+              id: true,
+              name: true,
+            },
+          }
+        },
       });
       return results;
     } catch (error) {
@@ -143,31 +176,22 @@ const Workspace = {
     orderBy = null
   ) {
     if (["admin", "manager"].includes(user.role))
-      return await this.where(clause, limit, orderBy);
+      return await this.where(clause, user, limit, orderBy);
 
-    try {
-      const workspaces = await prisma.workspaces.findMany({
-        where: {
-          ...clause,
-          workspace_users: {
-            some: {
-              user_id: user.id,
-            },
-          },
+    clause = {
+      ...clause,
+      workspace_users: {
+        some: {
+          user_id: user.id,
         },
-        ...(limit !== null ? { take: limit } : {}),
-        ...(orderBy !== null ? { orderBy } : {}),
-      });
-      return workspaces;
-    } catch (error) {
-      console.error(error.message);
-      return [];
-    }
+      },
+    };
+    return await this.where(clause, user, limit, orderBy);
   },
 
   whereWithUsers: async function (clause = {}, limit = null, orderBy = null) {
     try {
-      const workspaces = await this.where(clause, limit, orderBy);
+      const workspaces = await this.where(clause, null, limit, orderBy);
       for (const workspace of workspaces) {
         const userIds = (
           await WorkspaceUser.where({ workspace_id: Number(workspace.id) })

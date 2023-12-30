@@ -13,7 +13,7 @@ import { LogoProvider } from "./LogoContext";
 
 const Main = lazy(() => import("@/pages/Main"));
 const InvitePage = lazy(() => import("@/pages/Invite"));
-const WorkspaceChat = lazy(() => import("@/pages/WorkspaceChat"));
+const WorkspaceChat = lazy(() => import("@/pages/ThreadChat/index.jsx"));
 const AdminUsers = lazy(() => import("@/pages/Admin/Users"));
 const AdminInvites = lazy(() => import("@/pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
@@ -54,7 +54,7 @@ export default function App() {
               <Route path="/" element={<PrivateRoute Component={Main} />} />
               <Route path="/login" element={<Login />} />
               <Route
-                path="/workspace/:slug"
+                path="/workspace/:slug/thread/:thread"
                 element={<PrivateRoute Component={WorkspaceChat} />}
               />
               <Route path="/accept-invite/:code" element={<InvitePage />} />

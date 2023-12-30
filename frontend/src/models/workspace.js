@@ -49,8 +49,24 @@ const Workspace = {
 
     return { workspace, message };
   },
-  chatHistory: async function (slug) {
-    const history = await fetch(`${API_BASE}/workspace/${slug}/chats`, {
+  newThread: async function (slug, data = {}) {
+    const { thread, message } = await fetch(
+      `${API_BASE}/workspace/${slug}/thread/new`,
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        return { thread: null, message: e.message };
+      });
+
+    return { thread, message };
+  },
+  chatHistory: async function (slug, threadId) {
+    const history = await fetch(`${API_BASE}/workspace/${slug}/thread/${threadId}/chat`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -59,9 +75,9 @@ const Workspace = {
       .catch(() => []);
     return history;
   },
-  streamChat: async function ({ slug }, message, mode = "query", handleChat) {
+  streamChat: async function ({ slug }, threadId, message, mode = "query", handleChat) {
     const ctrl = new AbortController();
-    await fetchEventSource(`${API_BASE}/workspace/${slug}/stream-chat`, {
+    await fetchEventSource(`${API_BASE}/workspace/${slug}/thread/${threadId}/stream-chat`, {
       method: "POST",
       body: JSON.stringify({ message, mode }),
       headers: baseHeaders(),
@@ -170,8 +186,8 @@ const Workspace = {
   },
 
   // TODO: Deprecated and should be removed from frontend.
-  sendChat: async function ({ slug }, message, mode = "query") {
-    const chatResult = await fetch(`${API_BASE}/workspace/${slug}/chat`, {
+  sendChat: async function ({ slug }, threadId, message, mode = "query") {
+    const chatResult = await fetch(`${API_BASE}/workspace/${slug}/thread/${threadId}/chat`, {
       method: "POST",
       body: JSON.stringify({ message, mode }),
       headers: baseHeaders(),

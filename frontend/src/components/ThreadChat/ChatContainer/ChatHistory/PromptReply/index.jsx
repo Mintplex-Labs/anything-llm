@@ -6,7 +6,7 @@ import Citations from "../Citation";
 
 const PromptReply = forwardRef(
   (
-    { uuid, reply, pending, error, workspace, sources = [], closed = true },
+    { uuid, reply, pending, error, workspace, thread, sources = [], closed = true },
     ref
   ) => {
     const assistantBackgroundColor = "bg-historical-msg-system";
@@ -23,7 +23,7 @@ const PromptReply = forwardRef(
             <div className="flex gap-x-5">
               <Jazzicon
                 size={36}
-                user={{ uid: workspace.slug }}
+                user={{ uid: `${workspace.slug}-${thread.id}` }}
                 role="assistant"
               />
               <div className="mt-3 ml-5 dot-falling"></div>
@@ -42,7 +42,7 @@ const PromptReply = forwardRef(
             <div className="flex gap-x-5">
               <Jazzicon
                 size={36}
-                user={{ uid: workspace.slug }}
+                user={{ uid: `${workspace.slug}-${thread.id}` }}
                 role="assistant"
               />
               <span
@@ -68,7 +68,7 @@ const PromptReply = forwardRef(
           <div className="flex gap-x-5">
             <Jazzicon
               size={36}
-              user={{ uid: workspace.slug }}
+              user={{ uid: `${workspace.slug}-${thread.id}` }}
               role="assistant"
             />
             <span

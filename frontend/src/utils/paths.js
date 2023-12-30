@@ -32,6 +32,9 @@ export default {
     chat: (slug) => {
       return `/workspace/${slug}`;
     },
+    thread: (slug, thread) => {
+      return `/workspace/${slug}/thread/${thread}`;
+    },
   },
   exports: () => {
     return `${API_BASE.replace("/api", "")}/system/data-exports`;

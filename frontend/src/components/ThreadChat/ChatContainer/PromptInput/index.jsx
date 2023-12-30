@@ -14,6 +14,7 @@ import useUser from "@/hooks/useUser";
 
 export default function PromptInput({
   workspace,
+  thread,
   message,
   submit,
   onChange,
@@ -96,7 +97,7 @@ export default function PromptInput({
                   />
                 )}
 
-                <ChatModeSelector workspace={workspace} />
+                <ChatModeSelector workspace={workspace} thread={thread} />
                 {/* <TextT
                   className="w-7 h-7 text-white/30 cursor-not-allowed"
                   weight="fill"
@@ -117,8 +118,8 @@ export default function PromptInput({
   );
 }
 
-function ChatModeSelector({ workspace }) {
-  const STORAGE_KEY = `workspace_chat_mode_${workspace.slug}`;
+function ChatModeSelector({ workspace, thread }) {
+  const STORAGE_KEY = `workspace_chat_mode_${workspace.slug}_${thread.id}`;
   const [chatMode, setChatMode] = useState(
     window.localStorage.getItem(STORAGE_KEY) ?? "chat"
   );

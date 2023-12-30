@@ -9,7 +9,7 @@ import { v4 } from "uuid";
 
 const HistoricalMessage = forwardRef(
   (
-    { uuid = v4(), message, role, workspace, sources = [], error = false },
+    { uuid = v4(), message, role, workspace, thread, sources = [], error = false },
     ref
   ) => {
     return (
@@ -30,7 +30,7 @@ const HistoricalMessage = forwardRef(
                 uid:
                   role === "user"
                     ? userFromStorage()?.username
-                    : workspace.slug,
+                    : `${workspace.slug}-${thread.id}`,
               }}
               role={role}
             />

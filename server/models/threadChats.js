@@ -51,7 +51,7 @@ const ThreadChats = {
     try {
       const chats = await prisma.thread_chats.findMany({
         where: {
-          workspaceId,
+          workspace_id: workspaceId,
           include: true,
         },
         ...(limit !== null ? { take: limit } : {}),

@@ -1,11 +1,11 @@
-const { v4: uuidv4 } = require("uuid");
-const { reqBody, userFromSession, multiUserMode } = require("../utils/http");
-const { Workspace } = require("../models/workspace");
-const { chatWithWorkspace, convertToChatHistory} = require("../utils/chats");
-const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { ThreadChats } = require("../models/threadChats");
-const { SystemSettings } = require("../models/systemSettings");
-const { Telemetry } = require("../models/telemetry");
+const {v4: uuidv4} = require("uuid");
+const {reqBody, userFromSession, multiUserMode} = require("../utils/http");
+const {Workspace} = require("../models/workspace");
+const {chatWithWorkspace, convertToChatHistory} = require("../utils/chats");
+const {validatedRequest} = require("../utils/middleware/validatedRequest");
+const {ThreadChats} = require("../models/threadChats");
+const {SystemSettings} = require("../models/systemSettings");
+const {Telemetry} = require("../models/telemetry");
 const {
   streamChatWithWorkspace,
   writeResponseChunk,
@@ -21,16 +21,16 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { slug, threadId } = request.params;
-        const { message, mode = "query" } = reqBody(request);
+        const {slug, threadId} = request.params;
+        const {message, mode = "query"} = reqBody(request);
 
         const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
+          ? await Workspace.getWithUser(user, {slug})
+          : await Workspace.get({slug});
 
         const thread = multiUserMode(response)
-          ? await Threads.get({ id: Number(threadId), workspace_id: workspace.id, user_id: user.id })
-          : await Threads.get({ id: Number(threadId), workspace_id: workspace.id });
+          ? await Threads.get({id: Number(threadId), workspace_id: workspace.id, user_id: user.id})
+          : await Threads.get({id: Number(threadId), workspace_id: workspace.id});
 
         if (!workspace || !thread) {
           response.sendStatus(400).end();
@@ -107,16 +107,16 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { slug, threadId } = request.params;
-        const { message, mode = "query" } = reqBody(request);
+        const {slug, threadId} = request.params;
+        const {message, mode = "query"} = reqBody(request);
 
         const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
+          ? await Workspace.getWithUser(user, {slug})
+          : await Workspace.get({slug});
 
         const thread = multiUserMode(response)
-          ? await Threads.get({ id: Number(threadId), workspace_id: workspace.id, user_id: user.id })
-          : await Threads.get({ id: Number(threadId), workspace_id: workspace.id });
+          ? await Threads.get({id: Number(threadId), workspace_id: workspace.id, user_id: user.id})
+          : await Threads.get({id: Number(threadId), workspace_id: workspace.id});
 
         if (!workspace || !thread) {
           response.sendStatus(400).end();
@@ -169,7 +169,7 @@ function chatEndpoints(app) {
           },
           user?.id
         );
-        response.status(200).json({ ...result });
+        response.status(200).json({...result});
       } catch (e) {
         console.error(e);
         response.status(500).json({
@@ -189,22 +189,31 @@ function chatEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const { slug, threadId } = request.params;
+        const {slug, threadId} = request.params;
         const user = await userFromSession(request, response);
         const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
+          ? await Workspace.getWithUser(user, {slug})
+          : await Workspace.get({slug});
 
         if (!workspace) {
           response.sendStatus(400).end();
           return;
         }
 
-        const history = multiUserMode(response)
-          ? await ThreadChats.forWorkspaceByThread(workspace.id, threadId)
-          : await ThreadChats.forWorkspace(workspace.id);
+        const thread = await Threads.get({
+          id: Number(threadId),
+          workspace_id: workspace.id,
+          user_id: user?.id
+        });
 
-        response.status(200).json({ history: convertToChatHistory(history) });
+        if (!thread) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const history = await ThreadChats.forWorkspaceByThread(workspace.id, thread.id);
+
+        response.status(200).json({history: convertToChatHistory(history)});
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
@@ -213,4 +222,4 @@ function chatEndpoints(app) {
   );
 }
 
-module.exports = { chatEndpoints };
+module.exports = {chatEndpoints};

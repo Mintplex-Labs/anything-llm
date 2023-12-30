@@ -1,19 +1,19 @@
 const prisma = require("../utils/prisma");
 
 const Threads = {
-  new: async function ({ workspaceId, userId, name}) {
+  new: async function ({ workspaceId, userId, name}, prismaInstance = prisma) {
     try {
-      const thread = await prisma.threads.create({
+      const thread = await prismaInstance.threads.create({
         data: {
           user_id: userId,
           workspace_id: workspaceId,
           name: name || "New thread"
         },
       });
-      return thread;
+      return { thread, message: null };
     } catch (error) {
       console.error(error.message);
-      return null;
+      return { thread: null, message: error.message };
     }
   },
 

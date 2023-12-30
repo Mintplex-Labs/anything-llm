@@ -6,7 +6,7 @@ import handleChat from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
 
-export default function ChatContainer({ workspace, knownHistory = [] }) {
+export default function ChatContainer({ workspace, thread, knownHistory = [] }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
@@ -51,6 +51,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       // TODO: Delete this snippet once we have streaming stable.
       // const chatResult = await Workspace.sendChat(
       //   workspace,
+      //   thread.id,
       //   promptMessage.userMessage,
       //   window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
       //   "chat",
@@ -65,8 +66,9 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
       await Workspace.streamChat(
         workspace,
+        thread.id,
         promptMessage.userMessage,
-        window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
+        window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}_${thread.id}`) ??
           "chat",
         (chatResult) =>
           handleChat(
@@ -80,7 +82,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       return;
     }
     loadingResponse === true && fetchReply();
-  }, [loadingResponse, chatHistory, workspace]);
+  }, [loadingResponse, chatHistory, workspace, thread]);
 
   return (
     <div
@@ -89,9 +91,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     >
       {isMobile && <SidebarMobileHeader />}
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
-        <ChatHistory history={chatHistory} workspace={workspace} />
+        <ChatHistory history={chatHistory} workspace={workspace} thread={thread} />
         <PromptInput
           workspace={workspace}
+          thread={thread}
           message={message}
           submit={handleSubmit}
           onChange={handleMessageChange}

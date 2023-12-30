@@ -36,9 +36,9 @@ const WorkspaceUser = {
     return;
   },
 
-  create: async function (userId = 0, workspaceId = 0) {
+  create: async function (userId = 0, workspaceId = 0, prismaInstance = prisma) {
     try {
-      await prisma.workspace_users.create({
+      await prismaInstance.workspace_users.create({
         data: { user_id: Number(userId), workspace_id: Number(workspaceId) },
       });
       return true;

@@ -6,7 +6,7 @@ import ManageWorkspace from "../../../Modals/MangeWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 
-export default function ChatHistory({ history = [], workspace }) {
+export default function ChatHistory({ history = [], workspace, thread }) {
   const replyRef = useRef(null);
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -97,6 +97,7 @@ export default function ChatHistory({ history = [], workspace }) {
               sources={props.sources}
               error={props.error}
               workspace={workspace}
+              thread={thread}
               closed={props.closed}
             />
           );
@@ -109,6 +110,7 @@ export default function ChatHistory({ history = [], workspace }) {
             message={props.content}
             role={props.role}
             workspace={workspace}
+            thread={thread}
             sources={props.sources}
             error={props.error}
           />
