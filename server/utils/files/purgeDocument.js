@@ -6,7 +6,7 @@ const { Document } = require("../../models/documents");
 const { Workspace } = require("../../models/workspace");
 
 async function purgeDocument(filename) {
-  const workspaces = await Workspace.where();
+  const workspaces = await Workspace.where({});
   for (const workspace of workspaces) {
     await Document.removeDocuments(workspace, [filename]);
   }
@@ -26,7 +26,7 @@ async function purgeFolder(folderName) {
   const filenames = fs
     .readdirSync(folderPath)
     .map((file) => path.join(folderName, file));
-  const workspaces = await Workspace.where();
+  const workspaces = await Workspace.where({});
 
   const purgePromises = [];
   // Remove associated Vector-cache files

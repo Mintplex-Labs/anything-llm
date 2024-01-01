@@ -1,4 +1,5 @@
 const prisma = require("../utils/prisma");
+const {Threads} = require("./threads");
 
 const ThreadChats = {
   new: async function ({ workspaceId, threadId, prompt, response = {}}) {
@@ -53,6 +54,9 @@ const ThreadChats = {
         where: {
           workspace_id: workspaceId,
           include: true,
+        },
+        include: {
+          thread: true
         },
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : { orderBy: { id: "asc" } }),
@@ -147,22 +151,28 @@ const ThreadChats = {
     orderBy = null
   ) {
     const { Workspace } = require("./workspace");
-    const { Thread } = require("./threads");
+    const { Threads } = require("./threads");
+    const { User } = require("./user");
 
     // add validate thread
     try {
       const results = await this.where(clause, limit, orderBy, offset);
 
       for (const res of results) {
-        const workspace = await Workspace.get({ id: res.workspaceId });
+        const workspace = await Workspace.get({ id: res.workspace_id });
         res.workspace = workspace
           ? { name: workspace.name, slug: workspace.slug }
           : { name: "deleted workspace", slug: null };
 
-        const thread = await Thread.get({ id: res.thread_id });
+        const thread = await Threads.get({ id: res.thread_id });
         res.thread = thread
           ? { name: thread.name }
           : { username: "deleted thread" };
+
+        const user = await User.get({ id: thread?.user_id });
+        res.user = user
+          ? { username: user.username }
+          : { username: "Unknown user" };
       }
 
       return results;

@@ -219,8 +219,8 @@ function workspaceEndpoints(app) {
     try {
       const user = await userFromSession(request, response);
       const workspaces = multiUserMode(response)
-        ? await Workspace.whereWithUser(user)
-        : await Workspace.where();
+        ? await Workspace.whereWithUser({user})
+        : await Workspace.where({});
 
       response.status(200).json({ workspaces });
     } catch (e) {

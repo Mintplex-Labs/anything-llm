@@ -105,33 +105,36 @@ function ChatsContainer() {
     <>
       <table className="md:w-3/4 w-full text-sm text-left rounded-lg mt-5">
         <thead className="text-white text-opacity-80 text-sm font-bold uppercase border-white border-b border-opacity-60">
-          <tr>
-            <th scope="col" className="px-6 py-3 rounded-tl-lg">
-              Id
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Sent By
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Workspace
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Prompt
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Response
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Sent At
-            </th>
-            <th scope="col" className="px-6 py-3 rounded-tr-lg">
-              {" "}
-            </th>
-          </tr>
+        <tr>
+          <th scope="col" className="px-6 py-3 rounded-tl-lg">
+            Id
+          </th>
+          <th scope="col" className="px-6 py-3">
+            Sent By
+          </th>
+          <th scope="col" className="px-6 py-3">
+            Workspace
+          </th>
+          <th scope="col" className="px-6 py-3">
+            Thread
+          </th>
+          <th scope="col" className="px-6 py-3">
+            Prompt
+          </th>
+          <th scope="col" className="px-6 py-3">
+            Response
+          </th>
+          <th scope="col" className="px-6 py-3">
+            Sent At
+          </th>
+          <th scope="col" className="px-6 py-3 rounded-tr-lg">
+            {" "}
+          </th>
+        </tr>
         </thead>
         <tbody>
-          {!!chats &&
-            chats.map((chat) => <ChatRow key={chat.id} chat={chat} />)}
+        {!!chats &&
+          chats.map((chat) => <ChatRow key={chat.id} chat={chat} />)}
         </tbody>
       </table>
       <div className="flex w-full justify-between items-center">

@@ -1,7 +1,7 @@
 const prisma = require("../utils/prisma");
 const slugify = require("slugify");
-const { Document } = require("./documents");
-const { WorkspaceUser } = require("./workspaceUsers");
+const {Document} = require("./documents");
+const {WorkspaceUser} = require("./workspaceUsers");
 const {Threads} = require("./threads");
 
 const Workspace = {
@@ -18,19 +18,19 @@ const Workspace = {
   ],
 
   new: async function (name = null, creatorId = null) {
-    if (!name) return { result: null, message: "name cannot be null" };
-    var slug = slugify(name, { lower: true });
+    if (!name) return {result: null, message: "name cannot be null"};
+    var slug = slugify(name, {lower: true});
 
-    const existingBySlug = await this.get({ slug });
+    const existingBySlug = await this.get({slug});
     if (existingBySlug !== null) {
       const slugSeed = Math.floor(10000000 + Math.random() * 90000000);
-      slug = slugify(`${name}-${slugSeed}`, { lower: true });
+      slug = slugify(`${name}-${slugSeed}`, {lower: true});
     }
 
     try {
       return await prisma.$transaction(async (prisma) => {
         const workspace = await prisma.workspaces.create({
-          data: { name, slug },
+          data: {name, slug},
         });
 
         // If created with a user then we need to create the relationship as well.
@@ -38,17 +38,17 @@ const Workspace = {
         // view all workspaces anyway.
         if (!!creatorId) await WorkspaceUser.create(creatorId, workspace.id, prisma);
 
-        const { thread, message } = await Threads.new({
+        const {thread, message} = await Threads.new({
           workspaceId: workspace.id,
           userId: creatorId,
           name: "Default",
         }, prisma);
         workspace.threads = [thread];
-        return { workspace, message: message };
+        return {workspace, message: message};
       });
     } catch (error) {
       console.error(error.message);
-      return { workspace: null, message: error.message };
+      return {workspace: null, message: error.message};
     }
   },
 
@@ -59,17 +59,17 @@ const Workspace = {
       this.writable.includes(key)
     );
     if (validKeys.length === 0)
-      return { workspace: { id }, message: "No valid fields to update!" };
+      return {workspace: {id}, message: "No valid fields to update!"};
 
     try {
       const workspace = await prisma.workspaces.update({
-        where: { id },
+        where: {id},
         data,
       });
-      return { workspace, message: null };
+      return {workspace, message: null};
     } catch (error) {
       console.error(error.message);
-      return { workspace: null, message: error.message };
+      return {workspace: null, message: error.message};
     }
   },
 
@@ -138,13 +138,18 @@ const Workspace = {
     }
   },
 
-  where: async function (clause = {}, user = null, limit = null, orderBy = null) {
+  where: async function (
+    {
+      clause = {},
+      user = null,
+      limit = null,
+      orderBy = null,
+      includeThreads = true
+    }
+  ) {
     try {
-      const results = await prisma.workspaces.findMany({
-        where: clause,
-        ...(limit !== null ? { take: limit } : {}),
-        ...(orderBy !== null ? { orderBy } : {}),
-        include: {
+      const threadJoin = includeThreads
+        ? {
           threads: {
             ...(
               user
@@ -160,7 +165,13 @@ const Workspace = {
               name: true,
             },
           }
-        },
+        }
+        : {};
+      const results = await prisma.workspaces.findMany({
+        where: clause,
+        ...(limit !== null ? {take: limit} : {}),
+        ...(orderBy !== null ? {orderBy} : {}),
+        include: threadJoin,
       });
       return results;
     } catch (error) {
@@ -170,13 +181,16 @@ const Workspace = {
   },
 
   whereWithUser: async function (
-    user,
-    clause = {},
-    limit = null,
-    orderBy = null
+    {
+      user,
+      clause = {},
+      limit = null,
+      orderBy = null,
+      includeThreads = true,
+    }
   ) {
     if (["admin", "manager"].includes(user.role))
-      return await this.where(clause, user, limit, orderBy);
+      return await this.where({clause, user, limit, orderBy, includeThreads});
 
     clause = {
       ...clause,
@@ -186,15 +200,15 @@ const Workspace = {
         },
       },
     };
-    return await this.where(clause, user, limit, orderBy);
+    return await this.where({clause, user, limit, orderBy, includeThreads});
   },
 
   whereWithUsers: async function (clause = {}, limit = null, orderBy = null) {
     try {
-      const workspaces = await this.where(clause, null, limit, orderBy);
+      const workspaces = await this.where({clause, limit, orderBy});
       for (const workspace of workspaces) {
         const userIds = (
-          await WorkspaceUser.where({ workspace_id: Number(workspace.id) })
+          await WorkspaceUser.where({workspace_id: Number(workspace.id)})
         ).map((rel) => rel.user_id);
         workspace.userIds = userIds;
       }
@@ -207,14 +221,14 @@ const Workspace = {
 
   updateUsers: async function (workspaceId, userIds = []) {
     try {
-      await WorkspaceUser.delete({ workspace_id: Number(workspaceId) });
+      await WorkspaceUser.delete({workspace_id: Number(workspaceId)});
       await WorkspaceUser.createManyUsers(userIds, workspaceId);
-      return { success: true, error: null };
+      return {success: true, error: null};
     } catch (error) {
       console.error(error.message);
-      return { success: false, error: error.message };
+      return {success: false, error: error.message};
     }
   },
 };
 
-module.exports = { Workspace };
+module.exports = {Workspace};

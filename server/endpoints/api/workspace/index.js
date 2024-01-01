@@ -46,7 +46,8 @@ function apiWorkspaceEndpoints(app) {
                 "openAiTemp": null,
                 "lastUpdatedAt": "2023-08-17 00:45:03",
                 "openAiHistory": 20,
-                "openAiPrompt": null
+                "openAiPrompt": null,
+                "threads": []
               },
               message: 'Workspace created'
             }
@@ -110,7 +111,7 @@ function apiWorkspaceEndpoints(app) {
     }
     */
     try {
-      const workspaces = await Workspace.where();
+      const workspaces = await Workspace.where({includeThreads: false});
       response.status(200).json({ workspaces });
     } catch (e) {
       console.log(e.message, e);
@@ -144,7 +145,8 @@ function apiWorkspaceEndpoints(app) {
                 "lastUpdatedAt": "2023-08-17 00:45:03",
                 "openAiHistory": 20,
                 "openAiPrompt": null,
-                "documents": []
+                "documents": [],
+                "threads": []
               }
             }
           }
@@ -259,7 +261,8 @@ function apiWorkspaceEndpoints(app) {
                 "lastUpdatedAt": "2023-08-17 00:45:03",
                 "openAiHistory": 20,
                 "openAiPrompt": null,
-                "documents": []
+                "documents": [],
+                "threads": []
               },
               message: null,
             }
@@ -357,13 +360,13 @@ function apiWorkspaceEndpoints(app) {
   );
 
   app.get(
-    "/v1/workspace/:slug/threads/:threadId/chat",
+    "/v1/workspace/:slug/thread/:threadId/chat",
     [validApiKey],
     async (request, response) => {
       /*
     #swagger.tags = ['Workspaces']
-    #swagger.description = 'Get a workspaces chats regardless of user and  by its unique workspace slug and thread id.'
-    #swagger.path = '/v1/workspace/{slug}/threads/{threadId}/chat'
+    #swagger.description = 'Get a workspaces chats regardless of user and by its unique workspace slug and thread id.'
+    #swagger.path = '/v1/workspace/{slug}/thread/{threadId}/chat'
     #swagger.parameters['slug'] = {
         in: 'path',
         description: 'Unique slug of workspace to find',
@@ -407,7 +410,7 @@ function apiWorkspaceEndpoints(app) {
     */
       try {
         const { slug, threadId } = request.params;
-        const workspace = await Workspace.get({ slug, threadId });
+        const workspace = await Workspace.get({ slug });
         if (!workspace) {
           response.sendStatus(400).end();
           return;
@@ -469,7 +472,8 @@ function apiWorkspaceEndpoints(app) {
                 "lastUpdatedAt": "2023-08-17 00:45:03",
                 "openAiHistory": 20,
                 "openAiPrompt": null,
-                "documents": []
+                "documents": [],
+                "threads": []
               },
               message: null,
             }
@@ -507,7 +511,7 @@ function apiWorkspaceEndpoints(app) {
   );
 
   app.post(
-    "/v1/workspace/:slug/chat",
+    "/v1/workspace/:slug/thread/:threadId/chat",
     [validApiKey],
     async (request, response) => {
       /*
@@ -550,7 +554,7 @@ function apiWorkspaceEndpoints(app) {
    }
    */
       try {
-        const { slug } = request.params;
+        const { slug, threadId } = request.params;
         const { message, mode = "query" } = reqBody(request);
         const workspace = await Workspace.get({ slug });
 
@@ -559,7 +563,14 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        const result = await chatWithWorkspace(workspace, message, mode);
+        const thread = await Threads.get({ id: Number(threadId), workspace_id: workspace.id });
+
+        if (!thread) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const result = await chatWithWorkspace(workspace, thread, message, mode);
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
@@ -578,6 +589,56 @@ function apiWorkspaceEndpoints(app) {
       }
     }
   );
+
+  app.get("/v1/workspace/:slug/threads", [validApiKey], async (request, response) => {
+    /*
+    #swagger.tags = ['Workspaces']
+    #swagger.description = 'List all threads for a workspace'
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              threads: [
+                {
+                  "id": 79,
+                  "name": "Sample workspace",
+                  "user": {
+                    nickname: "test",
+                  },
+                  "workspace": {
+                    slug: "test",
+                    name: "test",
+                  },
+                }
+              ],
+            }
+          }
+        }
+      }
+    }
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+    */
+    try {
+      const { slug } = request.params;
+      const workspace = await Workspace.get({ slug });
+      if (!workspace) {
+        response.sendStatus(400).end();
+        return;
+      }
+
+      const threads = await Threads.whereWithData({workspace_id: workspace.id});
+      response.status(200).json({ threads });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
 }
 
 module.exports = { apiWorkspaceEndpoints };

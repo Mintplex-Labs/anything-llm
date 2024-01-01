@@ -1057,7 +1057,8 @@
                       "openAiTemp": null,
                       "lastUpdatedAt": "2023-08-17 00:45:03",
                       "openAiHistory": 20,
-                      "openAiPrompt": null
+                      "openAiPrompt": null,
+                      "threads": []
                     },
                     "message": "Workspace created"
                   }
@@ -1200,7 +1201,8 @@
                       "lastUpdatedAt": "2023-08-17 00:45:03",
                       "openAiHistory": 20,
                       "openAiPrompt": null,
-                      "documents": []
+                      "documents": [],
+                      "threads": []
                     }
                   }
                 }
@@ -1319,7 +1321,8 @@
                       "lastUpdatedAt": "2023-08-17 00:45:03",
                       "openAiHistory": 20,
                       "openAiPrompt": null,
-                      "documents": []
+                      "documents": [],
+                      "threads": []
                     },
                     "message": null
                   }
@@ -1443,7 +1446,7 @@
         }
       }
     },
-    "/v1/workspace/{slug}/threads/{threadId}/chat": {
+    "/v1/workspace/{slug}/thread/{threadId}/chat": {
       "get": {
         "tags": [
           "Workspaces"
@@ -1527,97 +1530,7 @@
             "description": "Internal Server Error"
           }
         }
-      }
-    },
-    "/v1/workspace/{slug}/update-embeddings": {
-      "post": {
-        "tags": [
-          "Workspaces"
-        ],
-        "description": "Add or remove documents from a workspace by its unique slug.",
-        "parameters": [
-          {
-            "name": "slug",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "example": {
-                    "workspace": {
-                      "id": 79,
-                      "name": "My workspace",
-                      "slug": "my-workspace-123",
-                      "createdAt": "2023-08-17 00:45:03",
-                      "openAiTemp": null,
-                      "lastUpdatedAt": "2023-08-17 00:45:03",
-                      "openAiHistory": 20,
-                      "openAiPrompt": null,
-                      "documents": []
-                    },
-                    "message": null
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidAPIKey"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidAPIKey"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "requestBody": {
-          "description": "JSON object of additions and removals of documents to add to update a workspace. The value should be the folder + filename with the exclusions of the top-level documents path.",
-          "required": true,
-          "type": "object",
-          "content": {
-            "application/json": {
-              "example": {
-                "adds": [],
-                "deletes": [
-                  "custom-documents/anythingllm-hash.json"
-                ]
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/workspace/{slug}/chat": {
+      },
       "post": {
         "tags": [
           "Workspaces"
@@ -1626,6 +1539,14 @@
         "parameters": [
           {
             "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "threadId",
             "in": "path",
             "required": true,
             "schema": {
@@ -1697,6 +1618,168 @@
                 "mode": "query | chat"
               }
             }
+          }
+        }
+      }
+    },
+    "/v1/workspace/{slug}/update-embeddings": {
+      "post": {
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Add or remove documents from a workspace by its unique slug.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace to find"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "workspace": {
+                      "id": 79,
+                      "name": "My workspace",
+                      "slug": "my-workspace-123",
+                      "createdAt": "2023-08-17 00:45:03",
+                      "openAiTemp": null,
+                      "lastUpdatedAt": "2023-08-17 00:45:03",
+                      "openAiHistory": 20,
+                      "openAiPrompt": null,
+                      "documents": [],
+                      "threads": []
+                    },
+                    "message": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object of additions and removals of documents to add to update a workspace. The value should be the folder + filename with the exclusions of the top-level documents path.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "adds": [],
+                "deletes": [
+                  "custom-documents/anythingllm-hash.json"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workspace/{slug}/threads": {
+      "get": {
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "List all threads for a workspace",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "threads": [
+                      {
+                        "id": 79,
+                        "name": "Sample workspace",
+                        "user": {
+                          "nickname": "test"
+                        },
+                        "workspace": {
+                          "slug": "test",
+                          "name": "test"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }

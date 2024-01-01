@@ -29,6 +29,7 @@ export default function ChatRow({ chat }) {
           {chat.user?.username}
         </td>
         <td className="px-6 py-4">{chat.workspace?.name}</td>
+        <td className="px-6 py-4">{chat.thread?.name}</td>
         <td
           onClick={() => {
             document.getElementById(`chat-${chat.id}-prompt`)?.showModal();
@@ -51,7 +52,7 @@ export default function ChatRow({ chat }) {
             onClick={handleDelete}
             className="font-medium text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
           >
-            <Trash className="h-5 w-5" />
+            <Trash className="h-5 w-5"/>
           </button>
         </td>
       </tr>

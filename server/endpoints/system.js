@@ -805,11 +805,9 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid],
     async (_request, response) => {
       try {
-        const chats = await ThreadChats.whereWithData({}, null, null, {
-          id: "asc",
-        });
+        const chats = await ThreadChats.where({}, null, { id: "asc" }, null);
         const workspaceIds = [
-          ...new Set(chats.map((chat) => chat.workspaceId)),
+          ...new Set(chats.map((chat) => chat.workspace_id)),
         ];
 
         const workspacesWithPrompts = await Promise.all(
