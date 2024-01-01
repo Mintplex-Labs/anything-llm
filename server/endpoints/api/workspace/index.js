@@ -1,17 +1,18 @@
-const { v4: uuidv4 } = require("uuid");
-const { Document } = require("../../../models/documents");
-const { Telemetry } = require("../../../models/telemetry");
-const { DocumentVectors } = require("../../../models/vectors");
-const { Workspace } = require("../../../models/workspace");
-const { ThreadChats } = require("../../../models/threadChats");
+const {v4: uuidv4} = require("uuid");
+const {Document} = require("../../../models/documents");
+const {Telemetry} = require("../../../models/telemetry");
+const {DocumentVectors} = require("../../../models/vectors");
+const {Workspace} = require("../../../models/workspace");
+const {ThreadChats} = require("../../../models/threadChats");
 const {
   convertToChatHistory,
   chatWithWorkspace,
 } = require("../../../utils/chats");
-const { getVectorDbClass } = require("../../../utils/helpers");
-const { multiUserMode, reqBody } = require("../../../utils/http");
-const { validApiKey } = require("../../../utils/middleware/validApiKey");
-const { Threads} = require("../../../models/threads");
+const {getVectorDbClass} = require("../../../utils/helpers");
+const {multiUserMode, reqBody, userFromSession} = require("../../../utils/http");
+const {validApiKey} = require("../../../utils/middleware/validApiKey");
+const {Threads} = require("../../../models/threads");
+const {validatedRequest} = require("../../../utils/middleware/validatedRequest");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -62,15 +63,15 @@ function apiWorkspaceEndpoints(app) {
     }
     */
     try {
-      const { name = null } = reqBody(request);
-      const { workspace, message } = await Workspace.new(name);
+      const {name = null} = reqBody(request);
+      const {workspace, message} = await Workspace.new(name);
       await Telemetry.sendTelemetry("workspace_created", {
         multiUserMode: multiUserMode(response),
         LLMSelection: process.env.LLM_PROVIDER || "openai",
         Embedder: process.env.EMBEDDING_ENGINE || "inherit",
         VectorDbSelection: process.env.VECTOR_DB || "pinecone",
       });
-      response.status(200).json({ workspace, message });
+      response.status(200).json({workspace, message});
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();
@@ -112,7 +113,7 @@ function apiWorkspaceEndpoints(app) {
     */
     try {
       const workspaces = await Workspace.where({includeThreads: false});
-      response.status(200).json({ workspaces });
+      response.status(200).json({workspaces});
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();
@@ -160,9 +161,9 @@ function apiWorkspaceEndpoints(app) {
     }
     */
     try {
-      const { slug } = request.params;
-      const workspace = await Workspace.get({ slug });
-      response.status(200).json({ workspace });
+      const {slug} = request.params;
+      const workspace = await Workspace.get({slug});
+      response.status(200).json({workspace});
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();
@@ -190,22 +191,22 @@ function apiWorkspaceEndpoints(app) {
     }
     */
       try {
-        const { slug = "" } = request.params;
+        const {slug = ""} = request.params;
         const VectorDb = getVectorDbClass();
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({slug});
 
         if (!workspace) {
           response.sendStatus(400).end();
           return;
         }
 
-        await ThreadChats.delete({ workspace_id: Number(workspace.id) });
-        await Threads.delete({ workspace_id: Number(workspace.id) })
+        await ThreadChats.delete({workspace_id: Number(workspace.id)});
+        await Threads.delete({workspace_id: Number(workspace.id)})
         await DocumentVectors.deleteForWorkspace(Number(workspace.id));
-        await Document.delete({ workspaceId: Number(workspace.id) });
-        await Workspace.delete({ id: Number(workspace.id) });
+        await Document.delete({workspaceId: Number(workspace.id)});
+        await Workspace.delete({id: Number(workspace.id)});
         try {
-          await VectorDb["delete-namespace"]({ namespace: slug });
+          await VectorDb["delete-namespace"]({namespace: slug});
         } catch (e) {
           console.error(e.message);
         }
@@ -277,20 +278,20 @@ function apiWorkspaceEndpoints(app) {
     }
     */
       try {
-        const { slug = null } = request.params;
+        const {slug = null} = request.params;
         const data = reqBody(request);
-        const currWorkspace = await Workspace.get({ slug });
+        const currWorkspace = await Workspace.get({slug});
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
           return;
         }
 
-        const { workspace, message } = await Workspace.update(
+        const {workspace, message} = await Workspace.update(
           currWorkspace.id,
           data
         );
-        response.status(200).json({ workspace, message });
+        response.status(200).json({workspace, message});
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
@@ -342,8 +343,8 @@ function apiWorkspaceEndpoints(app) {
     }
     */
       try {
-        const { slug } = request.params;
-        const workspace = await Workspace.get({ slug });
+        const {slug} = request.params;
+        const workspace = await Workspace.get({slug});
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -351,7 +352,7 @@ function apiWorkspaceEndpoints(app) {
         }
 
         const history = await ThreadChats.forWorkspace(workspace.id);
-        response.status(200).json({ history: convertToChatHistory(history) });
+        response.status(200).json({history: convertToChatHistory(history)});
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
@@ -409,20 +410,20 @@ function apiWorkspaceEndpoints(app) {
     }
     */
       try {
-        const { slug, threadId } = request.params;
-        const workspace = await Workspace.get({ slug });
+        const {slug, threadId} = request.params;
+        const workspace = await Workspace.get({slug});
         if (!workspace) {
           response.sendStatus(400).end();
           return;
         }
-        const thread = await Threads.get({ id: Number(threadId), workspace_id: workspace.id })
+        const thread = await Threads.get({id: Number(threadId), workspace_id: workspace.id})
         if (!thread) {
           response.sendStatus(400).end();
           return;
         }
 
         const history = await ThreadChats.forWorkspaceByThread(workspace.id, thread.id);
-        response.status(200).json({ history: convertToChatHistory(history) });
+        response.status(200).json({history: convertToChatHistory(history)});
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
@@ -488,9 +489,9 @@ function apiWorkspaceEndpoints(app) {
     }
     */
       try {
-        const { slug = null } = request.params;
-        const { adds = [], deletes = [] } = reqBody(request);
-        const currWorkspace = await Workspace.get({ slug });
+        const {slug = null} = request.params;
+        const {adds = [], deletes = []} = reqBody(request);
+        const currWorkspace = await Workspace.get({slug});
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -502,7 +503,7 @@ function apiWorkspaceEndpoints(app) {
         const updatedWorkspace = await Workspace.get(
           `id = ${Number(currWorkspace.id)}`
         );
-        response.status(200).json({ workspace: updatedWorkspace });
+        response.status(200).json({workspace: updatedWorkspace});
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
@@ -554,16 +555,16 @@ function apiWorkspaceEndpoints(app) {
    }
    */
       try {
-        const { slug, threadId } = request.params;
-        const { message, mode = "query" } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
+        const {slug, threadId} = request.params;
+        const {message, mode = "query"} = reqBody(request);
+        const workspace = await Workspace.get({slug});
 
         if (!workspace) {
           response.sendStatus(400).end();
           return;
         }
 
-        const thread = await Threads.get({ id: Number(threadId), workspace_id: workspace.id });
+        const thread = await Threads.get({id: Number(threadId), workspace_id: workspace.id});
 
         if (!thread) {
           response.sendStatus(400).end();
@@ -576,7 +577,7 @@ function apiWorkspaceEndpoints(app) {
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
-        response.status(200).json({ ...result });
+        response.status(200).json({...result});
       } catch (e) {
         response.status(500).json({
           id: uuidv4(),
@@ -625,20 +626,135 @@ function apiWorkspaceEndpoints(app) {
     }
     */
     try {
-      const { slug } = request.params;
-      const workspace = await Workspace.get({ slug });
+      const {slug} = request.params;
+      const workspace = await Workspace.get({slug});
       if (!workspace) {
         response.sendStatus(400).end();
         return;
       }
 
       const threads = await Threads.whereWithData({workspace_id: workspace.id});
-      response.status(200).json({ threads });
+      response.status(200).json({threads});
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();
     }
   });
+
+
+  app.post("/v1/workspace/:slug/thread/:threadId/update", [validApiKey], async (request, response) => {
+      /*
+      #swagger.tags = ['Workspaces']
+      #swagger.description = 'Update thread settings by its unique slug and thread id.'
+      #swagger.requestBody = {
+       description: 'Thread properties',
+       required: true,
+       type: 'object',
+       content: {
+         "application/json": {
+           example: {
+             name: "New name of thread"
+           }
+         }
+       }
+     }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                "id": 79,
+                "name": "Sample workspace",
+                "user_id": 12,
+                "workspace_id": 23
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
+      try {
+        const {slug, threadId} = request.params;
+        const workspace = await Workspace.get({slug});
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const thread = await Threads.get({
+          id: Number(threadId),
+          workspace_id: workspace.id,
+        });
+
+        if (!thread) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const data = reqBody(request);
+        const {thread: updatedThread, message} = await Threads.update(
+          thread.id,
+          data
+        );
+
+        response.status(200).json({thread: updatedThread, message});
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete("/workspace/:slug/thread/:threadId", [validApiKey], async (request, response) => {
+      /*
+      #swagger.tags = ['Workspaces']
+      #swagger.description = 'Deletes a thread by its id.'
+      #swagger.parameters['slug'] = {
+        in: 'path',
+        description: 'Unique slug of workspace to find',
+        required: true,
+        type: 'string'
+      }
+      #swagger.parameters['threadId'] = {
+          in: 'path',
+          description: 'Unique id of thread to find',
+          required: true,
+          type: 'number'
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
+      try {
+        const {slug, threadId} = request.params;
+        const workspace = await Workspace.get({slug});
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        await Threads.delete({
+          id: Number(threadId),
+          workspace_id: workspace.id,
+        });
+
+        response.status(200).json({});
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 }
 
-module.exports = { apiWorkspaceEndpoints };
+module.exports = {apiWorkspaceEndpoints};

@@ -1784,6 +1784,151 @@
         }
       }
     },
+    "/v1/workspace/{slug}/thread/{threadId}/update": {
+      "post": {
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Update thread settings by its unique slug and thread id.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "id": 79,
+                    "name": "Sample workspace",
+                    "user_id": 12,
+                    "workspace_id": 23
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Thread properties",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "New name of thread"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/workspace/{slug}/thread/{threadId}": {
+      "delete": {
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Deletes a thread by its id.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace to find"
+          },
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique id of thread to find"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/v1/system/env-dump": {
       "get": {
         "tags": [

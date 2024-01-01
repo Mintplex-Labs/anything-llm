@@ -1,6 +1,11 @@
 const prisma = require("../utils/prisma");
 
 const Threads = {
+  writable: [
+    // Used for generic updates so we can validate keys in request body
+    "name",
+  ],
+
   new: async function ({ workspaceId, userId, name}, prismaInstance = prisma) {
     try {
       const thread = await prismaInstance.threads.create({
@@ -127,6 +132,34 @@ const Threads = {
     } catch (error) {
       console.error(error.message);
       return [];
+    }
+  },
+
+  update: async function (id = null, data = {}) {
+    if (!id) throw new Error("No thread id provided for update");
+
+    const validData = Object.keys(data).filter((key) =>
+      this.writable.includes(key)
+    ).reduce((obj, key) => {
+      if (!obj)
+        obj = {};
+      obj[key] = data[key];
+      return obj;
+    }, {});
+
+    if (Object.keys(validData).length === 0) {
+      return {thread: {id}, message: "No valid fields to update!"};
+    }
+
+    try {
+      const thread = await prisma.threads.update({
+        where: {id},
+        data: validData,
+      });
+      return {thread, message: null};
+    } catch (error) {
+      console.error(error.message);
+      return {thread: null, message: error.message};
     }
   },
 };

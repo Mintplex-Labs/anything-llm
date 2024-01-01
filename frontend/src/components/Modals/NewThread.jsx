@@ -4,7 +4,7 @@ import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 
 const noop = () => false;
-export default function NewThreadModal({ hideModal = noop, workspace }) {
+export default function NewThreadModal({ hideModal = noop, workspace, thread = null }) {
   const formEl = useRef(null);
   const [error, setError] = useState(null);
   const handleCreate = async (e) => {
@@ -13,11 +13,23 @@ export default function NewThreadModal({ hideModal = noop, workspace }) {
     const data = {};
     const form = new FormData(formEl.current);
     for (var [key, value] of form.entries()) data[key] = value;
-    // change to create thread
+
     const { thread, message } = await Workspace.newThread(workspace, data);
     if (!!thread) {
       window.location.href = paths.workspace.thread(workspace, thread.id);
     }
+    setError(message);
+  };
+
+  const handleUpdate = async (e) => {
+    setError(null);
+    e.preventDefault();
+    const data = {};
+    const form = new FormData(formEl.current);
+    for (var [key, value] of form.entries()) data[key] = value;
+
+    const { thread: updatedThread, message } = await Workspace.updateThread(workspace, thread, data);
+    hideModal(updatedThread);
     setError(message);
   };
 
@@ -30,7 +42,7 @@ export default function NewThreadModal({ hideModal = noop, workspace }) {
       <div className="relative w-[500px] max-h-full">
         <div className="relative bg-modal-gradient rounded-lg shadow-md border-2 border-accent">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-white/10">
-            <h3 className="text-xl font-semibold text-white">New Thread</h3>
+            <h3 className="text-xl font-semibold text-white">{thread ? "Update thread" : "New Thread"}</h3>
             <button
               onClick={hideModal}
               type="button"
@@ -39,7 +51,7 @@ export default function NewThreadModal({ hideModal = noop, workspace }) {
               <X className="text-gray-300 text-lg" />
             </button>
           </div>
-          <form ref={formEl} onSubmit={handleCreate}>
+          <form ref={formEl} onSubmit={thread ? handleUpdate : handleCreate}>
             <div className="p-6 space-y-6 flex h-full w-full">
               <div className="w-full flex flex-col gap-y-4">
                 <div>
@@ -54,7 +66,7 @@ export default function NewThreadModal({ hideModal = noop, workspace }) {
                     type="text"
                     id="name"
                     className="bg-zinc-900 w-full text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                    placeholder="New thread"
+                    placeholder="My thread name"
                     required={true}
                     autoComplete="off"
                   />
@@ -82,14 +94,31 @@ export default function NewThreadModal({ hideModal = noop, workspace }) {
 export function useNewThreadModal() {
   const [showing, setShowing] = useState(false);
   const [workspace, setWorkspace] = useState(null);
-  const showModal = (workspace) => {
+  const [thread, setThread] = useState(null);
+  const [callback, setCallback] = useState(() => (_thread) => {});
+
+  const showCreateModal = (workspace, onExit = () => {}) => {
     setShowing(true);
+    setThread(null);
     setWorkspace(workspace);
+    setCallback(() => onExit);
   };
-  const hideModal = () => {
+  const hideModal = (thread = null) => {
     setShowing(false);
+    setThread(null);
     setWorkspace(null);
+
+    if (callback) {
+      callback(thread);
+    }
   };
 
-  return { showing, workspace, showModal, hideModal };
+  const showUpdateModal = (workspace, thread, onExit = (_thread) => {}) => {
+    setShowing(true);
+    setWorkspace(workspace);
+    setThread(thread);
+    setCallback(() => onExit);
+  }
+
+  return { showing, workspace, thread, showCreateModal, showUpdateModal, hideModal };
 }

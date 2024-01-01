@@ -65,6 +65,21 @@ const Workspace = {
 
     return { thread, message };
   },
+  updateThread: async function (slug, threadId, data = {}) {
+    const { thread, message } = await fetch(
+      `${API_BASE}/workspace/${slug}/thread/${threadId}/update`,
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        return { thread: null, message: e.message };
+      });
+    return { thread, message };
+  },
   chatHistory: async function (slug, threadId) {
     const history = await fetch(`${API_BASE}/workspace/${slug}/thread/${threadId}/chat`, {
       method: "GET",

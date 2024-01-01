@@ -49,6 +49,57 @@ function threadEndpoints(app) {
     }
   );
 
+  app.post(
+    "/workspace/:slug/thread/:threadId/update",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { slug, threadId } = request.params;
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const thread = await Threads.get({
+          id: Number(threadId),
+          workspace_id: workspace.id,
+          user_id: user?.id
+        });
+
+        if (!thread) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const data = reqBody(request);
+        const { thread: updatedThread, message } = await Threads.update(
+          thread.id,
+          data
+        );
+
+        await Telemetry.sendTelemetry(
+          "thread_updated",
+          {
+            multiUserMode: multiUserMode(response),
+            LLMSelection: process.env.LLM_PROVIDER || "openai",
+            Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+            VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          },
+          user?.id
+        );
+        response.status(200).json({ thread: updatedThread, message });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
   app.get(
     "/workspace/:slug/threads",
     [validatedRequest],

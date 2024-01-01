@@ -7,10 +7,11 @@ import ManageWorkspace, {
 } from "../../Modals/MangeWorkspace";
 import paths from "@/utils/paths";
 import {useParams} from "react-router-dom";
-import {GearSix, SquaresFour} from "@phosphor-icons/react";
+import {GearSix, PencilSimple, SquaresFour} from "@phosphor-icons/react";
 import truncate from "truncate";
 import useUser from "@/hooks/useUser";
 import NewThreadModal, {useNewThreadModal} from "@/components/Modals/NewThread.jsx";
+import workspace from "@/models/workspace";
 
 export default function ActiveWorkspaces() {
   const {slug, thread: threadId} = useParams();
@@ -21,12 +22,7 @@ export default function ActiveWorkspaces() {
   const [hoverStates, setHoverStates] = useState({});
   const {showing, showModal, hideModal} = useManageWorkspaceModal();
   const [expandedState, setExpandedState] = useState({});
-  const {
-    showing: showingNewThreadModal,
-    workspace: newThreadWorkspace,
-    showModal: showNewThreadModal,
-    hideModal: hideNewThreadModal,
-  } = useNewThreadModal();
+
   const {user} = useUser();
 
   useEffect(() => {
@@ -41,6 +37,23 @@ export default function ActiveWorkspaces() {
     }
 
     getWorkspaces();
+  }, []);
+
+  const updateThread = useCallback((thread) => {
+    setWorkspaces((prev) => {
+      return prev.map((w) => {
+        let updatedWorkspace = {...w};
+        if (updatedWorkspace.id === thread.workspace_id) {
+          updatedWorkspace.threads = updatedWorkspace.threads.map((t) => {
+            if (t.id === thread.id) {
+              return thread;
+            }
+            return t;
+          });
+        }
+        return updatedWorkspace;
+      });
+    });
   }, []);
 
   const handleMouseEnter = useCallback((workspaceId) => {
@@ -146,35 +159,13 @@ export default function ActiveWorkspaces() {
                 </div>
               </a>
             </div>
-            <div className={`flex flex-col gap-y-2 overflow-y-scroll no-scroll
-                  transition-all duration-[200ms]
-                  ${isExpanded ? "max-h-screen" : "max-h-0"}
-               `}>
-              {workspace.threads.map((thread) => {
-                const isActiveThread = thread.id === Number(threadId);
-                return (
-                  <a
-                    key={thread.id}
-                    href={isActiveThread ? null : paths.workspace.thread(workspace.slug, thread.id)}
-                    className={`
-                      flex flex-grow w-[100%] gap-x-2 py-[6px] px-[12px] rounded-lg text-slate-200 justify-start items-center
-                      hover:bg-workspace-item-gradient
-                      ${isActiveThread ? "bg-workspace-item-gradient" : ""}
-                    `}
-                  >
-                    {thread.name}
-                  </a>
-                );
-              })}
-              <a
-                onClick={() => showNewThreadModal(workspace.slug)}
-                className={`
-                      flex flex-grow w-[100%] gap-x-2 py-[6px] px-[12px] rounded-lg text-emerald-200 justify-start items-center
-                      hover:bg-workspace-item-gradient cursor-pointer`}
-              >
-                Create
-              </a>
-            </div>
+            <ThreadList
+              threads={workspace.threads}
+              isExpanded={isExpanded}
+              currentThreadId={threadId}
+              workspace={workspace.slug}
+              onUpdatedThread={updateThread}
+            />
           </div>
         );
       })}
@@ -184,7 +175,96 @@ export default function ActiveWorkspaces() {
           providedSlug={selectedWs ? selectedWs.slug : null}
         />
       )}
-      {showingNewThreadModal && <NewThreadModal hideModal={hideNewThreadModal} workspace={newThreadWorkspace}/>}
     </>
+  );
+}
+
+function ThreadList({currentThreadId, threads, workspace, isExpanded, onUpdatedThread}) {
+  const {
+    showing: showingNewThreadModal,
+    workspace: newThreadWorkspace,
+    thread: updatingThread,
+    showCreateModal: showNewThreadModal,
+    showUpdateModal: showUpdateThreadModal,
+    hideModal: hideNewThreadModal,
+  } = useNewThreadModal();
+
+  return (
+    <>
+      <div className={`flex flex-col gap-y-2 overflow-y-scroll no-scroll
+                  transition-all duration-[200ms]
+                  ${isExpanded ? "max-h-screen" : "max-h-0"}
+               `}>
+        {threads.map((thread) => {
+          return (
+            <Thread
+              key={thread.id}
+              workspace={workspace}
+              thread={thread}
+              isActiveThread={thread.id === Number(currentThreadId)}
+              onSettingsClick={() => showUpdateThreadModal(workspace, thread.id, onUpdatedThread)}
+            />
+          );
+        })}
+        <a
+          onClick={() => showNewThreadModal(workspace)}
+          className={`
+                      flex flex-grow w-[100%] gap-x-2 py-[6px] px-[12px] rounded-lg text-emerald-200 justify-start items-center
+                      hover:bg-workspace-item-gradient cursor-pointer`}
+        >
+          Create
+        </a>
+      </div>
+      {showingNewThreadModal && <NewThreadModal hideModal={hideNewThreadModal} workspace={newThreadWorkspace} thread={updatingThread}/>}
+    </>
+  );
+}
+
+function Thread({thread, isActiveThread, workspace, onSettingsClick}) {
+  const [isHoveredThread, setHoveredThread] = useState(false);
+  const [isIconHovered, setIconHovered] = useState(false);
+  return (
+    <a
+      href={isActiveThread ? null : paths.workspace.thread(workspace, thread.id)}
+      onMouseEnter={() => setHoveredThread(true)}
+      onMouseLeave={() => setHoveredThread(false)}
+      className={`
+                      flex flex-grow w-[100%] gap-x-2 py-[6px] px-[12px] rounded-lg text-slate-200 justify-start items-center
+                      hover:bg-workspace-item-gradient
+                      ${isActiveThread ? "bg-workspace-item-gradient" : ""}
+                    `}
+    >
+      <div className="flex flex-row justify-between w-full">
+        <div className="flex items-center space-x-2">
+          <p
+            className={`text-white text-sm leading-loose font-medium whitespace-nowrap overflow-hidden ${
+              isActiveThread ? "" : "text-opacity-80"
+            }`}
+          >
+            {isActiveThread || isHoveredThread
+              ? truncate(thread.name, 20)
+              : truncate(thread.name, 24)}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            onSettingsClick();
+          }}
+          className="rounded-md flex items-center justify-center text-white ml-auto"
+        >
+          <PencilSimple
+            weight={isIconHovered ? "fill" : "regular"}
+            hidden={
+              (!isActiveThread && !isHoveredThread)
+            }
+            onMouseEnter={() => setIconHovered(true)}
+            onMouseLeave={() => setIconHovered(false)}
+            className="h-[20px] w-[20px] transition-all duration-300"
+          />
+        </button>
+      </div>
+    </a>
   );
 }
