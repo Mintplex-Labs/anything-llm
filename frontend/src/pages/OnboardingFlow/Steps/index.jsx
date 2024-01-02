@@ -6,6 +6,7 @@ const OnboardingSteps = {
   survey: lazy(() => import("./Survey")),
   "custom-logo": lazy(() => import("./CustomLogo")),
   "user-setup": lazy(() => import("./UserSetup")),
+  "data-handling": lazy(() => import("./DataHandling")),
 };
 
 export default OnboardingSteps;
