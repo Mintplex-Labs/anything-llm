@@ -124,14 +124,14 @@ function AppearanceSetup({ prevStep, nextStep }) {
         </button>
         <div className="flex gap-2">
           <button
-            onClick={() => nextStep("user_mode_setup")}
+            onClick={() => nextStep("data_handling")}
             type="button"
             className="px-4 py-2 rounded-lg text-white hover:bg-sidebar"
           >
             Skip
           </button>
           <button
-            onClick={() => nextStep("user_mode_setup")}
+            onClick={() => nextStep("data_handling")}
             type="button"
             className="border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
           >
