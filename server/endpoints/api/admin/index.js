@@ -524,15 +524,8 @@ function apiAdminEndpoints(app) {
         "$ref": "#/definitions/InvalidAPIKey"
       }
     }
-     #swagger.responses[401] = {
-      description: "Instance is not in Multi-User mode. Method denied",
-    }
     */
       try {
-        if (!multiUserMode(response)) {
-          response.sendStatus(401).end();
-          return;
-        }
         const pgSize = 20;
         const { offset = 0 } = reqBody(request);
         const chats = await WorkspaceChats.whereWithData(
