@@ -21,64 +21,128 @@ import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import LLMItem from "./LLMItem";
+import System from "@/models/system";
 
-const LLMS = [
-  {
-    name: "OpenAI",
-    logo: OpenAiLogo,
-    options: <OpenAiOptions />,
-    description: "The standard option for most non-commercial use.",
-  },
-  {
-    name: "Azure OpenAI",
-    logo: AzureOpenAiLogo,
-    options: <AzureAiOptions />,
-    description: "The enterprise option of OpenAI hosted on Azure services.",
-  },
-  {
-    name: "Anthropic",
-    logo: AnthropicLogo,
-    options: <AnthropicAiOptions />,
-    description: "A friendly AI Assistant hosted by Anthropic.",
-  },
-  {
-    name: "Gemini",
-    logo: GeminiLogo,
-    options: <GeminiLLMOptions />,
-    description: "Google's largest and most capable AI model",
-  },
-  {
-    name: "Ollama",
-    logo: OllamaLogo,
-    options: <OllamaLLMOptions />,
-    description: "Run LLMs locally on your own machine.",
-  },
-  {
-    name: "LM Studio",
-    logo: LMStudioLogo,
-    options: <LMStudioOptions />,
-    description:
-      "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
-  },
-  {
-    name: "Local AI",
-    logo: LocalAiLogo,
-    options: <LocalAiOptions />,
-    description: "Run LLMs locally on your own machine.",
-  },
-  {
-    name: "Native",
-    logo: AnythingLLMIcon,
-    options: <NativeLLMOptions />,
-    description:
-      "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
-  },
-];
+// const LLMS = [
+//   {
+//     name: "OpenAI",
+//     logo: OpenAiLogo,
+//     options: <OpenAiOptions />,
+//     description: "The standard option for most non-commercial use.",
+//   },
+//   {
+//     name: "Azure OpenAI",
+//     logo: AzureOpenAiLogo,
+//     options: <AzureAiOptions />,
+//     description: "The enterprise option of OpenAI hosted on Azure services.",
+//   },
+//   {
+//     name: "Anthropic",
+//     logo: AnthropicLogo,
+//     options: <AnthropicAiOptions />,
+//     description: "A friendly AI Assistant hosted by Anthropic.",
+//   },
+//   {
+//     name: "Gemini",
+//     logo: GeminiLogo,
+//     options: <GeminiLLMOptions />,
+//     description: "Google's largest and most capable AI model",
+//   },
+//   {
+//     name: "Ollama",
+//     logo: OllamaLogo,
+//     options: <OllamaLLMOptions />,
+//     description: "Run LLMs locally on your own machine.",
+//   },
+//   {
+//     name: "LM Studio",
+//     logo: LMStudioLogo,
+//     options: <LMStudioOptions />,
+//     description:
+//       "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+//   },
+//   {
+//     name: "Local AI",
+//     logo: LocalAiLogo,
+//     options: <LocalAiOptions />,
+//     description: "Run LLMs locally on your own machine.",
+//   },
+//   {
+//     name: "Native",
+//     logo: AnythingLLMIcon,
+//     options: <NativeLLMOptions />,
+//     description:
+//       "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
+//   },
+// ];
 
 export default function LLMPreference({ setHeader, setForwardBtn }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredLLMs, setFilteredLLMs] = useState(LLMS);
+  const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
+  const [settings, setSettings] = useState(null);
+
+  useEffect(() => {
+    async function fetchKeys() {
+      const _settings = await System.keys();
+      setSettings(_settings);
+      setLoading(false);
+    }
+    fetchKeys();
+  }, []);
+
+  const LLMS = [
+    {
+      name: "OpenAI",
+      logo: OpenAiLogo,
+      options: <OpenAiOptions settings={settings} />,
+      description: "The standard option for most non-commercial use.",
+    },
+    {
+      name: "Azure OpenAI",
+      logo: AzureOpenAiLogo,
+      options: <AzureAiOptions settings={settings} />,
+      description: "The enterprise option of OpenAI hosted on Azure services.",
+    },
+    {
+      name: "Anthropic",
+      logo: AnthropicLogo,
+      options: <AnthropicAiOptions settings={settings} />,
+      description: "A friendly AI Assistant hosted by Anthropic.",
+    },
+    {
+      name: "Gemini",
+      logo: GeminiLogo,
+      options: <GeminiLLMOptions settings={settings} />,
+      description: "Google's largest and most capable AI model",
+    },
+    {
+      name: "Ollama",
+      logo: OllamaLogo,
+      options: <OllamaLLMOptions settings={settings} />,
+      description: "Run LLMs locally on your own machine.",
+    },
+    {
+      name: "LM Studio",
+      logo: LMStudioLogo,
+      options: <LMStudioOptions settings={settings} />,
+      description:
+        "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+    },
+    {
+      name: "Local AI",
+      logo: LocalAiLogo,
+      options: <LocalAiOptions settings={settings} />,
+      description: "Run LLMs locally on your own machine.",
+    },
+    {
+      name: "Native",
+      logo: AnythingLLMIcon,
+      options: <NativeLLMOptions settings={settings} />,
+      description:
+        "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
+    },
+  ];
 
   function handleForward() {
     console.log("Go forward");

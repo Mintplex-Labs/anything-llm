@@ -87,7 +87,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
                 <option
                   key={model}
                   value={model}
-                  selected={settings.OpenAiModelPref === model}
+                  selected={settings?.OpenAiModelPref === model}
                 >
                   {model}
                 </option>
@@ -102,7 +102,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
                 <option
                   key={model.id}
                   value={model.id}
-                  selected={settings.OpenAiModelPref === model.id}
+                  selected={settings?.OpenAiModelPref === model.id}
                 >
                   {model.id}
                 </option>
