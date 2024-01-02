@@ -1,5 +1,5 @@
 import React, { Suspense, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ContextWrapper } from "./AuthContext";
 import { READY_EVENT_NAME } from "./utils/constants";
 import PrivateRoute, {
@@ -14,17 +14,17 @@ import "react-toastify/dist/ReactToastify.css";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
 import WorkspaceChat from "./pages/WorkspaceChat";
-import AdminUsers from "./pages/Admin/Users";
-import AdminInvites from "./pages/Admin/Invitations";
-import AdminWorkspaces from "./pages/Admin/Workspaces";
-import AdminSystem from "./pages/Admin/System";
+// import AdminUsers from "./pages/Admin/Users";
+// import AdminInvites from "./pages/Admin/Invitations";
+// import AdminWorkspaces from "./pages/Admin/Workspaces";
+// import AdminSystem from "./pages/Admin/System";
 import GeneralChats from "./pages/GeneralSettings/Chats";
 import GeneralAppearance from "./pages/GeneralSettings/Appearance";
-import GeneralApiKeys from "./pages/GeneralSettings/ApiKeys";
+// import GeneralApiKeys from "./pages/GeneralSettings/ApiKeys";
 import GeneralLLMPreference from "./pages/GeneralSettings/LLMPreference";
 import GeneralEmbeddingPreference from "./pages/GeneralSettings/EmbeddingPreference";
 import GeneralVectorDatabase from "./pages/GeneralSettings/VectorDatabase";
-import GeneralSecurity from "./pages/GeneralSettings/Security";
+// import GeneralSecurity from "./pages/GeneralSettings/Security";
 import OnboardingFlow from "./pages/OnboardingFlow";
 import DataConnectors from "./pages/GeneralSettings/DataConnectors";
 import DataConnectorSetup from "./pages/GeneralSettings/DataConnectors/Connectors";
@@ -62,38 +62,38 @@ export default function App() {
                 />
 
                 {/* Manager */}
-                <Route
+                {/* <Route
                   path="/settings/security"
                   element={<ManagerRoute Component={GeneralSecurity} />}
-                />
+                /> */}
                 <Route
                   path="/settings/appearance"
                   element={<ManagerRoute Component={GeneralAppearance} />}
                 />
-                <Route
+                {/* <Route
                   path="/settings/api-keys"
                   element={<ManagerRoute Component={GeneralApiKeys} />}
-                />
+                /> */}
                 <Route
                   path="/settings/workspace-chats"
                   element={<ManagerRoute Component={GeneralChats} />}
                 />
-                <Route
+                {/* <Route
                   path="/settings/system-preferences"
                   element={<ManagerRoute Component={AdminSystem} />}
-                />
-                <Route
+                /> */}
+                {/* <Route
                   path="/settings/invites"
                   element={<ManagerRoute Component={AdminInvites} />}
-                />
-                <Route
+                /> */}
+                {/* <Route
                   path="/settings/users"
                   element={<ManagerRoute Component={AdminUsers} />}
-                />
-                <Route
+                /> */}
+                {/* <Route
                   path="/settings/workspaces"
                   element={<ManagerRoute Component={AdminWorkspaces} />}
-                />
+                /> */}
                 <Route
                   path="/settings/data-connectors"
                   element={<ManagerRoute Component={DataConnectors} />}
@@ -104,6 +104,7 @@ export default function App() {
                 />
                 {/* Onboarding Flow */}
                 <Route path="/onboarding" element={<OnboardingFlow />} />
+                <Route path="*" element={<Navigate replace to="/" />} />
               </Routes>
               <ToastContainer />
             </PfpProvider>

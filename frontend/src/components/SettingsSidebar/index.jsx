@@ -63,19 +63,19 @@ export default function SettingsSidebar() {
                 {/* Admin/manager Multi-user Settings */}
                 {!!user && user?.role !== "default" && (
                   <>
-                    <Option
+                    {/* <Option
                       href={paths.settings.system()}
                       btnText="System Preferences"
                       icon={<SquaresFour className="h-5 w-5 flex-shrink-0" />}
-                    />
-                    <Option
+                    /> */}
+                    {/* <Option
                       href={paths.settings.invites()}
                       btnText="Invitation"
                       icon={
                         <EnvelopeSimple className="h-5 w-5 flex-shrink-0" />
                       }
-                    />
-                    <Option
+                    /> */}
+                    {/* <Option
                       href={paths.settings.users()}
                       btnText="Users"
                       icon={<Users className="h-5 w-5 flex-shrink-0" />}
@@ -84,7 +84,7 @@ export default function SettingsSidebar() {
                       href={paths.settings.workspaces()}
                       btnText="Workspaces"
                       icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
-                    />
+                    /> */}
                   </>
                 )}
 
@@ -99,11 +99,11 @@ export default function SettingsSidebar() {
                   btnText="Appearance"
                   icon={<Eye className="h-5 w-5 flex-shrink-0" />}
                 />
-                <Option
+                {/* <Option
                   href={paths.settings.apiKeys()}
                   btnText="API Keys"
                   icon={<Key className="h-5 w-5 flex-shrink-0" />}
-                />
+                /> */}
 
                 {(!user || user?.role === "admin") && (
                   <>
@@ -129,11 +129,11 @@ export default function SettingsSidebar() {
                     />
                   </>
                 )}
-                <Option
+                {/* <Option
                   href={paths.settings.security()}
                   btnText="Security"
                   icon={<Lock className="h-5 w-5 flex-shrink-0" />}
-                />
+                /> */}
               </div>
             </div>
             <div>

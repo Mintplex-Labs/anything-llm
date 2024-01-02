@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "../../../components/SettingsSidebar";
-import System from "../../../models/system";
-import showToast from "../../../utils/toast";
-import OpenAiLogo from "../../../assets/llmprovider/openai.png";
-import AzureOpenAiLogo from "../../../assets/llmprovider/azure.png";
-import AnthropicLogo from "../../../assets/llmprovider/anthropic.png";
-import GeminiLogo from "@/media/llmprovider/gemini.png";
-import OllamaLogo from "@/media/llmprovider/ollama.png";
-import LMStudioLogo from "../../../assets/llmprovider/lmstudio.png";
-import LocalAiLogo from "../../../assets/llmprovider/localai.png";
-import PreLoader from "../../../components/Preloader";
-import LLMProviderOption from "../../../components/LLMSelection/LLMProviderOption";
-import OpenAiOptions from "../../../components/LLMSelection/OpenAiOptions";
-import AzureAiOptions from "../../../components/LLMSelection/AzureAiOptions";
-import AnthropicAiOptions from "../../../components/LLMSelection/AnthropicAiOptions";
-import LMStudioOptions from "../../../components/LLMSelection/LMStudioOptions";
-import LocalAiOptions from "../../../components/LLMSelection/LocalAiOptions";
+import Sidebar from "@/components/SettingsSidebar";
+import System from "@/models/system";
+import showToast from "@/utils/toast";
+import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
+import OpenAiLogo from "@/assets/llmprovider/openai.png";
+import AzureOpenAiLogo from "@/assets/llmprovider/azure.png";
+import AnthropicLogo from "@/assets/llmprovider/anthropic.png";
+import GeminiLogo from "@/assets/llmprovider/gemini.png";
+import OllamaLogo from "@/assets/llmprovider/ollama.png";
+import LMStudioLogo from "@/assets/llmprovider/lmstudio.png";
+import LocalAiLogo from "@/assets/llmprovider/localai.png";
+import PreLoader from "@/components/Preloader";
+import LLMProviderOption from "@/components/LLMSelection/LLMProviderOption";
+import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
+import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
+import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
+import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
+import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 
@@ -177,7 +178,7 @@ export default function GeneralLLMPreference() {
                     onClick={updateLLMChoice}
                   />
                 )}
-              </div >
+              </div>
               <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
                 {llmChoice === "openai" && (
                   <OpenAiOptions settings={settings} />
@@ -203,12 +204,11 @@ export default function GeneralLLMPreference() {
                 {llmChoice === "native" && (
                   <NativeLLMOptions settings={settings} />
                 )}
-              </div >
-            </div >
-          </form >
-        </div >
-      )
-      }
-    </div >
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
   );
 }
