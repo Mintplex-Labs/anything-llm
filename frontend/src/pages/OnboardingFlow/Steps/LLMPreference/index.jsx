@@ -1,5 +1,5 @@
 import { MagnifyingGlass } from "@phosphor-icons/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 const TITLE = "LLM Preference";
 const DESCRIPTION =
   "AnythingLLM can work with many LLM providers. This will be the service which handles chatting.";
@@ -76,6 +76,10 @@ const LLMS = [
 ];
 
 export default function LLMPreference({ setHeader, setForwardBtn }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredLLMs, setFilteredLLMs] = useState(LLMS);
+  const [selectedLLM, setSelectedLLM] = useState(null);
+
   function handleForward() {
     console.log("Go forward");
   }
@@ -85,30 +89,48 @@ export default function LLMPreference({ setHeader, setForwardBtn }) {
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
   }, []);
 
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredLLMs(LLMS);
+    } else {
+      const lowercasedQuery = searchQuery.toLowerCase();
+      const filtered = LLMS.filter((llm) =>
+        llm.name.toLowerCase().includes(lowercasedQuery)
+      );
+      setFilteredLLMs(filtered);
+    }
+  }, [searchQuery]);
+
   return (
-    <div className="w-full border-slate-300/40 shadow border-2 rounded-lg p-4 text-white">
-      <div className="relative flex items-center">
-        <MagnifyingGlass
-          size={16}
-          weight="bold"
-          className="absolute left-4 z-10 text-white"
-        />
-        <input
-          type="text"
-          placeholder="Chroma"
-          className="bg-white/10 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
-        />
-      </div>
-      <div className="mt-4 flex flex-col">
-        {LLMS.map((llm) => (
-          <LLMItem
-            key={llm.name}
-            name={llm.name}
-            image={llm.logo}
-            description={llm.description}
+    <>
+      <div className="w-full border-slate-300/40 shadow border-2 rounded-lg p-4 text-white overflow-y-auto">
+        <div className="relative flex items-center">
+          <MagnifyingGlass
+            size={16}
+            weight="bold"
+            className="absolute left-4 z-10 text-white"
           />
-        ))}
+          <input
+            type="text"
+            placeholder="Chroma"
+            className="bg-white/10 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            autoComplete="off"
+          />
+        </div>
+        <div className="mt-4 flex flex-col">
+          {filteredLLMs.map((llm) => (
+            <div key={llm.name} onClick={() => setSelectedLLM(llm)}>
+              <LLMItem
+                name={llm.name}
+                image={llm.logo}
+                description={llm.description}
+              />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+      {selectedLLM && <div className="mt-4">{selectedLLM.options}</div>}
+    </>
   );
 }

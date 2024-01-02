@@ -3,6 +3,7 @@ import { lazy, useState } from "react";
 const OnboardingSteps = {
   home: lazy(() => import("./Home")),
   "llm-preference": lazy(() => import("./LLMPreference")),
+  survey: lazy(() => import("./Survey")),
 };
 
 export default OnboardingSteps;
