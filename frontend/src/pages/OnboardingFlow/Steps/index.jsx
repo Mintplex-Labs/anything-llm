@@ -7,6 +7,7 @@ const OnboardingSteps = {
   "custom-logo": lazy(() => import("./CustomLogo")),
   "user-setup": lazy(() => import("./UserSetup")),
   "data-handling": lazy(() => import("./DataHandling")),
+  "create-workspace": lazy(() => import("./CreateWorkspace")),
 };
 
 export default OnboardingSteps;
