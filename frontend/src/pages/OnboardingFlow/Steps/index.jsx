@@ -5,6 +5,7 @@ const OnboardingSteps = {
   "llm-preference": lazy(() => import("./LLMPreference")),
   survey: lazy(() => import("./Survey")),
   "custom-logo": lazy(() => import("./CustomLogo")),
+  "user-setup": lazy(() => import("./UserSetup")),
 };
 
 export default OnboardingSteps;
