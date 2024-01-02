@@ -76,7 +76,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
               name="OpenAI"
               value="openai"
               link="openai.com"
-              description="The standard option for most non-commercial use. Provides both chat and embedding."
+              description="The standard option for most non-commercial use."
               checked={embeddingChoice === "openai"}
               image={OpenAiLogo}
               onClick={updateChoice}
@@ -85,7 +85,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
               name="Azure OpenAI"
               value="azure"
               link="azure.microsoft.com"
-              description="The enterprise option of OpenAI hosted on Azure services. Provides both chat and embedding."
+              description="The enterprise option of OpenAI hosted on Azure services."
               checked={embeddingChoice === "azure"}
               image={AzureOpenAiLogo}
               onClick={updateChoice}

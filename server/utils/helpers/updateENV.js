@@ -44,10 +44,19 @@ const KEY_MAPPING = {
     checks: [isNotEmpty, validAnthropicModel],
   },
 
+  GeminiLLMApiKey: {
+    envKey: "GEMINI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  GeminiLLMModelPref: {
+    envKey: "GEMINI_LLM_MODEL_PREF",
+    checks: [isNotEmpty, validGeminiModel],
+  },
+
   // LMStudio Settings
   LMStudioBasePath: {
     envKey: "LMSTUDIO_BASE_PATH",
-    checks: [isNotEmpty, validLLMExternalBasePath],
+    checks: [isNotEmpty, validLLMExternalBasePath, validDockerizedUrl],
   },
   LMStudioTokenLimit: {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
@@ -57,7 +66,7 @@ const KEY_MAPPING = {
   // LocalAI Settings
   LocalAiBasePath: {
     envKey: "LOCAL_AI_BASE_PATH",
-    checks: [isNotEmpty, validLLMExternalBasePath],
+    checks: [isNotEmpty, validLLMExternalBasePath, validDockerizedUrl],
   },
   LocalAiModelPref: {
     envKey: "LOCAL_AI_MODEL_PREF",
@@ -72,6 +81,19 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  OllamaLLMBasePath: {
+    envKey: "OLLAMA_BASE_PATH",
+    checks: [isNotEmpty, validOllamaLLMBasePath, validDockerizedUrl],
+  },
+  OllamaLLMModelPref: {
+    envKey: "OLLAMA_MODEL_PREF",
+    checks: [],
+  },
+  OllamaLLMTokenLimit: {
+    envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   // Native LLM Settings
   NativeLLMModelPref: {
     envKey: "NATIVE_LLM_MODEL_PREF",
@@ -84,7 +106,7 @@ const KEY_MAPPING = {
   },
   EmbeddingBasePath: {
     envKey: "EMBEDDING_BASE_PATH",
-    checks: [isNotEmpty, validLLMExternalBasePath],
+    checks: [isNotEmpty, validLLMExternalBasePath, validDockerizedUrl],
   },
   EmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
@@ -104,7 +126,7 @@ const KEY_MAPPING = {
   // Chroma Options
   ChromaEndpoint: {
     envKey: "CHROMA_ENDPOINT",
-    checks: [isValidURL, validChromaURL],
+    checks: [isValidURL, validChromaURL, validDockerizedUrl],
   },
   ChromaApiHeader: {
     envKey: "CHROMA_API_HEADER",
@@ -118,7 +140,7 @@ const KEY_MAPPING = {
   // Weaviate Options
   WeaviateEndpoint: {
     envKey: "WEAVIATE_ENDPOINT",
-    checks: [isValidURL],
+    checks: [isValidURL, validDockerizedUrl],
   },
   WeaviateApiKey: {
     envKey: "WEAVIATE_API_KEY",
@@ -128,7 +150,7 @@ const KEY_MAPPING = {
   // QDrant Options
   QdrantEndpoint: {
     envKey: "QDRANT_ENDPOINT",
-    checks: [isValidURL],
+    checks: [isValidURL, validDockerizedUrl],
   },
   QdrantApiKey: {
     envKey: "QDRANT_API_KEY",
@@ -199,15 +221,35 @@ function validLLMExternalBasePath(input = "") {
   }
 }
 
+function validOllamaLLMBasePath(input = "") {
+  try {
+    new URL(input);
+    if (input.split("").slice(-1)?.[0] === "/")
+      return "URL cannot end with a slash";
+    return null;
+  } catch {
+    return "Not a valid URL";
+  }
+}
+
 function supportedLLM(input = "") {
   return [
     "openai",
     "azure",
     "anthropic",
+    "gemini",
     "lmstudio",
     "localai",
+    "ollama",
     "native",
   ].includes(input);
+}
+
+function validGeminiModel(input = "") {
+  const validModels = ["gemini-pro"];
+  return validModels.includes(input)
+    ? null
+    : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
 }
 
 function validAnthropicModel(input = "") {
@@ -274,6 +316,17 @@ function isDownloadedModel(input = "") {
     .readdirSync(storageDir)
     .filter((file) => file.includes(".gguf"));
   return files.includes(input);
+}
+
+function validDockerizedUrl(input = "") {
+  if (process.env.ANYTHING_LLM_RUNTIME !== "docker") return null;
+  try {
+    const { hostname } = new URL(input);
+    if (["localhost", "127.0.0.1", "0.0.0.0"].includes(hostname.toLowerCase()))
+      return "Localhost, 127.0.0.1, or 0.0.0.0 origins cannot be reached from inside the AnythingLLM container. Please use host.docker.internal, a real machine ip, or domain to connect to your service.";
+    return null;
+  } catch {}
+  return null;
 }
 
 // This will force update .env variables which for any which reason were not able to be parsed or
