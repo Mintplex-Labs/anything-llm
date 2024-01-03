@@ -22,61 +22,13 @@ import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import LLMItem from "./LLMItem";
 import System from "@/models/system";
+import paths from "@/utils/paths";
 
-// const LLMS = [
-//   {
-//     name: "OpenAI",
-//     logo: OpenAiLogo,
-//     options: <OpenAiOptions />,
-//     description: "The standard option for most non-commercial use.",
-//   },
-//   {
-//     name: "Azure OpenAI",
-//     logo: AzureOpenAiLogo,
-//     options: <AzureAiOptions />,
-//     description: "The enterprise option of OpenAI hosted on Azure services.",
-//   },
-//   {
-//     name: "Anthropic",
-//     logo: AnthropicLogo,
-//     options: <AnthropicAiOptions />,
-//     description: "A friendly AI Assistant hosted by Anthropic.",
-//   },
-//   {
-//     name: "Gemini",
-//     logo: GeminiLogo,
-//     options: <GeminiLLMOptions />,
-//     description: "Google's largest and most capable AI model",
-//   },
-//   {
-//     name: "Ollama",
-//     logo: OllamaLogo,
-//     options: <OllamaLLMOptions />,
-//     description: "Run LLMs locally on your own machine.",
-//   },
-//   {
-//     name: "LM Studio",
-//     logo: LMStudioLogo,
-//     options: <LMStudioOptions />,
-//     description:
-//       "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
-//   },
-//   {
-//     name: "Local AI",
-//     logo: LocalAiLogo,
-//     options: <LocalAiOptions />,
-//     description: "Run LLMs locally on your own machine.",
-//   },
-//   {
-//     name: "Native",
-//     logo: AnythingLLMIcon,
-//     options: <NativeLLMOptions />,
-//     description:
-//       "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
-//   },
-// ];
-
-export default function LLMPreference({ setHeader, setForwardBtn }) {
+export default function LLMPreference({
+  setHeader,
+  setForwardBtn,
+  setBackBtn,
+}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
@@ -145,12 +97,17 @@ export default function LLMPreference({ setHeader, setForwardBtn }) {
   ];
 
   function handleForward() {
-    console.log("Go forward");
+    window.location.href = paths.onboarding.vectorDatabase();
+  }
+
+  function handleBack() {
+    window.location.href = paths.onboarding.survey();
   }
 
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
+    setBackBtn({ showing: true, disabled: false, onClick: handleBack });
   }, []);
 
   useEffect(() => {
@@ -194,7 +151,7 @@ export default function LLMPreference({ setHeader, setForwardBtn }) {
           ))}
         </div>
       </div>
-      {selectedLLM && <div className="mt-4">{selectedLLM.options}</div>}
+      {selectedLLM && <div className="mt-4 mb-10">{selectedLLM.options}</div>}
     </>
   );
 }

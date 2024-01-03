@@ -1,17 +1,27 @@
 import React, { useEffect } from "react";
 import illustration from "@/media/illustrations/create-workspace.png";
+import paths from "@/utils/paths";
 const TITLE = "Create a workspace";
 const DESCRIPTION =
   "Create your first workspace and get started with AnythingLLM.";
 
-export default function CreateWorkspace({ setHeader, setForwardBtn }) {
+export default function CreateWorkspace({
+  setHeader,
+  setForwardBtn,
+  setBackBtn,
+}) {
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
+    setBackBtn({ showing: true, disabled: false, onClick: handleBack });
   }, []);
 
   function handleForward() {
-    console.log("Go forward");
+    console.log("Go to dashboard");
+  }
+
+  function handleBack() {
+    window.location.href = paths.onboarding.dataHandling();
   }
 
   return (

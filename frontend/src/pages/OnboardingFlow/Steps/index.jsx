@@ -30,7 +30,7 @@ export function OnboardingLayout({ children }) {
   });
 
   return (
-    <div className="w-screen h-screen bg-[#2C2F35] md:bg-main-gradient flex items-center justify-center overflow-hidden">
+    <div className="w-screen overflow-y-auto bg-[#2C2F35] md:bg-main-gradient flex justify-center overflow-hidden">
       <div className="flex w-1/5 h-screen justify-center items-center">
         {backBtn.showing && (
           <button

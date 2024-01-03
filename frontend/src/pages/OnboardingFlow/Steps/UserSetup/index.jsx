@@ -5,14 +5,19 @@ import { Plus } from "@phosphor-icons/react";
 import React, { useState, useEffect } from "react";
 import AnythingLLM from "@/media/logo/anything-llm.png";
 import debounce from "lodash.debounce";
+import paths from "@/utils/paths";
 const TITLE = "User Setup";
 const DESCRIPTION = "Configure your user settings.";
 
-export default function UserSetup({ setHeader, setForwardBtn }) {
+export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   const [selectedOption, setSelectedOption] = useState("");
 
   function handleForward() {
-    console.log("Go forward");
+    window.location.href = paths.onboarding.dataHandling();
+  }
+
+  function handleBack() {
+    window.location.href = paths.onboarding.customLogo();
   }
 
   function handleClick(option) {
@@ -22,6 +27,7 @@ export default function UserSetup({ setHeader, setForwardBtn }) {
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
+    setBackBtn({ showing: true, disabled: false, onClick: handleBack });
   }, []);
 
   return (

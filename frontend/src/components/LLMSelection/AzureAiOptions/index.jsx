@@ -1,6 +1,7 @@
 export default function AzureAiOptions({ settings }) {
   return (
-    <>
+    // only 3 items then stack onto next line
+    <div className="w-full grid grid-cols-3 gap-y-4">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-4">
           Azure Service Endpoint
@@ -82,6 +83,6 @@ export default function AzureAiOptions({ settings }) {
           spellCheck={false}
         />
       </div>
-    </>
+    </div>
   );
 }

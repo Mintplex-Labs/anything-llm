@@ -17,7 +17,6 @@ export default function OnboardingHome() {
           style={{ backgroundImage: `url(${RGroupImg})` }}
         ></div>
 
-        {/* <div className="m-auto relative flex justify-center items-center flex-col p-4"> */}
         <div className="relative flex justify-center items-center m-auto">
           <div className="flex flex-col justify-center items-center">
             <p className="text-zinc-300 font-thin text-[24px]">Welcome to</p>
@@ -27,7 +26,7 @@ export default function OnboardingHome() {
               className="md:h-[50px] flex-shrink-0 max-w-[300px]"
             />
             <a
-              href={paths.onboarding.llmPreference()}
+              href={paths.onboarding.survey()}
               className="animate-pulse w-full md:max-w-[350px] md:min-w-[300px] text-center py-3 bg-white text-black font-semibold text-sm my-10 rounded-md hover:bg-gray-200"
             >
               Get started

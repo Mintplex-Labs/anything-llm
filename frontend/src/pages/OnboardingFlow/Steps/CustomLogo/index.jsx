@@ -4,17 +4,23 @@ import showToast from "@/utils/toast";
 import { Plus } from "@phosphor-icons/react";
 import React, { useState, useEffect } from "react";
 import AnythingLLM from "@/media/logo/anything-llm.png";
+import paths from "@/utils/paths";
 const TITLE = "Custom Logo";
 const DESCRIPTION = "Upload your custom logo to make your chatbot yours.";
 
-export default function CustomLogo({ setHeader, setForwardBtn }) {
+export default function CustomLogo({ setHeader, setForwardBtn, setBackBtn }) {
   function handleForward() {
-    console.log("Go forward");
+    window.location.href = paths.onboarding.userSetup();
+  }
+
+  function handleBack() {
+    window.location.href = paths.onboarding.vectorDatabase();
   }
 
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
+    setBackBtn({ showing: true, disabled: false, onClick: handleBack });
   }, []);
 
   const { logo: _initLogo, setLogo: _setLogo } = useLogo();

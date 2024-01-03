@@ -11,8 +11,26 @@ export default {
     home: () => {
       return "/onboarding";
     },
+    survey: () => {
+      return "/onboarding/survey";
+    },
     llmPreference: () => {
       return "/onboarding/llm-preference";
+    },
+    vectorDatabase: () => {
+      return "/onboarding/vector-database";
+    },
+    customLogo: () => {
+      return "/onboarding/custom-logo";
+    },
+    userSetup: () => {
+      return "/onboarding/user-setup";
+    },
+    dataHandling: () => {
+      return "/onboarding/data-handling";
+    },
+    createWorkspace: () => {
+      return "/onboarding/create-workspace";
     },
   },
   github: () => {

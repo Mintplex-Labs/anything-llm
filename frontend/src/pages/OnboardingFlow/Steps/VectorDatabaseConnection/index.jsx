@@ -18,8 +18,13 @@ import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import System from "@/models/system";
 import VectorDatabaseItem from "./VectorDatabaseItem";
+import paths from "@/utils/paths";
 
-export default function VectorDatabaseConnection({ setHeader, setForwardBtn }) {
+export default function VectorDatabaseConnection({
+  setHeader,
+  setForwardBtn,
+  setBackBtn,
+}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredVDBs, setFilteredVDBs] = useState([]);
   const [selectedVDB, setSelectedVDB] = useState(null);
@@ -71,12 +76,17 @@ export default function VectorDatabaseConnection({ setHeader, setForwardBtn }) {
   ];
 
   function handleForward() {
-    console.log("Go forward");
+    window.location.href = paths.onboarding.customLogo();
+  }
+
+  function handleBack() {
+    window.location.href = paths.onboarding.llmPreference();
   }
 
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
+    setBackBtn({ showing: true, disabled: false, onClick: handleBack });
   }, []);
 
   useEffect(() => {

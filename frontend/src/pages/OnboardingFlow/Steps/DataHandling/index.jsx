@@ -14,6 +14,7 @@ import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import React, { useState, useEffect } from "react";
+import paths from "@/utils/paths";
 const TITLE = "Data Handling & Privacy";
 const DESCRIPTION =
   "We are committed to transparency and control when it comes to your personal data.";
@@ -154,7 +155,7 @@ const EMBEDDING_ENGINE_PRIVACY = {
   },
 };
 
-export default function DataHandling({ setHeader, setForwardBtn }) {
+export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   const [llmChoice, setLLMChoice] = useState("openai");
   const [loading, setLoading] = useState(true);
   const [vectorDb, setVectorDb] = useState("pinecone");
@@ -163,6 +164,7 @@ export default function DataHandling({ setHeader, setForwardBtn }) {
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
+    setBackBtn({ showing: true, disabled: false, onClick: handleBack });
     async function fetchKeys() {
       const _settings = await System.keys();
       setLLMChoice(_settings?.LLMProvider || "openai");
@@ -175,7 +177,11 @@ export default function DataHandling({ setHeader, setForwardBtn }) {
   }, []);
 
   function handleForward() {
-    console.log("Go forward");
+    window.location.href = paths.onboarding.createWorkspace();
+  }
+
+  function handleBack() {
+    window.location.href = paths.onboarding.userSetup();
   }
 
   if (loading)

@@ -1,3 +1,4 @@
+import paths from "@/utils/paths";
 import React, { useState, useEffect, useRef } from "react";
 const TITLE = "Welcome to AnythingLLM";
 const DESCRIPTION = "Let's personalize your experience.";
@@ -8,18 +9,24 @@ const options = [
   "For my side-hustle",
 ];
 
-export default function Survey({ setHeader, setForwardBtn }) {
+export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
   const [name, setName] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
   const formRef = useRef(null);
 
   function handleForward() {
-    formRef.current && formRef.current.submit();
+    // formRef.current && formRef.current.submit();
+    window.location.href = paths.onboarding.llmPreference();
+  }
+
+  function handleBack() {
+    window.location.href = paths.onboarding.home();
   }
 
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
+    setBackBtn({ showing: true, disabled: false, onClick: handleBack });
   }, []);
 
   function handleSubmit(event) {
