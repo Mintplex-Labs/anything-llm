@@ -126,7 +126,7 @@ function BootLoader({ children }) {
         <img src={AnythingLLMLogo} className="w-[50%]" />
         <p className="text-xs text-white">by Mintplex Labs Inc</p>
         <p className="text-xs text-gray-400 mt-4  animate-pulse">
-          connecting to server...
+          loading workspaces...
         </p>
       </div>
     </div>

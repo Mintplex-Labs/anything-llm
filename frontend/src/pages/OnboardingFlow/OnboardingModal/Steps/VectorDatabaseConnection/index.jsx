@@ -41,7 +41,7 @@ function VectorDatabaseConnection({ nextStep, prevStep, currentStep }) {
       alert(`Failed to save settings: ${error}`, "error");
       return;
     }
-    nextStep("appearance");
+    nextStep("data_handling");
     return;
   };
 
