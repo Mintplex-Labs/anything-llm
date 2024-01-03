@@ -21,7 +21,6 @@ echo "Initial node_modules size: "$(du -hs .)
 
 # Common unneeded files
 find . -type d -name node_modules -prune -exec find {} -type f \( \
-    -iname Makefile -or \
     -iname README -or \
     -iname README.md -or \
     -iname CHANGELOG -or \
