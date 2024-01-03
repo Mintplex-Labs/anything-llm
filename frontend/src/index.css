@@ -10,6 +10,11 @@ body {
     Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
     sans-serif;
   background-color: white;
+  @apply no-scroll;
+}
+
+div {
+  @apply no-scroll;
 }
 
 a {
@@ -45,6 +50,7 @@ textarea {
 button {
   background: transparent;
   border-style: solid;
+  border-color: white;
 
   &:hover {
     cursor: pointer;

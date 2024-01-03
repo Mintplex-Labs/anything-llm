@@ -103,7 +103,7 @@ export default function OnboardingModal({ setModalVisible }) {
 
   const { component: StepComponent, ...step } = STEPS[currentStep];
   return (
-    <dialog id={DIALOG_ID} className="bg-transparent outline-none">
+    <dialog id={DIALOG_ID} className="bg-transparent outline-none border-none no-scroll">
       <div className="relative max-h-full">
         <div className="relative bg-main-gradient rounded-2xl shadow border-2 border-slate-300/10">
           <div className="flex items-start justify-between px-6 py-4 border-b rounded-t border-gray-500/50">

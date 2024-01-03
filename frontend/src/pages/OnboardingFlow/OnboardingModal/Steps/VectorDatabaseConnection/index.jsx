@@ -59,7 +59,7 @@ function VectorDatabaseConnection({ nextStep, prevStep, currentStep }) {
           <div className="text-white text-sm font-medium pb-4">
             Select your preferred vector database provider
           </div>
-          <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[752px]">
+          <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[752px] no-scroll">
             <input hidden={true} name="VectorDB" value={vectorDB} />
             <VectorDBOption
               name="Chroma"

@@ -25,7 +25,7 @@ export default function DataConnectors() {
                 Guaranteed to work with your AnythingLLM instance.
               </p>
             </div>
-            <div className="py-4 w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-full">
+            <div className="py-4 w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-full no-scroll">
               <DataConnectorOption slug="github" />
               <DataConnectorOption slug="youtube-transcript" />
             </div>

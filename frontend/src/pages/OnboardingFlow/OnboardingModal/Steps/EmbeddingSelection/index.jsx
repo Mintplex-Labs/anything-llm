@@ -58,7 +58,7 @@ function EmbeddingSelection({ nextStep, prevStep, currentStep }) {
           <div className="text-white text-sm font-medium pb-4">
             Embedding Provider
           </div>
-          <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[752px]">
+          <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[752px] no-scroll">
             <input
               hidden={true}
               name="EmbeddingEngine"

@@ -69,7 +69,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
           <div className="text-white text-sm font-medium pb-4">
             LLM Providers
           </div>
-          <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[752px]">
+          <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[752px] no-scroll">
             <input hidden={true} name="LLMProvider" value={llmChoice} />
             <LLMProviderOption
               name="OpenAI"

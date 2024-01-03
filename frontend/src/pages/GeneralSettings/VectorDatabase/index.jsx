@@ -114,7 +114,7 @@ export default function GeneralVectorDatabase() {
               <div className="text-white text-sm font-medium py-4">
                 Select your preferred vector database provider
               </div>
-              <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
+              <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px] no-scroll">
                 <input hidden={true} name="VectorDB" value={vectorDB} />
                 <VectorDBOption
                   name="Chroma"

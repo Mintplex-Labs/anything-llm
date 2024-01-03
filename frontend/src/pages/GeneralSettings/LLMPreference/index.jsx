@@ -103,7 +103,7 @@ export default function GeneralLLMPreference() {
               <div className="text-white text-sm font-medium py-4">
                 LLM Providers
               </div>
-              <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4">
+              <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 no-scroll">
                 <input hidden={true} name="LLMProvider" value={llmChoice} />
                 <LLMProviderOption
                   name="OpenAI"

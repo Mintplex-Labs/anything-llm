@@ -127,7 +127,7 @@ export default function GeneralEmbeddingPreference() {
                 <div className="text-white text-sm font-medium py-4">
                   Embedding Providers
                 </div>
-                <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4">
+                <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 no-scroll">
                   <input
                     hidden={true}
                     name="EmbeddingEngine"
