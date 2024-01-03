@@ -8,6 +8,7 @@ const OnboardingSteps = {
   "user-setup": lazy(() => import("./UserSetup")),
   "data-handling": lazy(() => import("./DataHandling")),
   "create-workspace": lazy(() => import("./CreateWorkspace")),
+  "vector-database": lazy(() => import("./VectorDatabaseConnection")),
 };
 
 export default OnboardingSteps;
