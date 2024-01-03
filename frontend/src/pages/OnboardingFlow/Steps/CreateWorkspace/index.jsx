@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import illustration from "@/media/illustrations/create-workspace.png";
 const TITLE = "Create a workspace";
 const DESCRIPTION =
   "Create your first workspace and get started with AnythingLLM.";
@@ -14,7 +15,8 @@ export default function CreateWorkspace({ setHeader, setForwardBtn }) {
   }
 
   return (
-    <div className="w-full flex items-center justify-center flex-col gap-y-6">
+    <div className="w-full flex items-center justify-center flex-col gap-y-2">
+      <img src={illustration} alt="Create workspace" />
       <div className="flex flex-col gap-y-4 w-full max-w-[600px]">
         {" "}
         <div className="w-full mt-4">
