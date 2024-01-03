@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import AnythingLLM from "@/assets/logo/anything-llm.png";
-import useLogo from "@/hooks/useLogo";
+// import AnythingLLM from "@/assets/logo/anything-llm.png";
+// import useLogo from "@/hooks/useLogo";
 import System from "@/models/system";
 import EditingChatBubble from "@/components/EditingChatBubble";
 import showToast from "@/utils/toast";
 import { Plus } from "@phosphor-icons/react";
 
 export default function Appearance() {
-  const { logo: _initLogo, setLogo: _setLogo } = useLogo();
-  const [logo, setLogo] = useState("");
+  // const { logo: _initLogo, setLogo: _setLogo } = useLogo();
+  // const [logo, setLogo] = useState("");
   const [hasChanges, setHasChanges] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [isDefaultLogo, setIsDefaultLogo] = useState(true);
+  // const [isDefaultLogo, setIsDefaultLogo] = useState(true);
 
-  useEffect(() => {
-    async function logoInit() {
-      setLogo(_initLogo || "");
-      const _isDefaultLogo = await System.isDefaultLogo();
-      setIsDefaultLogo(_isDefaultLogo);
-    }
-    logoInit();
-  }, [_initLogo]);
+  // useEffect(() => {
+  //   async function logoInit() {
+  //     setLogo(_initLogo || "");
+  //     const _isDefaultLogo = await System.isDefaultLogo();
+  //     setIsDefaultLogo(_isDefaultLogo);
+  //   }
+  //   logoInit();
+  // }, [_initLogo]);
 
   useEffect(() => {
     async function fetchMessages() {
@@ -31,48 +31,48 @@ export default function Appearance() {
     fetchMessages();
   }, []);
 
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return false;
+  // const handleFileUpload = async (event) => {
+  //   const file = event.target.files[0];
+  //   if (!file) return false;
 
-    const objectURL = URL.createObjectURL(file);
-    setLogo(objectURL);
+  //   const objectURL = URL.createObjectURL(file);
+  //   setLogo(objectURL);
 
-    const formData = new FormData();
-    formData.append("logo", file);
-    const { success, error } = await System.uploadLogo(formData);
-    if (!success) {
-      showToast(`Failed to upload logo: ${error}`, "error");
-      setLogo(_initLogo);
-      return;
-    }
+  //   const formData = new FormData();
+  //   formData.append("logo", file);
+  //   const { success, error } = await System.uploadLogo(formData);
+  //   if (!success) {
+  //     showToast(`Failed to upload logo: ${error}`, "error");
+  //     setLogo(_initLogo);
+  //     return;
+  //   }
 
-    const logoURL = await System.fetchLogo();
-    _setLogo(logoURL);
+  //   const logoURL = await System.fetchLogo();
+  //   _setLogo(logoURL);
 
-    showToast("Image uploaded successfully.", "success");
-    setIsDefaultLogo(false);
-  };
+  //   showToast("Image uploaded successfully.", "success");
+  //   setIsDefaultLogo(false);
+  // };
 
-  const handleRemoveLogo = async () => {
-    setLogo("");
-    setIsDefaultLogo(true);
+  // const handleRemoveLogo = async () => {
+  //   setLogo("");
+  //   setIsDefaultLogo(true);
 
-    const { success, error } = await System.removeCustomLogo();
-    if (!success) {
-      console.error("Failed to remove logo:", error);
-      showToast(`Failed to remove logo: ${error}`, "error");
-      const logoURL = await System.fetchLogo();
-      setLogo(logoURL);
-      setIsDefaultLogo(false);
-      return;
-    }
+  //   const { success, error } = await System.removeCustomLogo();
+  //   if (!success) {
+  //     console.error("Failed to remove logo:", error);
+  //     showToast(`Failed to remove logo: ${error}`, "error");
+  //     const logoURL = await System.fetchLogo();
+  //     setLogo(logoURL);
+  //     setIsDefaultLogo(false);
+  //     return;
+  //   }
 
-    const logoURL = await System.fetchLogo();
-    _setLogo(logoURL);
+  //   const logoURL = await System.fetchLogo();
+  //   _setLogo(logoURL);
 
-    showToast("Image successfully removed.", "success");
-  };
+  //   showToast("Image successfully removed.", "success");
+  // };
 
   const addMessage = (type) => {
     if (type === "user") {
@@ -128,7 +128,7 @@ export default function Appearance() {
               Customize the appearance settings of your platform.
             </p>
           </div>
-          <div className="my-6">
+          {/* <div className="my-6">
             <div className="flex flex-col gap-y-2">
               <h2 className="leading-tight font-medium text-white">
                 Custom Logo
@@ -182,7 +182,7 @@ export default function Appearance() {
                 </button>
               </div>
             </div>
-          </div>
+          </div> */}
           <div className="mb-6">
             <div className="flex flex-col gap-y-2">
               <h2 className="leading-tight font-medium text-white">

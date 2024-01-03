@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import LLMSelection from "./Steps/LLMSelection";
 import VectorDatabaseConnection from "./Steps/VectorDatabaseConnection";
-import AppearanceSetup from "./Steps/AppearanceSetup";
+// import AppearanceSetup from "./Steps/AppearanceSetup";
 // import UserModeSelection from "./Steps/UserModeSelection";
 // import PasswordProtection from "./Steps/PasswordProtection";
 // import MultiUserSetup from "./Steps/MultiUserSetup";
@@ -31,12 +31,12 @@ const STEPS = {
       "These are the credentials and settings for how your AnythingLLM instance will function.",
     component: VectorDatabaseConnection,
   },
-  appearance: {
-    title: "Appearance",
-    description:
-      "Customize the appearance of your AnythingLLM instance.\nFind more customization options on the appearance settings page.",
-    component: AppearanceSetup,
-  },
+  // appearance: {
+  //   title: "Appearance",
+  //   description:
+  //     "Customize the appearance of your AnythingLLM instance.\nFind more customization options on the appearance settings page.",
+  //   component: AppearanceSetup,
+  // },
   // user_mode_setup: {
   //   title: "User Mode Setup",
   //   description: "Choose how many people will be using your instance.",
