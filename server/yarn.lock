@@ -337,16 +337,15 @@
   integrity sha512-jhG3MqZ3r8BexXANLRNX57RAnCZT9psdSBORG3KTu5qe2xaunRlJNSA2kk8a79tf+gtUT/BAmMiXMzAi/dwq8w==
 
 "@langchain/core@~0.0.8":
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@langchain/core/-/core-0.0.11.tgz#d769c499720d40efb2147579c3137a78def350d5"
-  integrity sha512-tiESyyHM1KO1gRTduKcznWbEmE7z/ayPLWZ4+AUXF47qOtdV6lymnlMPzz+MGwnpaSaamzyYkBIxqeMPar256Q==
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@langchain/core/-/core-0.0.9.tgz#3b4e74693eddcfa5f6e649857b561d3a9b60d1d4"
+  integrity sha512-TpGOvSY/nvpTx3ArVOJPqogfWroxnuD2eGnXvKRroB+DLyKKTxH7EODzgpLpf52C1x1aSnhYNlXoDAbePNNg4Q==
   dependencies:
     ansi-styles "^5.0.0"
     camelcase "6"
     decamelize "1.2.0"
     js-tiktoken "^1.0.8"
-    langsmith "~0.0.48"
-    ml-distance "^4.0.0"
+    langsmith "^0.0.48"
     p-queue "^6.6.2"
     p-retry "4"
     uuid "^9.0.0"
@@ -2626,6 +2625,17 @@ langchainhub@~0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/langchainhub/-/langchainhub-0.0.6.tgz#9d2d06e4ce0807b4e8a31e19611f57aef990b54d"
   integrity sha512-SW6105T+YP1cTe0yMf//7kyshCgvCTyFBMTgH2H3s9rTAR4e+78DA/BBrUL/Mt4Q5eMWui7iGuAYb3pgGsdQ9w==
+
+langsmith@^0.0.48:
+  version "0.0.48"
+  resolved "https://registry.yarnpkg.com/langsmith/-/langsmith-0.0.48.tgz#3a9a8ce257271ddb43d01ebf585c4370a3a3ba79"
+  integrity sha512-s0hW8iZ90Q9XLTnDK0Pgee245URV3b1cXQjPDj5OKm1+KN7iSK1pKx+4CO7RcFLz58Ixe7Mt+mVcomYqUuryxQ==
+  dependencies:
+    "@types/uuid" "^9.0.1"
+    commander "^10.0.1"
+    p-queue "^6.6.2"
+    p-retry "4"
+    uuid "^9.0.0"
 
 langsmith@~0.0.48:
   version "0.0.52"
