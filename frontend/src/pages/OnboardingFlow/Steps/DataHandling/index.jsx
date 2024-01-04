@@ -179,7 +179,7 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   }, []);
 
   function handleForward() {
-    navigate(paths.onboarding.createWorkspace());
+    navigate(paths.onboarding.survey());
   }
 
   function handleBack() {

@@ -7,7 +7,8 @@ import AnythingLLM from "@/media/logo/anything-llm.png";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
 const TITLE = "Custom Logo";
-const DESCRIPTION = "Upload your custom logo to make your chatbot yours.";
+const DESCRIPTION =
+  "Upload your custom logo to make your chatbot yours. Optional.";
 
 export default function CustomLogo({ setHeader, setForwardBtn, setBackBtn }) {
   const navigate = useNavigate();

@@ -4,7 +4,7 @@ import { CheckCircle } from "@phosphor-icons/react";
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 const TITLE = "Welcome to AnythingLLM";
-const DESCRIPTION = "Let's personalize your experience.";
+const DESCRIPTION = "Help us make AnythingLLM built for your needs. Optional.";
 
 async function sendQuestionnaire({ email, useCase, comment }) {
   if (import.meta.env.DEV) return;
@@ -34,7 +34,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
 
   function handleForward() {
     if (!!window?.localStorage?.getItem(COMPLETE_QUESTIONNAIRE)) {
-      navigate(paths.onboarding.llmPreference());
+      navigate(paths.onboarding.createWorkspace());
       return;
     }
     if (submitRef.current) {
@@ -42,8 +42,12 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
     }
   }
 
+  function skipSurvey() {
+    navigate(paths.onboarding.createWorkspace());
+  }
+
   function handleBack() {
-    navigate(paths.onboarding.home());
+    navigate(paths.onboarding.dataHandling());
   }
 
   useEffect(() => {
@@ -63,7 +67,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
       comment: formData.get("comment") || null,
     });
 
-    navigate(paths.onboarding.llmPreference());
+    navigate(paths.onboarding.createWorkspace());
   };
 
   if (!!window?.localStorage?.getItem(COMPLETE_QUESTIONNAIRE)) {
@@ -91,14 +95,14 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
         <div className="md:min-w-[400px]">
           <label htmlFor="email" className="text-white text-base font-medium">
             What's your email?{" "}
-            <input
-              name="email"
-              type="email"
-              placeholder="you@gmail.com"
-              required={true}
-              className="mt-2 bg-zinc-900 text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight w-full h-11 p-2.5 bg-zinc-900 rounded-lg"
-            />
           </label>
+          <input
+            name="email"
+            type="email"
+            placeholder="you@gmail.com"
+            required={true}
+            className="mt-2 bg-zinc-900 text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight w-full h-11 p-2.5 bg-zinc-900 rounded-lg"
+          />
         </div>
 
         <div className="mt-8">
@@ -107,9 +111,6 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
             htmlFor="use_case"
           >
             What will you use AnythingLLM for?{" "}
-            <span className="text-neutral-400 text-base font-light">
-              (Optional)
-            </span>
           </label>
           <div className="mt-2 gap-y-3 flex flex-col">
             <label
@@ -263,15 +264,15 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
             <span className="text-neutral-400 text-base font-light">
               (Optional)
             </span>
-            <textarea
-              name="comment"
-              rows={5}
-              className="mt-2 bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="If you have any questions or comments right now, you can leave them here and we will get back to you. You can also email team@mintplexlabs.com"
-              wrap="soft"
-              autoComplete="off"
-            />
           </label>
+          <textarea
+            name="comment"
+            rows={5}
+            className="mt-2 bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            placeholder="If you have any questions or comments right now, you can leave them here and we will get back to you. You can also email team@mintplexlabs.com"
+            wrap="soft"
+            autoComplete="off"
+          />
         </div>
         <button
           type="submit"
@@ -279,6 +280,16 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           hidden
           aria-hidden="true"
         ></button>
+
+        <div className="w-full flex items-center justify-center">
+          <button
+            type="button"
+            onClick={skipSurvey}
+            className="text-white text-base font-medium text-opacity-30 hover:text-opacity-100 mt-8"
+          >
+            Skip Survey
+          </button>
+        </div>
       </form>
     </div>
   );

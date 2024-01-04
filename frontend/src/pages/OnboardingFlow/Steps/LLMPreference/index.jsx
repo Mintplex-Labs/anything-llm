@@ -116,7 +116,7 @@ export default function LLMPreference({
   }
 
   function handleBack() {
-    navigate(paths.onboarding.survey());
+    navigate(paths.onboarding.home());
   }
 
   const handleSubmit = async (e) => {
@@ -157,25 +157,27 @@ export default function LLMPreference({
   return (
     <div>
       <form ref={formRef} onSubmit={handleSubmit} className="w-full">
-        <div className="w-full border-slate-300/40 shadow border-2 rounded-lg p-4 text-white overflow-y-auto">
-          <div className="flex items-center sticky top-0 z-20">
-            <MagnifyingGlass
-              size={16}
-              weight="bold"
-              className="absolute left-4 z-30 text-white"
-            />
-            <input
-              type="text"
-              placeholder="Search LLM providers"
-              className="bg-zinc-600 z-20 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
-              onChange={(e) => setSearchQuery(e.target.value)}
-              autoComplete="off"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") e.preventDefault();
-              }}
-            />
+        <div className="w-full relative border-slate-300/40 shadow border-2 rounded-lg text-white">
+          <div className="w-full p-4 absolute top-0 rounded-t-lg bg-accent/50">
+            <div className="w-full flex items-center sticky top-0 z-20">
+              <MagnifyingGlass
+                size={16}
+                weight="bold"
+                className="absolute left-4 z-30 text-white"
+              />
+              <input
+                type="text"
+                placeholder="Search LLM providers"
+                className="bg-zinc-600 z-20 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                autoComplete="off"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") e.preventDefault();
+                }}
+              />
+            </div>
           </div>
-          <div className="mt-4 flex flex-col gap-y-1 max-h-[390px]">
+          <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll">
             {filteredLLMs.map((llm) => {
               if (llm.value === "native" && isHosted) {
                 return null;

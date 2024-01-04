@@ -28,7 +28,7 @@ export default function OnboardingHome() {
               className="md:h-[50px] flex-shrink-0 max-w-[300px]"
             />
             <button
-              onClick={() => navigate(paths.onboarding.survey())}
+              onClick={() => navigate(paths.onboarding.llmPreference())}
               className="animate-pulse w-full md:max-w-[350px] md:min-w-[300px] text-center py-3 bg-white text-black font-semibold text-sm my-10 rounded-md hover:bg-gray-200"
             >
               Get started
