@@ -5,6 +5,7 @@ import debounce from "lodash.debounce";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+
 const TITLE = "User Setup";
 const DESCRIPTION = "Configure your user settings.";
 

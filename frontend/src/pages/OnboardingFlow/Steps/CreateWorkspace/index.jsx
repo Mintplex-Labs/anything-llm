@@ -4,6 +4,7 @@ import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
 import Workspace from "@/models/workspace";
+
 const TITLE = "Create your first workspace";
 const DESCRIPTION =
   "Create your first workspace and get started with AnythingLLM.";

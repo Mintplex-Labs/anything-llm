@@ -1,15 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
-const TITLE = "Vector Database Connection";
-const DESCRIPTION =
-  "These are the credentials and settings for your vector database of choice.";
 import { MagnifyingGlass } from "@phosphor-icons/react";
-
 import ChromaLogo from "@/media/vectordbs/chroma.png";
 import PineconeLogo from "@/media/vectordbs/pinecone.png";
 import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
-
 import System from "@/models/system";
 import VectorDatabaseItem from "./VectorDatabaseItem";
 import paths from "@/utils/paths";
@@ -20,6 +15,10 @@ import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions"
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
+
+const TITLE = "Vector Database Connection";
+const DESCRIPTION =
+  "These are the credentials and settings for your vector database of choice.";
 
 export default function VectorDatabaseConnection({
   setHeader,

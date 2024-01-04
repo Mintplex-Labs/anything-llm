@@ -33,9 +33,9 @@ export function OnboardingLayout({ children }) {
 
   if (isMobile) {
     return (
-      <div className="w-screen h-screen overflow-y-auto bg-[#2C2F35] md:bg-main-gradient md:flex md:justify-center overflow-hidden">
+      <div className="w-screen h-screen overflow-y-auto bg-[#2C2F35] overflow-hidden">
         <div className="flex flex-col">
-          <div className="w-full md:w-3/5 relative py-10 px-2 md:px-10">
+          <div className="w-full relative py-10 px-2">
             <div className="flex flex-col w-fit mx-auto gap-y-1 mb-[55px]">
               <h1 className="text-white font-semibold text-center text-2xl">
                 {header.title}

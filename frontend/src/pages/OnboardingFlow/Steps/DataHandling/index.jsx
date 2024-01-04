@@ -16,10 +16,10 @@ import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
+
 const TITLE = "Data Handling & Privacy";
 const DESCRIPTION =
   "We are committed to transparency and control when it comes to your personal data.";
-
 const LLM_SELECTION_PRIVACY = {
   openai: {
     name: "OpenAI",

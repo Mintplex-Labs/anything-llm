@@ -1,8 +1,5 @@
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useEffect, useState, useRef } from "react";
-const TITLE = "LLM Preference";
-const DESCRIPTION =
-  "AnythingLLM can work with many LLM providers. This will be the service which handles chatting.";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
@@ -24,6 +21,10 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
+
+const TITLE = "LLM Preference";
+const DESCRIPTION =
+  "AnythingLLM can work with many LLM providers. This will be the service which handles chatting.";
 
 export default function LLMPreference({
   setHeader,
