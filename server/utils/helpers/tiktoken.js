@@ -17,7 +17,7 @@ class TokenManager {
   }
 
   tokensFromString(input = "") {
-    const tokens = this.encoder.encode(input);
+    const tokens = this.encoder.encode(input, undefined, []);
     return tokens;
   }
 
@@ -27,7 +27,7 @@ class TokenManager {
   }
 
   countFromString(input = "") {
-    const tokens = this.encoder.encode(input);
+    const tokens = this.encoder.encode(input, undefined, []);
     return tokens.length;
   }
 
