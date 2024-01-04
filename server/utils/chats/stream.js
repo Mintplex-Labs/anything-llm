@@ -200,21 +200,82 @@ async function streamEmptyEmbeddingChat({
   return;
 }
 
+// TODO: Refactor this implementation
 function handleStreamResponses(response, stream, responseProps) {
   const { uuid = uuidv4(), sources = [] } = responseProps;
 
-  // If stream is not a regular OpenAI Stream (like if using native model)
+  // Gemini likes to return a stream asyncIterator which will
+  // be a totally different object than other models.
+  if (stream?.type === "geminiStream") {
+    return new Promise(async (resolve) => {
+      let fullText = "";
+      for await (const chunk of stream.stream) {
+        fullText += chunk.text();
+        writeResponseChunk(response, {
+          uuid,
+          sources: [],
+          type: "textResponseChunk",
+          textResponse: chunk.text(),
+          close: false,
+          error: false,
+        });
+      }
+
+      writeResponseChunk(response, {
+        uuid,
+        sources,
+        type: "textResponseChunk",
+        textResponse: "",
+        close: true,
+        error: false,
+      });
+      resolve(fullText);
+    });
+  }
+
+  if (stream?.type === "azureStream") {
+    return new Promise(async (resolve) => {
+      let fullText = "";
+      for await (const event of stream.stream) {
+        for (const choice of event.choices) {
+          const delta = choice.delta?.content;
+          if (!delta) continue;
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: delta,
+            close: false,
+            error: false,
+          });
+        }
+      }
+
+      writeResponseChunk(response, {
+        uuid,
+        sources,
+        type: "textResponseChunk",
+        textResponse: "",
+        close: true,
+        error: false,
+      });
+      resolve(fullText);
+    });
+  }
+
+  // If stream is not a regular OpenAI Stream (like if using native model, Ollama, or most LangChain interfaces)
   // we can just iterate the stream content instead.
   if (!stream.hasOwnProperty("data")) {
     return new Promise(async (resolve) => {
       let fullText = "";
       for await (const chunk of stream) {
-        fullText += chunk.content;
+        const content = chunk.hasOwnProperty("content") ? chunk.content : chunk;
+        fullText += content;
         writeResponseChunk(response, {
           uuid,
           sources: [],
           type: "textResponseChunk",
-          textResponse: chunk.content,
+          textResponse: content,
           close: false,
           error: false,
         });

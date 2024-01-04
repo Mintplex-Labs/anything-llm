@@ -34,12 +34,18 @@ function getLLMProvider() {
     case "anthropic":
       const { AnthropicLLM } = require("../AiProviders/anthropic");
       return new AnthropicLLM(embedder);
+    case "gemini":
+      const { GeminiLLM } = require("../AiProviders/gemini");
+      return new GeminiLLM(embedder);
     case "lmstudio":
       const { LMStudioLLM } = require("../AiProviders/lmStudio");
       return new LMStudioLLM(embedder);
     case "localai":
       const { LocalAiLLM } = require("../AiProviders/localAi");
       return new LocalAiLLM(embedder);
+    case "ollama":
+      const { OllamaAILLM } = require("../AiProviders/ollama");
+      return new OllamaAILLM(embedder);
     case "native":
       const { NativeLLM } = require("../AiProviders/native");
       return new NativeLLM(embedder);

@@ -169,7 +169,7 @@ const ThreadChats = {
           ? { name: thread.name }
           : { username: "deleted thread" };
 
-        const user = await User.get({ id: thread?.user_id });
+        const user = thread.user_id ? await User.get({ id: thread.user_id }) : null;
         res.user = user
           ? { username: user.username }
           : { username: "Unknown user" };

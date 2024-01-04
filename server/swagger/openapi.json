@@ -665,9 +665,6 @@
               }
             }
           },
-          "401": {
-            "description": "Instance is not in Multi-User mode. Method denied"
-          },
           "403": {
             "description": "Forbidden",
             "content": {

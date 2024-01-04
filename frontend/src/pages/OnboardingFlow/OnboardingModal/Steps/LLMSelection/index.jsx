@@ -3,6 +3,8 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
+import GeminiLogo from "@/media/llmprovider/gemini.png";
+import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import System from "@/models/system";
@@ -14,6 +16,8 @@ import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
 import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
+import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
+import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 
 function LLMSelection({ nextStep, prevStep, currentStep }) {
   const [llmChoice, setLLMChoice] = useState("openai");
@@ -71,7 +75,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               name="OpenAI"
               value="openai"
               link="openai.com"
-              description="The standard option for most non-commercial use. Provides both chat and embedding."
+              description="The standard option for most non-commercial use."
               checked={llmChoice === "openai"}
               image={OpenAiLogo}
               onClick={updateLLMChoice}
@@ -80,7 +84,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               name="Azure OpenAI"
               value="azure"
               link="azure.microsoft.com"
-              description="The enterprise option of OpenAI hosted on Azure services. Provides both chat and embedding."
+              description="The enterprise option of OpenAI hosted on Azure services."
               checked={llmChoice === "azure"}
               image={AzureOpenAiLogo}
               onClick={updateLLMChoice}
@@ -92,6 +96,15 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               description="A friendly AI Assistant hosted by Anthropic. Provides chat services only!"
               checked={llmChoice === "anthropic"}
               image={AnthropicLogo}
+              onClick={updateLLMChoice}
+            />
+            <LLMProviderOption
+              name="Google Gemini"
+              value="gemini"
+              link="ai.google.dev"
+              description="Google's largest and most capable AI model"
+              checked={llmChoice === "gemini"}
+              image={GeminiLogo}
               onClick={updateLLMChoice}
             />
             <LLMProviderOption
@@ -113,13 +126,24 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               onClick={updateLLMChoice}
             />
             <LLMProviderOption
-              name="Custom Llama Model"
-              value="native"
-              description="Use a downloaded custom Llama model for chatting on this AnythingLLM instance."
-              checked={llmChoice === "native"}
-              image={AnythingLLMIcon}
+              name="Ollama"
+              value="ollama"
+              link="ollama.ai"
+              description="Run LLMs locally on your own machine."
+              checked={llmChoice === "ollama"}
+              image={OllamaLogo}
               onClick={updateLLMChoice}
             />
+            {!window.location.hostname.includes("useanything.com") && (
+              <LLMProviderOption
+                name="Custom Llama Model"
+                value="native"
+                description="Use a downloaded custom Llama model for chatting on this AnythingLLM instance."
+                checked={llmChoice === "native"}
+                image={AnythingLLMIcon}
+                onClick={updateLLMChoice}
+              />
+            )}
           </div>
           <div className="mt-4 flex flex-wrap gap-4 max-w-[752px]">
             {llmChoice === "openai" && <OpenAiOptions settings={settings} />}
@@ -127,10 +151,12 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
             {llmChoice === "anthropic" && (
               <AnthropicAiOptions settings={settings} />
             )}
+            {llmChoice === "gemini" && <GeminiLLMOptions settings={settings} />}
             {llmChoice === "lmstudio" && (
               <LMStudioOptions settings={settings} />
             )}
             {llmChoice === "localai" && <LocalAiOptions settings={settings} />}
+            {llmChoice === "ollama" && <OllamaLLMOptions settings={settings} />}
             {llmChoice === "native" && <NativeLLMOptions settings={settings} />}
           </div>
         </div>

@@ -25,9 +25,6 @@ export default {
   hosting: () => {
     return "https://my.mintplexlabs.com/aio-checkout?product=anythingllm";
   },
-  feedback: () => {
-    return "https://mintplexlabs.typeform.com/to/i0KE3aEW";
-  },
   workspace: {
     chat: (slug) => {
       return `/workspace/${slug}`;
