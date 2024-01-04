@@ -145,7 +145,7 @@ function LLMSelection({ nextStep, prevStep, currentStep }) {
               />
             )}
           </div>
-          <div className="mt-4 flex flex-wrap gap-4 max-w-[752px]">
+          <div className="mt-4 grid grid-cols-3">
             {llmChoice === "openai" && <OpenAiOptions settings={settings} />}
             {llmChoice === "azure" && <AzureAiOptions settings={settings} />}
             {llmChoice === "anthropic" && (
