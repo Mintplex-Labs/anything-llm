@@ -4,12 +4,13 @@ import { isMobile } from "react-device-detect";
 const OnboardingSteps = {
   home: lazy(() => import("./Home")),
   "llm-preference": lazy(() => import("./LLMPreference")),
-  survey: lazy(() => import("./Survey")),
+  "embedding-preference": lazy(() => import("./EmbeddingPreference")),
+  "vector-database": lazy(() => import("./VectorDatabaseConnection")),
   "custom-logo": lazy(() => import("./CustomLogo")),
   "user-setup": lazy(() => import("./UserSetup")),
   "data-handling": lazy(() => import("./DataHandling")),
+  survey: lazy(() => import("./Survey")),
   "create-workspace": lazy(() => import("./CreateWorkspace")),
-  "vector-database": lazy(() => import("./VectorDatabaseConnection")),
 };
 
 export default OnboardingSteps;
@@ -32,9 +33,9 @@ export function OnboardingLayout({ children }) {
 
   if (isMobile) {
     return (
-      <div className="w-screen h-screen overflow-y-auto bg-[#2C2F35] md:bg-main-gradient flex justify-center overflow-hidden">
+      <div className="w-screen h-screen overflow-y-auto bg-[#2C2F35] md:bg-main-gradient md:flex md:justify-center overflow-hidden">
         <div className="flex flex-col">
-          <div className="w-full md:w-3/5 relative py-10 px-10">
+          <div className="w-full md:w-3/5 relative py-10 px-2 md:px-10">
             <div className="flex flex-col w-fit mx-auto gap-y-1 mb-[55px]">
               <h1 className="text-white font-semibold text-center text-2xl">
                 {header.title}

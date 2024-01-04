@@ -1,38 +1,31 @@
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useEffect, useState, useRef } from "react";
-const TITLE = "LLM Preference";
-const DESCRIPTION =
-  "AnythingLLM can work with many LLM providers. This will be the service which handles chatting.";
+import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
-import AnthropicLogo from "@/media/llmprovider/anthropic.png";
-import GeminiLogo from "@/media/llmprovider/gemini.png";
-import OllamaLogo from "@/media/llmprovider/ollama.png";
-import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
-import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
-import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
-import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
-import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
-import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
-import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
-import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
-import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
-import LLMItem from "./LLMItem";
+import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
+import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
+import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
+import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
+import EmbedderItem from "./EmbedderItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
 
-export default function LLMPreference({
+const TITLE = "Embedding Preference";
+const DESCRIPTION =
+  "AnythingLLM can work with many embedding models. This will be the model which turns documents into vectors.";
+
+export default function EmbeddingPreference({
   setHeader,
   setForwardBtn,
   setBackBtn,
 }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredLLMs, setFilteredLLMs] = useState([]);
-  const [selectedLLM, setSelectedLLM] = useState(null);
+  const [filteredEmbedders, setFilteredEmbedders] = useState([]);
+  const [selectedEmbedder, setSelectedEmbedder] = useState(null);
   const [settings, setSettings] = useState(null);
   const formRef = useRef(null);
   const hiddenSubmitButtonRef = useRef(null);
@@ -43,12 +36,20 @@ export default function LLMPreference({
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setSelectedLLM(_settings?.LLMProvider || "openai");
+      setSelectedEmbedder(_settings?.EmbeddingEngine || "native");
     }
     fetchKeys();
   }, []);
 
-  const LLMS = [
+  const EMBEDDERS = [
+    {
+      name: "AnythingLLM Embedder",
+      value: "native",
+      logo: AnythingLLMIcon,
+      options: <NativeEmbeddingOptions settings={settings} />,
+      description:
+        "Use the built-in embedding engine for AnythingLLM. Zero setup!",
+    },
     {
       name: "OpenAI",
       value: "openai",
@@ -64,48 +65,11 @@ export default function LLMPreference({
       description: "The enterprise option of OpenAI hosted on Azure services.",
     },
     {
-      name: "Anthropic",
-      value: "anthropic",
-      logo: AnthropicLogo,
-      options: <AnthropicAiOptions settings={settings} />,
-      description: "A friendly AI Assistant hosted by Anthropic.",
-    },
-    {
-      name: "Gemini",
-      value: "gemini",
-      logo: GeminiLogo,
-      options: <GeminiLLMOptions settings={settings} />,
-      description: "Google's largest and most capable AI model",
-    },
-    {
-      name: "Ollama",
-      value: "ollama",
-      logo: OllamaLogo,
-      options: <OllamaLLMOptions settings={settings} />,
-      description: "Run LLMs locally on your own machine.",
-    },
-    {
-      name: "LM Studio",
-      value: "lmstudio",
-      logo: LMStudioLogo,
-      options: <LMStudioOptions settings={settings} />,
-      description:
-        "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
-    },
-    {
       name: "Local AI",
       value: "localai",
       logo: LocalAiLogo,
       options: <LocalAiOptions settings={settings} />,
-      description: "Run LLMs locally on your own machine.",
-    },
-    {
-      name: "Native",
-      value: "native",
-      logo: AnythingLLMIcon,
-      options: <NativeLLMOptions settings={settings} />,
-      description:
-        "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
+      description: "Run embedding models locally on your own machine.",
     },
   ];
 
@@ -116,7 +80,7 @@ export default function LLMPreference({
   }
 
   function handleBack() {
-    navigate(paths.onboarding.home());
+    navigate(paths.onboarding.llmPreference());
   }
 
   const handleSubmit = async (e) => {
@@ -124,16 +88,16 @@ export default function LLMPreference({
     const form = e.target;
     const data = {};
     const formData = new FormData(form);
-    data.LLMProvider = selectedLLM;
+    data.EmbeddingEngine = selectedEmbedder;
     for (var [key, value] of formData.entries()) data[key] = value;
 
     const { error } = await System.updateSystem(data);
     if (error) {
-      showToast(`Failed to save LLM settings: ${error}`, "error");
+      showToast(`Failed to save embedding settings: ${error}`, "error");
       return;
     }
-    showToast("LLM settings saved successfully.", "success");
-    navigate(paths.onboarding.embeddingPreference());
+    showToast("Embedder settings saved successfully.", "success");
+    navigate(paths.onboarding.vectorDatabase());
   };
 
   useEffect(() => {
@@ -144,13 +108,13 @@ export default function LLMPreference({
 
   useEffect(() => {
     if (searchQuery.trim() === "") {
-      setFilteredLLMs(LLMS);
+      setFilteredEmbedders(EMBEDDERS);
     } else {
       const lowercasedQuery = searchQuery.toLowerCase();
-      const filtered = LLMS.filter((llm) =>
-        llm.name.toLowerCase().includes(lowercasedQuery)
+      const filtered = EMBEDDERS.filter((embedder) =>
+        embedder.name.toLowerCase().includes(lowercasedQuery)
       );
-      setFilteredLLMs(filtered);
+      setFilteredEmbedders(filtered);
     }
   }, [searchQuery]);
 
@@ -167,7 +131,7 @@ export default function LLMPreference({
               />
               <input
                 type="text"
-                placeholder="Search LLM providers"
+                placeholder="Search Embedding providers"
                 className="bg-zinc-600 z-20 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoComplete="off"
@@ -178,25 +142,29 @@ export default function LLMPreference({
             </div>
           </div>
           <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
-            {filteredLLMs.map((llm) => {
-              if (llm.value === "native" && isHosted) return null;
+            {filteredEmbedders.map((embedder) => {
+              if (embedder.value === "native" && isHosted) {
+                return null;
+              }
+
               return (
-                <LLMItem
-                  key={llm.name}
-                  name={llm.name}
-                  value={llm.value}
-                  image={llm.logo}
-                  description={llm.description}
-                  checked={selectedLLM === llm.value}
-                  onClick={() => setSelectedLLM(llm.value)}
+                <EmbedderItem
+                  key={embedder.name}
+                  name={embedder.name}
+                  value={embedder.value}
+                  image={embedder.logo}
+                  description={embedder.description}
+                  checked={selectedEmbedder === embedder.value}
+                  onClick={() => setSelectedEmbedder(embedder.value)}
                 />
               );
             })}
           </div>
         </div>
         <div className="mt-4 flex flex-col gap-y-1">
-          {selectedLLM &&
-            LLMS.find((llm) => llm.value === selectedLLM)?.options}
+          {selectedEmbedder &&
+            EMBEDDERS.find((embedder) => embedder.value === selectedEmbedder)
+              ?.options}
         </div>
         <button
           type="submit"

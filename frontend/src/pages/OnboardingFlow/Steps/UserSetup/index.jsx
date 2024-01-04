@@ -54,10 +54,10 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
       <div className="flex flex-col border rounded-lg border-white/20 p-8 items-center gap-y-4 w-full max-w-[600px]">
-        <div className=" text-white text-sm font-semibold -ml-44">
+        <div className=" text-white text-sm font-semibold md:-ml-44">
           How many people will be using your instance?
         </div>
-        <div className="flex flex-row gap-x-6 w-full justify-center">
+        <div className="flex flex-col md:flex-row gap-6 w-full justify-center">
           <button
             onClick={() => setSelectedOption("just_me")}
             className={`${
@@ -162,10 +162,10 @@ const JustMe = ({
   return (
     <div className="w-full flex items-center justify-center flex-col gap-y-6">
       <div className="flex flex-col border rounded-lg border-white/20 p-8 items-center gap-y-4 w-full max-w-[600px]">
-        <div className=" text-white text-sm font-semibold -ml-56">
+        <div className=" text-white text-sm font-semibold md:-ml-56">
           Would you like to set up a password?
         </div>
-        <div className="flex flex-row gap-x-6 w-full justify-center">
+        <div className="flex flex-col md:flex-row gap-6 w-full justify-center">
           <button
             onClick={handleYes}
             className={`${
@@ -270,7 +270,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
   return (
     <div className="w-full flex items-center justify-center border max-w-[600px] rounded-lg border-white/20">
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-col w-full md:px-8 py-4">
+        <div className="flex flex-col w-full md:px-8 px-2 py-4">
           <div className="space-y-6 flex h-full w-full">
             <div className="w-full flex flex-col gap-y-4">
               <div>

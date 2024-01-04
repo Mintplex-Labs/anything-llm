@@ -17,6 +17,9 @@ export default {
     llmPreference: () => {
       return "/onboarding/llm-preference";
     },
+    embeddingPreference: () => {
+      return "/onboarding/embedding-preference";
+    },
     vectorDatabase: () => {
       return "/onboarding/vector-database";
     },
