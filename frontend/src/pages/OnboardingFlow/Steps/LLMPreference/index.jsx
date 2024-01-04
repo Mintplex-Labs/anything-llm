@@ -23,6 +23,7 @@ import LLMItem from "./LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
+import { useNavigate } from "react-router-dom";
 
 export default function LLMPreference({
   setHeader,
@@ -36,6 +37,7 @@ export default function LLMPreference({
   const formRef = useRef(null);
   const hiddenSubmitButtonRef = useRef(null);
   const isHosted = window.location.hostname.includes("useanything.com");
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchKeys() {
@@ -114,7 +116,7 @@ export default function LLMPreference({
   }
 
   function handleBack() {
-    window.location.href = paths.onboarding.survey();
+    navigate(paths.onboarding.survey());
   }
 
   const handleSubmit = async (e) => {
@@ -132,7 +134,7 @@ export default function LLMPreference({
     }
     showToast("LLM settings saved successfully.", "success");
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    window.location.href = paths.onboarding.vectorDatabase();
+    navigate(paths.onboarding.vectorDatabase());
   };
 
   useEffect(() => {

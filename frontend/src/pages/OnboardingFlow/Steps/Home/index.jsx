@@ -2,8 +2,10 @@ import paths from "@/utils/paths";
 import LGroupImg from "./l_group.png";
 import RGroupImg from "./r_group.png";
 import AnythingLLMLogo from "@/media/logo/anything-llm.png";
+import { useNavigate } from "react-router-dom";
 
 export default function OnboardingHome() {
+  const navigate = useNavigate();
   return (
     <>
       <div className="relative w-screen h-screen flex overflow-hidden bg-main-gradient">
@@ -25,12 +27,12 @@ export default function OnboardingHome() {
               alt="AnythingLLM"
               className="md:h-[50px] flex-shrink-0 max-w-[300px]"
             />
-            <a
-              href={paths.onboarding.survey()}
+            <button
+              onClick={() => navigate(paths.onboarding.survey())}
               className="animate-pulse w-full md:max-w-[350px] md:min-w-[300px] text-center py-3 bg-white text-black font-semibold text-sm my-10 rounded-md hover:bg-gray-200"
             >
               Get started
-            </a>
+            </button>
           </div>
         </div>
       </div>

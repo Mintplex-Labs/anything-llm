@@ -3,6 +3,7 @@ import showToast from "@/utils/toast";
 import React, { useState, useEffect, useRef } from "react";
 import debounce from "lodash.debounce";
 import paths from "@/utils/paths";
+import { useNavigate } from "react-router-dom";
 const TITLE = "User Setup";
 const DESCRIPTION = "Configure your user settings.";
 
@@ -13,6 +14,7 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   const [enablePassword, setEnablePassword] = useState(false);
   const myTeamSubmitRef = useRef(null);
   const justMeSubmitRef = useRef(null);
+  const navigate = useNavigate();
 
   function handleForward() {
     console.log("calling forward");
@@ -20,14 +22,14 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
     if (selectedOption === "just_me" && enablePassword) {
       justMeSubmitRef.current?.click();
     } else if (selectedOption === "just_me" && !enablePassword) {
-      window.location.href = paths.onboarding.dataHandling();
+      navigate(paths.onboarding.dataHandling());
     } else if (selectedOption === "my_team") {
       myTeamSubmitRef.current?.click();
     }
   }
 
   function handleBack() {
-    window.location.href = paths.onboarding.customLogo();
+    navigate(paths.onboarding.customLogo());
   }
 
   useEffect(() => {
@@ -85,12 +87,14 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
           enablePassword={enablePassword}
           setEnablePassword={setEnablePassword}
           justMeSubmitRef={justMeSubmitRef}
+          navigate={navigate}
         />
       )}
       {selectedOption === "my_team" && (
         <MyTeam
           setMultiUserLoginValid={setMultiUserLoginValid}
           myTeamSubmitRef={myTeamSubmitRef}
+          navigate={navigate}
         />
       )}
     </div>
@@ -102,6 +106,7 @@ const JustMe = ({
   enablePassword,
   setEnablePassword,
   justMeSubmitRef,
+  navigate,
 }) => {
   const [itemSelected, setItemSelected] = useState(false);
   const [password, setPassword] = useState("");
@@ -121,7 +126,7 @@ const JustMe = ({
 
     showToast("Password set successfully!", "success");
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    window.location.href = paths.onboarding.dataHandling();
+    navigate(paths.onboarding.dataHandling());
 
     // Auto-request token with password that was just set so they
     // are not redirected to login after completion.
@@ -222,7 +227,7 @@ const JustMe = ({
   );
 };
 
-const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef }) => {
+const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -242,7 +247,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef }) => {
 
     showToast("Multi-user login enabled.", "success");
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    window.location.href = paths.onboarding.dataHandling();
+    navigate(paths.onboarding.dataHandling());
 
     // Auto-request token with credentials that was just set so they
     // are not redirected to login after completion.

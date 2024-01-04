@@ -15,6 +15,7 @@ import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
+import { useNavigate } from "react-router-dom";
 const TITLE = "Data Handling & Privacy";
 const DESCRIPTION =
   "We are committed to transparency and control when it comes to your personal data.";
@@ -160,6 +161,7 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   const [loading, setLoading] = useState(true);
   const [vectorDb, setVectorDb] = useState("pinecone");
   const [embeddingEngine, setEmbeddingEngine] = useState("openai");
+  const navigate = useNavigate();
 
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
@@ -177,11 +179,11 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   }, []);
 
   function handleForward() {
-    window.location.href = paths.onboarding.createWorkspace();
+    navigate(paths.onboarding.createWorkspace());
   }
 
   function handleBack() {
-    window.location.href = paths.onboarding.userSetup();
+    navigate(paths.onboarding.userSetup());
   }
 
   if (loading)

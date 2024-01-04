@@ -5,16 +5,18 @@ import { Plus } from "@phosphor-icons/react";
 import React, { useState, useEffect } from "react";
 import AnythingLLM from "@/media/logo/anything-llm.png";
 import paths from "@/utils/paths";
+import { useNavigate } from "react-router-dom";
 const TITLE = "Custom Logo";
 const DESCRIPTION = "Upload your custom logo to make your chatbot yours.";
 
 export default function CustomLogo({ setHeader, setForwardBtn, setBackBtn }) {
+  const navigate = useNavigate();
   function handleForward() {
-    window.location.href = paths.onboarding.userSetup();
+    navigate(paths.onboarding.userSetup());
   }
 
   function handleBack() {
-    window.location.href = paths.onboarding.vectorDatabase();
+    navigate(paths.onboarding.vectorDatabase());
   }
 
   useEffect(() => {

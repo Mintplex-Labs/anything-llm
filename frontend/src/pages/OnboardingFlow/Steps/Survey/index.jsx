@@ -1,5 +1,6 @@
 import paths from "@/utils/paths";
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 const TITLE = "Welcome to AnythingLLM";
 const DESCRIPTION = "Let's personalize your experience.";
 const options = [
@@ -13,14 +14,15 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
   const [name, setName] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
   const formRef = useRef(null);
+  const navigate = useNavigate();
 
   function handleForward() {
     // formRef.current && formRef.current.submit();
-    window.location.href = paths.onboarding.llmPreference();
+    navigate(paths.onboarding.llmPreference());
   }
 
   function handleBack() {
-    window.location.href = paths.onboarding.home();
+    navigate(paths.onboarding.home());
   }
 
   useEffect(() => {

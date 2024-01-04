@@ -19,6 +19,7 @@ import QDrantDBOptions from "@/components/VectorDBSelection/QDrantDBOptions";
 import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions";
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import showToast from "@/utils/toast";
+import { useNavigate } from "react-router-dom";
 
 export default function VectorDatabaseConnection({
   setHeader,
@@ -31,6 +32,7 @@ export default function VectorDatabaseConnection({
   const [settings, setSettings] = useState(null);
   const formRef = useRef(null);
   const hiddenSubmitButtonRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchKeys() {
@@ -90,7 +92,7 @@ export default function VectorDatabaseConnection({
   }
 
   function handleBack() {
-    window.location.href = paths.onboarding.llmPreference();
+    navigate(paths.onboarding.llmPreference());
   }
 
   const handleSubmit = async (e) => {
@@ -107,7 +109,7 @@ export default function VectorDatabaseConnection({
     }
     showToast("Vector Database settings saved successfully.", "success");
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    window.location.href = paths.onboarding.customLogo();
+    navigate(paths.onboarding.customLogo());
   };
 
   useEffect(() => {
