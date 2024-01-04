@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 const TITLE = "LLM Preference";
 const DESCRIPTION =
   "AnythingLLM can work with many LLM providers. This will be the service which handles chatting.";
-
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
@@ -38,7 +37,7 @@ export default function LLMPreference({
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setLoading(false);
+      setSelectedLLM(_settings?.LLMProvider || "openai");
     }
     fetchKeys();
   }, []);
@@ -46,36 +45,42 @@ export default function LLMPreference({
   const LLMS = [
     {
       name: "OpenAI",
+      value: "openai",
       logo: OpenAiLogo,
       options: <OpenAiOptions settings={settings} />,
       description: "The standard option for most non-commercial use.",
     },
     {
       name: "Azure OpenAI",
+      value: "azure",
       logo: AzureOpenAiLogo,
       options: <AzureAiOptions settings={settings} />,
       description: "The enterprise option of OpenAI hosted on Azure services.",
     },
     {
       name: "Anthropic",
+      value: "anthropic",
       logo: AnthropicLogo,
       options: <AnthropicAiOptions settings={settings} />,
       description: "A friendly AI Assistant hosted by Anthropic.",
     },
     {
       name: "Gemini",
+      value: "gemini",
       logo: GeminiLogo,
       options: <GeminiLLMOptions settings={settings} />,
       description: "Google's largest and most capable AI model",
     },
     {
       name: "Ollama",
+      value: "ollama",
       logo: OllamaLogo,
       options: <OllamaLLMOptions settings={settings} />,
       description: "Run LLMs locally on your own machine.",
     },
     {
       name: "LM Studio",
+      value: "lmstudio",
       logo: LMStudioLogo,
       options: <LMStudioOptions settings={settings} />,
       description:
@@ -83,12 +88,14 @@ export default function LLMPreference({
     },
     {
       name: "Local AI",
+      value: "localai",
       logo: LocalAiLogo,
       options: <LocalAiOptions settings={settings} />,
       description: "Run LLMs locally on your own machine.",
     },
     {
       name: "Native",
+      value: "native",
       logo: AnythingLLMIcon,
       options: <NativeLLMOptions settings={settings} />,
       description:
@@ -103,6 +110,19 @@ export default function LLMPreference({
   function handleBack() {
     window.location.href = paths.onboarding.survey();
   }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = { LLMProvider: selectedLLM, ...settings };
+    console.log(data);
+    // const { error } = await System.updateSystem(data);
+    // if (error) {
+    //   alert(`Failed to save LLM settings: ${error}`, "error");
+    //   return;
+    // }
+    // console.log("LLM settings saved successfully.");
+    // Navigate to next step or handle the continuation logic here
+  };
 
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
@@ -124,34 +144,46 @@ export default function LLMPreference({
 
   return (
     <>
-      <div className="w-full border-slate-300/40 shadow border-2 rounded-lg p-4 text-white overflow-y-auto">
-        <div className="relative flex items-center">
-          <MagnifyingGlass
-            size={16}
-            weight="bold"
-            className="absolute left-4 z-10 text-white"
-          />
-          <input
-            type="text"
-            placeholder="Chroma"
-            className="bg-white/10 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
-            onChange={(e) => setSearchQuery(e.target.value)}
-            autoComplete="off"
-          />
-        </div>
-        <div className="mt-4 flex flex-col">
-          {filteredLLMs.map((llm) => (
-            <div key={llm.name} onClick={() => setSelectedLLM(llm)}>
+      <form onSubmit={handleSubmit} className="w-full">
+        <div className="w-full border-slate-300/40 shadow border-2 rounded-lg p-4 text-white overflow-y-auto">
+          <div className="flex items-center sticky top-0 z-20">
+            <MagnifyingGlass
+              size={16}
+              weight="bold"
+              className="absolute left-4 z-10 text-white"
+            />
+            <input
+              type="text"
+              placeholder="Search LLM Providers"
+              className="bg-white/10 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white z-30"
+              onChange={(e) => setSearchQuery(e.target.value)}
+              autoComplete="off"
+            />
+          </div>
+          <div className="mt-4 flex flex-col gap-y-1 max-h-[390px]">
+            {filteredLLMs.map((llm) => (
               <LLMItem
+                key={llm.name}
                 name={llm.name}
+                value={llm.value}
                 image={llm.logo}
                 description={llm.description}
+                checked={selectedLLM === llm.value}
+                onClick={() => setSelectedLLM(llm.value)}
               />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-      {selectedLLM && <div className="mt-4 mb-10">{selectedLLM.options}</div>}
+        <div className="mt-4 flex flex-col gap-y-1">
+          {selectedLLM &&
+            LLMS.find((llm) => llm.value === selectedLLM)?.options}
+        </div>
+        <div className="flex justify-between items-center px-6 py-4">
+          <button type="submit" className="submit-button-styles">
+            Save
+          </button>
+        </div>
+      </form>
     </>
   );
 }
