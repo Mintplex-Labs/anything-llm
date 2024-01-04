@@ -1,6 +1,5 @@
 export default function AzureAiOptions({ settings }) {
   return (
-    // only 3 items then stack onto next line
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
