@@ -37,7 +37,6 @@ export default function VectorDatabaseConnection({
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
-      console.log(_settings);
       setSettings(_settings);
       setSelectedVDB(_settings?.VectorDB || "lancedb");
     }
@@ -45,6 +44,14 @@ export default function VectorDatabaseConnection({
   }, []);
 
   const VECTOR_DBS = [
+    {
+      name: "LanceDB",
+      value: "lancedb",
+      logo: LanceDbLogo,
+      options: <LanceDBOptions />,
+      description:
+        "100% local vector DB that runs on the same instance as AnythingLLM.",
+    },
     {
       name: "Chroma",
       value: "chroma",
@@ -75,14 +82,6 @@ export default function VectorDatabaseConnection({
       description:
         "Open source local and cloud hosted multi-modal vector database.",
     },
-    {
-      name: "LanceDB",
-      value: "lancedb",
-      logo: LanceDbLogo,
-      options: <LanceDBOptions />,
-      description:
-        "100% local vector DB that runs on the same instance as AnythingLLM.",
-    },
   ];
 
   function handleForward() {
@@ -108,7 +107,6 @@ export default function VectorDatabaseConnection({
       return;
     }
     showToast("Vector Database settings saved successfully.", "success");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     navigate(paths.onboarding.customLogo());
   };
 

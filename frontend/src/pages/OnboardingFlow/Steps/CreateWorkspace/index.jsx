@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import illustration from "@/media/illustrations/create-workspace.png";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
@@ -13,14 +13,22 @@ export default function CreateWorkspace({
   setForwardBtn,
   setBackBtn,
 }) {
+  const [workspaceName, setWorkspaceName] = useState("");
   const navigate = useNavigate();
   const createWorkspaceRef = useRef();
 
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
-    setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
     setBackBtn({ showing: true, disabled: false, onClick: handleBack });
   }, []);
+
+  useEffect(() => {
+    if (workspaceName.length > 3) {
+      setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
+    } else {
+      setForwardBtn({ showing: true, disabled: true, onClick: handleForward });
+    }
+  }, [workspaceName]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -30,6 +38,11 @@ export default function CreateWorkspace({
       onboardingComplete: true,
     });
     if (!!workspace) {
+      showToast(
+        "Workspace created successfully! Taking you to home...",
+        "success"
+      );
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       navigate(paths.home());
     } else {
       showToast(`Failed to create workspace: ${error}`, "error");
@@ -41,7 +54,7 @@ export default function CreateWorkspace({
   }
 
   function handleBack() {
-    window.location.href = paths.onboarding.dataHandling();
+    navigate(paths.onboarding.dataHandling());
   }
 
   return (
@@ -67,7 +80,11 @@ export default function CreateWorkspace({
             minLength={4}
             required={true}
             autoComplete="off"
+            onChange={(e) => setWorkspaceName(e.target.value)}
           />
+          <div className="mt-4 text-white text-opacity-80 text-xs font-base -mb-2">
+            Workspace name must be at least 4 characters.
+          </div>
         </div>
       </div>
       <button

@@ -133,7 +133,6 @@ export default function LLMPreference({
       return;
     }
     showToast("LLM settings saved successfully.", "success");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     navigate(paths.onboarding.vectorDatabase());
   };
 

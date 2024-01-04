@@ -166,7 +166,7 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
-    setBackBtn({ showing: true, disabled: false, onClick: handleBack });
+    setBackBtn({ showing: false, disabled: false, onClick: handleBack });
     async function fetchKeys() {
       const _settings = await System.keys();
       setLLMChoice(_settings?.LLMProvider || "openai");

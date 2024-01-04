@@ -17,8 +17,6 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   const navigate = useNavigate();
 
   function handleForward() {
-    console.log("calling forward");
-    console.log(enablePassword);
     if (selectedOption === "just_me" && enablePassword) {
       justMeSubmitRef.current?.click();
     } else if (selectedOption === "just_me" && !enablePassword) {
@@ -125,7 +123,6 @@ const JustMe = ({
     }
 
     showToast("Password set successfully!", "success");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     navigate(paths.onboarding.dataHandling());
 
     // Auto-request token with password that was just set so they
@@ -246,7 +243,6 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
     }
 
     showToast("Multi-user login enabled.", "success");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     navigate(paths.onboarding.dataHandling());
 
     // Auto-request token with credentials that was just set so they
