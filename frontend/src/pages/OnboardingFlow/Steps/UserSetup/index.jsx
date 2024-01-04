@@ -123,7 +123,7 @@ const JustMe = ({
       return;
     }
 
-    showToast("Password set successfully!", "success");
+    showToast("Password set successfully!", "success", { clear: true });
 
     // Auto-request token with password that was just set so they
     // are not redirected to login after completion.
@@ -244,7 +244,7 @@ const MyTeam = ({ setMultiUserLoginValid, myTeamSubmitRef, navigate }) => {
       return;
     }
 
-    showToast("Multi-user login enabled.", "success");
+    showToast("Multi-user login enabled.", "success", { clear: true });
     navigate(paths.onboarding.dataHandling());
 
     // Auto-request token with credentials that was just set so they

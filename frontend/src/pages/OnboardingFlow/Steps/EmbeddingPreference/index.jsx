@@ -96,7 +96,9 @@ export default function EmbeddingPreference({
       showToast(`Failed to save embedding settings: ${error}`, "error");
       return;
     }
-    showToast("Embedder settings saved successfully.", "success");
+    showToast("Embedder settings saved successfully.", "success", {
+      clear: true,
+    });
     navigate(paths.onboarding.vectorDatabase());
   };
 

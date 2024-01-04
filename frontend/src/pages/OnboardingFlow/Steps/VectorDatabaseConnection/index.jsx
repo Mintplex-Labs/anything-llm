@@ -91,7 +91,7 @@ export default function VectorDatabaseConnection({
   }
 
   function handleBack() {
-    navigate(paths.onboarding.llmPreference());
+    navigate(paths.onboarding.embeddingPreference());
   }
 
   const handleSubmit = async (e) => {
@@ -106,7 +106,9 @@ export default function VectorDatabaseConnection({
       showToast(`Failed to save Vector Database settings: ${error}`, "error");
       return;
     }
-    showToast("Vector Database settings saved successfully.", "success");
+    showToast("Vector Database settings saved successfully.", "success", {
+      clear: true,
+    });
     navigate(paths.onboarding.customLogo());
   };
 
