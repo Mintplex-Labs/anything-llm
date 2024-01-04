@@ -48,10 +48,10 @@
     pad-left "^2.1.0"
     tslib "^2.5.0"
 
-"@azure-rest/core-client@^1.1.3":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@azure-rest/core-client/-/core-client-1.1.4.tgz#628381c3653f6dbae584ca6f2ae5f74a5c015526"
-  integrity sha512-RUIQOA8T0WcbNlddr8hjl2MuC5GVRqmMwPXqBVsgvdKesLy+eg3y/6nf3qe2fvcJMI1gF6VtgU5U4hRaR4w4ag==
+"@azure-rest/core-client@^1.1.7":
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@azure-rest/core-client/-/core-client-1.1.7.tgz#83d20a6f1bf6222bd5b4e22e3e3cf65b98a61448"
+  integrity sha512-eQdtieYrOfRwsHFuz6vNANpOT567456m8/CpE3cqdVQgLMrn1uua5O8nLS/XN727MsbTgiZP6C0rAkupt3ky7Q==
   dependencies:
     "@azure/abort-controller" "^1.1.0"
     "@azure/core-auth" "^1.3.0"
@@ -76,17 +76,21 @@
     "@azure/core-util" "^1.1.0"
     tslib "^2.2.0"
 
-"@azure/core-lro@^2.5.3":
-  version "2.5.4"
-  resolved "https://registry.yarnpkg.com/@azure/core-lro/-/core-lro-2.5.4.tgz#b21e2bcb8bd9a8a652ff85b61adeea51a8055f90"
-  integrity sha512-3GJiMVH7/10bulzOKGrrLeG/uCBH/9VtxqaMcB9lIqAeamI/xYQSHJL/KcsLDuH+yTjYpro/u6D/MuRe4dN70Q==
+"@azure/core-rest-pipeline@^1.13.0":
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/@azure/core-rest-pipeline/-/core-rest-pipeline-1.13.0.tgz#770b003c351b4869e3f1c85800bacb947c98cd33"
+  integrity sha512-a62aP/wppgmnfIkJLfcB4ssPBcH94WzrzPVJ3tlJt050zX4lfmtnvy95D3igDo3f31StO+9BgPrzvkj4aOxnoA==
   dependencies:
-    "@azure/abort-controller" "^1.0.0"
-    "@azure/core-util" "^1.2.0"
+    "@azure/abort-controller" "^1.1.0"
+    "@azure/core-auth" "^1.4.0"
+    "@azure/core-tracing" "^1.0.1"
+    "@azure/core-util" "^1.3.0"
     "@azure/logger" "^1.0.0"
+    http-proxy-agent "^5.0.0"
+    https-proxy-agent "^5.0.0"
     tslib "^2.2.0"
 
-"@azure/core-rest-pipeline@^1.10.2", "@azure/core-rest-pipeline@^1.5.0":
+"@azure/core-rest-pipeline@^1.5.0":
   version "1.12.0"
   resolved "https://registry.yarnpkg.com/@azure/core-rest-pipeline/-/core-rest-pipeline-1.12.0.tgz#a36dd361807494845522824532c076daa27c2786"
   integrity sha512-+MnSB0vGZjszSzr5AW8z93/9fkDu2RLtWmAN8gskURq7EW2sSwqy8jZa0V26rjuBVkwhdA3Hw8z3VWoeBUOw+A==
@@ -101,6 +105,13 @@
     https-proxy-agent "^5.0.0"
     tslib "^2.2.0"
 
+"@azure/core-sse@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@azure/core-sse/-/core-sse-2.0.0.tgz#e94d29d0d8ade9f11c664a1695e60ef15720c087"
+  integrity sha512-PFmmaUwDmcmtt+q9NLzfhwC5qA2ACDn/5fuy8GVxI+YRv2qRvy1C0rZrwZLvOHe//G4cSRMz1X+CekY/Nlem2w==
+  dependencies:
+    tslib "^2.4.0"
+
 "@azure/core-tracing@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@azure/core-tracing/-/core-tracing-1.0.1.tgz#352a38cbea438c4a83c86b314f48017d70ba9503"
@@ -108,10 +119,18 @@
   dependencies:
     tslib "^2.2.0"
 
-"@azure/core-util@^1.0.0", "@azure/core-util@^1.1.0", "@azure/core-util@^1.2.0", "@azure/core-util@^1.3.0":
+"@azure/core-util@^1.0.0", "@azure/core-util@^1.1.0", "@azure/core-util@^1.3.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@azure/core-util/-/core-util-1.4.0.tgz#c120a56b3e48a9e4d20619a0b00268ae9de891c7"
   integrity sha512-eGAyJpm3skVQoLiRqm/xPa+SXi/NPDdSHMxbRAz2lSprd+Zs+qrpQGQQ2VQ3Nttu+nSZR4XoYQC71LbEI7jsig==
+  dependencies:
+    "@azure/abort-controller" "^1.0.0"
+    tslib "^2.2.0"
+
+"@azure/core-util@^1.4.0":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@azure/core-util/-/core-util-1.6.1.tgz#fea221c4fa43c26543bccf799beb30c1c7878f5a"
+  integrity sha512-h5taHeySlsV9qxuK64KZxy4iln1BtMYlNt5jbuEFN3UFSAd1EwKg/Gjl5a6tZ/W8t6li3xPnutOx7zbDyXnPmQ==
   dependencies:
     "@azure/abort-controller" "^1.0.0"
     tslib "^2.2.0"
@@ -123,15 +142,16 @@
   dependencies:
     tslib "^2.2.0"
 
-"@azure/openai@^1.0.0-beta.3":
-  version "1.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@azure/openai/-/openai-1.0.0-beta.3.tgz#bf4f5ec0a5644b3a9ce4372620856a65e7721e24"
-  integrity sha512-gW4odbuy/X/W34SdvXomj/JzR09MyMHCY5Kd2ZxJkQo3IUGqJXz1rEv6QER7IAGgBFgNawE97K6UuJfMmoT0rw==
+"@azure/openai@1.0.0-beta.10":
+  version "1.0.0-beta.10"
+  resolved "https://registry.yarnpkg.com/@azure/openai/-/openai-1.0.0-beta.10.tgz#13bcf5c5bc34dd27e33dc6aab5db3dc97dd4545b"
+  integrity sha512-6kixZSMOI5jk9TBwgXrVo5fKUPUudOXxjwCJvAGaQN6NT1Tp3IMrjGou+2iP9iX7GwND9lptxfvafHtK7RX/VA==
   dependencies:
-    "@azure-rest/core-client" "^1.1.3"
+    "@azure-rest/core-client" "^1.1.7"
     "@azure/core-auth" "^1.4.0"
-    "@azure/core-lro" "^2.5.3"
-    "@azure/core-rest-pipeline" "^1.10.2"
+    "@azure/core-rest-pipeline" "^1.13.0"
+    "@azure/core-sse" "^2.0.0"
+    "@azure/core-util" "^1.4.0"
     "@azure/logger" "^1.0.3"
     tslib "^2.4.0"
 

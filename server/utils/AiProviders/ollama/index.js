@@ -1,4 +1,5 @@
 const { chatPrompt } = require("../../chats");
+const { StringOutputParser } = require("langchain/schema/output_parser");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -19,6 +20,51 @@ class OllamaAILLM {
         "INVALID OLLAMA SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Ollama as your LLM."
       );
     this.embedder = embedder;
+  }
+
+  #ollamaClient({ temperature = 0.07 }) {
+    const { ChatOllama } = require("langchain/chat_models/ollama");
+    return new ChatOllama({
+      baseUrl: this.basePath,
+      model: this.model,
+      temperature,
+    });
+  }
+
+  // For streaming we use Langchain's wrapper to handle weird chunks
+  // or otherwise absorb headaches that can arise from Ollama models
+  #convertToLangchainPrototypes(chats = []) {
+    const {
+      HumanMessage,
+      SystemMessage,
+      AIMessage,
+    } = require("langchain/schema");
+    const langchainChats = [];
+    const roleToMessageMap = {
+      system: SystemMessage,
+      user: HumanMessage,
+      assistant: AIMessage,
+    };
+
+    for (const chat of chats) {
+      if (!roleToMessageMap.hasOwnProperty(chat.role)) continue;
+      const MessageClass = roleToMessageMap[chat.role];
+      langchainChats.push(new MessageClass({ content: chat.content }));
+    }
+
+    return langchainChats;
+  }
+
+  #appendContext(contextTexts = []) {
+    if (!contextTexts || !contextTexts.length) return "";
+    return (
+      "\nContext:\n" +
+      contextTexts
+        .map((text, i) => {
+          return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+        })
+        .join("")
+    );
   }
 
   streamingEnabled() {
@@ -46,13 +92,7 @@ class OllamaAILLM {
   }) {
     const prompt = {
       role: "system",
-      content: `${systemPrompt}
-Context:
-    ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
@@ -63,37 +103,21 @@ Context:
   }
 
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const textResponse = await fetch(`${this.basePath}/api/chat`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const messages = await this.compressMessages(
+      {
+        systemPrompt: chatPrompt(workspace),
+        userPrompt: prompt,
+        chatHistory,
       },
-      body: JSON.stringify({
-        model: this.model,
-        stream: false,
-        options: {
-          temperature: Number(workspace?.openAiTemp ?? 0.7),
-        },
-        messages: await this.compressMessages(
-          {
-            systemPrompt: chatPrompt(workspace),
-            userPrompt: prompt,
-            chatHistory,
-          },
-          rawHistory
-        ),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok)
-          throw new Error(`Ollama:sendChat ${res.status} ${res.statusText}`);
-        return res.json();
-      })
-      .then((data) => data?.message?.content)
-      .catch((e) => {
-        console.error(e);
-        throw new Error(`Ollama::sendChat failed with: ${error.message}`);
-      });
+      rawHistory
+    );
+
+    const model = this.#ollamaClient({
+      temperature: Number(workspace?.openAiTemp ?? 0.7),
+    });
+    const textResponse = await model
+      .pipe(new StringOutputParser())
+      .invoke(this.#convertToLangchainPrototypes(messages));
 
     if (!textResponse.length)
       throw new Error(`Ollama::sendChat text response was empty.`);
@@ -102,63 +126,29 @@ Context:
   }
 
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const response = await fetch(`${this.basePath}/api/chat`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const messages = await this.compressMessages(
+      {
+        systemPrompt: chatPrompt(workspace),
+        userPrompt: prompt,
+        chatHistory,
       },
-      body: JSON.stringify({
-        model: this.model,
-        stream: true,
-        options: {
-          temperature: Number(workspace?.openAiTemp ?? 0.7),
-        },
-        messages: await this.compressMessages(
-          {
-            systemPrompt: chatPrompt(workspace),
-            userPrompt: prompt,
-            chatHistory,
-          },
-          rawHistory
-        ),
-      }),
-    }).catch((e) => {
-      console.error(e);
-      throw new Error(`Ollama:streamChat ${error.message}`);
-    });
+      rawHistory
+    );
 
-    return { type: "ollamaStream", response };
+    const model = this.#ollamaClient({
+      temperature: Number(workspace?.openAiTemp ?? 0.7),
+    });
+    const stream = await model
+      .pipe(new StringOutputParser())
+      .stream(this.#convertToLangchainPrototypes(messages));
+    return stream;
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const textResponse = await fetch(`${this.basePath}/api/chat`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: this.model,
-        messages,
-        stream: false,
-        options: {
-          temperature,
-        },
-      }),
-    })
-      .then((res) => {
-        if (!res.ok)
-          throw new Error(
-            `Ollama:getChatCompletion ${res.status} ${res.statusText}`
-          );
-        return res.json();
-      })
-      .then((data) => data?.message?.content)
-      .catch((e) => {
-        console.error(e);
-        throw new Error(
-          `Ollama::getChatCompletion failed with: ${error.message}`
-        );
-      });
+    const model = this.#ollamaClient({ temperature });
+    const textResponse = await model
+      .pipe(new StringOutputParser())
+      .invoke(this.#convertToLangchainPrototypes(messages));
 
     if (!textResponse.length)
       throw new Error(`Ollama::getChatCompletion text response was empty.`);
@@ -167,25 +157,11 @@ Context:
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const response = await fetch(`${this.basePath}/api/chat`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: this.model,
-        stream: true,
-        messages,
-        options: {
-          temperature,
-        },
-      }),
-    }).catch((e) => {
-      console.error(e);
-      throw new Error(`Ollama:streamGetChatCompletion ${error.message}`);
-    });
-
-    return { type: "ollamaStream", response };
+    const model = this.#ollamaClient({ temperature });
+    const stream = await model
+      .pipe(new StringOutputParser())
+      .stream(this.#convertToLangchainPrototypes(messages));
+    return stream;
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

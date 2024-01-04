@@ -232,20 +232,22 @@ function handleStreamResponses(response, stream, responseProps) {
     });
   }
 
-  if (stream?.type === "ollamaStream") {
+  if (stream?.type === "azureStream") {
     return new Promise(async (resolve) => {
       let fullText = "";
-      for await (const dataChunk of stream.response.body) {
-        const chunk = JSON.parse(Buffer.from(dataChunk).toString());
-        fullText += chunk.message.content;
-        writeResponseChunk(response, {
-          uuid,
-          sources: [],
-          type: "textResponseChunk",
-          textResponse: chunk.message.content,
-          close: false,
-          error: false,
-        });
+      for await (const event of stream.stream) {
+        for (const choice of event.choices) {
+          const delta = choice.delta?.content;
+          if (!delta) continue;
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: delta,
+            close: false,
+            error: false,
+          });
+        }
       }
 
       writeResponseChunk(response, {
@@ -260,18 +262,19 @@ function handleStreamResponses(response, stream, responseProps) {
     });
   }
 
-  // If stream is not a regular OpenAI Stream (like if using native model)
+  // If stream is not a regular OpenAI Stream (like if using native model, Ollama, or most LangChain interfaces)
   // we can just iterate the stream content instead.
   if (!stream.hasOwnProperty("data")) {
     return new Promise(async (resolve) => {
       let fullText = "";
       for await (const chunk of stream) {
-        fullText += chunk.content;
+        const content = chunk.hasOwnProperty("content") ? chunk.content : chunk;
+        fullText += content;
         writeResponseChunk(response, {
           uuid,
           sources: [],
           type: "textResponseChunk",
-          textResponse: chunk.content,
+          textResponse: content,
           close: false,
           error: false,
         });
