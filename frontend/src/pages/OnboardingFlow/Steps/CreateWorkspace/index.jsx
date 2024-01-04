@@ -1,6 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import illustration from "@/media/illustrations/create-workspace.png";
 import paths from "@/utils/paths";
+import showToast from "@/utils/toast";
+import { useNavigate } from "react-router-dom";
+import Workspace from "@/models/workspace";
 const TITLE = "Create a workspace";
 const DESCRIPTION =
   "Create your first workspace and get started with AnythingLLM.";
@@ -10,14 +13,31 @@ export default function CreateWorkspace({
   setForwardBtn,
   setBackBtn,
 }) {
+  const navigate = useNavigate();
+  const createWorkspaceRef = useRef();
+
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
     setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
     setBackBtn({ showing: true, disabled: false, onClick: handleBack });
   }, []);
 
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+    const { workspace, error } = await Workspace.new({
+      name: form.get("name"),
+      onboardingComplete: true,
+    });
+    if (!!workspace) {
+      navigate(paths.home());
+    } else {
+      showToast(`Failed to create workspace: ${error}`, "error");
+    }
+  };
+
   function handleForward() {
-    console.log("Go to dashboard");
+    createWorkspaceRef.current.click();
   }
 
   function handleBack() {
@@ -25,7 +45,10 @@ export default function CreateWorkspace({
   }
 
   return (
-    <div className="w-full flex items-center justify-center flex-col gap-y-2">
+    <form
+      onSubmit={handleCreate}
+      className="w-full flex items-center justify-center flex-col gap-y-2"
+    >
       <img src={illustration} alt="Create workspace" />
       <div className="flex flex-col gap-y-4 w-full max-w-[600px]">
         {" "}
@@ -41,12 +64,18 @@ export default function CreateWorkspace({
             type="text"
             className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5"
             placeholder="My Workspace"
-            minLength={6}
+            minLength={4}
             required={true}
             autoComplete="off"
           />
         </div>
       </div>
-    </div>
+      <button
+        type="submit"
+        ref={createWorkspaceRef}
+        hidden
+        aria-hidden="true"
+      ></button>
+    </form>
   );
 }
