@@ -232,6 +232,36 @@ function handleStreamResponses(response, stream, responseProps) {
     });
   }
 
+  if (stream?.type === "azureStream") {
+    return new Promise(async (resolve) => {
+      let fullText = "";
+      for await (const event of stream.stream) {
+        for (const choice of event.choices) {
+          const delta = choice.delta?.content;
+          if (!delta) continue;
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: delta,
+            close: false,
+            error: false,
+          });
+        }
+      }
+
+      writeResponseChunk(response, {
+        uuid,
+        sources,
+        type: "textResponseChunk",
+        textResponse: "",
+        close: true,
+        error: false,
+      });
+      resolve(fullText);
+    });
+  }
+
   // If stream is not a regular OpenAI Stream (like if using native model, Ollama, or most LangChain interfaces)
   // we can just iterate the stream content instead.
   if (!stream.hasOwnProperty("data")) {
