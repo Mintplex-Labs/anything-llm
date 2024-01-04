@@ -3,6 +3,7 @@ process.env.NODE_ENV === "development"
   : require("dotenv").config();
 
 const express = require("express");
+const fs = require("fs");
 const bodyParser = require("body-parser");
 const serveIndex = require("serve-index");
 const cors = require("cors");
@@ -95,20 +96,44 @@ app.all("*", function (_, response) {
   response.sendStatus(404);
 });
 
-app
-  .listen(process.env.SERVER_PORT || 3001, async () => {
-    await setupTelemetry();
-    console.log(
-      `Primary server listening on port ${process.env.SERVER_PORT || 3001}`
-    );
-  })
-  .on("error", function (err) {
-    process.once("SIGUSR2", function () {
-      Telemetry.flush();
-      process.kill(process.pid, "SIGUSR2");
+if (process.env.ENABLE_HTTPS === "true") {
+  console.log(`Loading the cert and key for HTTPS mode...`);
+
+  const https = require("https");
+
+  const privateKey = fs.readFileSync(process.env.HTTPS_KEY_PATH);
+  const certificate = fs.readFileSync(process.env.HTTPS_CERT_PATH);
+
+  const credentials = {key: privateKey, cert: certificate};
+  console.log(`Primary server in HTTPS mode listening on port ${process.env.SERVER_PORT || 3001}`);
+  https.createServer(credentials, app)
+    .listen(process.env.SERVER_PORT || 3001)
+    .on("error", function (err) {
+      process.once("SIGUSR2", function () {
+        Telemetry.flush();
+        process.kill(process.pid, "SIGUSR2");
+      });
+      process.on("SIGINT", function () {
+        Telemetry.flush();
+        process.kill(process.pid, "SIGINT");
+      });
     });
-    process.on("SIGINT", function () {
-      Telemetry.flush();
-      process.kill(process.pid, "SIGINT");
+} else {
+  app
+    .listen(process.env.SERVER_PORT || 3001, async () => {
+      await setupTelemetry();
+      console.log(
+        `Primary server in HTTP mode listening on port ${process.env.SERVER_PORT || 3001}`
+      );
+    })
+    .on("error", function (err) {
+      process.once("SIGUSR2", function () {
+        Telemetry.flush();
+        process.kill(process.pid, "SIGUSR2");
+      });
+      process.on("SIGINT", function () {
+        Telemetry.flush();
+        process.kill(process.pid, "SIGINT");
+      });
     });
-  });
+}
