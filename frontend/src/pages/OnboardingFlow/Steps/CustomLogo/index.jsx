@@ -85,7 +85,7 @@ export default function CustomLogo({ setHeader, setForwardBtn, setBackBtn }) {
     <div className="flex items-center w-full">
       <div className="flex gap-x-8 flex-col w-full">
         {isDefaultLogo ? (
-          <label className="mt-5 hover:opacity-60 w-full flex justify-center">
+          <label className="mt-5 hover:opacity-60 w-full flex justify-center transition-all duration-300">
             <input
               id="logo-upload"
               type="file"

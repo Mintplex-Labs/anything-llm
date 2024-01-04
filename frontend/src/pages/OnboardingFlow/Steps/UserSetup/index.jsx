@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import debounce from "lodash.debounce";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 const TITLE = "User Setup";
 const DESCRIPTION = "Configure your user settings.";
 
@@ -123,7 +124,6 @@ const JustMe = ({
     }
 
     showToast("Password set successfully!", "success");
-    navigate(paths.onboarding.dataHandling());
 
     // Auto-request token with password that was just set so they
     // are not redirected to login after completion.
@@ -133,6 +133,8 @@ const JustMe = ({
     window.localStorage.removeItem(AUTH_USER);
     window.localStorage.removeItem(AUTH_TIMESTAMP);
     window.localStorage.setItem(AUTH_TOKEN, token);
+
+    navigate(paths.onboarding.dataHandling());
   };
 
   const setNewPassword = (e) => setPassword(e.target.value);
@@ -194,7 +196,7 @@ const JustMe = ({
               Instance Password
             </label>
             <input
-              name="username"
+              name="password"
               type="password"
               className="bg-zinc-900 text-white text-sm rounded-lg block w-full p-2.5"
               placeholder="Your admin password"
