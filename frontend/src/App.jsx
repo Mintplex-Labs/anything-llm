@@ -120,6 +120,7 @@ export default function App() {
 
               {/* Onboarding Flow */}
               <Route path="/onboarding" element={<OnboardingFlow />} />
+              <Route path="/onboarding/:step" element={<OnboardingFlow />} />
             </Routes>
             <ToastContainer />
           </PfpProvider>

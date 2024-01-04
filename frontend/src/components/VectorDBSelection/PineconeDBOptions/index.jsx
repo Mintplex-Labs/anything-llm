@@ -1,33 +1,17 @@
-export default function AzureAiOptions({ settings }) {
+export default function PineconeDBOptions({ settings }) {
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
-            Azure Service Endpoint
-          </label>
-          <input
-            type="url"
-            name="AzureOpenAiEndpoint"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="https://my-azure.openai.azure.com"
-            defaultValue={settings?.AzureOpenAiEndpoint}
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            API Key
+            Pinecone DB API Key
           </label>
           <input
             type="password"
-            name="AzureOpenAiKey"
+            name="PineConeKey"
             className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="Azure OpenAI API Key"
-            defaultValue={settings?.AzureOpenAiKey ? "*".repeat(20) : ""}
+            placeholder="Pinecone API Key"
+            defaultValue={settings?.PineConeKey ? "*".repeat(20) : ""}
             required={true}
             autoComplete="off"
             spellCheck={false}
@@ -36,14 +20,30 @@ export default function AzureAiOptions({ settings }) {
 
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
-            Embedding Deployment Name
+            Pinecone Index Environment
           </label>
           <input
             type="text"
-            name="AzureOpenAiEmbeddingModelPref"
+            name="PineConeEnvironment"
             className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="Azure OpenAI embedding model deployment name"
-            defaultValue={settings?.AzureOpenAiEmbeddingModelPref}
+            placeholder="us-gcp-west-1"
+            defaultValue={settings?.PineConeEnvironment}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-4">
+            Pinecone Index Name
+          </label>
+          <input
+            type="text"
+            name="PineConeIndex"
+            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            placeholder="my-index"
+            defaultValue={settings?.PineConeIndex}
             required={true}
             autoComplete="off"
             spellCheck={false}

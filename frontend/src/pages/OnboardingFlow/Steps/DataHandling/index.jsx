@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import PreLoader from "@/components/Preloader";
 import System from "@/models/system";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
@@ -13,8 +13,13 @@ import PineconeLogo from "@/media/vectordbs/pinecone.png";
 import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
-import PreLoader from "@/components/Preloader";
+import React, { useState, useEffect } from "react";
+import paths from "@/utils/paths";
+import { useNavigate } from "react-router-dom";
 
+const TITLE = "Data Handling & Privacy";
+const DESCRIPTION =
+  "We are committed to transparency and control when it comes to your personal data.";
 const LLM_SELECTION_PRIVACY = {
   openai: {
     name: "OpenAI",
@@ -151,25 +156,35 @@ const EMBEDDING_ENGINE_PRIVACY = {
   },
 };
 
-function DataHandling({ nextStep, prevStep, currentStep }) {
+export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
   const [llmChoice, setLLMChoice] = useState("openai");
   const [loading, setLoading] = useState(true);
   const [vectorDb, setVectorDb] = useState("pinecone");
   const [embeddingEngine, setEmbeddingEngine] = useState("openai");
+  const navigate = useNavigate();
 
   useEffect(() => {
+    setHeader({ title: TITLE, description: DESCRIPTION });
+    setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
+    setBackBtn({ showing: false, disabled: false, onClick: handleBack });
     async function fetchKeys() {
       const _settings = await System.keys();
-      setLLMChoice(_settings?.LLMProvider);
-      setVectorDb(_settings?.VectorDB);
-      setEmbeddingEngine(_settings?.EmbeddingEngine);
+      setLLMChoice(_settings?.LLMProvider || "openai");
+      setVectorDb(_settings?.VectorDB || "pinecone");
+      setEmbeddingEngine(_settings?.EmbeddingEngine || "openai");
 
       setLoading(false);
     }
-    if (currentStep === "data_handling") {
-      fetchKeys();
-    }
+    fetchKeys();
   }, []);
+
+  function handleForward() {
+    navigate(paths.onboarding.survey());
+  }
+
+  function handleBack() {
+    navigate(paths.onboarding.userSetup());
+  }
 
   if (loading)
     return (
@@ -179,7 +194,7 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
     );
 
   return (
-    <div className="max-w-[750px]">
+    <div className="w-full flex items-center justify-center flex-col gap-y-6">
       <div className="p-8 flex flex-col gap-8">
         <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
           <div className="text-white text-base font-bold">LLM Selection</div>
@@ -239,23 +254,6 @@ function DataHandling({ nextStep, prevStep, currentStep }) {
           </ul>
         </div>
       </div>
-      <div className="flex w-[650px] justify-between items-center px-6 py-4 space-x-2 border-t rounded-b border-gray-500/50">
-        <button
-          onClick={prevStep}
-          type="button"
-          className="px-4 py-2 rounded-lg text-white hover:bg-sidebar"
-        >
-          Back
-        </button>
-        <button
-          onClick={() => nextStep("user_questionnaire")}
-          className="border border-slate-200 px-4 py-2 rounded-lg text-slate-800 bg-slate-200 text-sm items-center flex gap-x-2 hover:text-white hover:bg-transparent focus:ring-gray-800 font-semibold shadow"
-        >
-          Continue
-        </button>
-      </div>
     </div>
   );
 }
-
-export default memo(DataHandling);

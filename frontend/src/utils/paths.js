@@ -7,8 +7,34 @@ export default {
   login: () => {
     return "/login";
   },
-  onboarding: () => {
-    return "/onboarding";
+  onboarding: {
+    home: () => {
+      return "/onboarding";
+    },
+    survey: () => {
+      return "/onboarding/survey";
+    },
+    llmPreference: () => {
+      return "/onboarding/llm-preference";
+    },
+    embeddingPreference: () => {
+      return "/onboarding/embedding-preference";
+    },
+    vectorDatabase: () => {
+      return "/onboarding/vector-database";
+    },
+    customLogo: () => {
+      return "/onboarding/custom-logo";
+    },
+    userSetup: () => {
+      return "/onboarding/user-setup";
+    },
+    dataHandling: () => {
+      return "/onboarding/data-handling";
+    },
+    createWorkspace: () => {
+      return "/onboarding/create-workspace";
+    },
   },
   github: () => {
     return "https://github.com/Mintplex-Labs/anything-llm";
