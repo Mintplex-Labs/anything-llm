@@ -10,15 +10,15 @@ import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 
-// TODO: Replace with your vector database options
-import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
-import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
-import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
-import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
-import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import System from "@/models/system";
 import VectorDatabaseItem from "./VectorDatabaseItem";
 import paths from "@/utils/paths";
+import PineconeDBOptions from "@/components/VectorDBSelection/PineconeDBOptions";
+import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
+import QDrantDBOptions from "@/components/VectorDBSelection/QDrantDBOptions";
+import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions";
+import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
+import showToast from "@/utils/toast";
 
 export default function VectorDatabaseConnection({
   setHeader,
@@ -35,8 +35,9 @@ export default function VectorDatabaseConnection({
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
+      console.log(_settings);
       setSettings(_settings);
-      setSelectedVDB(_settings?.VectorDB || "chroma");
+      setSelectedVDB(_settings?.VectorDB || "lancedb");
     }
     fetchKeys();
   }, []);
@@ -46,7 +47,7 @@ export default function VectorDatabaseConnection({
       name: "Chroma",
       value: "chroma",
       logo: ChromaLogo,
-      options: <OpenAiOptions settings={settings} />,
+      options: <ChromaDBOptions settings={settings} />,
       description:
         "Open source vector database you can host yourself or on the cloud.",
     },
@@ -54,21 +55,21 @@ export default function VectorDatabaseConnection({
       name: "Pinecone",
       value: "pinecone",
       logo: PineconeLogo,
-      options: <AzureAiOptions settings={settings} />,
+      options: <PineconeDBOptions settings={settings} />,
       description: "100% cloud-based vector database for enterprise use cases.",
     },
     {
       name: "QDrant",
       value: "qdrant",
       logo: QDrantLogo,
-      options: <AnthropicAiOptions settings={settings} />,
+      options: <QDrantDBOptions settings={settings} />,
       description: "Open source local and distributed cloud vector database.",
     },
     {
       name: "Weaviate",
       value: "weaviate",
       logo: WeaviateLogo,
-      options: <GeminiLLMOptions settings={settings} />,
+      options: <WeaviateDBOptions settings={settings} />,
       description:
         "Open source local and cloud hosted multi-modal vector database.",
     },
@@ -76,7 +77,7 @@ export default function VectorDatabaseConnection({
       name: "LanceDB",
       value: "lancedb",
       logo: LanceDbLogo,
-      options: <OllamaLLMOptions settings={settings} />,
+      options: <LanceDBOptions />,
       description:
         "100% local vector DB that runs on the same instance as AnythingLLM.",
     },
@@ -97,9 +98,8 @@ export default function VectorDatabaseConnection({
     const form = e.target;
     const data = {};
     const formData = new FormData(form);
-    data.VectorDBProvider = selectedVDB.value;
+    data.VectorDB = selectedVDB;
     for (var [key, value] of formData.entries()) data[key] = value;
-
     const { error } = await System.updateSystem(data);
     if (error) {
       showToast(`Failed to save Vector Database settings: ${error}`, "error");
