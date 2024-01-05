@@ -8,7 +8,7 @@ import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbedd
 import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
 import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
-import EmbedderItem from "./EmbedderItem";
+import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";

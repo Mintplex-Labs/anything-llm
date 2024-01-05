@@ -1,4 +1,4 @@
-export default function VectorDatabaseItem({
+export default function VectorDBItem({
   name,
   value,
   image,

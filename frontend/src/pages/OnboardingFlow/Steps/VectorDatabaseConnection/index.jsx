@@ -6,7 +6,6 @@ import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import System from "@/models/system";
-import VectorDatabaseItem from "./VectorDatabaseItem";
 import paths from "@/utils/paths";
 import PineconeDBOptions from "@/components/VectorDBSelection/PineconeDBOptions";
 import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
@@ -15,6 +14,7 @@ import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions"
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
+import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
 
 const TITLE = "Vector Database Connection";
 const DESCRIPTION =
@@ -154,7 +154,7 @@ export default function VectorDatabaseConnection({
           </div>
           <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll">
             {filteredVDBs.map((vdb) => (
-              <VectorDatabaseItem
+              <VectorDBItem
                 key={vdb.name}
                 name={vdb.name}
                 value={vdb.value}
