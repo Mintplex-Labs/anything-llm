@@ -219,7 +219,10 @@ export default function GeneralEmbeddingPreference() {
                       })}
                     </div>
                   </div>
-                  <div className="mt-4 flex flex-col gap-y-1">
+                  <div
+                    onChange={() => setHasChanges(true)}
+                    className="mt-4 flex flex-col gap-y-1"
+                  >
                     {selectedEmbedder &&
                       EMBEDDERS.find(
                         (embedder) => embedder.value === selectedEmbedder

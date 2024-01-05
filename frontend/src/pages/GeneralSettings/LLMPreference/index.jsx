@@ -228,7 +228,10 @@ export default function GeneralLLMPreference() {
                     })}
                   </div>
                 </div>
-                <div className="mt-4 flex flex-col gap-y-1">
+                <div
+                  onChange={() => setHasChanges(true)}
+                  className="mt-4 flex flex-col gap-y-1"
+                >
                   {selectedLLM &&
                     LLMS.find((llm) => llm.value === selectedLLM)?.options}
                 </div>

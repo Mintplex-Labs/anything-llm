@@ -194,7 +194,10 @@ export default function GeneralVectorDatabase() {
                         type="text"
                         placeholder="Search vector databases"
                         className="bg-zinc-600 z-20 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                          e.preventDefault();
+                          setSearchQuery(e.target.value);
+                        }}
                         autoComplete="off"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") e.preventDefault();
@@ -216,7 +219,10 @@ export default function GeneralVectorDatabase() {
                     ))}
                   </div>
                 </div>
-                <div className="mt-4 flex flex-col gap-y-1">
+                <div
+                  onChange={() => setHasChanges(true)}
+                  className="mt-4 flex flex-col gap-y-1"
+                >
                   {selectedVDB &&
                     VECTOR_DBS.find((vdb) => vdb.value === selectedVDB)
                       ?.options}
