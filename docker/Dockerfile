@@ -4,6 +4,9 @@ FROM ubuntu:jammy-20230522 AS base
 # Build arguments
 ARG ARG_UID=1000
 ARG ARG_GID=1000
+ARG BUILDARCH
+
+RUN echo "Building AnythingLLM image for $BUILDARCH"
 
 # Install system dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -22,6 +25,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     curl -LO https://github.com/yarnpkg/yarn/releases/download/v1.22.19/yarn_1.22.19_all.deb \
         && dpkg -i yarn_1.22.19_all.deb \
         && rm yarn_1.22.19_all.deb
+
+RUN if [ "$BUILDARCH" = "arm64" ] ; then \
+    echo "Need to patch Chromium support for ARM - installing dep!" && \
+    DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -yq chromium-browser; \
+fi
 
 # Create a group and user with specific UID and GID
 RUN groupadd -g $ARG_GID anythingllm && \
@@ -53,9 +62,9 @@ COPY ./server/package.json ./server/yarn.lock ./server/
 RUN cd ./server/ && yarn install --production --network-timeout 100000 && yarn cache clean
 
 # Compile Llama.cpp bindings for node-llama-cpp for this operating system.
-USER root
-RUN cd ./server && npx --no node-llama-cpp download
-USER anythingllm
+# USER root
+# RUN cd ./server && npx --no node-llama-cpp download
+# USER anythingllm
 
 # Build the frontend
 FROM frontend-deps as build-stage
@@ -73,7 +82,17 @@ COPY --from=build-stage /app/frontend/dist ./server/public
 COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
 
 # Install collector dependencies
-RUN cd /app/collector && yarn install --production && yarn cache clean
+RUN if [ "$BUILDARCH" = "amd64" ] ; then \
+        export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true && \
+        export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium && \
+        cd /app/collector && \
+        yarn install --production && \
+        yarn cache clean; \
+    else \
+        cd /app/collector && yarn install --production && yarn cache clean; \
+fi
+
+# RUN cd /app/collector && yarn install --production && yarn cache clean
 
 # Migrate and Run Prisma against known schema
 RUN cd ./server && npx prisma generate --schema=./prisma/schema.prisma

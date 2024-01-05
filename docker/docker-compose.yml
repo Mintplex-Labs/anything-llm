@@ -10,7 +10,6 @@ services:
   anything-llm:
     container_name: anything-llm
     image: anything-llm:latest
-    platform: linux/amd64,linux/arm64
     build:
       context: ../.
       dockerfile: ./docker/Dockerfile

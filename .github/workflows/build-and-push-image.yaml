@@ -2,7 +2,7 @@ name: Publish Docker image and Github Registry
 
 on:
   push:
-    branches: ['master', '539-amd64-support']
+    branches: ['master']
     paths-ignore:
       - '*.md'
       - 'cloud-deployments/*'
@@ -53,7 +53,6 @@ jobs:
           context: .
           file: ./docker/Dockerfile
           push: true
-          # platforms: linux/amd64,linux/arm64
-          platforms: linux/arm64
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
