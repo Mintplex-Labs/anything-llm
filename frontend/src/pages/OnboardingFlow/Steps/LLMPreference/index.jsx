@@ -144,16 +144,19 @@ export default function LLMPreference({
   }, []);
 
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredLLMs(LLMS);
-    } else {
-      const lowercasedQuery = searchQuery.toLowerCase();
-      const filtered = LLMS.filter((llm) =>
-        llm.name.toLowerCase().includes(lowercasedQuery)
-      );
-      setFilteredLLMs(filtered);
+    const selectedLLMItem = LLMS.find((llm) => llm.value === selectedLLM);
+    let filtered = LLMS.filter((llm) =>
+      llm.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    // If LLM selected, move it to the top
+    if (selectedLLMItem) {
+      filtered = [
+        selectedLLMItem,
+        ...filtered.filter((llm) => llm.value !== selectedLLM),
+      ];
     }
-  }, [searchQuery]);
+    setFilteredLLMs(filtered);
+  }, [searchQuery, selectedLLM]);
 
   return (
     <div>

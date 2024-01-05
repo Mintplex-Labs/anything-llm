@@ -108,16 +108,20 @@ export default function EmbeddingPreference({
   }, []);
 
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredEmbedders(EMBEDDERS);
-    } else {
-      const lowercasedQuery = searchQuery.toLowerCase();
-      const filtered = EMBEDDERS.filter((embedder) =>
-        embedder.name.toLowerCase().includes(lowercasedQuery)
-      );
-      setFilteredEmbedders(filtered);
+    const selectedEmbedderItem = EMBEDDERS.find(
+      (embedder) => embedder.value === selectedEmbedder
+    );
+    let filtered = EMBEDDERS.filter((embedder) =>
+      embedder.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    if (selectedEmbedderItem) {
+      filtered = [
+        selectedEmbedderItem,
+        ...filtered.filter((embedder) => embedder.value !== selectedEmbedder),
+      ];
     }
-  }, [searchQuery]);
+    setFilteredEmbedders(filtered);
+  }, [searchQuery, selectedEmbedder]);
 
   return (
     <div>

@@ -117,16 +117,18 @@ export default function GeneralVectorDatabase() {
   };
 
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredVDBs(VECTOR_DBS);
-    } else {
-      const lowercasedQuery = searchQuery.toLowerCase();
-      const filtered = VECTOR_DBS.filter((vdb) =>
-        vdb.name.toLowerCase().includes(lowercasedQuery)
-      );
-      setFilteredVDBs(filtered);
+    const selectedVDBItem = VECTOR_DBS.find((vdb) => vdb.value === selectedVDB);
+    let filtered = VECTOR_DBS.filter((vdb) =>
+      vdb.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    if (selectedVDBItem) {
+      filtered = [
+        selectedVDBItem,
+        ...filtered.filter((vdb) => vdb.value !== selectedVDB),
+      ];
     }
-  }, [searchQuery]);
+    setFilteredVDBs(filtered);
+  }, [searchQuery, selectedVDB]);
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
