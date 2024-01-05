@@ -20,10 +20,8 @@ export default function GeneralEmbeddingPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [hasEmbeddings, setHasEmbeddings] = useState(false);
-  const [embeddingChoice, setEmbeddingChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredEmbedders, setFilteredEmbedders] = useState([]);
   const [selectedEmbedder, setSelectedEmbedder] = useState(null);
@@ -31,7 +29,7 @@ export default function GeneralEmbeddingPreference() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
-      embeddingChoice !== settings?.EmbeddingEngine &&
+      selectedEmbedder !== settings?.EmbeddingEngine &&
       hasChanges &&
       hasEmbeddings
     ) {
