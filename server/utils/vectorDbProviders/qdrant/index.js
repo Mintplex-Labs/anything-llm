@@ -152,9 +152,10 @@ const QDrant = {
 
           // Before sending to Qdrant and saving the records to our db
           // we need to assign the id of each chunk that is stored in the cached file.
+          // The id property must be defined or else it will be unable to be managed by ALLM.
           chunk.forEach((chunk) => {
             const id = uuidv4();
-            if (chunk.payload && chunk.payload.id) {
+            if (chunk?.payload?.hasOwnProperty("id")) {
               const { id: _id, ...payload } = chunk.payload;
               documentVectors.push({ docId, vectorId: id });
               submission.ids.push(id);
@@ -162,7 +163,7 @@ const QDrant = {
               submission.payloads.push(payload);
             } else {
               console.error(
-                "The 'id' property is not defined in chunk.payload"
+                "The 'id' property is not defined in chunk.payload - it will be omitted from being inserted in QDrant collection."
               );
             }
           });
