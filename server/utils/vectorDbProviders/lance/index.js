@@ -78,11 +78,12 @@ const LanceDb = {
       .execute();
 
     response.forEach((item) => {
-      if (this.distanceToSimilarity(item.score) < similarityThreshold) return;
+      if (this.distanceToSimilarity(item._distance) < similarityThreshold)
+        return;
       const { vector: _, ...rest } = item;
       result.contextTexts.push(rest.text);
       result.sourceDocuments.push(rest);
-      result.scores.push(this.distanceToSimilarity(item.score));
+      result.scores.push(this.distanceToSimilarity(item._distance));
     });
 
     return result;
