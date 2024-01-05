@@ -8,25 +8,28 @@ import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import PreLoader from "@/components/Preloader";
-import LLMProviderOption from "@/components/LLMSelection/LLMProviderOption";
 import ChangeWarningModal from "@/components/ChangeWarning";
 import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
 import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
 import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
+import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 
 export default function GeneralEmbeddingPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [hasEmbeddings, setHasEmbeddings] = useState(false);
-  const [embeddingChoice, setEmbeddingChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredEmbedders, setFilteredEmbedders] = useState([]);
+  const [selectedEmbedder, setSelectedEmbedder] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
-      embeddingChoice !== settings?.EmbeddingEngine &&
+      selectedEmbedder !== settings?.EmbeddingEngine &&
       hasChanges &&
       hasEmbeddings
     ) {
@@ -38,11 +41,11 @@ export default function GeneralEmbeddingPreference() {
 
   const handleSaveSettings = async () => {
     setSaving(true);
-    const data = new FormData(document.getElementById("embedding-form"));
+    const form = document.getElementById("embedding-form");
     const settingsData = {};
-    for (let [key, value] of data.entries()) {
-      settingsData[key] = value;
-    }
+    const formData = new FormData(form);
+    settingsData.EmbeddingEngine = selectedEmbedder;
+    for (var [key, value] of formData.entries()) settingsData[key] = value;
 
     const { error } = await System.updateSystem(settingsData);
     if (error) {
@@ -57,7 +60,7 @@ export default function GeneralEmbeddingPreference() {
   };
 
   const updateChoice = (selection) => {
-    setEmbeddingChoice(selection);
+    setSelectedEmbedder(selection);
     setHasChanges(true);
   };
 
@@ -65,12 +68,51 @@ export default function GeneralEmbeddingPreference() {
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setEmbeddingChoice(_settings?.EmbeddingEngine || "openai");
+      setSelectedEmbedder(_settings?.EmbeddingEngine || "native");
       setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
       setLoading(false);
     }
     fetchKeys();
   }, []);
+
+  const EMBEDDERS = [
+    {
+      name: "AnythingLLM Embedder",
+      value: "native",
+      logo: AnythingLLMIcon,
+      options: <NativeEmbeddingOptions settings={settings} />,
+      description:
+        "Use the built-in embedding engine for AnythingLLM. Zero setup!",
+    },
+    {
+      name: "OpenAI",
+      value: "openai",
+      logo: OpenAiLogo,
+      options: <OpenAiOptions settings={settings} />,
+      description: "The standard option for most non-commercial use.",
+    },
+    {
+      name: "Azure OpenAI",
+      value: "azure",
+      logo: AzureOpenAiLogo,
+      options: <AzureAiOptions settings={settings} />,
+      description: "The enterprise option of OpenAI hosted on Azure services.",
+    },
+    {
+      name: "Local AI",
+      value: "localai",
+      logo: LocalAiLogo,
+      options: <LocalAiOptions settings={settings} />,
+      description: "Run embedding models locally on your own machine.",
+    },
+  ];
+
+  useEffect(() => {
+    const filtered = EMBEDDERS.filter((embedder) =>
+      embedder.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredEmbedders(filtered);
+  }, [searchQuery, selectedEmbedder]);
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
@@ -98,7 +140,6 @@ export default function GeneralEmbeddingPreference() {
           <form
             id="embedding-form"
             onSubmit={handleSubmit}
-            onChange={() => setHasChanges(true)}
             className="flex w-full"
           >
             <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
@@ -132,59 +173,52 @@ export default function GeneralEmbeddingPreference() {
                 <div className="text-white text-sm font-medium py-4">
                   Embedding Providers
                 </div>
-                <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4">
-                  <input
-                    hidden={true}
-                    name="EmbeddingEngine"
-                    value={embeddingChoice}
-                  />
-                  <LLMProviderOption
-                    name="AnythingLLM Embedder"
-                    value="native"
-                    description="Use the built-in embedding engine for AnythingLLM. Zero setup!"
-                    checked={embeddingChoice === "native"}
-                    image={AnythingLLMIcon}
-                    onClick={updateChoice}
-                  />
-                  <LLMProviderOption
-                    name="OpenAI"
-                    value="openai"
-                    link="openai.com"
-                    description="Use OpenAI's text-embedding-ada-002 embedding model."
-                    checked={embeddingChoice === "openai"}
-                    image={OpenAiLogo}
-                    onClick={updateChoice}
-                  />
-                  <LLMProviderOption
-                    name="Azure OpenAI"
-                    value="azure"
-                    link="azure.microsoft.com"
-                    description="The enterprise option of OpenAI hosted on Azure services."
-                    checked={embeddingChoice === "azure"}
-                    image={AzureOpenAiLogo}
-                    onClick={updateChoice}
-                  />
-                  <LLMProviderOption
-                    name="LocalAI"
-                    value="localai"
-                    link="localai.io"
-                    description="Self hosted LocalAI embedding engine."
-                    checked={embeddingChoice === "localai"}
-                    image={LocalAiLogo}
-                    onClick={updateChoice}
-                  />
-                </div>
-                <div className="mt-10 flex flex-wrap gap-4">
-                  {embeddingChoice === "native" && <NativeEmbeddingOptions />}
-                  {embeddingChoice === "openai" && (
-                    <OpenAiOptions settings={settings} />
-                  )}
-                  {embeddingChoice === "azure" && (
-                    <AzureAiOptions settings={settings} />
-                  )}
-                  {embeddingChoice === "localai" && (
-                    <LocalAiOptions settings={settings} />
-                  )}
+                <div className="w-full">
+                  <div className="w-full relative border-slate-300/20 shadow border-4 rounded-xl text-white">
+                    <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
+                      <div className="w-full flex items-center sticky top-0 z-20">
+                        <MagnifyingGlass
+                          size={16}
+                          weight="bold"
+                          className="absolute left-4 z-30 text-white"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Search Embedding providers"
+                          className="bg-zinc-600 z-20 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          autoComplete="off"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") e.preventDefault();
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
+                      {filteredEmbedders.map((embedder) => {
+                        return (
+                          <EmbedderItem
+                            key={embedder.name}
+                            name={embedder.name}
+                            value={embedder.value}
+                            image={embedder.logo}
+                            description={embedder.description}
+                            checked={selectedEmbedder === embedder.value}
+                            onClick={() => updateChoice(embedder.value)}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div
+                    onChange={() => setHasChanges(true)}
+                    className="mt-4 flex flex-col gap-y-1"
+                  >
+                    {selectedEmbedder &&
+                      EMBEDDERS.find(
+                        (embedder) => embedder.value === selectedEmbedder
+                      )?.options}
+                  </div>
                 </div>
               </>
             </div>

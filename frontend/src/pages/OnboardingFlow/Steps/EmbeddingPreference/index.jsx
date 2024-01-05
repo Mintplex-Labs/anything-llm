@@ -8,7 +8,7 @@ import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbedd
 import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
 import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
-import EmbedderItem from "./EmbedderItem";
+import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
@@ -108,22 +108,17 @@ export default function EmbeddingPreference({
   }, []);
 
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredEmbedders(EMBEDDERS);
-    } else {
-      const lowercasedQuery = searchQuery.toLowerCase();
-      const filtered = EMBEDDERS.filter((embedder) =>
-        embedder.name.toLowerCase().includes(lowercasedQuery)
-      );
-      setFilteredEmbedders(filtered);
-    }
-  }, [searchQuery]);
+    const filtered = EMBEDDERS.filter((embedder) =>
+      embedder.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredEmbedders(filtered);
+  }, [searchQuery, selectedEmbedder]);
 
   return (
     <div>
       <form ref={formRef} onSubmit={handleSubmit} className="w-full">
         <div className="w-full relative border-slate-300/40 shadow border-2 rounded-lg text-white">
-          <div className="w-full p-4 absolute top-0 rounded-t-lg bg-accent/50">
+          <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
             <div className="w-full flex items-center sticky top-0 z-20">
               <MagnifyingGlass
                 size={16}

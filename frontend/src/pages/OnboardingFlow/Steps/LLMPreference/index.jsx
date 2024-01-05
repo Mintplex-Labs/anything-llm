@@ -16,7 +16,7 @@ import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
-import LLMItem from "./LLMItem";
+import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
@@ -144,23 +144,18 @@ export default function LLMPreference({
   }, []);
 
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredLLMs(LLMS);
-    } else {
-      const lowercasedQuery = searchQuery.toLowerCase();
-      const filtered = LLMS.filter((llm) =>
-        llm.name.toLowerCase().includes(lowercasedQuery)
-      );
-      setFilteredLLMs(filtered);
-    }
-  }, [searchQuery]);
+    const filtered = LLMS.filter((llm) =>
+      llm.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredLLMs(filtered);
+  }, [searchQuery, selectedLLM]);
 
   return (
     <div>
       <form ref={formRef} onSubmit={handleSubmit} className="w-full">
         <div className="w-full relative border-slate-300/40 shadow border-2 rounded-lg text-white">
-          <div className="w-full p-4 absolute top-0 rounded-t-lg bg-accent/50">
-            <div className="w-full flex items-center sticky top-0 z-20">
+          <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
+            <div className="w-full flex items-center sticky top-0">
               <MagnifyingGlass
                 size={16}
                 weight="bold"

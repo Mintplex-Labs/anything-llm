@@ -9,36 +9,86 @@ import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import PreLoader from "@/components/Preloader";
-import VectorDBOption from "@/components/VectorDBOption";
 import ChangeWarningModal from "@/components/ChangeWarning";
+import { MagnifyingGlass } from "@phosphor-icons/react";
+import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
+import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
+import PineconeDBOptions from "@/components/VectorDBSelection/PineconeDBOptions";
+import QDrantDBOptions from "@/components/VectorDBSelection/QDrantDBOptions";
+import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions";
+import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [hasEmbeddings, setHasEmbeddings] = useState(false);
-  const [vectorDB, setVectorDB] = useState("lancedb");
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredVDBs, setFilteredVDBs] = useState([]);
+  const [selectedVDB, setSelectedVDB] = useState(null);
 
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
+      console.log(_settings);
       setSettings(_settings);
-      setVectorDB(_settings?.VectorDB || "lancedb");
+      setSelectedVDB(_settings?.VectorDB || "lancedb");
       setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
       setLoading(false);
     }
     fetchKeys();
   }, []);
 
+  const VECTOR_DBS = [
+    {
+      name: "LanceDB",
+      value: "lancedb",
+      logo: LanceDbLogo,
+      options: <LanceDBOptions />,
+      description:
+        "100% local vector DB that runs on the same instance as AnythingLLM.",
+    },
+    {
+      name: "Chroma",
+      value: "chroma",
+      logo: ChromaLogo,
+      options: <ChromaDBOptions settings={settings} />,
+      description:
+        "Open source vector database you can host yourself or on the cloud.",
+    },
+    {
+      name: "Pinecone",
+      value: "pinecone",
+      logo: PineconeLogo,
+      options: <PineconeDBOptions settings={settings} />,
+      description: "100% cloud-based vector database for enterprise use cases.",
+    },
+    {
+      name: "QDrant",
+      value: "qdrant",
+      logo: QDrantLogo,
+      options: <QDrantDBOptions settings={settings} />,
+      description: "Open source local and distributed cloud vector database.",
+    },
+    {
+      name: "Weaviate",
+      value: "weaviate",
+      logo: WeaviateLogo,
+      options: <WeaviateDBOptions settings={settings} />,
+      description:
+        "Open source local and cloud hosted multi-modal vector database.",
+    },
+  ];
+
   const updateVectorChoice = (selection) => {
     setHasChanges(true);
-    setVectorDB(selection);
+    setSelectedVDB(selection);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (vectorDB !== settings?.VectorDB && hasChanges && hasEmbeddings) {
+    if (selectedVDB !== settings?.VectorDB && hasChanges && hasEmbeddings) {
       document.getElementById("confirmation-modal")?.showModal();
     } else {
       await handleSaveSettings();
@@ -47,11 +97,11 @@ export default function GeneralVectorDatabase() {
 
   const handleSaveSettings = async () => {
     setSaving(true);
-    const data = new FormData(document.getElementById("vectordb-form"));
+    const form = document.getElementById("vectordb-form");
     const settingsData = {};
-    for (let [key, value] of data.entries()) {
-      settingsData[key] = value;
-    }
+    const formData = new FormData(form);
+    settingsData.VectorDB = selectedVDB;
+    for (var [key, value] of formData.entries()) settingsData[key] = value;
 
     const { error } = await System.updateSystem(settingsData);
     if (error) {
@@ -64,6 +114,13 @@ export default function GeneralVectorDatabase() {
     setSaving(false);
     document.getElementById("confirmation-modal")?.close();
   };
+
+  useEffect(() => {
+    const filtered = VECTOR_DBS.filter((vdb) =>
+      vdb.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredVDBs(filtered);
+  }, [searchQuery, selectedVDB]);
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
@@ -91,7 +148,6 @@ export default function GeneralVectorDatabase() {
           <form
             id="vectordb-form"
             onSubmit={handleSubmit}
-            onChange={() => setHasChanges(true)}
             className="flex w-full"
           >
             <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
@@ -119,236 +175,52 @@ export default function GeneralVectorDatabase() {
               <div className="text-white text-sm font-medium py-4">
                 Select your preferred vector database provider
               </div>
-              <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
-                <input hidden={true} name="VectorDB" value={vectorDB} />
-                <VectorDBOption
-                  name="Chroma"
-                  value="chroma"
-                  link="trychroma.com"
-                  description="Open source vector database you can host yourself or on the cloud."
-                  checked={vectorDB === "chroma"}
-                  image={ChromaLogo}
-                  onClick={updateVectorChoice}
-                />
-                <VectorDBOption
-                  name="Pinecone"
-                  value="pinecone"
-                  link="pinecone.io"
-                  description="100% cloud-based vector database for enterprise use cases."
-                  checked={vectorDB === "pinecone"}
-                  image={PineconeLogo}
-                  onClick={updateVectorChoice}
-                />
-                <VectorDBOption
-                  name="QDrant"
-                  value="qdrant"
-                  link="qdrant.tech"
-                  description="Open source local and distributed cloud vector database."
-                  checked={vectorDB === "qdrant"}
-                  image={QDrantLogo}
-                  onClick={updateVectorChoice}
-                />
-                <VectorDBOption
-                  name="Weaviate"
-                  value="weaviate"
-                  link="weaviate.io"
-                  description="Open source local and cloud hosted multi-modal vector database."
-                  checked={vectorDB === "weaviate"}
-                  image={WeaviateLogo}
-                  onClick={updateVectorChoice}
-                />
-                <VectorDBOption
-                  name="LanceDB"
-                  value="lancedb"
-                  link="lancedb.com"
-                  description="100% local vector DB that runs on the same instance as AnythingLLM."
-                  checked={vectorDB === "lancedb"}
-                  image={LanceDbLogo}
-                  onClick={updateVectorChoice}
-                />
-              </div>
-              <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
-                {vectorDB === "pinecone" && (
-                  <>
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        Pinecone DB API Key
-                      </label>
-                      <input
-                        type="password"
-                        name="PineConeKey"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="Pinecone API Key"
-                        defaultValue={
-                          settings?.PineConeKey ? "*".repeat(20) : ""
-                        }
-                        required={true}
-                        autoComplete="off"
-                        spellCheck={false}
+              <div className="w-full">
+                <div className="w-full relative border-slate-300/20 shadow border-4 rounded-xl text-white">
+                  <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
+                    <div className="w-full flex items-center sticky top-0 z-20">
+                      <MagnifyingGlass
+                        size={16}
+                        weight="bold"
+                        className="absolute left-4 z-30 text-white"
                       />
-                    </div>
-
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        Pinecone Index Environment
-                      </label>
                       <input
                         type="text"
-                        name="PineConeEnvironment"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="us-gcp-west-1"
-                        defaultValue={settings?.PineConeEnvironment}
-                        required={true}
+                        placeholder="Search vector databases"
+                        className="bg-zinc-600 z-20 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
+                        onChange={(e) => {
+                          e.preventDefault();
+                          setSearchQuery(e.target.value);
+                        }}
                         autoComplete="off"
-                        spellCheck={false}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") e.preventDefault();
+                        }}
                       />
                     </div>
-
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        Pinecone Index Name
-                      </label>
-                      <input
-                        type="text"
-                        name="PineConeIndex"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="my-index"
-                        defaultValue={settings?.PineConeIndex}
-                        required={true}
-                        autoComplete="off"
-                        spellCheck={false}
-                      />
-                    </div>
-                  </>
-                )}
-
-                {vectorDB === "chroma" && (
-                  <>
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        Chroma Endpoint
-                      </label>
-                      <input
-                        type="url"
-                        name="ChromaEndpoint"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="http://localhost:8000"
-                        defaultValue={settings?.ChromaEndpoint}
-                        required={true}
-                        autoComplete="off"
-                        spellCheck={false}
-                      />
-                    </div>
-
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        API Header
-                      </label>
-                      <input
-                        name="ChromaApiHeader"
-                        autoComplete="off"
-                        type="text"
-                        defaultValue={settings?.ChromaApiHeader}
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="X-Api-Key"
-                      />
-                    </div>
-
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        API Key
-                      </label>
-                      <input
-                        name="ChromaApiKey"
-                        autoComplete="off"
-                        type="password"
-                        defaultValue={
-                          settings?.ChromaApiKey ? "*".repeat(20) : ""
-                        }
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="sk-myApiKeyToAccessMyChromaInstance"
-                      />
-                    </div>
-                  </>
-                )}
-
-                {vectorDB === "lancedb" && (
-                  <div className="w-full h-40 items-center justify-center flex">
-                    <p className="text-sm font-base text-white text-opacity-60">
-                      There is no configuration needed for LanceDB.
-                    </p>
                   </div>
-                )}
-
-                {vectorDB === "qdrant" && (
-                  <>
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        QDrant API Endpoint
-                      </label>
-                      <input
-                        type="url"
-                        name="QdrantEndpoint"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="http://localhost:6633"
-                        defaultValue={settings?.QdrantEndpoint}
-                        required={true}
-                        autoComplete="off"
-                        spellCheck={false}
+                  <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
+                    {filteredVDBs.map((vdb) => (
+                      <VectorDBItem
+                        key={vdb.name}
+                        name={vdb.name}
+                        value={vdb.value}
+                        image={vdb.logo}
+                        description={vdb.description}
+                        checked={selectedVDB === vdb.value}
+                        onClick={() => updateVectorChoice(vdb.value)}
                       />
-                    </div>
-
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        API Key
-                      </label>
-                      <input
-                        type="password"
-                        name="QdrantApiKey"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="wOeqxsYP4....1244sba"
-                        defaultValue={settings?.QdrantApiKey}
-                        autoComplete="off"
-                        spellCheck={false}
-                      />
-                    </div>
-                  </>
-                )}
-
-                {vectorDB === "weaviate" && (
-                  <>
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        Weaviate Endpoint
-                      </label>
-                      <input
-                        type="url"
-                        name="WeaviateEndpoint"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="http://localhost:8080"
-                        defaultValue={settings?.WeaviateEndpoint}
-                        required={true}
-                        autoComplete="off"
-                        spellCheck={false}
-                      />
-                    </div>
-
-                    <div className="flex flex-col w-60">
-                      <label className="text-white text-sm font-semibold block mb-4">
-                        API Key
-                      </label>
-                      <input
-                        type="password"
-                        name="WeaviateApiKey"
-                        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                        placeholder="sk-123Abcweaviate"
-                        defaultValue={settings?.WeaviateApiKey}
-                        autoComplete="off"
-                        spellCheck={false}
-                      />
-                    </div>
-                  </>
-                )}
+                    ))}
+                  </div>
+                </div>
+                <div
+                  onChange={() => setHasChanges(true)}
+                  className="mt-4 flex flex-col gap-y-1"
+                >
+                  {selectedVDB &&
+                    VECTOR_DBS.find((vdb) => vdb.value === selectedVDB)
+                      ?.options}
+                </div>
               </div>
             </div>
           </form>

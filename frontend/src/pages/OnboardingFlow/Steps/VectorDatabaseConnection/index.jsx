@@ -6,7 +6,6 @@ import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import System from "@/models/system";
-import VectorDatabaseItem from "./VectorDatabaseItem";
 import paths from "@/utils/paths";
 import PineconeDBOptions from "@/components/VectorDBSelection/PineconeDBOptions";
 import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
@@ -15,6 +14,7 @@ import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions"
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
+import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
 
 const TITLE = "Vector Database Connection";
 const DESCRIPTION =
@@ -118,22 +118,17 @@ export default function VectorDatabaseConnection({
   }, []);
 
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredVDBs(VECTOR_DBS);
-    } else {
-      const lowercasedQuery = searchQuery.toLowerCase();
-      const filtered = VECTOR_DBS.filter((vdb) =>
-        vdb.name.toLowerCase().includes(lowercasedQuery)
-      );
-      setFilteredVDBs(filtered);
-    }
-  }, [searchQuery]);
+    const filtered = VECTOR_DBS.filter((vdb) =>
+      vdb.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredVDBs(filtered);
+  }, [searchQuery, selectedVDB]);
 
   return (
     <>
       <form ref={formRef} onSubmit={handleSubmit} className="w-full">
         <div className="w-full relative border-slate-300/40 shadow border-2 rounded-lg text-white pb-4">
-          <div className="w-full p-4 absolute top-0 rounded-t-lg bg-accent/50">
+          <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
             <div className="w-full flex items-center sticky top-0 z-20">
               <MagnifyingGlass
                 size={16}
@@ -154,7 +149,7 @@ export default function VectorDatabaseConnection({
           </div>
           <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll">
             {filteredVDBs.map((vdb) => (
-              <VectorDatabaseItem
+              <VectorDBItem
                 key={vdb.name}
                 name={vdb.name}
                 value={vdb.value}
