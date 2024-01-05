@@ -29,7 +29,6 @@ export default function EmbeddingPreference({
   const [settings, setSettings] = useState(null);
   const formRef = useRef(null);
   const hiddenSubmitButtonRef = useRef(null);
-  const isHosted = window.location.hostname.includes("useanything.com");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -145,10 +144,6 @@ export default function EmbeddingPreference({
           </div>
           <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
             {filteredEmbedders.map((embedder) => {
-              if (embedder.value === "native" && isHosted) {
-                return null;
-              }
-
               return (
                 <EmbedderItem
                   key={embedder.name}
