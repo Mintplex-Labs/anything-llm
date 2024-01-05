@@ -154,15 +154,16 @@ const QDrant = {
           // we need to assign the id of each chunk that is stored in the cached file.
           chunk.forEach((chunk) => {
             const id = uuidv4();
-            if(chunk.payload && chunk.payload.id){
+            if (chunk.payload && chunk.payload.id) {
               const { id: _id, ...payload } = chunk.payload;
               documentVectors.push({ docId, vectorId: id });
               submission.ids.push(id);
               submission.vectors.push(chunk.vector);
               submission.payloads.push(payload);
-            }
-            else{
-              console.error("The 'id' property is not defined in chunk.payload");
+            } else {
+              console.error(
+                "The 'id' property is not defined in chunk.payload"
+              );
             }
           });
 
