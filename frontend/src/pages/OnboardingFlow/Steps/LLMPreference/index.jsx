@@ -159,8 +159,8 @@ export default function LLMPreference({
     <div>
       <form ref={formRef} onSubmit={handleSubmit} className="w-full">
         <div className="w-full relative border-slate-300/40 shadow border-2 rounded-lg text-white">
-          <div className="w-full p-4 absolute top-0 rounded-t-lg bg-accent/50">
-            <div className="w-full flex items-center sticky top-0 z-20">
+          <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
+            <div className="w-full flex items-center sticky top-0">
               <MagnifyingGlass
                 size={16}
                 weight="bold"
