@@ -59,7 +59,7 @@
     "swagger-ui-express": "^5.0.0",
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",
-    "vectordb": "0.1.12",
+    "vectordb": "0.1.19",
     "weaviate-ts-client": "^1.4.0"
   },
   "devDependencies": {
