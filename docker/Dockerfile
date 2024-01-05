@@ -50,9 +50,7 @@ RUN cd ./frontend/ && yarn install && yarn cache clean
 # Install server dependencies
 FROM base as server-deps
 COPY ./server/package.json ./server/yarn.lock ./server/
-RUN cd ./server/ && yarn install --production && yarn cache clean && \
-    rm /app/server/node_modules/vectordb/x86_64-apple-darwin.node && \
-    rm /app/server/node_modules/vectordb/aarch64-apple-darwin.node
+RUN cd ./server/ && yarn install --production && yarn cache clean
 
 # Compile Llama.cpp bindings for node-llama-cpp for this operating system.
 USER root
