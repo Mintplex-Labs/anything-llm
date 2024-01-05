@@ -104,6 +104,8 @@ export default function App() {
                 />
                 {/* Onboarding Flow */}
                 <Route path="/onboarding" element={<OnboardingFlow />} />
+                <Route path="/onboarding/:step" element={<OnboardingFlow />} />
+
                 <Route path="*" element={<Navigate replace to="/" />} />
               </Routes>
               <ToastContainer />

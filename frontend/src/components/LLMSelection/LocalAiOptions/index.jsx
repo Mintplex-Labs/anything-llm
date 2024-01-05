@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Info } from "@phosphor-icons/react";
-import paths from "../../../utils/paths";
-import System from "../../../models/system";
+import paths from "@/utils/paths";
+import System from "@/models/system";
 import { Link } from "react-router-dom";
 
 export default function LocalAiOptions({ settings, showAlert = false }) {
@@ -63,6 +63,28 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             defaultValue={settings?.LocalAiTokenLimit}
             required={true}
             autoComplete="off"
+          />
+        </div>
+      </div>
+      <div className="w-full flex items-center gap-4">
+        <div className="flex flex-col w-60">
+          <div className="flex flex-col gap-y-1 mb-4">
+            <label className="text-white text-sm font-semibold flex items-center gap-x-2">
+              Local AI API Key{" "}
+              <p className="!text-xs !italic !font-thin">optional</p>
+            </label>
+          </div>
+
+          <input
+            type="password"
+            name="LocalAiApiKey"
+            className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            placeholder="sk-mysecretkey"
+            defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
+            autoComplete="off"
+            spellCheck={false}
+            onChange={(e) => setApiKeyValue(e.target.value)}
+            onBlur={() => setApiKey(apiKeyValue)}
           />
         </div>
       </div>

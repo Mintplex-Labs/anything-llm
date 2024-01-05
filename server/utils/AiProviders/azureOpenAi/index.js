@@ -98,9 +98,9 @@ class AzureOpenAiLLM {
       })
       .then((res) => {
         if (!res.hasOwnProperty("choices"))
-          throw new Error("OpenAI chat: No results!");
+          throw new Error("AzureOpenAI chat: No results!");
         if (res.choices.length === 0)
-          throw new Error("OpenAI chat: No results length!");
+          throw new Error("AzureOpenAI chat: No results length!");
         return res.choices[0].message.content;
       })
       .catch((error) => {
@@ -110,6 +110,31 @@ class AzureOpenAiLLM {
         );
       });
     return textResponse;
+  }
+
+  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
+    if (!this.model)
+      throw new Error(
+        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
+      );
+
+    const messages = await this.compressMessages(
+      {
+        systemPrompt: chatPrompt(workspace),
+        userPrompt: prompt,
+        chatHistory,
+      },
+      rawHistory
+    );
+    const stream = await this.openai.streamChatCompletions(
+      this.model,
+      messages,
+      {
+        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        n: 1,
+      }
+    );
+    return { type: "azureStream", stream };
   }
 
   async getChatCompletion(messages = [], { temperature = 0.7 }) {
@@ -123,6 +148,23 @@ class AzureOpenAiLLM {
     });
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
+  }
+
+  async streamGetChatCompletion(messages = [], { temperature = 0.7 }) {
+    if (!this.model)
+      throw new Error(
+        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
+      );
+
+    const stream = await this.openai.streamChatCompletions(
+      this.model,
+      messages,
+      {
+        temperature,
+        n: 1,
+      }
+    );
+    return { type: "azureStream", stream };
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

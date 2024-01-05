@@ -91,7 +91,7 @@ export function AdminRoute({ Component }) {
   if (isAuthd === null) return <FullScreenLoader />;
 
   if (shouldRedirectToOnboarding) {
-    return <Navigate to={paths.onboarding()} />;
+    return <Navigate to={paths.onboarding.home()} />;
   }
 
   const user = userFromStorage();
@@ -112,7 +112,7 @@ export function ManagerRoute({ Component }) {
   if (isAuthd === null) return <FullScreenLoader />;
 
   if (shouldRedirectToOnboarding) {
-    return <Navigate to={paths.onboarding()} />;
+    return <Navigate to={paths.onboarding.home()} />;
   }
 
   const user = userFromStorage();

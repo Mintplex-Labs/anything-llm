@@ -14,10 +14,10 @@ const { chatEndpoints } = require("./endpoints/chat");
 const { adminEndpoints } = require("./endpoints/admin");
 const { inviteEndpoints } = require("./endpoints/invite");
 const { utilEndpoints } = require("./endpoints/utils");
-const { Telemetry } = require("./models/telemetry");
 const { developerEndpoints } = require("./endpoints/api");
-const setupTelemetry = require("./utils/telemetry");
 const { extensionEndpoints } = require("./endpoints/extensions");
+const setupTelemetry = require("./utils/telemetry");
+const { Telemetry } = require("./models/telemetry");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -49,10 +49,8 @@ app
   .listen(process.env.SERVER_PORT || 3001, async () => {
     await setupTelemetry();
     console.log(
-      `[${
-        process.env.NODE_ENV || "development"
-      }] AnythingLLM Standalone Backend listening on port ${
-        process.env.SERVER_PORT || 3001
+      `[${process.env.NODE_ENV || "development"
+      }] AnythingLLM Standalone Backend listening on port ${process.env.SERVER_PORT || 3001
       }`
     );
   })

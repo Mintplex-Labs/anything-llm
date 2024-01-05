@@ -9,7 +9,7 @@ export default function OpenAiOptions({ settings }) {
   }
 
   return (
-    <>
+    <div className="flex gap-x-4">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-4">
           API Key
@@ -28,7 +28,7 @@ export default function OpenAiOptions({ settings }) {
         />
       </div>
       <OpenAIModelSelection settings={settings} apiKey={openAIKey} />
-    </>
+    </div>
   );
 }
 
@@ -90,7 +90,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
                 <option
                   key={model}
                   value={model}
-                  selected={settings.OpenAiModelPref === model}
+                  selected={settings?.OpenAiModelPref === model}
                 >
                   {model}
                 </option>
@@ -105,7 +105,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
                 <option
                   key={model.id}
                   value={model.id}
-                  selected={settings.OpenAiModelPref === model.id}
+                  selected={settings?.OpenAiModelPref === model.id}
                 >
                   {model.id}
                 </option>

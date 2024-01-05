@@ -17,7 +17,7 @@ export default function OllamaLLMOptions({ settings }) {
           <input
             type="url"
             name="OllamaLLMBasePath"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="http://127.0.0.1:11434"
             defaultValue={settings?.OllamaLLMBasePath}
             required={true}
@@ -35,7 +35,7 @@ export default function OllamaLLMOptions({ settings }) {
           <input
             type="number"
             name="OllamaLLMTokenLimit"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="4096"
             min={1}
             onScroll={(e) => e.target.blur()}
