@@ -268,6 +268,11 @@ function handleStreamResponses(response, stream, responseProps) {
     return new Promise(async (resolve) => {
       let fullText = "";
       for await (const chunk of stream) {
+        if (chunk === undefined)
+          throw new Error(
+            "Stream returned undefined chunk. Aborting reply - check model provider logs."
+          );
+
         const content = chunk.hasOwnProperty("content") ? chunk.content : chunk;
         fullText += content;
         writeResponseChunk(response, {
