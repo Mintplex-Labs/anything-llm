@@ -300,7 +300,7 @@ function cannonball({
   // if the delta is the token difference between where our prompt is in size
   // and where we ideally need to land.
   const delta = initialInputSize - targetTokenSize;
-  const tokenChunks = tokenManager.countFromString(input);
+  const tokenChunks = tokenManager.tokensFromString(input);
   const middleIdx = Math.floor(tokenChunks.length / 2);
 
   // middle truncate the text going left and right of midpoint
