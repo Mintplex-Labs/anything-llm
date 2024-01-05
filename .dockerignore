@@ -14,4 +14,3 @@ collector/outputs/**
 **/bundleinspector.html
 !docker/.env.example
 !frontend/.env.production
-server/storage/models/**
