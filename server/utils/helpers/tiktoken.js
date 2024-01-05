@@ -3,12 +3,11 @@ const { getEncodingNameForModel, getEncoding } = require("js-tiktoken");
 class TokenManager {
   constructor(model = "gpt-3.5-turbo") {
     this.model = model;
-    this.encoderName = this.getEncodingFromModel(model);
+    this.encoderName = this.#getEncodingFromModel(model);
     this.encoder = getEncoding(this.encoderName);
-    this.buffer = 50;
   }
 
-  getEncodingFromModel(model) {
+  #getEncodingFromModel(model) {
     try {
       return getEncodingNameForModel(model);
     } catch {
@@ -16,18 +15,15 @@ class TokenManager {
     }
   }
 
-  tokensFromString(input = "") {
-    const tokens = this.encoder.encode(input);
-    return tokens;
-  }
-
   bytesFromTokens(tokens = []) {
     const bytes = this.encoder.decode(tokens);
     return bytes;
   }
 
+  // Pass in an empty array of disallowedSpecials to handle all tokens as text and to be tokenized.
+  // https://github.com/openai/tiktoken/blob/9e79899bc248d5313c7dd73562b5e211d728723d/tiktoken/core.py#L91C20-L91C38
   countFromString(input = "") {
-    const tokens = this.encoder.encode(input);
+    const tokens = this.encoder.encode(input, undefined, []);
     return tokens.length;
   }
 

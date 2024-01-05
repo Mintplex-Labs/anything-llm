@@ -12,7 +12,6 @@ import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import PreLoader from "@/components/Preloader";
-import LLMProviderOption from "@/components/LLMSelection/LLMProviderOption";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
@@ -21,21 +20,31 @@ import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
+import LLMItem from "@/components/LLMSelection/LLMItem";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [llmChoice, setLLMChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredLLMs, setFilteredLLMs] = useState([]);
+  const [selectedLLM, setSelectedLLM] = useState(null);
+
+  const isHosted = window.location.hostname.includes("useanything.com");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
+    const form = e.target;
     const data = {};
-    const form = new FormData(e.target);
-    for (var [key, value] of form.entries()) data[key] = value;
+    const formData = new FormData(form);
+    data.LLMProvider = selectedLLM;
+    for (var [key, value] of formData.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
+    setSaving(true);
+
     if (error) {
       showToast(`Failed to save LLM settings: ${error}`, "error");
     } else {
@@ -46,7 +55,7 @@ export default function GeneralLLMPreference() {
   };
 
   const updateLLMChoice = (selection) => {
-    setLLMChoice(selection);
+    setSelectedLLM(selection);
     setHasChanges(true);
   };
 
@@ -54,11 +63,79 @@ export default function GeneralLLMPreference() {
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setLLMChoice(_settings?.LLMProvider);
+      setSelectedLLM(_settings?.LLMProvider);
       setLoading(false);
     }
     fetchKeys();
   }, []);
+
+  useEffect(() => {
+    const filtered = LLMS.filter((llm) =>
+      llm.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredLLMs(filtered);
+  }, [searchQuery, selectedLLM]);
+
+  const LLMS = [
+    {
+      name: "OpenAI",
+      value: "openai",
+      logo: OpenAiLogo,
+      options: <OpenAiOptions settings={settings} />,
+      description: "The standard option for most non-commercial use.",
+    },
+    {
+      name: "Azure OpenAI",
+      value: "azure",
+      logo: AzureOpenAiLogo,
+      options: <AzureAiOptions settings={settings} />,
+      description: "The enterprise option of OpenAI hosted on Azure services.",
+    },
+    {
+      name: "Anthropic",
+      value: "anthropic",
+      logo: AnthropicLogo,
+      options: <AnthropicAiOptions settings={settings} />,
+      description: "A friendly AI Assistant hosted by Anthropic.",
+    },
+    {
+      name: "Gemini",
+      value: "gemini",
+      logo: GeminiLogo,
+      options: <GeminiLLMOptions settings={settings} />,
+      description: "Google's largest and most capable AI model",
+    },
+    {
+      name: "Ollama",
+      value: "ollama",
+      logo: OllamaLogo,
+      options: <OllamaLLMOptions settings={settings} />,
+      description: "Run LLMs locally on your own machine.",
+    },
+    {
+      name: "LM Studio",
+      value: "lmstudio",
+      logo: LMStudioLogo,
+      options: <LMStudioOptions settings={settings} />,
+      description:
+        "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+    },
+    {
+      name: "Local AI",
+      value: "localai",
+      logo: LocalAiLogo,
+      options: <LocalAiOptions settings={settings} />,
+      description: "Run LLMs locally on your own machine.",
+    },
+    {
+      name: "Native",
+      value: "native",
+      logo: AnythingLLMIcon,
+      options: <NativeLLMOptions settings={settings} />,
+      description:
+        "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
+    },
+  ];
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
@@ -78,11 +155,7 @@ export default function GeneralLLMPreference() {
           className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
         >
           {isMobile && <SidebarMobileHeader />}
-          <form
-            onSubmit={handleSubmit}
-            onChange={() => setHasChanges(true)}
-            className="flex w-full"
-          >
+          <form onSubmit={handleSubmit} className="flex w-full">
             <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
                 <div className="items-center flex gap-x-4">
@@ -109,107 +182,51 @@ export default function GeneralLLMPreference() {
               <div className="text-white text-sm font-medium py-4">
                 LLM Providers
               </div>
-              <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4">
-                <input hidden={true} name="LLMProvider" value={llmChoice} />
-                <LLMProviderOption
-                  name="OpenAI"
-                  value="openai"
-                  link="openai.com"
-                  description="The standard option for most non-commercial use."
-                  checked={llmChoice === "openai"}
-                  image={OpenAiLogo}
-                  onClick={updateLLMChoice}
-                />
-                <LLMProviderOption
-                  name="Azure OpenAI"
-                  value="azure"
-                  link="azure.microsoft.com"
-                  description="The enterprise option of OpenAI hosted on Azure services."
-                  checked={llmChoice === "azure"}
-                  image={AzureOpenAiLogo}
-                  onClick={updateLLMChoice}
-                />
-                <LLMProviderOption
-                  name="Anthropic Claude 2"
-                  value="anthropic"
-                  link="anthropic.com"
-                  description="A friendly AI Assistant hosted by Anthropic."
-                  checked={llmChoice === "anthropic"}
-                  image={AnthropicLogo}
-                  onClick={updateLLMChoice}
-                />
-                <LLMProviderOption
-                  name="Google Gemini"
-                  value="gemini"
-                  link="ai.google.dev"
-                  description="Google's largest and most capable AI model"
-                  checked={llmChoice === "gemini"}
-                  image={GeminiLogo}
-                  onClick={updateLLMChoice}
-                />
-                <LLMProviderOption
-                  name="LM Studio"
-                  value="lmstudio"
-                  link="lmstudio.ai"
-                  description="Discover, download, and run thousands of cutting edge LLMs in a few clicks."
-                  checked={llmChoice === "lmstudio"}
-                  image={LMStudioLogo}
-                  onClick={updateLLMChoice}
-                />
-                <LLMProviderOption
-                  name="Local AI"
-                  value="localai"
-                  link="localai.io"
-                  description="Run LLMs locally on your own machine."
-                  checked={llmChoice === "localai"}
-                  image={LocalAiLogo}
-                  onClick={updateLLMChoice}
-                />
-                <LLMProviderOption
-                  name="Ollama"
-                  value="ollama"
-                  link="ollama.ai"
-                  description="Run LLMs locally on your own machine."
-                  checked={llmChoice === "ollama"}
-                  image={OllamaLogo}
-                  onClick={updateLLMChoice}
-                />
-                {!window.location.hostname.includes("useanything.com") && (
-                  <LLMProviderOption
-                    name="Custom Llama Model"
-                    value="native"
-                    description="Use a downloaded custom Llama model for chatting on this AnythingLLM instance."
-                    checked={llmChoice === "native"}
-                    image={AnythingLLMIcon}
-                    onClick={updateLLMChoice}
-                  />
-                )}
-              </div>
-              <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
-                {llmChoice === "openai" && (
-                  <OpenAiOptions settings={settings} />
-                )}
-                {llmChoice === "azure" && (
-                  <AzureAiOptions settings={settings} />
-                )}
-                {llmChoice === "anthropic" && (
-                  <AnthropicAiOptions settings={settings} showAlert={true} />
-                )}
-                {llmChoice === "gemini" && (
-                  <GeminiLLMOptions settings={settings} />
-                )}
-                {llmChoice === "lmstudio" && (
-                  <LMStudioOptions settings={settings} showAlert={true} />
-                )}
-                {llmChoice === "localai" && (
-                  <LocalAiOptions settings={settings} showAlert={true} />
-                )}
-                {llmChoice === "ollama" && (
-                  <OllamaLLMOptions settings={settings} />
-                )}
-                {llmChoice === "native" && (
-                  <NativeLLMOptions settings={settings} />
-                )}
+              <div className="w-full">
+                <div className="w-full relative border-slate-300/20 shadow border-4 rounded-xl text-white">
+                  <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
+                    <div className="w-full flex items-center sticky top-0">
+                      <MagnifyingGlass
+                        size={16}
+                        weight="bold"
+                        className="absolute left-4 z-30 text-white"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Search LLM providers"
+                        className="bg-zinc-600 z-20 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        autoComplete="off"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") e.preventDefault();
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
+                    {filteredLLMs.map((llm) => {
+                      if (llm.value === "native" && isHosted) return null;
+                      return (
+                        <LLMItem
+                          key={llm.name}
+                          name={llm.name}
+                          value={llm.value}
+                          image={llm.logo}
+                          description={llm.description}
+                          checked={selectedLLM === llm.value}
+                          onClick={() => updateLLMChoice(llm.value)}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+                <div
+                  onChange={() => setHasChanges(true)}
+                  className="mt-4 flex flex-col gap-y-1"
+                >
+                  {selectedLLM &&
+                    LLMS.find((llm) => llm.value === selectedLLM)?.options}
+                </div>
               </div>
             </div>
           </form>

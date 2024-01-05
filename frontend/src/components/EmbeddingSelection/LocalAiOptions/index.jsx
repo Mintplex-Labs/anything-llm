@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import System from "@/models/system";
 
 export default function LocalAiOptions({ settings }) {
@@ -10,7 +10,7 @@ export default function LocalAiOptions({ settings }) {
   const [apiKey, setApiKey] = useState(settings?.LocalAiApiKey);
 
   return (
-    <>
+    <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
@@ -54,14 +54,11 @@ export default function LocalAiOptions({ settings }) {
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
           <div className="flex flex-col gap-y-1 mb-4">
-            <label className="text-white text-sm font-semibold block">
-              Local AI API Key
+            <label className="text-white text-sm font-semibold flex items-center gap-x-2">
+              Local AI API Key{" "}
+              <p className="!text-xs !italic !font-thin">optional</p>
             </label>
-            <p className="text-xs italic text-white/60">
-              optional API key to use if running LocalAI with API keys.
-            </p>
           </div>
-
           <input
             type="password"
             name="LocalAiApiKey"
@@ -75,7 +72,7 @@ export default function LocalAiOptions({ settings }) {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
