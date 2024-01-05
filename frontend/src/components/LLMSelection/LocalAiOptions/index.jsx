@@ -71,12 +71,10 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
           <div className="flex flex-col gap-y-1 mb-4">
-            <label className="text-white text-sm font-semibold block">
-              Local AI API Key
+            <label className="text-white text-sm font-semibold flex items-center gap-x-2">
+              Local AI API Key{" "}
+              <p className="!text-xs !italic !font-thin">optional</p>
             </label>
-            <p className="text-xs italic text-white/60">
-              optional API key to use if running LocalAI with API keys.
-            </p>
           </div>
 
           <input

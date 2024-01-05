@@ -9,7 +9,6 @@ import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import PreLoader from "@/components/Preloader";
-import VectorDBOption from "@/components/VectorDBOption";
 import ChangeWarningModal from "@/components/ChangeWarning";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
@@ -117,16 +116,9 @@ export default function GeneralVectorDatabase() {
   };
 
   useEffect(() => {
-    const selectedVDBItem = VECTOR_DBS.find((vdb) => vdb.value === selectedVDB);
-    let filtered = VECTOR_DBS.filter((vdb) =>
+    const filtered = VECTOR_DBS.filter((vdb) =>
       vdb.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    if (selectedVDBItem) {
-      filtered = [
-        selectedVDBItem,
-        ...filtered.filter((vdb) => vdb.value !== selectedVDB),
-      ];
-    }
     setFilteredVDBs(filtered);
   }, [searchQuery, selectedVDB]);
 
@@ -207,7 +199,7 @@ export default function GeneralVectorDatabase() {
                       />
                     </div>
                   </div>
-                  <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll">
+                  <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
                     {filteredVDBs.map((vdb) => (
                       <VectorDBItem
                         key={vdb.name}

@@ -108,18 +108,9 @@ export default function GeneralEmbeddingPreference() {
   ];
 
   useEffect(() => {
-    const selectedEmbedderItem = EMBEDDERS.find(
-      (embedder) => embedder.value === selectedEmbedder
-    );
-    let filtered = EMBEDDERS.filter((embedder) =>
+    const filtered = EMBEDDERS.filter((embedder) =>
       embedder.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    if (selectedEmbedderItem) {
-      filtered = [
-        selectedEmbedderItem,
-        ...filtered.filter((embedder) => embedder.value !== selectedEmbedder),
-      ];
-    }
     setFilteredEmbedders(filtered);
   }, [searchQuery, selectedEmbedder]);
 

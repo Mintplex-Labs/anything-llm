@@ -118,16 +118,9 @@ export default function VectorDatabaseConnection({
   }, []);
 
   useEffect(() => {
-    const selectedVDBItem = VECTOR_DBS.find((vdb) => vdb.value === selectedVDB);
-    let filtered = VECTOR_DBS.filter((vdb) =>
+    const filtered = VECTOR_DBS.filter((vdb) =>
       vdb.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    if (selectedVDBItem) {
-      filtered = [
-        selectedVDBItem,
-        ...filtered.filter((vdb) => vdb.value !== selectedVDB),
-      ];
-    }
     setFilteredVDBs(filtered);
   }, [searchQuery, selectedVDB]);
 

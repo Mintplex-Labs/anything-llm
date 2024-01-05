@@ -144,17 +144,9 @@ export default function LLMPreference({
   }, []);
 
   useEffect(() => {
-    const selectedLLMItem = LLMS.find((llm) => llm.value === selectedLLM);
-    let filtered = LLMS.filter((llm) =>
+    const filtered = LLMS.filter((llm) =>
       llm.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    // If LLM selected, move it to the top
-    if (selectedLLMItem) {
-      filtered = [
-        selectedLLMItem,
-        ...filtered.filter((llm) => llm.value !== selectedLLM),
-      ];
-    }
     setFilteredLLMs(filtered);
   }, [searchQuery, selectedLLM]);
 
