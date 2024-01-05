@@ -3988,7 +3988,7 @@ vary@^1, vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
-vectordb@^0.4.2:
+vectordb@~0.4.2:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/vectordb/-/vectordb-0.4.2.tgz#43d73c251e921dcfbac1fd62df482880e26ec30e"
   integrity sha512-nQAHDRsrH4ekTYPSXc3tL+0igcfFd/DLzFhAKJqLuwO8ETmKHtbuFC8kmsXxKSvLyK0ZXnCZhNzpRlslkF8Rtg==
