@@ -6,9 +6,13 @@
 # ref: https://github.com/actions/runner-images/issues/5631 :(
 name: Publish AnythingLLM Primary Docker image (amd64/arm64)
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
-    branches: ['master'] # master branch only. Do not modify.
+    branches: ['master', 'arm64'] # master branch only. Do not modify.
     paths-ignore:
       - '*.md'
       - 'cloud-deployments/*'
