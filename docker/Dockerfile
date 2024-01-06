@@ -47,12 +47,12 @@ WORKDIR /app
 FROM base as frontend-deps
 
 COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/
-RUN cd ./frontend/ && yarn install && yarn cache clean
+RUN cd ./frontend/ && yarn install --network-timeout 100000 && yarn cache clean
 
 # Install server dependencies
 FROM base as server-deps
 COPY ./server/package.json ./server/yarn.lock ./server/
-RUN cd ./server/ && yarn install --production && yarn cache clean
+RUN cd ./server/ && yarn install --production --network-timeout 100000 && yarn cache clean
 
 # Compile Llama.cpp bindings for node-llama-cpp for this operating system.
 USER root
@@ -75,7 +75,7 @@ COPY --from=build-stage /app/frontend/dist ./server/public
 COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
 
 # Install collector dependencies
-RUN cd /app/collector && yarn install --production && yarn cache clean
+RUN cd /app/collector && yarn install --production --network-timeout 100000 && yarn cache clean
 
 # Migrate and Run Prisma against known schema
 RUN cd ./server && npx prisma generate --schema=./prisma/schema.prisma
