@@ -61,6 +61,11 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
 
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
