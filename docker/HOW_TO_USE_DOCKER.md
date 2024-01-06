@@ -31,7 +31,7 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 
 <table>
 <tr>
-<th colspan="3">Pull in the correct image for your system</th>
+<th colspan="2">Pull in the correct image for your system</th>
 </tr>
 <tr>
 <td>
@@ -52,6 +52,7 @@ docker pull mintplexlabs/anythingllm:master
 <td>
 
 ```shell
+# Keep in mind your tag is `master-arm64`!
 docker pull mintplexlabs/anythingllm:master-arm64
 ```
 
@@ -61,10 +62,12 @@ docker pull mintplexlabs/anythingllm:master-arm64
 
 <table>
 <tr>
-<th>Linux/MacOs</th>
-<th>Windows Powershell</th>
+<th colspan="2">Mount the storage locally and run AnythingLLM in Docker</th>
 </tr>
 <tr>
+<td>
+  Linux/MacOs
+</td>
 <td>
 
 ```shell
@@ -80,9 +83,15 @@ mintplexlabs/anythingllm:master
 ```
 
 </td>
+</tr>
+<tr>
+<td>
+  Windows
+</td>
 <td>
 
 ```powershell
+# Run this in powershell terminal
 $env:STORAGE_LOCATION="$HOME\Documents\anythingllm"; `
 If(!(Test-Path $env:STORAGE_LOCATION)) {New-Item $env:STORAGE_LOCATION -ItemType Directory}; `
 If(!(Test-Path "$env:STORAGE_LOCATION\.env")) {New-Item "$env:STORAGE_LOCATION\.env"}; `
