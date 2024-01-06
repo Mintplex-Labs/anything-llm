@@ -4,7 +4,7 @@
 # TODO: Update `runs-on` for arm64 when GitHub finally supports
 # native arm environments as QEMU takes around 1 hour to build
 # ref: https://github.com/actions/runner-images/issues/5631 :(
-name: Publish AnythingLLM Primary Docker image
+name: Publish AnythingLLM Primary Docker image (amd64/arm64)
 
 on:
   push:
@@ -16,7 +16,7 @@ on:
       - '.vscode/*'
 
 jobs:
-  push_amd64_to_registries:
+  push_multi_platform_to_registries:
     name: Push Docker multi-platform image to multiple registries
     runs-on: ubuntu-latest
     permissions:
