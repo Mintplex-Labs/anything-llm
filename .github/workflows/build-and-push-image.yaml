@@ -100,7 +100,7 @@ jobs:
           file: ./docker/Dockerfile.arm64
           push: true
           platforms: linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.extract_branch.outputs.branch }}:arm64
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BUILDARCH=arm64
