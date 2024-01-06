@@ -9,7 +9,8 @@ networks:
 services:
   anything-llm:
     container_name: anything-llm
-    platform: linux/amd64 # We will assume all docker compose builds are using x86
+    platform: linux/amd64 # default composer builds for amd64 CPUs
+    # platform: linux/arm64 # to build for ARM-based CPUs
     image: anything-llm:latest
     build:
       context: ../.
