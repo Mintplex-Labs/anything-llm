@@ -1,8 +1,14 @@
-name: Publish AnythingLLM Docker image
+# This Github action is for publishing of the primary image for AnythingLLM
+# It will publish a linux/amd64 and linux/arm64 image at the same time
+# This file should ONLY BY USED FOR `master` BRANCH. 
+# TODO: Update `runs-on` for arm64 when GitHub finally supports
+# native arm environments as QEMU takes around 1 hour to build
+# ref: https://github.com/actions/runner-images/issues/5631 :(
+name: Publish AnythingLLM Primary Docker image
 
 on:
   push:
-    branches: ['master']
+    branches: ['master', 'arm64'] # master branch only. Do not modify.
     paths-ignore:
       - '*.md'
       - 'cloud-deployments/*'
@@ -58,66 +64,69 @@ jobs:
           file: ./docker/Dockerfile
           push: true
           platforms: linux/amd64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  push_arm64_to_registries:
-    name: Push Docker arm64 image to multiple registries
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4
-
-      - name: Extract branch name
-        shell: bash
-        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-        id: extract_branch
-
-      - name: downcase repository name
-        shell: bash
-        run: echo "repo=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
-        id: lowercase_repo
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      
-      - name: Log in to the Container registry
-        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: |
-            mintplexlabs/anythingllm
-            ghcr.io/${{ github.repository }}
-
-      - name: Build and push arm64 Docker and GHCR images
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./docker/Dockerfile.arm64
-          push: true
-          platforms: linux/arm64
           tags: |
-            mintplexlabs/anythingllm:${{ steps.extract_branch.outputs.branch }}-arm64
-            ghcr.io/${{  steps.lowercase_repo.outputs.repo }}:${{ steps.extract_branch.outputs.branch }}-arm64
+            ${{ steps.meta.outputs.tags }}
+            mintplexlabs/anythingllm:latest-ex
+            ghcr.io/${{  steps.lowercase_repo.outputs.repo }}:latest-ex
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            BUILDARCH=arm64
+
+  # push_arm64_to_registries:
+  #   name: Push Docker arm64 image to multiple registries
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     packages: write
+  #     contents: read
+  #   steps:
+  #     - name: Check out the repo
+  #       uses: actions/checkout@v4
+
+  #     - name: Extract branch name
+  #       shell: bash
+  #       run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+  #       id: extract_branch
+
+  #     - name: downcase repository name
+  #       shell: bash
+  #       run: echo "repo=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
+  #       id: lowercase_repo
+
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v3
+
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
+
+  #     - name: Log in to Docker Hub
+  #       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}
+  #         password: ${{ secrets.DOCKER_PASSWORD }}
+      
+  #     - name: Log in to the Container registry
+  #       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+      
+  #     - name: Extract metadata (tags, labels) for Docker
+  #       id: meta
+  #       uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+  #       with:
+  #         images: |
+  #           mintplexlabs/anythingllm
+  #           ghcr.io/${{ github.repository }}
+
+  #     - name: Build and push arm64 Docker and GHCR images
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: .
+  #         file: ./docker/Dockerfile.arm64
+  #         push: true
+  #         platforms: linux/arm64
+  #         tags: |
+  #           mintplexlabs/anythingllm:${{ steps.extract_branch.outputs.branch }}-arm64
+  #           ghcr.io/${{  steps.lowercase_repo.outputs.repo }}:${{ steps.extract_branch.outputs.branch }}-arm64
+  #         labels: ${{ steps.meta.outputs.labels }}
+  #         build-args: |
+  #           BUILDARCH=arm64
