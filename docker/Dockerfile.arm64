@@ -52,7 +52,7 @@ RUN if [ "$BUILDARCH" = "arm64" ] ; then \
     echo "Need to patch Puppeteer x Chromium support for ARM86 - installing dep!" && \
     curl https://playwright.azureedge.net/builds/chromium/1088/chromium-linux-arm64.zip -o chrome-linux.zip && \
     unzip chrome-linux.zip && \
-    rm -rf chrome-linux.zip;
+    rm -rf chrome-linux.zip; \
 fi
 
 # Install frontend dependencies
