@@ -6,7 +6,6 @@ ARG ARG_UID=1000
 ARG ARG_GID=1000
 ARG BUILDARCH
 
-RUN echo $BUILDARCH
 RUN if [ "$BUILDARCH" != "arm64" ] ; then echo "[ARCH INCOMPATIBLE] You can only run this Dockerfile on arm86 architecture - Aborting."; exit 1; fi
 RUN echo "Building AnythingLLM image for $BUILDARCH architecture"
 
