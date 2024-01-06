@@ -8,7 +8,7 @@ on:
       - 'cloud-deployments/*'
       - 'images/*'
       - '.vscode/*'
-      - '.env.example'
+      - '**/.env.example'
 
 jobs:
   push_to_registries:
