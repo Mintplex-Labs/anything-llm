@@ -6,7 +6,8 @@ ARG ARG_UID=1000
 ARG ARG_GID=1000
 ARG BUILDARCH
 
-RUN echo "Building AnythingLLM image for $BUILDARCH"
+RUN if [ "$BUILDARCH" != "arm64" ] ; then echo "[ARCH INCOMPATIBLE] You can only run this Dockerfile on arm86 architecture - Aborting."; exit 1; fi
+RUN echo "Building AnythingLLM image for $BUILDARCH architecture"
 
 # Install system dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -44,12 +45,14 @@ USER anythingllm
 
 WORKDIR /app
 
+# Puppeteer does not ship with an ARM86 compatible build for Chromium
+# so web-scraping would be broken in arm docker containers unless we patch it
+# by manually installing a compatible chromedriver.
 RUN if [ "$BUILDARCH" = "arm64" ] ; then \
-    echo "Need to patch Chromium support for ARM - installing dep!" && \
+    echo "Need to patch Puppeteer x Chromium support for ARM86 - installing dep!" && \
     curl https://playwright.azureedge.net/builds/chromium/1088/chromium-linux-arm64.zip -o chrome-linux.zip && \
     unzip chrome-linux.zip && \
-    rm -rf chrome-linux.zip && \
-    chmod -R 777 chrome-linux; \
+    rm -rf chrome-linux.zip;
 fi
 
 # Install frontend dependencies
@@ -64,9 +67,9 @@ COPY ./server/package.json ./server/yarn.lock ./server/
 RUN cd ./server/ && yarn install --production --network-timeout 100000 && yarn cache clean
 
 # Compile Llama.cpp bindings for node-llama-cpp for this operating system.
-# USER root
-# RUN cd ./server && npx --no node-llama-cpp download
-# USER anythingllm
+USER root
+RUN cd ./server && npx --no node-llama-cpp download
+USER anythingllm
 
 # Build the frontend
 FROM frontend-deps as build-stage

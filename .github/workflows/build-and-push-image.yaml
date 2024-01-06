@@ -2,7 +2,7 @@ name: Publish Docker image and Github Registry
 
 on:
   push:
-    branches: ['master']
+    branches: ['master', '539-amd64-support']
     paths-ignore:
       - '*.md'
       - 'cloud-deployments/*'
@@ -47,12 +47,22 @@ jobs:
             mintplexlabs/anythingllm
             ghcr.io/${{ github.repository }}
       
-      - name: Build and push multi-platform Docker and GHCR images
+      - name: Build and push x86 Docker and GHCR images
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./docker/Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Build and push arm86 Docker and GHCR images
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.arm64
+          push: true
+          platforms: linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

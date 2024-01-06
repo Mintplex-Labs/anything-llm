@@ -5,6 +5,8 @@ FROM ubuntu:jammy-20230522 AS base
 ARG ARG_UID=1000
 ARG ARG_GID=1000
 
+RUN echo "Building AnythingLLM image for non-ARM architecture"
+
 # Install system dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
