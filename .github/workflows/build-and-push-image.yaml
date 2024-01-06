@@ -47,15 +47,15 @@ jobs:
             mintplexlabs/anythingllm
             ghcr.io/${{ github.repository }}
       
-      - name: Build and push x86 Docker and GHCR images
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./docker/Dockerfile
-          push: true
-          platforms: linux/amd64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      # - name: Build and push x86 Docker and GHCR images
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: ./docker/Dockerfile
+      #     push: true
+      #     platforms: linux/amd64
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
 
       - name: Build and push arm86 Docker and GHCR images
         uses: docker/build-push-action@v5
@@ -66,3 +66,5 @@ jobs:
           platforms: linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+        env:
+          BUILDARCH: arm64
