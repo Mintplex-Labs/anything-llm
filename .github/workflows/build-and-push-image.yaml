@@ -58,9 +58,7 @@ jobs:
           file: ./docker/Dockerfile
           push: true
           platforms: linux/amd64
-          tags: |
-            mintplexlabs/anythingllm:${{ steps.extract_branch.outputs.branch }}-x86
-            ghcr.io/${{  steps.lowercase_repo.outputs.repo }}:${{ steps.extract_branch.outputs.branch }}-x86
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
   push_arm64_to_registries:
@@ -112,7 +110,9 @@ jobs:
           file: ./docker/Dockerfile.arm64
           push: true
           platforms: linux/arm64
-          tags: ${{ steps.extract_branch.outputs.branch }}:arm64
+          tags: |
+            mintplexlabs/anythingllm:${{ steps.extract_branch.outputs.branch }}-arm64
+            ghcr.io/${{  steps.lowercase_repo.outputs.repo }}:${{ steps.extract_branch.outputs.branch }}-arm64
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BUILDARCH=arm64
