@@ -25,6 +25,11 @@ jobs:
         run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extract_branch
       
+      - name: downcase repository name
+        shell: bash
+        run: echo "repo=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
+        id: lowercase_repo
+      
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
@@ -55,7 +60,7 @@ jobs:
           platforms: linux/amd64
           tags: |
             mintplexlabs/anythingllm:${{ steps.extract_branch.outputs.branch }}-x86
-            ghcr.io/${{ github.repository }}:${{ steps.extract_branch.outputs.branch }}-x86
+            ghcr.io/${{  steps.lowercase_repo.outputs.repo }}:${{ steps.extract_branch.outputs.branch }}-x86
           labels: ${{ steps.meta.outputs.labels }}
 
   push_arm64_to_registries:
