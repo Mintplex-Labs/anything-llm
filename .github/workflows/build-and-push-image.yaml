@@ -76,6 +76,11 @@ jobs:
         run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extract_branch
 
+      - name: downcase repository name
+        shell: bash
+        run: echo "repo=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
+        id: lowercase_repo
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
