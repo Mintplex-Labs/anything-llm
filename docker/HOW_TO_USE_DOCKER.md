@@ -30,8 +30,8 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 > so that you can pull in future updates without deleting your existing data!
 
 <table>
-<tr colspan="3"">
-<th>Pull in the correct image for your system</th>
+<tr>
+<th colspan="3">Pull in the correct image for your system</th>
 </tr>
 <tr>
 <td>
