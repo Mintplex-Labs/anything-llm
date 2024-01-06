@@ -29,7 +29,35 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 > It is best to mount the containers storage volume to a folder on your host machine
 > so that you can pull in future updates without deleting your existing data!
 
-`docker pull mintplexlabs/anythingllm:master`
+<table>
+<tr colspan="3"">
+<th>Pull in the correct image for your system</th>
+</tr>
+<tr>
+<td>
+  (default) amd64 / x86
+</td>
+<td>
+
+```shell
+docker pull mintplexlabs/anythingllm:master
+```
+
+</td>
+</tr>
+<tr>
+<td>
+  arm64 / Apple Silicon
+</td>
+<td>
+
+```shell
+docker pull mintplexlabs/anythingllm:master-arm64
+```
+
+</td>
+</tr>
+</table>
 
 <table>
 <tr>
