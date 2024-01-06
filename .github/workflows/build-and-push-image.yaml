@@ -66,5 +66,5 @@ jobs:
           platforms: linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-        env:
-          BUILDARCH: arm64
+          build-args: |
+            BUILDARCH=arm64
