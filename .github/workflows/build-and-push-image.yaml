@@ -53,7 +53,9 @@ jobs:
           file: ./docker/Dockerfile
           push: true
           platforms: linux/amd64
-          tags: ${{ steps.extract_branch.outputs.branch }}-x86
+          tags: |
+            mintplexlabs/anythingllm:${{ steps.extract_branch.outputs.branch }}-x86
+            ghcr.io/${{ github.repository }}:${{ steps.extract_branch.outputs.branch }}-x86
           labels: ${{ steps.meta.outputs.labels }}
 
   push_arm64_to_registries:
