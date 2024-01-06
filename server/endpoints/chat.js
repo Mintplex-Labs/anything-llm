@@ -1,3 +1,4 @@
+const expresss = require("express");
 const { v4: uuidv4 } = require("uuid");
 const { reqBody, userFromSession, multiUserMode } = require("../utils/http");
 const { Workspace } = require("../models/workspace");
@@ -11,6 +12,8 @@ const {
   writeResponseChunk,
 } = require("../utils/chats/stream");
 
+let shouldRespond = true;
+
 function chatEndpoints(app) {
   if (!app) return;
 
@@ -18,6 +21,14 @@ function chatEndpoints(app) {
     "/workspace/:slug/stream-chat",
     [validatedRequest],
     async (request, response) => {
+      if (!shouldRespond){
+        response.status(200).json({
+          id: uuidv4(),
+          type: "success",
+          message: "Stop responding logic executed successfully."
+        });
+        return;
+      }
       try {
         const user = await userFromSession(request, response);
         const { slug } = request.params;
@@ -100,6 +111,14 @@ function chatEndpoints(app) {
     "/workspace/:slug/chat",
     [validatedRequest],
     async (request, response) => {
+      if (!shouldRespond){
+        response.status(200).json({
+          id: uuidv4(),
+          type: "success",
+          message: "Stop responding success."
+        });
+        return;
+      }
       try {
         const user = await userFromSession(request, response);
         const { slug } = request.params;
@@ -174,6 +193,25 @@ function chatEndpoints(app) {
       }
     }
   );
+  app.post("/workspace/:slug/start-responding", [validatedRequest], async (request, response) =>{
+    try{
+      shouldRespond = true;
+      response.status(200).json({
+        id : uuidv4(),
+        type : "success",
+        message: "Start responding success",
+      });
+    }
+    catch(e){
+      console.error(e);
+      response.status(500).json({
+        id: uuidv4(),
+        type : "error",
+        message : "Error",
+        error : e.message,
+      })
+    }
+  });
 }
 
 module.exports = { chatEndpoints };
