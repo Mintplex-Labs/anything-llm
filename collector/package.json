@@ -34,7 +34,7 @@
     "multer": "^1.4.5-lts.1",
     "officeparser": "^4.0.5",
     "pdf-parse": "^1.1.1",
-    "puppeteer": "^21.6.1",
+    "puppeteer": "~21.5.2",
     "slugify": "^1.6.6",
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
