@@ -17,10 +17,20 @@ services:
       args:
         ARG_UID: ${UID:-1000}
         ARG_GID: ${GID:-1000}
+    # stub for gpu support on local models
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
     cap_add:
       - SYS_ADMIN
     volumes:
       - "./.env:/app/server/.env"
+      # it is advised to configure your own path to the storage folders
+      # these are the default paths
       - "../server/storage:/app/server/storage"
       - "../collector/hotdir/:/app/collector/hotdir"
       - "../collector/outputs/:/app/collector/outputs"
