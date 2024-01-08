@@ -72,6 +72,6 @@ jobs:
           platforms: linux/amd64
           tags: |
             ${{ steps.meta.outputs.tags }}
-            ${{ github.ref_name == 'master' && 'mintplexlabs/anythingllm:dev' || '' }}
-            ${{ github.ref_name == 'master' && format('ghcr.io/{0}:{1}', steps.lowercase_repo.outputs.repo, 'dev') || '' }}
+            ${{ github.ref_name == 'arm64' && 'mintplexlabs/anythingllm:dev' || '' }}
+            ${{ github.ref_name == 'arm64' && format('ghcr.io/{0}:{1}', steps.lowercase_repo.outputs.repo, 'dev') || '' }}
           labels: ${{ steps.meta.outputs.labels }}
