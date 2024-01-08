@@ -18,6 +18,7 @@ on:
       - 'cloud-deployments/*'
       - 'images/*'
       - '.vscode/*'
+      - '**/.env.example'
 
 jobs:
   push_multi_platform_to_registries:

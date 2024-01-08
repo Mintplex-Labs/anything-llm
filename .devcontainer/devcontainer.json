@@ -1,0 +1,211 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node
+{
+  "name": "Node.js",
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  // "build": {
+  //   "args": {
+  //     "ARG_UID": "1000",
+  //     "ARG_GID": "1000"
+  //   },
+  //   "dockerfile": "Dockerfile"
+  // },
+  // "containerUser": "anythingllm",
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm",
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {
+    // Docker very useful linter
+    "ghcr.io/dhoeric/features/hadolint:1": {
+      "version": "latest"
+    },
+    // Terraform support
+    "ghcr.io/devcontainers/features/terraform:1": {},
+    // Just a wrap to install needed packages
+    "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+      // Dependencies copied from ../docker/Dockerfile plus some dev stuff
+      "packages": [
+        "build-essential",
+        "ca-certificates",
+        "curl",
+        "ffmpeg",
+        "fonts-liberation",
+        "git",
+        "gnupg",
+        "htop",
+        "less",
+        "libappindicator1",
+        "libasound2",
+        "libatk-bridge2.0-0",
+        "libatk1.0-0",
+        "libc6",
+        "libcairo2",
+        "libcups2",
+        "libdbus-1-3",
+        "libexpat1",
+        "libfontconfig1",
+        "libgbm1",
+        "libgcc1",
+        "libgfortran5",
+        "libglib2.0-0",
+        "libgtk-3-0",
+        "libnspr4",
+        "libnss3",
+        "libpango-1.0-0",
+        "libpangocairo-1.0-0",
+        "libstdc++6",
+        "libx11-6",
+        "libx11-xcb1",
+        "libxcb1",
+        "libxcomposite1",
+        "libxcursor1",
+        "libxdamage1",
+        "libxext6",
+        "libxfixes3",
+        "libxi6",
+        "libxrandr2",
+        "libxrender1",
+        "libxss1",
+        "libxtst6",
+        "locales",
+        "lsb-release",
+        "procps",
+        "tzdata",
+        "wget",
+        "xdg-utils"
+      ]
+    }
+  },
+  "updateContentCommand": "yarn setup",
+  // Use 'postCreateCommand' to run commands after the container is created.
+  // This configures VITE for github codespaces
+  "postCreateCommand": "if [ \"${CODESPACES}\" = \"true\" ]; then echo 'VITE_API_BASE=\"https://$CODESPACE_NAME-3001.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN/api\"' > ./frontend/.env; fi",
+  "portsAttributes": {
+    "3001": {
+      "label": "Backend",
+      "onAutoForward": "notify"
+    },
+    "3000": {
+      "label": "Frontend",
+      "onAutoForward": "openPreview"
+    }
+  },
+  "capAdd": [
+    "SYS_ADMIN" // needed for puppeteer using headless chrome in sandbox
+  ],
+  "remoteEnv": {
+    "NODE_ENV": "development",
+    "ESLINT_USE_FLAT_CONFIG": "true",
+    "ANYTHING_LLM_RUNTIME": "docker"
+  },
+  // "initializeCommand": "echo Initialize....",
+  "shutdownAction": "stopContainer",
+  // Configure tool-specific properties.
+  "customizations": {
+    "codespaces": {
+      "openFiles": [
+        "README.md",
+        ".devcontainer/README.md"
+      ]
+    },
+    "vscode": {
+      "openFiles": [
+        "README.md",
+        ".devcontainer/README.md"
+      ],
+      "extensions": [
+        "bierner.github-markdown-preview",
+        "bradlc.vscode-tailwindcss",
+        "dbaeumer.vscode-eslint",
+        "editorconfig.editorconfig",
+        "esbenp.prettier-vscode",
+        "exiasr.hadolint",
+        "flowtype.flow-for-vscode",
+        "gamunu.vscode-yarn",
+        "hashicorp.terraform",
+        "mariusschulz.yarn-lock-syntax",
+        "ms-azuretools.vscode-docker",
+        "streetsidesoftware.code-spell-checker",
+        "actboy168.tasks",
+        "tombonnike.vscode-status-bar-format-toggle",
+        "ms-vscode.js-debug"
+      ],
+      "settings": {
+        "[css]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[dockercompose]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[dockerfile]": {
+          "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+        },
+        "[html]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[markdown]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[postcss]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[toml]": {
+          "editor.defaultFormatter": "tamasfe.even-better-toml"
+        },
+        "eslint.debug": true,
+        "eslint.enable": true,
+        "eslint.experimental.useFlatConfig": true,
+        "eslint.run": "onSave",
+        "files.associations": {
+          ".*ignore": "ignore",
+          ".editorconfig": "editorconfig",
+          ".env*": "properties",
+          ".flowconfig": "ini",
+          ".prettierrc": "json",
+          "*.css": "tailwindcss",
+          "*.md": "markdown",
+          "*.sh": "shellscript",
+          "docker-compose.*": "dockercompose",
+          "Dockerfile*": "dockerfile",
+          "yarn.lock": "yarnlock"
+        },
+        "javascript.format.enable": false,
+        "javascript.inlayHints.enumMemberValues.enabled": true,
+        "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
+        "javascript.inlayHints.parameterTypes.enabled": true,
+        "javascript.inlayHints.variableTypes.enabled": true,
+        "js/ts.implicitProjectConfig.module": "CommonJS",
+        "json.format.enable": false,
+        "json.schemaDownload.enable": true,
+        "npm.autoDetect": "on",
+        "npm.packageManager": "yarn",
+        "prettier.useEditorConfig": false,
+        "tailwindCSS.files.exclude": [
+          "**/.git/**",
+          "**/node_modules/**",
+          "**/.hg/**",
+          "**/.svn/**",
+          "**/dist/**"
+        ],
+        "typescript.validate.enable": false,
+        "workbench.editorAssociations": {
+          "*.md": "vscode.markdown.preview.editor"
+        }
+      }
+    }
+  }
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root"
+}

@@ -16,9 +16,11 @@ import System from "@/models/system";
 import Jazzicon from "../UserIcon";
 import { userFromStorage } from "@/utils/request";
 import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
+import useUser from "@/hooks/useUser";
 
 export default function DefaultChatContainer() {
   const [mockMsgs, setMockMessages] = useState([]);
+  const { user } = useUser();
   const [fetchedMessages, setFetchedMessages] = useState([]);
   const {
     showing: showingNewWsModal,
@@ -163,13 +165,15 @@ export default function DefaultChatContainer() {
                 You can add and remove files at anytime.
               </span>
 
-              <button
-                onClick={showNewWsModal}
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              >
-                <Plus className="h-4 w-4" />
-                <p>Create your first workspace</p>
-              </button>
+              {(!user || user?.role !== "default") && (
+                <button
+                  onClick={showNewWsModal}
+                  className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                >
+                  <Plus className="h-4 w-4" />
+                  <p>Create your first workspace</p>
+                </button>
+              )}
             </div>
           </div>
         </div>
