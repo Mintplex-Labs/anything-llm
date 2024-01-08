@@ -30,6 +30,11 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
 
+      - name: downcase repository name
+        shell: bash
+        run: echo "repo=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
+        id: lowercase_repo
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -67,6 +72,6 @@ jobs:
           platforms: linux/amd64
           tags: |
             ${{ steps.meta.outputs.tags }}
-            mintplexlabs/anythingllm:dev
-            ghcr.io/${{ github.repository }}:dev
+            ${{ github.ref_name == 'master' && 'mintplexlabs/anythingllm:dev' || '' }}
+            ${{ github.ref_name == 'master' && format('ghcr.io/{0}:{1}', steps.lowercase_repo.outputs.repo, 'dev') || '' }}
           labels: ${{ steps.meta.outputs.labels }}
