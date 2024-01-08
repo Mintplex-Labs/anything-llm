@@ -21,16 +21,12 @@ export default function PromptInput({
   inputDisabled,
   buttonDisabled,
   toggleSlashCommands,
+  showSlashCommands,
 }) {
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const formRef = useRef(null);
   const [_, setFocused] = useState(false);
   const { user } = useUser();
-  // const [showSlashCommands, setShowSlashCommands] = useState(false);
-
-  // const toggleSlashCommands = () => {
-  //   setShowSlashCommands(!showSlashCommands);
-  // };
 
   const handleSubmit = (e) => {
     setFocused(false);
@@ -57,11 +53,6 @@ export default function PromptInput({
 
   return (
     <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center overflow-hidden">
-      {/* {showSlashCommands && (
-        <div className="absolute  bg-black text-white p-3 rounded-md">
-          <p>Slash Command Options</p>
-        </div>
-      )} */}
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl"
@@ -111,7 +102,9 @@ export default function PromptInput({
                 <ChatModeSelector workspace={workspace} />
                 <div
                   onClick={toggleSlashCommands}
-                  className="flex justify-center items-center opacity-40 hover:opacity-100 cursor-pointer"
+                  className={`flex justify-center items-center opacity-40 hover:opacity-100 cursor-pointer ${
+                    showSlashCommands && "opacity-100"
+                  }`}
                 >
                   <img
                     src={SlashCommandIcon}

@@ -131,6 +131,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           inputDisabled={loadingResponse}
           buttonDisabled={loadingResponse}
           toggleSlashCommands={toggleSlashCommands}
+          showSlashCommands={showSlashCommands}
         />
       </div>
     </div>
