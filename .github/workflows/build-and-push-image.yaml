@@ -12,7 +12,7 @@ concurrency:
 
 on:
   push:
-    branches: ['master', 'arm64'] # master branch only. Do not modify.
+    branches: ['master'] # master branch only. Do not modify.
     paths-ignore:
       - '*.md'
       - 'cloud-deployments/*'
@@ -30,7 +30,7 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
 
-      - name: downcase repository name
+      - name: Parse repository name to lowercase
         shell: bash
         run: echo "repo=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
         id: lowercase_repo
