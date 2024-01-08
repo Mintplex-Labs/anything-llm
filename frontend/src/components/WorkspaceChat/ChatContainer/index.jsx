@@ -10,6 +10,11 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
+  const [showSlashCommands, setShowSlashCommands] = useState(false);
+
+  const toggleSlashCommands = () => {
+    setShowSlashCommands(!showSlashCommands);
+  };
 
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
@@ -89,6 +94,34 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     >
       {isMobile && <SidebarMobileHeader />}
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
+        {showSlashCommands && (
+          <div className="absolute md:bottom-36 md:left-56 bottom-20 left-0 z-10 w-96 h-40 pl-4 pr-16 py-4 bg-zinc-800 rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex">
+            <div className="w-80 grow shrink basis-0 relative hover:cursor-pointer hover:bg-zinc-700">
+              <div className="w-28 h-4 left-0 top-0 absolute text-white text-sm font-bold font-['Plus Jakarta Sans'] leading-tight">
+                /reset
+              </div>
+              <div className="w-80 h-4 left-0 top-[21.61px] absolute text-white text-opacity-60 text-sm font-normal font-['Plus Jakarta Sans'] leading-tight">
+                Clear your chat history and begin a new chat
+              </div>
+            </div>
+            <div className="w-80 grow shrink basis-0 relative">
+              <div className="w-28 h-4 left-0 top-0 absolute text-white text-sm font-bold font-['Plus Jakarta Sans'] leading-tight">
+                /reset
+              </div>
+              <div className="w-80 h-4 left-0 top-[21.61px] absolute text-white text-opacity-60 text-sm font-normal font-['Plus Jakarta Sans'] leading-tight">
+                Clear your chat history and begin a new chat
+              </div>
+            </div>
+            <div className="w-80 grow shrink basis-0 relative">
+              <div className="w-28 h-4 left-0 top-0 absolute text-white text-sm font-bold font-['Plus Jakarta Sans'] leading-tight">
+                /reset
+              </div>
+              <div className="w-80 h-4 left-0 top-[21.61px] absolute text-white text-opacity-60 text-sm font-normal font-['Plus Jakarta Sans'] leading-tight">
+                Clear your chat history and begin a new chat
+              </div>
+            </div>
+          </div>
+        )}
         <ChatHistory history={chatHistory} workspace={workspace} />
         <PromptInput
           workspace={workspace}
@@ -97,6 +130,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           onChange={handleMessageChange}
           inputDisabled={loadingResponse}
           buttonDisabled={loadingResponse}
+          toggleSlashCommands={toggleSlashCommands}
         />
       </div>
     </div>
