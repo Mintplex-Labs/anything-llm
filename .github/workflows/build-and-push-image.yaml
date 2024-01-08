@@ -12,7 +12,7 @@ concurrency:
 
 on:
   push:
-    branches: ['master'] # master branch only. Do not modify.
+    branches: ['master', 'arm64'] # master branch only. Do not modify.
     paths-ignore:
       - '*.md'
       - 'cloud-deployments/*'
@@ -63,6 +63,10 @@ jobs:
           context: .
           file: ./docker/Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
+          # platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            mintplexlabs/anythingllm:dev
+            ghcr.io/${{ github.repository }}:dev
           labels: ${{ steps.meta.outputs.labels }}
