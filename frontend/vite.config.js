@@ -1,23 +1,23 @@
-import { defineConfig } from 'vite'
-import { fileURLToPath, URL } from "url";
-import postcss from './postcss.config.js'
-import react from '@vitejs/plugin-react'
-import dns from 'dns'
-import { visualizer } from "rollup-plugin-visualizer";
+import { defineConfig } from "vite"
+import { fileURLToPath, URL } from "url"
+import postcss from "./postcss.config.js"
+import react from "@vitejs/plugin-react"
+import dns from "dns"
+import { visualizer } from "rollup-plugin-visualizer"
 
-dns.setDefaultResultOrder('verbatim')
+dns.setDefaultResultOrder("verbatim")
 
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
     port: 3000,
-    host: 'localhost'
+    host: "localhost"
   },
   define: {
-    'process.env': process.env
+    "process.env": process.env
   },
   css: {
-    postcss,
+    postcss
   },
   plugins: [
     react(),
@@ -26,12 +26,15 @@ export default defineConfig({
       open: false,
       gzipSize: true,
       brotliSize: true,
-      filename: "bundleinspector.html", // will be saved in project's root
-    }),
+      filename: "bundleinspector.html" // will be saved in project's root
+    })
   ],
   resolve: {
     alias: [
-      { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
+      {
+        find: "@",
+        replacement: fileURLToPath(new URL("./src", import.meta.url))
+      },
       {
         process: "process/browser",
         stream: "stream-browserify",
@@ -39,23 +42,22 @@ export default defineConfig({
         util: "util",
         find: /^~.+/,
         replacement: (val) => {
-          return val.replace(/^~/, "");
-        },
-      },
-    ],
+          return val.replace(/^~/, "")
+        }
+      }
+    ]
   },
   build: {
     commonjsOptions: {
-      transformMixedEsModules: true,
+      transformMixedEsModules: true
     }
   },
   optimizeDeps: {
     esbuildOptions: {
       define: {
-        global: 'globalThis'
+        global: "globalThis"
       },
-      plugins: [
-      ]
+      plugins: []
     }
   }
 })
