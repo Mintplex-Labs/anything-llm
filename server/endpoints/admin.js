@@ -30,7 +30,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -45,7 +45,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -81,7 +81,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.delete(
@@ -96,7 +96,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -110,7 +110,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -125,7 +125,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.delete(
@@ -140,7 +140,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -154,7 +154,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -166,14 +166,14 @@ function adminEndpoints(app) {
         const { name } = reqBody(request);
         const { workspace, message: error } = await Workspace.new(
           name,
-          user.id
+          user.id,
         );
         response.status(200).json({ workspace, error });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -185,14 +185,14 @@ function adminEndpoints(app) {
         const { userIds } = reqBody(request);
         const { success, error } = await Workspace.updateUsers(
           workspaceId,
-          userIds
+          userIds,
         );
         response.status(200).json({ success, error });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.delete(
@@ -223,7 +223,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -240,7 +240,7 @@ function adminEndpoints(app) {
               ?.value === "true",
           message_limit:
             Number(
-              (await SystemSettings.get({ label: "message_limit" }))?.value
+              (await SystemSettings.get({ label: "message_limit" }))?.value,
             ) || 10,
         };
         response.status(200).json({ settings });
@@ -248,7 +248,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -263,7 +263,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -283,7 +283,7 @@ function adminEndpoints(app) {
           error: "Could not find an API Keys.",
         });
       }
-    }
+    },
   );
 
   app.post(
@@ -301,7 +301,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.delete(
@@ -316,7 +316,7 @@ function adminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 }
 

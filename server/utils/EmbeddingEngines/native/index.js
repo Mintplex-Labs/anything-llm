@@ -9,7 +9,7 @@ class NativeEmbedder {
     this.cacheDir = path.resolve(
       process.env.STORAGE_DIR
         ? path.resolve(process.env.STORAGE_DIR, `models`)
-        : path.resolve(__dirname, `../../../storage/models`)
+        : path.resolve(__dirname, `../../../storage/models`),
     );
     this.modelPath = path.resolve(this.cacheDir, "Xenova", "all-MiniLM-L6-v2");
 
@@ -24,7 +24,7 @@ class NativeEmbedder {
   async embedderClient() {
     if (!fs.existsSync(this.modelPath)) {
       console.log(
-        "\x1b[34m[INFO]\x1b[0m The native embedding model has never been run and will be downloaded right now. Subsequent runs will be faster. (~23MB)\n\n"
+        "\x1b[34m[INFO]\x1b[0m The native embedding model has never been run and will be downloaded right now. Subsequent runs will be faster. (~23MB)\n\n",
       );
     }
 
@@ -32,7 +32,7 @@ class NativeEmbedder {
       // Convert ESM to CommonJS via import so we can load this library.
       const pipeline = (...args) =>
         import("@xenova/transformers").then(({ pipeline }) =>
-          pipeline(...args)
+          pipeline(...args),
         );
       return await pipeline("feature-extraction", this.model, {
         cache_dir: this.cacheDir,
@@ -44,7 +44,7 @@ class NativeEmbedder {
                 console.log(
                   `\x1b[34m[Embedding - Downloading Model Files]\x1b[0m ${
                     data.file
-                  } ${~~data?.progress}%`
+                  } ${~~data?.progress}%`,
                 );
               },
             }

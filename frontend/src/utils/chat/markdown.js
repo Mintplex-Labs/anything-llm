@@ -31,7 +31,7 @@ window.copySnippet = function (uuid = "") {
   const target = document.getElementById(`code-${uuid}`);
   const markdown =
     target.parentElement?.parentElement?.querySelector(
-      "pre:first-of-type"
+      "pre:first-of-type",
     )?.innerText;
   if (!markdown) return false;
 

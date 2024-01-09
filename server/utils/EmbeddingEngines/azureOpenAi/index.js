@@ -10,7 +10,7 @@ class AzureOpenAiEmbedder {
 
     const openai = new OpenAIClient(
       process.env.AZURE_OPENAI_ENDPOINT,
-      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
+      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY),
     );
     this.openai = openai;
 
@@ -30,7 +30,7 @@ class AzureOpenAiEmbedder {
       process.env.EMBEDDING_MODEL_PREF || "text-embedding-ada-002";
     if (!textEmbeddingModel)
       throw new Error(
-        "No EMBEDDING_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an embedding model."
+        "No EMBEDDING_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an embedding model.",
       );
 
     // Because there is a limit on how many chunks can be sent at once to Azure OpenAI
@@ -48,12 +48,12 @@ class AzureOpenAiEmbedder {
             .catch((e) => {
               resolve({ data: [], error: e?.error });
             });
-        })
+        }),
       );
     }
 
     const { data = [], error = null } = await Promise.all(
-      embeddingRequests
+      embeddingRequests,
     ).then((results) => {
       // If any errors were returned from Azure abort the entire sequence because the embeddings
       // will be incomplete.

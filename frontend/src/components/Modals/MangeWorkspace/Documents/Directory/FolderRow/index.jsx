@@ -21,7 +21,7 @@ export default function FolderRow({
     event.stopPropagation();
     if (
       !window.confirm(
-        "Are you sure you want to delete this folder?\nThis will require you to re-upload and re-embed it.\nAny documents in this folder will be removed from any workspace that is currently referencing it.\nThis action is not reversible."
+        "Are you sure you want to delete this folder?\nThis will require you to re-upload and re-embed it.\nAny documents in this folder will be removed from any workspace that is currently referencing it.\nThis action is not reversible.",
       )
     ) {
       return false;

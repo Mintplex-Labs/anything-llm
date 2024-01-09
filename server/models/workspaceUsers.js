@@ -8,8 +8,8 @@ const WorkspaceUser = {
         workspaceIds.map((workspaceId) =>
           prisma.workspace_users.create({
             data: { user_id: userId, workspace_id: workspaceId },
-          })
-        )
+          }),
+        ),
       );
     } catch (error) {
       console.error(error.message);
@@ -27,8 +27,8 @@ const WorkspaceUser = {
               user_id: Number(userId),
               workspace_id: Number(workspaceId),
             },
-          })
-        )
+          }),
+        ),
       );
     } catch (error) {
       console.error(error.message);
@@ -45,7 +45,7 @@ const WorkspaceUser = {
     } catch (error) {
       console.error(
         "FAILED TO CREATE WORKSPACE_USER RELATIONSHIP.",
-        error.message
+        error.message,
       );
       return false;
     }

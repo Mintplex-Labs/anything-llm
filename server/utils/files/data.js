@@ -22,7 +22,7 @@ async function exportData() {
       fs.cpSync(
         path.resolve(storageBase, `documents`),
         path.resolve(folder, "documents"),
-        { recursive: true }
+        { recursive: true },
       );
     }
 
@@ -31,7 +31,7 @@ async function exportData() {
       fs.cpSync(
         path.resolve(storageBase, `lancedb`),
         path.resolve(folder, "lancedb"),
-        { recursive: true }
+        { recursive: true },
       );
     }
 
@@ -40,17 +40,17 @@ async function exportData() {
       fs.cpSync(
         path.resolve(storageBase, `vector-cache`),
         path.resolve(folder, "vector-cache"),
-        { recursive: true }
+        { recursive: true },
       );
     }
 
     if (fs.existsSync(path.resolve(storageBase, `anythingllm.db`))) {
       console.log(
-        "\x1b[34m[EXPORTING DATA]\x1b[0m Copying anythingllm database!"
+        "\x1b[34m[EXPORTING DATA]\x1b[0m Copying anythingllm database!",
       );
       fs.cpSync(
         path.resolve(storageBase, `anythingllm.db`),
-        path.resolve(folder, "anythingllm.db")
+        path.resolve(folder, "anythingllm.db"),
       );
     }
 
@@ -87,14 +87,14 @@ async function unpackAndOverwriteImport(importFilename) {
 
   try {
     console.log(
-      "\x1b[34m[EXTRACTING DATA]\x1b[0m Extracting data from zip into storage!"
+      "\x1b[34m[EXTRACTING DATA]\x1b[0m Extracting data from zip into storage!",
     );
     const unzipProc = await unzipDirectory(importFilepath, outDir);
     if (!unzipProc.success) return unzipProc;
 
     if (fs.existsSync(path.resolve(outDir, `documents`))) {
       console.log(
-        "\x1b[34m[OVERWRITE & IMPORT DATA]\x1b[0m Importing documents!"
+        "\x1b[34m[OVERWRITE & IMPORT DATA]\x1b[0m Importing documents!",
       );
       if (fs.existsSync(path.resolve(storageBase, `documents`)))
         fs.rmSync(path.resolve(storageBase, `documents`), {
@@ -104,13 +104,13 @@ async function unpackAndOverwriteImport(importFilename) {
       fs.cpSync(
         path.resolve(outDir, `documents`),
         path.resolve(storageBase, "documents"),
-        { recursive: true }
+        { recursive: true },
       );
     }
 
     if (fs.existsSync(path.resolve(outDir, `lancedb`))) {
       console.log(
-        "\x1b[34m[OVERWRITE & IMPORT DATA]\x1b[0m Importing LanceDb!"
+        "\x1b[34m[OVERWRITE & IMPORT DATA]\x1b[0m Importing LanceDb!",
       );
       if (fs.existsSync(path.resolve(storageBase, `lancedb`)))
         fs.rmSync(path.resolve(storageBase, `lancedb`), {
@@ -120,13 +120,13 @@ async function unpackAndOverwriteImport(importFilename) {
       fs.cpSync(
         path.resolve(outDir, `lancedb`),
         path.resolve(storageBase, "lancedb"),
-        { recursive: true }
+        { recursive: true },
       );
     }
 
     if (fs.existsSync(path.resolve(outDir, `vector-cache`))) {
       console.log(
-        "\x1b[34m[OVERWRITE & IMPORT DATA]\x1b[0m Importing Vector Cache!"
+        "\x1b[34m[OVERWRITE & IMPORT DATA]\x1b[0m Importing Vector Cache!",
       );
       if (fs.existsSync(path.resolve(storageBase, `vector-cache`)))
         fs.rmSync(path.resolve(storageBase, `vector-cache`), {
@@ -136,19 +136,19 @@ async function unpackAndOverwriteImport(importFilename) {
       fs.cpSync(
         path.resolve(outDir, `vector-cache`),
         path.resolve(storageBase, "vector-cache"),
-        { recursive: true }
+        { recursive: true },
       );
     }
 
     if (fs.existsSync(path.resolve(outDir, `anythingllm.db`))) {
       console.log(
-        "\x1b[34m[OVERWRITE & IMPORT DATA]\x1b[0m Importing AnythingLLM DB!"
+        "\x1b[34m[OVERWRITE & IMPORT DATA]\x1b[0m Importing AnythingLLM DB!",
       );
       if (fs.existsSync(path.resolve(storageBase, `anythingllm.db`)))
         fs.rmSync(path.resolve(storageBase, `anythingllm.db`), { force: true });
       fs.cpSync(
         path.resolve(outDir, `anythingllm.db`),
-        path.resolve(storageBase, "anythingllm.db")
+        path.resolve(storageBase, "anythingllm.db"),
       );
     }
 

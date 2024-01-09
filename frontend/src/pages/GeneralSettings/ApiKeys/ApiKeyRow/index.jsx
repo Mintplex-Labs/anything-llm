@@ -11,7 +11,7 @@ export default function ApiKeyRow({ apiKey }) {
   const handleDelete = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to deactivate this api key?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible.`
+        `Are you sure you want to deactivate this api key?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible.`,
       )
     )
       return false;

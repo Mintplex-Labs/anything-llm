@@ -12,7 +12,7 @@ async function collectDocumentData(folderName = null) {
   const dirExists = fs.existsSync(folder);
   if (!dirExists)
     throw new Error(
-      `No documents folder for ${folderName} - did you run collector/main.py for this element?`
+      `No documents folder for ${folderName} - did you run collector/main.py for this element?`,
     );
 
   const files = fs.readdirSync(folder);
@@ -112,7 +112,7 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
   if (!exists) return { exists, chunks: [] };
 
   console.log(
-    `Cached vectorized results of ${filename} found! Using cached data to save on embed costs.`
+    `Cached vectorized results of ${filename} found! Using cached data to save on embed costs.`,
   );
   const rawData = fs.readFileSync(file, "utf8");
   return { exists: true, chunks: JSON.parse(rawData) };
@@ -123,7 +123,7 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
 async function storeVectorResult(vectorData = [], filename = null) {
   if (!filename) return;
   console.log(
-    `Caching vectorized results of ${filename} to prevent duplicated embedding.`
+    `Caching vectorized results of ${filename} to prevent duplicated embedding.`,
   );
   const folder =
     process.env.NODE_ENV === "development"

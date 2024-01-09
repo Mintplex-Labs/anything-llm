@@ -25,7 +25,7 @@ export default function UploadFile({
     const form = new FormData(formEl);
     const { response, data } = await Workspace.uploadLink(
       workspace.slug,
-      form.get("link")
+      form.get("link"),
     );
     if (!response.ok) {
       showToast(`Error uploading link: ${data.error}`, "error");

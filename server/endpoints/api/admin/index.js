@@ -274,7 +274,7 @@ function apiAdminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get("/v1/admin/invites", [validApiKey], async (request, response) => {
@@ -416,7 +416,7 @@ function apiAdminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -477,14 +477,14 @@ function apiAdminEndpoints(app) {
         const { userIds } = reqBody(request);
         const { success, error } = await Workspace.updateUsers(
           workspaceId,
-          userIds
+          userIds,
         );
         response.status(200).json({ success, error });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -532,7 +532,7 @@ function apiAdminEndpoints(app) {
           {},
           pgSize,
           offset * pgSize,
-          { id: "desc" }
+          { id: "desc" },
         );
 
         const hasPages = (await WorkspaceChats.count()) > (offset + 1) * pgSize;
@@ -541,7 +541,7 @@ function apiAdminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get("/v1/admin/preferences", [validApiKey], async (request, response) => {
@@ -588,7 +588,7 @@ function apiAdminEndpoints(app) {
             ?.value === "true",
         message_limit:
           Number(
-            (await SystemSettings.get({ label: "message_limit" }))?.value
+            (await SystemSettings.get({ label: "message_limit" }))?.value,
           ) || 10,
       };
       response.status(200).json({ settings });
@@ -654,7 +654,7 @@ function apiAdminEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 }
 

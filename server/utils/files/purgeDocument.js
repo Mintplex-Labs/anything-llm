@@ -33,7 +33,7 @@ async function purgeFolder(folderName) {
   for (const filename of filenames) {
     const rmVectorCache = () =>
       new Promise((resolve) =>
-        purgeVectorCache(filename).then(() => resolve(true))
+        purgeVectorCache(filename).then(() => resolve(true)),
       );
     purgePromises.push(rmVectorCache);
   }
@@ -42,7 +42,9 @@ async function purgeFolder(folderName) {
   for (const workspace of workspaces) {
     const rmWorkspaceDoc = () =>
       new Promise((resolve) =>
-        Document.removeDocuments(workspace, filenames).then(() => resolve(true))
+        Document.removeDocuments(workspace, filenames).then(() =>
+          resolve(true),
+        ),
       );
     purgePromises.push(rmWorkspaceDoc);
   }

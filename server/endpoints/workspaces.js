@@ -35,7 +35,7 @@ function workspaceEndpoints(app) {
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "pinecone",
           },
-          user?.id
+          user?.id,
         );
         if (onboardingComplete === true)
           await Telemetry.sendTelemetry("onboarding_complete");
@@ -45,7 +45,7 @@ function workspaceEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -67,14 +67,14 @@ function workspaceEndpoints(app) {
 
         const { workspace, message } = await Workspace.update(
           currWorkspace.id,
-          data
+          data,
         );
         response.status(200).json({ workspace, message });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -102,11 +102,11 @@ function workspaceEndpoints(app) {
       }
 
       console.log(
-        `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
+        `Document ${originalname} uploaded processed and successfully. It is now available in documents.`,
       );
       await Telemetry.sendTelemetry("document_uploaded");
       response.status(200).json({ success: true, error: null });
-    }
+    },
   );
 
   app.post(
@@ -134,11 +134,11 @@ function workspaceEndpoints(app) {
       }
 
       console.log(
-        `Link ${link} uploaded processed and successfully. It is now available in documents.`
+        `Link ${link} uploaded processed and successfully. It is now available in documents.`,
       );
       await Telemetry.sendTelemetry("link_uploaded");
       response.status(200).json({ success: true, error: null });
-    }
+    },
   );
 
   app.post(
@@ -161,7 +161,7 @@ function workspaceEndpoints(app) {
         await Document.removeDocuments(currWorkspace, deletes);
         const { failed = [] } = await Document.addDocuments(
           currWorkspace,
-          adds
+          adds,
         );
         const updatedWorkspace = await Workspace.get({ id: currWorkspace.id });
         response.status(200).json({
@@ -175,7 +175,7 @@ function workspaceEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.delete(
@@ -210,7 +210,7 @@ function workspaceEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get("/workspaces", [validatedRequest], async (request, response) => {
@@ -267,7 +267,7 @@ function workspaceEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 }
 

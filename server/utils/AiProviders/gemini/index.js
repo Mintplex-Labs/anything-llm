@@ -18,7 +18,7 @@ class GeminiLLM {
 
     if (!embedder)
       throw new Error(
-        "INVALID GEMINI LLM SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Gemini as your LLM."
+        "INVALID GEMINI LLM SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Gemini as your LLM.",
       );
     this.embedder = embedder;
   }
@@ -97,7 +97,7 @@ class GeminiLLM {
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
+        `Gemini chat: ${this.model} is not valid for chat completion!`,
       );
 
     const compressedHistory = await this.compressMessages(
@@ -105,7 +105,7 @@ class GeminiLLM {
         systemPrompt: chatPrompt(workspace),
         chatHistory,
       },
-      rawHistory
+      rawHistory,
     );
 
     const chatThread = this.gemini.startChat({
@@ -123,11 +123,11 @@ class GeminiLLM {
   async getChatCompletion(messages = [], _opts = {}) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
+        `Gemini chat: ${this.model} is not valid for chat completion!`,
       );
 
     const prompt = messages.find(
-      (chat) => chat.role === "USER_PROMPT"
+      (chat) => chat.role === "USER_PROMPT",
     )?.content;
     const chatThread = this.gemini.startChat({
       history: this.formatMessages(messages),
@@ -144,7 +144,7 @@ class GeminiLLM {
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
+        `Gemini chat: ${this.model} is not valid for chat completion!`,
       );
 
     const compressedHistory = await this.compressMessages(
@@ -152,7 +152,7 @@ class GeminiLLM {
         systemPrompt: chatPrompt(workspace),
         chatHistory,
       },
-      rawHistory
+      rawHistory,
     );
 
     const chatThread = this.gemini.startChat({
@@ -168,11 +168,11 @@ class GeminiLLM {
   async streamGetChatCompletion(messages = [], _opts = {}) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
+        `Gemini chat: ${this.model} is not valid for chat completion!`,
       );
 
     const prompt = messages.find(
-      (chat) => chat.role === "USER_PROMPT"
+      (chat) => chat.role === "USER_PROMPT",
     )?.content;
     const chatThread = this.gemini.startChat({
       history: this.formatMessages(messages),

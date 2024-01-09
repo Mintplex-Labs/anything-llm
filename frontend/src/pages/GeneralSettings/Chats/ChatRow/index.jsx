@@ -8,7 +8,7 @@ export default function ChatRow({ chat }) {
   const handleDelete = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to delete this chat?\n\nThis action is irreversible.`
+        `Are you sure you want to delete this chat?\n\nThis action is irreversible.`,
       )
     )
       return false;

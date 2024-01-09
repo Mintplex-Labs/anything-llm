@@ -11,7 +11,10 @@ import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../../Modals/MangeWorkspace";
 import useUser from "@/hooks/useUser";
-import SlashCommandIcon from "./icons/slash-commands-icon.svg";
+import SlashCommandsButton, {
+  SlashCommands,
+  useSlashCommands,
+} from "./SlashCommands";
 
 export default function PromptInput({
   workspace,
@@ -20,10 +23,9 @@ export default function PromptInput({
   onChange,
   inputDisabled,
   buttonDisabled,
-  toggleSlashCommands,
-  showSlashCommands,
-  slashCommandsButtonRef,
+  sendCommand,
 }) {
+  const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const formRef = useRef(null);
   const [_, setFocused] = useState(false);
@@ -53,7 +55,12 @@ export default function PromptInput({
   };
 
   return (
-    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center overflow-hidden">
+    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
+      <SlashCommands
+        showing={showSlashCommand}
+        setShowing={setShowSlashCommand}
+        sendCommand={sendCommand}
+      />
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl"
@@ -99,20 +106,11 @@ export default function PromptInput({
                     weight="fill"
                   />
                 )}
-
                 <ChatModeSelector workspace={workspace} />
-                <div
-                  ref={slashCommandsButtonRef}
-                  onClick={toggleSlashCommands}
-                  className={`flex justify-center items-center opacity-40 hover:opacity-100 cursor-pointer ${showSlashCommands ? "opacity-100" : ""
-                    }`}
-                >
-                  <img
-                    src={SlashCommandIcon}
-                    className="w-6 h-6"
-                    alt="Slash commands button"
-                  />
-                </div>
+                <SlashCommandsButton
+                  showing={showSlashCommand}
+                  setShowSlashCommand={setShowSlashCommand}
+                />
               </div>
               {/* <Microphone
                 className="w-7 h-7 text-white/30 cursor-not-allowed"
@@ -132,7 +130,7 @@ export default function PromptInput({
 function ChatModeSelector({ workspace }) {
   const STORAGE_KEY = `workspace_chat_mode_${workspace.slug}`;
   const [chatMode, setChatMode] = useState(
-    window.localStorage.getItem(STORAGE_KEY) ?? "chat"
+    window.localStorage.getItem(STORAGE_KEY) ?? "chat",
   );
   const [showToolTip, setShowTooltip] = useState(false);
   const [delayHandler, setDelayHandler] = useState(null);
@@ -148,7 +146,7 @@ function ChatModeSelector({ workspace }) {
     setDelayHandler(
       setTimeout(() => {
         setShowTooltip(true);
-      }, 700)
+      }, 700),
     );
   }
 
@@ -165,8 +163,9 @@ function ChatModeSelector({ workspace }) {
       onMouseLeave={cleanupTooltipListener}
     >
       <div
-        className={`opacity-${showToolTip ? 1 : 0
-          } pointer-events-none transition-all duration-300 tip absolute bottom-10 z-99 left-0 bg-white/50 text-gray-200 text-xs p-1.5 rounded shadow-lg whitespace-nowrap`}
+        className={`opacity-${
+          showToolTip ? 1 : 0
+        } pointer-events-none transition-all duration-300 tip absolute bottom-10 z-99 left-0 bg-white/50 text-gray-200 text-xs p-1.5 rounded shadow-lg whitespace-nowrap`}
       >
         You are currently in {chatMode} mode. Click to switch to{" "}
         {chatMode === "chat" ? "query" : "chat"} mode.

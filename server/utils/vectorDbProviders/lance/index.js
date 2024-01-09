@@ -62,7 +62,7 @@ const LanceDb = {
     client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
   ) {
     const collection = await client.openTable(namespace);
     const result = {
@@ -128,7 +128,7 @@ const LanceDb = {
     const exists = await this.namespaceExists(client, namespace);
     if (!exists) {
       console.error(
-        `LanceDB:deleteDocumentFromNamespace - namespace ${namespace} does not exist.`
+        `LanceDB:deleteDocumentFromNamespace - namespace ${namespace} does not exist.`,
       );
       return;
     }
@@ -136,7 +136,7 @@ const LanceDb = {
     const { DocumentVectors } = require("../../../models/vectors");
     const table = await client.openTable(namespace);
     const vectorIds = (await DocumentVectors.where({ docId })).map(
-      (record) => record.vectorId
+      (record) => record.vectorId,
     );
 
     if (vectorIds.length === 0) return;
@@ -146,7 +146,7 @@ const LanceDb = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null
+    fullFilePath = null,
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -214,7 +214,7 @@ const LanceDb = {
         }
       } else {
         throw new Error(
-          "Could not embed document chunks! This document will not be recorded."
+          "Could not embed document chunks! This document will not be recorded.",
         );
       }
 
@@ -259,7 +259,7 @@ const LanceDb = {
       client,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

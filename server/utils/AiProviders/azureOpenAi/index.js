@@ -11,7 +11,7 @@ class AzureOpenAiLLM {
 
     this.openai = new OpenAIClient(
       process.env.AZURE_OPENAI_ENDPOINT,
-      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
+      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY),
     );
     this.model = process.env.OPEN_MODEL_PREF;
     this.limits = {
@@ -22,7 +22,7 @@ class AzureOpenAiLLM {
 
     if (!embedder)
       console.warn(
-        "No embedding provider defined for AzureOpenAiLLM - falling back to AzureOpenAiEmbedder for embedding!"
+        "No embedding provider defined for AzureOpenAiLLM - falling back to AzureOpenAiEmbedder for embedding!",
       );
     this.embedder = !embedder ? new AzureOpenAiEmbedder() : embedder;
   }
@@ -80,7 +80,7 @@ class AzureOpenAiLLM {
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!this.model)
       throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
+        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5.",
       );
 
     const messages = await this.compressMessages(
@@ -89,7 +89,7 @@ class AzureOpenAiLLM {
         userPrompt: prompt,
         chatHistory,
       },
-      rawHistory
+      rawHistory,
     );
     const textResponse = await this.openai
       .getChatCompletions(this.model, messages, {
@@ -106,7 +106,7 @@ class AzureOpenAiLLM {
       .catch((error) => {
         console.log(error);
         throw new Error(
-          `AzureOpenAI::getChatCompletions failed with: ${error.message}`
+          `AzureOpenAI::getChatCompletions failed with: ${error.message}`,
         );
       });
     return textResponse;
@@ -115,7 +115,7 @@ class AzureOpenAiLLM {
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!this.model)
       throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
+        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5.",
       );
 
     const messages = await this.compressMessages(
@@ -124,7 +124,7 @@ class AzureOpenAiLLM {
         userPrompt: prompt,
         chatHistory,
       },
-      rawHistory
+      rawHistory,
     );
     const stream = await this.openai.streamChatCompletions(
       this.model,
@@ -132,7 +132,7 @@ class AzureOpenAiLLM {
       {
         temperature: Number(workspace?.openAiTemp ?? 0.7),
         n: 1,
-      }
+      },
     );
     return { type: "azureStream", stream };
   }
@@ -140,7 +140,7 @@ class AzureOpenAiLLM {
   async getChatCompletion(messages = [], { temperature = 0.7 }) {
     if (!this.model)
       throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
+        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5.",
       );
 
     const data = await this.openai.getChatCompletions(this.model, messages, {
@@ -153,7 +153,7 @@ class AzureOpenAiLLM {
   async streamGetChatCompletion(messages = [], { temperature = 0.7 }) {
     if (!this.model)
       throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
+        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5.",
       );
 
     const stream = await this.openai.streamChatCompletions(
@@ -162,7 +162,7 @@ class AzureOpenAiLLM {
       {
         temperature,
         n: 1,
-      }
+      },
     );
     return { type: "azureStream", stream };
   }

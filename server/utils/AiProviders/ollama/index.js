@@ -17,7 +17,7 @@ class OllamaAILLM {
 
     if (!embedder)
       throw new Error(
-        "INVALID OLLAMA SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Ollama as your LLM."
+        "INVALID OLLAMA SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Ollama as your LLM.",
       );
     this.embedder = embedder;
   }
@@ -109,7 +109,7 @@ class OllamaAILLM {
         userPrompt: prompt,
         chatHistory,
       },
-      rawHistory
+      rawHistory,
     );
 
     const model = this.#ollamaClient({
@@ -132,7 +132,7 @@ class OllamaAILLM {
         userPrompt: prompt,
         chatHistory,
       },
-      rawHistory
+      rawHistory,
     );
 
     const model = this.#ollamaClient({

@@ -6,7 +6,7 @@ const { chatPrompt } = require("../../chats");
 // Docs: https://api.js.langchain.com/classes/chat_models_llama_cpp.ChatLlamaCpp.html
 const ChatLlamaCpp = (...args) =>
   import("langchain/chat_models/llama_cpp").then(
-    ({ ChatLlamaCpp }) => new ChatLlamaCpp(...args)
+    ({ ChatLlamaCpp }) => new ChatLlamaCpp(...args),
   );
 
 class NativeLLM {
@@ -24,7 +24,7 @@ class NativeLLM {
     this.cacheDir = path.resolve(
       process.env.STORAGE_DIR
         ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
-        : path.resolve(__dirname, `../../../storage/models/downloaded`)
+        : path.resolve(__dirname, `../../../storage/models/downloaded`),
     );
 
     // Make directory when it does not exist in existing installations
@@ -35,7 +35,7 @@ class NativeLLM {
     const modelPath = path.join(this.cacheDir, this.model);
     if (!fs.existsSync(modelPath))
       throw new Error(
-        `Local Llama model ${this.model} was not found in storage!`
+        `Local Llama model ${this.model} was not found in storage!`,
       );
 
     global.llamaModelInstance = await ChatLlamaCpp({
@@ -128,7 +128,7 @@ class NativeLLM {
           userPrompt: prompt,
           chatHistory,
         },
-        rawHistory
+        rawHistory,
       );
 
       const model = await this.#llamaClient({
@@ -138,7 +138,7 @@ class NativeLLM {
       return response.content;
     } catch (error) {
       throw new Error(
-        `NativeLLM::createChatCompletion failed with: ${error.message}`
+        `NativeLLM::createChatCompletion failed with: ${error.message}`,
       );
     }
   }
@@ -153,7 +153,7 @@ class NativeLLM {
         userPrompt: prompt,
         chatHistory,
       },
-      rawHistory
+      rawHistory,
     );
     const responseStream = await model.stream(messages);
     return responseStream;
@@ -185,7 +185,7 @@ class NativeLLM {
     const compressedMessages = await messageArrayCompressor(
       this,
       messageArray,
-      rawHistory
+      rawHistory,
     );
     return this.#convertToLangchainPrototypes(compressedMessages);
   }

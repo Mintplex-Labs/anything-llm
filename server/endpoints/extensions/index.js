@@ -25,7 +25,7 @@ function extensionEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -46,7 +46,7 @@ function extensionEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -67,7 +67,7 @@ function extensionEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 }
 

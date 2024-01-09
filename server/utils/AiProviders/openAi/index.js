@@ -19,7 +19,7 @@ class OpenAiLLM {
 
     if (!embedder)
       console.warn(
-        "No embedding provider defined for OpenAiLLM - falling back to OpenAiEmbedder for embedding!"
+        "No embedding provider defined for OpenAiLLM - falling back to OpenAiEmbedder for embedding!",
       );
     this.embedder = !embedder ? new OpenAiEmbedder() : embedder;
   }
@@ -98,7 +98,7 @@ class OpenAiLLM {
       })
       .catch((error) => {
         throw new Error(
-          `OpenAI::CreateModeration failed with: ${error.message}`
+          `OpenAI::CreateModeration failed with: ${error.message}`,
         );
       });
 
@@ -120,7 +120,7 @@ class OpenAiLLM {
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
+        `OpenAI chat: ${this.model} is not valid for chat completion!`,
       );
 
     const textResponse = await this.openai
@@ -134,7 +134,7 @@ class OpenAiLLM {
             userPrompt: prompt,
             chatHistory,
           },
-          rawHistory
+          rawHistory,
         ),
       })
       .then((json) => {
@@ -147,7 +147,7 @@ class OpenAiLLM {
       })
       .catch((error) => {
         throw new Error(
-          `OpenAI::createChatCompletion failed with: ${error.message}`
+          `OpenAI::createChatCompletion failed with: ${error.message}`,
         );
       });
 
@@ -157,7 +157,7 @@ class OpenAiLLM {
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
+        `OpenAI chat: ${this.model} is not valid for chat completion!`,
       );
 
     const streamRequest = await this.openai.createChatCompletion(
@@ -172,10 +172,10 @@ class OpenAiLLM {
             userPrompt: prompt,
             chatHistory,
           },
-          rawHistory
+          rawHistory,
         ),
       },
-      { responseType: "stream" }
+      { responseType: "stream" },
     );
     return streamRequest;
   }
@@ -183,7 +183,7 @@ class OpenAiLLM {
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
+        `OpenAI chat: ${this.model} is not valid for chat completion!`,
       );
 
     const { data } = await this.openai.createChatCompletion({
@@ -199,7 +199,7 @@ class OpenAiLLM {
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
+        `OpenAI chat: ${this.model} is not valid for chat completion!`,
       );
 
     const streamRequest = await this.openai.createChatCompletion(
@@ -209,7 +209,7 @@ class OpenAiLLM {
         messages,
         temperature,
       },
-      { responseType: "stream" }
+      { responseType: "stream" },
     );
     return streamRequest;
   }

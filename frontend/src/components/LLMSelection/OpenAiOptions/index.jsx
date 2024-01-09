@@ -43,7 +43,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
       setLoading(true);
       const { models } = await System.customModels(
         "openai",
-        typeof apiKey === "boolean" ? null : apiKey
+        typeof apiKey === "boolean" ? null : apiKey,
       );
       setCustomModels(models || []);
       setLoading(false);
@@ -92,7 +92,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
                   {model}
                 </option>
               );
-            }
+            },
           )}
         </optgroup>
         {customModels.length > 0 && (

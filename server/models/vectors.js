@@ -14,7 +14,7 @@ const DocumentVectors = {
               docId: record.docId,
               vectorId: record.vectorId,
             },
-          })
+          }),
         );
       });
       await prisma.$transaction(inserts);

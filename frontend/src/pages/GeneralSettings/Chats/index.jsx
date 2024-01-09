@@ -23,7 +23,7 @@ export default function WorkspaceChats() {
       document.body.removeChild(link);
       showToast(
         "Chats exported successfully. Note: Must have at least 10 chats to be valid for OpenAI fine tuning.",
-        "success"
+        "success",
       );
     } else {
       showToast("Failed to export chats.", "error");

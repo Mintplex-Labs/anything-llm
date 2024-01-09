@@ -18,7 +18,7 @@ async function streamChatWithWorkspace(
   workspace,
   message,
   chatMode = "chat",
-  user = null
+  user = null,
 ) {
   const uuid = uuidv4();
   const command = grepCommand(message);
@@ -40,7 +40,7 @@ async function streamChatWithWorkspace(
       sources: [],
       close: true,
       error: `This message was moderated and will not be allowed. Violations for ${reasons.join(
-        ", "
+        ", ",
       )} found.`,
     });
     return;
@@ -67,7 +67,7 @@ async function streamChatWithWorkspace(
     user,
     workspace,
     messageLimit,
-    chatMode
+    chatMode,
   );
   const {
     contextTexts = [],
@@ -102,14 +102,14 @@ async function streamChatWithWorkspace(
       contextTexts,
       chatHistory,
     },
-    rawHistory
+    rawHistory,
   );
 
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
     console.log(
-      `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
+      `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`,
     );
     completeText = await LLMConnector.getChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? 0.7,
@@ -154,20 +154,20 @@ async function streamEmptyEmbeddingChat({
   const { rawHistory, chatHistory } = await recentChatHistory(
     user,
     workspace,
-    messageLimit
+    messageLimit,
   );
 
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
     console.log(
-      `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
+      `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`,
     );
     completeText = await LLMConnector.sendChat(
       chatHistory,
       message,
       workspace,
-      rawHistory
+      rawHistory,
     );
     writeResponseChunk(response, {
       uuid,
@@ -182,7 +182,7 @@ async function streamEmptyEmbeddingChat({
       chatHistory,
       message,
       workspace,
-      rawHistory
+      rawHistory,
     );
     completeText = await handleStreamResponses(response, stream, {
       uuid,
@@ -270,7 +270,7 @@ function handleStreamResponses(response, stream, responseProps) {
       for await (const chunk of stream) {
         if (chunk === undefined)
           throw new Error(
-            "Stream returned undefined chunk. Aborting reply - check model provider logs."
+            "Stream returned undefined chunk. Aborting reply - check model provider logs.",
           );
 
         const content = chunk.hasOwnProperty("content") ? chunk.content : chunk;

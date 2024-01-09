@@ -203,7 +203,7 @@ async function messageStringCompressor(llm, promptArgs = {}, rawHistory = []) {
         input: system,
         targetTokenSize: llm.limits.system,
         tiktokenInstance: tokenManager,
-      })
+      }),
     );
   });
 
@@ -313,8 +313,8 @@ function cannonball({
 
   console.log(
     `Cannonball results ${initialInputSize} -> ${tokenManager.countFromString(
-      truncatedText
-    )} tokens.`
+      truncatedText,
+    )} tokens.`,
   );
   return truncatedText;
 }

@@ -230,7 +230,7 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
             {EMBEDDING_ENGINE_PRIVACY[embeddingEngine].description.map(
               (desc) => (
                 <li className="text-white/90 text-sm">{desc}</li>
-              )
+              ),
             )}
           </ul>
         </div>

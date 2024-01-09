@@ -97,7 +97,7 @@ export default function Directory({
                       item={item}
                       selected={isSelected(
                         item.id,
-                        item.type === "folder" ? item : null
+                        item.type === "folder" ? item : null,
                       )}
                       fetchKeys={fetchKeys}
                       onRowClick={() => toggleSelection(item)}
@@ -107,7 +107,7 @@ export default function Directory({
                       setLoadingMessage={setLoadingMessage}
                       autoExpanded={index === 0}
                     />
-                  )
+                  ),
               )
             ) : (
               <div className="w-full h-full flex items-center justify-center">

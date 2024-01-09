@@ -71,7 +71,7 @@ export default function GeneralLLMPreference() {
 
   useEffect(() => {
     const filtered = LLMS.filter((llm) =>
-      llm.name.toLowerCase().includes(searchQuery.toLowerCase())
+      llm.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
     setFilteredLLMs(filtered);
   }, [searchQuery, selectedLLM]);

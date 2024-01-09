@@ -22,7 +22,7 @@ class LMStudioLLM {
 
     if (!embedder)
       throw new Error(
-        "INVALID LM STUDIO SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use LMStudio as your LLM."
+        "INVALID LM STUDIO SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use LMStudio as your LLM.",
       );
     this.embedder = embedder;
   }
@@ -79,7 +79,7 @@ class LMStudioLLM {
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!this.model)
       throw new Error(
-        `LMStudio chat: ${this.model} is not valid or defined for chat completion!`
+        `LMStudio chat: ${this.model} is not valid or defined for chat completion!`,
       );
 
     const textResponse = await this.lmstudio
@@ -93,7 +93,7 @@ class LMStudioLLM {
             userPrompt: prompt,
             chatHistory,
           },
-          rawHistory
+          rawHistory,
         ),
       })
       .then((json) => {
@@ -106,7 +106,7 @@ class LMStudioLLM {
       })
       .catch((error) => {
         throw new Error(
-          `LMStudio::createChatCompletion failed with: ${error.message}`
+          `LMStudio::createChatCompletion failed with: ${error.message}`,
         );
       });
 
@@ -116,7 +116,7 @@ class LMStudioLLM {
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!this.model)
       throw new Error(
-        `LMStudio chat: ${this.model} is not valid or defined for chat completion!`
+        `LMStudio chat: ${this.model} is not valid or defined for chat completion!`,
       );
 
     const streamRequest = await this.lmstudio.createChatCompletion(
@@ -131,10 +131,10 @@ class LMStudioLLM {
             userPrompt: prompt,
             chatHistory,
           },
-          rawHistory
+          rawHistory,
         ),
       },
-      { responseType: "stream" }
+      { responseType: "stream" },
     );
     return streamRequest;
   }
@@ -142,7 +142,7 @@ class LMStudioLLM {
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!this.model)
       throw new Error(
-        `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
+        `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`,
       );
 
     const { data } = await this.lmstudio.createChatCompletion({
@@ -158,7 +158,7 @@ class LMStudioLLM {
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!this.model)
       throw new Error(
-        `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
+        `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`,
       );
 
     const streamRequest = await this.lmstudio.createChatCompletion(
@@ -168,7 +168,7 @@ class LMStudioLLM {
         messages,
         temperature,
       },
-      { responseType: "stream" }
+      { responseType: "stream" },
     );
     return streamRequest;
   }

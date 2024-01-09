@@ -3,7 +3,7 @@ import System from "@/models/system";
 
 export default function OllamaLLMOptions({ settings }) {
   const [basePathValue, setBasePathValue] = useState(
-    settings?.OllamaLLMBasePath
+    settings?.OllamaLLMBasePath,
   );
   const [basePath, setBasePath] = useState(settings?.OllamaLLMBasePath);
 

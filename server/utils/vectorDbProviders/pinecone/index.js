@@ -32,7 +32,7 @@ const Pinecone = {
     const { namespaces } = await pineconeIndex.describeIndexStats1();
     return Object.values(namespaces).reduce(
       (a, b) => a + (b?.vectorCount || 0),
-      0
+      0,
     );
   },
   namespaceCount: async function (_namespace = null) {
@@ -44,7 +44,7 @@ const Pinecone = {
     index,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
   ) {
     const result = {
       contextTexts: [],
@@ -92,7 +92,7 @@ const Pinecone = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null
+    fullFilePath = null,
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -162,7 +162,7 @@ const Pinecone = {
         }
       } else {
         throw new Error(
-          "Could not embed document chunks! This document will not be recorded."
+          "Could not embed document chunks! This document will not be recorded.",
         );
       }
 
@@ -245,7 +245,7 @@ const Pinecone = {
     const { pineconeIndex } = await this.connect();
     if (!(await this.namespaceExists(pineconeIndex, namespace)))
       throw new Error(
-        "Invalid namespace - has it been collected and populated yet?"
+        "Invalid namespace - has it been collected and populated yet?",
       );
 
     const queryVector = await LLMConnector.embedTextInput(input);
@@ -253,7 +253,7 @@ const Pinecone = {
       pineconeIndex,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

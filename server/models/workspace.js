@@ -46,7 +46,7 @@ const Workspace = {
     if (!id) throw new Error("No workspace id provided for update");
 
     const validKeys = Object.keys(data).filter((key) =>
-      this.writable.includes(key)
+      this.writable.includes(key),
     );
     if (validKeys.length === 0)
       return { workspace: { id }, message: "No valid fields to update!" };
@@ -140,7 +140,7 @@ const Workspace = {
     user,
     clause = {},
     limit = null,
-    orderBy = null
+    orderBy = null,
   ) {
     if (["admin", "manager"].includes(user.role))
       return await this.where(clause, limit, orderBy);

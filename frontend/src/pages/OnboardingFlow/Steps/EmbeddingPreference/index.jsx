@@ -109,7 +109,7 @@ export default function EmbeddingPreference({
 
   useEffect(() => {
     const filtered = EMBEDDERS.filter((embedder) =>
-      embedder.name.toLowerCase().includes(searchQuery.toLowerCase())
+      embedder.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
     setFilteredEmbedders(filtered);
   }, [searchQuery, selectedEmbedder]);
