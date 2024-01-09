@@ -1,0 +1,41 @@
+name: 🐛 Bug Report
+description: File a bug report for AnythingLLM
+title: "[BUG]: "
+labels: [possible-bug]
+body:
+  - type: markdown
+    attributes:
+      value: Use this template to file a bug report for AnythingLLM. Please be as descriptive as possible to allow everyone to replicate and solve your issue.
+  
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: How are you running AnythingLLM?
+      description: AnythingLLM can be run in many environments, pick the one that best represents where you encounter the bug.
+      options:
+        - Docker (local)
+        - Docker (remote machine)
+        - Local development
+        - AnythingLLM desktop app
+        - Not listed
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Are there known steps to reproduce?
+      description: |
+        Let us know how to reproduce the bug and we may be able to fix it more
+        quickly. This is not required, but it is helpful.
+    validations:
+      required: false

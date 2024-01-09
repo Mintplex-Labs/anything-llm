@@ -19,6 +19,7 @@ on:
       - 'images/*'
       - '.vscode/*'
       - '**/.env.example'
+      - '.github/ISSUE_TEMPLATE/*'
 
 jobs:
   push_multi_platform_to_registries:

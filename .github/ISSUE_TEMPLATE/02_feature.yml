@@ -1,0 +1,18 @@
+name: ✨ New Feature suggestion
+description: Suggest a new feature for AnythingLLM!
+title: "[FEAT]: "
+labels: [enhancement, feature-request]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share a new idea for a feature or improvement. Be sure to search existing
+        issues first to avoid duplicates.
+  - type: textarea
+    id: description
+    attributes:
+      label: What would you like to see?
+      description: |
+        Describe the feature and why it would be useful to your use-case as well as others.
+    validations:
+      required: true
