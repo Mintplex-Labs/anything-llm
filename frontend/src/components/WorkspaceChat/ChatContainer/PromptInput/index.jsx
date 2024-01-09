@@ -112,10 +112,6 @@ export default function PromptInput({
                   setShowSlashCommand={setShowSlashCommand}
                 />
               </div>
-              {/* <Microphone
-                className="w-7 h-7 text-white/30 cursor-not-allowed"
-                weight="fill"
-              /> */}
             </div>
           </div>
         </div>
