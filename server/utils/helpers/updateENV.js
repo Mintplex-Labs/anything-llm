@@ -170,6 +170,16 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Milvus Options
+  MilvusAddress: {
+    envKey: "MILVUS_ADDRESS",
+    checks: [isValidURL, validDockerizedUrl],
+  },
+  MilvusToken: {
+    envKey: "MILVUS_TOKEN",
+    checks: [],
+  },
+
   // Together Ai Options
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
@@ -279,7 +289,14 @@ function supportedEmbeddingModel(input = "") {
 }
 
 function supportedVectorDB(input = "") {
-  const supported = ["chroma", "pinecone", "lancedb", "weaviate", "qdrant"];
+  const supported = [
+    "chroma",
+    "pinecone",
+    "lancedb",
+    "weaviate",
+    "qdrant",
+    "milvus",
+  ];
   return supported.includes(input)
     ? null
     : `Invalid VectorDB type. Must be one of ${supported.join(", ")}.`;

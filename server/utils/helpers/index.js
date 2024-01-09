@@ -16,6 +16,9 @@ function getVectorDbClass() {
     case "qdrant":
       const { QDrant } = require("../vectorDbProviders/qdrant");
       return QDrant;
+    case "milvus":
+      const { Milvus } = require("../vectorDbProviders/milvus");
+      return Milvus;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
   }
