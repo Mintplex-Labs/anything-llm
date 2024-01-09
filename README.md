@@ -97,19 +97,14 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 
 
 ## How to setup for development
-- `yarn setup` from the project root directory.
-  - This will fill in the required `.env` files you'll need in each of the application sections. Go fill those out before proceeding or else things won't work right.
-- `yarn prisma:setup` To build the Prisma client and migrate the database.
+- `yarn setup` To fill in the required `.env` files you'll need in each of the application sections (from root of repo).
+  - Go fill those out before proceeding. Ensure `server/.env.development` is filled or else things won't work right.
+- `yarn dev:server` To boot the server locally (from root of repo).
+- `yarn dev:frontend` To boot the frontend locally (from root of repo).
+- `yarn dev:collector` To then run the document collector (from root of repo).
 
-To boot the server locally (from root of repo):
-- ensure `server/.env.development` is set and filled out.
-`yarn dev:server`
- 
-To boot the frontend locally (from root of repo):
-`yarn dev:frontend`
 
-To then run the document collector (from root of repo)
-`yarn dev:collector`
+
 
 [Learn about documents](./server/storage/documents/DOCUMENTS.md)
 

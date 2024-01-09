@@ -1,0 +1,94 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/collector",
+        "statusbar": {
+          "color": "#ffea00",
+          "detail": "Runs the collector",
+          "label": "Collector: $(play) run",
+          "running": {
+            "color": "#ffea00",
+            "label": "Collector: $(gear~spin) running"
+          }
+        }
+      },
+      "command": "cd ${workspaceFolder}/collector/ && yarn dev",
+      "runOptions": {
+        "instanceLimit": 1,
+        "reevaluateOnRerun": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "label": "Collector: run"
+    },
+    {
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/server",
+        "statusbar": {
+          "color": "#ffea00",
+          "detail": "Runs the server",
+          "label": "Server: $(play) run",
+          "running": {
+            "color": "#ffea00",
+            "label": "Server: $(gear~spin) running"
+          }
+        }
+      },
+      "command": "cd ${workspaceFolder}/server/ && yarn dev",
+      "runOptions": {
+        "instanceLimit": 1,
+        "reevaluateOnRerun": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "label": "Server: run"
+    },
+    {
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend",
+        "statusbar": {
+          "color": "#ffea00",
+          "detail": "Runs the frontend",
+          "label": "Frontend: $(play) run",
+          "running": {
+            "color": "#ffea00",
+            "label": "Frontend: $(gear~spin) running"
+          }
+        }
+      },
+      "command": "cd ${workspaceFolder}/frontend/ && yarn dev",
+      "runOptions": {
+        "instanceLimit": 1,
+        "reevaluateOnRerun": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "label": "Frontend: run"
+    }
+  ]
+}

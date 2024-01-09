@@ -6,5 +6,6 @@
     "openai",
     "Qdrant",
     "Weaviate"
-  ]
+  ],
+  "eslint.experimental.useFlatConfig": true
 }

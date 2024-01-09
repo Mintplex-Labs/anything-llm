@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "The best solution for turning private documents into a chat bot using off-the-shelf tools and commercially viable AI technologies.",
   "main": "index.js",
+  "type": "module",
   "author": "Timothy Carambat (Mintplex Labs)",
   "license": "MIT",
   "engines": {
@@ -14,7 +15,7 @@
     "setup:envs": "cp -n ./frontend/.env.example ./frontend/.env && cp -n ./server/.env.example ./server/.env.development && cp -n ./collector/.env.example ./collector/.env && cp -n ./docker/.env.example ./docker/.env && echo \"All ENV files copied!\n\"",
     "dev:server": "cd server && yarn dev",
     "dev:collector": "cd collector && yarn dev",
-    "dev:frontend": "cd frontend && yarn start",
+    "dev:frontend": "cd frontend && yarn dev",
     "prisma:generate": "cd server && npx prisma generate",
     "prisma:migrate": "cd server && npx prisma migrate dev --name init",
     "prisma:seed": "cd server && npx prisma db seed",

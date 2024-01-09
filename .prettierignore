@@ -1,0 +1,12 @@
+# defaults
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+
+#frontend
+frontend/bundleinspector.html
+**/dist
+
+#server
+server/swagger/openapi.json
