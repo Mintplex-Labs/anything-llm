@@ -140,6 +140,13 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
+      ...(llmProvider === "togetherai"
+        ? {
+            TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
+            TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
+            TogetherAiTokenLimit: process.env.TOGETHER_AI_MODEL_TOKEN_LIMIT,
+          }
+        : {}),
       ...(llmProvider === "native"
         ? {
             NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,

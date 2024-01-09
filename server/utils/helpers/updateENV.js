@@ -170,6 +170,20 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Together Ai Options
+  TogetherAiModelPref: {
+    envKey: "TOGETHER_AI_MODEL_PREF",
+    checks: [],
+  },
+  TogetherAiTokenLimit: {
+    envKey: "TOGETHER_AI_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  TogetherAiApiKey: {
+    envKey: "TOGETHER_AI_API_KEY",
+    checks: [],
+  },
+
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
