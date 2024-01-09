@@ -93,7 +93,7 @@ function chatEndpoints(app) {
         });
         response.end();
       }
-    },
+    }
   );
 
   app.post(
@@ -158,7 +158,7 @@ function chatEndpoints(app) {
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "pinecone",
           },
-          user?.id,
+          user?.id
         );
         response.status(200).json({ ...result });
       } catch (e) {
@@ -172,7 +172,7 @@ function chatEndpoints(app) {
           error: e.message,
         });
       }
-    },
+    }
   );
 }
 

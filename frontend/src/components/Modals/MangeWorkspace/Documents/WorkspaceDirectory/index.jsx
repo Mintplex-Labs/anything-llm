@@ -62,7 +62,7 @@ export default function WorkspaceDirectory({
         </div>
         <div className="w-full h-full flex flex-col z-0">
           {Object.values(files.items).some(
-            (folder) => folder.items.length > 0,
+            (folder) => folder.items.length > 0
           ) || movedItems.length > 0 ? (
             <>
               {files.items.map((folder) =>
@@ -78,7 +78,7 @@ export default function WorkspaceDirectory({
                     hasChanges={hasChanges}
                     movedItems={movedItems}
                   />
-                )),
+                ))
               )}
             </>
           ) : (

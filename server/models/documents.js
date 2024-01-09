@@ -56,7 +56,7 @@ const Document = {
       const vectorized = await VectorDb.addDocumentToNamespace(
         workspace.slug,
         { ...data, docId },
-        path,
+        path
       );
       if (!vectorized) {
         console.error("Failed to vectorize", path);
@@ -92,7 +92,7 @@ const Document = {
       if (!document) continue;
       await VectorDb.deleteDocumentFromNamespace(
         workspace.slug,
-        document.docId,
+        document.docId
       );
 
       try {

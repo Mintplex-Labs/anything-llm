@@ -110,7 +110,7 @@ const User = {
 
     const complexityCheck = passwordComplexity(
       complexityOptions,
-      "password",
+      "password"
     ).validate(passwordInput);
     if (complexityCheck.hasOwnProperty("error")) {
       let myError = "";

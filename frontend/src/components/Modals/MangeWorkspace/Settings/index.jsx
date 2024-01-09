@@ -53,7 +53,7 @@ export default function WorkspaceSettings({ workspace }) {
     for (var [key, value] of form.entries()) data[key] = castToType(key, value);
     const { workspace: updatedWorkspace, message } = await Workspace.update(
       workspace.slug,
-      data,
+      data
     );
     if (!!updatedWorkspace) {
       showToast("Workspace updated!", "success", { clear: true });
@@ -67,7 +67,7 @@ export default function WorkspaceSettings({ workspace }) {
   const deleteWorkspace = async () => {
     if (
       !window.confirm(
-        `You are about to delete your entire ${workspace.name} workspace. This will remove all vector embeddings on your vector database.\n\nThe original source files will remain untouched. This action is irreversible.`,
+        `You are about to delete your entire ${workspace.name} workspace. This will remove all vector embeddings on your vector database.\n\nThe original source files will remain untouched. This action is irreversible.`
       )
     )
       return false;

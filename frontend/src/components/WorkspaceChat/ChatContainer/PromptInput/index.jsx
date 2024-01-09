@@ -130,7 +130,7 @@ export default function PromptInput({
 function ChatModeSelector({ workspace }) {
   const STORAGE_KEY = `workspace_chat_mode_${workspace.slug}`;
   const [chatMode, setChatMode] = useState(
-    window.localStorage.getItem(STORAGE_KEY) ?? "chat",
+    window.localStorage.getItem(STORAGE_KEY) ?? "chat"
   );
   const [showToolTip, setShowTooltip] = useState(false);
   const [delayHandler, setDelayHandler] = useState(null);
@@ -146,7 +146,7 @@ function ChatModeSelector({ workspace }) {
     setDelayHandler(
       setTimeout(() => {
         setShowTooltip(true);
-      }, 700),
+      }, 700)
     );
   }
 

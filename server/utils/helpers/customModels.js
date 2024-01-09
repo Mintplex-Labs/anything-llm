@@ -33,8 +33,7 @@ async function openAiModels(apiKey = null) {
         return [];
       })
   ).filter(
-    (model) =>
-      !model.owned_by.includes("openai") && model.owned_by !== "system",
+    (model) => !model.owned_by.includes("openai") && model.owned_by !== "system"
   );
 
   // Api Key was successful so lets save it for future uses
@@ -83,7 +82,7 @@ async function ollamaAIModels(basePath = null, _apiKey = null) {
     .then((models) =>
       models.map((model) => {
         return { id: model.name };
-      }),
+      })
     )
     .catch((e) => {
       console.error(e);
@@ -99,7 +98,7 @@ function nativeLLMModels() {
   const storageDir = path.resolve(
     process.env.STORAGE_DIR
       ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
-      : path.resolve(__dirname, `../../storage/models/downloaded`),
+      : path.resolve(__dirname, `../../storage/models/downloaded`)
   );
   if (!fs.existsSync(storageDir))
     return { models: [], error: "No model/downloaded storage folder found." };

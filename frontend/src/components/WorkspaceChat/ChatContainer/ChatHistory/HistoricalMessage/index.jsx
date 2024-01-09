@@ -10,7 +10,7 @@ import { v4 } from "uuid";
 const HistoricalMessage = forwardRef(
   (
     { uuid = v4(), message, role, workspace, sources = [], error = false },
-    ref,
+    ref
   ) => {
     return (
       <div
@@ -53,7 +53,7 @@ const HistoricalMessage = forwardRef(
         </div>
       </div>
     );
-  },
+  }
 );
 
 export default memo(HistoricalMessage);

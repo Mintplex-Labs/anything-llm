@@ -24,7 +24,7 @@ class LocalAiLLM {
 
     if (!embedder)
       throw new Error(
-        "INVALID LOCAL AI SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use LocalAI as your LLM.",
+        "INVALID LOCAL AI SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use LocalAI as your LLM."
       );
     this.embedder = embedder;
   }
@@ -79,7 +79,7 @@ class LocalAiLLM {
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `LocalAI chat: ${this.model} is not valid for chat completion!`,
+        `LocalAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const textResponse = await this.openai
@@ -93,7 +93,7 @@ class LocalAiLLM {
             userPrompt: prompt,
             chatHistory,
           },
-          rawHistory,
+          rawHistory
         ),
       })
       .then((json) => {
@@ -106,7 +106,7 @@ class LocalAiLLM {
       })
       .catch((error) => {
         throw new Error(
-          `LocalAI::createChatCompletion failed with: ${error.message}`,
+          `LocalAI::createChatCompletion failed with: ${error.message}`
         );
       });
 
@@ -116,7 +116,7 @@ class LocalAiLLM {
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `LocalAI chat: ${this.model} is not valid for chat completion!`,
+        `LocalAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.createChatCompletion(
@@ -131,10 +131,10 @@ class LocalAiLLM {
             userPrompt: prompt,
             chatHistory,
           },
-          rawHistory,
+          rawHistory
         ),
       },
-      { responseType: "stream" },
+      { responseType: "stream" }
     );
     return streamRequest;
   }
@@ -142,7 +142,7 @@ class LocalAiLLM {
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `LocalAI chat: ${this.model} is not valid for chat completion!`,
+        `LocalAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const { data } = await this.openai.createChatCompletion({
@@ -158,7 +158,7 @@ class LocalAiLLM {
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `LocalAi chat: ${this.model} is not valid for chat completion!`,
+        `LocalAi chat: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.createChatCompletion(
@@ -168,7 +168,7 @@ class LocalAiLLM {
         messages,
         temperature,
       },
-      { responseType: "stream" },
+      { responseType: "stream" }
     );
     return streamRequest;
   }

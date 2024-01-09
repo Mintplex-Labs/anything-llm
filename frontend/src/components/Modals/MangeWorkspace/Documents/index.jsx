@@ -43,7 +43,7 @@ export default function DocumentSettings({
             items: folder.items.filter(
               (file) =>
                 file.type === "file" &&
-                !documentsInWorkspace.includes(`${folder.name}/${file.name}`),
+                !documentsInWorkspace.includes(`${folder.name}/${file.name}`)
             ),
           };
         } else {
@@ -62,7 +62,7 @@ export default function DocumentSettings({
             items: folder.items.filter(
               (file) =>
                 file.type === "file" &&
-                documentsInWorkspace.includes(`${folder.name}/${file.name}`),
+                documentsInWorkspace.includes(`${folder.name}/${file.name}`)
             ),
           };
         } else {
@@ -172,7 +172,7 @@ export default function DocumentSettings({
             ...folder,
             items: remainingItems,
           };
-        },
+        }
       );
 
       if (foundItem) {

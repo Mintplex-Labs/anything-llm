@@ -21,7 +21,7 @@ const Chroma = {
             fetchOptions: {
               headers: parseAuthHeader(
                 process.env.CHROMA_API_HEADER || "X-Api-Key",
-                process.env.CHROMA_API_KEY,
+                process.env.CHROMA_API_KEY
               ),
             },
           }
@@ -31,7 +31,7 @@ const Chroma = {
     const isAlive = await client.heartbeat();
     if (!isAlive)
       throw new Error(
-        "ChromaDB::Invalid Heartbeat received - is the instance online?",
+        "ChromaDB::Invalid Heartbeat received - is the instance online?"
       );
     return { client };
   },
@@ -67,7 +67,7 @@ const Chroma = {
     client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25,
+    similarityThreshold = 0.25
   ) {
     const collection = await client.getCollection({ name: namespace });
     const result = {
@@ -127,7 +127,7 @@ const Chroma = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null,
+    fullFilePath = null
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -218,7 +218,7 @@ const Chroma = {
         }
       } else {
         throw new Error(
-          "Could not embed document chunks! This document will not be recorded.",
+          "Could not embed document chunks! This document will not be recorded."
         );
       }
 
@@ -290,7 +290,7 @@ const Chroma = {
       client,
       namespace,
       queryVector,
-      similarityThreshold,
+      similarityThreshold
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

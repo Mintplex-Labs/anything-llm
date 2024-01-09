@@ -7,7 +7,7 @@ import Citations from "../Citation";
 const PromptReply = forwardRef(
   (
     { uuid, reply, pending, error, workspace, sources = [], closed = true },
-    ref,
+    ref
   ) => {
     const assistantBackgroundColor = "bg-historical-msg-system";
 
@@ -80,7 +80,7 @@ const PromptReply = forwardRef(
         </div>
       </div>
     );
-  },
+  }
 );
 
 export default memo(PromptReply);

@@ -28,7 +28,7 @@ export default function EditWorkspaceUsersModal({ workspace, users }) {
     }
     const { success, error } = await Admin.updateUsersInWorkspace(
       workspace.id,
-      data.userIds,
+      data.userIds
     );
     if (success) window.location.reload();
     setError(error);
@@ -68,7 +68,7 @@ export default function EditWorkspaceUsersModal({ workspace, users }) {
                         onClick={() => {
                           document
                             .getElementById(
-                              `workspace-${workspace.id}-user-${user.id}`,
+                              `workspace-${workspace.id}-user-${user.id}`
                             )
                             ?.click();
                         }}
@@ -100,8 +100,8 @@ export default function EditWorkspaceUsersModal({ workspace, users }) {
                         ?.click();
                       Array.from(
                         document.querySelectorAll(
-                          `[data-workspace='${workspace.id}']`,
-                        ),
+                          `[data-workspace='${workspace.id}']`
+                        )
                       ).forEach((el) => {
                         if (!el.firstChild.checked) el.firstChild.click();
                       });
@@ -118,8 +118,8 @@ export default function EditWorkspaceUsersModal({ workspace, users }) {
                         ?.click();
                       Array.from(
                         document.querySelectorAll(
-                          `[data-workspace='${workspace.id}']`,
-                        ),
+                          `[data-workspace='${workspace.id}']`
+                        )
                       ).forEach((el) => {
                         if (el.firstChild.checked) el.firstChild.click();
                       });

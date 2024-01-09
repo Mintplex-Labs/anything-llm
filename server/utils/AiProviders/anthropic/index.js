@@ -21,7 +21,7 @@ class AnthropicLLM {
 
     if (!embedder)
       throw new Error(
-        "INVALID ANTHROPIC SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Anthropic as your LLM.",
+        "INVALID ANTHROPIC SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Anthropic as your LLM."
       );
     this.embedder = embedder;
     this.answerKey = v4().split("-")[0];
@@ -86,7 +86,7 @@ class AnthropicLLM {
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `Anthropic chat: ${this.model} is not valid for chat completion!`,
+        `Anthropic chat: ${this.model} is not valid for chat completion!`
       );
 
     const compressedPrompt = await this.compressMessages(
@@ -95,7 +95,7 @@ class AnthropicLLM {
         userPrompt: prompt,
         chatHistory,
       },
-      rawHistory,
+      rawHistory
     );
     const { content, error } = await this.anthropic.completions
       .create({
@@ -106,11 +106,7 @@ class AnthropicLLM {
       .then((res) => {
         const { completion } = res;
         const re = new RegExp(
-          "(?:<" +
-            this.answerKey +
-            ">)([\\s\\S]*)(?:</" +
-            this.answerKey +
-            ">)",
+          "(?:<" + this.answerKey + ">)([\\s\\S]*)(?:</" + this.answerKey + ">)"
         );
         const response = completion.match(re)?.[1]?.trim();
         if (!response)
@@ -128,7 +124,7 @@ class AnthropicLLM {
   async getChatCompletion(prompt = "", _opts = {}) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `Anthropic chat: ${this.model} is not valid for chat completion!`,
+        `Anthropic chat: ${this.model} is not valid for chat completion!`
       );
 
     const { content, error } = await this.anthropic.completions
@@ -140,11 +136,7 @@ class AnthropicLLM {
       .then((res) => {
         const { completion } = res;
         const re = new RegExp(
-          "(?:<" +
-            this.answerKey +
-            ">)([\\s\\S]*)(?:</" +
-            this.answerKey +
-            ">)",
+          "(?:<" + this.answerKey + ">)([\\s\\S]*)(?:</" + this.answerKey + ">)"
         );
         const response = completion.match(re)?.[1]?.trim();
         if (!response)
@@ -164,7 +156,7 @@ class AnthropicLLM {
     const compressedPrompt = await messageStringCompressor(
       this,
       promptArgs,
-      rawHistory,
+      rawHistory
     );
     return compressedPrompt;
   }

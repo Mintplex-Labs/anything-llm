@@ -7,7 +7,7 @@ require("dotenv").config();
 const DATABASE_PATH = process.env.DB_URL || "../../storage/anythingllm.db";
 const BACKUP_PATH = path.join(
   path.dirname(DATABASE_PATH),
-  "anythingllm_backup.db",
+  "anythingllm_backup.db"
 );
 
 // Backup the database before migrating data
@@ -252,11 +252,11 @@ async function migrateTable(tableName, migrateRowFunc) {
 
   // Check table exists
   const { count } = await db.get(
-    `SELECT COUNT(*) as count FROM sqlite_master WHERE name='${tableName}'`,
+    `SELECT COUNT(*) as count FROM sqlite_master WHERE name='${tableName}'`
   );
   if (count === 0) {
     console.log(
-      `${tableName} does not exist in legacy DB - nothing to migrate - skipping.`,
+      `${tableName} does not exist in legacy DB - nothing to migrate - skipping.`
     );
     return;
   }

@@ -39,12 +39,12 @@ class OpenAiEmbedder {
             .catch((e) => {
               resolve({ data: [], error: e?.error });
             });
-        }),
+        })
       );
     }
 
     const { data = [], error = null } = await Promise.all(
-      embeddingRequests,
+      embeddingRequests
     ).then((results) => {
       // If any errors were returned from OpenAI abort the entire sequence because the embeddings
       // will be incomplete.

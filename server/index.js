@@ -29,7 +29,7 @@ app.use(
   bodyParser.urlencoded({
     limit: FILE_LIMIT,
     extended: true,
-  }),
+  })
 );
 
 app.use("/api", apiRouter);
@@ -72,7 +72,7 @@ apiRouter.post("/v/:command", async (request, response) => {
 
 if (process.env.NODE_ENV !== "development") {
   app.use(
-    express.static(path.resolve(__dirname, "public"), { extensions: ["js"] }),
+    express.static(path.resolve(__dirname, "public"), { extensions: ["js"] })
   );
 
   app.use("/", function (_, response) {
@@ -87,7 +87,7 @@ if (process.env.NODE_ENV !== "development") {
 
 app.use(
   "/system/data-exports",
-  serveIndex(__dirname + "/storage/exports", { icons: true }),
+  serveIndex(__dirname + "/storage/exports", { icons: true })
 );
 
 app.all("*", function (_, response) {

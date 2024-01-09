@@ -210,7 +210,7 @@ function apiWorkspaceEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.post(
@@ -283,14 +283,14 @@ function apiWorkspaceEndpoints(app) {
 
         const { workspace, message } = await Workspace.update(
           currWorkspace.id,
-          data,
+          data
         );
         response.status(200).json({ workspace, message });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.get(
@@ -351,7 +351,7 @@ function apiWorkspaceEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.post(
@@ -423,14 +423,14 @@ function apiWorkspaceEndpoints(app) {
         await Document.removeDocuments(currWorkspace, deletes);
         await Document.addDocuments(currWorkspace, adds);
         const updatedWorkspace = await Workspace.get(
-          `id = ${Number(currWorkspace.id)}`,
+          `id = ${Number(currWorkspace.id)}`
         );
         response.status(200).json({ workspace: updatedWorkspace });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.post(
@@ -503,7 +503,7 @@ function apiWorkspaceEndpoints(app) {
           error: e.message,
         });
       }
-    },
+    }
   );
 }
 

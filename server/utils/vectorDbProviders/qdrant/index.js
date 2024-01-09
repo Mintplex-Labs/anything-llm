@@ -24,7 +24,7 @@ const QDrant = {
     const isAlive = (await client.api("cluster")?.clusterStatus())?.ok || false;
     if (!isAlive)
       throw new Error(
-        "QDrant::Invalid Heartbeat received - is the instance online?",
+        "QDrant::Invalid Heartbeat received - is the instance online?"
       );
 
     return { client };
@@ -53,7 +53,7 @@ const QDrant = {
     _client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25,
+    similarityThreshold = 0.25
   ) {
     const { client } = await this.connect();
     const result = {
@@ -123,7 +123,7 @@ const QDrant = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null,
+    fullFilePath = null
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -163,7 +163,7 @@ const QDrant = {
               submission.payloads.push(payload);
             } else {
               console.error(
-                "The 'id' property is not defined in chunk.payload - it will be omitted from being inserted in QDrant collection.",
+                "The 'id' property is not defined in chunk.payload - it will be omitted from being inserted in QDrant collection."
               );
             }
           });
@@ -222,7 +222,7 @@ const QDrant = {
         }
       } else {
         throw new Error(
-          "Could not embed document chunks! This document will not be recorded.",
+          "Could not embed document chunks! This document will not be recorded."
         );
       }
 
@@ -302,7 +302,7 @@ const QDrant = {
       client,
       namespace,
       queryVector,
-      similarityThreshold,
+      similarityThreshold
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

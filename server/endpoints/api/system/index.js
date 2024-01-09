@@ -146,7 +146,7 @@ function apiSystemEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 }
 

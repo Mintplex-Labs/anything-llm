@@ -4,7 +4,7 @@ export default function handleChat(
   setLoadingResponse,
   setChatHistory,
   remHistory,
-  _chatHistory,
+  _chatHistory
 ) {
   const { uuid, textResponse, type, sources = [], error, close } = chatResult;
 

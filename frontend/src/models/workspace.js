@@ -24,7 +24,7 @@ const Workspace = {
         method: "POST",
         body: JSON.stringify(data),
         headers: baseHeaders(),
-      },
+      }
     )
       .then((res) => res.json())
       .catch((e) => {
@@ -40,7 +40,7 @@ const Workspace = {
         method: "POST",
         body: JSON.stringify(changes), // contains 'adds' and 'removes' keys that are arrays of filepaths
         headers: baseHeaders(),
-      },
+      }
     )
       .then((res) => res.json())
       .catch((e) => {

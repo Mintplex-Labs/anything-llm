@@ -97,8 +97,8 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
             setLoadingResponse,
             setChatHistory,
             remHistory,
-            _chatHistory,
-          ),
+            _chatHistory
+          )
       );
       return;
     }

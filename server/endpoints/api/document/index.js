@@ -78,7 +78,7 @@ function apiDocumentEndpoints(app) {
         }
 
         console.log(
-          `Document ${originalname} uploaded processed and successfully. It is now available in documents.`,
+          `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
         );
         await Telemetry.sendTelemetry("document_uploaded");
         response.status(200).json({ success: true, error: null });
@@ -86,7 +86,7 @@ function apiDocumentEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.get("/v1/documents", [validApiKey], async (_, response) => {
@@ -187,7 +187,7 @@ function apiDocumentEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 }
 

@@ -45,7 +45,7 @@ class TokenManager {
       const perMessageFactorTokens = input.length * 3;
       const tokensFromContent = input.reduce(
         (a, b) => a + this.countFromString(b.content),
-        0,
+        0
       );
       const diffCoefficient = 5;
       return perMessageFactorTokens + tokensFromContent + diffCoefficient;

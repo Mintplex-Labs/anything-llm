@@ -41,7 +41,7 @@ export default function CreateWorkspace({
     if (!!workspace) {
       showToast(
         "Workspace created successfully! Taking you to home...",
-        "success",
+        "success"
       );
       await new Promise((resolve) => setTimeout(resolve, 1000));
       navigate(paths.home());

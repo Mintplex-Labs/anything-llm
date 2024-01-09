@@ -3,7 +3,7 @@ import System from "@/models/system";
 
 export default function LocalAiOptions({ settings }) {
   const [basePathValue, setBasePathValue] = useState(
-    settings?.EmbeddingBasePath,
+    settings?.EmbeddingBasePath
   );
   const [basePath, setBasePath] = useState(settings?.EmbeddingBasePath);
   const [apiKeyValue, setApiKeyValue] = useState(settings?.LocalAiApiKey);
@@ -91,7 +91,7 @@ function LocalAIModelSelection({ settings, apiKey = null, basePath = null }) {
       const { models } = await System.customModels(
         "localai",
         typeof apiKey === "boolean" ? null : apiKey,
-        basePath,
+        basePath
       );
       setCustomModels(models || []);
       setLoading(false);

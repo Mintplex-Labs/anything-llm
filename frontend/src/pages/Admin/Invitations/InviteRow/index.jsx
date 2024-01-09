@@ -10,7 +10,7 @@ export default function InviteRow({ invite }) {
   const handleDelete = async () => {
     if (
       !window.confirm(
-        `Are you sure you want to deactivate this invite?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible.`,
+        `Are you sure you want to deactivate this invite?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible.`
       )
     )
       return false;
@@ -23,7 +23,7 @@ export default function InviteRow({ invite }) {
   const copyInviteLink = () => {
     if (!invite) return false;
     window.navigator.clipboard.writeText(
-      `${window.location.origin}/accept-invite/${invite.code}`,
+      `${window.location.origin}/accept-invite/${invite.code}`
     );
     setCopied(true);
   };

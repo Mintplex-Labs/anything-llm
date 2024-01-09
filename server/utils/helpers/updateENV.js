@@ -308,7 +308,7 @@ function isDownloadedModel(input = "") {
   const storageDir = path.resolve(
     process.env.STORAGE_DIR
       ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
-      : path.resolve(__dirname, `../../storage/models/downloaded`),
+      : path.resolve(__dirname, `../../storage/models/downloaded`)
   );
   if (!fs.existsSync(storageDir)) return false;
 
@@ -337,7 +337,7 @@ function updateENV(newENVs = {}, force = false) {
   let error = "";
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
-    (key) => validKeys.includes(key) && !newENVs[key].includes("******"), // strip out answers where the value is all asterisks
+    (key) => validKeys.includes(key) && !newENVs[key].includes("******") // strip out answers where the value is all asterisks
   );
   const newValues = {};
 

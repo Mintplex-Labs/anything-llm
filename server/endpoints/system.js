@@ -101,7 +101,7 @@ function systemEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.post("/request-token", async (request, response) => {
@@ -144,14 +144,14 @@ function systemEndpoints(app) {
         await Telemetry.sendTelemetry(
           "login_event",
           { multiUserMode: false },
-          existingUser?.id,
+          existingUser?.id
         );
         response.status(200).json({
           valid: true,
           user: existingUser,
           token: makeJWT(
             { id: existingUser.id, username: existingUser.username },
-            "30d",
+            "30d"
           ),
           message: null,
         });
@@ -203,7 +203,7 @@ function systemEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.delete(
@@ -218,7 +218,7 @@ function systemEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.get("/system/local-files", [validatedRequest], async (_, response) => {
@@ -242,7 +242,7 @@ function systemEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.get(
@@ -261,7 +261,7 @@ function systemEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.post(
@@ -277,7 +277,7 @@ function systemEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.post(
@@ -297,7 +297,7 @@ function systemEndpoints(app) {
             AuthToken: usePassword ? newPassword : "",
             JWTSecret: usePassword ? v4() : "",
           },
-          true,
+          true
         );
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ success: !error, error });
@@ -305,7 +305,7 @@ function systemEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.post(
@@ -340,7 +340,7 @@ function systemEndpoints(app) {
             AuthToken: "",
             JWTSecret: process.env.JWT_SECRET || v4(),
           },
-          true,
+          true
         );
         if (process.env.NODE_ENV === "production") await dumpENV();
         await Telemetry.sendTelemetry("enabled_multi_user_mode", {
@@ -356,7 +356,7 @@ function systemEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.get("/system/multi-user-mode", async (request, response) => {
@@ -413,7 +413,7 @@ function systemEndpoints(app) {
       const { originalname } = request.file;
       const { success, error } = await unpackAndOverwriteImport(originalname);
       response.status(200).json({ success, error });
-    },
+    }
   );
 
   app.get("/system/logo", async function (request, response) {
@@ -429,7 +429,7 @@ function systemEndpoints(app) {
       response.writeHead(200, {
         "Content-Type": mime || "image/png",
         "Content-Disposition": `attachment; filename=${path.basename(
-          logoPath,
+          logoPath
         )}`,
         "Content-Length": size,
       });
@@ -489,7 +489,7 @@ function systemEndpoints(app) {
         if (oldPfpFilename) {
           const oldPfpPath = path.join(
             __dirname,
-            `../storage/assets/pfp/${oldPfpFilename}`,
+            `../storage/assets/pfp/${oldPfpFilename}`
           );
 
           if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
@@ -508,7 +508,7 @@ function systemEndpoints(app) {
         console.error("Error processing the profile picture upload:", error);
         response.status(500).json({ message: "Internal server error" });
       }
-    },
+    }
   );
 
   app.delete(
@@ -523,7 +523,7 @@ function systemEndpoints(app) {
         if (oldPfpFilename) {
           const oldPfpPath = path.join(
             __dirname,
-            `../storage/assets/pfp/${oldPfpFilename}`,
+            `../storage/assets/pfp/${oldPfpFilename}`
           );
 
           if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
@@ -542,7 +542,7 @@ function systemEndpoints(app) {
         console.error("Error processing the profile picture removal:", error);
         response.status(500).json({ message: "Internal server error" });
       }
-    },
+    }
   );
 
   app.post(
@@ -578,7 +578,7 @@ function systemEndpoints(app) {
         console.error("Error processing the logo upload:", error);
         response.status(500).json({ message: "Error uploading the logo." });
       }
-    },
+    }
   );
 
   app.get("/system/is-default-logo", async (request, response) => {
@@ -612,7 +612,7 @@ function systemEndpoints(app) {
         console.error("Error processing the logo removal:", error);
         response.status(500).json({ message: "Error removing the logo." });
       }
-    },
+    }
   );
 
   app.get(
@@ -639,7 +639,7 @@ function systemEndpoints(app) {
           canDelete: false,
         });
       }
-    },
+    }
   );
 
   app.get("/system/welcome-messages", async function (request, response) {
@@ -679,7 +679,7 @@ function systemEndpoints(app) {
           message: "Error saving the welcome messages.",
         });
       }
-    },
+    }
   );
 
   app.get("/system/api-keys", [validatedRequest], async (_, response) => {
@@ -723,7 +723,7 @@ function systemEndpoints(app) {
           error: "Error generating api key.",
         });
       }
-    },
+    }
   );
 
   app.delete("/system/api-key", [validatedRequest], async (_, response) => {
@@ -749,7 +749,7 @@ function systemEndpoints(app) {
         const { models, error } = await getCustomModels(
           provider,
           apiKey,
-          basePath,
+          basePath
         );
         return response.status(200).json({
           models,
@@ -759,7 +759,7 @@ function systemEndpoints(app) {
         console.error(error);
         response.status(500).end();
       }
-    },
+    }
   );
 
   app.post(
@@ -772,7 +772,7 @@ function systemEndpoints(app) {
           {},
           limit,
           offset * limit,
-          { id: "desc" },
+          { id: "desc" }
         );
         const totalChats = await WorkspaceChats.count();
         const hasPages = totalChats > (offset + 1) * limit;
@@ -782,7 +782,7 @@ function systemEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.delete(
@@ -797,7 +797,7 @@ function systemEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.get(
@@ -813,7 +813,7 @@ function systemEndpoints(app) {
         ];
 
         const workspacesWithPrompts = await Promise.all(
-          workspaceIds.map((id) => Workspace.get({ id: Number(id) })),
+          workspaceIds.map((id) => Workspace.get({ id: Number(id) }))
         );
 
         const workspacePromptsMap = workspacesWithPrompts.reduce(
@@ -821,7 +821,7 @@ function systemEndpoints(app) {
             acc[workspace.id] = workspace.openAiPrompt;
             return acc;
           },
-          {},
+          {}
         );
 
         const workspaceChatsMap = chats.reduce((acc, chat) => {
@@ -849,7 +849,7 @@ function systemEndpoints(app) {
             {
               role: "assistant",
               content: responseJson.text,
-            },
+            }
           );
 
           return acc;
@@ -866,7 +866,7 @@ function systemEndpoints(app) {
         console.error(e);
         response.sendStatus(500).end();
       }
-    },
+    }
   );
 
   app.post("/system/user", [validatedRequest], async (request, response) => {

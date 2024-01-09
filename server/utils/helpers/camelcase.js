@@ -7,7 +7,7 @@ const SEPARATORS = /[_.\- ]+/;
 const LEADING_SEPARATORS = new RegExp("^" + SEPARATORS.source);
 const SEPARATORS_AND_IDENTIFIER = new RegExp(
   SEPARATORS.source + IDENTIFIER.source,
-  "gu",
+  "gu"
 );
 const NUMBERS_AND_IDENTIFIER = new RegExp("\\d+" + IDENTIFIER.source, "gu");
 
@@ -15,7 +15,7 @@ const preserveCamelCase = (
   string,
   toLowerCase,
   toUpperCase,
-  preserveConsecutiveUppercase,
+  preserveConsecutiveUppercase
 ) => {
   let isLastCharLower = false;
   let isLastCharUpper = false;
@@ -68,7 +68,7 @@ const postProcess = (input, toUpperCase) => {
 
   return input
     .replace(SEPARATORS_AND_IDENTIFIER, (_, identifier) =>
-      toUpperCase(identifier),
+      toUpperCase(identifier)
     )
     .replace(NUMBERS_AND_IDENTIFIER, (m) => toUpperCase(m));
 };
@@ -122,7 +122,7 @@ function camelCase(input, options) {
       input,
       toLowerCase,
       toUpperCase,
-      options.preserveConsecutiveUppercase,
+      options.preserveConsecutiveUppercase
     );
   }
 

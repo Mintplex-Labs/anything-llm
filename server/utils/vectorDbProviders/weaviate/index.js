@@ -27,7 +27,7 @@ const Weaviate = {
     const isAlive = await await client.misc.liveChecker().do();
     if (!isAlive)
       throw new Error(
-        "Weaviate::Invalid Alive signal received - is the service online?",
+        "Weaviate::Invalid Alive signal received - is the service online?"
       );
     return { client };
   },
@@ -80,7 +80,7 @@ const Weaviate = {
     client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25,
+    similarityThreshold = 0.25
   ) {
     const result = {
       contextTexts: [],
@@ -172,7 +172,7 @@ const Weaviate = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null,
+    fullFilePath = null
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -195,7 +195,7 @@ const Weaviate = {
             .withClass({
               class: camelCase(namespace),
               description: `Class created by AnythingLLM named ${camelCase(
-                namespace,
+                namespace
               )}`,
               vectorizer: "none",
             })
@@ -212,7 +212,7 @@ const Weaviate = {
           chunk.forEach((chunk) => {
             const id = uuidv4();
             const flattenedMetadata = this.flattenObjectForWeaviate(
-              chunk.properties,
+              chunk.properties
             );
             documentVectors.push({ docId, vectorId: id });
             const vectorRecord = {
@@ -280,7 +280,7 @@ const Weaviate = {
         }
       } else {
         throw new Error(
-          "Could not embed document chunks! This document will not be recorded.",
+          "Could not embed document chunks! This document will not be recorded."
         );
       }
 
@@ -292,7 +292,7 @@ const Weaviate = {
           .withClass({
             class: camelCase(namespace),
             description: `Class created by AnythingLLM named ${camelCase(
-              namespace,
+              namespace
             )}`,
             vectorizer: "none",
           })
@@ -306,7 +306,7 @@ const Weaviate = {
         console.log("Inserting vectorized chunks into Weaviate collection.");
         const { success: additionResult, errors = [] } = await this.addVectors(
           client,
-          vectors,
+          vectors
         );
         if (!additionResult) {
           console.error("Weaviate::addVectors failed to insert", errors);
@@ -366,7 +366,7 @@ const Weaviate = {
       client,
       namespace,
       queryVector,
-      similarityThreshold,
+      similarityThreshold
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

@@ -119,7 +119,7 @@ const Admin = {
         method: "POST",
         headers: baseHeaders(),
         body: JSON.stringify({ userIds }),
-      },
+      }
     )
       .then((res) => res.json())
       .catch((e) => {

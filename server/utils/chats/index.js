@@ -62,7 +62,7 @@ async function chatWithWorkspace(
   workspace,
   message,
   chatMode = "chat",
-  user = null,
+  user = null
 ) {
   const uuid = uuidv4();
   const command = grepCommand(message);
@@ -82,7 +82,7 @@ async function chatWithWorkspace(
       sources: [],
       close: true,
       error: `This message was moderated and will not be allowed. Violations for ${reasons.join(
-        ", ",
+        ", "
       )} found.`,
     };
   }
@@ -106,7 +106,7 @@ async function chatWithWorkspace(
     user,
     workspace,
     messageLimit,
-    chatMode,
+    chatMode
   );
   const {
     contextTexts = [],
@@ -140,7 +140,7 @@ async function chatWithWorkspace(
       contextTexts,
       chatHistory,
     },
-    rawHistory,
+    rawHistory
   );
 
   // Send the text completion.
@@ -181,7 +181,7 @@ async function recentChatHistory(
   user = null,
   workspace,
   messageLimit = 20,
-  chatMode = null,
+  chatMode = null
 ) {
   if (chatMode === "query") return [];
   const rawHistory = (
@@ -190,7 +190,7 @@ async function recentChatHistory(
           workspace.id,
           user.id,
           messageLimit,
-          { id: "desc" },
+          { id: "desc" }
         )
       : await WorkspaceChats.forWorkspace(workspace.id, messageLimit, {
           id: "desc",
@@ -210,13 +210,13 @@ async function emptyEmbeddingChat({
   const { rawHistory, chatHistory } = await recentChatHistory(
     user,
     workspace,
-    messageLimit,
+    messageLimit
   );
   const textResponse = await LLMConnector.sendChat(
     chatHistory,
     message,
     workspace,
-    rawHistory,
+    rawHistory
   );
   await WorkspaceChats.new({
     workspaceId: workspace.id,

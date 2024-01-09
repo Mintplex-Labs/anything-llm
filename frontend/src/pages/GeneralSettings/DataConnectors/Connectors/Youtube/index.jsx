@@ -31,7 +31,7 @@ export default function YouTubeTranscriptConnectorSetup() {
       showToast(
         `${data.title} by ${data.author} transcription completed. Output folder is ${data.destination}.`,
         "success",
-        { clear: true },
+        { clear: true }
       );
       e.target.reset();
       setLoading(false);
