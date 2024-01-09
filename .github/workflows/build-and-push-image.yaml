@@ -14,12 +14,12 @@ on:
   push:
     branches: ['master'] # master branch only. Do not modify.
     paths-ignore:
-      - '*.md'
+      - '**.md'
       - 'cloud-deployments/*'
-      - 'images/*'
-      - '.vscode/*'
+      - 'images/**/*'
+      - '.vscode/**/*'
       - '**/.env.example'
-      - '.github/ISSUE_TEMPLATE/*'
+      - '.github/ISSUE_TEMPLATE/**/*'
 
 jobs:
   push_multi_platform_to_registries:
