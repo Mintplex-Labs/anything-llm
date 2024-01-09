@@ -1,0 +1,12 @@
+name: Documentation improvement
+description: Report an issue or problem with the documentation.
+labels: [documentation]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the issue with the documentation that is giving you trouble or causing confusion.
+    validations:
+      required: true
