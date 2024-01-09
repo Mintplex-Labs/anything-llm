@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 name: anythingllm
 
@@ -10,7 +10,6 @@ services:
   anything-llm:
     container_name: anything-llm
     image: anything-llm:latest
-    platform: linux/amd64
     build:
       context: ../.
       dockerfile: ./docker/Dockerfile

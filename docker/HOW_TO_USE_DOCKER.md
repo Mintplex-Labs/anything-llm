@@ -29,14 +29,19 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 > It is best to mount the containers storage volume to a folder on your host machine
 > so that you can pull in future updates without deleting your existing data!
 
-`docker pull mintplexlabs/anythingllm:master`
+Pull in the latest image from docker. Supports both `amd64` and `arm64` CPU architectures.
+```shell
+docker pull mintplexlabs/anythingllm
+```
 
 <table>
 <tr>
-<th>Linux/MacOs</th>
-<th>Windows Powershell</th>
+<th colspan="2">Mount the storage locally and run AnythingLLM in Docker</th>
 </tr>
 <tr>
+<td>
+  Linux/MacOs
+</td>
 <td>
 
 ```shell
@@ -48,13 +53,19 @@ docker run -d -p 3001:3001 \
 -v ${STORAGE_LOCATION}:/app/server/storage \
 -v ${STORAGE_LOCATION}/.env:/app/server/.env \
 -e STORAGE_DIR="/app/server/storage" \
-mintplexlabs/anythingllm:master
+mintplexlabs/anythingllm
 ```
 
+</td>
+</tr>
+<tr>
+<td>
+  Windows
 </td>
 <td>
 
 ```powershell
+# Run this in powershell terminal
 $env:STORAGE_LOCATION="$HOME\Documents\anythingllm"; `
 If(!(Test-Path $env:STORAGE_LOCATION)) {New-Item $env:STORAGE_LOCATION -ItemType Directory}; `
 If(!(Test-Path "$env:STORAGE_LOCATION\.env")) {New-Item "$env:STORAGE_LOCATION\.env"}; `
@@ -63,7 +74,7 @@ docker run -d -p 3001:3001 `
 -v "$env:STORAGE_LOCATION`:/app/server/storage" `
 -v "$env:STORAGE_LOCATION\.env:/app/server/.env" `
 -e STORAGE_DIR="/app/server/storage" `
-mintplexlabs/anythingllm:master;
+mintplexlabs/anythingllm;
 ```
 
 </td>

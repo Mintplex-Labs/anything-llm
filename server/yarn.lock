@@ -257,6 +257,31 @@
   resolved "https://registry.yarnpkg.com/@kwsites/promise-deferred/-/promise-deferred-1.1.1.tgz#8ace5259254426ccef57f3175bc64ed7095ed919"
   integrity sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==
 
+"@lancedb/vectordb-darwin-arm64@0.1.19":
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/@lancedb/vectordb-darwin-arm64/-/vectordb-darwin-arm64-0.1.19.tgz#f7e270623008446b2cdcedcc1badfba2d35ab8e8"
+  integrity sha512-efQhJkBKvMNhjFq3Sw3/qHo9D9gb9UqiIr98n3STsbNxBQjMnWemXn91Ckl40siRG1O8qXcINW7Qs/EGmus+kg==
+
+"@lancedb/vectordb-darwin-x64@0.1.19":
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/@lancedb/vectordb-darwin-x64/-/vectordb-darwin-x64-0.1.19.tgz#0d1c271acfb832a5282ad24c2e77cb9a1cc0e9a3"
+  integrity sha512-r6OZNVyemAssABz2w7CRhe7dyREwBEfTytn+ux1zzTnzsgMgDovCQ0rQ3WZcxWvcy7SFCxiemA9IP1b/lsb4tQ==
+
+"@lancedb/vectordb-linux-arm64-gnu@0.1.19":
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/@lancedb/vectordb-linux-arm64-gnu/-/vectordb-linux-arm64-gnu-0.1.19.tgz#47f36e1069182bce9b4143b5fe89963a335babb9"
+  integrity sha512-mL/hRmZp6Kw7hmGJBdOZfp/tTYiCdlOcs8DA/+nr2eiXERv0gIhyiKvr2P5DwbBmut3qXEkDalMHTo95BSdL2A==
+
+"@lancedb/vectordb-linux-x64-gnu@0.1.19":
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/@lancedb/vectordb-linux-x64-gnu/-/vectordb-linux-x64-gnu-0.1.19.tgz#8612ce0969fd98ef2f166837d517bcfc32a45937"
+  integrity sha512-AG0FHksbbr+cHVKPi4B8cmBtqb6T9E0uaK4kyZkXrX52/xtv9RYVZcykaB/tSSm0XNFPWWRnx9R8UqNZV/hxMA==
+
+"@lancedb/vectordb-win32-x64-msvc@0.1.19":
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/@lancedb/vectordb-win32-x64-msvc/-/vectordb-win32-x64-msvc-0.1.19.tgz#6e859949ac2e83546f275b65727eee31451884e9"
+  integrity sha512-PDWZ2hvLVXH4Z4WIO1rsWY8ev3NpNm7aXlaey32P+l1Iz9Hia9+F2GBpp2UiEQKfvbk82ucAvBLRmpSsHY8Tlw==
+
 "@langchain/core@~0.0.8":
   version "0.0.9"
   resolved "https://registry.yarnpkg.com/@langchain/core/-/core-0.0.9.tgz#3b4e74693eddcfa5f6e649857b561d3a9b60d1d4"
@@ -286,6 +311,11 @@
     rimraf "^3.0.2"
     semver "^7.3.5"
     tar "^6.1.11"
+
+"@neon-rs/load@^0.0.74":
+  version "0.0.74"
+  resolved "https://registry.yarnpkg.com/@neon-rs/load/-/load-0.0.74.tgz#0f887144b0e3ea79e099b89bd83345004adedeb2"
+  integrity sha512-/cPZD907UNz55yrc/ud4wDgQKtU1TvkD9jeqZWG6J4IMmZkp6zgjkQcKA8UvpkZlcpPHvc8J17sGzLFbP/LUYg==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -1091,6 +1121,15 @@ axios@^1.3.2:
   integrity sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==
   dependencies:
     follow-redirects "^1.15.0"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
+axios@^1.4.0:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.5.tgz#2c090da14aeeab3770ad30c3a1461bc970fb0cd8"
+  integrity sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==
+  dependencies:
+    follow-redirects "^1.15.4"
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
@@ -2309,6 +2348,11 @@ follow-redirects@^1.15.0:
   version "1.15.3"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.3.tgz#fe2f3ef2690afce7e82ed0b44db08165b207123a"
   integrity sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==
+
+follow-redirects@^1.15.4:
+  version "1.15.4"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.4.tgz#cdc7d308bf6493126b17ea2191ea0ccf3e535adf"
+  integrity sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==
 
 for-each@^0.3.3:
   version "0.3.3"
@@ -5275,13 +5319,21 @@ vary@^1, vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
-vectordb@0.1.12:
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/vectordb/-/vectordb-0.1.12.tgz#b23b9938467415060e53d614e2a84458244eeb17"
-  integrity sha512-C7/4/n3kBiR2Z5Cgid08z9hUNfVpQaA5WKVyT4msdwmLoSZOltFeikCdx7OM5a6ekd9BwnPbzP8RhNTW8hBfNA==
+vectordb@0.1.19:
+  version "0.1.19"
+  resolved "https://registry.yarnpkg.com/vectordb/-/vectordb-0.1.19.tgz#a36ea583cbc269c871edefa6a2abc5467e902d83"
+  integrity sha512-AS73SjteiLFM5qJQ9YwwYORd2vIVDseEq/vZmwZVbCwJAyD7M52uCiZir0cScRRAisovQZFoyvAKwZs2T4gOmw==
   dependencies:
     "@apache-arrow/ts" "^12.0.0"
+    "@neon-rs/load" "^0.0.74"
     apache-arrow "^12.0.0"
+    axios "^1.4.0"
+  optionalDependencies:
+    "@lancedb/vectordb-darwin-arm64" "0.1.19"
+    "@lancedb/vectordb-darwin-x64" "0.1.19"
+    "@lancedb/vectordb-linux-arm64-gnu" "0.1.19"
+    "@lancedb/vectordb-linux-x64-gnu" "0.1.19"
+    "@lancedb/vectordb-win32-x64-msvc" "0.1.19"
 
 vlq@^0.2.1:
   version "0.2.3"
