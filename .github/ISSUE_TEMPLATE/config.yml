@@ -4,5 +4,5 @@ contact_links:
     url: https://discord.gg/6UyHPeGZAC
     about: Interact with the Mintplex Labs community here by asking for help, discussing and more!
   - name: 📧 E-mail the team
-    url: "mailto:team@mintplexlabs.com"
+    url: mailto:team@mintplexlabs.com
     about: Contact the core-team about a question.
