@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
+lib
 dist-ssr
 *.local
 
@@ -24,3 +25,4 @@ dist-ssr
 *.sw?
 bundleinspector.html
 .env.production
+flow-typed

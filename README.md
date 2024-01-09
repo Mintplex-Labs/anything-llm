@@ -23,9 +23,13 @@
   </a>
 </p>
 
+<p align="center">
+👉 AnythingLLM for desktop! <a href="https://mintplexlabs.typeform.com/to/sFgD2TIb" target="_blank"> Sign up</a>
+</p>
+
 A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use as well as supporting multi-user management and permissions.
 
-![Chatting](/images/screenshots/chatting.gif)
+![Chatting](https://github.com/Mintplex-Labs/anything-llm/assets/16845892/cfc5f47c-bd91-4067-986c-f3f49621a859)
 
 <details>
 <summary><kbd>Watch the demo!</kbd></summary>
@@ -58,6 +62,8 @@ Some cool features of AnythingLLM
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Anthropic ClaudeV2](https://www.anthropic.com/)
+- [Google Gemini Pro](https://ai.google.dev/)
+- [Ollama (chat models)](https://ollama.ai/)
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAi (all models)](https://localai.io/)
 
@@ -91,19 +97,14 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 
 
 ## How to setup for development
-- `yarn setup` from the project root directory.
-  - This will fill in the required `.env` files you'll need in each of the application sections. Go fill those out before proceeding or else things won't work right.
-- `yarn prisma:setup` To build the Prisma client and migrate the database.
+- `yarn setup` To fill in the required `.env` files you'll need in each of the application sections (from root of repo).
+  - Go fill those out before proceeding. Ensure `server/.env.development` is filled or else things won't work right.
+- `yarn dev:server` To boot the server locally (from root of repo).
+- `yarn dev:frontend` To boot the frontend locally (from root of repo).
+- `yarn dev:collector` To then run the document collector (from root of repo).
 
-To boot the server locally (from root of repo):
-- ensure `server/.env.development` is set and filled out.
-`yarn dev:server`
- 
-To boot the frontend locally (from root of repo):
-`yarn dev:frontend`
 
-To then run the document collector (from root of repo)
-`yarn dev:collector`
+
 
 [Learn about documents](./server/storage/documents/DOCUMENTS.md)
 

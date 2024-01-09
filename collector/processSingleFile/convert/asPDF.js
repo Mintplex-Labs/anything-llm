@@ -33,7 +33,7 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
   }
 
   const content = pageContent.join("");
-  data = {
+  const data = {
     id: v4(),
     url: "file://" + fullFilePath,
     title: docs[0]?.metadata?.pdf?.info?.Title || filename,

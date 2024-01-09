@@ -71,8 +71,8 @@ export default function Directory({
 
         <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl">
           <div className="rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900 sticky top-0 z-10">
-            <p className="col-span-6">Name</p>
-            <p className="col-span-2">Date</p>
+            <p className="col-span-5">Name</p>
+            <p className="col-span-3">Date</p>
             <p className="col-span-2">Kind</p>
             <p className="col-span-2">Cached</p>
           </div>

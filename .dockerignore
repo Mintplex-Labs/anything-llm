@@ -1,10 +1,10 @@
-server/storage/documents/**
-server/storage/vector-cache/**
-server/storage/*.db
-server/storage/lancedb
-collector/hotdir/**
-collector/v-env/**
-collector/outputs/**
+**/server/storage/documents/**
+**/server/storage/vector-cache/**
+**/server/storage/*.db
+**/server/storage/lancedb
+**/collector/hotdir/**
+**/collector/v-env/**
+**/collector/outputs/**
 **/node_modules/
 **/dist/
 **/v-env/
@@ -14,3 +14,4 @@ collector/outputs/**
 **/bundleinspector.html
 !docker/.env.example
 !frontend/.env.production
+**/tmp/**

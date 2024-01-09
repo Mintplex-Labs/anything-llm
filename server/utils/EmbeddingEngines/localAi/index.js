@@ -18,6 +18,7 @@ class LocalAiEmbedder {
     this.openai = new OpenAIApi(config);
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
+    this.maxConcurrentChunks = 50;
     this.embeddingMaxChunkLength = maximumChunkLength();
   }
 
@@ -28,7 +29,7 @@ class LocalAiEmbedder {
 
   async embedChunks(textChunks = []) {
     const embeddingRequests = [];
-    for (const chunk of toChunks(textChunks, this.embeddingMaxChunkLength)) {
+    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
           this.openai

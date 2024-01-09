@@ -28,7 +28,7 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
   }
 
   const content = pageContent.join("");
-  data = {
+  const data = {
     id: v4(),
     url: "file://" + fullFilePath,
     title: filename,
