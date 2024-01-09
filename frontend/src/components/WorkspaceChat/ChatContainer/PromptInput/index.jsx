@@ -11,7 +11,7 @@ import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../../Modals/MangeWorkspace";
 import useUser from "@/hooks/useUser";
-import SlashCommandIcon from "../../../../media/icons/slash-commands-icon.svg";
+import SlashCommandIcon from "./icons/slash-commands-icon.svg";
 
 export default function PromptInput({
   workspace,
@@ -104,9 +104,8 @@ export default function PromptInput({
                 <div
                   ref={slashCommandsButtonRef}
                   onClick={toggleSlashCommands}
-                  className={`flex justify-center items-center opacity-40 hover:opacity-100 cursor-pointer ${
-                    showSlashCommands ? "opacity-100" : ""
-                  }`}
+                  className={`flex justify-center items-center opacity-40 hover:opacity-100 cursor-pointer ${showSlashCommands ? "opacity-100" : ""
+                    }`}
                 >
                   <img
                     src={SlashCommandIcon}
@@ -166,9 +165,8 @@ function ChatModeSelector({ workspace }) {
       onMouseLeave={cleanupTooltipListener}
     >
       <div
-        className={`opacity-${
-          showToolTip ? 1 : 0
-        } pointer-events-none transition-all duration-300 tip absolute bottom-10 z-99 left-0 bg-white/50 text-gray-200 text-xs p-1.5 rounded shadow-lg whitespace-nowrap`}
+        className={`opacity-${showToolTip ? 1 : 0
+          } pointer-events-none transition-all duration-300 tip absolute bottom-10 z-99 left-0 bg-white/50 text-gray-200 text-xs p-1.5 rounded shadow-lg whitespace-nowrap`}
       >
         You are currently in {chatMode} mode. Click to switch to{" "}
         {chatMode === "chat" ? "query" : "chat"} mode.
