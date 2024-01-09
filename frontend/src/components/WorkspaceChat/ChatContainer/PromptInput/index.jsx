@@ -22,6 +22,7 @@ export default function PromptInput({
   buttonDisabled,
   toggleSlashCommands,
   showSlashCommands,
+  slashCommandsButtonRef,
 }) {
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const formRef = useRef(null);
@@ -101,9 +102,10 @@ export default function PromptInput({
 
                 <ChatModeSelector workspace={workspace} />
                 <div
+                  ref={slashCommandsButtonRef}
                   onClick={toggleSlashCommands}
                   className={`flex justify-center items-center opacity-40 hover:opacity-100 cursor-pointer ${
-                    showSlashCommands && "opacity-100"
+                    showSlashCommands ? "opacity-100" : ""
                   }`}
                 >
                   <img
