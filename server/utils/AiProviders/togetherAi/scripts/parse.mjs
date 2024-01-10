@@ -28,6 +28,7 @@ function parseChatModels() {
 
     fixed[data.id] = {
       id: data.id,
+      organization: data.provider,
       name: data.name,
       maxLength: data.maxLength,
     };

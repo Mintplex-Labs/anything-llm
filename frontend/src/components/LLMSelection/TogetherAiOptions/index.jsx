@@ -23,22 +23,31 @@ export default function TogetherAiOptions({ settings }) {
     </div>
   );
 }
-
 function TogetherAiModelSelection({ settings }) {
-  const [customModels, setCustomModels] = useState([]);
+  const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function findCustomModels() {
       setLoading(true);
       const { models } = await System.customModels("togetherai");
-      setCustomModels(models || []);
+
+      if (models) {
+        const modelsByOrganization = models.reduce((acc, model) => {
+          acc[model.organization] = acc[model.organization] || [];
+          acc[model.organization].push(model);
+          return acc;
+        }, {});
+
+        setGroupedModels(modelsByOrganization);
+      }
+
       setLoading(false);
     }
     findCustomModels();
   }, []);
 
-  if (loading || customModels.length == 0) {
+  if (loading || Object.keys(groupedModels).length === 0) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-4">
@@ -67,21 +76,19 @@ function TogetherAiModelSelection({ settings }) {
         required={true}
         className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
-        {customModels.length > 0 && (
-          <optgroup label="Available models">
-            {customModels.map((model) => {
-              return (
-                <option
-                  key={model.id}
-                  value={model.id}
-                  selected={settings.TogetherAiModelPref === model.id}
-                >
-                  {model.name}
-                </option>
-              );
-            })}
+        {Object.entries(groupedModels).map(([organization, models]) => (
+          <optgroup key={organization} label={organization}>
+            {models.map((model) => (
+              <option
+                key={model.id}
+                value={model.id}
+                selected={settings.TogetherAiModelPref === model.id}
+              >
+                {model.name}
+              </option>
+            ))}
           </optgroup>
-        )}
+        ))}
       </select>
     </div>
   );
