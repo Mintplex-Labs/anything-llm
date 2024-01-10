@@ -1,7 +1,7 @@
 name: ✨ New Feature suggestion
 description: Suggest a new feature for AnythingLLM!
 title: "[FEAT]: "
-labels: [enhancement, feature-request]
+labels: [enhancement, feature request]
 body:
   - type: markdown
     attributes:
