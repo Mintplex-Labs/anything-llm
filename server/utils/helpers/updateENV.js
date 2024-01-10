@@ -243,7 +243,7 @@ function validOllamaLLMBasePath(input = "") {
 }
 
 function supportedLLM(input = "") {
-  return [
+  const validSelection = [
     "openai",
     "azure",
     "anthropic",
@@ -252,7 +252,9 @@ function supportedLLM(input = "") {
     "localai",
     "ollama",
     "native",
+    "togetherai",
   ].includes(input);
+  return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
 
 function validGeminiModel(input = "") {

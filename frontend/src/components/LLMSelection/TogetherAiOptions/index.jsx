@@ -32,7 +32,7 @@ function TogetherAiModelSelection({ settings }) {
       setLoading(true);
       const { models } = await System.customModels("togetherai");
 
-      if (models) {
+      if (models?.length > 0) {
         const modelsByOrganization = models.reduce((acc, model) => {
           acc[model.organization] = acc[model.organization] || [];
           acc[model.organization].push(model);
