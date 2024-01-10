@@ -8,6 +8,10 @@ body:
       value: |
         Share a new idea for a feature or improvement. Be sure to search existing
         issues first to avoid duplicates.
+
+        Want help contributing a PR? Use our repo chatbot by OnboardAI! https://app.getonboardai.com/chat/github/mintplex-labs/anything-llm
+
+
   - type: textarea
     id: description
     attributes:
