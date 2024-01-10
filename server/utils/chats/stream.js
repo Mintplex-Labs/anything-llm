@@ -262,7 +262,7 @@ function handleStreamResponses(response, stream, responseProps) {
     });
   }
 
-  if ((stream.type = "togetherAiStream")) {
+  if (stream.type === "togetherAiStream") {
     return new Promise((resolve) => {
       let fullText = "";
       let chunk = "";
