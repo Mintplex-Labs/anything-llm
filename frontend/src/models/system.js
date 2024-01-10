@@ -9,8 +9,10 @@ const System = {
       .then((res) => res?.online || false)
       .catch(() => false);
   },
-  totalIndexes: async function () {
-    return await fetch(`${API_BASE}/system/system-vectors`, {
+  totalIndexes: async function (slug = null) {
+    const url = new URL(`${API_BASE}/system/system-vectors`);
+    if (!!slug) url.searchParams.append("slug", encodeURIComponent(slug));
+    return await fetch(url.toString(), {
       headers: baseHeaders(),
     })
       .then((res) => {
