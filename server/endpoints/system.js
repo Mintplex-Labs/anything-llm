@@ -15,6 +15,7 @@ const {
   makeJWT,
   userFromSession,
   multiUserMode,
+  queryParams,
 } = require("../utils/http");
 const {
   setupDataImports,
@@ -180,16 +181,23 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/system-vectors", [validatedRequest], async (_, response) => {
-    try {
-      const VectorDb = getVectorDbClass();
-      const vectorCount = await VectorDb.totalVectors();
-      response.status(200).json({ vectorCount });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+  app.get(
+    "/system/system-vectors",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const query = queryParams(request);
+        const VectorDb = getVectorDbClass();
+        const vectorCount = !!query.slug
+          ? await VectorDb.namespaceCount(query.slug)
+          : await VectorDb.totalVectors();
+        response.status(200).json({ vectorCount });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.delete(
     "/system/remove-document",
