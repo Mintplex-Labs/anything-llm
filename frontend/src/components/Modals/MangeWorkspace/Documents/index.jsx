@@ -6,7 +6,9 @@ import Directory from "./Directory";
 import showToast from "../../../../utils/toast";
 import WorkspaceDirectory from "./WorkspaceDirectory";
 
-const COST_PER_TOKEN = 0.0004;
+// OpenAI Cost per token for text-ada-embedding
+// ref: https://openai.com/pricing#:~:text=%C2%A0/%201K%20tokens-,Embedding%20models,-Build%20advanced%20search
+const COST_PER_TOKEN = 0.0000001; // $0.0001 / 1K tokens
 
 export default function DocumentSettings({
   workspace,

@@ -21,11 +21,11 @@ export default function ChatHistory({ history = [], workspace }) {
     return (
       <div className="flex flex-col h-full md:mt-0 pb-48 w-full justify-end items-center">
         <div className="flex flex-col items-start">
-          <p className="text-white/60 text-lg font-base -ml-6 py-4">
+          <p className="text-white/60 text-lg font-base py-4">
             Welcome to your new workspace.
           </p>
           <div className="w-full text-center">
-            <p className="text-white/60 text-lg font-base inline-flex items-center gap-x-2">
+            <p className="text-white/60 text-lg font-base inline-grid md:inline-flex items-center gap-x-2">
               To get started either{" "}
               <span
                 className="underline font-medium cursor-pointer"

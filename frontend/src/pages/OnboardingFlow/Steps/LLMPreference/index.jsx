@@ -8,6 +8,7 @@ import OllamaLogo from "@/assets/llmprovider/ollama.png";
 import LMStudioLogo from "@/assets/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/assets/llmprovider/localai.png";
 import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
+import TogetherAILogo from "@/assets/llmprovider/togetherai.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
@@ -21,6 +22,7 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
+import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -99,6 +101,13 @@ export default function LLMPreference({
       logo: LocalAiLogo,
       options: <LocalAiOptions settings={settings} />,
       description: "Run LLMs locally on your own machine.",
+    },
+    {
+      name: "Together AI",
+      value: "togetherai",
+      logo: TogetherAILogo,
+      options: <TogetherAiOptions settings={settings} />,
+      description: "Run open source models from Together AI.",
     },
     {
       name: "Native",

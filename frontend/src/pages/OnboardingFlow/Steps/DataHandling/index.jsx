@@ -7,6 +7,7 @@ import AzureOpenAiLogo from "@/assets/llmprovider/azure.png";
 import AnthropicLogo from "@/assets/llmprovider/anthropic.png";
 import GeminiLogo from "@/assets/llmprovider/gemini.png";
 import OllamaLogo from "@/assets/llmprovider/ollama.png";
+import TogetherAILogo from "@/assets/llmprovider/togetherai.png";
 import LMStudioLogo from "@/assets/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/assets/llmprovider/localai.png";
 import ChromaLogo from "@/assets/vectordbs/chroma.png";
@@ -25,7 +26,7 @@ const LLM_SELECTION_PRIVACY = {
     name: "OpenAI",
     description: [
       "Your chats will not be used for training",
-      "Your prompts and document text used in responses are visible to OpenAI",
+      "Your prompts and document text used in response creation are visible to OpenAI",
     ],
     logo: OpenAiLogo,
   },
@@ -41,7 +42,7 @@ const LLM_SELECTION_PRIVACY = {
     name: "Anthropic",
     description: [
       "Your chats will not be used for training",
-      "Your prompts and document text used in responses are visible to Anthropic",
+      "Your prompts and document text used in response creation are visible to Anthropic",
     ],
     logo: AnthropicLogo,
   },
@@ -49,7 +50,7 @@ const LLM_SELECTION_PRIVACY = {
     name: "Google Gemini",
     description: [
       "Your chats are de-identified and used in training",
-      "Your prompts and document text are visible in responses to Google",
+      "Your prompts and document text used in response creation are visible to Google",
     ],
     logo: GeminiLogo,
   },
@@ -80,6 +81,14 @@ const LLM_SELECTION_PRIVACY = {
       "Your model and chats are only accessible on this AnythingLLM instance",
     ],
     logo: AnythingLLMIcon,
+  },
+  togetherai: {
+    name: "TogetherAI",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to TogetherAI",
+    ],
+    logo: TogetherAILogo,
   },
 };
 

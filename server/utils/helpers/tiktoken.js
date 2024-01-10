@@ -15,15 +15,22 @@ class TokenManager {
     }
   }
 
+  // Pass in an empty array of disallowedSpecials to handle all tokens as text and to be tokenized.
+  // https://github.com/openai/tiktoken/blob/9e79899bc248d5313c7dd73562b5e211d728723d/tiktoken/core.py#L91C20-L91C38
+  // Returns number[]
+  tokensFromString(input = "") {
+    const tokens = this.encoder.encode(input, undefined, []);
+    return tokens;
+  }
+
   bytesFromTokens(tokens = []) {
     const bytes = this.encoder.decode(tokens);
     return bytes;
   }
 
-  // Pass in an empty array of disallowedSpecials to handle all tokens as text and to be tokenized.
-  // https://github.com/openai/tiktoken/blob/9e79899bc248d5313c7dd73562b5e211d728723d/tiktoken/core.py#L91C20-L91C38
+  // Returns number
   countFromString(input = "") {
-    const tokens = this.encoder.encode(input, undefined, []);
+    const tokens = this.tokensFromString(input);
     return tokens.length;
   }
 

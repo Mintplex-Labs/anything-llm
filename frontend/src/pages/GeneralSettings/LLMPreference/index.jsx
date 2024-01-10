@@ -10,6 +10,7 @@ import GeminiLogo from "@/assets/llmprovider/gemini.png";
 import OllamaLogo from "@/assets/llmprovider/ollama.png";
 import LMStudioLogo from "@/assets/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/assets/llmprovider/localai.png";
+import TogetherAILogo from "@/assets/llmprovider/togetherai.png";
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -21,6 +22,7 @@ import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
+import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -125,6 +127,13 @@ export default function GeneralLLMPreference() {
       logo: LocalAiLogo,
       options: <LocalAiOptions settings={settings} />,
       description: "Run LLMs locally on your own machine.",
+    },
+    {
+      name: "Together AI",
+      value: "togetherai",
+      logo: TogetherAILogo,
+      options: <TogetherAiOptions settings={settings} />,
+      description: "Run open source models from Together AI.",
     },
     {
       name: "Native",

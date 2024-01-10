@@ -13,12 +13,12 @@ import paths from "../../utils/paths";
 import ChatBubble from "../ChatBubble";
 import System from "../../models/system";
 import Jazzicon from "../UserIcon";
-import { userFromStorage } from "../../utils/request";
 import {
   AI_BACKGROUND_COLOR,
   USER_BACKGROUND_COLOR,
 } from "../../utils/constants";
 import { Link } from "react-router-dom";
+import { userFromStorage } from "../../utils/request";
 
 export default function DefaultChatContainer() {
   const [mockMsgs, setMockMessages] = useState([]);
@@ -165,7 +165,6 @@ export default function DefaultChatContainer() {
                 <br />
                 You can add and remove files at anytime.
               </span>
-
               <button
                 onClick={showNewWsModal}
                 className="border-solid h-button mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
@@ -173,11 +172,11 @@ export default function DefaultChatContainer() {
                 <Plus className="h-4 w-4" />
                 <p>Create your first workspace</p>
               </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>,
+            </div >
+          </div >
+        </div >
+      </div >
+    </React.Fragment >,
 
     <React.Fragment>
       <div
@@ -335,23 +334,23 @@ export default function DefaultChatContainer() {
     <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
       {fetchedMessages.length === 0
         ? mockMsgs.map((content, i) => {
-            return <React.Fragment key={i}>{content}</React.Fragment>;
-          })
+          return <React.Fragment key={i}>{content}</React.Fragment>;
+        })
         : fetchedMessages.map((fetchedMessage, i) => {
-            return (
-              <React.Fragment key={i}>
-                <ChatBubble
-                  message={
-                    fetchedMessage.user === ""
-                      ? fetchedMessage.response
-                      : fetchedMessage.user
-                  }
-                  type={fetchedMessage.user === "" ? "response" : "user"}
-                  popMsg={popMsg}
-                />
-              </React.Fragment>
-            );
-          })}
+          return (
+            <React.Fragment key={i}>
+              <ChatBubble
+                message={
+                  fetchedMessage.user === ""
+                    ? fetchedMessage.response
+                    : fetchedMessage.user
+                }
+                type={fetchedMessage.user === "" ? "response" : "user"}
+                popMsg={popMsg}
+              />
+            </React.Fragment>
+          );
+        })}
       {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
     </div>
   );

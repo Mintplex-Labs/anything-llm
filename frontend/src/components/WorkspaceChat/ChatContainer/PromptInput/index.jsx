@@ -9,7 +9,10 @@ import React, { useState, useRef } from "react";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../../Modals/MangeWorkspace";
-import useUser from "../../../../hooks/useUser";
+import SlashCommandsButton, {
+  SlashCommands,
+  useSlashCommands,
+} from "./SlashCommands";
 
 export default function PromptInput({
   workspace,
@@ -18,11 +21,12 @@ export default function PromptInput({
   onChange,
   inputDisabled,
   buttonDisabled,
+  sendCommand,
 }) {
+  const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const formRef = useRef(null);
   const [_, setFocused] = useState(false);
-  const { user } = useUser();
 
   const handleSubmit = (e) => {
     setFocused(false);
@@ -47,7 +51,12 @@ export default function PromptInput({
   };
 
   return (
-    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center overflow-hidden">
+    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
+      <SlashCommands
+        showing={showSlashCommand}
+        setShowing={setShowSlashCommand}
+        sendCommand={sendCommand}
+      />
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl border-none"
@@ -86,24 +95,17 @@ export default function PromptInput({
             </div>
             <div className="flex justify-between py-3.5">
               <div className="flex gap-2">
-                {user?.role !== "default" && (
-                  <Gear
-                    onClick={showModal}
-                    className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"
-                    weight="fill"
-                  />
-                )}
-
-                <ChatModeSelector workspace={workspace} />
-                {/* <TextT
-                  className="w-7 h-7 text-white/30 cursor-not-allowed"
+                <Gear
+                  onClick={showModal}
+                  className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"
                   weight="fill"
-                /> */}
+                />
+                <ChatModeSelector workspace={workspace} />
+                <SlashCommandsButton
+                  showing={showSlashCommand}
+                  setShowSlashCommand={setShowSlashCommand}
+                />
               </div>
-              {/* <Microphone
-                className="w-7 h-7 text-white/30 cursor-not-allowed"
-                weight="fill"
-              /> */}
             </div>
           </div>
         </div>
@@ -151,9 +153,8 @@ function ChatModeSelector({ workspace }) {
     >
       <i className="hidden opacity-1 opacity-0" />
       <div
-        className={`opacity-${
-          showToolTip ? 1 : 0
-        } pointer-events-none transition-all duration-300 tip absolute bottom-10 z-99 left-0 bg-white/50 text-gray-200 text-xs p-1.5 rounded shadow-lg whitespace-nowrap`}
+        className={`opacity-${showToolTip ? 1 : 0
+          } pointer-events-none transition-all duration-300 tip absolute bottom-10 z-99 left-0 bg-white/50 text-gray-200 text-xs p-1.5 rounded shadow-lg whitespace-nowrap`}
       >
         You are currently in {chatMode} mode. Click to switch to{" "}
         {chatMode === "chat" ? "query" : "chat"} mode.

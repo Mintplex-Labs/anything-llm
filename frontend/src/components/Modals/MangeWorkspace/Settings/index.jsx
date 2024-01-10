@@ -26,24 +26,11 @@ function castToType(key, value) {
   return definitions[key].cast(value);
 }
 
-export default function WorkspaceSettings({ workspace }) {
+export default function WorkspaceSettings({ active, workspace }) {
   const { slug } = useParams();
   const formEl = useRef(null);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [totalVectors, setTotalVectors] = useState(null);
-  const [canDelete, setCanDelete] = useState(false);
-
-  useEffect(() => {
-    async function fetchKeys() {
-      const canDelete = await System.getCanDeleteWorkspaces();
-      setCanDelete(canDelete);
-
-      const totalVectors = await System.totalIndexes();
-      setTotalVectors(totalVectors);
-    }
-    fetchKeys();
-  }, []);
 
   const handleUpdate = async (e) => {
     setSaving(true);
@@ -89,6 +76,9 @@ export default function WorkspaceSettings({ workspace }) {
               <h3 className="text-white text-sm font-semibold">
                 Vector database identifier
               </h3>
+              <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+                {" "}
+              </p>
               <p className="text-white text-opacity-60 text-sm font-medium">
                 {workspace?.slug}
               </p>
@@ -101,13 +91,7 @@ export default function WorkspaceSettings({ workspace }) {
               <p className="text-white text-opacity-60 text-xs font-medium my-[2px]">
                 Total number of vectors in your vector database.
               </p>
-              {totalVectors !== null ? (
-                <p className="text-white text-opacity-60 text-sm font-medium">
-                  {totalVectors}
-                </p>
-              ) : (
-                <PreLoader size="4" />
-              )}
+              <VectorCount reload={active} workspace={workspace} />
             </div>
           </div>
         </div>
@@ -275,15 +259,7 @@ export default function WorkspaceSettings({ workspace }) {
         </div>
       </div>
       <div className="flex items-center justify-between p-2 md:p-6 space-x-2 border-t rounded-b border-gray-600">
-        {canDelete && (
-          <button
-            onClick={deleteWorkspace}
-            type="button"
-            className="transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-transparent text-white hover:text-white hover:bg-red-600"
-          >
-            Delete Workspace
-          </button>
-        )}
+        <DeleteWorkspace workspace={workspace} onClick={deleteWorkspace} />
         {hasChanges && (
           <button
             type="submit"
@@ -294,5 +270,45 @@ export default function WorkspaceSettings({ workspace }) {
         )}
       </div>
     </form>
+  );
+}
+
+function DeleteWorkspace({ workspace, onClick }) {
+  const [canDelete, setCanDelete] = useState(false);
+  useEffect(() => {
+    async function fetchKeys() {
+      const canDelete = await System.getCanDeleteWorkspaces();
+      setCanDelete(canDelete);
+    }
+    fetchKeys();
+  }, [workspace?.slug]);
+
+  if (!canDelete) return null;
+  return (
+    <button
+      onClick={onClick}
+      type="button"
+      className="transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-transparent text-white hover:text-white hover:bg-red-600"
+    >
+      Delete Workspace
+    </button>
+  );
+}
+
+function VectorCount({ reload, workspace }) {
+  const [totalVectors, setTotalVectors] = useState(null);
+  useEffect(() => {
+    async function fetchVectorCount() {
+      const totalVectors = await System.totalIndexes(workspace.slug);
+      setTotalVectors(totalVectors);
+    }
+    fetchVectorCount();
+  }, [workspace?.slug, reload]);
+
+  if (totalVectors === null) return <PreLoader size="4" />;
+  return (
+    <p className="text-white text-opacity-60 text-sm font-medium">
+      {totalVectors}
+    </p>
   );
 }
