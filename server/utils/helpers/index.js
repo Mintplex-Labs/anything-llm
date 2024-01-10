@@ -46,6 +46,9 @@ function getLLMProvider() {
     case "ollama":
       const { OllamaAILLM } = require("../AiProviders/ollama");
       return new OllamaAILLM(embedder);
+    case "togetherai":
+      const { TogetherAiLLM } = require("../AiProviders/togetherAi");
+      return new TogetherAiLLM(embedder);
     case "native":
       const { NativeLLM } = require("../AiProviders/native");
       return new NativeLLM(embedder);

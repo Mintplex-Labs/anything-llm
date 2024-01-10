@@ -262,6 +262,96 @@ function handleStreamResponses(response, stream, responseProps) {
     });
   }
 
+  if ((stream.type = "togetherAiStream")) {
+    return new Promise((resolve) => {
+      let fullText = "";
+      let chunk = "";
+      stream.stream.data.on("data", (data) => {
+        const lines = data
+          ?.toString()
+          ?.split("\n")
+          .filter((line) => line.trim() !== "");
+
+        for (const line of lines) {
+          let validJSON = false;
+          const message = chunk + line.replace(/^data: /, "");
+
+          if (message !== "[DONE]") {
+            // JSON chunk is incomplete and has not ended yet
+            // so we need to stitch it together. You would think JSON
+            // chunks would only come complete - but they don't!
+            try {
+              JSON.parse(message);
+              validJSON = true;
+            } catch {}
+
+            if (!validJSON) {
+              // It can be possible that the chunk decoding is running away
+              // and the message chunk fails to append due to string length.
+              // In this case abort the chunk and reset so we can continue.
+              // ref: https://github.com/Mintplex-Labs/anything-llm/issues/416
+              try {
+                chunk += message;
+              } catch (e) {
+                console.error(`Chunk appending error`, e);
+                chunk = "";
+              }
+              continue;
+            } else {
+              chunk = "";
+            }
+          }
+
+          if (message == "[DONE]") {
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: "",
+              close: true,
+              error: false,
+            });
+            resolve(fullText);
+          } else {
+            let finishReason = null;
+            let token = "";
+            try {
+              const json = JSON.parse(message);
+              token = json?.choices?.[0]?.delta?.content;
+              finishReason = json?.choices?.[0]?.finish_reason || null;
+            } catch {
+              continue;
+            }
+
+            if (token) {
+              fullText += token;
+              writeResponseChunk(response, {
+                uuid,
+                sources: [],
+                type: "textResponseChunk",
+                textResponse: token,
+                close: false,
+                error: false,
+              });
+            }
+
+            if (finishReason !== null) {
+              writeResponseChunk(response, {
+                uuid,
+                sources,
+                type: "textResponseChunk",
+                textResponse: "",
+                close: true,
+                error: false,
+              });
+              resolve(fullText);
+            }
+          }
+        }
+      });
+    });
+  }
+
   // If stream is not a regular OpenAI Stream (like if using native model, Ollama, or most LangChain interfaces)
   // we can just iterate the stream content instead.
   if (!stream.hasOwnProperty("data")) {

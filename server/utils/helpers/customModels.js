@@ -1,4 +1,11 @@
-const SUPPORT_CUSTOM_MODELS = ["openai", "localai", "ollama", "native-llm"];
+const { togetherAiModels } = require("../AiProviders/togetherAi");
+const SUPPORT_CUSTOM_MODELS = [
+  "openai",
+  "localai",
+  "ollama",
+  "native-llm",
+  "togetherai",
+];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
   if (!SUPPORT_CUSTOM_MODELS.includes(provider))
@@ -11,6 +18,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await localAIModels(basePath, apiKey);
     case "ollama":
       return await ollamaAIModels(basePath, apiKey);
+    case "togetherai":
+      return await getTogetherAiModels();
     case "native-llm":
       return nativeLLMModels();
     default:
@@ -89,6 +98,21 @@ async function ollamaAIModels(basePath = null, _apiKey = null) {
       return [];
     });
 
+  return { models, error: null };
+}
+
+async function getTogetherAiModels() {
+  const knownModels = togetherAiModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
   return { models, error: null };
 }
 

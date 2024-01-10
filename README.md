@@ -1,4 +1,5 @@
 <a name="readme-top"></a>
+
 <p align="center">
   <a href="https://useanything.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
@@ -38,13 +39,14 @@ A full-stack application that enables you to turn any document, resource, or pie
 
 </details>
 
-
 ### Product Overview
+
 AnythingLLM is a full-stack application where you can use commercial off-the-shelf LLMs or popular open source LLMs and vectorDB solutions to build a private ChatGPT with no compromises that you can run locally as well as host remotely and be able to chat intelligently with any documents you provide it.
 
 AnythingLLM divides your documents into objects called `workspaces`. A Workspace functions a lot like a thread, but with the addition of containerization of your documents. Workspaces can share documents, but they do not talk to each other so you can keep your context for each workspace clean.
 
 Some cool features of AnythingLLM
+
 - **Multi-user instance support and permissioning**
 - Multiple document type support (PDF, TXT, DOCX, etc)
 - Manage documents in your vector database from a simple UI
@@ -57,7 +59,9 @@ Some cool features of AnythingLLM
 - Full Developer API for custom integrations!
 
 ### Supported LLMs, Embedders, and Vector Databases
+
 **Supported LLMs:**
+
 - [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
@@ -66,8 +70,10 @@ Some cool features of AnythingLLM
 - [Ollama (chat models)](https://ollama.ai/)
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAi (all models)](https://localai.io/)
+- [Together AI (chat models)](https://www.together.ai/)
 
 **Supported Embedding models:**
+
 - [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
@@ -75,42 +81,43 @@ Some cool features of AnythingLLM
 - [LocalAi (all)](https://localai.io/)
 
 **Supported Vector Databases:**
+
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)
 - [Weaviate](https://weaviate.io)
 - [QDrant](https://qdrant.tech)
 
-
 ### Technical Overview
+
 This monorepo consists of three main sections:
+
 - `frontend`: A viteJS + React frontend that you can run to easily create and manage all your content the LLM can use.
 - `server`: A NodeJS express server to handle all the interactions and do all the vectorDB management and LLM interactions.
 - `docker`: Docker instructions and build process + information for building from source.
 - `collector`: NodeJS express server that process and parses documents from the UI.
 
 ## 🛳 Self Hosting
-Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
-| Docker                                 | AWS | GCP | Digital Ocean | Render.com |
-|----------------------------------------|----:|-----|---------------|------------|
-| [![Deploy on Docker][docker-btn]][docker-deploy] |  [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy]  | [![Deploy on DigitalOcean][do-btn]][aws-deploy]  |  [![Deploy on Render.com][render-btn]][render-deploy] |
 
+Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
+| Docker | AWS | GCP | Digital Ocean | Render.com |
+|----------------------------------------|----:|-----|---------------|------------|
+| [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][aws-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
 ## How to setup for development
+
 - `yarn setup` To fill in the required `.env` files you'll need in each of the application sections (from root of repo).
   - Go fill those out before proceeding. Ensure `server/.env.development` is filled or else things won't work right.
 - `yarn dev:server` To boot the server locally (from root of repo).
 - `yarn dev:frontend` To boot the frontend locally (from root of repo).
 - `yarn dev:collector` To then run the document collector (from root of repo).
 
-
-
-
 [Learn about documents](./server/storage/documents/DOCUMENTS.md)
 
 [Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
 
 ## Contributing
+
 - create issue
 - create PR with branch name format of `<issue number>-<short name>`
 - yee haw let's merge
@@ -119,12 +126,15 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 <summary><kbd>Telemetry for AnythingLLM</kbd></summary>
 
 ## Telemetry
+
 AnythingLLM by Mintplex Labs Inc contains a telemetry feature that collects anonymous usage information.
 
 ### Why?
+
 We use this information to help us understand how AnythingLLM is used, to help us prioritize work on new features and bug fixes, and to help us improve AnythingLLM's performance and stability.
 
 ### Opting out
+
 Set `DISABLE_TELEMETRY` in your server or docker .env settings to "true" to opt out of telemetry.
 
 ```
@@ -132,7 +142,9 @@ DISABLE_TELEMETRY="true"
 ```
 
 ### What do you explicitly track?
+
 We will only track usage details that help us make product and roadmap decisions, specifically:
+
 - Version of your installation
 - When a document is added or removed. No information _about_ the document. Just that the event occurred. This gives us an idea of use.
 - Type of vector database in use. Let's us know which vector database provider is the most used to prioritize changes when updates arrive for that provider.
@@ -160,6 +172,7 @@ Copyright © 2023 [Mintplex Labs][profile-link]. <br />
 This project is [MIT](./LICENSE) licensed.
 
 <!-- LINK GROUP -->
+
 [back-to-top]: https://img.shields.io/badge/-BACK_TO_TOP-222628?style=flat-square
 [profile-link]: https://github.com/mintplex-labs
 [vector-admin]: https://github.com/mintplex-labs/vector-admin
