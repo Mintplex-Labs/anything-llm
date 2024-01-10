@@ -10,7 +10,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
-
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
@@ -27,6 +26,30 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         role: "assistant",
         pending: true,
         userMessage: message,
+        animate: true,
+      },
+    ];
+
+    setChatHistory(prevChatHistory);
+    setMessage("");
+    setLoadingResponse(true);
+  };
+
+  const sendCommand = async (command, submit = false) => {
+    if (!command || command === "") return false;
+    if (!submit) {
+      setMessage(command);
+      return;
+    }
+
+    const prevChatHistory = [
+      ...chatHistory,
+      { content: command, role: "user" },
+      {
+        content: "",
+        role: "assistant",
+        pending: true,
+        userMessage: command,
         animate: true,
       },
     ];
@@ -97,6 +120,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           onChange={handleMessageChange}
           inputDisabled={loadingResponse}
           buttonDisabled={loadingResponse}
+          sendCommand={sendCommand}
         />
       </div>
     </div>
