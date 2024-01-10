@@ -76,7 +76,9 @@ export default function WorkspaceSettings({ active, workspace }) {
               <h3 className="text-white text-sm font-semibold">
                 Vector database identifier
               </h3>
-              <p className="text-white text-opacity-60 text-xs font-medium py-1.5">{' '}</p>
+              <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+                {" "}
+              </p>
               <p className="text-white text-opacity-60 text-sm font-medium">
                 {workspace?.slug}
               </p>
