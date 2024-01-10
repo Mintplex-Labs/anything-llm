@@ -11,7 +11,7 @@ export default function TogetherAiOptions({ settings }) {
         <input
           type="password"
           name="TogetherAiApiKey"
-          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
           placeholder="Together AI API Key"
           defaultValue={settings?.TogetherAiApiKey ? "*".repeat(20) : ""}
           required={true}

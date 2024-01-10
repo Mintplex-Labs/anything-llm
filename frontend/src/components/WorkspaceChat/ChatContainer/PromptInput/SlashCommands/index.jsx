@@ -6,9 +6,8 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
     <div
       id="slash-cmd-btn"
       onClick={() => setShowSlashCommand(!showing)}
-      className={`flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
-        showing ? "!opacity-100" : ""
-      }`}
+      className={`flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${showing ? "!opacity-100" : ""
+        }`}
     >
       <img
         src={SlashCommandIcon}
@@ -48,7 +47,7 @@ export function SlashCommands({ showing, setShowing, sendCommand }) {
             setShowing(false);
             sendCommand("/reset", true);
           }}
-          className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-col justify-start"
+          className="border-none w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-col justify-start"
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
             <div className="text-white text-sm font-bold">/reset</div>

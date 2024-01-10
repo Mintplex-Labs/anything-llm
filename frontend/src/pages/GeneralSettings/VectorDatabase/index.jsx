@@ -182,7 +182,7 @@ export default function GeneralVectorDatabase() {
                       <input
                         type="text"
                         placeholder="Search vector databases"
-                        className="bg-zinc-600 z-20 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
+                        className="border-none bg-zinc-600 z-20 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
                         onChange={(e) => {
                           e.preventDefault();
                           setSearchQuery(e.target.value);
