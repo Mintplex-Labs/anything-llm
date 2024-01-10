@@ -171,17 +171,13 @@ const KEY_MAPPING = {
   },
 
   // Together Ai Options
-  TogetherAiModelPref: {
-    envKey: "TOGETHER_AI_MODEL_PREF",
-    checks: [],
-  },
-  TogetherAiTokenLimit: {
-    envKey: "TOGETHER_AI_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
-  },
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
-    checks: [],
+    checks: [isNotEmpty],
+  },
+  TogetherAiModelPref: {
+    envKey: "TOGETHER_AI_MODEL_PREF",
+    checks: [isNotEmpty],
   },
 
   // System Settings

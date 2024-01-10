@@ -1,15 +1,19 @@
 const { chatPrompt } = require("../../chats");
 
+function togetherAiModels() {
+  const { MODELS } = require("./models.js");
+  return MODELS || {};
+}
+
 class TogetherAiLLM {
   constructor(embedder = null) {
     const { Configuration, OpenAIApi } = require("openai");
+    if (!process.env.TOGETHER_AI_API_KEY)
+      throw new Error("No TogetherAI API key was set.");
+
     const config = new Configuration({
       basePath: "https://api.together.xyz/v1",
-      ...(!!process.env.TOGETHER_AI_API_KEY
-        ? {
-            apiKey: process.env.TOGETHER_AI_API_KEY,
-          }
-        : {}),
+      apiKey: process.env.TOGETHER_AI_API_KEY,
     });
     this.openai = new OpenAIApi(config);
     this.model = process.env.TOGETHER_AI_MODEL_PREF;
@@ -38,22 +42,24 @@ class TogetherAiLLM {
     );
   }
 
+  allModelInformation() {
+    return togetherAiModels();
+  }
+
   streamingEnabled() {
-    // return "streamChat" in this && "streamGetChatCompletion" in this;
-    return false;
+    return "streamChat" in this && "streamGetChatCompletion" in this;
   }
 
   // Ensure the user set a value for the token limit
   // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.TOGETHER_AI_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No Together AI token context limit was set.");
-    return Number(limit);
+    const availableModels = this.allModelInformation();
+    return availableModels[this.model]?.maxLength || 4096;
   }
 
-  async isValidChatCompletionModel(_ = "") {
-    return true;
+  async isValidChatCompletionModel(model = "") {
+    const availableModels = this.allModelInformation();
+    return availableModels.hasOwnProperty(model);
   }
 
   constructPrompt({
@@ -114,7 +120,7 @@ class TogetherAiLLM {
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `Together AI chat: ${this.model} is not valid for chat completion!`
+        `TogetherAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.createChatCompletion(
@@ -134,13 +140,13 @@ class TogetherAiLLM {
       },
       { responseType: "stream" }
     );
-    return streamRequest;
+    return { type: "togetherAiStream", stream: streamRequest };
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `Together AI chat: ${this.model} is not valid for chat completion!`
+        `TogetherAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const { data } = await this.openai.createChatCompletion({
@@ -156,7 +162,7 @@ class TogetherAiLLM {
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `Together AI chat: ${this.model} is not valid for chat completion!`
+        `TogetherAI chat: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.createChatCompletion(
@@ -168,7 +174,7 @@ class TogetherAiLLM {
       },
       { responseType: "stream" }
     );
-    return streamRequest;
+    return { type: "togetherAiStream", stream: streamRequest };
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
@@ -188,4 +194,5 @@ class TogetherAiLLM {
 
 module.exports = {
   TogetherAiLLM,
+  togetherAiModels,
 };

@@ -19,28 +19,28 @@ const AdminInvites = lazy(() => import("@/pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
 const AdminSystem = lazy(() => import("@/pages/Admin/System"));
 const GeneralChats = lazy(() => import("@/pages/GeneralSettings/Chats"));
-const GeneralAppearance = lazy(() =>
-  import("@/pages/GeneralSettings/Appearance")
+const GeneralAppearance = lazy(
+  () => import("@/pages/GeneralSettings/Appearance")
 );
 const GeneralApiKeys = lazy(() => import("@/pages/GeneralSettings/ApiKeys"));
-const GeneralLLMPreference = lazy(() =>
-  import("@/pages/GeneralSettings/LLMPreference")
+const GeneralLLMPreference = lazy(
+  () => import("@/pages/GeneralSettings/LLMPreference")
 );
-const GeneralEmbeddingPreference = lazy(() =>
-  import("@/pages/GeneralSettings/EmbeddingPreference")
+const GeneralEmbeddingPreference = lazy(
+  () => import("@/pages/GeneralSettings/EmbeddingPreference")
 );
-const GeneralVectorDatabase = lazy(() =>
-  import("@/pages/GeneralSettings/VectorDatabase")
+const GeneralVectorDatabase = lazy(
+  () => import("@/pages/GeneralSettings/VectorDatabase")
 );
-const GeneralExportImport = lazy(() =>
-  import("@/pages/GeneralSettings/ExportImport")
+const GeneralExportImport = lazy(
+  () => import("@/pages/GeneralSettings/ExportImport")
 );
 const GeneralSecurity = lazy(() => import("@/pages/GeneralSettings/Security"));
-const DataConnectors = lazy(() =>
-  import("@/pages/GeneralSettings/DataConnectors")
+const DataConnectors = lazy(
+  () => import("@/pages/GeneralSettings/DataConnectors")
 );
-const DataConnectorSetup = lazy(() =>
-  import("@/pages/GeneralSettings/DataConnectors/Connectors")
+const DataConnectorSetup = lazy(
+  () => import("@/pages/GeneralSettings/DataConnectors/Connectors")
 );
 const OnboardingFlow = lazy(() => import("@/pages/OnboardingFlow"));
 
