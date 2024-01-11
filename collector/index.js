@@ -29,8 +29,8 @@ app.post("/process", async function (request, response) {
     const targetFilename = path
       .normalize(filename)
       .replace(/^(\.\.(\/|\\|$))+/, "");
-    const { success, reason } = await processSingleFile(targetFilename);
-    response.status(200).json({ filename: targetFilename, success, reason });
+    const {document, success, reason } = await processSingleFile(targetFilename);
+    response.status(200).json({ document: document, success, reason });
   } catch (e) {
     console.error(e);
     response.status(200).json({

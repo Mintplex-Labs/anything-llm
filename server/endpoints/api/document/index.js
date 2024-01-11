@@ -17,7 +17,7 @@ function apiDocumentEndpoints(app) {
     [validApiKey],
     handleUploads.single("file"),
     async (request, response) => {
-      /* 
+      /*
     #swagger.tags = ['Documents']
     #swagger.description = 'Upload a new file to AnythingLLM to be parsed and prepared for embedding.'
 
@@ -49,9 +49,9 @@ function apiDocumentEndpoints(app) {
               error: null,
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -72,16 +72,17 @@ function apiDocumentEndpoints(app) {
             .end();
         }
 
-        const { success, reason } = await processDocument(originalname);
+        const { document, success, reason } = await processDocument(originalname);
         if (!success) {
           response.status(500).json({ success: false, error: reason }).end();
         }
+
 
         console.log(
           `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
         );
         await Telemetry.sendTelemetry("document_uploaded");
-        response.status(200).json({ success: true, error: null });
+        response.status(200).json({ success: success, error: null, document: document});
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
@@ -90,7 +91,7 @@ function apiDocumentEndpoints(app) {
   );
 
   app.get("/v1/documents", [validApiKey], async (_, response) => {
-    /* 
+    /*
     #swagger.tags = ['Documents']
     #swagger.description = 'List of all locally-stored documents in instance'
     #swagger.responses[200] = {
@@ -115,9 +116,9 @@ function apiDocumentEndpoints(app) {
              }
             }
           }
-        }           
+        }
       }
-    }  
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"
@@ -137,7 +138,7 @@ function apiDocumentEndpoints(app) {
     "/v1/document/accepted-file-types",
     [validApiKey],
     async (_, response) => {
-      /* 
+      /*
     #swagger.tags = ['Documents']
     #swagger.description = 'Check available filetypes and MIMEs that can be uploaded.'
     #swagger.responses[200] = {
@@ -166,9 +167,9 @@ function apiDocumentEndpoints(app) {
               }
             }
           }
-        }           
+        }
       }
-    } 
+    }
     #swagger.responses[403] = {
       schema: {
         "$ref": "#/definitions/InvalidAPIKey"

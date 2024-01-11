@@ -12,22 +12,22 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
   const loader = new DocxLoader(fullFilePath);
 
   console.log(`-- Working ${filename} --`);
-  let pageContent = [];
+  let docxPageContent = [];
   const docs = await loader.load();
   for (const doc of docs) {
     console.log(doc.metadata);
     console.log(`-- Parsing content from docx page --`);
     if (!doc.pageContent.length) continue;
-    pageContent.push(doc.pageContent);
+    docxPageContent.push(doc.pageContent);
   }
 
-  if (!pageContent.length) {
+  if (!docxPageContent.length) {
     console.error(`Resulting text content was empty for ${filename}.`);
     trashFile(fullFilePath);
     return { success: false, reason: `No text content found in ${filename}.` };
   }
 
-  const content = pageContent.join("");
+  const content = docxPageContent.join("");
   const data = {
     id: v4(),
     url: "file://" + fullFilePath,
@@ -42,10 +42,12 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
     token_count_estimate: tokenizeString(content).length,
   };
 
+  const { pageContent, token_count_estimate, ...responseData } = data;
+
   writeToServerDocuments(data, `${slugify(filename)}-${data.id}`);
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
-  return { success: true, reason: null };
+  return { success: true, reason: null, document: data };
 }
 
 module.exports = asDocX;
