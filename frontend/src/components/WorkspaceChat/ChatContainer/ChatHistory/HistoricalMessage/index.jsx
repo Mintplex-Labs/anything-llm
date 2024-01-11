@@ -6,6 +6,8 @@ import { userFromStorage } from "@/utils/request";
 import Citations from "../Citation";
 import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { v4 } from "uuid";
+import createDOMPurify from "dompurify";
+const DOMPurify = createDOMPurify(window);
 
 const HistoricalMessage = forwardRef(
   (
@@ -45,7 +47,9 @@ const HistoricalMessage = forwardRef(
             ) : (
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-                dangerouslySetInnerHTML={{ __html: renderMarkdown(message) }}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(renderMarkdown(message)),
+                }}
               />
             )}
           </div>
