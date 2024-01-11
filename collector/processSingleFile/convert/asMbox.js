@@ -55,11 +55,13 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
     writeToServerDocuments(data, `${slugify(filename)}-${data.id}-msg-${item}`);
   }
 
+  const { pageContent, token_count_estimate, ...responseData } = data;
+
   trashFile(fullFilePath);
   console.log(
     `[SUCCESS]: ${filename} messages converted & ready for embedding.\n`
   );
-  return { success: true, reason: null };
+  return { success: true, reason: null, document: data };
 }
 
 module.exports = asMbox;

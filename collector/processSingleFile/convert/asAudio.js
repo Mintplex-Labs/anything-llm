@@ -60,12 +60,14 @@ async function asAudio({ fullFilePath = "", filename = "" }) {
     token_count_estimate: tokenizeString(content).length,
   };
 
+  const { pageContent, token_count_estimate, ...responseData } = data;
+
   writeToServerDocuments(data, `${slugify(filename)}-${data.id}`);
   trashFile(fullFilePath);
   console.log(
     `[SUCCESS]: ${filename} transcribed, converted & ready for embedding.\n`
   );
-  return { success: true, reason: null };
+  return { success: true, reason: null, document: data };
 }
 
 async function convertToWavAudioData(sourcePath) {

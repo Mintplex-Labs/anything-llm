@@ -14,7 +14,7 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
   });
 
   console.log(`-- Working ${filename} --`);
-  const pageContent = [];
+  const pdfPageContent = [];
   const docs = await pdfLoader.load();
   for (const doc of docs) {
     console.log(
@@ -23,16 +23,16 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
       } --`
     );
     if (!doc.pageContent.length) continue;
-    pageContent.push(doc.pageContent);
+    pdfPageContent.push(doc.pageContent);
   }
 
-  if (!pageContent.length) {
+  if (!pdfPageContent.length) {
     console.error(`Resulting text content was empty for ${filename}.`);
     trashFile(fullFilePath);
     return { success: false, reason: `No text content found in ${filename}.` };
   }
 
-  const content = pageContent.join("");
+  const content = pdfPageContent.join("");
   const data = {
     id: v4(),
     url: "file://" + fullFilePath,
@@ -47,10 +47,13 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
     token_count_estimate: tokenizeString(content).length,
   };
 
+  const { pageContent, token_count_estimate, ...responseData } = data;
+
   writeToServerDocuments(data, `${slugify(filename)}-${data.id}`);
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
-  return { success: true, reason: null };
+
+  return { success: true, reason: null, document: responseData };
 }
 
 module.exports = asPDF;
