@@ -20,6 +20,8 @@ function makeJWT(info = {}, expiry = "30d") {
   return JWT.sign(info, process.env.JWT_SECRET, { expiresIn: expiry });
 }
 
+// Note: Only valid for finding users in multi-user mode
+// as single-user mode with password is not a "user"
 async function userFromSession(request, response = null) {
   if (!!response && !!response.locals?.user) {
     return response.locals.user;

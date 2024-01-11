@@ -283,8 +283,18 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid],
     async (request, response) => {
       try {
+        const user = await userFromSession(request, response);
+        if (!!user && user.role !== "admin") {
+          response.sendStatus(401).end();
+          return;
+        }
+
         const body = reqBody(request);
-        const { newValues, error } = updateENV(body);
+        const { newValues, error } = updateENV(
+          body,
+          false,
+          response.locals?.user
+        );
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
