@@ -47,6 +47,17 @@ function apiDocumentEndpoints(app) {
             example: {
               success: true,
               error: null,
+              "document": {
+                  "id": "115f2bab-957b-42e7-b5d0-16cac2379bce",
+                  "url": "file:///home/user/Workspace/anything-llm/collector/hotdir/file.txt",
+                  "title": "file.txt",
+                  "docAuthor": "Unknown",
+                  "description": "Unknown",
+                  "docSource": "a text file uploaded by the user.",
+                  "chunkSource": "Bfile.txt",
+                  "published": "11/01/2024, 16:25:09",
+                  "wordCount": 17653
+              }
             }
           }
         }
