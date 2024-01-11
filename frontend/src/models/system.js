@@ -1,4 +1,4 @@
-import { API_BASE, AUTH_TIMESTAMP } from "@/utils/constants";
+import { API_BASE, AUTH_TIMESTAMP, fullApiUrl } from "@/utils/constants";
 import { baseHeaders } from "@/utils/request";
 import DataConnector from "./dataConnector";
 
@@ -10,7 +10,7 @@ const System = {
       .catch(() => false);
   },
   totalIndexes: async function (slug = null) {
-    const url = new URL(`${API_BASE}/system/system-vectors`);
+    const url = new URL(`${fullApiUrl()}/system/system-vectors`);
     if (!!slug) url.searchParams.append("slug", encodeURIComponent(slug));
     return await fetch(url.toString(), {
       headers: baseHeaders(),

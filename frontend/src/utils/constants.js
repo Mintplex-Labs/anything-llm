@@ -7,3 +7,8 @@ export const COMPLETE_QUESTIONNAIRE = "anythingllm_completed_questionnaire";
 
 export const USER_BACKGROUND_COLOR = "bg-historical-msg-user";
 export const AI_BACKGROUND_COLOR = "bg-historical-msg-system";
+
+export function fullApiUrl() {
+  if (API_BASE !== "/api") return API_BASE;
+  return `${window.location.origin}/api`;
+}
