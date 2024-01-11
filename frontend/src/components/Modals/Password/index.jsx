@@ -37,7 +37,7 @@ export default function PasswordModal({ mode = "single" }) {
 export function usePasswordModal() {
   const [auth, setAuth] = useState({
     loading: true,
-    required: false,
+    requiresAuth: false,
     mode: "single",
   });
 
