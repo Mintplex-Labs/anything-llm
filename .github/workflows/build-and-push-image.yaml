@@ -36,6 +36,19 @@ jobs:
         shell: bash
         run: echo "repo=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
         id: lowercase_repo
+      
+      - name: Check if DockerHub build needed
+        shell: bash
+        run: |
+          # Check if the secret for USERNAME is set (don't even check for the password)
+          if [[ -z "${{ secrets.DOCKER_USERNAME }}" ]]; then
+            echo "DockerHub build not needed"
+            echo "enabled=false" >> $GITHUB_OUTPUT
+          else
+            echo "DockerHub build needed"
+            echo "enabled=true" >> $GITHUB_OUTPUT
+          fi
+        id: dockerhub
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -45,6 +58,8 @@ jobs:
       
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        # Only login to the Docker Hub if the repo is mintplex/anythingllm, to allow for forks to build on GHCR
+        if: steps.dockerhub.outputs.enabled == 'true' 
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -61,9 +76,16 @@ jobs:
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: |
-            mintplexlabs/anythingllm
+            ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
             ghcr.io/${{ github.repository }}
-      
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+
+
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v5
         with:
@@ -71,8 +93,7 @@ jobs:
           file: ./docker/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: |
-            ${{ steps.meta.outputs.tags }}
-            ${{ github.ref_name == 'master' && 'mintplexlabs/anythingllm:latest' || '' }}
-            ${{ github.ref_name == 'master' && format('ghcr.io/{0}:{1}', steps.lowercase_repo.outputs.repo, 'latest') || '' }}
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
