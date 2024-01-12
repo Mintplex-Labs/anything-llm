@@ -167,10 +167,6 @@ const Milvus = {
         return true;
       }
 
-      // If we are here then we are going to embed and store a novel document.
-      // We have to do this manually as opposed to using LangChains `Chroma.fromDocuments`
-      // because we then cannot atomically control our namespace to granularly find/remove documents
-      // from vectordb.
       const textSplitter = new RecursiveCharacterTextSplitter({
         chunkSize:
           getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1_000,
