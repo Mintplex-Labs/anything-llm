@@ -9,6 +9,7 @@ class OpenAiEmbedder {
     });
     const openai = new OpenAIApi(config);
     this.openai = openai;
+    this.dimensions = 1536;
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 500;
