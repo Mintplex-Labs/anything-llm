@@ -32,11 +32,6 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
 
-      - name: Parse repository name to lowercase
-        shell: bash
-        run: echo "repo=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
-        id: lowercase_repo
-      
       - name: Check if DockerHub build needed
         shell: bash
         run: |
