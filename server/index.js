@@ -85,6 +85,14 @@ if (process.env.NODE_ENV !== "development") {
   });
 }
 
+process.on('unhandledRejection', (reason, p) => {
+  console.log("Unhandled Rejection at: Promise ", p, " reason: ", reason);
+});
+
+process.on('uncaughtException', function (exception) {
+  console.log(exception);
+});
+
 app.use(
   "/system/data-exports",
   serveIndex(__dirname + "/storage/exports", { icons: true })
