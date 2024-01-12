@@ -39,16 +39,15 @@ class NativeEmbedder {
         cache_dir: this.cacheDir,
         ...(!fs.existsSync(this.modelPath)
           ? {
-              // Show download progress if we need to download any files
-              progress_callback: (data) => {
-                if (!data.hasOwnProperty("progress")) return;
-                console.log(
-                  `\x1b[34m[Embedding - Downloading Model Files]\x1b[0m ${
-                    data.file
-                  } ${~~data?.progress}%`
-                );
-              },
-            }
+            // Show download progress if we need to download any files
+            progress_callback: (data) => {
+              if (!data.hasOwnProperty("progress")) return;
+              console.log(
+                `\x1b[34m[Embedding - Downloading Model Files]\x1b[0m ${data.file
+                } ${~~data?.progress}%`
+              );
+            },
+          }
           : {}),
       });
     } catch (error) {
@@ -70,6 +69,10 @@ class NativeEmbedder {
         pooling: "mean",
         normalize: true,
       });
+
+      const used = process.memoryUsage().heapUsed / 1024 / 1024;
+      console.log(`This app is currently using ${Math.floor(used)} MB of memory.`);
+
       if (output.length === 0) continue;
       embeddingResults.push(output.tolist());
     }
