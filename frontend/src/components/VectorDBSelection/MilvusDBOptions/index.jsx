@@ -10,7 +10,7 @@ export default function MilvusDBOptions({ settings }) {
             type="text"
             name="MilvusAddress"
             className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="http://localhost:19539"
+            placeholder="http://localhost:19530"
             defaultValue={settings?.MilvusAddress}
             required={true}
             autoComplete="off"
@@ -20,14 +20,28 @@ export default function MilvusDBOptions({ settings }) {
 
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
-            Milvus Token
+            Milvus Username
+          </label>
+          <input
+            type="text"
+            name="MilvusUsername"
+            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            placeholder="username"
+            defaultValue={settings?.MilvusUsername}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-4">
+            Milvus Password
           </label>
           <input
             type="password"
-            name="MilvusToken"
+            name="MilvusPassword"
             className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="username:password"
-            defaultValue={settings?.MilvusToken ? "*".repeat(20) : ""}
+            placeholder="password"
+            defaultValue={settings?.MilvusPassword ? "*".repeat(20) : ""}
             autoComplete="off"
             spellCheck={false}
           />

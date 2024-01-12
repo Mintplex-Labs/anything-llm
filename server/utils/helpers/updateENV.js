@@ -175,9 +175,13 @@ const KEY_MAPPING = {
     envKey: "MILVUS_ADDRESS",
     checks: [isValidURL, validDockerizedUrl],
   },
-  MilvusToken: {
-    envKey: "MILVUS_TOKEN",
-    checks: [],
+  MilvusUsername: {
+    envKey: "MILVUS_USERNAME",
+    checks: [isNotEmpty],
+  },
+  MilvusPassword: {
+    envKey: "MILVUS_PASSWORD",
+    checks: [isNotEmpty],
   },
 
   // Together Ai Options

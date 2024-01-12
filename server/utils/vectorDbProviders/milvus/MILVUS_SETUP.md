@@ -34,6 +34,7 @@ eg: `server/.env.development`
 
 ```
 VECTOR_DB="milvus"
-MILVUS_ENDPOINT="http://localhost:19530"
-MILVUS_TOKEN="{username}:{password}"
+MILVUS_ADDRESS="http://localhost:19530"
+MILVUS_USERNAME=minioadmin # Whatever your username and password are
+MILVUS_PASSWORD=minioadmin
 ```

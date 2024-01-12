@@ -2,7 +2,7 @@ const {
   DataType,
   MetricType,
   IndexType,
-  OrmClient,
+  MilvusClient,
 } = require("@zilliz/milvus2-sdk-node");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { v4: uuidv4 } = require("uuid");
@@ -13,20 +13,17 @@ const {
   getEmbeddingEngineSelection,
 } = require("../../helpers");
 
-let client = null;
-
 const Milvus = {
   name: "Milvus",
   connect: async function () {
     if (process.env.VECTOR_DB !== "milvus")
       throw new Error("Milvus::Invalid ENV settings");
 
-    if (!client) {
-      client = new OrmClient({
-        address: process.env.MILVUS_ENDPOINT,
-        token: process.env.MILVUS_TOKEN,
-      });
-    }
+    const client = new MilvusClient({
+      address: process.env.MILVUS_ADDRESS,
+      username: process.env.MILVUS_USERNAME,
+      password: process.env.MILVUS_PASSWORD,
+    });
 
     const { isHealthy } = await client.checkHealth();
     if (!isHealthy)
@@ -42,24 +39,28 @@ const Milvus = {
   },
   totalVectors: async function () {
     const { client } = await this.connect();
-    const collections = await client.collections();
-    const total = collections.reduce(async (acc, collection) => {
-      const count = await collection.count();
-      return acc + count;
+    const { collection_names } = await client.listCollections();
+    const total = collection_names.reduce(async (acc, collection_name) => {
+      const statistics = await client.getCollectionStatistics({
+        collection_name,
+      });
+      return Number(acc) + Number(statistics?.data?.row_count ?? 0);
     }, 0);
     return total;
   },
   namespaceCount: async function (_namespace = null) {
     const { client } = await this.connect();
-    const namespace = await this.namespace(client, _namespace);
-    return namespace?.count() ?? 0;
+    const statistics = await client.getCollectionStatistics({
+      collection_name: _namespace,
+    });
+    return Number(statistics?.data?.row_count ?? 0);
   },
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    const collections = await client
-      .collections({ collection_names: [namespace] })
-      .catch(() => []);
-    return collections?.[0];
+    const collection = await client
+      .getCollectionStatistics({ collection_name: namespace })
+      .catch(() => null);
+    return collection;
   },
   hasNamespace: async function (namespace = null) {
     if (!namespace) return false;
@@ -72,9 +73,9 @@ const Milvus = {
       .hasCollection({ collection_name: namespace })
       .catch((e) => {
         console.error("MilvusDB::namespaceExists", e.message);
-        return { value: null };
+        return { value: false };
       });
-    return !!value;
+    return value;
   },
   deleteVectorsInNamespace: async function (client, namespace = null) {
     await client.dropCollection({ collection_name: namespace });
@@ -83,6 +84,12 @@ const Milvus = {
   getOrCreateCollection: async function (client, namespace) {
     const isExists = await this.namespaceExists(client, namespace);
     if (!isExists) {
+      const embedder = getEmbeddingEngineSelection();
+      if (!embedder.dimensions)
+        throw new Error(
+          `Your embedder selection has unknown dimensions output. It should be defined when using ${this.name}. Open an issue on Github for support.`
+        );
+
       await client.createCollection({
         collection_name: namespace,
         fields: [
@@ -97,7 +104,7 @@ const Milvus = {
             name: "vector",
             description: "vector",
             data_type: DataType.FloatVector,
-            dim: 1536,
+            dim: embedder.dimensions,
           },
           {
             name: "metadata",
@@ -144,16 +151,19 @@ const Milvus = {
             documentVectors.push({ docId, vectorId: id });
             return { id, vector: chunk.values, metadata: chunk.metadata };
           });
-          await client
-            .insert({
-              collection_name: namespace,
-              data: newChunks,
-            })
-            .catch((e) => {
-              console.error("MilvusDB::addDocumentToNamespace", e.message);
-            });
+          const insertResult = await client.insert({
+            collection_name: namespace,
+            data: newChunks,
+          });
+
+          if (insertResult?.status.error_code !== "Success") {
+            throw new Error(
+              `Error embedding into Milvus! Reason:${insertResult?.status.reason}`
+            );
+          }
         }
         await DocumentVectors.bulkInsert(documentVectors);
+        await client.flushSync({ collection_names: [namespace] });
         return true;
       }
 
@@ -196,10 +206,12 @@ const Milvus = {
       if (vectors.length > 0) {
         const chunks = [];
         const { client } = await this.connect();
+        await this.getOrCreateCollection(client, namespace);
+
         console.log("Inserting vectorized chunks into Milvus.");
         for (const chunk of toChunks(vectors, 100)) {
           chunks.push(chunk);
-          await client.upsert({
+          const insertResult = await client.insert({
             collection_name: namespace,
             data: chunk.map((item) => ({
               id: item.id,
@@ -207,8 +219,15 @@ const Milvus = {
               metadata: chunk.metadata,
             })),
           });
+
+          if (insertResult?.status.error_code !== "Success") {
+            throw new Error(
+              `Error embedding into Milvus! Reason:${insertResult?.status.reason}`
+            );
+          }
         }
         await storeVectorResult(chunks, fullFilePath);
+        await client.flushSync({ collection_names: [namespace] });
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
@@ -227,10 +246,19 @@ const Milvus = {
     if (knownDocuments.length === 0) return;
 
     const vectorIds = knownDocuments.map((doc) => doc.vectorId);
-    await client.delete({ collection_name: namespace, ids: vectorIds });
+    const queryIn = vectorIds.map((v) => `'${v}'`).join(",");
+    await client.deleteEntities({
+      collection_name: namespace,
+      expr: `id in [${queryIn}]`,
+    });
 
     const indexes = knownDocuments.map((doc) => doc.id);
     await DocumentVectors.deleteIds(indexes);
+
+    // Even after flushing Milvus can take some time to re-calc the count
+    // so all we can hope to do is flushSync so that the count can be correct
+    // on a later call.
+    await client.flushSync({ collection_names: [namespace] });
     return true;
   },
   performSimilaritySearch: async function ({
@@ -308,9 +336,9 @@ const Milvus = {
     if (!(await this.namespaceExists(client, namespace)))
       throw new Error("Namespace by that name does not exist.");
 
-    const details = await this.namespace(client, namespace);
+    const statistics = await this.namespace(client, namespace);
     await this.deleteVectorsInNamespace(client, namespace);
-    const vectorCount = await details?.count();
+    const vectorCount = Number(statistics?.data?.row_count ?? 0);
     return {
       message: `Namespace ${namespace} was deleted along with ${vectorCount} vectors.`,
     };

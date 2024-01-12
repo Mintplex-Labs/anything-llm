@@ -59,7 +59,8 @@ const SystemSettings = {
       ...(vectorDB === "milvus"
         ? {
             MilvusAddress: process.env.MILVUS_ADDRESS,
-            MilvusToken: process.env.MILVUS_TOKEN,
+            MilvusUsername: process.env.MILVUS_USERNAME,
+            MilvusPassword: !!process.env.MILVUS_PASSWORD,
           }
         : {}),
       LLMProvider: llmProvider,

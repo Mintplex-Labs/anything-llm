@@ -112,9 +112,15 @@ const QDrant = {
     if (await this.namespaceExists(client, namespace)) {
       return await client.getCollection(namespace);
     }
+
+    const embedder = getEmbeddingEngineSelection();
+    if (!embedder.dimensions)
+      throw new Error(
+        `Your embedder selection has unknown dimensions output. It should be defined when using ${this.name}. Open an issue on Github for support.`
+      );
     await client.createCollection(namespace, {
       vectors: {
-        size: 1536, //TODO: Fixed to OpenAI models - when other embeddings exist make variable.
+        size: embedder.dimensions,
         distance: "Cosine",
       },
     });
