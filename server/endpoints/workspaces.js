@@ -146,6 +146,8 @@ function workspaceEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
+        request.setTimeout(20 * (60 * 1000))
+        console.log(`TIMEOUT SET TO ${20}min`)
         const user = await userFromSession(request, response);
         const { slug = null } = request.params;
         const { adds = [], deletes = [] } = reqBody(request);
