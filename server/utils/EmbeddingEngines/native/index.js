@@ -81,9 +81,9 @@ class NativeEmbedder {
       if (chunks.length - 1 === idx) fs.writeFileSync(tmpPath, ']', { encoding: 'utf8', flag: 'a+' });
     }
 
-    const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
+    // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
     fs.rmSync(tmpPath, { force: true });
-    return embeddingResults.length > 0 ? embeddingResults.flat() : null;
+    // return embeddingResults.length > 0 ? embeddingResults.flat() : null;
   }
 }
 
