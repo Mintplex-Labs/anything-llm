@@ -16,7 +16,7 @@ class NativeEmbedder {
     this.dimensions = 384;
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
-    this.maxConcurrentChunks = 50;
+    this.maxConcurrentChunks = 25;
     this.embeddingMaxChunkLength = 1_000;
 
     // Make directory when it does not exist in existing installations
@@ -94,6 +94,7 @@ class NativeEmbedder {
     }
   }
 
+  // SURVIVES with forced GC with without when doing 500 chunks
   async embedChunks(textChunks = []) {
     const filename = `${v4()}.tmp`;
     const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
@@ -124,6 +125,43 @@ class NativeEmbedder {
     // return embeddingResults.length > 0 ? embeddingResults.flat() : null;
     return null
   }
+
+  // async embedChunks(textChunks = []) {
+  //   const filename = `${v4()}.tmp`;
+  //   const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
+  //   const chunks = toChunks(textChunks, this.maxConcurrentChunks);
+
+  //   for (let [idx, chunk] of chunks.entries()) {
+  //     // if (idx === 0) this.writeToOut(tmpPath, '[');
+  //     let pipeline = await this.embedderClient();
+  //     let output = await pipeline(chunk, {
+  //       pooling: "mean",
+  //       normalize: true,
+  //     })
+
+  //     if (output.length === 0) {
+  //       data = null;
+  //       output = null;
+  //       pipeline = null;
+  //       global.gc ? global?.gc() : null;
+  //       continue;
+  //     }
+  //     let data = JSON.stringify(output.tolist());
+  //     // this.writeToOut(tmpPath, data)
+  //     console.log(`wrote ${data.length} bytes`)
+  //     // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
+  //     // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
+  //     data = null;
+  //     output = null;
+  //     pipeline = null
+  //     global.gc ? global?.gc() : null
+  //   }
+
+  //   // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
+  //   // fs.rmSync(tmpPath, { force: true });
+  //   // return embeddingResults.length > 0 ? embeddingResults.flat() : null;
+  //   return null
+  // }
 }
 
 module.exports = {
