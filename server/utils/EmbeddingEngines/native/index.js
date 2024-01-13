@@ -65,8 +65,8 @@ class NativeEmbedder {
   writeToOut(filePath, data) {
     let fd = 0;
     try {
-      fd = fs.openSync(filePath, 'a', 0o666);
-      let writer = fs.writeSync(fd, data, null, 'utf8');
+      fd = fs.openSync(filePath, 'w', 0o666);
+      let writer = fs.writeSync(fd, data, 0, 'utf8');
     } catch (e) {
     } finally {
       if (fd) console.log('Closing.')
