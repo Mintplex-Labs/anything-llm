@@ -78,27 +78,22 @@ class NativeEmbedder {
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
 
 
-    for (const [idx, chunk] of chunks.entries()) {
+    for await (const [idx, chunk] of chunks.entries()) {
       // if (idx === 0) this.writeToOut(tmpPath, '[');
-      await Embedder(chunk, {
+
+      let output = await Embedder(chunk, {
         pooling: "mean",
         normalize: true,
-      })
-      console.log(`run ${idx} on chunk of ${chunk.length}`)
+      }).then((res) => res.tolist())
 
-      // let output = await Embedder(chunk, {
-      //   pooling: "mean",
-      //   normalize: true,
-      // })
-
-      // if (output.length === 0) continue;
+      if (output.length === 0) continue;
       // let data = JSON.stringify(output.tolist());
       // this.writeToOut(tmpPath, data)
-      // console.log(`wrote ${data.length} bytes`)
+      console.log(`wrote ${JSON.stringify(output).length} bytes`)
       // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
       // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
       // data = null;
-      // output = null;
+      output = null;
       global.gc ? global?.gc() : null
     }
 
