@@ -32,14 +32,11 @@ class NativeEmbedder {
     return path.resolve(tmpPath, filename);
   }
 
-  #writeToTempfile(filePath, data) {
-    let fd = 0;
+  async #writeToTempfile(filePath, data) {
     try {
-      fd = fs.openSync(filePath, "a", 0o666);
-      let _ = fs.writeSync(fd, data, null, "utf8");
+      await fs.promises.appendFile(filePath, data, { encoding: "utf8" });
     } catch (e) {
-    } finally {
-      if (fd) fs.closeSync(fd);
+      console.error(`Error writing to tempfile: ${e}`);
     }
   }
 
@@ -99,7 +96,7 @@ class NativeEmbedder {
     const chunkLen = chunks.length;
 
     for (let [idx, chunk] of chunks.entries()) {
-      if (idx === 0) this.#writeToTempfile(tmpFilePath, "[");
+      if (idx === 0) await this.#writeToTempfile(tmpFilePath, "[");
       let data;
       let pipeline = await this.embedderClient();
       let output = await pipeline(chunk, {
@@ -108,16 +105,20 @@ class NativeEmbedder {
       });
 
       if (output.length === 0) {
-        pipeline, output, (data = null);
+        pipeline = null;
+        output = null;
+        data = null;
         continue;
       }
 
       data = JSON.stringify(output.tolist());
-      this.#writeToTempfile(tmpFilePath, data);
+      await this.#writeToTempfile(tmpFilePath, data);
       console.log(`\x1b[34m[Embedded Chunk ${idx + 1} of ${chunkLen}]\x1b[0m`);
-      if (chunkLen - 1 !== idx) this.#writeToTempfile(tmpFilePath, ",");
-      if (chunkLen - 1 === idx) this.#writeToTempfile(tmpFilePath, "]");
-      pipeline, output, (data = null);
+      if (chunkLen - 1 !== idx) await this.#writeToTempfile(tmpFilePath, ",");
+      if (chunkLen - 1 === idx) await this.#writeToTempfile(tmpFilePath, "]");
+      pipeline = null;
+      output = null;
+      data = null;
     }
 
     const embeddingResults = JSON.parse(
