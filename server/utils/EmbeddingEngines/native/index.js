@@ -77,31 +77,39 @@ class NativeEmbedder {
     const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
 
+    await Embedder(textChunks, {
+      pooling: "mean",
+      normalize: true,
+    }).then((output) => {
+      if (output.length === 0) return;
+      console.log(`wrote ${JSON.stringify(output.tolist()).length} bytes`)
+      return;
+    })
 
-    for (let [idx, chunk] of chunks.entries()) {
-      // if (idx === 0) this.writeToOut(tmpPath, '[');
-      new Promise((re) => {
-        Embedder(chunk, {
-          pooling: "mean",
-          normalize: true,
-        }).then((output) => {
-          if (output.length === 0) return;
-          console.log(`wrote ${JSON.stringify(output.tolist()).length} bytes`)
-          resolve()
-          return;
-        })
-      })
+    // for (let [idx, chunk] of chunks.entries()) {
+    //   // if (idx === 0) this.writeToOut(tmpPath, '[');
+    //   new Promise((re) => {
+    //     Embedder(chunk, {
+    //       pooling: "mean",
+    //       normalize: true,
+    //     }).then((output) => {
+    //       if (output.length === 0) return;
+    //       console.log(`wrote ${JSON.stringify(output.tolist()).length} bytes`)
+    //       resolve()
+    //       return;
+    //     })
+    //   })
 
-      // if (output.length === 0) continue;
-      // let data = JSON.stringify(output.tolist());
-      // this.writeToOut(tmpPath, data)
-      // console.log(`wrote ${JSON.stringify(output).length} bytes`)
-      // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
-      // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
-      // data = null;
-      // output = null;
-      global.gc ? global?.gc() : null
-    }
+    //   // if (output.length === 0) continue;
+    //   // let data = JSON.stringify(output.tolist());
+    //   // this.writeToOut(tmpPath, data)
+    //   // console.log(`wrote ${JSON.stringify(output).length} bytes`)
+    //   // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
+    //   // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
+    //   // data = null;
+    //   // output = null;
+    //   global.gc ? global?.gc() : null
+    // }
 
     // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
     // fs.rmSync(tmpPath, { force: true });
