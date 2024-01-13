@@ -269,6 +269,11 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@huggingface/jinja@^0.1.0":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@huggingface/jinja/-/jinja-0.1.2.tgz#073fa0a68ef481a1806b0186bbafd8013e586fbe"
+  integrity sha512-x5mpbfJt1nKmVep5WNP5VjNsjWApWNj8pPYI+uYMkBWH9bWUJmQmHt2lbf0VCoQd54Oq3XuFEh/UyoVh7rPxmg==
+
 "@humanwhocodes/config-array@^0.11.13":
   version "0.11.13"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.13.tgz#075dc9684f40a531d9b26b0822153c1e832ee297"
@@ -851,11 +856,12 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@xenova/transformers@^2.10.0":
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/@xenova/transformers/-/transformers-2.10.0.tgz#ae97d724a3addf78de7314336a9f7b28ed96a140"
-  integrity sha512-Al9WKiOsimAC3mU9Ef434GkHF0izmeAM7mMMx5npdWsWLAYL8fmJXCrULj6uCfjomMQ7jyN9rDtKpp570hffiw==
+"@xenova/transformers@^2.14.0":
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/@xenova/transformers/-/transformers-2.14.0.tgz#6fe128957e64377ca4fca910e77f6092f3f3512a"
+  integrity sha512-rQ3O7SW5EM64b6XFZGx3XQ2cfiroefxUwU9ShfSpEZyhd082GvwNJJKndxgaukse1hZP1JUDoT0DfjDiq4IZiw==
   dependencies:
+    "@huggingface/jinja" "^0.1.0"
     onnxruntime-web "1.14.0"
     sharp "^0.32.0"
   optionalDependencies:
