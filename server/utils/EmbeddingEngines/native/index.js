@@ -24,7 +24,6 @@ class NativeEmbedder {
 
     // Convert ESM to CommonJS via import so we can load this library.
     this.pipeline = (...args) => import("@xenova/transformers").then(({ pipeline }) => pipeline(...args))
-    this.instance = null;
   }
 
   async embedderClient() {
@@ -35,9 +34,7 @@ class NativeEmbedder {
     }
 
     try {
-      if (this.instance) return this.instance;
-
-      this.instance = this.pipeline("feature-extraction", this.model, {
+      return this.pipeline("feature-extraction", this.model, {
         cache_dir: this.cacheDir,
         ...(!fs.existsSync(this.modelPath)
           ? {
@@ -52,7 +49,6 @@ class NativeEmbedder {
           }
           : {})
       })
-      return this.instance;
     } catch (error) {
       console.error("Failed to load the native embedding model:", error);
       throw error;
