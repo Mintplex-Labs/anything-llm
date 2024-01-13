@@ -16,7 +16,7 @@ class NativeEmbedder {
     this.dimensions = 384;
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
-    this.maxConcurrentChunks = 25;
+    this.maxConcurrentChunks = 35;
     this.embeddingMaxChunkLength = 1_000;
 
     // Make directory when it does not exist in existing installations
@@ -54,27 +54,6 @@ class NativeEmbedder {
       console.error("Failed to load the native embedding model:", error);
       throw error;
     }
-
-    // try {
-    //   return await this.pipeline("feature-extraction", this.model, {
-    //     cache_dir: this.cacheDir,
-    //     ...(!fs.existsSync(this.modelPath)
-    //       ? {
-    //         // Show download progress if we need to download any files
-    //         progress_callback: (data) => {
-    //           if (!data.hasOwnProperty("progress")) return;
-    //           console.log(
-    //             `\x1b[34m[Embedding - Downloading Model Files]\x1b[0m ${data.file
-    //             } ${~~data?.progress}%`
-    //           );
-    //         },
-    //       }
-    //       : {}),
-    //   });
-    // } catch (error) {
-    //   console.error("Failed to load the native embedding model:", error);
-    //   throw error;
-    // }
   }
 
   async embedTextInput(textInput) {
