@@ -34,7 +34,8 @@ class NativeEmbedder {
     }
 
     try {
-      return this.pipeline("feature-extraction", this.model, {
+      const pipeline = (...args) => import("@xenova/transformers").then(({ pipeline }) => pipeline(...args));
+      return await pipeline("feature-extraction", this.model, {
         cache_dir: this.cacheDir,
         ...(!fs.existsSync(this.modelPath)
           ? {
@@ -114,6 +115,7 @@ class NativeEmbedder {
       // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
       data = null;
       output = null;
+      pipeline = null
       global.gc ? global?.gc() : null
     }
 
