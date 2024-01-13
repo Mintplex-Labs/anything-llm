@@ -16,7 +16,7 @@ class NativeEmbedder {
     this.dimensions = 384;
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
-    this.maxConcurrentChunks = 35;
+    this.maxConcurrentChunks = 25;
     this.embeddingMaxChunkLength = 1_000;
 
     // Make directory when it does not exist in existing installations
