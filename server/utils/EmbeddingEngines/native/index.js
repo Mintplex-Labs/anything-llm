@@ -71,10 +71,12 @@ class NativeEmbedder {
       });
 
       const used = process.memoryUsage().heapUsed / 1024 / 1024;
-      console.log(`This app is currently using ${Math.floor(used)} MB of memory.`);
+      console.log(`This app is currently using ${Math.floor(used)} MB of memory.`, process.memoryUsage());
 
       if (output.length === 0) continue;
       embeddingResults.push(output.tolist());
+
+      console.log(`Result set is now ${output.length}`);
     }
 
     return embeddingResults.length > 0 ? embeddingResults.flat() : null;
