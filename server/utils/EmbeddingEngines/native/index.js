@@ -23,6 +23,15 @@ class NativeEmbedder {
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
   }
 
+  #tempfilePath() {
+    const filename = `${v4()}.tmp`;
+    const tmpPath = process.env.STORAGE_DIR
+      ? path.resolve(process.env.STORAGE_DIR, "tmp")
+      : path.resolve(__dirname, `../../../storage/tmp`);
+    if (!fs.existsSync(tmpPath)) fs.mkdirSync(tmpPath, { recursive: true })
+    return path.resolve(tmpPath, filename);
+  }
+
   async embedderClient() {
     if (!fs.existsSync(this.modelPath)) {
       console.log(
@@ -70,13 +79,22 @@ class NativeEmbedder {
     }
   }
 
+  // If you are thinking you want to edit this function - dont.
+  // This process was benchmarked heavily on a t3.small (2GB RAM 1vCPU)
+  // and without careful memory management for the V8 garbage collector
+  // this function will likely result in an OOM on any resource-constrained deployment.
+  // To help manage very large documents we run a concurrent write-log each iteration
+  // to keep the embedding result out of memory. The `maxConcurrentChunk` is set to 25,
+  // as 50 seems to overflow no matter what. Given the above, memory use hovers around ~30%
+  // during a very large document (>100K words) but can spike up to 70% before gc.
+  // This seems repeatable for all document sizes.
   async embedChunks(textChunks = []) {
-    const filename = `${v4()}.tmp`;
-    const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
+    const tmpFilePath = this.#tempfilePath();
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
+    const chunkLen = chunks.length;
 
     for (let [idx, chunk] of chunks.entries()) {
-      if (idx === 0) this.writeToOut(tmpPath, '[');
+      if (idx === 0) this.writeToOut(tmpFilePath, '[');
       let data;
       let pipeline = await this.embedderClient();
       let output = await pipeline(chunk, {
@@ -88,88 +106,19 @@ class NativeEmbedder {
         pipeline, output, data = null;
         continue;
       }
+
       data = JSON.stringify(output.tolist());
-      this.writeToOut(tmpPath, data)
-      console.log(`wrote ${data.length} bytes`)
-      if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
-      if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
+      this.writeToOut(tmpFilePath, data)
+      console.log(`\x1b[34m[Embedded Chunk ${idx + 1} of ${chunkLen}]\x1b[0m`)
+      if (chunkLen - 1 !== idx) this.writeToOut(tmpFilePath, ',')
+      if (chunkLen - 1 === idx) this.writeToOut(tmpFilePath, ']');
       pipeline, output, data = null;
     }
 
-    const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
-    fs.rmSync(tmpPath, { force: true });
-    // return embeddingResults.length > 0 ? embeddingResults.flat() : null;
-    return null
+    const embeddingResults = JSON.parse(fs.readFileSync(tmpFilePath, { encoding: 'utf-8' }))
+    fs.rmSync(tmpFilePath, { force: true });
+    return embeddingResults.length > 0 ? embeddingResults.flat() : null;
   }
-
-  // SURVIVES with forced GC with without when doing 500 chunks
-  // async embedChunks(textChunks = []) {
-  //   const filename = `${v4()}.tmp`;
-  //   const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
-  //   const chunks = toChunks(textChunks, this.maxConcurrentChunks);
-
-  //   for (let [idx, chunk] of chunks.entries()) {
-  //     // if (idx === 0) this.writeToOut(tmpPath, '[');
-  //     let pipeline = await this.embedderClient();
-  //     let output = await pipeline(chunk, {
-  //       pooling: "mean",
-  //       normalize: true,
-  //     })
-
-  //     if (output.length === 0) continue;
-  //     let data = JSON.stringify(output.tolist());
-  //     // this.writeToOut(tmpPath, data)
-  //     console.log(`wrote ${data.length} bytes`)
-  //     // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
-  //     // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
-  //     data = null;
-  //     output = null;
-  //     pipeline = null
-  //     global.gc ? global?.gc() : null
-  //   }
-
-  //   // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
-  //   // fs.rmSync(tmpPath, { force: true });
-  //   // return embeddingResults.length > 0 ? embeddingResults.flat() : null;
-  //   return null
-  // }
-
-  // async embedChunks(textChunks = []) {
-  //   const filename = `${v4()}.tmp`;
-  //   const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
-  //   const chunks = toChunks(textChunks, this.maxConcurrentChunks);
-
-  //   for (let [idx, chunk] of chunks.entries()) {
-  //     // if (idx === 0) this.writeToOut(tmpPath, '[');
-  //     let pipeline = await this.embedderClient();
-  //     let output = await pipeline(chunk, {
-  //       pooling: "mean",
-  //       normalize: true,
-  //     })
-
-  //     if (output.length === 0) {
-  //       data = null;
-  //       output = null;
-  //       pipeline = null;
-  //       global.gc ? global?.gc() : null;
-  //       continue;
-  //     }
-  //     let data = JSON.stringify(output.tolist());
-  //     // this.writeToOut(tmpPath, data)
-  //     console.log(`wrote ${data.length} bytes`)
-  //     // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
-  //     // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
-  //     data = null;
-  //     output = null;
-  //     pipeline = null
-  //     global.gc ? global?.gc() : null
-  //   }
-
-  //   // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
-  //   // fs.rmSync(tmpPath, { force: true });
-  //   // return embeddingResults.length > 0 ? embeddingResults.flat() : null;
-  //   return null
-  // }
 }
 
 module.exports = {
