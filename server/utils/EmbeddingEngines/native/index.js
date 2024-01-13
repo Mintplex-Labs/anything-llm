@@ -65,7 +65,7 @@ class NativeEmbedder {
     let fd = 0;
     try {
       fd = fs.openSync(filePath, 'w', 0o666);
-      let writer = fs.writeSync(fd, data, 0, 'utf8');
+      let _ = fs.writeSync(fd, data, 0, 'utf8');
     } catch (e) {
     } finally {
       if (fd) console.log('Closing.')
@@ -74,18 +74,31 @@ class NativeEmbedder {
   }
 
   async embedChunks(textChunks = []) {
-    const embeddingResults = [];
-    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
-      let Embedder = await this.embedderClient();
-      let output = await Embedder(chunk, {
+    const filename = `${v4()}.tmp`;
+    const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
+    const chunks = toChunks(textChunks, this.maxConcurrentChunks);
+
+    for (let [idx, chunk] of chunks.entries()) {
+      if (idx === 0) this.writeToOut(tmpPath, '[');
+      let pipeline = await this.embedderClient();
+      let output = await pipeline(chunk, {
         pooling: "mean",
         normalize: true,
-      });
+      })
+
       if (output.length === 0) continue;
-      embeddingResults.push(output.tolist());
+      let data = JSON.stringify(output.tolist());
+      this.writeToOut(tmpPath, data)
+      console.log(`wrote ${data.length} bytes`)
+      if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
+      if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
     }
-    return null;
-    return embeddingResults.length > 0 ? embeddingResults.flat() : null;
+
+    const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
+    fs.rmSync(tmpPath, { force: true });
+    return null
+    // return embeddingResults.length > 0 ? embeddingResults.flat() : null;
+    return null
   }
 
   // SURVIVES with forced GC with without when doing 500 chunks
