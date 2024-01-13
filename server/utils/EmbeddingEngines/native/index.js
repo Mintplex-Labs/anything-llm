@@ -80,6 +80,8 @@ class NativeEmbedder {
     const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
 
+    return null;
+
     for (const [idx, chunk] of chunks.entries()) {
       if (idx === 0) this.writeToOut(tmpPath, '[');
       let output = await Embedder(chunk, {
