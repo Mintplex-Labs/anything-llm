@@ -76,7 +76,7 @@ class NativeEmbedder {
       if (output.length === 0) continue;
       embeddingResults.push(output.tolist());
 
-      console.log(`Result set is now ${output.length}`);
+      console.log(`Result set is now ${embeddingResults.length}`);
     }
 
     return embeddingResults.length > 0 ? embeddingResults.flat() : null;
