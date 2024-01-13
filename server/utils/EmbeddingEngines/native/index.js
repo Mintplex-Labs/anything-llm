@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const { toChunks } = require("../../helpers");
+const { v4 } = require("uuid");
 
 class NativeEmbedder {
   constructor() {
@@ -63,21 +64,25 @@ class NativeEmbedder {
 
   async embedChunks(textChunks = []) {
     const Embedder = await this.embedderClient();
-    const embeddingResults = [];
-    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
+    const filename = `${v4()}.tmp`;
+    const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
+    const chunks = toChunks(textChunks, this.maxConcurrentChunks);
+
+    for (const [idx, chunk] of chunks.entries()) {
+      if (idx === 0) fs.writeFileSync(tmpPath, '[', { encoding: 'utf8', flag: 'a+' });
       const output = await Embedder(chunk, {
         pooling: "mean",
         normalize: true,
       });
 
-      const used = process.memoryUsage().heapUsed / 1024 / 1024;
-      console.log(`This app is currently using ${Math.floor(used)} MB of memory.`, process.memoryUsage());
-
       if (output.length === 0) continue;
-      embeddingResults.push.apply(embeddingResults, output.tolist())
-      console.log(`Result set is now ${embeddingResults.length}`);
+      fs.writeFileSync(tmpPath, JSON.stringify(output.tolist()), { encoding: 'utf8', flag: 'a+' })
+      if (chunks.length - 1 !== idx) fs.writeFileSync(tmpPath, ',', { encoding: 'utf8', flag: 'a+' })
+      if (chunks.length - 1 === idx) fs.writeFileSync(tmpPath, ']', { encoding: 'utf8', flag: 'a+' });
     }
 
+    const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
+    fs.rmSync(tmpPath, { force: true });
     return embeddingResults.length > 0 ? embeddingResults.flat() : null;
   }
 }
