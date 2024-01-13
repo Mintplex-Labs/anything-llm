@@ -98,14 +98,14 @@ class NativeEmbedder {
   }
 
   async embedChunks(textChunks = []) {
-    const Embedder = await this.embedderClient();
     const filename = `${v4()}.tmp`;
     const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
 
     for (let [idx, chunk] of chunks.entries()) {
       // if (idx === 0) this.writeToOut(tmpPath, '[');
-      let output = await Embedder(chunk, {
+      let pipeline = await this.embedderClient();
+      let output = await pipeline(chunk, {
         pooling: "mean",
         normalize: true,
       })
