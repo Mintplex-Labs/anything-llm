@@ -14,6 +14,7 @@ const Workspace = {
     "lastUpdatedAt",
     "openAiPrompt",
     "similarityThreshold",
+    "chatModel",
   ],
 
   new: async function (name = null, creatorId = null) {

@@ -1,35 +1,41 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
 
-export default function OpenAiOptions({ settings }) {
+export default function OpenAiOptions({ settings, isWorkspace = false }) {
   const [inputValue, setInputValue] = useState(settings?.OpenAiKey);
   const [openAIKey, setOpenAIKey] = useState(settings?.OpenAiKey);
 
   return (
     <div className="flex gap-x-4">
-      <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
-          API Key
-        </label>
-        <input
-          type="password"
-          name="OpenAiKey"
-          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-          placeholder="OpenAI API Key"
-          defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
-          required={true}
-          autoComplete="off"
-          spellCheck={false}
-          onChange={(e) => setInputValue(e.target.value)}
-          onBlur={() => setOpenAIKey(inputValue)}
-        />
-      </div>
-      <OpenAIModelSelection settings={settings} apiKey={openAIKey} />
+      {!isWorkspace && (
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-4">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="OpenAiKey"
+            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            placeholder="OpenAI API Key"
+            defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+            onChange={(e) => setInputValue(e.target.value)}
+            onBlur={() => setOpenAIKey(inputValue)}
+          />
+        </div>
+      )}
+      <OpenAIModelSelection
+        settings={settings}
+        apiKey={openAIKey}
+        isWorkspace={isWorkspace}
+      />
     </div>
   );
 }
 
-function OpenAIModelSelection({ apiKey, settings }) {
+function OpenAIModelSelection({ apiKey, settings, isWorkspace = false }) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,9 +60,11 @@ function OpenAIModelSelection({ apiKey, settings }) {
   if (loading) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
-          Chat Model Selection
-        </label>
+        {!isWorkspace && (
+          <label className="text-white text-sm font-semibold block mb-4">
+            Chat Model Selection
+          </label>
+        )}
         <select
           name="OpenAiModelPref"
           disabled={true}
@@ -72,9 +80,11 @@ function OpenAIModelSelection({ apiKey, settings }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-4">
-        Chat Model Selection
-      </label>
+      {!isWorkspace && (
+        <label className="text-white text-sm font-semibold block mb-4">
+          Chat Model Selection
+        </label>
+      )}
       <select
         name="OpenAiModelPref"
         required={true}

@@ -15,16 +15,25 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const [selectedTab, setSelectedTab] = useState("documents");
   const [workspace, setWorkspace] = useState(null);
   const [fileTypes, setFileTypes] = useState(null);
-  const [settings, setSettings] = useState({});
+  const [workspaceSettings, setWorkspaceSettings] = useState({});
+  const [settings, setSettings] = useState(null);
 
   useEffect(() => {
     async function checkSupportedFiletypes() {
       const acceptedTypes = await System.acceptedDocumentTypes();
       const _settings = await System.keys();
       setFileTypes(acceptedTypes ?? {});
-      setSettings(_settings ?? {});
+      setWorkspaceSettings(_settings ?? {});
     }
     checkSupportedFiletypes();
+  }, []);
+
+  useEffect(() => {
+    async function fetchKeys() {
+      const _settings = await System.keys();
+      setSettings(_settings);
+    }
+    fetchKeys();
   }, []);
 
   useEffect(() => {
@@ -110,13 +119,14 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
               <DocumentSettings
                 workspace={workspace}
                 fileTypes={fileTypes}
-                systemSettings={settings}
+                systemSettings={workspaceSettings}
               />
             </div>
             <div className={selectedTab === "settings" ? "" : "hidden"}>
               <WorkspaceSettings
                 active={selectedTab === "settings"} // To force reload live sub-components like VectorCount
                 workspace={workspace}
+                settings={settings}
               />
             </div>
           </Suspense>

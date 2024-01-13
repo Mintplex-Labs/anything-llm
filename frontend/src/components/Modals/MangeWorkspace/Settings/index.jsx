@@ -7,6 +7,16 @@ import PreLoader from "../../../Preloader";
 import { useParams } from "react-router-dom";
 import showToast from "../../../../utils/toast";
 
+import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
+import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
+import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
+import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
+import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
+import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
+import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
+import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
+import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
+
 // Ensure that a type is correct before sending the body
 // to the backend.
 function castToType(key, value) {
@@ -26,11 +36,13 @@ function castToType(key, value) {
   return definitions[key].cast(value);
 }
 
-export default function WorkspaceSettings({ active, workspace }) {
+export default function WorkspaceSettings({ active, workspace, settings }) {
+  console.log("Workspace: ", workspace);
   const { slug } = useParams();
   const formEl = useRef(null);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [customModels, setCustomModels] = useState([]);
 
   const handleUpdate = async (e) => {
     setSaving(true);
@@ -38,6 +50,8 @@ export default function WorkspaceSettings({ active, workspace }) {
     const data = {};
     const form = new FormData(formEl.current);
     for (var [key, value] of form.entries()) data[key] = castToType(key, value);
+
+    console.log(data);
     const { workspace: updatedWorkspace, message } = await Workspace.update(
       workspace.slug,
       data
@@ -63,6 +77,80 @@ export default function WorkspaceSettings({ active, workspace }) {
       ? (window.location = paths.home())
       : window.location.reload();
   };
+
+  // const LLMS = [
+  //   {
+  //     name: "OpenAI",
+  //     value: "openai",
+  //     options: <OpenAiOptions settings={settings} isWorkspace={true} />,
+  //     description: "The standard option for most non-commercial use.",
+  //   },
+  //   {
+  //     name: "Azure OpenAI",
+  //     value: "azure",
+  //     options: <AzureAiOptions settings={settings} isWorkspace={true} />,
+  //     description: "The enterprise option of OpenAI hosted on Azure services.",
+  //   },
+  //   {
+  //     name: "Anthropic",
+  //     value: "anthropic",
+  //     options: <AnthropicAiOptions settings={settings} isWorkspace={true} />,
+  //     description: "A friendly AI Assistant hosted by Anthropic.",
+  //   },
+  //   {
+  //     name: "Gemini",
+  //     value: "gemini",
+  //     options: <GeminiLLMOptions settings={settings} isWorkspace={true} />,
+  //     description: "Google's largest and most capable AI model",
+  //   },
+  //   {
+  //     name: "Ollama",
+  //     value: "ollama",
+  //     options: <OllamaLLMOptions settings={settings} isWorkspace={true} />,
+  //     description: "Run LLMs locally on your own machine.",
+  //   },
+  //   {
+  //     name: "LM Studio",
+  //     value: "lmstudio",
+  //     options: <LMStudioOptions settings={settings} isWorkspace={true} />,
+  //     description:
+  //       "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+  //   },
+  //   {
+  //     name: "Local AI",
+  //     value: "localai",
+  //     options: <LocalAiOptions settings={settings} isWorkspace={true} />,
+  //     description: "Run LLMs locally on your own machine.",
+  //   },
+  //   {
+  //     name: "Together AI",
+  //     value: "togetherai",
+  //     options: <TogetherAiOptions settings={settings} isWorkspace={true} />,
+  //     description: "Run open source models from Together AI.",
+  //   },
+  //   {
+  //     name: "Native",
+  //     value: "native",
+  //     options: <NativeLLMOptions settings={settings} isWorkspace={true} />,
+  //     description:
+  //       "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
+  //   },
+  // ];
+
+  // const selectedLLMOptions = LLMS.find(
+  //   (llm) => llm.value === settings?.LLMProvider
+  // )?.options;
+
+  // const llmName = LLMS.find((llm) => llm.value === settings?.LLMProvider).name;
+
+  useEffect(() => {
+    async function getCustomModels() {
+      const customModels = await System.customModels(settings?.LLMProvider);
+      setCustomModels(customModels?.models || []);
+    }
+
+    getCustomModels();
+  }, [settings?.LLMProvider]);
 
   return (
     <form ref={formEl} onSubmit={handleUpdate}>
@@ -99,6 +187,70 @@ export default function WorkspaceSettings({ active, workspace }) {
           <div className="flex">
             <div className="flex flex-col gap-y-4 w-1/2">
               <div className="w-3/4 flex flex-col gap-y-4">
+                {/* Chat model */}
+                <div>
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-white"
+                    >
+                      Chat model (LLM: {settings?.LLMProvider})
+                    </label>
+                    <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+                      The specific chat model that will be used for this
+                      workspace.
+                    </p>
+                  </div>
+                  <select
+                    name="chatModel"
+                    required={true}
+                    onChange={() => {
+                      setHasChanges(true);
+                    }}
+                    className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+                  >
+                    <optgroup label="General LLM models">
+                      {[
+                        "gpt-3.5-turbo",
+                        "gpt-4",
+                        "gpt-4-1106-preview",
+                        "gpt-4-32k",
+                      ].map((model) => {
+                        return (
+                          <option
+                            key={model}
+                            value={model}
+                            selected={
+                              workspace?.chatModel === model ||
+                              settings?.OpenAiModelPref === model
+                            }
+                          >
+                            {model}
+                          </option>
+                        );
+                      })}
+                    </optgroup>
+                    {customModels.length > 0 && (
+                      <optgroup label="Your fine-tuned models">
+                        {customModels.map((model) => {
+                          return (
+                            <option
+                              key={model.id}
+                              value={model.id}
+                              selected={
+                                workspace?.chatModel === model ||
+                                workspace?.chatModel === model.id
+                              }
+                            >
+                              {model.id}
+                            </option>
+                          );
+                        })}
+                      </optgroup>
+                    )}
+                  </select>
+                </div>
+
                 <div>
                   <div className="flex flex-col">
                     <label
