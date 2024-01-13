@@ -24,6 +24,11 @@ class NativeEmbedder {
   }
 
   async embedderClient() {
+    if (!!this.cachedEmbedder) {
+      console.log(`CACHE HIT: EMBEDDER`)
+      return this.cachedEmbedder;
+    }
+
     if (!fs.existsSync(this.modelPath)) {
       console.log(
         "\x1b[34m[INFO]\x1b[0m The native embedding model has never been run and will be downloaded right now. Subsequent runs will be faster. (~23MB)\n\n"
@@ -36,7 +41,7 @@ class NativeEmbedder {
         import("@xenova/transformers").then(({ pipeline }) =>
           pipeline(...args)
         );
-      return await pipeline("feature-extraction", this.model, {
+      this.cachedEmbedder = await pipeline("feature-extraction", this.model, {
         cache_dir: this.cacheDir,
         ...(!fs.existsSync(this.modelPath)
           ? {
@@ -51,6 +56,8 @@ class NativeEmbedder {
           }
           : {}),
       });
+      console.log('Called to load model again')
+      return this.cachedEmbedder;
     } catch (error) {
       console.error("Failed to load the native embedding model:", error);
       throw error;
@@ -75,7 +82,7 @@ class NativeEmbedder {
   }
 
   async embedChunks(textChunks = []) {
-    const Embedder = await this.embedderClient();
+    const Embedder = await this.embedderClient()
     const filename = `${v4()}.tmp`;
     const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
@@ -87,10 +94,10 @@ class NativeEmbedder {
         normalize: true,
       });
 
-      // if (output.length === 0) continue;
-      // let data = JSON.stringify(output.tolist());
+      if (output.length === 0) continue;
+      let data = JSON.stringify(output.tolist());
       // this.writeToOut(tmpPath, data)
-      // console.log(`wrote ${data.length} bytes`)
+      console.log(`wrote ${data.length} bytes`)
       // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
       // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
     }
@@ -98,6 +105,7 @@ class NativeEmbedder {
     // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
     // fs.rmSync(tmpPath, { force: true });
     // return embeddingResults.length > 0 ? embeddingResults.flat() : null;
+    return null;
   }
 }
 
