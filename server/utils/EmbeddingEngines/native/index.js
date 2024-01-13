@@ -62,6 +62,17 @@ class NativeEmbedder {
     return result?.[0] || [];
   }
 
+  writeToOut(filePath, data) {
+    let fd = 0;
+    try {
+      fd = fs.openSync(filePath, 'a', 0o666);
+      fs.writeSync(fd, data, null, 'utf8');
+    } catch (e) {
+    } finally {
+      if (fd) fs.closeSync(fd);
+    }
+  }
+
   async embedChunks(textChunks = []) {
     const Embedder = await this.embedderClient();
     const filename = `${v4()}.tmp`;
@@ -69,16 +80,16 @@ class NativeEmbedder {
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
 
     for (const [idx, chunk] of chunks.entries()) {
-      if (idx === 0) fs.writeFileSync(tmpPath, '[', { encoding: 'utf8', flag: 'a+' });
+      if (idx === 0) this.writeToOut(tmpPath, '[');
       const output = await Embedder(chunk, {
         pooling: "mean",
         normalize: true,
       });
 
       if (output.length === 0) continue;
-      fs.writeFileSync(tmpPath, JSON.stringify(output.tolist()), { encoding: 'utf8', flag: 'a+' })
-      if (chunks.length - 1 !== idx) fs.writeFileSync(tmpPath, ',', { encoding: 'utf8', flag: 'a+' })
-      if (chunks.length - 1 === idx) fs.writeFileSync(tmpPath, ']', { encoding: 'utf8', flag: 'a+' });
+      this.writeToOut(tmpPath, JSON.stringify(output.tolist()))
+      if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
+      if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
     }
 
     // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
