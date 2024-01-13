@@ -21,7 +21,10 @@ class NativeEmbedder {
 
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
+
+    // Convert ESM to CommonJS via import so we can load this library.
     this.pipeline = (...args) => import("@xenova/transformers").then(({ pipeline }) => pipeline(...args))
+    this.instance = null;
   }
 
   async embedderClient() {
@@ -32,8 +35,9 @@ class NativeEmbedder {
     }
 
     try {
-      // Convert ESM to CommonJS via import so we can load this library.
-      return await this.pipeline("feature-extraction", this.model, {
+      if (this.instance) return this.instance;
+
+      this.instance = this.pipeline("feature-extraction", this.model, {
         cache_dir: this.cacheDir,
         ...(!fs.existsSync(this.modelPath)
           ? {
@@ -46,12 +50,34 @@ class NativeEmbedder {
               );
             },
           }
-          : {}),
-      });
+          : {})
+      })
+      return this.instance;
     } catch (error) {
       console.error("Failed to load the native embedding model:", error);
       throw error;
     }
+
+    // try {
+    //   return await this.pipeline("feature-extraction", this.model, {
+    //     cache_dir: this.cacheDir,
+    //     ...(!fs.existsSync(this.modelPath)
+    //       ? {
+    //         // Show download progress if we need to download any files
+    //         progress_callback: (data) => {
+    //           if (!data.hasOwnProperty("progress")) return;
+    //           console.log(
+    //             `\x1b[34m[Embedding - Downloading Model Files]\x1b[0m ${data.file
+    //             } ${~~data?.progress}%`
+    //           );
+    //         },
+    //       }
+    //       : {}),
+    //   });
+    // } catch (error) {
+    //   console.error("Failed to load the native embedding model:", error);
+    //   throw error;
+    // }
   }
 
   async embedTextInput(textInput) {
@@ -77,39 +103,23 @@ class NativeEmbedder {
     const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
 
-    await Embedder(textChunks, {
-      pooling: "mean",
-      normalize: true,
-    }).then((output) => {
-      if (output.length === 0) return;
-      console.log(`wrote ${JSON.stringify(output.tolist()).length} bytes`)
-      return;
-    })
+    for (let [idx, chunk] of chunks.entries()) {
+      // if (idx === 0) this.writeToOut(tmpPath, '[');
+      let output = await Embedder(chunk, {
+        pooling: "mean",
+        normalize: true,
+      })
 
-    // for (let [idx, chunk] of chunks.entries()) {
-    //   // if (idx === 0) this.writeToOut(tmpPath, '[');
-    //   new Promise((re) => {
-    //     Embedder(chunk, {
-    //       pooling: "mean",
-    //       normalize: true,
-    //     }).then((output) => {
-    //       if (output.length === 0) return;
-    //       console.log(`wrote ${JSON.stringify(output.tolist()).length} bytes`)
-    //       resolve()
-    //       return;
-    //     })
-    //   })
-
-    //   // if (output.length === 0) continue;
-    //   // let data = JSON.stringify(output.tolist());
-    //   // this.writeToOut(tmpPath, data)
-    //   // console.log(`wrote ${JSON.stringify(output).length} bytes`)
-    //   // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
-    //   // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
-    //   // data = null;
-    //   // output = null;
-    //   global.gc ? global?.gc() : null
-    // }
+      if (output.length === 0) continue;
+      let data = JSON.stringify(output.tolist());
+      // this.writeToOut(tmpPath, data)
+      console.log(`wrote ${data.length} bytes`)
+      // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
+      // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
+      data = null;
+      output = null;
+      global.gc ? global?.gc() : null
+    }
 
     // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
     // fs.rmSync(tmpPath, { force: true });
