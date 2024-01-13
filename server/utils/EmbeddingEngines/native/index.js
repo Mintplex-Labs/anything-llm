@@ -73,37 +73,52 @@ class NativeEmbedder {
     }
   }
 
-  // SURVIVES with forced GC with without when doing 500 chunks
   async embedChunks(textChunks = []) {
-    const filename = `${v4()}.tmp`;
-    const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
-    const chunks = toChunks(textChunks, this.maxConcurrentChunks);
-
-    for (let [idx, chunk] of chunks.entries()) {
-      // if (idx === 0) this.writeToOut(tmpPath, '[');
-      let pipeline = await this.embedderClient();
-      let output = await pipeline(chunk, {
+    const Embedder = await this.embedderClient();
+    const embeddingResults = [];
+    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
+      const output = await Embedder(chunk, {
         pooling: "mean",
         normalize: true,
-      })
-
+      });
       if (output.length === 0) continue;
-      let data = JSON.stringify(output.tolist());
-      // this.writeToOut(tmpPath, data)
-      console.log(`wrote ${data.length} bytes`)
-      // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
-      // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
-      data = null;
-      output = null;
-      pipeline = null
-      global.gc ? global?.gc() : null
+      embeddingResults.push(output.tolist());
     }
 
-    // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
-    // fs.rmSync(tmpPath, { force: true });
-    // return embeddingResults.length > 0 ? embeddingResults.flat() : null;
-    return null
+    return embeddingResults.length > 0 ? embeddingResults.flat() : null;
   }
+
+  // SURVIVES with forced GC with without when doing 500 chunks
+  // async embedChunks(textChunks = []) {
+  //   const filename = `${v4()}.tmp`;
+  //   const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
+  //   const chunks = toChunks(textChunks, this.maxConcurrentChunks);
+
+  //   for (let [idx, chunk] of chunks.entries()) {
+  //     // if (idx === 0) this.writeToOut(tmpPath, '[');
+  //     let pipeline = await this.embedderClient();
+  //     let output = await pipeline(chunk, {
+  //       pooling: "mean",
+  //       normalize: true,
+  //     })
+
+  //     if (output.length === 0) continue;
+  //     let data = JSON.stringify(output.tolist());
+  //     // this.writeToOut(tmpPath, data)
+  //     console.log(`wrote ${data.length} bytes`)
+  //     // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
+  //     // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
+  //     data = null;
+  //     output = null;
+  //     pipeline = null
+  //     global.gc ? global?.gc() : null
+  //   }
+
+  //   // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
+  //   // fs.rmSync(tmpPath, { force: true });
+  //   // return embeddingResults.length > 0 ? embeddingResults.flat() : null;
+  //   return null
+  // }
 
   // async embedChunks(textChunks = []) {
   //   const filename = `${v4()}.tmp`;
