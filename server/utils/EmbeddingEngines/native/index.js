@@ -62,8 +62,8 @@ class NativeEmbedder {
   writeToOut(filePath, data) {
     let fd = 0;
     try {
-      fd = fs.openSync(filePath, 'w', 0o666);
-      let _ = fs.writeSync(fd, data, 0, 'utf8');
+      fd = fs.openSync(filePath, 'a', 0o666);
+      let _ = fs.writeSync(fd, data, null, 'utf8');
     } catch (e) {
     } finally {
       if (fd) fs.closeSync(fd);
@@ -98,7 +98,6 @@ class NativeEmbedder {
 
     const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
     fs.rmSync(tmpPath, { force: true });
-    return null
     // return embeddingResults.length > 0 ? embeddingResults.flat() : null;
     return null
   }
