@@ -74,9 +74,9 @@ class NativeEmbedder {
   }
 
   async embedChunks(textChunks = []) {
-    const Embedder = await this.embedderClient();
     const embeddingResults = [];
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
+      const Embedder = await this.embedderClient();
       const output = await Embedder(chunk, {
         pooling: "mean",
         normalize: true,
@@ -84,7 +84,7 @@ class NativeEmbedder {
       if (output.length === 0) continue;
       embeddingResults.push(output.tolist());
     }
-
+    return null;
     return embeddingResults.length > 0 ? embeddingResults.flat() : null;
   }
 
