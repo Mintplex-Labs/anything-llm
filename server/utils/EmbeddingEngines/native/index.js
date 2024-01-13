@@ -78,7 +78,7 @@ class NativeEmbedder {
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
 
 
-    for await (const [idx, chunk] of chunks.entries()) {
+    for (let [idx, chunk] of chunks.entries()) {
       // if (idx === 0) this.writeToOut(tmpPath, '[');
       await Embedder(chunk, {
         pooling: "mean",
