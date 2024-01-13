@@ -79,18 +79,19 @@ class NativeEmbedder {
     const filename = `${v4()}.tmp`;
     const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
+    const func = (chunk) => Embedder(chunk, {
+      pooling: "mean",
+      normalize: true,
+    })
 
     for (const [idx, chunk] of chunks.entries()) {
       // if (idx === 0) this.writeToOut(tmpPath, '[');
-      let output = await Embedder(chunk, {
-        pooling: "mean",
-        normalize: true,
-      });
+      let output = await func(chunk);
 
       // if (output.length === 0) continue;
-      // let data = JSON.stringify(output.tolist());
+      let data = JSON.stringify(output.tolist());
       // this.writeToOut(tmpPath, data)
-      // console.log(`wrote ${data.length} bytes`)
+      console.log(`wrote ${data.length} bytes`)
       // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
       // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
       output = null;
