@@ -66,9 +66,10 @@ class NativeEmbedder {
     let fd = 0;
     try {
       fd = fs.openSync(filePath, 'a', 0o666);
-      fs.writeSync(fd, data, null, 'utf8');
+      let writer = fs.writeSync(fd, data, null, 'utf8');
     } catch (e) {
     } finally {
+      if (fd) console.log('Closing.')
       if (fd) fs.closeSync(fd);
     }
   }
@@ -81,19 +82,21 @@ class NativeEmbedder {
 
     for (const [idx, chunk] of chunks.entries()) {
       if (idx === 0) this.writeToOut(tmpPath, '[');
-      const output = await Embedder(chunk, {
+      let output = await Embedder(chunk, {
         pooling: "mean",
         normalize: true,
       });
 
       if (output.length === 0) continue;
-      this.writeToOut(tmpPath, JSON.stringify(output.tolist()))
+      let data = JSON.stringify(output.tolist());
+      this.writeToOut(tmpPath, data)
+      console.log(`wrote ${data.length} bytes`)
       if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
       if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
     }
 
     // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
-    fs.rmSync(tmpPath, { force: true });
+    // fs.rmSync(tmpPath, { force: true });
     // return embeddingResults.length > 0 ? embeddingResults.flat() : null;
   }
 }
