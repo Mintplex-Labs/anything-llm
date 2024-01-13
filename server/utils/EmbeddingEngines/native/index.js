@@ -80,13 +80,16 @@ class NativeEmbedder {
 
     for (let [idx, chunk] of chunks.entries()) {
       // if (idx === 0) this.writeToOut(tmpPath, '[');
-      await Embedder(chunk, {
-        pooling: "mean",
-        normalize: true,
-      }).then((output) => {
-        if (output.length === 0) return;
-        console.log(`wrote ${JSON.stringify(output.tolist()).length} bytes`)
-        return;
+      new Promise((re) => {
+        Embedder(chunk, {
+          pooling: "mean",
+          normalize: true,
+        }).then((output) => {
+          if (output.length === 0) return;
+          console.log(`wrote ${JSON.stringify(output.tolist()).length} bytes`)
+          resolve()
+          return;
+        })
       })
 
       // if (output.length === 0) continue;
