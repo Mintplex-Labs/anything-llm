@@ -88,6 +88,7 @@ class NativeEmbedder {
   // as 50 seems to overflow no matter what. Given the above, memory use hovers around ~30%
   // during a very large document (>100K words) but can spike up to 70% before gc.
   // This seems repeatable for all document sizes.
+  // While this does take a while, it is zero set up and is 100% free and on-instance.
   async embedChunks(textChunks = []) {
     const tmpFilePath = this.#tempfilePath();
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
