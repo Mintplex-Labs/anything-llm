@@ -21,9 +21,6 @@ class NativeEmbedder {
 
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
-
-    // Convert ESM to CommonJS via import so we can load this library.
-    this.pipeline = (...args) => import("@xenova/transformers").then(({ pipeline }) => pipeline(...args))
   }
 
   async embedderClient() {
@@ -34,6 +31,7 @@ class NativeEmbedder {
     }
 
     try {
+      // Convert ESM to CommonJS via import so we can load this library.
       const pipeline = (...args) => import("@xenova/transformers").then(({ pipeline }) => pipeline(...args));
       return await pipeline("feature-extraction", this.model, {
         cache_dir: this.cacheDir,
@@ -68,7 +66,6 @@ class NativeEmbedder {
       let _ = fs.writeSync(fd, data, 0, 'utf8');
     } catch (e) {
     } finally {
-      if (fd) console.log('Closing.')
       if (fd) fs.closeSync(fd);
     }
   }
@@ -80,18 +77,23 @@ class NativeEmbedder {
 
     for (let [idx, chunk] of chunks.entries()) {
       if (idx === 0) this.writeToOut(tmpPath, '[');
+      let data;
       let pipeline = await this.embedderClient();
       let output = await pipeline(chunk, {
         pooling: "mean",
         normalize: true,
       })
 
-      if (output.length === 0) continue;
-      let data = JSON.stringify(output.tolist());
+      if (output.length === 0) {
+        pipeline, output, data = null;
+        continue;
+      }
+      data = JSON.stringify(output.tolist());
       this.writeToOut(tmpPath, data)
       console.log(`wrote ${data.length} bytes`)
       if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
       if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
+      pipeline, output, data = null;
     }
 
     const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
