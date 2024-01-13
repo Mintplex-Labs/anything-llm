@@ -21,6 +21,7 @@ class NativeEmbedder {
 
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
+    this.pipeline = (...args) => import("@xenova/transformers").then(({ pipeline }) => pipeline(...args))
   }
 
   async embedderClient() {
@@ -32,11 +33,7 @@ class NativeEmbedder {
 
     try {
       // Convert ESM to CommonJS via import so we can load this library.
-      const pipeline = (...args) =>
-        import("@xenova/transformers").then(({ pipeline }) =>
-          pipeline(...args)
-        );
-      return await pipeline("feature-extraction", this.model, {
+      return await this.pipeline("feature-extraction", this.model, {
         cache_dir: this.cacheDir,
         ...(!fs.existsSync(this.modelPath)
           ? {
@@ -75,18 +72,18 @@ class NativeEmbedder {
   }
 
   async embedChunks(textChunks = []) {
-    const Embedder = await this.embedderClient()
+    const Embedder = await this.embedderClient();
     const filename = `${v4()}.tmp`;
     const tmpPath = path.resolve(__dirname, '../../../storage/tmp', filename)
     const chunks = toChunks(textChunks, this.maxConcurrentChunks);
-    const func = (chunk) => Embedder(chunk, {
-      pooling: "mean",
-      normalize: true,
-    })
+
 
     for (const [idx, chunk] of chunks.entries()) {
       // if (idx === 0) this.writeToOut(tmpPath, '[');
-      let output = await func(chunk);
+      let output = await Embedder(chunk, {
+        pooling: "mean",
+        normalize: true,
+      })
 
       // if (output.length === 0) continue;
       let data = JSON.stringify(output.tolist());
@@ -94,7 +91,9 @@ class NativeEmbedder {
       console.log(`wrote ${data.length} bytes`)
       // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
       // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
+      data = null;
       output = null;
+      global.gc ? global?.gc() : null
     }
 
     // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
