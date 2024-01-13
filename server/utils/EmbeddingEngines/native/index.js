@@ -79,21 +79,24 @@ class NativeEmbedder {
 
 
     for (const [idx, chunk] of chunks.entries()) {
+      console.log(chunk.map((c) => c.length))
+      await new Promise(r => setTimeout(r, 8000));
+
       // if (idx === 0) this.writeToOut(tmpPath, '[');
-      let output = await Embedder(chunk, {
-        pooling: "mean",
-        normalize: true,
-      })
+      // let output = await Embedder(chunk, {
+      //   pooling: "mean",
+      //   normalize: true,
+      // })
 
       // if (output.length === 0) continue;
-      let data = JSON.stringify(output.tolist());
+      // let data = JSON.stringify(output.tolist());
       // this.writeToOut(tmpPath, data)
-      console.log(`wrote ${data.length} bytes`)
+      // console.log(`wrote ${data.length} bytes`)
       // if (chunks.length - 1 !== idx) this.writeToOut(tmpPath, ',')
       // if (chunks.length - 1 === idx) this.writeToOut(tmpPath, ']');
-      data = null;
-      output = null;
-      global.gc ? global?.gc() : null
+      // data = null;
+      // output = null;
+      // global.gc ? global?.gc() : null
     }
 
     // const embeddingResults = JSON.parse(fs.readFileSync(tmpPath, { encoding: 'utf-8' }))
