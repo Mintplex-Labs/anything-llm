@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-
-const { purgeVectorCache, purgeSourceDocument } = require(".");
+const { purgeVectorCache, purgeSourceDocument, normalizePath } = require(".");
 const { Document } = require("../../models/documents");
 const { Workspace } = require("../../models/workspace");
 
@@ -22,10 +21,10 @@ async function purgeFolder(folderName) {
       ? path.resolve(__dirname, `../../storage/documents`)
       : path.resolve(process.env.STORAGE_DIR, `documents`);
 
-  const folderPath = path.resolve(documentsFolder, folderName);
+  const folderPath = path.resolve(documentsFolder, normalizePath(folderName));
   const filenames = fs
     .readdirSync(folderPath)
-    .map((file) => path.join(folderName, file));
+    .map((file) => path.join(folderPath, file));
   const workspaces = await Workspace.where();
 
   const purgePromises = [];
