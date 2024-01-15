@@ -389,15 +389,19 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/data-export", [validatedRequest], async (_, response) => {
-    try {
-      const { filename, error } = await exportData();
-      response.status(200).json({ filename, error });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+  app.get(
+    "/system/data-export",
+    [validatedRequest, flexUserRoleValid],
+    async (_, response) => {
+      try {
+        const { filename, error } = await exportData();
+        response.status(200).json({ filename, error });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.get("/system/data-exports/:filename", (request, response) => {
     const exportLocation = __dirname + "/../storage/exports/";
