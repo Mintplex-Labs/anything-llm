@@ -1,7 +1,7 @@
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
-const { viewLocalFiles } = require("../utils/files");
+const { viewLocalFiles, normalizePath } = require("../utils/files");
 const { exportData, unpackAndOverwriteImport } = require("../utils/files/data");
 const {
   checkProcessorAlive,
@@ -401,9 +401,7 @@ function systemEndpoints(app) {
 
   app.get("/system/data-exports/:filename", (request, response) => {
     const exportLocation = __dirname + "/../storage/exports/";
-    const sanitized = path
-      .normalize(request.params.filename)
-      .replace(/^(\.\.(\/|\\|$))+/, "");
+    const sanitized = normalizePath(request.params.filename);
     const finalDestination = path.join(exportLocation, sanitized);
 
     if (!fs.existsSync(finalDestination)) {

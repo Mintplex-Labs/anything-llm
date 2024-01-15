@@ -2,32 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const { v5: uuidv5 } = require("uuid");
 
-async function collectDocumentData(folderName = null) {
-  if (!folderName) throw new Error("No docPath provided in request");
-  const folder =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../storage/documents/${folderName}`)
-      : path.resolve(process.env.STORAGE_DIR, `documents/${folderName}`);
-
-  const dirExists = fs.existsSync(folder);
-  if (!dirExists)
-    throw new Error(
-      `No documents folder for ${folderName} - did you run collector/main.py for this element?`
-    );
-
-  const files = fs.readdirSync(folder);
-  const fileData = [];
-  files.forEach((file) => {
-    if (path.extname(file) === ".json") {
-      const filePath = path.join(folder, file);
-      const data = fs.readFileSync(filePath, "utf8");
-      console.log(`Parsing document: ${file}`);
-      fileData.push(JSON.parse(data));
-    }
-  });
-  return fileData;
-}
-
 // Should take in a folder that is a subfolder of documents
 // eg: youtube-subject/video-123.json
 async function fileData(filePath = null) {
@@ -35,8 +9,15 @@ async function fileData(filePath = null) {
 
   const fullPath =
     process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../storage/documents/${filePath}`)
-      : path.resolve(process.env.STORAGE_DIR, `documents/${filePath}`);
+      ? path.resolve(
+          __dirname,
+          `../../storage/documents/${normalizePath(filePath)}`
+        )
+      : path.resolve(
+          process.env.STORAGE_DIR,
+          `documents/${normalizePath(filePath)}`
+        );
+
   const fileExists = fs.existsSync(fullPath);
   if (!fileExists) return null;
 
@@ -142,11 +123,18 @@ async function storeVectorResult(vectorData = [], filename = null) {
 async function purgeSourceDocument(filename = null) {
   if (!filename) return;
   console.log(`Purging source document of ${filename}.`);
-
   const filePath =
     process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../storage/documents`, filename)
-      : path.resolve(process.env.STORAGE_DIR, `documents`, filename);
+      ? path.resolve(
+          __dirname,
+          `../../storage/documents`,
+          normalizePath(filename)
+        )
+      : path.resolve(
+          process.env.STORAGE_DIR,
+          `documents`,
+          normalizePath(filename)
+        );
 
   if (!fs.existsSync(filePath)) return;
   fs.rmSync(filePath);
@@ -169,12 +157,16 @@ async function purgeVectorCache(filename = null) {
   return;
 }
 
+function normalizePath(filepath = "") {
+  return path.normalize(filepath).replace(/^(\.\.(\/|\\|$))+/, "");
+}
+
 module.exports = {
   cachedVectorInformation,
-  collectDocumentData,
   viewLocalFiles,
   purgeSourceDocument,
   purgeVectorCache,
   storeVectorResult,
   fileData,
+  normalizePath,
 };
