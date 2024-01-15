@@ -502,7 +502,8 @@ function systemEndpoints(app) {
         }
 
         const userRecord = await User.get({ id: user.id });
-        const oldPfpFilename = userRecord.pfpFilename;
+        const oldPfpFilename = normalizePath(userRecord.pfpFilename);
+
         console.log("oldPfpFilename", oldPfpFilename);
         if (oldPfpFilename) {
           const oldPfpPath = path.join(
@@ -536,7 +537,7 @@ function systemEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const userRecord = await User.get({ id: user.id });
-        const oldPfpFilename = userRecord.pfpFilename;
+        const oldPfpFilename = normalizePath(userRecord.pfpFilename);
         console.log("oldPfpFilename", oldPfpFilename);
         if (oldPfpFilename) {
           const oldPfpPath = path.join(
