@@ -56,6 +56,13 @@ const SystemSettings = {
             QdrantApiKey: process.env.QDRANT_API_KEY,
           }
         : {}),
+      ...(vectorDB === "milvus"
+        ? {
+            MilvusAddress: process.env.MILVUS_ADDRESS,
+            MilvusUsername: process.env.MILVUS_USERNAME,
+            MilvusPassword: !!process.env.MILVUS_PASSWORD,
+          }
+        : {}),
       LLMProvider: llmProvider,
       ...(llmProvider === "openai"
         ? {

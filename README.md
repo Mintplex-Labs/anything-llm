@@ -87,6 +87,7 @@ Some cool features of AnythingLLM
 - [Chroma](https://trychroma.com)
 - [Weaviate](https://weaviate.io)
 - [QDrant](https://qdrant.tech)
+- [Milvus](https://milvus.io)
 
 ### Technical Overview
 

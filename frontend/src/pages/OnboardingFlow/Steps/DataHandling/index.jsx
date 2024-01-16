@@ -14,6 +14,7 @@ import PineconeLogo from "@/media/vectordbs/pinecone.png";
 import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
+import MilvusLogo from "@/media/vectordbs/milvus.png";
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -122,6 +123,13 @@ const VECTOR_DB_PRIVACY = {
       "Your vectors and document text are stored on your Weaviate instance (cloud or self-hosted)",
     ],
     logo: WeaviateLogo,
+  },
+  milvus: {
+    name: "Milvus",
+    description: [
+      "Your vectors and document text are stored on your Milvus instance (cloud or self-hosted)",
+    ],
+    logo: MilvusLogo,
   },
   lancedb: {
     name: "LanceDB",

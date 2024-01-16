@@ -1,7 +1,7 @@
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
-const { viewLocalFiles } = require("../utils/files");
+const { viewLocalFiles, normalizePath } = require("../utils/files");
 const { exportData, unpackAndOverwriteImport } = require("../utils/files/data");
 const {
   checkProcessorAlive,
@@ -403,21 +403,23 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/data-export", [validatedRequest], async (_, response) => {
-    try {
-      const { filename, error } = await exportData();
-      response.status(200).json({ filename, error });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+  app.get(
+    "/system/data-export",
+    [validatedRequest, flexUserRoleValid],
+    async (_, response) => {
+      try {
+        const { filename, error } = await exportData();
+        response.status(200).json({ filename, error });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.get("/system/data-exports/:filename", (request, response) => {
     const exportLocation = __dirname + "/../storage/exports/";
-    const sanitized = path
-      .normalize(request.params.filename)
-      .replace(/^(\.\.(\/|\\|$))+/, "");
+    const sanitized = normalizePath(request.params.filename);
     const finalDestination = path.join(exportLocation, sanitized);
 
     if (!fs.existsSync(finalDestination)) {
@@ -518,7 +520,8 @@ function systemEndpoints(app) {
         }
 
         const userRecord = await User.get({ id: user.id });
-        const oldPfpFilename = userRecord.pfpFilename;
+        const oldPfpFilename = normalizePath(userRecord.pfpFilename);
+
         console.log("oldPfpFilename", oldPfpFilename);
         if (oldPfpFilename) {
           const oldPfpPath = path.join(
@@ -552,7 +555,7 @@ function systemEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const userRecord = await User.get({ id: user.id });
-        const oldPfpFilename = userRecord.pfpFilename;
+        const oldPfpFilename = normalizePath(userRecord.pfpFilename);
         console.log("oldPfpFilename", oldPfpFilename);
         if (oldPfpFilename) {
           const oldPfpPath = path.join(

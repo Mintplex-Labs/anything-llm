@@ -64,8 +64,14 @@ server {
    listen 80;
    server_name [insert FQDN here];
    location / {
+      # Prevent timeouts on long-running requests.
+      proxy_connect_timeout       605;
+      proxy_send_timeout          605;
+      proxy_read_timeout          605;
+      send_timeout                605;
+      keepalive_timeout           605;
       proxy_pass  http://0.0.0.0:3001;
-      }
+    }
 }
 3. Enter ':wq' to save the changes to the anything config file
 

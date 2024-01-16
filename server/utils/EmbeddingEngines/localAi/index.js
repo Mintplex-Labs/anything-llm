@@ -16,6 +16,10 @@ class LocalAiEmbedder {
         : {}),
     });
     this.openai = new OpenAIApi(config);
+    // We don't know this for user's set model so for vectorDB integrations that requires dimensionality
+    // in schema, we will throw an error.
+    // Applies to QDrant and Milvus.
+    this.dimensions = null;
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 50;
