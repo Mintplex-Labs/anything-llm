@@ -11,6 +11,11 @@ const {
 const { getVectorDbClass } = require("../../../utils/helpers");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const {
+  streamChatWithWorkspace,
+  writeResponseChunk,
+  VALID_CHAT_MODE,
+} = require("../../../utils/chats/stream");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -483,7 +488,28 @@ function apiWorkspaceEndpoints(app) {
         const workspace = await Workspace.get({ slug });
 
         if (!workspace) {
-          response.sendStatus(400).end();
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `Workspace ${slug} is not a valid workspace.`,
+          });
+          return;
+        }
+
+        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: !message?.length
+              ? "message parameter cannot be empty."
+              : `${mode} is not a valid mode.`,
+          });
           return;
         }
 
@@ -503,6 +529,126 @@ function apiWorkspaceEndpoints(app) {
           close: true,
           error: e.message,
         });
+      }
+    }
+  );
+
+  app.post(
+    "/v1/workspace/:slug/stream-chat",
+    [validApiKey],
+    async (request, response) => {
+      /*
+   #swagger.tags = ['Workspaces']
+   #swagger.description = 'Execute a streamable chat with a workspace'
+   #swagger.requestBody = {
+       description: 'Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.',
+       required: true,
+       type: 'object',
+       content: {
+         "application/json": {
+           example: {
+             message: "What is AnythingLLM?",
+             mode: "query | chat"
+           }
+         }
+       }
+     }
+   #swagger.responses[200] = {
+     content: {
+       "text/event-stream": {
+         schema: {
+           type: 'array',
+           example: [
+            {
+              id: 'uuid-123',
+              type: "abort | textResponseChunk",
+              textResponse: "First chunk",
+              sources: [],
+              close: false,
+              error: "null | text string of the failure mode."
+            },
+            {
+              id: 'uuid-123',
+              type: "abort | textResponseChunk",
+              textResponse: "chunk two",
+              sources: [],
+              close: false,
+              error: "null | text string of the failure mode."
+            },
+             {
+              id: 'uuid-123',
+              type: "abort | textResponseChunk",
+              textResponse: "final chunk of LLM output!",
+              sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."}],
+              close: true,
+              error: "null | text string of the failure mode."
+            }
+          ]
+         }
+       }
+     }
+   }
+   #swagger.responses[403] = {
+     schema: {
+       "$ref": "#/definitions/InvalidAPIKey"
+     }
+   }
+   */
+      try {
+        const { slug } = request.params;
+        const { message, mode = "query" } = reqBody(request);
+        const workspace = await Workspace.get({ slug });
+
+        if (!workspace) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `Workspace ${slug} is not a valid workspace.`,
+          });
+          return;
+        }
+
+        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: !message?.length
+              ? "Message is empty"
+              : `${mode} is not a valid mode.`,
+          });
+          return;
+        }
+
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Content-Type", "text/event-stream");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Connection", "keep-alive");
+        response.flushHeaders();
+
+        await streamChatWithWorkspace(response, workspace, message, mode);
+        await Telemetry.sendTelemetry("sent_chat", {
+          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        });
+        response.end();
+      } catch (e) {
+        console.error(e);
+        writeResponseChunk(response, {
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: e.message,
+        });
+        response.end();
       }
     }
   );

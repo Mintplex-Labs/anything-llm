@@ -8,6 +8,7 @@ const {
   chatPrompt,
 } = require(".");
 
+const VALID_CHAT_MODE = ["chat", "query"];
 function writeResponseChunk(response, data) {
   response.write(`data: ${JSON.stringify(data)}\n\n`);
   return;
@@ -503,6 +504,7 @@ function handleStreamResponses(response, stream, responseProps) {
 }
 
 module.exports = {
+  VALID_CHAT_MODE,
   streamChatWithWorkspace,
   writeResponseChunk,
 };
