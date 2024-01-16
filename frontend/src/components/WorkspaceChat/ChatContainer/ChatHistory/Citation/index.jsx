@@ -122,7 +122,7 @@ function CitationDetailModal({ source, onClose }) {
         <div className="flex items-start justify-between p-6 border-b rounded-t border-gray-500/50">
           <div className="flex flex-col flex-grow mr-4">
             <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              {truncate(title, 52)}
+              {truncate(title, 45)}
             </h3>
             {references > 1 && (
               <p className="text-xs text-gray-400 mt-2">
