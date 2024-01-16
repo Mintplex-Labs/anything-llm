@@ -67,46 +67,6 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
       : window.location.reload();
   };
 
-  // useEffect(() => {
-  //   async function getCustomModels() {
-  //     let customModels;
-
-  //     if (settings?.LLMProvider === "openai") {
-  //       customModels = await System.customModels(settings?.LLMProvider);
-  //     }
-
-  //     if (settings?.LLMProvider === "localai") {
-  //       customModels = await System.customModels(
-  //         "localai",
-  //         null,
-  //         settings?.LocalAiBasePath
-  //       );
-
-  //     }
-
-  //     if (settings?.LLMProvider === "ollama") {
-  //       customModels = await System.customModels(
-  //         "ollama",
-  //         null,
-  //         settings?.OllamaLLMBasePath
-  //       );
-  //     }
-
-  //     if (settings?.LLMProvider === "togetherai") {
-  //       customModels = await System.customModels("togetherai");
-  //     }
-
-  //     if (settings?.LLMProvider === "native") {
-  //       customModels = await System.customModels("native-llm", null, null);
-  //     }
-
-  //     setLoadingModels(false);
-  //     setCustomModels(customModels?.models || []);
-  //   }
-
-  //   getCustomModels();
-  // }, [settings?.LLMProvider]);
-
   useEffect(() => {
     async function getCustomModels() {
       let provider = settings?.LLMProvider;
