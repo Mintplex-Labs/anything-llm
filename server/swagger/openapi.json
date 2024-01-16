@@ -1612,6 +1612,105 @@
         }
       }
     },
+    "/v1/workspace/{slug}/stream-chat": {
+      "post": {
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Execute a streamable chat with a workspace",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "array",
+                  "example": [
+                    {
+                      "id": "uuid-123",
+                      "type": "abort | textResponseChunk",
+                      "textResponse": "First chunk",
+                      "sources": [],
+                      "close": false,
+                      "error": "null | text string of the failure mode."
+                    },
+                    {
+                      "id": "uuid-123",
+                      "type": "abort | textResponseChunk",
+                      "textResponse": "chunk two",
+                      "sources": [],
+                      "close": false,
+                      "error": "null | text string of the failure mode."
+                    },
+                    {
+                      "id": "uuid-123",
+                      "type": "abort | textResponseChunk",
+                      "textResponse": "final chunk of LLM output!",
+                      "sources": [
+                        {
+                          "title": "anythingllm.txt",
+                          "chunk": "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."
+                        }
+                      ],
+                      "close": true,
+                      "error": "null | text string of the failure mode."
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "message": "What is AnythingLLM?",
+                "mode": "query | chat"
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/system/env-dump": {
       "get": {
         "tags": [

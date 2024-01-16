@@ -8,6 +8,7 @@ const { Telemetry } = require("../models/telemetry");
 const {
   streamChatWithWorkspace,
   writeResponseChunk,
+  VALID_CHAT_MODE,
 } = require("../utils/chats/stream");
 
 function chatEndpoints(app) {
@@ -28,6 +29,20 @@ function chatEndpoints(app) {
 
         if (!workspace) {
           response.sendStatus(400).end();
+          return;
+        }
+
+        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: !message?.length
+              ? "Message is empty."
+              : `${mode} is not a valid mode.`,
+          });
           return;
         }
 
