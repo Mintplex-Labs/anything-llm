@@ -30,7 +30,7 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
   }
 
   let item = 1;
-  let documents = [];
+  const documents = [];
   for (const mail of mails) {
     if (!mail.hasOwnProperty("text")) continue;
 

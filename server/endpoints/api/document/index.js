@@ -145,7 +145,18 @@ function apiDocumentEndpoints(app) {
               error: null,
               documents: [
                 {
-                 
+                  "id": "c530dbe6-bff1-4b9e-b87f-710d539d20bc",
+                  "url": "file://useanything_com.html",
+                  "title": "useanything_com.html",
+                  "docAuthor": "no author found",
+                  "description": "No description found.",
+                  "docSource": "URL link uploaded by the user.",
+                  "chunkSource": "https:useanything.com.html",
+                  "published": "1/16/2024, 3:46:33 PM",
+                  "wordCount": 252,
+                  "pageContent": "AnythingLLM is the best....",
+                  "token_count_estimate": 447,
+                  "location": "custom-documents/url-useanything_com-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
                 }
               ]
             }
