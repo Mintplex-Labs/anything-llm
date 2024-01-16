@@ -13,7 +13,6 @@ class NativeEmbedder {
         : path.resolve(__dirname, `../../../storage/models`)
     );
     this.modelPath = path.resolve(this.cacheDir, "Xenova", "all-MiniLM-L6-v2");
-    this.dimensions = 384;
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 25;

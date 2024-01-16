@@ -81,13 +81,15 @@ const Milvus = {
     await client.dropCollection({ collection_name: namespace });
     return true;
   },
-  getOrCreateCollection: async function (client, namespace) {
+  // Milvus requires a dimension aspect for collection creation
+  // we pass this in from the first chunk to infer the dimensions like other
+  // providers do.
+  getOrCreateCollection: async function (client, namespace, dimensions = null) {
     const isExists = await this.namespaceExists(client, namespace);
     if (!isExists) {
-      const embedder = getEmbeddingEngineSelection();
-      if (!embedder.dimensions)
+      if (!dimensions)
         throw new Error(
-          `Your embedder selection has unknown dimensions output. It should be defined when using ${this.name}. Open an issue on Github for support.`
+          `Milvus:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on Github for support.`
         );
 
       await client.createCollection({
@@ -104,7 +106,7 @@ const Milvus = {
             name: "vector",
             description: "vector",
             data_type: DataType.FloatVector,
-            dim: embedder.dimensions,
+            dim: dimensions,
           },
           {
             name: "metadata",
@@ -131,6 +133,7 @@ const Milvus = {
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
+      let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
@@ -138,11 +141,11 @@ const Milvus = {
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
-        await this.getOrCreateCollection(client, namespace);
-
         const { chunks } = cacheResult;
         const documentVectors = [];
+        vectorDimension = chunks[0][0].values.length || null;
 
+        await this.getOrCreateCollection(client, namespace, vectorDimension);
         for (const chunk of chunks) {
           // Before sending to Pinecone and saving the records to our db
           // we need to assign the id of each chunk that is stored in the cached file.
@@ -182,6 +185,7 @@ const Milvus = {
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
+          if (!vectorDimension) vectorDimension = vector.length;
           const vectorRecord = {
             id: uuidv4(),
             values: vector,
@@ -202,7 +206,7 @@ const Milvus = {
       if (vectors.length > 0) {
         const chunks = [];
         const { client } = await this.connect();
-        await this.getOrCreateCollection(client, namespace);
+        await this.getOrCreateCollection(client, namespace, vectorDimension);
 
         console.log("Inserting vectorized chunks into Milvus.");
         for (const chunk of toChunks(vectors, 100)) {
