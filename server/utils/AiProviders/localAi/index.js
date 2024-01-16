@@ -76,15 +76,22 @@ class LocalAiLLM {
     return { safe: true, reasons: [] };
   }
 
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
+  async sendChat(
+    chatHistory = [],
+    prompt,
+    workspace = {},
+    rawHistory = [],
+    model = null
+  ) {
+    const chatModel = model || this.model;
+    if (!(await this.isValidChatCompletionModel(chatModel)))
       throw new Error(
-        `LocalAI chat: ${this.model} is not valid for chat completion!`
+        `LocalAI chat: ${chatModel} is not valid for chat completion!`
       );
 
     const textResponse = await this.openai
       .createChatCompletion({
-        model: this.model,
+        model: chatModel,
         temperature: Number(workspace?.openAiTemp ?? 0.7),
         n: 1,
         messages: await this.compressMessages(
@@ -113,15 +120,22 @@ class LocalAiLLM {
     return textResponse;
   }
 
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
+  async streamChat(
+    chatHistory = [],
+    prompt,
+    workspace = {},
+    rawHistory = [],
+    model = null
+  ) {
+    const chatModel = model || this.model;
+    if (!(await this.isValidChatCompletionModel(chatModel)))
       throw new Error(
-        `LocalAI chat: ${this.model} is not valid for chat completion!`
+        `LocalAI chat: ${chatModel} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.createChatCompletion(
       {
-        model: this.model,
+        model: chatModel,
         stream: true,
         temperature: Number(workspace?.openAiTemp ?? 0.7),
         n: 1,
@@ -139,14 +153,18 @@ class LocalAiLLM {
     return streamRequest;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, model = null }
+  ) {
+    const chatModel = model || this.model;
+    if (!(await this.isValidChatCompletionModel(chatModel)))
       throw new Error(
-        `LocalAI chat: ${this.model} is not valid for chat completion!`
+        `LocalAI chat: ${chatModel} is not valid for chat completion!`
       );
 
     const { data } = await this.openai.createChatCompletion({
-      model: this.model,
+      model: chatModel,
       messages,
       temperature,
     });
@@ -155,15 +173,19 @@ class LocalAiLLM {
     return data.choices[0].message.content;
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, model = null }
+  ) {
+    const chatModel = model || this.model;
+    if (!(await this.isValidChatCompletionModel(chatModel)))
       throw new Error(
-        `LocalAi chat: ${this.model} is not valid for chat completion!`
+        `LocalAi chat: ${chatModel} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.createChatCompletion(
       {
-        model: this.model,
+        model: chatModel,
         stream: true,
         messages,
         temperature,

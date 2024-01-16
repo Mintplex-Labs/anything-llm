@@ -83,10 +83,17 @@ class AnthropicLLM {
     \n\nAssistant:`;
   }
 
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.isValidChatCompletionModel(this.model))
+  async sendChat(
+    chatHistory = [],
+    prompt,
+    workspace = {},
+    rawHistory = [],
+    model = null
+  ) {
+    const chatModel = model || this.model;
+    if (!this.isValidChatCompletionModel(chatModel))
       throw new Error(
-        `Anthropic chat: ${this.model} is not valid for chat completion!`
+        `Anthropic chat: ${chatModel} is not valid for chat completion!`
       );
 
     const compressedPrompt = await this.compressMessages(
@@ -99,7 +106,7 @@ class AnthropicLLM {
     );
     const { content, error } = await this.anthropic.completions
       .create({
-        model: this.model,
+        model: chatModel,
         max_tokens_to_sample: 300,
         prompt: compressedPrompt,
       })
@@ -121,15 +128,16 @@ class AnthropicLLM {
     return content;
   }
 
-  async getChatCompletion(prompt = "", _opts = {}) {
-    if (!this.isValidChatCompletionModel(this.model))
+  async getChatCompletion(prompt = "", { model = null }) {
+    const chatModel = model || this.model;
+    if (!this.isValidChatCompletionModel(chatModel))
       throw new Error(
-        `Anthropic chat: ${this.model} is not valid for chat completion!`
+        `Anthropic chat: ${chatModel} is not valid for chat completion!`
       );
 
     const { content, error } = await this.anthropic.completions
       .create({
-        model: this.model,
+        model: chatModel,
         max_tokens_to_sample: 300,
         prompt,
       })

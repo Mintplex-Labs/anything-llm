@@ -22,11 +22,12 @@ class OllamaAILLM {
     this.embedder = embedder;
   }
 
-  #ollamaClient({ temperature = 0.07 }) {
+  #ollamaClient({ temperature = 0.07, model = null }) {
+    const chatModel = model || this.model;
     const { ChatOllama } = require("langchain/chat_models/ollama");
     return new ChatOllama({
       baseUrl: this.basePath,
-      model: this.model,
+      model: chatModel,
       temperature,
     });
   }
@@ -102,7 +103,14 @@ class OllamaAILLM {
     return { safe: true, reasons: [] };
   }
 
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
+  async sendChat(
+    chatHistory = [],
+    prompt,
+    workspace = {},
+    rawHistory = [],
+    model = null
+  ) {
+    const chatModel = model || this.model;
     const messages = await this.compressMessages(
       {
         systemPrompt: chatPrompt(workspace),
@@ -112,10 +120,11 @@ class OllamaAILLM {
       rawHistory
     );
 
-    const model = this.#ollamaClient({
+    const ollamaModel = this.#ollamaClient({
       temperature: Number(workspace?.openAiTemp ?? 0.7),
+      model: chatModel,
     });
-    const textResponse = await model
+    const textResponse = await ollamaModel
       .pipe(new StringOutputParser())
       .invoke(this.#convertToLangchainPrototypes(messages));
 
@@ -125,7 +134,14 @@ class OllamaAILLM {
     return textResponse;
   }
 
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
+  async streamChat(
+    chatHistory = [],
+    prompt,
+    workspace = {},
+    rawHistory = [],
+    model = null
+  ) {
+    const chatModel = model || this.model;
     const messages = await this.compressMessages(
       {
         systemPrompt: chatPrompt(workspace),
@@ -135,18 +151,24 @@ class OllamaAILLM {
       rawHistory
     );
 
-    const model = this.#ollamaClient({
+    const ollamaModel = this.#ollamaClient({
       temperature: Number(workspace?.openAiTemp ?? 0.7),
+      model: chatModel,
     });
-    const stream = await model
+    const stream = await ollamaModel
       .pipe(new StringOutputParser())
       .stream(this.#convertToLangchainPrototypes(messages));
     return stream;
   }
 
-  async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const model = this.#ollamaClient({ temperature });
-    const textResponse = await model
+  async getChatCompletion(
+    messages = null,
+    { temperature = 0.7, model = null }
+  ) {
+    const chatModel = model || this.model;
+
+    const ollamaModel = this.#ollamaClient({ temperature, model: chatModel });
+    const textResponse = await ollamaModel
       .pipe(new StringOutputParser())
       .invoke(this.#convertToLangchainPrototypes(messages));
 
@@ -156,9 +178,13 @@ class OllamaAILLM {
     return textResponse;
   }
 
-  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const model = this.#ollamaClient({ temperature });
-    const stream = await model
+  async streamGetChatCompletion(
+    messages = null,
+    { temperature = 0.7, model = null }
+  ) {
+    const chatModel = model || this.model;
+    const ollamaModel = this.#ollamaClient({ temperature, model: chatModel });
+    const stream = await ollamaModel
       .pipe(new StringOutputParser())
       .stream(this.#convertToLangchainPrototypes(messages));
     return stream;

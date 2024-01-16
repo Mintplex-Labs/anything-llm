@@ -100,6 +100,17 @@ const System = {
         return { newValues: null, error: e.message };
       });
   },
+  resetWorkspaceChatModels: async () => {
+    return await fetch(`${API_BASE}/system/reset-workspace-chat-models`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
   updateSystemPassword: async (data) => {
     return await fetch(`${API_BASE}/system/update-password`, {
       method: "POST",

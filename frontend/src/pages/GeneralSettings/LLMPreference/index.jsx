@@ -45,10 +45,11 @@ export default function GeneralLLMPreference() {
     data.LLMProvider = selectedLLM;
     for (var [key, value] of formData.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
+    const { error: resetError } = await System.resetWorkspaceChatModels();
     setSaving(true);
 
-    if (error) {
-      showToast(`Failed to save LLM settings: ${error}`, "error");
+    if (error || resetError) {
+      showToast(`Failed to save LLM settings: ${error || resetError}`, "error");
     } else {
       showToast("LLM preferences saved successfully.", "success");
     }

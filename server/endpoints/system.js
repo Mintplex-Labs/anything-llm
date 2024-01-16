@@ -300,6 +300,20 @@ function systemEndpoints(app) {
     }
   );
 
+  app.get(
+    "/system/reset-workspace-chat-models",
+    [validatedRequest],
+    async (_, response) => {
+      try {
+        const results = await Workspace.resetWorkspaceChatModels();
+        response.status(200).json({ results });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
   app.post(
     "/system/update-password",
     [validatedRequest],

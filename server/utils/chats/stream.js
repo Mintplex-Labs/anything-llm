@@ -113,6 +113,7 @@ async function streamChatWithWorkspace(
     );
     completeText = await LLMConnector.getChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? 0.7,
+      model: workspace?.chatModel,
     });
     writeResponseChunk(response, {
       uuid,
@@ -125,6 +126,7 @@ async function streamChatWithWorkspace(
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? 0.7,
+      model: workspace?.chatModel,
     });
     completeText = await handleStreamResponses(response, stream, {
       uuid,
@@ -167,7 +169,8 @@ async function streamEmptyEmbeddingChat({
       chatHistory,
       message,
       workspace,
-      rawHistory
+      rawHistory,
+      workspace?.chatModel
     );
     writeResponseChunk(response, {
       uuid,
@@ -182,7 +185,8 @@ async function streamEmptyEmbeddingChat({
       chatHistory,
       message,
       workspace,
-      rawHistory
+      rawHistory,
+      workspace?.chatModel
     );
     completeText = await handleStreamResponses(response, stream, {
       uuid,
