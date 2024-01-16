@@ -98,7 +98,8 @@ async function chatWithWorkspace(
         sources: [],
         close: true,
         error: null,
-        textResponse,
+        textResponse:
+          "There is no relevant information in this workspace to answer your query.",
       };
     }
 
@@ -151,7 +152,8 @@ async function chatWithWorkspace(
       sources: [],
       close: true,
       error: null,
-      textResponse,
+      textResponse:
+        "There is no relevant information in this workspace to answer your query.",
     };
   }
 
