@@ -6,7 +6,10 @@ const {
   acceptedFileTypes,
   processDocument,
 } = require("../../../utils/files/documentProcessor");
-const { viewLocalFiles } = require("../../../utils/files");
+const {
+  viewLocalFiles,
+  findDocumentInDocuments,
+} = require("../../../utils/files");
 const { handleUploads } = setupMulter();
 
 function apiDocumentEndpoints(app) {
@@ -127,6 +130,61 @@ function apiDocumentEndpoints(app) {
     try {
       const localFiles = await viewLocalFiles();
       response.status(200).json({ localFiles });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.get("/v1/document/:docName", [validApiKey], async (request, response) => {
+    /* 
+    #swagger.tags = ['Documents']
+    #swagger.description = 'Get a single document by its unique AnythingLLM document name'
+    #swagger.parameters['docName'] = {
+        in: 'path',
+        description: 'Unique document name to find (name in /documents)',
+        required: true,
+        type: 'string'
+    }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+             "localFiles": {
+              "name": "documents",
+              "type": "folder",
+              items: [
+                {
+                  "name": "my-stored-document.txt-uuid1234.json",
+                  "type": "file",
+                  "id": "bb07c334-4dab-4419-9462-9d00065a49a1",
+                  "url": "file://my-stored-document.txt",
+                  "title": "my-stored-document.txt",
+                  "cached": false
+                },
+              ]
+             }
+            }
+          }
+        }           
+      }
+    }  
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+    */
+    try {
+      const { docName } = request.params;
+      const document = await findDocumentInDocuments(docName);
+      if (!document) {
+        response.sendStatus(404).end();
+        return;
+      }
+      response.status(200).json({ document });
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();

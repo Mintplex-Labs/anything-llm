@@ -157,7 +157,6 @@ function CitationDetailModal({ source, onClose }) {
   );
 }
 
-
 function truncateMiddle(title) {
   if (title.length <= 18) return title;
 
