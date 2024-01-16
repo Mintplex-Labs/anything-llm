@@ -12,7 +12,11 @@ async function scrapeGenericUrl(link) {
 
   if (!content.length) {
     console.error(`Resulting URL content was empty at ${link}.`);
-    return { success: false, reason: `No URL content found at ${link}.` };
+    return {
+      success: false,
+      reason: `No URL content found at ${link}.`,
+      documents: [],
+    };
   }
 
   const url = new URL(link);
@@ -32,9 +36,12 @@ async function scrapeGenericUrl(link) {
     token_count_estimate: tokenizeString(content).length,
   };
 
-  writeToServerDocuments(data, `url-${slugify(filename)}-${data.id}`);
+  const document = writeToServerDocuments(
+    data,
+    `url-${slugify(filename)}-${data.id}`
+  );
   console.log(`[SUCCESS]: URL ${link} converted & ready for embedding.\n`);
-  return { success: true, reason: null };
+  return { success: true, reason: null, documents: [document] };
 }
 
 async function getPageContent(link) {
