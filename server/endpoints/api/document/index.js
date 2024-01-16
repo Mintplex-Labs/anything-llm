@@ -119,7 +119,7 @@ function apiDocumentEndpoints(app) {
     async (request, response) => {
       /* 
     #swagger.tags = ['Documents']
-    #swagger.description = 'Upload a valid URL for AnythingLLM scraped and prepare for embedding.'
+    #swagger.description = 'Upload a valid URL for AnythingLLM to scrape and prepare for embedding.'
     #swagger.requestBody = {
       description: 'Link of web address to be scraped.',
       required: true,

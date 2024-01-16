@@ -910,7 +910,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Upload a valid URL for AnythingLLM scraped and prepare for embedding.",
+        "description": "Upload a valid URL for AnythingLLM to scrape and prepare for embedding.",
         "parameters": [
           {
             "name": "Authorization",
