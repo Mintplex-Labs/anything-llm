@@ -32,6 +32,7 @@ const WelcomeMessages = {
 
       // Create new messages
       for (const [index, message] of messages.entries()) {
+        if (!message.response) continue;
         await prisma.welcome_messages.create({
           data: {
             user: message.user,
