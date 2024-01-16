@@ -91,6 +91,18 @@ async function chatWithWorkspace(
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
   if (!hasVectorizedSpace || embeddingsCount === 0) {
+    if (chatMode === "query") {
+      return {
+        id: uuid,
+        type: "textResponse",
+        sources: [],
+        close: true,
+        error: null,
+        textResponse:
+          "There is no relevant information in this workspace to answer your query.",
+      };
+    }
+
     // If there are no embeddings - chat like a normal LLM chat interface.
     return await emptyEmbeddingChat({
       uuid,
@@ -128,6 +140,20 @@ async function chatWithWorkspace(
       sources: [],
       close: true,
       error,
+    };
+  }
+
+  // If in query mode and no sources are found, do not
+  // let the LLM try to hallucinate a response or use general knowledge
+  if (chatMode === "query" && sources.length === 0) {
+    return {
+      id: uuid,
+      type: "textResponse",
+      sources: [],
+      close: true,
+      error: null,
+      textResponse:
+        "There is no relevant information in this workspace to answer your query.",
     };
   }
 
