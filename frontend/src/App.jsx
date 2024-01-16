@@ -8,6 +8,8 @@ import PrivateRoute, {
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "@/pages/Login";
+import OnboardingFlow from "@/pages/OnboardingFlow";
+
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
 
@@ -42,7 +44,6 @@ const DataConnectors = lazy(
 const DataConnectorSetup = lazy(
   () => import("@/pages/GeneralSettings/DataConnectors/Connectors")
 );
-const OnboardingFlow = lazy(() => import("@/pages/OnboardingFlow"));
 
 export default function App() {
   return (
