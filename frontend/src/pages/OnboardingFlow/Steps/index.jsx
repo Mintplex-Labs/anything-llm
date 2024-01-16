@@ -1,15 +1,15 @@
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { useState } from "react";
 import { isMobile } from "react-device-detect";
-import Home from './Home'
-import LLMPreference from './LLMPreference'
-import EmbeddingPreference from './EmbeddingPreference'
-import VectorDatabaseConnection from './VectorDatabaseConnection'
-import CustomLogo from './CustomLogo'
-import UserSetup from './UserSetup'
-import DataHandling from './DataHandling'
-import Survey from './Survey'
-import CreateWorkspace from './CreateWorkspace'
+import Home from "./Home";
+import LLMPreference from "./LLMPreference";
+import EmbeddingPreference from "./EmbeddingPreference";
+import VectorDatabaseConnection from "./VectorDatabaseConnection";
+import CustomLogo from "./CustomLogo";
+import UserSetup from "./UserSetup";
+import DataHandling from "./DataHandling";
+import Survey from "./Survey";
+import CreateWorkspace from "./CreateWorkspace";
 
 const OnboardingSteps = {
   home: Home,
