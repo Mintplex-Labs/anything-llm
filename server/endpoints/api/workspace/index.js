@@ -196,10 +196,11 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        await WorkspaceChats.delete({ workspaceId: Number(workspace.id) });
-        await DocumentVectors.deleteForWorkspace(Number(workspace.id));
-        await Document.delete({ workspaceId: Number(workspace.id) });
-        await Workspace.delete({ id: Number(workspace.id) });
+        const workspaceId = Number(workspace.id);
+        await WorkspaceChats.delete({ workspaceId: workspaceId });
+        await DocumentVectors.deleteForWorkspace(workspaceId);
+        await Document.delete({ workspaceId: workspaceId });
+        await Workspace.delete({ id: workspaceId });
         try {
           await VectorDb["delete-namespace"]({ namespace: slug });
         } catch (e) {
