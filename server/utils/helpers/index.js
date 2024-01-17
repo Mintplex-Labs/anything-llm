@@ -52,6 +52,9 @@ function getLLMProvider() {
     case "togetherai":
       const { TogetherAiLLM } = require("../AiProviders/togetherAi");
       return new TogetherAiLLM(embedder);
+    case "mistral":
+      const { MistralLLM } = require("../AiProviders/mistral");
+      return new MistralLLM(embedder);
     case "native":
       const { NativeLLM } = require("../AiProviders/native");
       return new NativeLLM(embedder);
@@ -76,6 +79,7 @@ function getEmbeddingEngineSelection() {
       return new LocalAiEmbedder();
     case "native":
       const { NativeEmbedder } = require("../EmbeddingEngines/native");
+      console.log("\x1b[34m[INFO]\x1b[0m Using Native Embedder");
       return new NativeEmbedder();
     default:
       return null;
