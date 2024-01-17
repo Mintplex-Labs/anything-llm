@@ -167,7 +167,7 @@ async function streamEmptyEmbeddingChat({
       chatHistory,
       message,
       workspace,
-      rawHistory,
+      rawHistory
     );
     writeResponseChunk(response, {
       uuid,
@@ -182,7 +182,7 @@ async function streamEmptyEmbeddingChat({
       chatHistory,
       message,
       workspace,
-      rawHistory,
+      rawHistory
     );
     completeText = await handleStreamResponses(response, stream, {
       uuid,
@@ -283,7 +283,7 @@ function handleStreamResponses(response, stream, responseProps) {
             try {
               JSON.parse(message);
               validJSON = true;
-            } catch { }
+            } catch {}
 
             if (!validJSON) {
               // It can be possible that the chunk decoding is running away
@@ -406,7 +406,7 @@ function handleStreamResponses(response, stream, responseProps) {
         try {
           JSON.parse(message);
           validJSON = true;
-        } catch { }
+        } catch {}
 
         if (!validJSON) {
           // It can be possible that the chunk decoding is running away
