@@ -2,7 +2,7 @@ const { chatPrompt } = require("../../chats");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, _modelPreference = null) {
     if (!process.env.LMSTUDIO_BASE_PATH)
       throw new Error("No LMStudio API Base Path was set.");
 
@@ -12,7 +12,7 @@ class LMStudioLLM {
     });
     this.lmstudio = new OpenAIApi(config);
     // When using LMStudios inference server - the model param is not required so
-    // we can stub it here.
+    // we can stub it here. LMStudio can only run one model at a time.
     this.model = "model-placeholder";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
