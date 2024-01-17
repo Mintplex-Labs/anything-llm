@@ -26,6 +26,7 @@ class AnthropicLLM {
       );
     this.embedder = embedder;
     this.answerKey = v4().split("-")[0];
+    this.defaultTemp = 0.7;
   }
 
   streamingEnabled() {

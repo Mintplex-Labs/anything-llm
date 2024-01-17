@@ -98,7 +98,7 @@ const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to Mistral",
     ],
     logo: MistralLogo,
-  }
+  },
 };
 
 const VECTOR_DB_PRIVACY = {

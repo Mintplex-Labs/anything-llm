@@ -11,7 +11,8 @@ class MistralLLM {
       apiKey: process.env.MISTRAL_API_KEY,
     });
     this.openai = new OpenAIApi(config);
-    this.model = modelPreference || process.env.MISTRAL_MODEL_PREF || "mistral-tiny";
+    this.model =
+      modelPreference || process.env.MISTRAL_MODEL_PREF || "mistral-tiny";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -23,6 +24,7 @@ class MistralLLM {
         "No embedding provider defined for MistralLLM - falling back to OpenAiEmbedder for embedding!"
       );
     this.embedder = embedder;
+    this.defaultTemp = 0.0;
   }
 
   #appendContext(contextTexts = []) {
@@ -62,7 +64,7 @@ class MistralLLM {
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  async isSafe(input = "") {
+  async isSafe(_ = "") {
     return { safe: true, reasons: [] };
   }
 
@@ -75,7 +77,7 @@ class MistralLLM {
     const textResponse = await this.openai
       .createChatCompletion({
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         messages: await this.compressMessages(
           {
             systemPrompt: chatPrompt(workspace),
@@ -112,7 +114,7 @@ class MistralLLM {
       {
         model: this.model,
         stream: true,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         messages: await this.compressMessages(
           {
             systemPrompt: chatPrompt(workspace),

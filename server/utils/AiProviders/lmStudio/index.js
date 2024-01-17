@@ -25,6 +25,7 @@ class LMStudioLLM {
         "INVALID LM STUDIO SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use LMStudio as your LLM."
       );
     this.embedder = embedder;
+    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -85,7 +86,7 @@ class LMStudioLLM {
     const textResponse = await this.lmstudio
       .createChatCompletion({
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {
@@ -122,7 +123,7 @@ class LMStudioLLM {
     const streamRequest = await this.lmstudio.createChatCompletion(
       {
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         stream: true,
         messages: await this.compressMessages(

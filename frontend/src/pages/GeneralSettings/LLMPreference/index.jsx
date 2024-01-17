@@ -27,7 +27,6 @@ import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 
-
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);

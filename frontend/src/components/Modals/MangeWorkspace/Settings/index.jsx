@@ -27,11 +27,21 @@ function castToType(key, value) {
   return definitions[key].cast(value);
 }
 
+function recommendedSettings(provider = null) {
+  switch (provider) {
+    case "mistral":
+      return { temp: 0 };
+    default:
+      return { temp: 0.7 };
+  }
+}
+
 export default function WorkspaceSettings({ active, workspace, settings }) {
   const { slug } = useParams();
   const formEl = useRef(null);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const defaults = recommendedSettings(settings?.LLMProvider);
 
   const handleUpdate = async (e) => {
     setSaving(true);
@@ -143,20 +153,20 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
                       This setting controls how "random" or dynamic your chat
                       responses will be.
                       <br />
-                      The higher the number (2.0 maximum) the more random and
+                      The higher the number (1.0 maximum) the more random and
                       incoherent.
                       <br />
-                      <i>Recommended: 0.7</i>
+                      <i>Recommended: {defaults.temp}</i>
                     </p>
                   </div>
                   <input
                     name="openAiTemp"
                     type="number"
                     min={0.0}
-                    max={2.0}
+                    max={1.0}
                     step={0.1}
                     onWheel={(e) => e.target.blur()}
-                    defaultValue={workspace?.openAiTemp ?? 0.7}
+                    defaultValue={workspace?.openAiTemp ?? defaults.temp}
                     className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="0.7"
                     required={true}

@@ -23,6 +23,7 @@ class OpenAiLLM {
         "No embedding provider defined for OpenAiLLM - falling back to OpenAiEmbedder for embedding!"
       );
     this.embedder = !embedder ? new OpenAiEmbedder() : embedder;
+    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -127,7 +128,7 @@ class OpenAiLLM {
     const textResponse = await this.openai
       .createChatCompletion({
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {
@@ -165,7 +166,7 @@ class OpenAiLLM {
       {
         model: this.model,
         stream: true,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {

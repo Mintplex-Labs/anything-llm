@@ -63,7 +63,9 @@ function MistralModelSelection({ apiKey, settings }) {
           className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            {!!apiKey ? "-- loading available models --" : "-- waiting for API key --"}
+            {!!apiKey
+              ? "-- loading available models --"
+              : "-- waiting for API key --"}
           </option>
         </select>
       </div>

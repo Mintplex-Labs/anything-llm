@@ -22,6 +22,7 @@ class GeminiLLM {
         "INVALID GEMINI LLM SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Gemini as your LLM."
       );
     this.embedder = embedder;
+    this.defaultTemp = 0.7; // not used for Gemini
   }
 
   #appendContext(contextTexts = []) {
