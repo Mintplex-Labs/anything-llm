@@ -53,7 +53,7 @@ async function openAiModels(apiKey = null) {
 async function localAIModels(basePath = null, apiKey = null) {
   const { Configuration, OpenAIApi } = require("openai");
   const config = new Configuration({
-    basePath,
+    basePath: basePath || process.env.LOCAL_AI_BASE_PATH,
     apiKey: apiKey || process.env.LOCAL_AI_API_KEY,
   });
   const openai = new OpenAIApi(config);
