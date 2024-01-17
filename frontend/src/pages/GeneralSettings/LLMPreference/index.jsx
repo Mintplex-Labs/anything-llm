@@ -30,19 +30,17 @@ export default function GeneralLLMPreference() {
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
-
   const isHosted = window.location.hostname.includes("useanything.com");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
-    const data = {};
+    const data = { LLMProvider: selectedLLM };
     const formData = new FormData(form);
-    data.LLMProvider = selectedLLM;
+
     for (var [key, value] of formData.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
     setSaving(true);

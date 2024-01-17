@@ -2,7 +2,7 @@ const { v4 } = require("uuid");
 const { chatPrompt } = require("../../chats");
 
 class AnthropicLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
       throw new Error("No Anthropic API key was set.");
 
@@ -12,7 +12,8 @@ class AnthropicLLM {
       apiKey: process.env.ANTHROPIC_API_KEY,
     });
     this.anthropic = anthropic;
-    this.model = process.env.ANTHROPIC_MODEL_PREF || "claude-2";
+    this.model =
+      modelPreference || process.env.ANTHROPIC_MODEL_PREF || "claude-2";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,

@@ -93,6 +93,7 @@ model workspaces {
   lastUpdatedAt       DateTime              @default(now())
   openAiPrompt        String?
   similarityThreshold Float?                @default(0.25)
+  chatModel           String?
   workspace_users     workspace_users[]
   documents           workspace_documents[]
 }

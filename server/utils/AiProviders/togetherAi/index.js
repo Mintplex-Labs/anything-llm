@@ -6,7 +6,7 @@ function togetherAiModels() {
 }
 
 class TogetherAiLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     const { Configuration, OpenAIApi } = require("openai");
     if (!process.env.TOGETHER_AI_API_KEY)
       throw new Error("No TogetherAI API key was set.");
@@ -16,7 +16,7 @@ class TogetherAiLLM {
       apiKey: process.env.TOGETHER_AI_API_KEY,
     });
     this.openai = new OpenAIApi(config);
-    this.model = process.env.TOGETHER_AI_MODEL_PREF;
+    this.model = modelPreference || process.env.TOGETHER_AI_MODEL_PREF;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,

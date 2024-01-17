@@ -1,7 +1,7 @@
 const { chatPrompt } = require("../../chats");
 
 class LocalAiLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     if (!process.env.LOCAL_AI_BASE_PATH)
       throw new Error("No LocalAI Base Path was set.");
 
@@ -15,7 +15,7 @@ class LocalAiLLM {
         : {}),
     });
     this.openai = new OpenAIApi(config);
-    this.model = process.env.LOCAL_AI_MODEL_PREF;
+    this.model = modelPreference || process.env.LOCAL_AI_MODEL_PREF;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,

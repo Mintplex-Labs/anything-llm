@@ -17,7 +17,7 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
     case "localai":
       return await localAIModels(basePath, apiKey);
     case "ollama":
-      return await ollamaAIModels(basePath, apiKey);
+      return await ollamaAIModels(basePath);
     case "togetherai":
       return await getTogetherAiModels();
     case "native-llm":
@@ -53,7 +53,7 @@ async function openAiModels(apiKey = null) {
 async function localAIModels(basePath = null, apiKey = null) {
   const { Configuration, OpenAIApi } = require("openai");
   const config = new Configuration({
-    basePath,
+    basePath: basePath || process.env.LOCAL_AI_BASE_PATH,
     apiKey: apiKey || process.env.LOCAL_AI_API_KEY,
   });
   const openai = new OpenAIApi(config);
@@ -70,13 +70,14 @@ async function localAIModels(basePath = null, apiKey = null) {
   return { models, error: null };
 }
 
-async function ollamaAIModels(basePath = null, _apiKey = null) {
+async function ollamaAIModels(basePath = null) {
   let url;
   try {
-    new URL(basePath);
-    if (basePath.split("").slice(-1)?.[0] === "/")
+    let urlPath = basePath ?? process.env.OLLAMA_BASE_PATH;
+    new URL(urlPath);
+    if (urlPath.split("").slice(-1)?.[0] === "/")
       throw new Error("BasePath Cannot end in /!");
-    url = basePath;
+    url = urlPath;
   } catch {
     return { models: [], error: "Not a valid URL." };
   }

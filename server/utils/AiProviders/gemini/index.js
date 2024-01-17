@@ -1,14 +1,15 @@
 const { chatPrompt } = require("../../chats");
 
 class GeminiLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     if (!process.env.GEMINI_API_KEY)
       throw new Error("No Gemini API key was set.");
 
     // Docs: https://ai.google.dev/tutorials/node_quickstart
     const { GoogleGenerativeAI } = require("@google/generative-ai");
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    this.model = process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro";
+    this.model =
+      modelPreference || process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro";
     this.gemini = genAI.getGenerativeModel({ model: this.model });
     this.limits = {
       history: this.promptWindowLimit() * 0.15,

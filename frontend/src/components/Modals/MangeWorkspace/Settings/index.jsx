@@ -6,6 +6,7 @@ import System from "../../../../models/system";
 import PreLoader from "../../../Preloader";
 import { useParams } from "react-router-dom";
 import showToast from "../../../../utils/toast";
+import ChatModelPreference from "./ChatModelPreference";
 
 // Ensure that a type is correct before sending the body
 // to the backend.
@@ -26,7 +27,7 @@ function castToType(key, value) {
   return definitions[key].cast(value);
 }
 
-export default function WorkspaceSettings({ active, workspace }) {
+export default function WorkspaceSettings({ active, workspace, settings }) {
   const { slug } = useParams();
   const formEl = useRef(null);
   const [saving, setSaving] = useState(false);
@@ -99,6 +100,11 @@ export default function WorkspaceSettings({ active, workspace }) {
           <div className="flex">
             <div className="flex flex-col gap-y-4 w-1/2">
               <div className="w-3/4 flex flex-col gap-y-4">
+                <ChatModelPreference
+                  settings={settings}
+                  workspace={workspace}
+                  setHasChanges={setHasChanges}
+                />
                 <div>
                   <div className="flex flex-col">
                     <label
