@@ -381,8 +381,8 @@ function apiWorkspaceEndpoints(app) {
       content: {
         "application/json": {
           example: {
-            adds: [],
-            deletes: ["custom-documents/anythingllm-hash.json"]
+            adds: ["custom-documents/my-pdf.pdf-hash.json"],
+            deletes: ["custom-documents/anythingllm.txt-hash.json"]
           }
         }
       }

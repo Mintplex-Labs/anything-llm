@@ -845,7 +845,22 @@
                   "type": "object",
                   "example": {
                     "success": true,
-                    "error": null
+                    "error": null,
+                    "documents": [
+                      {
+                        "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                        "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                        "url": "file://Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
+                        "title": "anythingllm.txt",
+                        "docAuthor": "Unknown",
+                        "description": "Unknown",
+                        "docSource": "a text file uploaded by the user.",
+                        "chunkSource": "anythingllm.txt",
+                        "published": "1/16/2024, 3:07:00 PM",
+                        "wordCount": 93,
+                        "token_count_estimate": 115
+                      }
+                    ]
                   }
                 }
               }
@@ -883,6 +898,88 @@
                     "type": "string",
                     "format": "binary"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/document/upload-link": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Upload a valid URL for AnythingLLM to scrape and prepare for embedding.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null,
+                    "documents": [
+                      {
+                        "id": "c530dbe6-bff1-4b9e-b87f-710d539d20bc",
+                        "url": "file://useanything_com.html",
+                        "title": "useanything_com.html",
+                        "docAuthor": "no author found",
+                        "description": "No description found.",
+                        "docSource": "URL link uploaded by the user.",
+                        "chunkSource": "https:useanything.com.html",
+                        "published": "1/16/2024, 3:46:33 PM",
+                        "wordCount": 252,
+                        "pageContent": "AnythingLLM is the best....",
+                        "token_count_estimate": 447,
+                        "location": "custom-documents/url-useanything_com-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Link of web address to be scraped.",
+          "required": true,
+          "type": "file",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "link": "https://useanything.com"
                 }
               }
             }
@@ -1593,9 +1690,11 @@
           "content": {
             "application/json": {
               "example": {
-                "adds": [],
+                "adds": [
+                  "custom-documents/my-pdf.pdf-hash.json"
+                ],
                 "deletes": [
-                  "custom-documents/anythingllm-hash.json"
+                  "custom-documents/anythingllm.txt-hash.json"
                 ]
               }
             }
