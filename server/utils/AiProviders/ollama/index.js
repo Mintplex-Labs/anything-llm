@@ -3,12 +3,12 @@ const { StringOutputParser } = require("langchain/schema/output_parser");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     if (!process.env.OLLAMA_BASE_PATH)
       throw new Error("No Ollama Base Path was set.");
 
     this.basePath = process.env.OLLAMA_BASE_PATH;
-    this.model = process.env.OLLAMA_MODEL_PREF;
+    this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -20,6 +20,7 @@ class OllamaAILLM {
         "INVALID OLLAMA SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Ollama as your LLM."
       );
     this.embedder = embedder;
+    this.defaultTemp = 0.7;
   }
 
   #ollamaClient({ temperature = 0.07 }) {
@@ -113,7 +114,7 @@ class OllamaAILLM {
     );
 
     const model = this.#ollamaClient({
-      temperature: Number(workspace?.openAiTemp ?? 0.7),
+      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
     });
     const textResponse = await model
       .pipe(new StringOutputParser())
@@ -136,7 +137,7 @@ class OllamaAILLM {
     );
 
     const model = this.#ollamaClient({
-      temperature: Number(workspace?.openAiTemp ?? 0.7),
+      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
     });
     const stream = await model
       .pipe(new StringOutputParser())

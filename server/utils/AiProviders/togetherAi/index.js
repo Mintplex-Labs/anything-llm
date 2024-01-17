@@ -6,7 +6,7 @@ function togetherAiModels() {
 }
 
 class TogetherAiLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     const { Configuration, OpenAIApi } = require("openai");
     if (!process.env.TOGETHER_AI_API_KEY)
       throw new Error("No TogetherAI API key was set.");
@@ -16,7 +16,7 @@ class TogetherAiLLM {
       apiKey: process.env.TOGETHER_AI_API_KEY,
     });
     this.openai = new OpenAIApi(config);
-    this.model = process.env.TOGETHER_AI_MODEL_PREF;
+    this.model = modelPreference || process.env.TOGETHER_AI_MODEL_PREF;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -28,6 +28,7 @@ class TogetherAiLLM {
         "INVALID TOGETHER AI SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Together AI as your LLM."
       );
     this.embedder = embedder;
+    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -89,7 +90,7 @@ class TogetherAiLLM {
     const textResponse = await this.openai
       .createChatCompletion({
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {
@@ -127,7 +128,7 @@ class TogetherAiLLM {
       {
         model: this.model,
         stream: true,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {

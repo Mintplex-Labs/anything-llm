@@ -10,11 +10,11 @@ const ChatLlamaCpp = (...args) =>
   );
 
 class NativeLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     if (!process.env.NATIVE_LLM_MODEL_PREF)
       throw new Error("No local Llama model was set.");
 
-    this.model = process.env.NATIVE_LLM_MODEL_PREF || null;
+    this.model = modelPreference || process.env.NATIVE_LLM_MODEL_PREF || null;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -29,6 +29,7 @@ class NativeLLM {
 
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
+    this.defaultTemp = 0.7;
   }
 
   async #initializeLlamaModel(temperature = 0.7) {
@@ -132,7 +133,7 @@ class NativeLLM {
       );
 
       const model = await this.#llamaClient({
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
       });
       const response = await model.call(messages);
       return response.content;
@@ -145,7 +146,7 @@ class NativeLLM {
 
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     const model = await this.#llamaClient({
-      temperature: Number(workspace?.openAiTemp ?? 0.7),
+      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
     });
     const messages = await this.compressMessages(
       {

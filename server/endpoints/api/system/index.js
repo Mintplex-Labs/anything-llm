@@ -139,7 +139,7 @@ function apiSystemEndpoints(app) {
       */
       try {
         const body = reqBody(request);
-        const { newValues, error } = updateENV(body);
+        const { newValues, error } = await updateENV(body);
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {

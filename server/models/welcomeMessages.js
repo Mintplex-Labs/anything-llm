@@ -31,7 +31,10 @@ const WelcomeMessages = {
       await prisma.welcome_messages.deleteMany({}); // Delete all existing messages
 
       // Create new messages
+      // We create each message individually because prisma
+      // with sqlite does not support createMany()
       for (const [index, message] of messages.entries()) {
+        if (!message.response) continue;
         await prisma.welcome_messages.create({
           data: {
             user: message.user,

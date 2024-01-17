@@ -9,6 +9,7 @@ import OllamaLogo from "@/media/llmprovider/ollama.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
+import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
 import PineconeLogo from "@/media/vectordbs/pinecone.png";
 import LanceDbLogo from "@/media/vectordbs/lancedb.png";
@@ -90,6 +91,13 @@ const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to TogetherAI",
     ],
     logo: TogetherAILogo,
+  },
+  mistral: {
+    name: "Mistral",
+    description: [
+      "Your prompts and document text used in response creation are visible to Mistral",
+    ],
+    logo: MistralLogo,
   },
 };
 

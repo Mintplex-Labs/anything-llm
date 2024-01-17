@@ -2,7 +2,7 @@ const { AzureOpenAiEmbedder } = require("../../EmbeddingEngines/azureOpenAi");
 const { chatPrompt } = require("../../chats");
 
 class AzureOpenAiLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, _modelPreference = null) {
     const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
@@ -25,6 +25,7 @@ class AzureOpenAiLLM {
         "No embedding provider defined for AzureOpenAiLLM - falling back to AzureOpenAiEmbedder for embedding!"
       );
     this.embedder = !embedder ? new AzureOpenAiEmbedder() : embedder;
+    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -93,7 +94,7 @@ class AzureOpenAiLLM {
     );
     const textResponse = await this.openai
       .getChatCompletions(this.model, messages, {
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
       })
       .then((res) => {
@@ -130,7 +131,7 @@ class AzureOpenAiLLM {
       this.model,
       messages,
       {
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
       }
     );

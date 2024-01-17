@@ -71,6 +71,7 @@ Some cool features of AnythingLLM
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAi (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
+- [Mistral](https://mistral.ai/)
 
 **Supported Embedding models:**
 
