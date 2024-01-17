@@ -290,23 +290,9 @@ function systemEndpoints(app) {
         }
 
         const body = reqBody(request);
-        const { newValues, error } = updateENV(body);
+        const { newValues, error } = await updateENV(body);
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
-      } catch (e) {
-        console.log(e.message, e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.get(
-    "/system/reset-workspace-chat-models",
-    [validatedRequest, flexUserRoleValid],
-    async (_, response) => {
-      try {
-        const { success, error } = await Workspace.resetWorkspaceChatModels();
-        response.status(200).json({ success, error });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
@@ -326,7 +312,7 @@ function systemEndpoints(app) {
         }
 
         const { usePassword, newPassword } = reqBody(request);
-        const { error } = updateENV(
+        const { error } = await updateENV(
           {
             AuthToken: usePassword ? newPassword : "",
             JWTSecret: usePassword ? v4() : "",
@@ -369,7 +355,7 @@ function systemEndpoints(app) {
           message_limit: 25,
         });
 
-        updateENV(
+        await updateENV(
           {
             AuthToken: "",
             JWTSecret: process.env.JWT_SECRET || v4(),
