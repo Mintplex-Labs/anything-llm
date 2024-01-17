@@ -1,7 +1,7 @@
 const { chatPrompt } = require("../../chats");
 
 class MistralLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     const { Configuration, OpenAIApi } = require("openai");
     if (!process.env.MISTRAL_API_KEY)
       throw new Error("No Mistral API key was set.");
@@ -11,7 +11,7 @@ class MistralLLM {
       apiKey: process.env.MISTRAL_API_KEY,
     });
     this.openai = new OpenAIApi(config);
-    this.model = process.env.MISTRAL_MODEL_PREF || "mistral-tiny";
+    this.model = modelPreference || process.env.MISTRAL_MODEL_PREF || "mistral-tiny";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,

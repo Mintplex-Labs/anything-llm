@@ -10,11 +10,11 @@ const ChatLlamaCpp = (...args) =>
   );
 
 class NativeLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     if (!process.env.NATIVE_LLM_MODEL_PREF)
       throw new Error("No local Llama model was set.");
 
-    this.model = process.env.NATIVE_LLM_MODEL_PREF || null;
+    this.model = modelPreference || process.env.NATIVE_LLM_MODEL_PREF || null;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,

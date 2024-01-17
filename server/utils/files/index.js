@@ -157,11 +157,49 @@ async function purgeVectorCache(filename = null) {
   return;
 }
 
+// Search for a specific document by its unique name in the entire `documents`
+// folder via iteration of all folders and checking if the expected file exists.
+async function findDocumentInDocuments(documentName = null) {
+  if (!documentName) return null;
+  const documentsFolder =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, `../../storage/documents`)
+      : path.resolve(process.env.STORAGE_DIR, `documents`);
+
+  for (const folder of fs.readdirSync(documentsFolder)) {
+    const isFolder = fs
+      .lstatSync(path.join(documentsFolder, folder))
+      .isDirectory();
+    if (!isFolder) continue;
+
+    const targetFilename = normalizePath(documentName);
+    const targetFileLocation = path.join(
+      documentsFolder,
+      folder,
+      targetFilename
+    );
+    if (!fs.existsSync(targetFileLocation)) continue;
+
+    const fileData = fs.readFileSync(targetFileLocation, "utf8");
+    const cachefilename = `${folder}/${targetFilename}`;
+    const { pageContent, ...metadata } = JSON.parse(fileData);
+    return {
+      name: targetFilename,
+      type: "file",
+      ...metadata,
+      cached: await cachedVectorInformation(cachefilename, true),
+    };
+  }
+
+  return null;
+}
+
 function normalizePath(filepath = "") {
   return path.normalize(filepath).replace(/^(\.\.(\/|\\|$))+/, "");
 }
 
 module.exports = {
+  findDocumentInDocuments,
   cachedVectorInformation,
   viewLocalFiles,
   purgeSourceDocument,

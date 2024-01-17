@@ -3,12 +3,12 @@ const { StringOutputParser } = require("langchain/schema/output_parser");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     if (!process.env.OLLAMA_BASE_PATH)
       throw new Error("No Ollama Base Path was set.");
 
     this.basePath = process.env.OLLAMA_BASE_PATH;
-    this.model = process.env.OLLAMA_MODEL_PREF;
+    this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,

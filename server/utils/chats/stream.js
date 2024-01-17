@@ -8,6 +8,7 @@ const {
   chatPrompt,
 } = require(".");
 
+const VALID_CHAT_MODE = ["chat", "query"];
 function writeResponseChunk(response, data) {
   response.write(`data: ${JSON.stringify(data)}\n\n`);
   return;
@@ -29,7 +30,7 @@ async function streamChatWithWorkspace(
     return;
   }
 
-  const LLMConnector = getLLMProvider();
+  const LLMConnector = getLLMProvider(workspace?.chatModel);
   const VectorDb = getVectorDbClass();
   const { safe, reasons = [] } = await LLMConnector.isSafe(message);
   if (!safe) {
@@ -503,6 +504,7 @@ function handleStreamResponses(response, stream, responseProps) {
 }
 
 module.exports = {
+  VALID_CHAT_MODE,
   streamChatWithWorkspace,
   writeResponseChunk,
 };
