@@ -21,7 +21,10 @@ const HistoricalMessage = forwardRef(
     const handleCopy = async () => {
       await navigator.clipboard.writeText(message);
       setHasCopied(true);
-      setTimeout(() => setHasCopied(false), 2500);
+      setTimeout(() => {
+        setHasCopied(false);
+        setShowTooltip(false);
+      }, 2500);
     };
 
     return (
