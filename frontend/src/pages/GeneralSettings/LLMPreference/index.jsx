@@ -38,16 +38,15 @@ export default function GeneralLLMPreference() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
-    const data = {};
+    const data = { LLMProvider: selectedLLM };
     const formData = new FormData(form);
-    data.LLMProvider = selectedLLM;
 
     for (var [key, value] of formData.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
     setSaving(true);
 
     if (error) {
-      showToast(`Failed to save LLM settings: ${error || resetError}`, "error");
+      showToast(`Failed to save LLM settings: ${error}`, "error");
     } else {
       showToast("LLM preferences saved successfully.", "success");
     }
