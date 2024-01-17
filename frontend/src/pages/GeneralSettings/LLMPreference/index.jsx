@@ -30,11 +30,11 @@ export default function GeneralLLMPreference() {
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
-
+  const [originalProvider, setOriginalProvider] = useState(null);
+  const [clearWorkspaceModels, setClearWorkspaceModels] = useState(false);
   const isHosted = window.location.hostname.includes("useanything.com");
 
   const handleSubmit = async (e) => {
@@ -43,12 +43,13 @@ export default function GeneralLLMPreference() {
     const data = {};
     const formData = new FormData(form);
     data.LLMProvider = selectedLLM;
+
     for (var [key, value] of formData.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
-    const { error: resetError } = await System.resetWorkspaceChatModels();
+    if (clearWorkspaceModels) await System.resetWorkspaceChatModels();
     setSaving(true);
 
-    if (error || resetError) {
+    if (error) {
       showToast(`Failed to save LLM settings: ${error || resetError}`, "error");
     } else {
       showToast("LLM preferences saved successfully.", "success");
@@ -60,6 +61,10 @@ export default function GeneralLLMPreference() {
   const updateLLMChoice = (selection) => {
     setSelectedLLM(selection);
     setHasChanges(true);
+    // If the user changes LLM providers from an existing provider we are going
+    // to force-wipe the workspace model preference since the set model will not
+    // exist on another provider.
+    if (!!originalProvider && originalProvider !== selection) setClearWorkspaceModels(true)
   };
 
   useEffect(() => {
@@ -67,6 +72,7 @@ export default function GeneralLLMPreference() {
       const _settings = await System.keys();
       setSettings(_settings);
       setSelectedLLM(_settings?.LLMProvider);
+      setOriginalProvider(_settings?.LLMProvider)
       setLoading(false);
     }
     fetchKeys();

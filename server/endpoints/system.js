@@ -302,11 +302,11 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/reset-workspace-chat-models",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid],
     async (_, response) => {
       try {
-        const results = await Workspace.resetWorkspaceChatModels();
-        response.status(200).json({ results });
+        const { success, error } = await Workspace.resetWorkspaceChatModels();
+        response.status(200).json({ success, error });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
