@@ -113,7 +113,6 @@ async function streamChatWithWorkspace(
     );
     completeText = await LLMConnector.getChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? 0.7,
-      model: workspace?.chatModel,
     });
     writeResponseChunk(response, {
       uuid,
@@ -126,7 +125,6 @@ async function streamChatWithWorkspace(
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? 0.7,
-      model: workspace?.chatModel,
     });
     completeText = await handleStreamResponses(response, stream, {
       uuid,
@@ -170,7 +168,6 @@ async function streamEmptyEmbeddingChat({
       message,
       workspace,
       rawHistory,
-      workspace?.chatModel
     );
     writeResponseChunk(response, {
       uuid,
@@ -186,7 +183,6 @@ async function streamEmptyEmbeddingChat({
       message,
       workspace,
       rawHistory,
-      workspace?.chatModel
     );
     completeText = await handleStreamResponses(response, stream, {
       uuid,
@@ -287,7 +283,7 @@ function handleStreamResponses(response, stream, responseProps) {
             try {
               JSON.parse(message);
               validJSON = true;
-            } catch {}
+            } catch { }
 
             if (!validJSON) {
               // It can be possible that the chunk decoding is running away
@@ -410,7 +406,7 @@ function handleStreamResponses(response, stream, responseProps) {
         try {
           JSON.parse(message);
           validJSON = true;
-        } catch {}
+        } catch { }
 
         if (!validJSON) {
           // It can be possible that the chunk decoding is running away
