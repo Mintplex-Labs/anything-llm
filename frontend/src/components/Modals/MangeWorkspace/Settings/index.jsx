@@ -6,7 +6,7 @@ import System from "../../../../models/system";
 import PreLoader from "../../../Preloader";
 import { useParams } from "react-router-dom";
 import showToast from "../../../../utils/toast";
-import ChatModelSelection from "./ChatModelSelection";
+import ChatModelPreference from "./ChatModelPreference";
 
 // Ensure that a type is correct before sending the body
 // to the backend.
@@ -32,8 +32,6 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
   const formEl = useRef(null);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [customModels, setCustomModels] = useState([]);
-  const [loadingModels, setLoadingModels] = useState(true);
 
   const handleUpdate = async (e) => {
     setSaving(true);
@@ -66,48 +64,6 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
       ? (window.location = paths.home())
       : window.location.reload();
   };
-
-  useEffect(() => {
-    async function getCustomModels() {
-      let provider = settings?.LLMProvider;
-      let basePath = null;
-
-      if (provider) {
-        switch (provider) {
-          case "localai":
-            basePath = settings?.LocalAiBasePath;
-            break;
-          case "ollama":
-            basePath = settings?.OllamaLLMBasePath;
-            break;
-          case "native":
-            provider = "native-llm";
-            break;
-          default:
-            break;
-        }
-
-        try {
-          const customModels = await System.customModels(
-            provider,
-            null,
-            basePath
-          );
-          setCustomModels(customModels?.models || []);
-        } catch (error) {
-          console.error("Error fetching custom models:", error);
-        }
-      }
-
-      setLoadingModels(false);
-    }
-
-    getCustomModels();
-  }, [
-    settings?.LLMProvider,
-    settings?.LocalAiBasePath,
-    settings?.OllamaLLMBasePath,
-  ]);
 
   return (
     <form ref={formEl} onSubmit={handleUpdate}>
@@ -144,12 +100,10 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
           <div className="flex">
             <div className="flex flex-col gap-y-4 w-1/2">
               <div className="w-3/4 flex flex-col gap-y-4">
-                <ChatModelSelection
+                <ChatModelPreference
                   settings={settings}
                   workspace={workspace}
                   setHasChanges={setHasChanges}
-                  customModels={customModels}
-                  loadingModels={loadingModels}
                 />
                 <div>
                   <div className="flex flex-col">

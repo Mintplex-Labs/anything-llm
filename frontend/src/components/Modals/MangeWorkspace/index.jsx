@@ -15,25 +15,16 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const [selectedTab, setSelectedTab] = useState("documents");
   const [workspace, setWorkspace] = useState(null);
   const [fileTypes, setFileTypes] = useState(null);
-  const [workspaceSettings, setWorkspaceSettings] = useState({});
-  const [settings, setSettings] = useState(null);
+  const [settings, setSettings] = useState({});
 
   useEffect(() => {
     async function checkSupportedFiletypes() {
       const acceptedTypes = await System.acceptedDocumentTypes();
       const _settings = await System.keys();
       setFileTypes(acceptedTypes ?? {});
-      setWorkspaceSettings(_settings ?? {});
+      setSettings(_settings ?? {});
     }
     checkSupportedFiletypes();
-  }, []);
-
-  useEffect(() => {
-    async function fetchKeys() {
-      const _settings = await System.keys();
-      setSettings(_settings);
-    }
-    fetchKeys();
   }, []);
 
   useEffect(() => {
@@ -119,7 +110,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
               <DocumentSettings
                 workspace={workspace}
                 fileTypes={fileTypes}
-                systemSettings={workspaceSettings}
+                systemSettings={settings}
               />
             </div>
             <div className={selectedTab === "settings" ? "" : "hidden"}>
