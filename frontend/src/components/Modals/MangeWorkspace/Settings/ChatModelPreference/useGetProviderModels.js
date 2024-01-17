@@ -35,7 +35,8 @@ export default function useGetProviderModels(provider = null) {
     async function fetchProviderModels() {
       if (!provider) return;
       const { models = [] } = await System.customModels(provider);
-      setDefaultModels(PROVIDER_DEFAULT_MODELS[provider]);
+      if (PROVIDER_DEFAULT_MODELS.hasOwnProperty(provider))
+        setDefaultModels(PROVIDER_DEFAULT_MODELS[provider]);
       provider === "togetherai"
         ? setCustomModels(groupModels(models))
         : setCustomModels(models);
