@@ -171,7 +171,7 @@ async function chatWithWorkspace(
 
   // Send the text completion.
   const textResponse = await LLMConnector.getChatCompletion(messages, {
-    temperature: workspace?.openAiTemp ?? 0.7,
+    temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
   });
 
   if (!textResponse) {

@@ -5,6 +5,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "ollama",
   "native-llm",
   "togetherai",
+  "mistral",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -20,6 +21,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await ollamaAIModels(basePath);
     case "togetherai":
       return await getTogetherAiModels();
+    case "mistral":
+      return await getMistralModels(apiKey);
     case "native-llm":
       return nativeLLMModels();
     default:
@@ -114,6 +117,26 @@ async function getTogetherAiModels() {
       name: model.name,
     };
   });
+  return { models, error: null };
+}
+
+async function getMistralModels(apiKey = null) {
+  const { Configuration, OpenAIApi } = require("openai");
+  const config = new Configuration({
+    apiKey: apiKey || process.env.MISTRAL_API_KEY,
+    basePath: "https://api.mistral.ai/v1",
+  });
+  const openai = new OpenAIApi(config);
+  const models = await openai
+    .listModels()
+    .then((res) => res.data.data.filter((model) => !model.id.includes("embed")))
+    .catch((e) => {
+      console.error(`Mistral:listModels`, e.message);
+      return [];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.MISTRAL_API_KEY = apiKey;
   return { models, error: null };
 }
 

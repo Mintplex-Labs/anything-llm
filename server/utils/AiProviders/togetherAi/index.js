@@ -28,6 +28,7 @@ class TogetherAiLLM {
         "INVALID TOGETHER AI SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Together AI as your LLM."
       );
     this.embedder = embedder;
+    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -89,7 +90,7 @@ class TogetherAiLLM {
     const textResponse = await this.openai
       .createChatCompletion({
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {
@@ -127,7 +128,7 @@ class TogetherAiLLM {
       {
         model: this.model,
         stream: true,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {

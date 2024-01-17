@@ -141,7 +141,7 @@ async function streamChatWithWorkspace(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
     );
     completeText = await LLMConnector.getChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? 0.7,
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
     writeResponseChunk(response, {
       uuid,
@@ -153,7 +153,7 @@ async function streamChatWithWorkspace(
     });
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? 0.7,
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
     completeText = await handleStreamResponses(response, stream, {
       uuid,

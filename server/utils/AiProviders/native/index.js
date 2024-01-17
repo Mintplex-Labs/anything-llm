@@ -29,6 +29,7 @@ class NativeLLM {
 
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
+    this.defaultTemp = 0.7;
   }
 
   async #initializeLlamaModel(temperature = 0.7) {
@@ -132,7 +133,7 @@ class NativeLLM {
       );
 
       const model = await this.#llamaClient({
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
       });
       const response = await model.call(messages);
       return response.content;
@@ -145,7 +146,7 @@ class NativeLLM {
 
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     const model = await this.#llamaClient({
-      temperature: Number(workspace?.openAiTemp ?? 0.7),
+      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
     });
     const messages = await this.compressMessages(
       {

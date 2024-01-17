@@ -95,6 +95,15 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  MistralApiKey: {
+    envKey: "MISTRAL_API_KEY",
+    checks: [isNotEmpty],
+  },
+  MistralModelPref: {
+    envKey: "MISTRAL_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Native LLM Settings
   NativeLLMModelPref: {
     envKey: "NATIVE_LLM_MODEL_PREF",
@@ -268,6 +277,7 @@ function supportedLLM(input = "") {
     "ollama",
     "native",
     "togetherai",
+    "mistral",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

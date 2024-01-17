@@ -1,19 +1,18 @@
 const { chatPrompt } = require("../../chats");
 
-//  hybrid of openAi LLM chat completion for LMStudio
-class LMStudioLLM {
-  constructor(embedder = null, _modelPreference = null) {
-    if (!process.env.LMSTUDIO_BASE_PATH)
-      throw new Error("No LMStudio API Base Path was set.");
-
+class MistralLLM {
+  constructor(embedder = null, modelPreference = null) {
     const { Configuration, OpenAIApi } = require("openai");
+    if (!process.env.MISTRAL_API_KEY)
+      throw new Error("No Mistral API key was set.");
+
     const config = new Configuration({
-      basePath: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
+      basePath: "https://api.mistral.ai/v1",
+      apiKey: process.env.MISTRAL_API_KEY,
     });
-    this.lmstudio = new OpenAIApi(config);
-    // When using LMStudios inference server - the model param is not required so
-    // we can stub it here. LMStudio can only run one model at a time.
-    this.model = "model-placeholder";
+    this.openai = new OpenAIApi(config);
+    this.model =
+      modelPreference || process.env.MISTRAL_MODEL_PREF || "mistral-tiny";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -21,11 +20,11 @@ class LMStudioLLM {
     };
 
     if (!embedder)
-      throw new Error(
-        "INVALID LM STUDIO SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use LMStudio as your LLM."
+      console.warn(
+        "No embedding provider defined for MistralLLM - falling back to OpenAiEmbedder for embedding!"
       );
     this.embedder = embedder;
-    this.defaultTemp = 0.7;
+    this.defaultTemp = 0.0;
   }
 
   #appendContext(contextTexts = []) {
@@ -44,18 +43,11 @@ class LMStudioLLM {
     return "streamChat" in this && "streamGetChatCompletion" in this;
   }
 
-  // Ensure the user set a value for the token limit
-  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    const limit = process.env.LMSTUDIO_MODEL_TOKEN_LIMIT || 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No LMStudio token context limit was set.");
-    return Number(limit);
+    return 32000;
   }
 
-  async isValidChatCompletionModel(_ = "") {
-    // LMStudio may be anything. The user must do it correctly.
-    // See comment about this.model declaration in constructor
+  async isValidChatCompletionModel(modelName = "") {
     return true;
   }
 
@@ -72,22 +64,20 @@ class LMStudioLLM {
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  async isSafe(_input = "") {
-    // Not implemented so must be stubbed
+  async isSafe(_ = "") {
     return { safe: true, reasons: [] };
   }
 
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.model)
+    if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `LMStudio chat: ${this.model} is not valid or defined for chat completion!`
+        `Mistral chat: ${this.model} is not valid for chat completion!`
       );
 
-    const textResponse = await this.lmstudio
+    const textResponse = await this.openai
       .createChatCompletion({
         model: this.model,
         temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-        n: 1,
         messages: await this.compressMessages(
           {
             systemPrompt: chatPrompt(workspace),
@@ -100,14 +90,14 @@ class LMStudioLLM {
       .then((json) => {
         const res = json.data;
         if (!res.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
+          throw new Error("Mistral chat: No results!");
         if (res.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
+          throw new Error("Mistral chat: No results length!");
         return res.choices[0].message.content;
       })
       .catch((error) => {
         throw new Error(
-          `LMStudio::createChatCompletion failed with: ${error.message}`
+          `Mistral::createChatCompletion failed with: ${error.message}`
         );
       });
 
@@ -115,17 +105,16 @@ class LMStudioLLM {
   }
 
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.model)
+    if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `LMStudio chat: ${this.model} is not valid or defined for chat completion!`
+        `Mistral chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.lmstudio.createChatCompletion(
+    const streamRequest = await this.openai.createChatCompletion(
       {
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-        n: 1,
         stream: true,
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         messages: await this.compressMessages(
           {
             systemPrompt: chatPrompt(workspace),
@@ -137,16 +126,17 @@ class LMStudioLLM {
       },
       { responseType: "stream" }
     );
+
     return streamRequest;
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!this.model)
+    if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
+        `Mistral chat: ${this.model} is not valid for chat completion!`
       );
 
-    const { data } = await this.lmstudio.createChatCompletion({
+    const { data } = await this.openai.createChatCompletion({
       model: this.model,
       messages,
       temperature,
@@ -157,12 +147,12 @@ class LMStudioLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!this.model)
+    if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
+        `Mistral chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.lmstudio.createChatCompletion(
+    const streamRequest = await this.openai.createChatCompletion(
       {
         model: this.model,
         stream: true,
@@ -190,5 +180,5 @@ class LMStudioLLM {
 }
 
 module.exports = {
-  LMStudioLLM,
+  MistralLLM,
 };
