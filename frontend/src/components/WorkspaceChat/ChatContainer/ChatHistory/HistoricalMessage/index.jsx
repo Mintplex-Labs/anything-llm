@@ -1,14 +1,15 @@
-import { memo, forwardRef } from "react";
+import React, { memo, forwardRef } from "react";
 import { Warning } from "@phosphor-icons/react";
 import Jazzicon from "../../../../UserIcon";
+import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
 import { userFromStorage } from "@/utils/request";
 import Citations from "../Citation";
 import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
-const DOMPurify = createDOMPurify(window);
 
+const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = forwardRef(
   (
     { uuid = v4(), message, role, workspace, sources = [], error = false },
@@ -53,6 +54,12 @@ const HistoricalMessage = forwardRef(
               />
             )}
           </div>
+          {role === "assistant" && (
+            <div className="flex gap-x-5">
+              <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden" />
+              <Actions message={DOMPurify.sanitize(message)} />
+            </div>
+          )}
           {role === "assistant" && <Citations sources={sources} />}
         </div>
       </div>

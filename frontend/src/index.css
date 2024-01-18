@@ -399,3 +399,7 @@ dialog::backdrop {
 .rti--container {
   @apply !bg-zinc-900 !text-white !placeholder-white !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
 }
+
+.tooltip {
+  @apply !bg-black !text-white !py-2 !px-3 !rounded-md;
+}
