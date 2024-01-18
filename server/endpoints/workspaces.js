@@ -159,7 +159,7 @@ function workspaceEndpoints(app) {
         }
 
         await Document.removeDocuments(currWorkspace, deletes);
-        const { failedToEmbed = [], errors } = await Document.addDocuments(
+        const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
           currWorkspace,
           adds
         );
