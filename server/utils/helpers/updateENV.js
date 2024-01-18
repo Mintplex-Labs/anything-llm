@@ -110,6 +110,11 @@ const KEY_MAPPING = {
     checks: [isDownloadedModel],
   },
 
+  NativeLLMTokenLimit: {
+    envKey: "NATIVE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],

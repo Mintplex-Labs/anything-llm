@@ -94,8 +94,6 @@ class NativeLLM {
   }
 
   // Ensure the user set a value for the token limit
-  // and if undefined - assume 4096 window.
-  // DEV: Currently this ENV is not configurable.
   promptWindowLimit() {
     const limit = process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT || 4096;
     if (!limit || isNaN(Number(limit)))
