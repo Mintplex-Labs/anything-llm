@@ -1,13 +1,14 @@
 const path = require("path");
+const fs = require("fs");
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config({
-      path: process.env.STORAGE_DIR
-        ? path.resolve(process.env.STORAGE_DIR, ".env")
-        : path.resolve(__dirname, ".env"),
-    });
+    path: process.env.STORAGE_DIR
+      ? path.resolve(process.env.STORAGE_DIR, ".env")
+      : path.resolve(__dirname, ".env"),
+  });
 
-const { viewLocalFiles } = require("../utils/files");
+const { viewLocalFiles, normalizePath } = require("../utils/files");
 const { exportData, unpackAndOverwriteImport } = require("../utils/files/data");
 const {
   checkProcessorAlive,
@@ -21,6 +22,7 @@ const {
   makeJWT,
   userFromSession,
   multiUserMode,
+  queryParams,
 } = require("../utils/http");
 const {
   setupDataImports,
@@ -34,7 +36,6 @@ const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { handleImports } = setupDataImports();
 const { handleLogoUploads } = setupLogoUploads();
 const { handlePfpUploads } = setupPfpUploads();
-const fs = require("fs");
 const {
   getDefaultFilename,
   determineLogoFilepath,
@@ -111,6 +112,8 @@ function systemEndpoints(app) {
 
   app.post("/request-token", async (request, response) => {
     try {
+      const bcrypt = require("bcrypt");
+
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
         const existingUser = await User.get({ username });
@@ -125,7 +128,6 @@ function systemEndpoints(app) {
           return;
         }
 
-        const bcrypt = require("bcrypt");
         if (!bcrypt.compareSync(password, existingUser.password)) {
           response.status(200).json({
             user: null,
@@ -163,7 +165,12 @@ function systemEndpoints(app) {
         return;
       } else {
         const { password } = reqBody(request);
-        if (password !== process.env.AUTH_TOKEN) {
+        if (
+          !bcrypt.compareSync(
+            password,
+            bcrypt.hashSync(process.env.AUTH_TOKEN, 10)
+          )
+        ) {
           response.status(401).json({
             valid: false,
             token: null,
@@ -185,16 +192,23 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/system-vectors", [validatedRequest], async (_, response) => {
-    try {
-      const VectorDb = getVectorDbClass();
-      const vectorCount = await VectorDb.totalVectors();
-      response.status(200).json({ vectorCount });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+  app.get(
+    "/system/system-vectors",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const query = queryParams(request);
+        const VectorDb = getVectorDbClass();
+        const vectorCount = !!query.slug
+          ? await VectorDb.namespaceCount(query.slug)
+          : await VectorDb.totalVectors();
+        response.status(200).json({ vectorCount });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.delete(
     "/system/remove-document",
@@ -274,8 +288,14 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid],
     async (request, response) => {
       try {
+        const user = await userFromSession(request, response);
+        if (!!user && user.role !== "admin") {
+          response.sendStatus(401).end();
+          return;
+        }
+
         const body = reqBody(request);
-        const { newValues, error } = updateENV(body);
+        const { newValues, error } = await updateENV(body);
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
@@ -297,7 +317,7 @@ function systemEndpoints(app) {
         }
 
         const { usePassword, newPassword } = reqBody(request);
-        const { error } = updateENV(
+        const { error } = await updateENV(
           {
             AuthToken: usePassword ? newPassword : "",
             JWTSecret: usePassword ? v4() : "",
@@ -340,7 +360,7 @@ function systemEndpoints(app) {
           message_limit: 25,
         });
 
-        updateENV(
+        await updateENV(
           {
             AuthToken: "",
             JWTSecret: process.env.JWT_SECRET || v4(),
@@ -374,21 +394,23 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/data-export", [validatedRequest], async (_, response) => {
-    try {
-      const { filename, error } = await exportData();
-      response.status(200).json({ filename, error });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+  app.get(
+    "/system/data-export",
+    [validatedRequest, flexUserRoleValid],
+    async (_, response) => {
+      try {
+        const { filename, error } = await exportData();
+        response.status(200).json({ filename, error });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.get("/system/data-exports/:filename", (request, response) => {
     const exportLocation = __dirname + "/../storage/exports/";
-    const sanitized = path
-      .normalize(request.params.filename)
-      .replace(/^(\.\.(\/|\\|$))+/, "");
+    const sanitized = normalizePath(request.params.filename);
     const finalDestination = path.join(exportLocation, sanitized);
 
     if (!fs.existsSync(finalDestination)) {
@@ -489,7 +511,8 @@ function systemEndpoints(app) {
         }
 
         const userRecord = await User.get({ id: user.id });
-        const oldPfpFilename = userRecord.pfpFilename;
+        const oldPfpFilename = normalizePath(userRecord.pfpFilename);
+
         console.log("oldPfpFilename", oldPfpFilename);
         if (oldPfpFilename) {
           const oldPfpPath = path.join(
@@ -523,7 +546,7 @@ function systemEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const userRecord = await User.get({ id: user.id });
-        const oldPfpFilename = userRecord.pfpFilename;
+        const oldPfpFilename = normalizePath(userRecord.pfpFilename);
         console.log("oldPfpFilename", oldPfpFilename);
         if (oldPfpFilename) {
           const oldPfpPath = path.join(

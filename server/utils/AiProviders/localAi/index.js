@@ -1,7 +1,7 @@
 const { chatPrompt } = require("../../chats");
 
 class LocalAiLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     if (!process.env.LOCAL_AI_BASE_PATH)
       throw new Error("No LocalAI Base Path was set.");
 
@@ -15,7 +15,7 @@ class LocalAiLLM {
         : {}),
     });
     this.openai = new OpenAIApi(config);
-    this.model = process.env.LOCAL_AI_MODEL_PREF;
+    this.model = modelPreference || process.env.LOCAL_AI_MODEL_PREF;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -27,6 +27,7 @@ class LocalAiLLM {
         "INVALID LOCAL AI SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use LocalAI as your LLM."
       );
     this.embedder = embedder;
+    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -85,7 +86,7 @@ class LocalAiLLM {
     const textResponse = await this.openai
       .createChatCompletion({
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {
@@ -123,7 +124,7 @@ class LocalAiLLM {
       {
         model: this.model,
         stream: true,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {

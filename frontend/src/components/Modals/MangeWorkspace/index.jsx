@@ -114,7 +114,11 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
               />
             </div>
             <div className={selectedTab === "settings" ? "" : "hidden"}>
-              <WorkspaceSettings workspace={workspace} fileTypes={fileTypes} />
+              <WorkspaceSettings
+                active={selectedTab === "settings"} // To force reload live sub-components like VectorCount
+                workspace={workspace}
+                settings={settings}
+              />
             </div>
           </Suspense>
         </div>

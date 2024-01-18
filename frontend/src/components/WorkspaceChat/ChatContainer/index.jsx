@@ -10,7 +10,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
-
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
@@ -36,6 +35,30 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     setLoadingResponse(true);
   };
 
+  const sendCommand = async (command, submit = false) => {
+    if (!command || command === "") return false;
+    if (!submit) {
+      setMessage(command);
+      return;
+    }
+
+    const prevChatHistory = [
+      ...chatHistory,
+      { content: command, role: "user" },
+      {
+        content: "",
+        role: "assistant",
+        pending: true,
+        userMessage: command,
+        animate: true,
+      },
+    ];
+
+    setChatHistory(prevChatHistory);
+    setMessage("");
+    setLoadingResponse(true);
+  };
+
   useEffect(() => {
     async function fetchReply() {
       const promptMessage =
@@ -47,21 +70,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         setLoadingResponse(false);
         return false;
       }
-
-      // TODO: Delete this snippet once we have streaming stable.
-      // const chatResult = await Workspace.sendChat(
-      //   workspace,
-      //   promptMessage.userMessage,
-      //   window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
-      //   "chat",
-      // )
-      // handleChat(
-      //   chatResult,
-      //   setLoadingResponse,
-      //   setChatHistory,
-      //   remHistory,
-      //   _chatHistory
-      // )
 
       await Workspace.streamChat(
         workspace,
@@ -97,6 +105,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           onChange={handleMessageChange}
           inputDisabled={loadingResponse}
           buttonDisabled={loadingResponse}
+          sendCommand={sendCommand}
         />
       </div>
     </div>

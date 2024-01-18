@@ -7,7 +7,9 @@ import GeminiLogo from "@/media/llmprovider/gemini.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
+import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
+import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
@@ -16,11 +18,13 @@ import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
+import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
+import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -99,6 +103,20 @@ export default function LLMPreference({
       logo: LocalAiLogo,
       options: <LocalAiOptions settings={settings} />,
       description: "Run LLMs locally on your own machine.",
+    },
+    {
+      name: "Together AI",
+      value: "togetherai",
+      logo: TogetherAILogo,
+      options: <TogetherAiOptions settings={settings} />,
+      description: "Run open source models from Together AI.",
+    },
+    {
+      name: "Mistral",
+      value: "mistral",
+      logo: MistralLogo,
+      options: <MistralOptions settings={settings} />,
+      description: "Run open source models from Mistral AI.",
     },
     {
       name: "Native",

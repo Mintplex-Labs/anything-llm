@@ -11,6 +11,8 @@ import GeminiLogo from "@/media/llmprovider/gemini.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
+import TogetherAILogo from "@/media/llmprovider/togetherai.png";
+import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -20,6 +22,8 @@ import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
+import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
+import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 
@@ -28,19 +32,17 @@ export default function GeneralLLMPreference() {
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
-
   const isHosted = window.location.hostname.includes("useanything.com");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
-    const data = {};
+    const data = { LLMProvider: selectedLLM };
     const formData = new FormData(form);
-    data.LLMProvider = selectedLLM;
+
     for (var [key, value] of formData.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
     setSaving(true);
@@ -126,6 +128,20 @@ export default function GeneralLLMPreference() {
       logo: LocalAiLogo,
       options: <LocalAiOptions settings={settings} />,
       description: "Run LLMs locally on your own machine.",
+    },
+    {
+      name: "Together AI",
+      value: "togetherai",
+      logo: TogetherAILogo,
+      options: <TogetherAiOptions settings={settings} />,
+      description: "Run open source models from Together AI.",
+    },
+    {
+      name: "Mistral",
+      value: "mistral",
+      logo: MistralLogo,
+      options: <MistralOptions settings={settings} />,
+      description: "Run open source models from Mistral AI.",
     },
     {
       name: "Native",

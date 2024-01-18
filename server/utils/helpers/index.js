@@ -16,39 +16,51 @@ function getVectorDbClass() {
     case "qdrant":
       const { QDrant } = require("../vectorDbProviders/qdrant");
       return QDrant;
+    case "milvus":
+      const { Milvus } = require("../vectorDbProviders/milvus");
+      return Milvus;
+    case "zilliz":
+      const { Zilliz } = require("../vectorDbProviders/zilliz");
+      return Zilliz;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
   }
 }
 
-function getLLMProvider() {
+function getLLMProvider(modelPreference = null) {
   const vectorSelection = process.env.LLM_PROVIDER || "openai";
   const embedder = getEmbeddingEngineSelection();
   switch (vectorSelection) {
     case "openai":
       const { OpenAiLLM } = require("../AiProviders/openAi");
-      return new OpenAiLLM(embedder);
+      return new OpenAiLLM(embedder, modelPreference);
     case "azure":
       const { AzureOpenAiLLM } = require("../AiProviders/azureOpenAi");
-      return new AzureOpenAiLLM(embedder);
+      return new AzureOpenAiLLM(embedder, modelPreference);
     case "anthropic":
       const { AnthropicLLM } = require("../AiProviders/anthropic");
-      return new AnthropicLLM(embedder);
+      return new AnthropicLLM(embedder, modelPreference);
     case "gemini":
       const { GeminiLLM } = require("../AiProviders/gemini");
-      return new GeminiLLM(embedder);
+      return new GeminiLLM(embedder, modelPreference);
     case "lmstudio":
       const { LMStudioLLM } = require("../AiProviders/lmStudio");
-      return new LMStudioLLM(embedder);
+      return new LMStudioLLM(embedder, modelPreference);
     case "localai":
       const { LocalAiLLM } = require("../AiProviders/localAi");
-      return new LocalAiLLM(embedder);
+      return new LocalAiLLM(embedder, modelPreference);
     case "ollama":
       const { OllamaAILLM } = require("../AiProviders/ollama");
-      return new OllamaAILLM(embedder);
+      return new OllamaAILLM(embedder, modelPreference);
+    case "togetherai":
+      const { TogetherAiLLM } = require("../AiProviders/togetherAi");
+      return new TogetherAiLLM(embedder, modelPreference);
+    case "mistral":
+      const { MistralLLM } = require("../AiProviders/mistral");
+      return new MistralLLM(embedder, modelPreference);
     case "native":
       const { NativeLLM } = require("../AiProviders/native");
-      return new NativeLLM(embedder);
+      return new NativeLLM(embedder, modelPreference);
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
   }
@@ -70,6 +82,7 @@ function getEmbeddingEngineSelection() {
       return new LocalAiEmbedder();
     case "native":
       const { NativeEmbedder } = require("../EmbeddingEngines/native");
+      console.log("\x1b[34m[INFO]\x1b[0m Using Native Embedder");
       return new NativeEmbedder();
     default:
       return null;

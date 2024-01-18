@@ -11,6 +11,10 @@ import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../../Modals/MangeWorkspace";
 import useUser from "@/hooks/useUser";
+import SlashCommandsButton, {
+  SlashCommands,
+  useSlashCommands,
+} from "./SlashCommands";
 
 export default function PromptInput({
   workspace,
@@ -19,7 +23,9 @@ export default function PromptInput({
   onChange,
   inputDisabled,
   buttonDisabled,
+  sendCommand,
 }) {
+  const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const formRef = useRef(null);
   const [_, setFocused] = useState(false);
@@ -49,7 +55,12 @@ export default function PromptInput({
   };
 
   return (
-    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center overflow-hidden">
+    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
+      <SlashCommands
+        showing={showSlashCommand}
+        setShowing={setShowSlashCommand}
+        sendCommand={sendCommand}
+      />
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl"
@@ -95,17 +106,12 @@ export default function PromptInput({
                     weight="fill"
                   />
                 )}
-
                 <ChatModeSelector workspace={workspace} />
-                {/* <TextT
-                  className="w-7 h-7 text-white/30 cursor-not-allowed"
-                  weight="fill"
-                /> */}
+                <SlashCommandsButton
+                  showing={showSlashCommand}
+                  setShowSlashCommand={setShowSlashCommand}
+                />
               </div>
-              {/* <Microphone
-                className="w-7 h-7 text-white/30 cursor-not-allowed"
-                weight="fill"
-              /> */}
             </div>
           </div>
         </div>

@@ -108,13 +108,20 @@ const QDrant = {
     await client.deleteCollection(namespace);
     return true;
   },
-  getOrCreateCollection: async function (client, namespace) {
+  // QDrant requires a dimension aspect for collection creation
+  // we pass this in from the first chunk to infer the dimensions like other
+  // providers do.
+  getOrCreateCollection: async function (client, namespace, dimensions = null) {
     if (await this.namespaceExists(client, namespace)) {
       return await client.getCollection(namespace);
     }
+    if (!dimensions)
+      throw new Error(
+        `Qdrant:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on Github for support.`
+      );
     await client.createCollection(namespace, {
       vectors: {
-        size: 1536, //TODO: Fixed to OpenAI models - when other embeddings exist make variable.
+        size: dimensions,
         distance: "Cosine",
       },
     });
@@ -127,6 +134,7 @@ const QDrant = {
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
+      let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
@@ -134,14 +142,19 @@ const QDrant = {
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
-        const collection = await this.getOrCreateCollection(client, namespace);
+        const { chunks } = cacheResult;
+        const documentVectors = [];
+        vectorDimension = chunks[0][0].vector.length || null;
+
+        const collection = await this.getOrCreateCollection(
+          client,
+          namespace,
+          vectorDimension
+        );
         if (!collection)
           throw new Error("Failed to create new QDrant collection!", {
             namespace,
           });
-
-        const { chunks } = cacheResult;
-        const documentVectors = [];
 
         for (const chunk of chunks) {
           const submission = {
@@ -204,6 +217,7 @@ const QDrant = {
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
+          if (!vectorDimension) vectorDimension = vector.length;
           const vectorRecord = {
             id: uuidv4(),
             vector: vector,
@@ -227,7 +241,11 @@ const QDrant = {
       }
 
       const { client } = await this.connect();
-      const collection = await this.getOrCreateCollection(client, namespace);
+      const collection = await this.getOrCreateCollection(
+        client,
+        namespace,
+        vectorDimension
+      );
       if (!collection)
         throw new Error("Failed to create new QDrant collection!", {
           namespace,

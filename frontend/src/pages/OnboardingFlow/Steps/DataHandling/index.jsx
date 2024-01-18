@@ -6,13 +6,17 @@ import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
+import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
+import MistralLogo from "@/media/llmprovider/mistral.jpeg";
+import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
 import PineconeLogo from "@/media/vectordbs/pinecone.png";
 import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
+import MilvusLogo from "@/media/vectordbs/milvus.png";
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +29,7 @@ const LLM_SELECTION_PRIVACY = {
     name: "OpenAI",
     description: [
       "Your chats will not be used for training",
-      "Your prompts and document text used in responses are visible to OpenAI",
+      "Your prompts and document text used in response creation are visible to OpenAI",
     ],
     logo: OpenAiLogo,
   },
@@ -41,7 +45,7 @@ const LLM_SELECTION_PRIVACY = {
     name: "Anthropic",
     description: [
       "Your chats will not be used for training",
-      "Your prompts and document text used in responses are visible to Anthropic",
+      "Your prompts and document text used in response creation are visible to Anthropic",
     ],
     logo: AnthropicLogo,
   },
@@ -49,7 +53,7 @@ const LLM_SELECTION_PRIVACY = {
     name: "Google Gemini",
     description: [
       "Your chats are de-identified and used in training",
-      "Your prompts and document text are visible in responses to Google",
+      "Your prompts and document text used in response creation are visible to Google",
     ],
     logo: GeminiLogo,
   },
@@ -80,6 +84,21 @@ const LLM_SELECTION_PRIVACY = {
       "Your model and chats are only accessible on this AnythingLLM instance",
     ],
     logo: AnythingLLMIcon,
+  },
+  togetherai: {
+    name: "TogetherAI",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to TogetherAI",
+    ],
+    logo: TogetherAILogo,
+  },
+  mistral: {
+    name: "Mistral",
+    description: [
+      "Your prompts and document text used in response creation are visible to Mistral",
+    ],
+    logo: MistralLogo,
   },
 };
 
@@ -113,6 +132,20 @@ const VECTOR_DB_PRIVACY = {
       "Your vectors and document text are stored on your Weaviate instance (cloud or self-hosted)",
     ],
     logo: WeaviateLogo,
+  },
+  milvus: {
+    name: "Milvus",
+    description: [
+      "Your vectors and document text are stored on your Milvus instance (cloud or self-hosted)",
+    ],
+    logo: MilvusLogo,
+  },
+  zilliz: {
+    name: "Zilliz Cloud",
+    description: [
+      "Your vectors and document text are stored on your Zilliz cloud cluster.",
+    ],
+    logo: ZillizLogo,
   },
   lancedb: {
     name: "LanceDB",

@@ -8,6 +8,7 @@ const {
   chatPrompt,
 } = require(".");
 
+const VALID_CHAT_MODE = ["chat", "query"];
 function writeResponseChunk(response, data) {
   response.write(`data: ${JSON.stringify(data)}\n\n`);
   return;
@@ -29,7 +30,7 @@ async function streamChatWithWorkspace(
     return;
   }
 
-  const LLMConnector = getLLMProvider();
+  const LLMConnector = getLLMProvider(workspace?.chatModel);
   const VectorDb = getVectorDbClass();
   const { safe, reasons = [] } = await LLMConnector.isSafe(message);
   if (!safe) {
@@ -50,6 +51,19 @@ async function streamChatWithWorkspace(
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
   if (!hasVectorizedSpace || embeddingsCount === 0) {
+    if (chatMode === "query") {
+      writeResponseChunk(response, {
+        id: uuid,
+        type: "textResponse",
+        textResponse:
+          "There is no relevant information in this workspace to answer your query.",
+        sources: [],
+        close: true,
+        error: null,
+      });
+      return;
+    }
+
     // If there are no embeddings - chat like a normal LLM chat interface.
     return await streamEmptyEmbeddingChat({
       response,
@@ -93,6 +107,21 @@ async function streamChatWithWorkspace(
     return;
   }
 
+  // If in query mode and no sources are found, do not
+  // let the LLM try to hallucinate a response or use general knowledge
+  if (chatMode === "query" && sources.length === 0) {
+    writeResponseChunk(response, {
+      id: uuid,
+      type: "textResponse",
+      textResponse:
+        "There is no relevant information in this workspace to answer your query.",
+      sources: [],
+      close: true,
+      error: null,
+    });
+    return;
+  }
+
   // Compress message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
@@ -112,7 +141,7 @@ async function streamChatWithWorkspace(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
     );
     completeText = await LLMConnector.getChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? 0.7,
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
     writeResponseChunk(response, {
       uuid,
@@ -124,7 +153,7 @@ async function streamChatWithWorkspace(
     });
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? 0.7,
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
     completeText = await handleStreamResponses(response, stream, {
       uuid,
@@ -262,6 +291,96 @@ function handleStreamResponses(response, stream, responseProps) {
     });
   }
 
+  if (stream.type === "togetherAiStream") {
+    return new Promise((resolve) => {
+      let fullText = "";
+      let chunk = "";
+      stream.stream.data.on("data", (data) => {
+        const lines = data
+          ?.toString()
+          ?.split("\n")
+          .filter((line) => line.trim() !== "");
+
+        for (const line of lines) {
+          let validJSON = false;
+          const message = chunk + line.replace(/^data: /, "");
+
+          if (message !== "[DONE]") {
+            // JSON chunk is incomplete and has not ended yet
+            // so we need to stitch it together. You would think JSON
+            // chunks would only come complete - but they don't!
+            try {
+              JSON.parse(message);
+              validJSON = true;
+            } catch {}
+
+            if (!validJSON) {
+              // It can be possible that the chunk decoding is running away
+              // and the message chunk fails to append due to string length.
+              // In this case abort the chunk and reset so we can continue.
+              // ref: https://github.com/Mintplex-Labs/anything-llm/issues/416
+              try {
+                chunk += message;
+              } catch (e) {
+                console.error(`Chunk appending error`, e);
+                chunk = "";
+              }
+              continue;
+            } else {
+              chunk = "";
+            }
+          }
+
+          if (message == "[DONE]") {
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: "",
+              close: true,
+              error: false,
+            });
+            resolve(fullText);
+          } else {
+            let finishReason = null;
+            let token = "";
+            try {
+              const json = JSON.parse(message);
+              token = json?.choices?.[0]?.delta?.content;
+              finishReason = json?.choices?.[0]?.finish_reason || null;
+            } catch {
+              continue;
+            }
+
+            if (token) {
+              fullText += token;
+              writeResponseChunk(response, {
+                uuid,
+                sources: [],
+                type: "textResponseChunk",
+                textResponse: token,
+                close: false,
+                error: false,
+              });
+            }
+
+            if (finishReason !== null) {
+              writeResponseChunk(response, {
+                uuid,
+                sources,
+                type: "textResponseChunk",
+                textResponse: "",
+                close: true,
+                error: false,
+              });
+              resolve(fullText);
+            }
+          }
+        }
+      });
+    });
+  }
+
   // If stream is not a regular OpenAI Stream (like if using native model, Ollama, or most LangChain interfaces)
   // we can just iterate the stream content instead.
   if (!stream.hasOwnProperty("data")) {
@@ -385,6 +504,7 @@ function handleStreamResponses(response, stream, responseProps) {
 }
 
 module.exports = {
+  VALID_CHAT_MODE,
   streamChatWithWorkspace,
   writeResponseChunk,
 };

@@ -60,6 +60,19 @@ const SystemSettings = {
             QdrantApiKey: process.env.QDRANT_API_KEY,
           }
         : {}),
+      ...(vectorDB === "milvus"
+        ? {
+            MilvusAddress: process.env.MILVUS_ADDRESS,
+            MilvusUsername: process.env.MILVUS_USERNAME,
+            MilvusPassword: !!process.env.MILVUS_PASSWORD,
+          }
+        : {}),
+      ...(vectorDB === "zilliz"
+        ? {
+            ZillizEndpoint: process.env.ZILLIZ_ENDPOINT,
+            ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
+          }
+        : {}),
       LLMProvider: llmProvider,
       ...(llmProvider === "openai"
         ? {
@@ -144,9 +157,40 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
+      ...(llmProvider === "togetherai"
+        ? {
+            TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
+            TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
+
+            // For embedding credentials when ollama is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
+      ...(llmProvider === "mistral"
+        ? {
+            MistralApiKey: !!process.env.MISTRAL_API_KEY,
+            MistralModelPref: process.env.MISTRAL_MODEL_PREF,
+
+            // For embedding credentials when mistral is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
       ...(llmProvider === "native"
         ? {
             NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
+            NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
+
+            // For embedding credentials when ollama is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
     };

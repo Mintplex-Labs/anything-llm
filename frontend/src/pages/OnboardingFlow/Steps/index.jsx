@@ -1,16 +1,26 @@
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
-import { lazy, useState } from "react";
+import { useState } from "react";
 import { isMobile } from "react-device-detect";
+import Home from "./Home";
+import LLMPreference from "./LLMPreference";
+import EmbeddingPreference from "./EmbeddingPreference";
+import VectorDatabaseConnection from "./VectorDatabaseConnection";
+import CustomLogo from "./CustomLogo";
+import UserSetup from "./UserSetup";
+import DataHandling from "./DataHandling";
+import Survey from "./Survey";
+import CreateWorkspace from "./CreateWorkspace";
+
 const OnboardingSteps = {
-  home: lazy(() => import("./Home")),
-  "llm-preference": lazy(() => import("./LLMPreference")),
-  "embedding-preference": lazy(() => import("./EmbeddingPreference")),
-  "vector-database": lazy(() => import("./VectorDatabaseConnection")),
-  "custom-logo": lazy(() => import("./CustomLogo")),
-  "user-setup": lazy(() => import("./UserSetup")),
-  "data-handling": lazy(() => import("./DataHandling")),
-  survey: lazy(() => import("./Survey")),
-  "create-workspace": lazy(() => import("./CreateWorkspace")),
+  home: Home,
+  "llm-preference": LLMPreference,
+  "embedding-preference": EmbeddingPreference,
+  "vector-database": VectorDatabaseConnection,
+  "custom-logo": CustomLogo,
+  "user-setup": UserSetup,
+  "data-handling": DataHandling,
+  survey: Survey,
+  "create-workspace": CreateWorkspace,
 };
 
 export default OnboardingSteps;
