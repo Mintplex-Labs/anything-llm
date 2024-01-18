@@ -31,6 +31,7 @@
     "react-router-dom": "^6.3.0",
     "react-tag-input-component": "^2.0.2",
     "react-toastify": "^9.1.3",
+    "react-tooltip": "^5.25.2",
     "text-case": "^1.0.9",
     "truncate": "^3.0.0",
     "uuid": "^9.0.0"

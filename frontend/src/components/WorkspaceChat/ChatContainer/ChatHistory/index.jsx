@@ -17,9 +17,12 @@ export default function ChatHistory({ history = [], workspace }) {
   }, [history]);
 
   const handleScroll = () => {
-    const isBottom =
-      chatHistoryRef.current.scrollHeight - chatHistoryRef.current.scrollTop ===
+    const diff =
+      chatHistoryRef.current.scrollHeight -
+      chatHistoryRef.current.scrollTop -
       chatHistoryRef.current.clientHeight;
+    // Fuzzy margin for what qualifies as "bottom". Stronger than straight comparison since that may change over time.
+    const isBottom = diff <= 10;
     setIsAtBottom(isBottom);
   };
 
@@ -112,7 +115,6 @@ export default function ChatHistory({ history = [], workspace }) {
           />
         );
       })}
-
       {showing && (
         <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
       )}
