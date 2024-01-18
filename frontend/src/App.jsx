@@ -34,9 +34,6 @@ const GeneralEmbeddingPreference = lazy(
 const GeneralVectorDatabase = lazy(
   () => import("@/pages/GeneralSettings/VectorDatabase")
 );
-const GeneralExportImport = lazy(
-  () => import("@/pages/GeneralSettings/ExportImport")
-);
 const GeneralSecurity = lazy(() => import("@/pages/GeneralSettings/Security"));
 const DataConnectors = lazy(
   () => import("@/pages/GeneralSettings/DataConnectors")
@@ -74,10 +71,6 @@ export default function App() {
                 element={<AdminRoute Component={GeneralVectorDatabase} />}
               />
               {/* Manager */}
-              <Route
-                path="/settings/export-import"
-                element={<ManagerRoute Component={GeneralExportImport} />}
-              />
               <Route
                 path="/settings/security"
                 element={<ManagerRoute Component={GeneralSecurity} />}
