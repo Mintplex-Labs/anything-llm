@@ -68,6 +68,14 @@ export default function GeneralVectorDatabase() {
       description: "100% cloud-based vector database for enterprise use cases.",
     },
     {
+      name: "Zilliz Cloud",
+      value: "zilliz",
+      logo: ZillizLogo,
+      options: <ZillizCloudOptions settings={settings} />,
+      description:
+        "Cloud hosted vector database built for enterprise with SOC 2 compliance.",
+    },
+    {
       name: "QDrant",
       value: "qdrant",
       logo: QDrantLogo,
@@ -88,13 +96,6 @@ export default function GeneralVectorDatabase() {
       logo: MilvusLogo,
       options: <MilvusDBOptions settings={settings} />,
       description: "Open-source, highly scalable, and blazing fast.",
-    },
-    {
-      name: "Zilliz Cloud",
-      value: "zilliz",
-      logo: ZillizLogo,
-      options: <ZillizCloudOptions settings={settings} />,
-      description: "Cloud hosted version of Milvus.",
     },
   ];
 
