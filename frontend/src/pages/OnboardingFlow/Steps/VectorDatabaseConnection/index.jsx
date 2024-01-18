@@ -6,6 +6,7 @@ import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import MilvusLogo from "@/media/vectordbs/milvus.png";
+import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import PineconeDBOptions from "@/components/VectorDBSelection/PineconeDBOptions";
@@ -14,6 +15,7 @@ import QDrantDBOptions from "@/components/VectorDBSelection/QDrantDBOptions";
 import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions";
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import MilvusOptions from "@/components/VectorDBSelection/MilvusDBOptions";
+import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
 import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
@@ -89,6 +91,13 @@ export default function VectorDatabaseConnection({
       logo: MilvusLogo,
       options: <MilvusOptions settings={settings} />,
       description: "Open-source, highly scalable, and blazing fast.",
+    },
+    {
+      name: "Zilliz Cloud",
+      value: "zilliz",
+      logo: ZillizLogo,
+      options: <ZillizCloudOptions settings={settings} />,
+      description: "Cloud hosted version of Milvus.",
     },
   ];
 

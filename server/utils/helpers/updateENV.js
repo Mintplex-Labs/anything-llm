@@ -199,6 +199,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Zilliz Cloud Options
+  ZillizEndpoint: {
+    envKey: "ZILLIZ_ENDPOINT",
+    checks: [isValidURL],
+  },
+  ZillizApiToken: {
+    envKey: "ZILLIZ_API_TOKEN",
+    checks: [isNotEmpty],
+  },
+
   // Together Ai Options
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
@@ -316,6 +326,7 @@ function supportedVectorDB(input = "") {
     "weaviate",
     "qdrant",
     "milvus",
+    "zilliz",
   ];
   return supported.includes(input)
     ? null
