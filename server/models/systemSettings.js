@@ -174,6 +174,7 @@ const SystemSettings = {
       ...(llmProvider === "native"
         ? {
             NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
+            NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
 
             // For embedding credentials when ollama is selected.
             OpenAiKey: !!process.env.OPEN_AI_KEY,
