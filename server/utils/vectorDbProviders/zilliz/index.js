@@ -168,7 +168,7 @@ const Zilliz = {
         }
         await DocumentVectors.bulkInsert(documentVectors);
         await client.flushSync({ collection_names: [namespace] });
-        return true;
+        return { vectorized: true, error: null };
       }
 
       const textSplitter = new RecursiveCharacterTextSplitter({
@@ -232,11 +232,10 @@ const Zilliz = {
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
-      return true;
+      return { vectorized: true, error: null };
     } catch (e) {
-      console.error(e);
       console.error("addDocumentToNamespace", e.message);
-      return false;
+      return { vectorized: false, error: e.message };
     }
   },
   deleteDocumentFromNamespace: async function (namespace, docId) {
