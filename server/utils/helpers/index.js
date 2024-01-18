@@ -19,6 +19,9 @@ function getVectorDbClass() {
     case "milvus":
       const { Milvus } = require("../vectorDbProviders/milvus");
       return Milvus;
+    case "zilliz":
+      const { Zilliz } = require("../vectorDbProviders/zilliz");
+      return Zilliz;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
   }

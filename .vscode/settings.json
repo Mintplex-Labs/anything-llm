@@ -2,10 +2,13 @@
   "cSpell.words": [
     "Dockerized",
     "Langchain",
+    "Milvus",
     "Ollama",
     "openai",
     "Qdrant",
-    "Weaviate"
+    "vectordbs",
+    "Weaviate",
+    "Zilliz"
   ],
   "eslint.experimental.useFlatConfig": true
 }

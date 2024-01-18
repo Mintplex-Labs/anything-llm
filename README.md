@@ -89,6 +89,7 @@ Some cool features of AnythingLLM
 - [Weaviate](https://weaviate.io)
 - [QDrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
+- [Zilliz](https://zilliz.com)
 
 ### Technical Overview
 
