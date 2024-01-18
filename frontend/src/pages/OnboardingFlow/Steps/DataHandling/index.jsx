@@ -143,7 +143,7 @@ const VECTOR_DB_PRIVACY = {
   zilliz: {
     name: "Zilliz Cloud",
     description: [
-      "Your vectors and document text are stored on your Zilliz instance (cloud or self-hosted)",
+      "Your vectors and document text are stored on your Zilliz cloud cluster.",
     ],
     logo: ZillizLogo,
   },
