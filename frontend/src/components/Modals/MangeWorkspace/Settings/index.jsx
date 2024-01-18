@@ -246,11 +246,12 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
                       htmlFor="name"
                       className="block text-sm font-medium text-white"
                     >
-                      Top N Snippets
+                      Max Context Snippets
                     </label>
                     <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-                      This setting controls how many context snippets will be
-                      returned by the vector database.
+                      This setting controls the maximum amount of context
+                      snippets the will be sent to the LLM for per chat or
+                      query.
                       <br />
                       <i>Recommended: 4</i>
                     </p>
@@ -258,7 +259,7 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
                   <input
                     name="topN"
                     type="number"
-                    min={4}
+                    min={1}
                     max={12}
                     step={1}
                     onWheel={(e) => e.target.blur()}

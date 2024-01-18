@@ -92,7 +92,7 @@ async function streamChatWithWorkspace(
     input: message,
     LLMConnector,
     similarityThreshold: workspace?.similarityThreshold,
-    topN: workspace.topN,
+    topN: workspace?.topN,
   });
 
   // Failed similarity search.

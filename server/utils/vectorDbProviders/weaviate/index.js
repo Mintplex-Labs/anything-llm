@@ -81,7 +81,7 @@ const Weaviate = {
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN
+    topN = 4
   ) {
     const result = {
       contextTexts: [],
@@ -349,7 +349,7 @@ const Weaviate = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
-    topN = null,
+    topN = 4,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -369,7 +369,7 @@ const Weaviate = {
       namespace,
       queryVector,
       similarityThreshold,
-      topN || 4
+      topN
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
