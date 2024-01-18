@@ -35,7 +35,7 @@ async function processDocument(filename = "") {
     .then((res) => res)
     .catch((e) => {
       console.log(e.message);
-      return { success: false, reason: e.message };
+      return { success: false, reason: e.message, documents: [] };
     });
 }
 
@@ -55,7 +55,7 @@ async function processLink(link = "") {
     .then((res) => res)
     .catch((e) => {
       console.log(e.message);
-      return { success: false, reason: e.message };
+      return { success: false, reason: e.message, documents: [] };
     });
 }
 

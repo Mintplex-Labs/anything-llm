@@ -2,7 +2,7 @@ const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
 const { chatPrompt } = require("../../chats");
 
 class OpenAiLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     const { Configuration, OpenAIApi } = require("openai");
     if (!process.env.OPEN_AI_KEY) throw new Error("No OpenAI API key was set.");
 
@@ -10,7 +10,8 @@ class OpenAiLLM {
       apiKey: process.env.OPEN_AI_KEY,
     });
     this.openai = new OpenAIApi(config);
-    this.model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
+    this.model =
+      modelPreference || process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -22,6 +23,7 @@ class OpenAiLLM {
         "No embedding provider defined for OpenAiLLM - falling back to OpenAiEmbedder for embedding!"
       );
     this.embedder = !embedder ? new OpenAiEmbedder() : embedder;
+    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -126,7 +128,7 @@ class OpenAiLLM {
     const textResponse = await this.openai
       .createChatCompletion({
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {
@@ -164,7 +166,7 @@ class OpenAiLLM {
       {
         model: this.model,
         stream: true,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {

@@ -2,6 +2,7 @@ const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
     checks: [isNotEmpty, supportedLLM],
+    postUpdate: [wipeWorkspaceModelPreference],
   },
   // OpenAI Settings
   OpenAiKey: {
@@ -94,10 +95,24 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  MistralApiKey: {
+    envKey: "MISTRAL_API_KEY",
+    checks: [isNotEmpty],
+  },
+  MistralModelPref: {
+    envKey: "MISTRAL_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Native LLM Settings
   NativeLLMModelPref: {
     envKey: "NATIVE_LLM_MODEL_PREF",
     checks: [isDownloadedModel],
+  },
+
+  NativeLLMTokenLimit: {
+    envKey: "NATIVE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
   },
 
   EmbeddingEngine: {
@@ -184,6 +199,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Zilliz Cloud Options
+  ZillizEndpoint: {
+    envKey: "ZILLIZ_ENDPOINT",
+    checks: [isValidURL],
+  },
+  ZillizApiToken: {
+    envKey: "ZILLIZ_API_TOKEN",
+    checks: [isNotEmpty],
+  },
+
   // Together Ai Options
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
@@ -267,6 +292,7 @@ function supportedLLM(input = "") {
     "ollama",
     "native",
     "togetherai",
+    "mistral",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -300,6 +326,7 @@ function supportedVectorDB(input = "") {
     "weaviate",
     "qdrant",
     "milvus",
+    "zilliz",
   ];
   return supported.includes(input)
     ? null
@@ -362,11 +389,20 @@ function validDockerizedUrl(input = "") {
   return null;
 }
 
+// If the LLMProvider has changed we need to reset all workspace model preferences to
+// null since the provider<>model name combination will be invalid for whatever the new
+// provider is.
+async function wipeWorkspaceModelPreference(key, prev, next) {
+  if (prev === next) return;
+  const { Workspace } = require("../../models/workspace");
+  await Workspace.resetWorkspaceChatModels();
+}
+
 // This will force update .env variables which for any which reason were not able to be parsed or
 // read from an ENV file as this seems to be a complicating step for many so allowing people to write
 // to the process will at least alleviate that issue. It does not perform comprehensive validity checks or sanity checks
 // and is simply for debugging when the .env not found issue many come across.
-function updateENV(newENVs = {}, force = false) {
+async function updateENV(newENVs = {}, force = false) {
   let error = "";
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
@@ -374,21 +410,25 @@ function updateENV(newENVs = {}, force = false) {
   );
   const newValues = {};
 
-  ENV_KEYS.forEach((key) => {
-    const { envKey, checks } = KEY_MAPPING[key];
-    const value = newENVs[key];
+  for (const key of ENV_KEYS) {
+    const { envKey, checks, postUpdate = [] } = KEY_MAPPING[key];
+    const prevValue = process.env[envKey];
+    const nextValue = newENVs[key];
     const errors = checks
-      .map((validityCheck) => validityCheck(value, force))
+      .map((validityCheck) => validityCheck(nextValue, force))
       .filter((err) => typeof err === "string");
 
     if (errors.length > 0) {
       error += errors.join("\n");
-      return;
+      break;
     }
 
-    newValues[key] = value;
-    process.env[envKey] = value;
-  });
+    newValues[key] = nextValue;
+    process.env[envKey] = nextValue;
+
+    for (const postUpdateFunc of postUpdate)
+      await postUpdateFunc(key, prevValue, nextValue);
+  }
 
   return { newValues, error: error?.length > 0 ? error : false };
 }

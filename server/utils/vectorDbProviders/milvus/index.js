@@ -167,7 +167,7 @@ const Milvus = {
         }
         await DocumentVectors.bulkInsert(documentVectors);
         await client.flushSync({ collection_names: [namespace] });
-        return true;
+        return { vectorized: true, error: null };
       }
 
       const textSplitter = new RecursiveCharacterTextSplitter({
@@ -231,11 +231,10 @@ const Milvus = {
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
-      return true;
+      return { vectorized: true, error: null };
     } catch (e) {
-      console.error(e);
       console.error("addDocumentToNamespace", e.message);
-      return false;
+      return { vectorized: false, error: e.message };
     }
   },
   deleteDocumentFromNamespace: async function (namespace, docId) {
@@ -266,6 +265,7 @@ const Milvus = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
+    topN = 4,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -284,7 +284,8 @@ const Milvus = {
       client,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
+      topN
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
@@ -300,7 +301,8 @@ const Milvus = {
     client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
+    topN = 4
   ) {
     const result = {
       contextTexts: [],
@@ -310,6 +312,7 @@ const Milvus = {
     const response = await client.search({
       collection_name: namespace,
       vectors: queryVector,
+      limit: topN,
     });
     response.results.forEach((match) => {
       if (match.score < similarityThreshold) return;

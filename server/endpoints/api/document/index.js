@@ -5,11 +5,13 @@ const {
   checkProcessorAlive,
   acceptedFileTypes,
   processDocument,
+  processLink,
 } = require("../../../utils/files/documentProcessor");
 const {
   viewLocalFiles,
   findDocumentInDocuments,
 } = require("../../../utils/files");
+const { reqBody } = require("../../../utils/http");
 const { handleUploads } = setupMulter();
 
 function apiDocumentEndpoints(app) {
@@ -23,7 +25,6 @@ function apiDocumentEndpoints(app) {
       /* 
     #swagger.tags = ['Documents']
     #swagger.description = 'Upload a new file to AnythingLLM to be parsed and prepared for embedding.'
-
     #swagger.requestBody = {
       description: 'File to be uploaded.',
       required: true,
@@ -50,6 +51,21 @@ function apiDocumentEndpoints(app) {
             example: {
               success: true,
               error: null,
+              documents: [
+                {
+                  "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                  "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                  "url": "file:///Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
+                  "title": "anythingllm.txt",
+                  "docAuthor": "Unknown",
+                  "description": "Unknown",
+                  "docSource": "a text file uploaded by the user.",
+                  "chunkSource": "anythingllm.txt",
+                  "published": "1/16/2024, 3:07:00 PM",
+                  "wordCount": 93,
+                  "token_count_estimate": 115,
+                }
+              ]
             }
           }
         }           
@@ -75,16 +91,113 @@ function apiDocumentEndpoints(app) {
             .end();
         }
 
-        const { success, reason } = await processDocument(originalname);
+        const { success, reason, documents } =
+          await processDocument(originalname);
         if (!success) {
-          response.status(500).json({ success: false, error: reason }).end();
+          response
+            .status(500)
+            .json({ success: false, error: reason, documents })
+            .end();
+          return;
         }
 
         console.log(
           `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
         );
         await Telemetry.sendTelemetry("document_uploaded");
-        response.status(200).json({ success: true, error: null });
+        response.status(200).json({ success: true, error: null, documents });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/v1/document/upload-link",
+    [validApiKey],
+    async (request, response) => {
+      /* 
+    #swagger.tags = ['Documents']
+    #swagger.description = 'Upload a valid URL for AnythingLLM to scrape and prepare for embedding.'
+    #swagger.requestBody = {
+      description: 'Link of web address to be scraped.',
+      required: true,
+      type: 'file',
+      content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                "link": "https://useanything.com"
+              }
+            }
+          }           
+        }
+    }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              success: true,
+              error: null,
+              documents: [
+                {
+                  "id": "c530dbe6-bff1-4b9e-b87f-710d539d20bc",
+                  "url": "file://useanything_com.html",
+                  "title": "useanything_com.html",
+                  "docAuthor": "no author found",
+                  "description": "No description found.",
+                  "docSource": "URL link uploaded by the user.",
+                  "chunkSource": "https:useanything.com.html",
+                  "published": "1/16/2024, 3:46:33 PM",
+                  "wordCount": 252,
+                  "pageContent": "AnythingLLM is the best....",
+                  "token_count_estimate": 447,
+                  "location": "custom-documents/url-useanything_com-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
+                }
+              ]
+            }
+          }
+        }           
+      }
+    }  
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+    */
+      try {
+        const { link } = reqBody(request);
+        const processingOnline = await checkProcessorAlive();
+
+        if (!processingOnline) {
+          response
+            .status(500)
+            .json({
+              success: false,
+              error: `Document processing API is not online. Link ${link} will not be processed automatically.`,
+            })
+            .end();
+        }
+
+        const { success, reason, documents } = await processLink(link);
+        if (!success) {
+          response
+            .status(500)
+            .json({ success: false, error: reason, documents })
+            .end();
+          return;
+        }
+
+        console.log(
+          `Link ${link} uploaded processed and successfully. It is now available in documents.`
+        );
+        await Telemetry.sendTelemetry("document_uploaded");
+        response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();

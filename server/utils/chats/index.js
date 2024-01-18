@@ -71,7 +71,7 @@ async function chatWithWorkspace(
     return await VALID_COMMANDS[command](workspace, message, uuid, user);
   }
 
-  const LLMConnector = getLLMProvider();
+  const LLMConnector = getLLMProvider(workspace?.chatModel);
   const VectorDb = getVectorDbClass();
   const { safe, reasons = [] } = await LLMConnector.isSafe(message);
   if (!safe) {
@@ -129,6 +129,7 @@ async function chatWithWorkspace(
     input: message,
     LLMConnector,
     similarityThreshold: workspace?.similarityThreshold,
+    topN: workspace?.topN,
   });
 
   // Failed similarity search.
@@ -171,7 +172,7 @@ async function chatWithWorkspace(
 
   // Send the text completion.
   const textResponse = await LLMConnector.getChatCompletion(messages, {
-    temperature: workspace?.openAiTemp ?? 0.7,
+    temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
   });
 
   if (!textResponse) {

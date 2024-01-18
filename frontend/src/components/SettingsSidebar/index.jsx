@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-// import IndexCount from "../Sidebar/IndexCount";
-// import LLMStatus from "../Sidebar/LLMStatus";
 import paths from "@/utils/paths";
 import useLogo from "@/hooks/useLogo";
 import {
@@ -14,10 +12,8 @@ import {
   Key,
   ChatText,
   Database,
-  DownloadSimple,
   Lock,
   GithubLogo,
-  DotsThree,
   House,
   X,
   List,
@@ -135,12 +131,6 @@ export default function SettingsSidebar() {
                     />
                   </>
                 )}
-
-                <Option
-                  href={paths.settings.exportImport()}
-                  btnText="Export or Import"
-                  icon={<DownloadSimple className="h-5 w-5 flex-shrink-0" />}
-                />
                 <Option
                   href={paths.settings.security()}
                   btnText="Security"
@@ -328,11 +318,6 @@ export function SidebarMobileHeader() {
                       />
                     </>
                   )}
-                  <Option
-                    href={paths.settings.exportImport()}
-                    btnText="Export or Import"
-                    icon={<DownloadSimple className="h-5 w-5 flex-shrink-0" />}
-                  />
                   <Option
                     href={paths.settings.security()}
                     btnText="Security"

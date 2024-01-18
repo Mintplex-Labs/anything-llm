@@ -4,7 +4,6 @@ process.env.NODE_ENV === "development"
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const serveIndex = require("serve-index");
 const cors = require("cors");
 const path = require("path");
 const { reqBody } = require("./utils/http");
@@ -84,11 +83,6 @@ if (process.env.NODE_ENV !== "development") {
     response.send("User-agent: *\nDisallow: /").end();
   });
 }
-
-app.use(
-  "/system/data-exports",
-  serveIndex(__dirname + "/storage/exports", { icons: true })
-);
 
 app.all("*", function (_, response) {
   response.sendStatus(404);

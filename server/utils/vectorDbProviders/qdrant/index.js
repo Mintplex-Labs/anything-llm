@@ -53,7 +53,8 @@ const QDrant = {
     _client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
+    topN = 4
   ) {
     const { client } = await this.connect();
     const result = {
@@ -64,7 +65,7 @@ const QDrant = {
 
     const responses = await client.search(namespace, {
       vector: queryVector,
-      limit: 4,
+      limit: topN,
       with_payload: true,
     });
 
@@ -190,7 +191,7 @@ const QDrant = {
         }
 
         await DocumentVectors.bulkInsert(documentVectors);
-        return true;
+        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.
@@ -272,11 +273,10 @@ const QDrant = {
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
-      return true;
+      return { vectorized: true, error: null };
     } catch (e) {
-      console.error(e);
       console.error("addDocumentToNamespace", e.message);
-      return false;
+      return { vectorized: false, error: e.message };
     }
   },
   deleteDocumentFromNamespace: async function (namespace, docId) {
@@ -302,6 +302,7 @@ const QDrant = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
+    topN = 4,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -320,7 +321,8 @@ const QDrant = {
       client,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
+      topN
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

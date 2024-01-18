@@ -9,6 +9,7 @@ import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import MilvusLogo from "@/media/vectordbs/milvus.png";
+import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
 import { MagnifyingGlass } from "@phosphor-icons/react";
@@ -19,6 +20,7 @@ import QDrantDBOptions from "@/components/VectorDBSelection/QDrantDBOptions";
 import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions";
 import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
 import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
+import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -33,7 +35,6 @@ export default function GeneralVectorDatabase() {
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
-      console.log(_settings);
       setSettings(_settings);
       setSelectedVDB(_settings?.VectorDB || "lancedb");
       setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
@@ -65,6 +66,14 @@ export default function GeneralVectorDatabase() {
       logo: PineconeLogo,
       options: <PineconeDBOptions settings={settings} />,
       description: "100% cloud-based vector database for enterprise use cases.",
+    },
+    {
+      name: "Zilliz Cloud",
+      value: "zilliz",
+      logo: ZillizLogo,
+      options: <ZillizCloudOptions settings={settings} />,
+      description:
+        "Cloud hosted vector database built for enterprise with SOC 2 compliance.",
     },
     {
       name: "QDrant",

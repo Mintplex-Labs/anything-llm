@@ -160,31 +160,6 @@ const System = {
         return false;
       });
   },
-  dataExport: async () => {
-    return await fetch(`${API_BASE}/system/data-export`, {
-      method: "GET",
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .then((res) => res)
-      .catch((e) => {
-        console.error(e);
-        return { filename: null, error: e.message };
-      });
-  },
-  importData: async (formData) => {
-    return await fetch(`${API_BASE}/system/data-import`, {
-      method: "POST",
-      body: formData,
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .then((res) => res)
-      .catch((e) => {
-        console.error(e);
-        return { success: false, error: e.message };
-      });
-  },
   uploadPfp: async function (formData) {
     return await fetch(`${API_BASE}/system/upload-pfp`, {
       method: "POST",

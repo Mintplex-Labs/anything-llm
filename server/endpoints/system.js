@@ -2,7 +2,6 @@ process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
 const { viewLocalFiles, normalizePath } = require("../utils/files");
-const { exportData, unpackAndOverwriteImport } = require("../utils/files/data");
 const {
   checkProcessorAlive,
   acceptedFileTypes,
@@ -290,7 +289,7 @@ function systemEndpoints(app) {
         }
 
         const body = reqBody(request);
-        const { newValues, error } = updateENV(body);
+        const { newValues, error } = await updateENV(body);
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
@@ -312,7 +311,7 @@ function systemEndpoints(app) {
         }
 
         const { usePassword, newPassword } = reqBody(request);
-        const { error } = updateENV(
+        const { error } = await updateENV(
           {
             AuthToken: usePassword ? newPassword : "",
             JWTSecret: usePassword ? v4() : "",
@@ -355,7 +354,7 @@ function systemEndpoints(app) {
           message_limit: 25,
         });
 
-        updateENV(
+        await updateENV(
           {
             AuthToken: "",
             JWTSecret: process.env.JWT_SECRET || v4(),
@@ -388,55 +387,6 @@ function systemEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
-
-  app.get(
-    "/system/data-export",
-    [validatedRequest, flexUserRoleValid],
-    async (_, response) => {
-      try {
-        const { filename, error } = await exportData();
-        response.status(200).json({ filename, error });
-      } catch (e) {
-        console.log(e.message, e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.get("/system/data-exports/:filename", (request, response) => {
-    const exportLocation = __dirname + "/../storage/exports/";
-    const sanitized = normalizePath(request.params.filename);
-    const finalDestination = path.join(exportLocation, sanitized);
-
-    if (!fs.existsSync(finalDestination)) {
-      response.status(404).json({
-        error: 404,
-        msg: `File ${request.params.filename} does not exist in exports.`,
-      });
-      return;
-    }
-
-    response.download(finalDestination, request.params.filename, (err) => {
-      if (err) {
-        response.send({
-          error: err,
-          msg: "Problem downloading the file",
-        });
-      }
-      // delete on download because endpoint is not authenticated.
-      fs.rmSync(finalDestination);
-    });
-  });
-
-  app.post(
-    "/system/data-import",
-    handleImports.single("file"),
-    async function (request, response) {
-      const { originalname } = request.file;
-      const { success, error } = await unpackAndOverwriteImport(originalname);
-      response.status(200).json({ success, error });
-    }
-  );
 
   app.get("/system/logo", async function (request, response) {
     try {
