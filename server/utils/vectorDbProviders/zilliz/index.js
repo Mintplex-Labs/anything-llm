@@ -1,110 +1,67 @@
-const { ChromaClient } = require("chromadb");
+const {
+  DataType,
+  MetricType,
+  IndexType,
+  MilvusClient,
+} = require("@zilliz/milvus2-sdk-node");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
-const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
+const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const {
   toChunks,
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
 
-const Chroma = {
-  name: "Chroma",
+// Zilliz is basically a copy of Milvus DB class with a different constructor
+// to connect to the cloud
+const Zilliz = {
+  name: "Zilliz",
   connect: async function () {
-    if (process.env.VECTOR_DB !== "chroma")
-      throw new Error("Chroma::Invalid ENV settings");
+    if (process.env.VECTOR_DB !== "zilliz")
+      throw new Error("Zilliz::Invalid ENV settings");
 
-    const client = new ChromaClient({
-      path: process.env.CHROMA_ENDPOINT, // if not set will fallback to localhost:8000
-      ...(!!process.env.CHROMA_API_HEADER && !!process.env.CHROMA_API_KEY
-        ? {
-            fetchOptions: {
-              headers: parseAuthHeader(
-                process.env.CHROMA_API_HEADER || "X-Api-Key",
-                process.env.CHROMA_API_KEY
-              ),
-            },
-          }
-        : {}),
+    const client = new MilvusClient({
+      address: process.env.ZILLIZ_ENDPOINT,
+      token: process.env.ZILLIZ_API_TOKEN,
     });
 
-    const isAlive = await client.heartbeat();
-    if (!isAlive)
+    const { isHealthy } = await client.checkHealth();
+    if (!isHealthy)
       throw new Error(
-        "ChromaDB::Invalid Heartbeat received - is the instance online?"
+        "Zilliz::Invalid Heartbeat received - is the instance online?"
       );
+
     return { client };
   },
   heartbeat: async function () {
-    const { client } = await this.connect();
-    return { heartbeat: await client.heartbeat() };
+    await this.connect();
+    return { heartbeat: Number(new Date()) };
   },
   totalVectors: async function () {
     const { client } = await this.connect();
-    const collections = await client.listCollections();
-    var totalVectors = 0;
-    for (const collectionObj of collections) {
-      const collection = await client
-        .getCollection({ name: collectionObj.name })
-        .catch(() => null);
-      if (!collection) continue;
-      totalVectors += await collection.count();
-    }
-    return totalVectors;
-  },
-  distanceToSimilarity: function (distance = null) {
-    if (distance === null || typeof distance !== "number") return 0.0;
-    if (distance >= 1.0) return 1;
-    if (distance <= 0) return 0;
-    return 1 - distance;
+    const { collection_names } = await client.listCollections();
+    const total = collection_names.reduce(async (acc, collection_name) => {
+      const statistics = await client.getCollectionStatistics({
+        collection_name,
+      });
+      return Number(acc) + Number(statistics?.data?.row_count ?? 0);
+    }, 0);
+    return total;
   },
   namespaceCount: async function (_namespace = null) {
     const { client } = await this.connect();
-    const namespace = await this.namespace(client, _namespace);
-    return namespace?.vectorCount || 0;
-  },
-  similarityResponse: async function (
-    client,
-    namespace,
-    queryVector,
-    similarityThreshold = 0.25,
-    topN = 4
-  ) {
-    const collection = await client.getCollection({ name: namespace });
-    const result = {
-      contextTexts: [],
-      sourceDocuments: [],
-      scores: [],
-    };
-
-    const response = await collection.query({
-      queryEmbeddings: queryVector,
-      nResults: topN,
+    const statistics = await client.getCollectionStatistics({
+      collection_name: _namespace,
     });
-    response.ids[0].forEach((_, i) => {
-      if (
-        this.distanceToSimilarity(response.distances[0][i]) <
-        similarityThreshold
-      )
-        return;
-      result.contextTexts.push(response.documents[0][i]);
-      result.sourceDocuments.push(response.metadatas[0][i]);
-      result.scores.push(this.distanceToSimilarity(response.distances[0][i]));
-    });
-
-    return result;
+    return Number(statistics?.data?.row_count ?? 0);
   },
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
-      .getCollection({ name: namespace })
+      .getCollectionStatistics({ collection_name: namespace })
       .catch(() => null);
-    if (!collection) return null;
-
-    return {
-      ...collection,
-      vectorCount: await collection.count(),
-    };
+    return collection;
   },
   hasNamespace: async function (namespace = null) {
     if (!namespace) return false;
@@ -113,17 +70,62 @@ const Chroma = {
   },
   namespaceExists: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    const collection = await client
-      .getCollection({ name: namespace })
+    const { value } = await client
+      .hasCollection({ collection_name: namespace })
       .catch((e) => {
-        console.error("ChromaDB::namespaceExists", e.message);
-        return null;
+        console.error("Zilliz::namespaceExists", e.message);
+        return { value: false };
       });
-    return !!collection;
+    return value;
   },
   deleteVectorsInNamespace: async function (client, namespace = null) {
-    await client.deleteCollection({ name: namespace });
+    await client.dropCollection({ collection_name: namespace });
     return true;
+  },
+  // Zilliz requires a dimension aspect for collection creation
+  // we pass this in from the first chunk to infer the dimensions like other
+  // providers do.
+  getOrCreateCollection: async function (client, namespace, dimensions = null) {
+    const isExists = await this.namespaceExists(client, namespace);
+    if (!isExists) {
+      if (!dimensions)
+        throw new Error(
+          `Zilliz:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on Github for support.`
+        );
+
+      await client.createCollection({
+        collection_name: namespace,
+        fields: [
+          {
+            name: "id",
+            description: "id",
+            data_type: DataType.VarChar,
+            max_length: 255,
+            is_primary_key: true,
+          },
+          {
+            name: "vector",
+            description: "vector",
+            data_type: DataType.FloatVector,
+            dim: dimensions,
+          },
+          {
+            name: "metadata",
+            decription: "metadata",
+            data_type: DataType.JSON,
+          },
+        ],
+      });
+      await client.createIndex({
+        collection_name: namespace,
+        field_name: "vector",
+        index_type: IndexType.AUTOINDEX,
+        metric_type: MetricType.COSINE,
+      });
+      await client.loadCollectionSync({
+        collection_name: namespace,
+      });
+    }
   },
   addDocumentToNamespace: async function (
     namespace,
@@ -132,6 +134,7 @@ const Chroma = {
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
+      let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
@@ -139,46 +142,35 @@ const Chroma = {
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
-        const collection = await client.getOrCreateCollection({
-          name: namespace,
-          metadata: { "hnsw:space": "cosine" },
-        });
         const { chunks } = cacheResult;
         const documentVectors = [];
+        vectorDimension = chunks[0][0].values.length || null;
 
+        await this.getOrCreateCollection(client, namespace, vectorDimension);
         for (const chunk of chunks) {
-          const submission = {
-            ids: [],
-            embeddings: [],
-            metadatas: [],
-            documents: [],
-          };
-
-          // Before sending to Chroma and saving the records to our db
+          // Before sending to Pinecone and saving the records to our db
           // we need to assign the id of each chunk that is stored in the cached file.
-          chunk.forEach((chunk) => {
+          const newChunks = chunk.map((chunk) => {
             const id = uuidv4();
-            const { id: _id, ...metadata } = chunk.metadata;
             documentVectors.push({ docId, vectorId: id });
-            submission.ids.push(id);
-            submission.embeddings.push(chunk.values);
-            submission.metadatas.push(metadata);
-            submission.documents.push(metadata.text);
+            return { id, vector: chunk.values, metadata: chunk.metadata };
+          });
+          const insertResult = await client.insert({
+            collection_name: namespace,
+            data: newChunks,
           });
 
-          const additionResult = await collection.add(submission);
-          if (!additionResult)
-            throw new Error("Error embedding into ChromaDB", additionResult);
+          if (insertResult?.status.error_code !== "Success") {
+            throw new Error(
+              `Error embedding into Zilliz! Reason:${insertResult?.status.reason}`
+            );
+          }
         }
-
         await DocumentVectors.bulkInsert(documentVectors);
+        await client.flushSync({ collection_names: [namespace] });
         return { vectorized: true, error: null };
       }
 
-      // If we are here then we are going to embed and store a novel document.
-      // We have to do this manually as opposed to using LangChains `Chroma.fromDocuments`
-      // because we then cannot atomically control our namespace to granularly find/remove documents
-      // from vectordb.
       const textSplitter = new RecursiveCharacterTextSplitter({
         chunkSize:
           getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1_000,
@@ -191,28 +183,17 @@ const Chroma = {
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await LLMConnector.embedChunks(textChunks);
-      const submission = {
-        ids: [],
-        embeddings: [],
-        metadatas: [],
-        documents: [],
-      };
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
+          if (!vectorDimension) vectorDimension = vector.length;
           const vectorRecord = {
             id: uuidv4(),
             values: vector,
             // [DO NOT REMOVE]
             // LangChain will be unable to find your text if you embed manually and dont include the `text` key.
-            // https://github.com/hwchase17/langchainjs/blob/2def486af734c0ca87285a48f1a04c057ab74bdf/langchain/src/vectorstores/pinecone.ts#L64
             metadata: { ...metadata, text: textChunks[i] },
           };
-
-          submission.ids.push(vectorRecord.id);
-          submission.embeddings.push(vectorRecord.values);
-          submission.metadatas.push(metadata);
-          submission.documents.push(textChunks[i]);
 
           vectors.push(vectorRecord);
           documentVectors.push({ docId, vectorId: vectorRecord.id });
@@ -223,23 +204,31 @@ const Chroma = {
         );
       }
 
-      const { client } = await this.connect();
-      const collection = await client.getOrCreateCollection({
-        name: namespace,
-        metadata: { "hnsw:space": "cosine" },
-      });
-
       if (vectors.length > 0) {
         const chunks = [];
+        const { client } = await this.connect();
+        await this.getOrCreateCollection(client, namespace, vectorDimension);
 
-        console.log("Inserting vectorized chunks into Chroma collection.");
-        for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
+        console.log("Inserting vectorized chunks into Zilliz.");
+        for (const chunk of toChunks(vectors, 100)) {
+          chunks.push(chunk);
+          const insertResult = await client.insert({
+            collection_name: namespace,
+            data: chunk.map((item) => ({
+              id: item.id,
+              vector: item.values,
+              metadata: chunk.metadata,
+            })),
+          });
 
-        const additionResult = await collection.add(submission);
-        if (!additionResult)
-          throw new Error("Error embedding into ChromaDB", additionResult);
-
+          if (insertResult?.status.error_code !== "Success") {
+            throw new Error(
+              `Error embedding into Zilliz! Reason:${insertResult?.status.reason}`
+            );
+          }
+        }
         await storeVectorResult(chunks, fullFilePath);
+        await client.flushSync({ collection_names: [namespace] });
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
@@ -253,18 +242,23 @@ const Chroma = {
     const { DocumentVectors } = require("../../../models/vectors");
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) return;
-    const collection = await client.getCollection({
-      name: namespace,
-    });
-
     const knownDocuments = await DocumentVectors.where({ docId });
     if (knownDocuments.length === 0) return;
 
     const vectorIds = knownDocuments.map((doc) => doc.vectorId);
-    await collection.delete({ ids: vectorIds });
+    const queryIn = vectorIds.map((v) => `'${v}'`).join(",");
+    await client.deleteEntities({
+      collection_name: namespace,
+      expr: `id in [${queryIn}]`,
+    });
 
     const indexes = knownDocuments.map((doc) => doc.id);
     await DocumentVectors.deleteIds(indexes);
+
+    // Even after flushing Zilliz can take some time to re-calc the count
+    // so all we can hope to do is flushSync so that the count can be correct
+    // on a later call.
+    await client.flushSync({ collection_names: [namespace] });
     return true;
   },
   performSimilaritySearch: async function ({
@@ -272,7 +266,6 @@ const Chroma = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
-    topN = 4,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -291,18 +284,40 @@ const Chroma = {
       client,
       namespace,
       queryVector,
-      similarityThreshold,
-      topN
+      similarityThreshold
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
-      return { metadata: { ...metadata, text: contextTexts[i] } };
+      return { ...metadata, text: contextTexts[i] };
     });
     return {
       contextTexts,
       sources: this.curateSources(sources),
       message: false,
     };
+  },
+  similarityResponse: async function (
+    client,
+    namespace,
+    queryVector,
+    similarityThreshold = 0.25
+  ) {
+    const result = {
+      contextTexts: [],
+      sourceDocuments: [],
+      scores: [],
+    };
+    const response = await client.search({
+      collection_name: namespace,
+      vectors: queryVector,
+    });
+    response.results.forEach((match) => {
+      if (match.score < similarityThreshold) return;
+      result.contextTexts.push(match.metadata.text);
+      result.sourceDocuments.push(match);
+      result.scores.push(match.score);
+    });
+    return result;
   },
   "namespace-stats": async function (reqBody = {}) {
     const { namespace = null } = reqBody;
@@ -321,16 +336,12 @@ const Chroma = {
     if (!(await this.namespaceExists(client, namespace)))
       throw new Error("Namespace by that name does not exist.");
 
-    const details = await this.namespace(client, namespace);
+    const statistics = await this.namespace(client, namespace);
     await this.deleteVectorsInNamespace(client, namespace);
+    const vectorCount = Number(statistics?.data?.row_count ?? 0);
     return {
-      message: `Namespace ${namespace} was deleted along with ${details?.vectorCount} vectors.`,
+      message: `Namespace ${namespace} was deleted along with ${vectorCount} vectors.`,
     };
-  },
-  reset: async function () {
-    const { client } = await this.connect();
-    await client.reset();
-    return { reset: true };
   },
   curateSources: function (sources = []) {
     const documents = [];
@@ -350,4 +361,4 @@ const Chroma = {
   },
 };
 
-module.exports.Chroma = Chroma;
+module.exports.Zilliz = Zilliz;

@@ -10,6 +10,7 @@ import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
+import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
 import PineconeLogo from "@/media/vectordbs/pinecone.png";
 import LanceDbLogo from "@/media/vectordbs/lancedb.png";
@@ -138,6 +139,13 @@ const VECTOR_DB_PRIVACY = {
       "Your vectors and document text are stored on your Milvus instance (cloud or self-hosted)",
     ],
     logo: MilvusLogo,
+  },
+  zilliz: {
+    name: "Zilliz Cloud",
+    description: [
+      "Your vectors and document text are stored on your Zilliz cloud cluster.",
+    ],
+    logo: ZillizLogo,
   },
   lancedb: {
     name: "LanceDB",

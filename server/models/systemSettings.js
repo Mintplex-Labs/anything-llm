@@ -63,6 +63,12 @@ const SystemSettings = {
             MilvusPassword: !!process.env.MILVUS_PASSWORD,
           }
         : {}),
+      ...(vectorDB === "zilliz"
+        ? {
+            ZillizEndpoint: process.env.ZILLIZ_ENDPOINT,
+            ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
+          }
+        : {}),
       LLMProvider: llmProvider,
       ...(llmProvider === "openai"
         ? {

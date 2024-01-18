@@ -403,3 +403,7 @@ dialog::backdrop {
 .tooltip {
   @apply !bg-black !text-white !py-2 !px-3 !rounded-md;
 }
+
+.Toastify__toast-body {
+  white-space: pre-line;
+}
