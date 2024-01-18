@@ -29,14 +29,21 @@ app.post("/process", async function (request, response) {
     const targetFilename = path
       .normalize(filename)
       .replace(/^(\.\.(\/|\\|$))+/, "");
-    const { success, reason } = await processSingleFile(targetFilename);
-    response.status(200).json({ filename: targetFilename, success, reason });
+    const {
+      success,
+      reason,
+      documents = [],
+    } = await processSingleFile(targetFilename);
+    response
+      .status(200)
+      .json({ filename: targetFilename, success, reason, documents });
   } catch (e) {
     console.error(e);
     response.status(200).json({
       filename: filename,
       success: false,
       reason: "A processing error occurred.",
+      documents: [],
     });
   }
   return;
@@ -45,14 +52,15 @@ app.post("/process", async function (request, response) {
 app.post("/process-link", async function (request, response) {
   const { link } = reqBody(request);
   try {
-    const { success, reason } = await processLink(link);
-    response.status(200).json({ url: link, success, reason });
+    const { success, reason, documents = [] } = await processLink(link);
+    response.status(200).json({ url: link, success, reason, documents });
   } catch (e) {
     console.error(e);
     response.status(200).json({
       url: link,
       success: false,
       reason: "A processing error occurred.",
+      documents: [],
     });
   }
   return;

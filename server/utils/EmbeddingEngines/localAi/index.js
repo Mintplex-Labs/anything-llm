@@ -16,10 +16,6 @@ class LocalAiEmbedder {
         : {}),
     });
     this.openai = new OpenAIApi(config);
-    // We don't know this for user's set model so for vectorDB integrations that requires dimensionality
-    // in schema, we will throw an error.
-    // Applies to QDrant and Milvus.
-    this.dimensions = null;
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 50;
@@ -45,7 +41,12 @@ class LocalAiEmbedder {
               resolve({ data: res.data?.data, error: null });
             })
             .catch((e) => {
-              resolve({ data: [], error: e?.error });
+              e.type =
+                e?.response?.data?.error?.code ||
+                e?.response?.status ||
+                "failed_to_embed";
+              e.message = e?.response?.data?.error?.message || e.message;
+              resolve({ data: [], error: e });
             });
         })
       );
@@ -61,11 +62,14 @@ class LocalAiEmbedder {
         .map((res) => res.error)
         .flat();
       if (errors.length > 0) {
+        let uniqueErrors = new Set();
+        errors.map((error) =>
+          uniqueErrors.add(`[${error.type}]: ${error.message}`)
+        );
+
         return {
           data: [],
-          error: `(${errors.length}) Embedding Errors! ${errors
-            .map((error) => `[${error.type}]: ${error.message}`)
-            .join(", ")}`,
+          error: Array.from(uniqueErrors).join(", "),
         };
       }
       return {

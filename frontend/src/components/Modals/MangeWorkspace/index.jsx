@@ -117,6 +117,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
               <WorkspaceSettings
                 active={selectedTab === "settings"} // To force reload live sub-components like VectorCount
                 workspace={workspace}
+                settings={settings}
               />
             </div>
           </Suspense>

@@ -8,6 +8,7 @@ const {
   chatPrompt,
 } = require(".");
 
+const VALID_CHAT_MODE = ["chat", "query"];
 function writeResponseChunk(response, data) {
   response.write(`data: ${JSON.stringify(data)}\n\n`);
   return;
@@ -29,7 +30,7 @@ async function streamChatWithWorkspace(
     return;
   }
 
-  const LLMConnector = getLLMProvider();
+  const LLMConnector = getLLMProvider(workspace?.chatModel);
   const VectorDb = getVectorDbClass();
   const { safe, reasons = [] } = await LLMConnector.isSafe(message);
   if (!safe) {
@@ -50,6 +51,19 @@ async function streamChatWithWorkspace(
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
   if (!hasVectorizedSpace || embeddingsCount === 0) {
+    if (chatMode === "query") {
+      writeResponseChunk(response, {
+        id: uuid,
+        type: "textResponse",
+        textResponse:
+          "There is no relevant information in this workspace to answer your query.",
+        sources: [],
+        close: true,
+        error: null,
+      });
+      return;
+    }
+
     // If there are no embeddings - chat like a normal LLM chat interface.
     return await streamEmptyEmbeddingChat({
       response,
@@ -78,6 +92,7 @@ async function streamChatWithWorkspace(
     input: message,
     LLMConnector,
     similarityThreshold: workspace?.similarityThreshold,
+    topN: workspace?.topN,
   });
 
   // Failed similarity search.
@@ -89,6 +104,21 @@ async function streamChatWithWorkspace(
       sources: [],
       close: true,
       error,
+    });
+    return;
+  }
+
+  // If in query mode and no sources are found, do not
+  // let the LLM try to hallucinate a response or use general knowledge
+  if (chatMode === "query" && sources.length === 0) {
+    writeResponseChunk(response, {
+      id: uuid,
+      type: "textResponse",
+      textResponse:
+        "There is no relevant information in this workspace to answer your query.",
+      sources: [],
+      close: true,
+      error: null,
     });
     return;
   }
@@ -112,7 +142,7 @@ async function streamChatWithWorkspace(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
     );
     completeText = await LLMConnector.getChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? 0.7,
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
     writeResponseChunk(response, {
       uuid,
@@ -124,7 +154,7 @@ async function streamChatWithWorkspace(
     });
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? 0.7,
+      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
     completeText = await handleStreamResponses(response, stream, {
       uuid,
@@ -475,6 +505,7 @@ function handleStreamResponses(response, stream, responseProps) {
 }
 
 module.exports = {
+  VALID_CHAT_MODE,
   streamChatWithWorkspace,
   writeResponseChunk,
 };

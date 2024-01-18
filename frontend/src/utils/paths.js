@@ -56,9 +56,6 @@ export default {
       return `/workspace/${slug}`;
     },
   },
-  exports: () => {
-    return `${API_BASE.replace("/api", "")}/system/data-exports`;
-  },
   apiDocs: () => {
     return `${API_BASE}/docs`;
   },
@@ -86,9 +83,6 @@ export default {
     },
     vectorDatabase: () => {
       return "/settings/vector-database";
-    },
-    exportImport: () => {
-      return "/settings/export-import";
     },
     security: () => {
       return "/settings/security";

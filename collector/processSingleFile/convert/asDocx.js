@@ -24,7 +24,11 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
   if (!pageContent.length) {
     console.error(`Resulting text content was empty for ${filename}.`);
     trashFile(fullFilePath);
-    return { success: false, reason: `No text content found in ${filename}.` };
+    return {
+      success: false,
+      reason: `No text content found in ${filename}.`,
+      documents: [],
+    };
   }
 
   const content = pageContent.join("");
@@ -42,10 +46,13 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
     token_count_estimate: tokenizeString(content).length,
   };
 
-  writeToServerDocuments(data, `${slugify(filename)}-${data.id}`);
+  const document = writeToServerDocuments(
+    data,
+    `${slugify(filename)}-${data.id}`
+  );
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
-  return { success: true, reason: null };
+  return { success: true, reason: null, documents: [document] };
 }
 
 module.exports = asDocX;

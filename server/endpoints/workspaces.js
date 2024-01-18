@@ -159,7 +159,7 @@ function workspaceEndpoints(app) {
         }
 
         await Document.removeDocuments(currWorkspace, deletes);
-        const { failed = [] } = await Document.addDocuments(
+        const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
           currWorkspace,
           adds
         );
@@ -167,8 +167,10 @@ function workspaceEndpoints(app) {
         response.status(200).json({
           workspace: updatedWorkspace,
           message:
-            failed.length > 0
-              ? `${failed.length} documents could not be embedded.`
+            failedToEmbed.length > 0
+              ? `${failedToEmbed.length} documents failed to add.\n\n${errors
+                  .map((msg) => `${msg}`)
+                  .join("\n\n")}`
               : null,
         });
       } catch (e) {

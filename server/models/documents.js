@@ -39,6 +39,7 @@ const Document = {
     if (additions.length === 0) return { failed: [], embedded: [] };
     const embedded = [];
     const failedToEmbed = [];
+    const errors = new Set();
 
     for (const path of additions) {
       const data = await fileData(path);
@@ -53,14 +54,20 @@ const Document = {
         workspaceId: workspace.id,
         metadata: JSON.stringify(metadata),
       };
-      const vectorized = await VectorDb.addDocumentToNamespace(
+
+      const { vectorized, error } = await VectorDb.addDocumentToNamespace(
         workspace.slug,
         { ...data, docId },
         path
       );
+
       if (!vectorized) {
-        console.error("Failed to vectorize", path);
-        failedToEmbed.push(path);
+        console.error(
+          "Failed to vectorize",
+          metadata?.title || newDoc.filename
+        );
+        failedToEmbed.push(metadata?.title || newDoc.filename);
+        errors.add(error);
         continue;
       }
 
@@ -77,7 +84,7 @@ const Document = {
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "pinecone",
     });
-    return { failed: failedToEmbed, embedded };
+    return { failedToEmbed, errors: Array.from(errors), embedded };
   },
 
   removeDocuments: async function (workspace, removals = []) {

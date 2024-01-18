@@ -1,14 +1,15 @@
-import { memo, forwardRef } from "react";
+import React, { memo, forwardRef } from "react";
 import { Warning } from "@phosphor-icons/react";
 import Jazzicon from "../../../../UserIcon";
+import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
 import { userFromStorage } from "@/utils/request";
 import Citations from "../Citation";
 import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
-const DOMPurify = createDOMPurify(window);
 
+const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = forwardRef(
   (
     { uuid = v4(), message, role, workspace, sources = [], error = false },
@@ -38,12 +39,15 @@ const HistoricalMessage = forwardRef(
             />
 
             {error ? (
-              <span
-                className={`inline-block p-2 rounded-lg bg-red-50 text-red-500`}
-              >
-                <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
-                respond to message.
-              </span>
+              <div className="p-2 rounded-lg bg-red-50 text-red-500">
+                <span className={`inline-block `}>
+                  <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
+                  respond to message.
+                </span>
+                <p className="text-xs font-mono mt-2 border-l-2 border-red-300 pl-2 bg-red-200 p-2 rounded-sm">
+                  {error}
+                </p>
+              </div>
             ) : (
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -53,6 +57,12 @@ const HistoricalMessage = forwardRef(
               />
             )}
           </div>
+          {role === "assistant" && !error && (
+            <div className="flex gap-x-5">
+              <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden" />
+              <Actions message={DOMPurify.sanitize(message)} />
+            </div>
+          )}
           {role === "assistant" && <Citations sources={sources} />}
         </div>
       </div>

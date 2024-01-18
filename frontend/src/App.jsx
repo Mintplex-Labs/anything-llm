@@ -8,6 +8,8 @@ import PrivateRoute, {
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "@/pages/Login";
+import OnboardingFlow from "@/pages/OnboardingFlow";
+
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
 
@@ -32,9 +34,6 @@ const GeneralEmbeddingPreference = lazy(
 const GeneralVectorDatabase = lazy(
   () => import("@/pages/GeneralSettings/VectorDatabase")
 );
-const GeneralExportImport = lazy(
-  () => import("@/pages/GeneralSettings/ExportImport")
-);
 const GeneralSecurity = lazy(() => import("@/pages/GeneralSettings/Security"));
 const DataConnectors = lazy(
   () => import("@/pages/GeneralSettings/DataConnectors")
@@ -42,7 +41,6 @@ const DataConnectors = lazy(
 const DataConnectorSetup = lazy(
   () => import("@/pages/GeneralSettings/DataConnectors/Connectors")
 );
-const OnboardingFlow = lazy(() => import("@/pages/OnboardingFlow"));
 
 export default function App() {
   return (
@@ -73,10 +71,6 @@ export default function App() {
                 element={<AdminRoute Component={GeneralVectorDatabase} />}
               />
               {/* Manager */}
-              <Route
-                path="/settings/export-import"
-                element={<ManagerRoute Component={GeneralExportImport} />}
-              />
               <Route
                 path="/settings/security"
                 element={<ManagerRoute Component={GeneralSecurity} />}

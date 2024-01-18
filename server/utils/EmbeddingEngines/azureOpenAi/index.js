@@ -13,7 +13,6 @@ class AzureOpenAiEmbedder {
       new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
     );
     this.openai = openai;
-    this.dimensions = 1536;
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     // https://learn.microsoft.com/en-us/azure/ai-services/openai/faq#i-am-trying-to-use-embeddings-and-received-the-error--invalidrequesterror--too-many-inputs--the-max-number-of-inputs-is-1---how-do-i-fix-this-:~:text=consisting%20of%20up%20to%2016%20inputs%20per%20API%20request
@@ -47,7 +46,12 @@ class AzureOpenAiEmbedder {
               resolve({ data: res.data, error: null });
             })
             .catch((e) => {
-              resolve({ data: [], error: e?.error });
+              e.type =
+                e?.response?.data?.error?.code ||
+                e?.response?.status ||
+                "failed_to_embed";
+              e.message = e?.response?.data?.error?.message || e.message;
+              resolve({ data: [], error: e });
             });
         })
       );
@@ -63,11 +67,14 @@ class AzureOpenAiEmbedder {
         .map((res) => res.error)
         .flat();
       if (errors.length > 0) {
+        let uniqueErrors = new Set();
+        errors.map((error) =>
+          uniqueErrors.add(`[${error.type}]: ${error.message}`)
+        );
+
         return {
           data: [],
-          error: `(${errors.length}) Embedding Errors! ${errors
-            .map((error) => `[${error.type}]: ${error.message}`)
-            .join(", ")}`,
+          error: Array.from(uniqueErrors).join(", "),
         };
       }
       return {

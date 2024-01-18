@@ -71,21 +71,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         return false;
       }
 
-      // TODO: Delete this snippet once we have streaming stable.
-      // const chatResult = await Workspace.sendChat(
-      //   workspace,
-      //   promptMessage.userMessage,
-      //   window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
-      //   "chat",
-      // )
-      // handleChat(
-      //   chatResult,
-      //   setLoadingResponse,
-      //   setChatHistory,
-      //   remHistory,
-      //   _chatHistory
-      // )
-
       await Workspace.streamChat(
         workspace,
         promptMessage.userMessage,

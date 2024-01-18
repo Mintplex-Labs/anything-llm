@@ -38,14 +38,19 @@ function writeToServerDocuments(
       );
   if (!fs.existsSync(destination))
     fs.mkdirSync(destination, { recursive: true });
-  const destinationFilePath = path.resolve(destination, filename);
+  const destinationFilePath = path.resolve(destination, filename) + ".json";
 
-  fs.writeFileSync(
-    destinationFilePath + ".json",
-    JSON.stringify(data, null, 4),
-    { encoding: "utf-8" }
-  );
-  return;
+  fs.writeFileSync(destinationFilePath, JSON.stringify(data, null, 4), {
+    encoding: "utf-8",
+  });
+
+  return {
+    ...data,
+    // relative location string that can be passed into the /update-embeddings api
+    // that will work since we know the location exists and since we only allow
+    // 1-level deep folders this will always work. This still works for integrations like GitHub and YouTube.
+    location: destinationFilePath.split("/").slice(-2).join("/"),
+  };
 }
 
 // When required we can wipe the entire collector hotdir and tmp storage in case
