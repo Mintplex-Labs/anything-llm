@@ -67,7 +67,8 @@ const Chroma = {
     client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
+    topN
   ) {
     const collection = await client.getCollection({ name: namespace });
     const result = {
@@ -78,7 +79,7 @@ const Chroma = {
 
     const response = await collection.query({
       queryEmbeddings: queryVector,
-      nResults: 4,
+      nResults: topN,
     });
     response.ids[0].forEach((_, i) => {
       if (
@@ -272,6 +273,7 @@ const Chroma = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
+    topN = null,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -290,7 +292,8 @@ const Chroma = {
       client,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
+      topN || 4
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

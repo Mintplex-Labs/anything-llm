@@ -44,7 +44,8 @@ const Pinecone = {
     index,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
+    topN
   ) {
     const result = {
       contextTexts: [],
@@ -55,7 +56,7 @@ const Pinecone = {
       queryRequest: {
         namespace,
         vector: queryVector,
-        topK: 4,
+        topK: topN,
         includeMetadata: true,
       },
     });
@@ -238,6 +239,7 @@ const Pinecone = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
+    topN = null,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -253,7 +255,8 @@ const Pinecone = {
       pineconeIndex,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
+      topN || 4
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

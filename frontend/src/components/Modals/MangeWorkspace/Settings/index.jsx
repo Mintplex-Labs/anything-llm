@@ -21,6 +21,9 @@ function castToType(key, value) {
     similarityThreshold: {
       cast: (value) => parseFloat(value),
     },
+    topN: {
+      cast: (value) => Number(value),
+    },
   };
 
   if (!definitions.hasOwnProperty(key)) return value;
@@ -236,6 +239,37 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
                   autoComplete="off"
                   onChange={() => setHasChanges(true)}
                 />
+
+                <div className="mt-4">
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-white"
+                    >
+                      Top N Snippets
+                    </label>
+                    <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+                      This setting controls how many context snippets will be
+                      returned by the vector database.
+                      <br />
+                      <i>Recommended: 4</i>
+                    </p>
+                  </div>
+                  <input
+                    name="topN"
+                    type="number"
+                    min={4}
+                    max={12}
+                    step={1}
+                    onWheel={(e) => e.target.blur()}
+                    defaultValue={workspace?.topN ?? 4}
+                    className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder="4"
+                    required={true}
+                    autoComplete="off"
+                    onChange={() => setHasChanges(true)}
+                  />
+                </div>
                 <div className="mt-4">
                   <div className="flex flex-col">
                     <label
