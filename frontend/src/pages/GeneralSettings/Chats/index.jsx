@@ -10,7 +10,7 @@ import System from "@/models/system";
 import { CaretDown } from "@phosphor-icons/react";
 export default function WorkspaceChats() {
   const [showMenu, setShowMenu] = useState(false);
-  const [exportType, setExportType] = useState("csv");
+  const [exportType, setExportType] = useState("jsonl");
   const menuRef = useRef();
   const openMenuButton = useRef();
 

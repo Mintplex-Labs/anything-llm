@@ -829,7 +829,7 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid],
     async (request, response) => {
       try {
-        const { type = "csv" } = request.query;
+        const { type = "jsonl" } = request.query;
         const chats = await WorkspaceChats.whereWithData({}, null, null, {
           id: "asc",
         });
