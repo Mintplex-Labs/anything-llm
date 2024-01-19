@@ -16,10 +16,7 @@ const {
   multiUserMode,
   queryParams,
 } = require("../utils/http");
-const {
-  setupLogoUploads,
-  setupPfpUploads,
-} = require("../utils/files/multer");
+const { setupLogoUploads, setupPfpUploads } = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
