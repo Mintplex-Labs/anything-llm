@@ -32,7 +32,7 @@ export default function WorkspaceChats() {
       window.URL.revokeObjectURL(link.href);
       document.body.removeChild(link);
       showToast(
-        `Chats exported successfully as ${fileExtension.toUpperCase()}. Note: Must have at least 10 chats to be valid for OpenAI fine tuning.`,
+        `Chats exported successfully as ${fileExtension.toUpperCase()}.`,
         "success"
       );
     } else {
