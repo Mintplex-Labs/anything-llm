@@ -423,8 +423,9 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  exportChats: async () => {
-    return await fetch(`${API_BASE}/system/export-chats`, {
+  exportChats: async (type = "csv") => {
+    const url = `${API_BASE}/system/export-chats?type=${type}`;
+    return await fetch(url, {
       method: "GET",
       headers: baseHeaders(),
     })
