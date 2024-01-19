@@ -17,7 +17,6 @@ const {
   queryParams,
 } = require("../utils/http");
 const {
-  setupDataImports,
   setupLogoUploads,
   setupPfpUploads,
 } = require("../utils/files/multer");
@@ -25,7 +24,6 @@ const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { handleImports } = setupDataImports();
 const { handleLogoUploads } = setupLogoUploads();
 const { handlePfpUploads } = setupPfpUploads();
 const fs = require("fs");
