@@ -398,8 +398,10 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  exportChats: async () => {
-    return await fetch(`${API_BASE}/system/export-chats`, {
+  exportChats: async (type = "csv") => {
+    const url = new URL(`${fullApiUrl()}/system/export-chats`);
+    url.searchParams.append("type", encodeURIComponent(type));
+    return await fetch(url, {
       method: "GET",
       headers: baseHeaders(),
     })

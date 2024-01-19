@@ -47,6 +47,7 @@ const { WorkspaceChats } = require("../models/workspaceChats");
 const { Workspace } = require("../models/workspace");
 const { flexUserRoleValid } = require("../utils/middleware/multiUserProtected");
 const { fetchPfp, determinePfpFilepath } = require("../utils/files/pfp");
+const { convertToCSV, convertToJSON, convertToJSONL } = require("./utils");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -776,8 +777,9 @@ function systemEndpoints(app) {
   app.get(
     "/system/export-chats",
     [validatedRequest, flexUserRoleValid],
-    async (_request, response) => {
+    async (request, response) => {
       try {
+        const { type = "jsonl" } = request.query;
         const chats = await WorkspaceChats.whereWithData({}, null, null, {
           id: "asc",
         });
@@ -828,13 +830,27 @@ function systemEndpoints(app) {
           return acc;
         }, {});
 
-        // Convert to JSONL
-        const jsonl = Object.values(workspaceChatsMap)
-          .map((workspaceChats) => JSON.stringify(workspaceChats))
-          .join("\n");
+        let output;
+        switch (type.toLowerCase()) {
+          case "json": {
+            response.setHeader("Content-Type", "application/json");
+            output = await convertToJSON(workspaceChatsMap);
+            break;
+          }
+          case "csv": {
+            response.setHeader("Content-Type", "text/csv");
+            output = await convertToCSV(workspaceChatsMap);
+            break;
+          }
+          // JSONL default
+          default: {
+            response.setHeader("Content-Type", "application/jsonl");
+            output = await convertToJSONL(workspaceChatsMap);
+            break;
+          }
+        }
 
-        response.setHeader("Content-Type", "application/jsonl");
-        response.status(200).send(jsonl);
+        response.status(200).send(output);
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
