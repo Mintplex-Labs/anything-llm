@@ -1,30 +1,53 @@
 const fs = require("fs");
 const path = require("path");
-const { purgeVectorCache, purgeSourceDocument, normalizePath } = require(".");
+const {
+  purgeVectorCache,
+  purgeSourceDocument,
+  normalizePath,
+  isWithin,
+  documentsPath,
+} = require(".");
 const { Document } = require("../../models/documents");
 const { Workspace } = require("../../models/workspace");
 
-async function purgeDocument(filename) {
+async function purgeDocument(filename = null) {
+  if (!filename || !normalizePath(filename)) return;
+
+  await purgeVectorCache(filename);
+  await purgeSourceDocument(filename);
   const workspaces = await Workspace.where();
   for (const workspace of workspaces) {
     await Document.removeDocuments(workspace, [filename]);
   }
-  await purgeVectorCache(filename);
-  await purgeSourceDocument(filename);
   return;
 }
 
-async function purgeFolder(folderName) {
-  if (folderName === "custom-documents") return;
-  const documentsFolder =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, `../../storage/documents`)
-      : path.resolve(process.env.STORAGE_DIR, `documents`);
+async function purgeFolder(folderName = null) {
+  if (!folderName) return;
+  const subFolder = normalizePath(folderName);
+  const subFolderPath = path.resolve(documentsPath, subFolder);
+  const validRemovableSubFolders = fs
+    .readdirSync(documentsPath)
+    .map((folder) => {
+      // Filter out any results which are not folders or
+      // are the protected custom-documents folder.
+      if (folder === "custom-documents") return null;
+      const subfolderPath = path.resolve(documentsPath, folder);
+      if (!fs.lstatSync(subfolderPath).isDirectory()) return null;
+      return folder;
+    })
+    .filter((subFolder) => !!subFolder);
 
-  const folderPath = path.resolve(documentsFolder, normalizePath(folderName));
+  if (
+    !validRemovableSubFolders.includes(subFolder) ||
+    !fs.existsSync(subFolderPath) ||
+    !isWithin(documentsPath, subFolderPath)
+  )
+    return;
+
   const filenames = fs
-    .readdirSync(folderPath)
-    .map((file) => path.join(folderPath, file));
+    .readdirSync(subFolderPath)
+    .map((file) => path.join(subFolderPath, file));
   const workspaces = await Workspace.where();
 
   const purgePromises = [];
@@ -47,7 +70,7 @@ async function purgeFolder(folderName) {
   }
 
   await Promise.all(purgePromises.flat().map((f) => f()));
-  fs.rmSync(folderPath, { recursive: true }); // Delete root document and source files.
+  fs.rmSync(subFolderPath, { recursive: true }); // Delete target document-folder and source files.
 
   return;
 }
