@@ -29,10 +29,11 @@ async function purgeFolder(folderName = null) {
   const validRemovableSubFolders = fs
     .readdirSync(documentsPath)
     .map((folder) => {
+      // Filter out any results which are not folders or
+      // are the protected custom-documents folder.
       if (folder === "custom-documents") return null;
-      const folderPath = path.resolve(documentsPath, folder);
-      if (!fs.existsSync(folderPath) || !isWithin(documentsPath, folderPath))
-        return null;
+      const subfolderPath = path.resolve(documentsPath, folder);
+      if (!fs.lstatSync(subfolderPath).isDirectory()) return null;
       return folder;
     })
     .filter((subFolder) => !!subFolder);
