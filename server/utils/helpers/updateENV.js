@@ -450,6 +450,12 @@ async function dumpENV() {
     "PASSWORDNUMERIC",
     "PASSWORDSYMBOL",
     "PASSWORDREQUIREMENTS",
+    // HTTPS SETUP KEYS
+    "ENABLE_HTTPS",
+    "HTTPS_CERT_PATH",
+    "HTTPS_KEY_PATH",
+    // DISABLED TELEMETRY
+    "DISABLE_TELEMETRY",
   ];
 
   for (const key of protectedKeys) {
