@@ -424,7 +424,8 @@ const System = {
       });
   },
   exportChats: async (type = "csv") => {
-    const url = `${API_BASE}/system/export-chats?type=${type}`;
+    const url = new URL(`${fullApiUrl()}/system/export-chats`);
+    url.searchParams.append("type", encodeURIComponent(type));
     return await fetch(url, {
       method: "GET",
       headers: baseHeaders(),
