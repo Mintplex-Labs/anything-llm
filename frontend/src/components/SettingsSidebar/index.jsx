@@ -96,6 +96,7 @@ export default function SettingsSidebar() {
                   btnText="Workspace Chat"
                   icon={<ChatCenteredText className="h-5 w-5 flex-shrink-0" />}
                   user={user}
+                  flex={true}
                   allowedRole={["admin", "manager"]}
                 />
                 <Option
@@ -103,6 +104,7 @@ export default function SettingsSidebar() {
                   btnText="Appearance"
                   icon={<Eye className="h-5 w-5 flex-shrink-0" />}
                   user={user}
+                  flex={true}
                   allowedRole={["admin", "manager"]}
                 />
                 <Option
@@ -110,6 +112,7 @@ export default function SettingsSidebar() {
                   btnText="API Keys"
                   icon={<Key className="h-5 w-5 flex-shrink-0" />}
                   user={user}
+                  flex={true}
                   allowedRole={["admin"]}
                 />
                 <Option
@@ -117,6 +120,7 @@ export default function SettingsSidebar() {
                   btnText="LLM Preference"
                   icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
                   user={user}
+                  flex={true}
                   allowedRole={["admin"]}
                 />
                 <Option
@@ -124,6 +128,7 @@ export default function SettingsSidebar() {
                   btnText="Embedding Preference"
                   icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
                   user={user}
+                  flex={true}
                   allowedRole={["admin"]}
                 />
                 <Option
@@ -131,6 +136,7 @@ export default function SettingsSidebar() {
                   btnText="Vector Database"
                   icon={<Database className="h-5 w-5 flex-shrink-0" />}
                   user={user}
+                  flex={true}
                   allowedRole={["admin"]}
                 />
                 <Option
@@ -138,6 +144,7 @@ export default function SettingsSidebar() {
                   btnText="Data Connectors"
                   icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
                   user={user}
+                  flex={true}
                   allowedRole={["admin", "manager"]}
                 />
                 <Option
@@ -145,6 +152,7 @@ export default function SettingsSidebar() {
                   btnText="Security"
                   icon={<Lock className="h-5 w-5 flex-shrink-0" />}
                   user={user}
+                  flex={true}
                   allowedRole={["admin", "manager"]}
                 />
               </div>
@@ -375,10 +383,21 @@ export function SidebarMobileHeader() {
   );
 }
 
-const Option = ({ btnText, icon, href, user = null, allowedRole = [] }) => {
+const Option = ({
+  btnText,
+  icon,
+  href,
+  flex = false,
+  user = null,
+  allowedRole = [],
+}) => {
   const isActive = window.location.pathname === href;
 
-  if (allowedRole.length > 0 && !allowedRole.includes(user?.role)) return null;
+  // Option only for multi-user
+  if (!flex && !allowedRole.includes(user?.role)) return null;
+
+  // Option is dual-mode, but user exists, we need to check permissions
+  if (flex && !!user && !allowedRole.includes(user?.role)) return null;
   return (
     <div className="flex gap-x-2 items-center justify-between text-white">
       <a
