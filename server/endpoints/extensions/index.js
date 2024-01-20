@@ -4,6 +4,7 @@ const {
 } = require("../../utils/files/documentProcessor");
 const {
   flexUserRoleValid,
+  ROLES,
 } = require("../../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../../utils/middleware/validatedRequest");
 
@@ -12,7 +13,7 @@ function extensionEndpoints(app) {
 
   app.post(
     "/ext/github/branches",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const responseFromProcessor = await forwardExtensionRequest({
@@ -30,7 +31,7 @@ function extensionEndpoints(app) {
 
   app.post(
     "/ext/github/repo",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const responseFromProcessor = await forwardExtensionRequest({
@@ -51,7 +52,7 @@ function extensionEndpoints(app) {
 
   app.post(
     "/ext/youtube/transcript",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const responseFromProcessor = await forwardExtensionRequest({
