@@ -298,7 +298,7 @@ function adminEndpoints(app) {
 
   app.get(
     "/admin/api-keys",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
         const apiKeys = await ApiKey.whereWithUser({});
@@ -318,7 +318,7 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/generate-api-key",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -336,7 +336,7 @@ function adminEndpoints(app) {
 
   app.delete(
     "/admin/delete-api-key/:id",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { id } = request.params;

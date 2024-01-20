@@ -110,7 +110,7 @@ export default function SettingsSidebar() {
                   btnText="API Keys"
                   icon={<Key className="h-5 w-5 flex-shrink-0" />}
                   user={user}
-                  allowedRole={["admin", "manager"]}
+                  allowedRole={["admin"]}
                 />
                 <Option
                   href={paths.settings.llmPreference()}

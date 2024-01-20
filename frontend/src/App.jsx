@@ -81,7 +81,7 @@ export default function App() {
               />
               <Route
                 path="/settings/api-keys"
-                element={<ManagerRoute Component={GeneralApiKeys} />}
+                element={<AdminRoute Component={GeneralApiKeys} />}
               />
               <Route
                 path="/settings/workspace-chats"
