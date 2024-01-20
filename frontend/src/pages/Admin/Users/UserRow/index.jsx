@@ -13,9 +13,7 @@ const ModMap = {
 
 export default function UserRow({ currUser, user }) {
   const rowRef = useRef(null);
-  const canModify = !!currUser?.role
-    ? ModMap[currUser?.role].includes(user.role)
-    : false;
+  const canModify = ModMap[currUser?.role || "default"].includes(user.role);
   const [suspended, setSuspended] = useState(user.suspended === 1);
   const handleSuspend = async () => {
     if (

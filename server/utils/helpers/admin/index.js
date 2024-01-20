@@ -2,7 +2,7 @@ const { User } = require("../../../models/user");
 const { ROLES } = require("../../middleware/multiUserProtected");
 
 // When a user is updating or creating a user in multi-user, we need to check if they
-// are allowed to do this and are the new or existing user will be at or below their permission level.
+// are allowed to do this and that the new or existing user will be at or below their permission level.
 // the user executing this function should be an admin or manager.
 function validRoleSelection(currentUser = {}, newUserParams = {}) {
   if (!newUserParams.hasOwnProperty("role"))

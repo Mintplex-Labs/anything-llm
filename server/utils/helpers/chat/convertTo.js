@@ -4,6 +4,7 @@
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 
+// Todo: make this more useful for export by adding other columns about workspace, user, time, etc for post-filtering.
 async function convertToCSV(workspaceChatsMap) {
   const rows = ["role,content"];
   for (const workspaceChats of Object.values(workspaceChatsMap)) {

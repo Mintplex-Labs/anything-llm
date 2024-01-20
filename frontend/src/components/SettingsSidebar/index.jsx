@@ -62,6 +62,7 @@ export default function SettingsSidebar() {
           <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
             <div className="h-auto sidebar-items">
               <div className="flex flex-col gap-y-2 h-[65vh] pb-8 overflow-y-scroll no-scroll">
+                {/* TODO: TEST SINGLE USER */}
                 <Option
                   href={paths.settings.system()}
                   btnText="System Preferences"
