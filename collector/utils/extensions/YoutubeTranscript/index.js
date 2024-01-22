@@ -88,6 +88,7 @@ async function loadYouTubeTranscript({ url }) {
     data: {
       title: metadata.title,
       author: metadata.author,
+      destination: outFolder,
     },
   };
 }
