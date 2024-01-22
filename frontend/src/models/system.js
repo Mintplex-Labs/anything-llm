@@ -209,6 +209,7 @@ const System = {
     return await fetch(`${API_BASE}/system/pfp/${id}`, {
       method: "GET",
       cache: "no-cache",
+      headers: baseHeaders(),
     })
       .then((res) => {
         if (res.ok && res.status !== 204) return res.blob();
@@ -283,6 +284,7 @@ const System = {
     return await fetch(`${API_BASE}/system/welcome-messages`, {
       method: "GET",
       cache: "no-cache",
+      headers: baseHeaders(),
     })
       .then((res) => {
         if (!res.ok) throw new Error("Could not fetch welcome messages.");
