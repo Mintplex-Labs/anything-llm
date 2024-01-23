@@ -21,7 +21,7 @@ const PineconeDB = {
     const pineconeIndex = client.Index(process.env.PINECONE_INDEX);
     const { status } = await client.describeIndex(process.env.PINECONE_INDEX);
 
-    if (!status.ready) throw new Error("Pinecode::Index not ready.");
+    if (!status.ready) throw new Error("Pinecone::Index not ready.");
     return { client, pineconeIndex, indexName: process.env.PINECONE_INDEX };
   },
   totalVectors: async function () {
@@ -67,7 +67,6 @@ const PineconeDB = {
 
     return result;
   },
-
   namespace: async function (index, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const { namespaces } = await index.describeIndexStats();
