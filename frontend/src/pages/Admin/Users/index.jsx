@@ -7,9 +7,12 @@ import { UserPlus } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import UserRow from "./UserRow";
 import useUser from "@/hooks/useUser";
-import NewUserModal, { NewUserModalId } from "./NewUserModal";
+import NewUserModal from "./NewUserModal";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
 
 export default function AdminUsers() {
+  const { isOpen, openModal, closeModal } = useModal();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       {!isMobile && <Sidebar />}
@@ -23,9 +26,7 @@ export default function AdminUsers() {
             <div className="items-center flex gap-x-4">
               <p className="text-2xl font-semibold text-white">Users</p>
               <button
-                onClick={() =>
-                  document?.getElementById(NewUserModalId)?.showModal()
-                }
+                onClick={openModal}
                 className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
               >
                 <UserPlus className="h-4 w-4" /> Add user
@@ -39,7 +40,9 @@ export default function AdminUsers() {
           </div>
           <UsersContainer />
         </div>
-        <NewUserModal />
+        <ModalWrapper isOpen={isOpen}>
+          <NewUserModal closeModal={closeModal} />
+        </ModalWrapper>
       </div>
     </div>
   );
