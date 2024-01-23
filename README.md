@@ -107,6 +107,8 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 |----------------------------------------|----:|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][aws-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
+[or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
+
 ## How to setup for development
 
 - `yarn setup` To fill in the required `.env` files you'll need in each of the application sections (from root of repo).
