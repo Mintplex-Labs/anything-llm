@@ -171,11 +171,6 @@ const KEY_MAPPING = {
     envKey: "QDRANT_API_KEY",
     checks: [],
   },
-
-  PineConeEnvironment: {
-    envKey: "PINECONE_ENVIRONMENT",
-    checks: [],
-  },
   PineConeKey: {
     envKey: "PINECONE_API_KEY",
     checks: [],
