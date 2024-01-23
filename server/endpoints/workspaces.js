@@ -13,7 +13,10 @@ const {
 } = require("../utils/files/documentProcessor");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
-const { flexUserRoleValid } = require("../utils/middleware/multiUserProtected");
+const {
+  flexUserRoleValid,
+  ROLES,
+} = require("../utils/middleware/multiUserProtected");
 const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
@@ -21,7 +24,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/new",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -50,7 +53,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/update",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -79,6 +82,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/upload",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     handleUploads.single("file"),
     async function (request, response) {
       const { originalname } = request.file;
@@ -111,7 +115,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/upload-link",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       const { link = "" } = reqBody(request);
       const processingOnline = await checkProcessorAlive();
@@ -143,7 +147,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/update-embeddings",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -182,7 +186,7 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { slug = "" } = request.params;
@@ -215,38 +219,46 @@ function workspaceEndpoints(app) {
     }
   );
 
-  app.get("/workspaces", [validatedRequest], async (request, response) => {
-    try {
-      const user = await userFromSession(request, response);
-      const workspaces = multiUserMode(response)
-        ? await Workspace.whereWithUser(user)
-        : await Workspace.where();
+  app.get(
+    "/workspaces",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const workspaces = multiUserMode(response)
+          ? await Workspace.whereWithUser(user)
+          : await Workspace.where();
 
-      response.status(200).json({ workspaces });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+        response.status(200).json({ workspaces });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
-  app.get("/workspace/:slug", [validatedRequest], async (request, response) => {
-    try {
-      const { slug } = request.params;
-      const user = await userFromSession(request, response);
-      const workspace = multiUserMode(response)
-        ? await Workspace.getWithUser(user, { slug })
-        : await Workspace.get({ slug });
+  app.get(
+    "/workspace/:slug",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { slug } = request.params;
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
 
-      response.status(200).json({ workspace });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+        response.status(200).json({ workspace });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.get(
     "/workspace/:slug/chats",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const { slug } = request.params;

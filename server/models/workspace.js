@@ -2,6 +2,7 @@ const prisma = require("../utils/prisma");
 const slugify = require("slugify");
 const { Document } = require("./documents");
 const { WorkspaceUser } = require("./workspaceUsers");
+const { ROLES } = require("../utils/middleware/multiUserProtected");
 
 const Workspace = {
   writable: [
@@ -66,7 +67,8 @@ const Workspace = {
   },
 
   getWithUser: async function (user = null, clause = {}) {
-    if (["admin", "manager"].includes(user.role)) return this.get(clause);
+    if ([ROLES.admin, ROLES.manager].includes(user.role))
+      return this.get(clause);
 
     try {
       const workspace = await prisma.workspaces.findFirst({
@@ -144,7 +146,7 @@ const Workspace = {
     limit = null,
     orderBy = null
   ) {
-    if (["admin", "manager"].includes(user.role))
+    if ([ROLES.admin, ROLES.manager].includes(user.role))
       return await this.where(clause, limit, orderBy);
 
     try {

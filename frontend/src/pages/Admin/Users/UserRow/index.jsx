@@ -3,9 +3,17 @@ import { titleCase } from "text-case";
 import Admin from "@/models/admin";
 import EditUserModal, { EditUserModalId } from "./EditUserModal";
 import { DotsThreeOutline } from "@phosphor-icons/react";
+import showToast from "@/utils/toast";
+
+const ModMap = {
+  admin: ["admin", "manager", "default"],
+  manager: ["manager", "default"],
+  default: [],
+};
 
 export default function UserRow({ currUser, user }) {
   const rowRef = useRef(null);
+  const canModify = ModMap[currUser?.role || "default"].includes(user.role);
   const [suspended, setSuspended] = useState(user.suspended === 1);
   const handleSuspend = async () => {
     if (
@@ -14,8 +22,19 @@ export default function UserRow({ currUser, user }) {
       )
     )
       return false;
-    setSuspended(!suspended);
-    await Admin.updateUser(user.id, { suspended: suspended ? 0 : 1 });
+
+    const { success, error } = await Admin.updateUser(user.id, {
+      suspended: suspended ? 0 : 1,
+    });
+    if (!success) showToast(error, "error", { clear: true });
+    if (success) {
+      showToast(
+        `User ${!suspended ? "has been suspended" : "is no longer suspended"}.`,
+        "success",
+        { clear: true }
+      );
+      setSuspended(!suspended);
+    }
   };
   const handleDelete = async () => {
     if (
@@ -24,8 +43,12 @@ export default function UserRow({ currUser, user }) {
       )
     )
       return false;
-    rowRef?.current?.remove();
-    await Admin.deleteUser(user.id);
+    const { success, error } = await Admin.deleteUser(user.id);
+    if (!success) showToast(error, "error", { clear: true });
+    if (success) {
+      rowRef?.current?.remove();
+      showToast("User deleted from system.", "success", { clear: true });
+    }
   };
 
   return (
@@ -40,7 +63,7 @@ export default function UserRow({ currUser, user }) {
         <td className="px-6 py-4">{titleCase(user.role)}</td>
         <td className="px-6 py-4">{user.createdAt}</td>
         <td className="px-6 py-4 flex items-center gap-x-6">
-          {currUser?.role !== "default" && (
+          {canModify && (
             <button
               onClick={() =>
                 document?.getElementById(EditUserModalId(user))?.showModal()
@@ -50,7 +73,7 @@ export default function UserRow({ currUser, user }) {
               <DotsThreeOutline weight="fill" className="h-5 w-5" />
             </button>
           )}
-          {currUser?.id !== user.id && currUser?.role !== "default" && (
+          {currUser?.id !== user.id && canModify && (
             <>
               <button
                 onClick={handleSuspend}

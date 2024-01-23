@@ -105,7 +105,8 @@ const ROLE_HINT = {
     "Cannot modify any settings at all.",
   ],
   manager: [
-    "Can view all workspaces and modify all settings.",
+    "Can view, create, and delete any workspaces and modify workspace-specific settings.",
+    "Can create, update and invite new users to the instance.",
     "Cannot modify LLM, vectorDB, embedding, or other connections.",
   ],
   admin: [
