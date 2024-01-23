@@ -5,7 +5,7 @@
 > You are fully responsible for securing your deployment and data in this mode.
 > **Any issues** experienced from bare-metal or non-containerized deployments will be **not** answered or supported.
 
-Here you can find the scripts and known working process to run AnythingLLM outside of a Docker container. This method of deployment is preferable for those using localL LMs and want native performance on their devices.
+Here you can find the scripts and known working process to run AnythingLLM outside of a Docker container. This method of deployment is preferable for those using local LLMs and want native performance on their devices.
 
 ### Minimum Requirements
 > [!TIP]
