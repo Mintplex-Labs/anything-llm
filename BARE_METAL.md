@@ -23,9 +23,9 @@ Here you can find the scripts and known working process to run AnythingLLM outsi
 
 2. `cd anything-llm` and run `yarn setup`. This will install all dependencies to run in production as well as debug the application.
 
-3. `cp server/.env.example server/.env` to create the basic ENV file for where instance settings will be read from on service start. This file is automatically managed and should not be editing manually.
+3. `cp server/.env.example server/.env` to create the basic ENV file for where instance settings will be read from on service start. This file is automatically managed and should not be edited manually.
 
-### To start the application
+## To start the application
 
 AnythingLLM is comprised of three main sections. The `frontend`, `server`, and `collector`. When running in production you will be running `server` and `collector` on two different processes, with a build step for compilation of the frontend.
 
@@ -33,7 +33,7 @@ AnythingLLM is comprised of three main sections. The `frontend`, `server`, and `
 `cd frontend && yarn build` - this will produce a `frontend/dist` folder that will be used later.
 
 2. Copy `frontend/dist` to `server/public` - `cp -R frontend/dist server/public`.
-This should product a folder in `server` named `public` which contains a top level `index.html` and various other files.
+This should create a folder in `server` named `public` which contains a top level `index.html` file and various other files/folders.
 
 _(optional)_ Build native LLM support if using `native` as your LLM.
 `cd server && npx --no node-llama-cpp download`
@@ -52,7 +52,7 @@ cd server && npx prisma migrate deploy --schema=./prisma/schema.prisma
 
 AnythingLLM should now be running on `http://localhost:3001`!
 
-### Updating AnythingLLM
+## Updating AnythingLLM
 
 To update AnythingLLM with future updates you can `git pull origin master` to pull in the latest code and then repeat steps 2 - 5 to deploy with all changes fully.
 
