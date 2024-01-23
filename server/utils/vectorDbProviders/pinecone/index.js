@@ -50,13 +50,12 @@ const PineconeDB = {
       sourceDocuments: [],
       scores: [],
     };
-    const response = await index.query({
-      queryRequest: {
-        namespace,
-        vector: queryVector,
-        topK: topN,
-        includeMetadata: true,
-      },
+
+    const pineconeNamespace = index.namespace(namespace);
+    const response = await pineconeNamespace.query({
+      vector: queryVector,
+      topK: topN,
+      includeMetadata: true,
     });
 
     response.matches.forEach((match) => {
