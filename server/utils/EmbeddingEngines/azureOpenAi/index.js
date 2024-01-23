@@ -46,7 +46,12 @@ class AzureOpenAiEmbedder {
               resolve({ data: res.data, error: null });
             })
             .catch((e) => {
-              resolve({ data: [], error: e?.error });
+              e.type =
+                e?.response?.data?.error?.code ||
+                e?.response?.status ||
+                "failed_to_embed";
+              e.message = e?.response?.data?.error?.message || e.message;
+              resolve({ data: [], error: e });
             });
         })
       );
@@ -62,11 +67,14 @@ class AzureOpenAiEmbedder {
         .map((res) => res.error)
         .flat();
       if (errors.length > 0) {
+        let uniqueErrors = new Set();
+        errors.map((error) =>
+          uniqueErrors.add(`[${error.type}]: ${error.message}`)
+        );
+
         return {
           data: [],
-          error: `(${errors.length}) Embedding Errors! ${errors
-            .map((error) => `[${error.type}]: ${error.message}`)
-            .join(", ")}`,
+          error: Array.from(uniqueErrors).join(", "),
         };
       }
       return {

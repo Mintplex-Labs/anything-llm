@@ -71,6 +71,7 @@ Some cool features of AnythingLLM
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAi (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
+- [Mistral](https://mistral.ai/)
 
 **Supported Embedding models:**
 
@@ -87,6 +88,8 @@ Some cool features of AnythingLLM
 - [Chroma](https://trychroma.com)
 - [Weaviate](https://weaviate.io)
 - [QDrant](https://qdrant.tech)
+- [Milvus](https://milvus.io)
+- [Zilliz](https://zilliz.com)
 
 ### Technical Overview
 
@@ -103,6 +106,8 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----:|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][aws-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
+
+[or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
 ## How to setup for development
 

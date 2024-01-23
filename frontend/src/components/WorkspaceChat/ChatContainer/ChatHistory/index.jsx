@@ -10,12 +10,38 @@ export default function ChatHistory({ history = [], workspace }) {
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
 
   useEffect(() => {
-    if (replyRef.current) {
-      setTimeout(() => {
-        replyRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-      }, 700);
-    }
+    scrollToBottom();
   }, [history]);
+
+  const handleScroll = () => {
+    const diff =
+      replyRef.current.scrollHeight -
+      replyRef.current.scrollTop -
+      replyRef.current.clientHeight;
+    // Fuzzy margin for what qualifies as "bottom". Stronger than straight comparison since that may change over time.
+    const isBottom = diff <= 10;
+    setIsAtBottom(isBottom);
+  };
+
+  const debouncedScroll = debounce(handleScroll, 100);
+  useEffect(() => {
+    function watchScrollEvent() {
+      if (!replyRef.current) return null;
+      const chatHistoryElement = replyRef.current;
+      if (!chatHistoryElement) return null;
+      chatHistoryElement.addEventListener("scroll", debouncedScroll);
+    }
+    watchScrollEvent();
+  }, []);
+
+  const scrollToBottom = () => {
+    if (replyRef.current) {
+      replyRef.current.scrollTo({
+        top: replyRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
 
   if (history.length === 0) {
     return (
@@ -85,7 +111,6 @@ export default function ChatHistory({ history = [], workspace }) {
           />
         );
       })}
-
       {showing && (
         <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
       )}

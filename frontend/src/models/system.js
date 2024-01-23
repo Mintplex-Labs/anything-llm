@@ -1,6 +1,5 @@
-import { AUTH_TIMESTAMP } from "../utils/constants";
-import { API_BASE } from "../utils/api";
-import { baseHeaders } from "../utils/request";
+import { API_BASE, AUTH_TIMESTAMP } from "@/utils/constants";
+import { baseHeaders } from "@/utils/request";
 import DataConnector from "./dataConnector";
 
 const System = {
@@ -243,6 +242,7 @@ const System = {
     return await fetch(`${API_BASE()}/system/welcome-messages`, {
       method: "GET",
       cache: "no-cache",
+      headers: baseHeaders(),
     })
       .then((res) => {
         if (!res.ok) throw new Error("Could not fetch welcome messages.");

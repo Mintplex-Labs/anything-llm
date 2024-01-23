@@ -83,7 +83,7 @@ const Workspace = {
         try {
           const chatResult = JSON.parse(msg.data);
           handleChat(chatResult);
-        } catch {}
+        } catch { }
       },
       onerror(err) {
         handleChat({
@@ -150,22 +150,6 @@ const Workspace = {
 
     const data = await response.json();
     return { response, data };
-  },
-
-  // TODO: Deprecated and should be removed from frontend.
-  sendChat: async function ({ slug }, message, mode = "query") {
-    const chatResult = await fetch(`${API_BASE()}/workspace/${slug}/chat`, {
-      method: "POST",
-      body: JSON.stringify({ message, mode }),
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error(e);
-        return null;
-      });
-
-    return chatResult;
   },
 };
 

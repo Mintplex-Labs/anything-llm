@@ -75,9 +75,6 @@ export default {
     vectorDatabase: () => {
       return "/settings/vector-database";
     },
-    exportImport: () => {
-      return "/settings/export-import";
-    },
     security: () => {
       return "/settings/security";
     },

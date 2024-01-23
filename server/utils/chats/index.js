@@ -71,7 +71,7 @@ async function chatWithWorkspace(
     return await VALID_COMMANDS[command](workspace, message, uuid, user);
   }
 
-  const LLMConnector = getLLMProvider();
+  const LLMConnector = getLLMProvider(workspace?.chatModel);
   const VectorDb = getVectorDbClass();
   const { safe, reasons = [] } = await LLMConnector.isSafe(message);
   if (!safe) {
@@ -91,6 +91,18 @@ async function chatWithWorkspace(
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
   if (!hasVectorizedSpace || embeddingsCount === 0) {
+    if (chatMode === "query") {
+      return {
+        id: uuid,
+        type: "textResponse",
+        sources: [],
+        close: true,
+        error: null,
+        textResponse:
+          "There is no relevant information in this workspace to answer your query.",
+      };
+    }
+
     // If there are no embeddings - chat like a normal LLM chat interface.
     return await emptyEmbeddingChat({
       uuid,
@@ -117,6 +129,7 @@ async function chatWithWorkspace(
     input: message,
     LLMConnector,
     similarityThreshold: workspace?.similarityThreshold,
+    topN: workspace?.topN,
   });
 
   // Failed similarity search.
@@ -128,6 +141,20 @@ async function chatWithWorkspace(
       sources: [],
       close: true,
       error,
+    };
+  }
+
+  // If in query mode and no sources are found, do not
+  // let the LLM try to hallucinate a response or use general knowledge
+  if (chatMode === "query" && sources.length === 0) {
+    return {
+      id: uuid,
+      type: "textResponse",
+      sources: [],
+      close: true,
+      error: null,
+      textResponse:
+        "There is no relevant information in this workspace to answer your query.",
     };
   }
 
@@ -145,7 +172,7 @@ async function chatWithWorkspace(
 
   // Send the text completion.
   const textResponse = await LLMConnector.getChatCompletion(messages, {
-    temperature: workspace?.openAiTemp ?? 0.7,
+    temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
   });
 
   if (!textResponse) {

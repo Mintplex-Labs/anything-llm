@@ -62,7 +62,8 @@ const LanceDb = {
     client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
+    topN = 4
   ) {
     const collection = await client.openTable(namespace);
     const result = {
@@ -74,7 +75,7 @@ const LanceDb = {
     const response = await collection
       .search(queryVector)
       .metricType("cosine")
-      .limit(5)
+      .limit(topN)
       .execute();
 
     response.forEach((item) => {
@@ -173,7 +174,7 @@ const LanceDb = {
 
         await this.updateOrCreateCollection(client, submissions, namespace);
         await DocumentVectors.bulkInsert(documentVectors);
-        return true;
+        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.
@@ -230,11 +231,10 @@ const LanceDb = {
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
-      return true;
+      return { vectorized: true, error: null };
     } catch (e) {
-      console.error(e);
       console.error("addDocumentToNamespace", e.message);
-      return false;
+      return { vectorized: false, error: e.message };
     }
   },
   performSimilaritySearch: async function ({
@@ -242,6 +242,7 @@ const LanceDb = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
+    topN = 4,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -260,7 +261,8 @@ const LanceDb = {
       client,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
+      topN
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

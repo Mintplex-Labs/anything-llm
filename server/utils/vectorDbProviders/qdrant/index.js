@@ -53,7 +53,8 @@ const QDrant = {
     _client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
+    topN = 4
   ) {
     const { client } = await this.connect();
     const result = {
@@ -64,7 +65,7 @@ const QDrant = {
 
     const responses = await client.search(namespace, {
       vector: queryVector,
-      limit: 4,
+      limit: topN,
       with_payload: true,
     });
 
@@ -108,13 +109,20 @@ const QDrant = {
     await client.deleteCollection(namespace);
     return true;
   },
-  getOrCreateCollection: async function (client, namespace) {
+  // QDrant requires a dimension aspect for collection creation
+  // we pass this in from the first chunk to infer the dimensions like other
+  // providers do.
+  getOrCreateCollection: async function (client, namespace, dimensions = null) {
     if (await this.namespaceExists(client, namespace)) {
       return await client.getCollection(namespace);
     }
+    if (!dimensions)
+      throw new Error(
+        `Qdrant:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on Github for support.`
+      );
     await client.createCollection(namespace, {
       vectors: {
-        size: 1536, //TODO: Fixed to OpenAI models - when other embeddings exist make variable.
+        size: dimensions,
         distance: "Cosine",
       },
     });
@@ -127,6 +135,7 @@ const QDrant = {
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
+      let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
@@ -134,14 +143,19 @@ const QDrant = {
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
-        const collection = await this.getOrCreateCollection(client, namespace);
+        const { chunks } = cacheResult;
+        const documentVectors = [];
+        vectorDimension = chunks[0][0].vector.length || null;
+
+        const collection = await this.getOrCreateCollection(
+          client,
+          namespace,
+          vectorDimension
+        );
         if (!collection)
           throw new Error("Failed to create new QDrant collection!", {
             namespace,
           });
-
-        const { chunks } = cacheResult;
-        const documentVectors = [];
 
         for (const chunk of chunks) {
           const submission = {
@@ -177,7 +191,7 @@ const QDrant = {
         }
 
         await DocumentVectors.bulkInsert(documentVectors);
-        return true;
+        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.
@@ -204,6 +218,7 @@ const QDrant = {
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
+          if (!vectorDimension) vectorDimension = vector.length;
           const vectorRecord = {
             id: uuidv4(),
             vector: vector,
@@ -227,7 +242,11 @@ const QDrant = {
       }
 
       const { client } = await this.connect();
-      const collection = await this.getOrCreateCollection(client, namespace);
+      const collection = await this.getOrCreateCollection(
+        client,
+        namespace,
+        vectorDimension
+      );
       if (!collection)
         throw new Error("Failed to create new QDrant collection!", {
           namespace,
@@ -254,11 +273,10 @@ const QDrant = {
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
-      return true;
+      return { vectorized: true, error: null };
     } catch (e) {
-      console.error(e);
       console.error("addDocumentToNamespace", e.message);
-      return false;
+      return { vectorized: false, error: e.message };
     }
   },
   deleteDocumentFromNamespace: async function (namespace, docId) {
@@ -284,6 +302,7 @@ const QDrant = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
+    topN = 4,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -302,7 +321,8 @@ const QDrant = {
       client,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
+      topN
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

@@ -7,6 +7,8 @@ import PineconeLogo from "@/assets/vectordbs/pinecone.png";
 import LanceDbLogo from "@/assets/vectordbs/lancedb.png";
 import WeaviateLogo from "@/assets/vectordbs/weaviate.png";
 import QDrantLogo from "@/assets/vectordbs/qdrant.png";
+import MilvusLogo from "@/assets/vectordbs/milvus.png";
+import ZillizLogo from "@/assets/vectordbs/zilliz.png";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
 import { MagnifyingGlass } from "@phosphor-icons/react";
@@ -16,6 +18,8 @@ import PineconeDBOptions from "@/components/VectorDBSelection/PineconeDBOptions"
 import QDrantDBOptions from "@/components/VectorDBSelection/QDrantDBOptions";
 import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions";
 import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
+import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
+import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -30,7 +34,6 @@ export default function GeneralVectorDatabase() {
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
-      console.log(_settings);
       setSettings(_settings);
       setSelectedVDB(_settings?.VectorDB || "lancedb");
       setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
@@ -64,6 +67,14 @@ export default function GeneralVectorDatabase() {
       description: "100% cloud-based vector database for enterprise use cases.",
     },
     {
+      name: "Zilliz Cloud",
+      value: "zilliz",
+      logo: ZillizLogo,
+      options: <ZillizCloudOptions settings={settings} />,
+      description:
+        "Cloud hosted vector database built for enterprise with SOC 2 compliance.",
+    },
+    {
       name: "QDrant",
       value: "qdrant",
       logo: QDrantLogo,
@@ -77,6 +88,13 @@ export default function GeneralVectorDatabase() {
       options: <WeaviateDBOptions settings={settings} />,
       description:
         "Open source local and cloud hosted multi-modal vector database.",
+    },
+    {
+      name: "Milvus",
+      value: "milvus",
+      logo: MilvusLogo,
+      options: <MilvusDBOptions settings={settings} />,
+      description: "Open-source, highly scalable, and blazing fast.",
     },
   ];
 

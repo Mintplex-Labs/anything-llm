@@ -7,6 +7,7 @@ import PrivateRoute, {
   ManagerRoute,
 } from "./components/PrivateRoute";
 import { ToastContainer } from "react-toastify";
+
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
 import AnythingLLMLogo from "./assets/logo/anything-llm.png";
@@ -22,6 +23,11 @@ import GeneralVectorDatabase from "./pages/GeneralSettings/VectorDatabase";
 import OnboardingFlow from "./pages/OnboardingFlow";
 import DataConnectors from "./pages/GeneralSettings/DataConnectors";
 import DataConnectorSetup from "./pages/GeneralSettings/DataConnectors/Connectors";
+import "react-toastify/dist/ReactToastify.css";
+import Login from "@/pages/Login";
+import OnboardingFlow from "@/pages/OnboardingFlow";
+import { PfpProvider } from "./PfpContext";
+import { LogoProvider } from "./LogoContext";
 
 export default function App() {
   return (
@@ -33,7 +39,6 @@ export default function App() {
               <Routes>
                 <Route path="/" element={<PrivateRoute Component={Main} />} />
                 <Route path="/login" element={<Login />} />
-
                 <Route
                   path="/workspace/:slug"
                   element={<PrivateRoute Component={WorkspaceChat} />}

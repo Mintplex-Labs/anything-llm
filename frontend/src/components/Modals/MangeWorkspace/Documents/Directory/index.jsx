@@ -91,7 +91,8 @@ export default function Directory({
             ) : !!files.items ? (
               files.items.map(
                 (item, index) =>
-                  item.type === "folder" && (
+                  (item.name === "custom-documents" ||
+                    (item.type === "folder" && item.items.length > 0)) && (
                     <FolderRow
                       key={index}
                       item={item}

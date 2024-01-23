@@ -13,11 +13,13 @@ async function processSingleFile(targetFilename) {
     return {
       success: false,
       reason: "Filename is a reserved filename and cannot be processed.",
+      documents: [],
     };
   if (!fs.existsSync(fullFilePath))
     return {
       success: false,
       reason: "File does not exist in upload directory.",
+      documents: [],
     };
 
   const fileExtension = path.extname(fullFilePath).toLowerCase();
@@ -25,6 +27,7 @@ async function processSingleFile(targetFilename) {
     return {
       success: false,
       reason: `No file extension found. This file cannot be processed.`,
+      documents: [],
     };
   }
 
@@ -33,6 +36,7 @@ async function processSingleFile(targetFilename) {
     return {
       success: false,
       reason: `File extension ${fileExtension} not supported for parsing.`,
+      documents: [],
     };
   }
 

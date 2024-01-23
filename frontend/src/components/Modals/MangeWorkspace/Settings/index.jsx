@@ -6,6 +6,7 @@ import System from "../../../../models/system";
 import PreLoader from "../../../Preloader";
 import { useParams } from "react-router-dom";
 import showToast from "../../../../utils/toast";
+import ChatModelPreference from "./ChatModelPreference";
 
 // Ensure that a type is correct before sending the body
 // to the backend.
@@ -20,17 +21,30 @@ function castToType(key, value) {
     similarityThreshold: {
       cast: (value) => parseFloat(value),
     },
+    topN: {
+      cast: (value) => Number(value),
+    },
   };
 
   if (!definitions.hasOwnProperty(key)) return value;
   return definitions[key].cast(value);
 }
 
-export default function WorkspaceSettings({ active, workspace }) {
+function recommendedSettings(provider = null) {
+  switch (provider) {
+    case "mistral":
+      return { temp: 0 };
+    default:
+      return { temp: 0.7 };
+  }
+}
+
+export default function WorkspaceSettings({ active, workspace, settings }) {
   const { slug } = useParams();
   const formEl = useRef(null);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const defaults = recommendedSettings(settings?.LLMProvider);
 
   const handleUpdate = async (e) => {
     setSaving(true);
@@ -99,6 +113,11 @@ export default function WorkspaceSettings({ active, workspace }) {
           <div className="flex">
             <div className="flex flex-col gap-y-4 w-1/2">
               <div className="w-3/4 flex flex-col gap-y-4">
+                <ChatModelPreference
+                  settings={settings}
+                  workspace={workspace}
+                  setHasChanges={setHasChanges}
+                />
                 <div>
                   <div className="flex flex-col">
                     <label
@@ -137,20 +156,20 @@ export default function WorkspaceSettings({ active, workspace }) {
                       This setting controls how "random" or dynamic your chat
                       responses will be.
                       <br />
-                      The higher the number (2.0 maximum) the more random and
+                      The higher the number (1.0 maximum) the more random and
                       incoherent.
                       <br />
-                      <i>Recommended: 0.7</i>
+                      <i>Recommended: {defaults.temp}</i>
                     </p>
                   </div>
                   <input
                     name="openAiTemp"
                     type="number"
                     min={0.0}
-                    max={2.0}
+                    max={1.0}
                     step={0.1}
                     onWheel={(e) => e.target.blur()}
-                    defaultValue={workspace?.openAiTemp ?? 0.7}
+                    defaultValue={workspace?.openAiTemp ?? defaults.temp}
                     className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="0.7"
                     required={true}
@@ -220,6 +239,38 @@ export default function WorkspaceSettings({ active, workspace }) {
                   autoComplete="off"
                   onChange={() => setHasChanges(true)}
                 />
+
+                <div className="mt-4">
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-white"
+                    >
+                      Max Context Snippets
+                    </label>
+                    <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+                      This setting controls the maximum amount of context
+                      snippets the will be sent to the LLM for per chat or
+                      query.
+                      <br />
+                      <i>Recommended: 4</i>
+                    </p>
+                  </div>
+                  <input
+                    name="topN"
+                    type="number"
+                    min={1}
+                    max={12}
+                    step={1}
+                    onWheel={(e) => e.target.blur()}
+                    defaultValue={workspace?.topN ?? 4}
+                    className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder="4"
+                    required={true}
+                    autoComplete="off"
+                    onChange={() => setHasChanges(true)}
+                  />
+                </div>
                 <div className="mt-4">
                   <div className="flex flex-col">
                     <label

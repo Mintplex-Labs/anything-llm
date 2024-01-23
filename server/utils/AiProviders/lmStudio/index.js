@@ -2,7 +2,7 @@ const { chatPrompt } = require("../../chats");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, _modelPreference = null) {
     if (!process.env.LMSTUDIO_BASE_PATH)
       throw new Error("No LMStudio API Base Path was set.");
 
@@ -12,7 +12,7 @@ class LMStudioLLM {
     });
     this.lmstudio = new OpenAIApi(config);
     // When using LMStudios inference server - the model param is not required so
-    // we can stub it here.
+    // we can stub it here. LMStudio can only run one model at a time.
     this.model = "model-placeholder";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
@@ -25,6 +25,7 @@ class LMStudioLLM {
         "INVALID LM STUDIO SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use LMStudio as your LLM."
       );
     this.embedder = embedder;
+    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -85,7 +86,7 @@ class LMStudioLLM {
     const textResponse = await this.lmstudio
       .createChatCompletion({
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {
@@ -122,7 +123,7 @@ class LMStudioLLM {
     const streamRequest = await this.lmstudio.createChatCompletion(
       {
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         stream: true,
         messages: await this.compressMessages(
