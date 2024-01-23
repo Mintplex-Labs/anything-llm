@@ -1,4 +1,4 @@
-const { PineconeClient } = require("@pinecone-database/pinecone");
+const { Pinecone } = require("@pinecone-database/pinecone");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
@@ -8,37 +8,35 @@ const {
   getEmbeddingEngineSelection,
 } = require("../../helpers");
 
-const Pinecone = {
+const PineconeDB = {
   name: "Pinecone",
   connect: async function () {
     if (process.env.VECTOR_DB !== "pinecone")
       throw new Error("Pinecone::Invalid ENV settings");
 
-    const client = new PineconeClient();
-    await client.init({
+    const client = new Pinecone({
       apiKey: process.env.PINECONE_API_KEY,
-      environment: process.env.PINECONE_ENVIRONMENT,
-    });
-    const pineconeIndex = client.Index(process.env.PINECONE_INDEX);
-    const { status } = await client.describeIndex({
-      indexName: process.env.PINECONE_INDEX,
     });
 
-    if (!status.ready) throw new Error("Pinecode::Index not ready.");
+    const pineconeIndex = client.Index(process.env.PINECONE_INDEX);
+    const { status } = await client.describeIndex(process.env.PINECONE_INDEX);
+
+    if (!status.ready) throw new Error("Pinecone::Index not ready.");
     return { client, pineconeIndex, indexName: process.env.PINECONE_INDEX };
   },
   totalVectors: async function () {
     const { pineconeIndex } = await this.connect();
-    const { namespaces } = await pineconeIndex.describeIndexStats1();
+    const { namespaces } = await pineconeIndex.describeIndexStats();
+
     return Object.values(namespaces).reduce(
-      (a, b) => a + (b?.vectorCount || 0),
+      (a, b) => a + (b?.recordCount || 0),
       0
     );
   },
   namespaceCount: async function (_namespace = null) {
     const { pineconeIndex } = await this.connect();
     const namespace = await this.namespace(pineconeIndex, _namespace);
-    return namespace?.vectorCount || 0;
+    return namespace?.recordCount || 0;
   },
   similarityResponse: async function (
     index,
@@ -52,13 +50,12 @@ const Pinecone = {
       sourceDocuments: [],
       scores: [],
     };
-    const response = await index.query({
-      queryRequest: {
-        namespace,
-        vector: queryVector,
-        topK: topN,
-        includeMetadata: true,
-      },
+
+    const pineconeNamespace = index.namespace(namespace);
+    const response = await pineconeNamespace.query({
+      vector: queryVector,
+      topK: topN,
+      includeMetadata: true,
     });
 
     response.matches.forEach((match) => {
@@ -70,10 +67,9 @@ const Pinecone = {
 
     return result;
   },
-
   namespace: async function (index, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    const { namespaces } = await index.describeIndexStats1();
+    const { namespaces } = await index.describeIndexStats();
     return namespaces.hasOwnProperty(namespace) ? namespaces[namespace] : null;
   },
   hasNamespace: async function (namespace = null) {
@@ -83,11 +79,12 @@ const Pinecone = {
   },
   namespaceExists: async function (index, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    const { namespaces } = await index.describeIndexStats1();
+    const { namespaces } = await index.describeIndexStats();
     return namespaces.hasOwnProperty(namespace);
   },
   deleteVectorsInNamespace: async function (index, namespace = null) {
-    await index.delete1({ namespace, deleteAll: true });
+    const pineconeNamespace = index.namespace(namespace);
+    await pineconeNamespace.deleteAll();
     return true;
   },
   addDocumentToNamespace: async function (
@@ -104,6 +101,7 @@ const Pinecone = {
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { pineconeIndex } = await this.connect();
+        const pineconeNamespace = pineconeIndex.namespace(namespace);
         const { chunks } = cacheResult;
         const documentVectors = [];
 
@@ -115,14 +113,7 @@ const Pinecone = {
             documentVectors.push({ docId, vectorId: id });
             return { ...chunk, id };
           });
-
-          // Push chunks with new ids to pinecone.
-          await pineconeIndex.upsert({
-            upsertRequest: {
-              vectors: [...newChunks],
-              namespace,
-            },
-          });
+          await pineconeNamespace.upsert([...newChunks]);
         }
 
         await DocumentVectors.bulkInsert(documentVectors);
@@ -170,15 +161,11 @@ const Pinecone = {
       if (vectors.length > 0) {
         const chunks = [];
         const { pineconeIndex } = await this.connect();
+        const pineconeNamespace = pineconeIndex.namespace(namespace);
         console.log("Inserting vectorized chunks into Pinecone.");
         for (const chunk of toChunks(vectors, 100)) {
           chunks.push(chunk);
-          await pineconeIndex.upsert({
-            upsertRequest: {
-              vectors: [...chunk],
-              namespace,
-            },
-          });
+          await pineconeNamespace.upsert([...chunk]);
         }
         await storeVectorResult(chunks, fullFilePath);
       }
@@ -199,11 +186,10 @@ const Pinecone = {
     if (knownDocuments.length === 0) return;
 
     const vectorIds = knownDocuments.map((doc) => doc.vectorId);
+
+    const pineconeNamespace = pineconeIndex.namespace(namespace);
     for (const batchOfVectorIds of toChunks(vectorIds, 1000)) {
-      await pineconeIndex.delete1({
-        ids: batchOfVectorIds,
-        namespace,
-      });
+      await pineconeNamespace.deleteMany(batchOfVectorIds);
     }
 
     const indexes = knownDocuments.map((doc) => doc.id);
@@ -285,4 +271,4 @@ const Pinecone = {
   },
 };
 
-module.exports.Pinecone = Pinecone;
+module.exports.Pinecone = PineconeDB;

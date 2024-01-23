@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
@@ -7,28 +7,59 @@ import useQuery from "@/hooks/useQuery";
 import ChatRow from "./ChatRow";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
-
-const PAGE_SIZE = 20;
+import { CaretDown } from "@phosphor-icons/react";
 export default function WorkspaceChats() {
+  const [showMenu, setShowMenu] = useState(false);
+  const [exportType, setExportType] = useState("jsonl");
+  const menuRef = useRef();
+  const openMenuButton = useRef();
+
+  const exportOptions = {
+    csv: { mimeType: "text/csv", fileExtension: "csv" },
+    json: { mimeType: "application/json", fileExtension: "json" },
+    jsonl: { mimeType: "application/jsonl", fileExtension: "jsonl" },
+  };
   const handleDumpChats = async () => {
-    const chats = await System.exportChats();
+    const chats = await System.exportChats(exportType);
     if (chats) {
-      const blob = new Blob([chats], { type: "application/jsonl" });
+      const { mimeType, fileExtension } = exportOptions[exportType];
+      const blob = new Blob([chats], { type: mimeType });
       const link = document.createElement("a");
       link.href = window.URL.createObjectURL(blob);
-      link.download = "chats.jsonl";
+      link.download = `chats.${fileExtension}`;
       document.body.appendChild(link);
       link.click();
       window.URL.revokeObjectURL(link.href);
       document.body.removeChild(link);
       showToast(
-        "Chats exported successfully. Note: Must have at least 10 chats to be valid for OpenAI fine tuning.",
+        `Chats exported successfully as ${fileExtension.toUpperCase()}.`,
         "success"
       );
     } else {
       showToast("Failed to export chats.", "error");
     }
   };
+
+  const toggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        !openMenuButton.current.contains(event.target)
+      ) {
+        setShowMenu(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
@@ -44,12 +75,46 @@ export default function WorkspaceChats() {
               <p className="text-2xl font-semibold text-white">
                 Workspace Chats
               </p>
-              <button
-                onClick={handleDumpChats}
-                className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
-              >
-                Export Chats to JSONL
-              </button>
+              <div className="flex gap-x-1 relative">
+                <button
+                  onClick={handleDumpChats}
+                  className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
+                >
+                  Export Chats to {exportType.toUpperCase()}
+                </button>
+                <button
+                  ref={openMenuButton}
+                  onClick={toggleMenu}
+                  className={`transition-all duration-300 border border-slate-200 p-1 rounded-lg text-slate-200 text-sm items-center flex hover:bg-slate-200 hover:text-slate-800 ${
+                    showMenu ? "bg-slate-200 text-slate-800" : ""
+                  }`}
+                >
+                  <CaretDown weight="bold" className="h-4 w-4" />
+                </button>
+                <div
+                  ref={menuRef}
+                  className={`${
+                    showMenu ? "slide-down" : "slide-up hidden"
+                  } z-20 w-fit rounded-lg absolute top-full right-0 bg-sidebar p-4 flex items-center justify-center mt-2`}
+                >
+                  <div className="flex flex-col gap-y-2">
+                    {Object.keys(exportOptions)
+                      .filter((type) => type !== exportType)
+                      .map((type) => (
+                        <button
+                          key={type}
+                          onClick={() => {
+                            setExportType(type);
+                            setShowMenu(false);
+                          }}
+                          className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+                        >
+                          {type.toUpperCase()}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              </div>
             </div>
             <p className="text-sm font-base text-white text-opacity-60">
               These are all the recorded chats and messages that have been sent

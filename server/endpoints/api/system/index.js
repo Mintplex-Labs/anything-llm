@@ -40,7 +40,6 @@ function apiSystemEndpoints(app) {
             example: {
              "settings": {
                 "VectorDB": "pinecone",
-                "PineConeEnvironment": "us-west4-gcp-free",
                 "PineConeKey": true,
                 "PineConeIndex": "my-pinecone-index",
                 "LLMProvider": "azure",

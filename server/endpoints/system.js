@@ -16,16 +16,11 @@ const {
   multiUserMode,
   queryParams,
 } = require("../utils/http");
-const {
-  setupDataImports,
-  setupLogoUploads,
-  setupPfpUploads,
-} = require("../utils/files/multer");
+const { setupLogoUploads, setupPfpUploads } = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { handleImports } = setupDataImports();
 const { handleLogoUploads } = setupLogoUploads();
 const { handlePfpUploads } = setupPfpUploads();
 const fs = require("fs");
@@ -44,9 +39,15 @@ const { WelcomeMessages } = require("../models/welcomeMessages");
 const { ApiKey } = require("../models/apiKeys");
 const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { Workspace } = require("../models/workspace");
-const { flexUserRoleValid } = require("../utils/middleware/multiUserProtected");
+const {
+  flexUserRoleValid,
+  ROLES,
+} = require("../utils/middleware/multiUserProtected");
 const { fetchPfp, determinePfpFilepath } = require("../utils/files/pfp");
+const {
+  prepareWorkspaceChatsForExport,
+  exportChatsAsType,
+} = require("../utils/helpers/chat/convertTo");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -188,7 +189,7 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/system-vectors",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const query = queryParams(request);
@@ -206,7 +207,7 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/remove-document",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { name } = reqBody(request);
@@ -221,7 +222,7 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/remove-folder",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { name } = reqBody(request);
@@ -234,15 +235,19 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/local-files", [validatedRequest], async (_, response) => {
-    try {
-      const localFiles = await viewLocalFiles();
-      response.status(200).json({ localFiles });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+  app.get(
+    "/system/local-files",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (_, response) => {
+      try {
+        const localFiles = await viewLocalFiles();
+        response.status(200).json({ localFiles });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.get(
     "/system/document-processing-status",
@@ -279,15 +284,9 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/update-env",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const user = await userFromSession(request, response);
-        if (!!user && user.role !== "admin") {
-          response.sendStatus(401).end();
-          return;
-        }
-
         const body = reqBody(request);
         const { newValues, error } = await updateENV(body);
         if (process.env.NODE_ENV === "production") await dumpENV();
@@ -345,7 +344,7 @@ function systemEndpoints(app) {
         const { user, error } = await User.create({
           username,
           password,
-          role: "admin",
+          role: ROLES.admin,
         });
         await SystemSettings.updateSettings({
           multi_user_mode: true,
@@ -378,7 +377,7 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/multi-user-mode", async (request, response) => {
+  app.get("/system/multi-user-mode", async (_, response) => {
     try {
       const multiUserMode = await SystemSettings.isMultiUserMode();
       response.status(200).json({ multiUserMode });
@@ -388,7 +387,7 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/logo", async function (request, response) {
+  app.get("/system/logo", async function (_, response) {
     try {
       const defaultFilename = getDefaultFilename();
       const logoPath = await determineLogoFilepath(defaultFilename);
@@ -413,56 +412,61 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/pfp/:id", async function (request, response) {
-    try {
-      const { id } = request.params;
-      const pfpPath = await determinePfpFilepath(id);
+  app.get(
+    "/system/pfp/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async function (request, response) {
+      try {
+        const { id } = request.params;
+        const pfpPath = await determinePfpFilepath(id);
 
-      if (!pfpPath) {
-        response.sendStatus(204).end();
+        if (!pfpPath) {
+          response.sendStatus(204).end();
+          return;
+        }
+
+        const { found, buffer, size, mime } = fetchPfp(pfpPath);
+        if (!found) {
+          response.sendStatus(204).end();
+          return;
+        }
+
+        response.writeHead(200, {
+          "Content-Type": mime || "image/png",
+          "Content-Disposition": `attachment; filename=${path.basename(
+            pfpPath
+          )}`,
+          "Content-Length": size,
+        });
+        response.end(Buffer.from(buffer, "base64"));
         return;
+      } catch (error) {
+        console.error("Error processing the logo request:", error);
+        response.status(500).json({ message: "Internal server error" });
       }
-
-      const { found, buffer, size, mime } = fetchPfp(pfpPath);
-      if (!found) {
-        response.sendStatus(204).end();
-        return;
-      }
-
-      response.writeHead(200, {
-        "Content-Type": mime || "image/png",
-        "Content-Disposition": `attachment; filename=${path.basename(pfpPath)}`,
-        "Content-Length": size,
-      });
-      response.end(Buffer.from(buffer, "base64"));
-      return;
-    } catch (error) {
-      console.error("Error processing the logo request:", error);
-      response.status(500).json({ message: "Internal server error" });
     }
-  });
+  );
 
   app.post(
     "/system/upload-pfp",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     handlePfpUploads.single("file"),
     async function (request, response) {
       try {
         const user = await userFromSession(request, response);
         const uploadedFileName = request.randomFileName;
-
         if (!uploadedFileName) {
           return response.status(400).json({ message: "File upload failed." });
         }
 
         const userRecord = await User.get({ id: user.id });
-        const oldPfpFilename = normalizePath(userRecord.pfpFilename);
+        const oldPfpFilename = userRecord.pfpFilename;
 
         console.log("oldPfpFilename", oldPfpFilename);
         if (oldPfpFilename) {
           const oldPfpPath = path.join(
             __dirname,
-            `../storage/assets/pfp/${oldPfpFilename}`
+            `../storage/assets/pfp/${normalizePath(userRecord.pfpFilename)}`
           );
 
           if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
@@ -486,17 +490,18 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/remove-pfp",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async function (request, response) {
       try {
         const user = await userFromSession(request, response);
         const userRecord = await User.get({ id: user.id });
-        const oldPfpFilename = normalizePath(userRecord.pfpFilename);
+        const oldPfpFilename = userRecord.pfpFilename;
+
         console.log("oldPfpFilename", oldPfpFilename);
         if (oldPfpFilename) {
           const oldPfpPath = path.join(
             __dirname,
-            `../storage/assets/pfp/${oldPfpFilename}`
+            `../storage/assets/pfp/${normalizePath(oldPfpFilename)}`
           );
 
           if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
@@ -520,7 +525,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/upload-logo",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     handleLogoUploads.single("logo"),
     async (request, response) => {
       if (!request.file || !request.file.originalname) {
@@ -554,7 +559,7 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/is-default-logo", async (request, response) => {
+  app.get("/system/is-default-logo", async (_, response) => {
     try {
       const currentLogoFilename = await SystemSettings.currentLogoFilename();
       const isDefaultLogo = currentLogoFilename === LOGO_FILENAME;
@@ -567,7 +572,7 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/remove-logo",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (_request, response) => {
       try {
         const currentLogoFilename = await SystemSettings.currentLogoFilename();
@@ -598,7 +603,7 @@ function systemEndpoints(app) {
         }
 
         const user = await userFromSession(request, response);
-        if (["admin", "manager"].includes(user?.role)) {
+        if ([ROLES.admin, ROLES.manager].includes(user?.role)) {
           return response.status(200).json({ canDelete: true });
         }
 
@@ -615,21 +620,25 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/welcome-messages", async function (request, response) {
-    try {
-      const welcomeMessages = await WelcomeMessages.getMessages();
-      response.status(200).json({ success: true, welcomeMessages });
-    } catch (error) {
-      console.error("Error fetching welcome messages:", error);
-      response
-        .status(500)
-        .json({ success: false, message: "Internal server error" });
+  app.get(
+    "/system/welcome-messages",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async function (_, response) {
+      try {
+        const welcomeMessages = await WelcomeMessages.getMessages();
+        response.status(200).json({ success: true, welcomeMessages });
+      } catch (error) {
+        console.error("Error fetching welcome messages:", error);
+        response
+          .status(500)
+          .json({ success: false, message: "Internal server error" });
+      }
     }
-  });
+  );
 
   app.post(
     "/system/set-welcome-messages",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { messages = [] } = reqBody(request);
@@ -737,7 +746,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/workspace-chats",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { offset = 0, limit = 20 } = reqBody(request);
@@ -760,7 +769,7 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/workspace-chats/:id",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { id } = request.params;
@@ -775,66 +784,14 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/export-chats",
-    [validatedRequest, flexUserRoleValid],
-    async (_request, response) => {
+    [validatedRequest, flexUserRoleValid([ROLES.manager, ROLES.admin])],
+    async (request, response) => {
       try {
-        const chats = await WorkspaceChats.whereWithData({}, null, null, {
-          id: "asc",
-        });
-        const workspaceIds = [
-          ...new Set(chats.map((chat) => chat.workspaceId)),
-        ];
-
-        const workspacesWithPrompts = await Promise.all(
-          workspaceIds.map((id) => Workspace.get({ id: Number(id) }))
-        );
-
-        const workspacePromptsMap = workspacesWithPrompts.reduce(
-          (acc, workspace) => {
-            acc[workspace.id] = workspace.openAiPrompt;
-            return acc;
-          },
-          {}
-        );
-
-        const workspaceChatsMap = chats.reduce((acc, chat) => {
-          const { prompt, response, workspaceId } = chat;
-          const responseJson = JSON.parse(response);
-
-          if (!acc[workspaceId]) {
-            acc[workspaceId] = {
-              messages: [
-                {
-                  role: "system",
-                  content:
-                    workspacePromptsMap[workspaceId] ||
-                    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
-                },
-              ],
-            };
-          }
-
-          acc[workspaceId].messages.push(
-            {
-              role: "user",
-              content: prompt,
-            },
-            {
-              role: "assistant",
-              content: responseJson.text,
-            }
-          );
-
-          return acc;
-        }, {});
-
-        // Convert to JSONL
-        const jsonl = Object.values(workspaceChatsMap)
-          .map((workspaceChats) => JSON.stringify(workspaceChats))
-          .join("\n");
-
-        response.setHeader("Content-Type", "application/jsonl");
-        response.status(200).send(jsonl);
+        const { type = "jsonl" } = request.query;
+        const chats = await prepareWorkspaceChatsForExport();
+        const { contentType, data } = await exportChatsAsType(chats, type);
+        response.setHeader("Content-Type", contentType);
+        response.status(200).send(data);
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
@@ -842,6 +799,8 @@ function systemEndpoints(app) {
     }
   );
 
+  // Used for when a user in multi-user updates their own profile
+  // from the UI.
   app.post("/system/user", [validatedRequest], async (request, response) => {
     try {
       const sessionUser = await userFromSession(request, response);

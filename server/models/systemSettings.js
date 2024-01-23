@@ -32,7 +32,6 @@ const SystemSettings = {
       LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
       ...(vectorDB === "pinecone"
         ? {
-            PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
             PineConeKey: !!process.env.PINECONE_API_KEY,
             PineConeIndex: process.env.PINECONE_INDEX,
           }

@@ -171,11 +171,6 @@ const KEY_MAPPING = {
     envKey: "QDRANT_API_KEY",
     checks: [],
   },
-
-  PineConeEnvironment: {
-    envKey: "PINECONE_ENVIRONMENT",
-    checks: [],
-  },
   PineConeKey: {
     envKey: "PINECONE_API_KEY",
     checks: [],
@@ -450,6 +445,12 @@ async function dumpENV() {
     "PASSWORDNUMERIC",
     "PASSWORDSYMBOL",
     "PASSWORDREQUIREMENTS",
+    // HTTPS SETUP KEYS
+    "ENABLE_HTTPS",
+    "HTTPS_CERT_PATH",
+    "HTTPS_KEY_PATH",
+    // DISABLED TELEMETRY
+    "DISABLE_TELEMETRY",
   ];
 
   for (const key of protectedKeys) {
