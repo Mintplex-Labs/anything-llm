@@ -31,7 +31,7 @@ export default function ChatModelSelection({
           name="chatModel"
           required={true}
           disabled={true}
-          className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- waiting for models --
@@ -60,7 +60,7 @@ export default function ChatModelSelection({
         onChange={() => {
           setHasChanges(true);
         }}
-        className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
       >
         <option disabled={true} selected={workspace?.chatModel === null}>
           System default

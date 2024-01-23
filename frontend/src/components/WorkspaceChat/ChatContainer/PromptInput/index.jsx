@@ -153,8 +153,9 @@ function ChatModeSelector({ workspace }) {
     >
       <i className="hidden opacity-1 opacity-0" />
       <div
-        className={`opacity-${showToolTip ? 1 : 0
-          } pointer-events-none transition-all duration-300 tip absolute bottom-10 z-99 left-0 bg-white/50 text-gray-200 text-xs p-1.5 rounded shadow-lg whitespace-nowrap`}
+        className={`opacity-${
+          showToolTip ? 1 : 0
+        } pointer-events-none transition-all duration-300 tip absolute bottom-10 z-99 left-0 bg-white/50 text-gray-200 text-xs p-1.5 rounded shadow-lg whitespace-nowrap`}
       >
         You are currently in {chatMode} mode. Click to switch to{" "}
         {chatMode === "chat" ? "query" : "chat"} mode.

@@ -23,11 +23,6 @@ import GeneralVectorDatabase from "./pages/GeneralSettings/VectorDatabase";
 import OnboardingFlow from "./pages/OnboardingFlow";
 import DataConnectors from "./pages/GeneralSettings/DataConnectors";
 import DataConnectorSetup from "./pages/GeneralSettings/DataConnectors/Connectors";
-import "react-toastify/dist/ReactToastify.css";
-import Login from "@/pages/Login";
-import OnboardingFlow from "@/pages/OnboardingFlow";
-import { PfpProvider } from "./PfpContext";
-import { LogoProvider } from "./LogoContext";
 
 export default function App() {
   return (

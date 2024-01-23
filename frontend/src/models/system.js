@@ -1,6 +1,7 @@
-import { API_BASE, AUTH_TIMESTAMP } from "@/utils/constants";
+import { AUTH_TIMESTAMP } from "@/utils/constants";
 import { baseHeaders } from "@/utils/request";
 import DataConnector from "./dataConnector";
+import { API_BASE } from "@/utils/api";
 
 const System = {
   ping: async function () {

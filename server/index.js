@@ -49,8 +49,10 @@ app
   .listen(process.env.SERVER_PORT || 3001, async () => {
     await setupTelemetry();
     console.log(
-      `[${process.env.NODE_ENV || "development"
-      }] AnythingLLM Standalone Backend listening on port ${process.env.SERVER_PORT || 3001
+      `[${
+        process.env.NODE_ENV || "development"
+      }] AnythingLLM Standalone Backend listening on port ${
+        process.env.SERVER_PORT || 3001
       }`
     );
   })

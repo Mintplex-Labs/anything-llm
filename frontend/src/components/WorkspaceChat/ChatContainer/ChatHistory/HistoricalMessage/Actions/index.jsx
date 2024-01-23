@@ -20,7 +20,7 @@ function CopyMessage({ message }) {
         <button
           data-tooltip-id="copy-assistant-text"
           data-tooltip-content="Copy"
-          className="text-zinc-300"
+          className="border-none text-zinc-300"
           onClick={() => copyText(message)}
         >
           {copied ? (

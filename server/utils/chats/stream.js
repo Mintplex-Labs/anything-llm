@@ -313,7 +313,7 @@ function handleStreamResponses(response, stream, responseProps) {
             try {
               JSON.parse(message);
               validJSON = true;
-            } catch { }
+            } catch {}
 
             if (!validJSON) {
               // It can be possible that the chunk decoding is running away
@@ -436,7 +436,7 @@ function handleStreamResponses(response, stream, responseProps) {
         try {
           JSON.parse(message);
           validJSON = true;
-        } catch { }
+        } catch {}
 
         if (!validJSON) {
           // It can be possible that the chunk decoding is running away

@@ -1,43 +1,50 @@
+import { useEffect, useRef, useState } from "react";
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
-import { useEffect, useRef } from "react";
-import { useManageWorkspaceModal } from "../../../Modals/MangeWorkspace";
-import ManageWorkspace from "../../../Modals/MangeWorkspace";
-import { v4 } from "uuid";
+import { useManageWorkspaceModal } from "@/components/Modals/MangeWorkspace";
+import ManageWorkspace from "@/components/Modals/MangeWorkspace";
+import { ArrowDown } from "@phosphor-icons/react";
+import debounce from "lodash.debounce";
 
 export default function ChatHistory({ history = [], workspace }) {
   const replyRef = useRef(null);
+  const chatHistoryRef = useRef(null);
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
   useEffect(() => {
-    scrollToBottom();
+    if (replyRef.current) {
+      setTimeout(() => {
+        replyRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+      }, 700);
+    }
   }, [history]);
 
   const handleScroll = () => {
     const diff =
-      replyRef.current.scrollHeight -
-      replyRef.current.scrollTop -
-      replyRef.current.clientHeight;
+      chatHistoryRef.current.scrollHeight -
+      chatHistoryRef.current.scrollTop -
+      chatHistoryRef.current.clientHeight;
     // Fuzzy margin for what qualifies as "bottom". Stronger than straight comparison since that may change over time.
-    const isBottom = diff <= 10;
+    const isBottom = diff <= 100;
     setIsAtBottom(isBottom);
   };
 
   const debouncedScroll = debounce(handleScroll, 100);
   useEffect(() => {
     function watchScrollEvent() {
-      if (!replyRef.current) return null;
-      const chatHistoryElement = replyRef.current;
+      if (!chatHistoryRef.current) return null;
+      const chatHistoryElement = chatHistoryRef.current;
       if (!chatHistoryElement) return null;
       chatHistoryElement.addEventListener("scroll", debouncedScroll);
     }
     watchScrollEvent();
-  }, []);
+  }, [chatHistoryRef.current]);
 
   const scrollToBottom = () => {
-    if (replyRef.current) {
-      replyRef.current.scrollTo({
-        top: replyRef.current.scrollHeight,
+    if (chatHistoryRef.current) {
+      chatHistoryRef.current.scrollTo({
+        top: chatHistoryRef.current.scrollHeight,
         behavior: "smooth",
       });
     }
@@ -77,6 +84,7 @@ export default function ChatHistory({ history = [], workspace }) {
     <div
       className="h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
       id="chat-history"
+      ref={chatHistoryRef}
     >
       {history.map((props, index) => {
         const isLastMessage = index === history.length - 1;
@@ -113,6 +121,19 @@ export default function ChatHistory({ history = [], workspace }) {
       })}
       {showing && (
         <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
+      )}
+      {!isAtBottom && (
+        <div className="fixed bottom-40 right-10 md:right-20 z-50 cursor-pointer animate-pulse">
+          <div className="flex flex-col items-center">
+            <div className="p-1 flex items-center justify-center flex rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white">
+              <ArrowDown
+                weight="bold"
+                className="text-white/60 w-5 h-5"
+                onClick={scrollToBottom}
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

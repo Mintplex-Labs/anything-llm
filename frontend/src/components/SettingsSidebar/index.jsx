@@ -63,7 +63,6 @@ export default function SettingsSidebar() {
                   btnText="Appearance"
                   icon={<Eye className="h-5 w-5 flex-shrink-0" />}
                 />
-
                 <Option
                   href={paths.settings.llmPreference()}
                   btnText="LLM Preference"
@@ -84,44 +83,45 @@ export default function SettingsSidebar() {
                   btnText="Data Connectors"
                   icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
                 />
-
-                {/* Footer */}
-                <div className="flex justify-center mt-2">
-                  <div className="flex space-x-4">
-                    <Link
-                      target="_blank"
-                      to={paths.github()}
-                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                    >
-                      <GithubLogo weight="fill" className="h-5 w-5 " />
-                    </Link>
-                    <Link
-                      target="_blank"
-                      to={paths.docs()}
-                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                    >
-                      <BookOpen weight="fill" className="h-5 w-5 " />
-                    </Link>
-                    <Link
-                      target="_blank"
-                      to={paths.discord()}
-                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                    >
-                      <DiscordLogo
-                        weight="fill"
-                        className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
-                      />
-                    </Link>
-                    {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
+              </div>
+            </div>
+            <div>
+              {/* Footer */}
+              <div className="flex justify-center mt-2">
+                <div className="flex space-x-4">
+                  <Link
+                    target="_blank"
+                    to={paths.github()}
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+                  >
+                    <GithubLogo weight="fill" className="h-5 w-5 " />
+                  </Link>
+                  <Link
+                    target="_blank"
+                    to={paths.docs()}
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+                  >
+                    <BookOpen weight="fill" className="h-5 w-5 " />
+                  </Link>
+                  <Link
+                    target="_blank"
+                    to={paths.discord()}
+                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+                  >
+                    <DiscordLogo
+                      weight="fill"
+                      className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
+                    />
+                  </Link>
+                  {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
                     <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
                   </button> */}
-                  </div>
                 </div>
               </div>
-            </div >
-          </div >
-        </div >
-      </div >
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
@@ -135,9 +135,10 @@ const Option = ({ btnText, icon, href }) => {
         className={`
           transition-all duration-[200ms]
           flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 rounded justify-start items-center border
-          ${isActive
-            ? "bg-menu-item-selected-gradient border-slate-100 border-opacity-50 font-medium"
-            : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
+          ${
+            isActive
+              ? "bg-menu-item-selected-gradient border-slate-100 border-opacity-50 font-medium"
+              : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
           }
         `}
       >

@@ -84,15 +84,17 @@ export default function WorkspaceChats() {
                 <button
                   ref={openMenuButton}
                   onClick={toggleMenu}
-                  className={`transition-all duration-300 border border-slate-200 p-1 rounded-lg text-slate-200 text-sm items-center flex hover:bg-slate-200 hover:text-slate-800 ${showMenu ? "bg-slate-200 text-slate-800" : ""
-                    }`}
+                  className={`transition-all duration-300 border border-slate-200 p-1 rounded-lg text-slate-200 text-sm items-center flex hover:bg-slate-200 hover:text-slate-800 ${
+                    showMenu ? "bg-slate-200 text-slate-800" : ""
+                  }`}
                 >
                   <CaretDown weight="bold" className="h-4 w-4" />
                 </button>
                 <div
                   ref={menuRef}
-                  className={`${showMenu ? "slide-down" : "slide-up hidden"
-                    } z-20 w-fit rounded-lg absolute top-full right-0 bg-sidebar p-4 flex items-center justify-center mt-2`}
+                  className={`${
+                    showMenu ? "slide-down" : "slide-up hidden"
+                  } z-20 w-fit rounded-lg absolute top-full right-0 bg-sidebar p-4 flex items-center justify-center mt-2`}
                 >
                   <div className="flex flex-col gap-y-2">
                     {Object.keys(exportOptions)

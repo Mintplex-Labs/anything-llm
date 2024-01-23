@@ -264,7 +264,7 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
                     step={1}
                     onWheel={(e) => e.target.blur()}
                     defaultValue={workspace?.topN ?? 4}
-                    className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="4"
                     required={true}
                     autoComplete="off"

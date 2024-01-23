@@ -7,9 +7,7 @@ export default function LocalAiOptions({ settings }) {
     settings?.EmbeddingBasePath
   );
   const [apiKey, setApiKey] = useState(settings?.LocalAiApiKey);
-  const [apiKeyValue, setApiKeyValue] = useState(
-    settings?.LocalAiApiKey
-  );
+  const [apiKeyValue, setApiKeyValue] = useState(settings?.LocalAiApiKey);
 
   return (
     <div className="w-full flex flex-col gap-y-4">
@@ -106,7 +104,7 @@ function LocalAIModelSelection({ settings, basePath = null }) {
         <select
           name="EmbeddingModelPref"
           disabled={true}
-          className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
@@ -126,7 +124,7 @@ function LocalAIModelSelection({ settings, basePath = null }) {
       <select
         name="EmbeddingModelPref"
         required={true}
-        className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">

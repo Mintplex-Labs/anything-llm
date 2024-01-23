@@ -6,8 +6,9 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
     <div
       id="slash-cmd-btn"
       onClick={() => setShowSlashCommand(!showing)}
-      className={`flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${showing ? "!opacity-100" : ""
-        }`}
+      className={`flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
+        showing ? "!opacity-100" : ""
+      }`}
     >
       <img
         src={SlashCommandIcon}

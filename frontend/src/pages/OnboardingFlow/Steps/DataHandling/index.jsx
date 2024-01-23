@@ -17,7 +17,7 @@ import PineconeLogo from "@/assets/vectordbs/pinecone.png";
 import LanceDbLogo from "@/assets/vectordbs/lancedb.png";
 import WeaviateLogo from "@/assets/vectordbs/weaviate.png";
 import QDrantLogo from "@/assets/vectordbs/qdrant.png";
-import MilvusLogo from "@/media/vectordbs/milvus.png";
+import MilvusLogo from "@/assets/vectordbs/milvus.png";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
 

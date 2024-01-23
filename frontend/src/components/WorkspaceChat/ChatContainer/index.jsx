@@ -77,7 +77,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         workspace,
         promptMessage.userMessage,
         window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
-        "chat",
+          "chat",
         (chatResult) =>
           handleChat(
             chatResult,

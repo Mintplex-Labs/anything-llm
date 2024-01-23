@@ -56,7 +56,7 @@ function TogetherAiModelSelection({ settings }) {
         <select
           name="TogetherAiModelPref"
           disabled={true}
-          className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -74,7 +74,7 @@ function TogetherAiModelSelection({ settings }) {
       <select
         name="TogetherAiModelPref"
         required={true}
-        className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {Object.entries(groupedModels).map(([organization, models]) => (
           <optgroup key={organization} label={organization}>

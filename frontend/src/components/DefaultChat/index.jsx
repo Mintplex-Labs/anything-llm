@@ -172,11 +172,11 @@ export default function DefaultChatContainer() {
                 <Plus className="h-4 w-4" />
                 <p>Create your first workspace</p>
               </button>
-            </div >
-          </div >
-        </div >
-      </div >
-    </React.Fragment >,
+            </div>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>,
 
     <React.Fragment>
       <div
@@ -334,23 +334,23 @@ export default function DefaultChatContainer() {
     <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
       {fetchedMessages.length === 0
         ? mockMsgs.map((content, i) => {
-          return <React.Fragment key={i}>{content}</React.Fragment>;
-        })
+            return <React.Fragment key={i}>{content}</React.Fragment>;
+          })
         : fetchedMessages.map((fetchedMessage, i) => {
-          return (
-            <React.Fragment key={i}>
-              <ChatBubble
-                message={
-                  fetchedMessage.user === ""
-                    ? fetchedMessage.response
-                    : fetchedMessage.user
-                }
-                type={fetchedMessage.user === "" ? "response" : "user"}
-                popMsg={popMsg}
-              />
-            </React.Fragment>
-          );
-        })}
+            return (
+              <React.Fragment key={i}>
+                <ChatBubble
+                  message={
+                    fetchedMessage.user === ""
+                      ? fetchedMessage.response
+                      : fetchedMessage.user
+                  }
+                  type={fetchedMessage.user === "" ? "response" : "user"}
+                  popMsg={popMsg}
+                />
+              </React.Fragment>
+            );
+          })}
       {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
     </div>
   );
