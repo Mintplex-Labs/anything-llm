@@ -1,7 +1,4 @@
 const { v4 } = require("uuid");
-const {
-  PuppeteerWebBaseLoader,
-} = require("langchain/document_loaders/web/puppeteer");
 const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
@@ -44,30 +41,40 @@ async function scrapeGenericUrl(link) {
   return { success: true, reason: null, documents: [document] };
 }
 
+// Instead of puppeteer, on desktop we do IPC calls via PostMessage to the parent port
+// and waiting for a valid response back via the requestID. This ensures we only close the listener
+// that we were waiting for and not squash messages that may be ongoing at the same time.
+// Note: Because we rely on collector to have a parent process (AKA be spawned from main) if
+// you run the collector via yarn dev:collector, this call will always fail.
 async function getPageContent(link) {
   try {
-    let pageContents = [];
-    const loader = new PuppeteerWebBaseLoader(link, {
-      launchOptions: {
-        headless: "new",
-      },
-      gotoOptions: {
-        waitUntil: "domcontentloaded",
-      },
-      async evaluate(page, browser) {
-        const result = await page.evaluate(() => document.body.innerText);
-        await browser.close();
-        return result;
-      },
+    const requestUuid = v4();
+    let requestHandler = null;
+    process.parentPort.postMessage({
+      message: "process-link",
+      params: { reqId: requestUuid, link },
     });
 
-    const docs = await loader.load();
+    const fetchPageContent = new Promise((resolve) => {
+      requestHandler = ({ data }) => {
+        const { reqId, pageContent } = data;
+        if (reqId === requestUuid) resolve(pageContent);
+      };
 
-    for (const doc of docs) {
-      pageContents.push(doc.pageContent);
+      process?.parentPort?.on("message", requestHandler);
+      setTimeout(() => {
+        resolve("");
+      }, 60_000);
+    });
+
+    const pageContents = await fetchPageContent.then((res) => res);
+    if (!!pageContents && !!requestHandler) {
+      console.log(`Cleaning up request handler for request ID.`);
+      process.parentPort.removeListener("message", requestHandler);
+      requestHandler = null;
     }
 
-    return pageContents.join(" ");
+    return pageContents;
   } catch (error) {
     console.error("getPageContent failed!", error);
   }
