@@ -74,7 +74,7 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
       return false;
     await Workspace.delete(workspace.slug);
     workspace.slug === slug
-      ? (window.location = paths.home())
+      ? (window.location.hash = paths.home())
       : window.location.reload();
   };
 
