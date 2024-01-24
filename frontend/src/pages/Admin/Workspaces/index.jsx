@@ -6,9 +6,12 @@ import { BookOpen } from "@phosphor-icons/react";
 import usePrefersDarkMode from "../../../hooks/usePrefersDarkMode";
 import Admin from "../../../models/admin";
 import WorkspaceRow from "./WorkspaceRow";
-import NewWorkspaceModal, { NewWorkspaceModalId } from "./NewWorkspaceModal";
+import NewWorkspaceModal from "./NewWorkspaceModal";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
 
 export default function AdminWorkspaces() {
+  const { isOpen, openModal, closeModal } = useModal();
   return (
     <div
       style={{ height: "calc(100vh - 40px)" }}
@@ -23,9 +26,7 @@ export default function AdminWorkspaces() {
                 Instance workspaces
               </p>
               <button
-                onClick={() =>
-                  document?.getElementById(NewWorkspaceModalId)?.showModal()
-                }
+                onClick={openModal}
                 className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
               >
                 <BookOpen className="h-4 w-4" /> New Workspace
@@ -38,7 +39,9 @@ export default function AdminWorkspaces() {
           </div>
           <WorkspacesContainer />
         </div>
-        <NewWorkspaceModal />
+        <ModalWrapper isOpen={isOpen}>
+          <NewWorkspaceModal closeModal={closeModal} />
+        </ModalWrapper>
       </div>
     </div>
   );

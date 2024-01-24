@@ -28,11 +28,20 @@ const Telemetry = {
     return new PostHog(this.pubkey);
   },
 
-  sendTelemetry: async function (event, properties = {}, subUserId = null) {
+  runtime: function () {
+    return "desktop";
+  },
+
+  sendTelemetry: async function (
+    event,
+    eventProperties = {},
+    subUserId = null
+  ) {
     try {
       const { client, distinctId: systemId } = await this.connect();
       if (!client) return;
       const distinctId = !!subUserId ? `${systemId}::${subUserId}` : systemId;
+      const properties = { ...eventProperties, runtime: this.runtime() };
       console.log(`\x1b[32m[TELEMETRY SENT]\x1b[0m`, {
         event,
         distinctId,

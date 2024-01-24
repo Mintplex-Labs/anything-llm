@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import paths from "../../utils/paths";
-import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "../../utils/constants";
+import paths from "@/utils/paths";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import { Person } from "@phosphor-icons/react";
-import { userFromStorage } from "../../utils/request";
+import { userFromStorage } from "@/utils/request";
 import { Link } from "react-router-dom";
 
 function useLoginMode() {

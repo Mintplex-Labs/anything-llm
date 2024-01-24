@@ -1,14 +1,15 @@
 import { useRef } from "react";
-import Admin from "../../../../models/admin";
-import paths from "../../../../utils/paths";
-import EditWorkspaceUsersModal, {
-  EditWorkspaceUsersModalId,
-} from "./EditWorkspaceUsersModal";
+import Admin from "@/models/admin";
+import paths from "@/utils/paths";
+import EditWorkspaceUsersModal from "./EditWorkspaceUsersModal";
 import { DotsThreeOutline, LinkSimple, Trash } from "@phosphor-icons/react";
+import { useModal } from "@/hooks/useModal";
 import { Link } from "react-router-dom";
+import ModalWrapper from "@/components/ModalWrapper";
 
 export default function WorkspaceRow({ workspace, users }) {
   const rowRef = useRef(null);
+  const { isOpen, openModal, closeModal } = useModal();
   const handleDelete = async () => {
     if (
       !window.confirm(
@@ -33,6 +34,7 @@ export default function WorkspaceRow({ workspace, users }) {
           <Link
             to={paths.workspace.chat(workspace.slug)}
             target="_blank"
+            rel="noreferrer"
             className="text-white flex items-center hover:underline"
           >
             <LinkSimple className="mr-2 w-5 h-5" /> {workspace.slug}
@@ -42,12 +44,8 @@ export default function WorkspaceRow({ workspace, users }) {
         <td className="px-6 py-4">{workspace.createdAt}</td>
         <td className="px-6 py-4 flex items-center gap-x-6">
           <button
-            onClick={() =>
-              document
-                ?.getElementById(EditWorkspaceUsersModalId(workspace))
-                ?.showModal()
-            }
-            className="border border-slate-200 px-2 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:bg-opacity-10"
+            onClick={openModal}
+            className="font-medium rounded-lg hover:text-white hover:text-opacity-60 px-2 py-1 hover:bg-white hover:bg-opacity-10"
           >
             <DotsThreeOutline weight="fill" className="h-5 w-5" />
           </button>
@@ -59,7 +57,13 @@ export default function WorkspaceRow({ workspace, users }) {
           </button>
         </td>
       </tr>
-      <EditWorkspaceUsersModal workspace={workspace} users={users} />
+      <ModalWrapper isOpen={isOpen}>
+        <EditWorkspaceUsersModal
+          workspace={workspace}
+          users={users}
+          closeModal={closeModal}
+        />
+      </ModalWrapper>
     </>
   );
 }

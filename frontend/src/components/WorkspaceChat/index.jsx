@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Workspace from "../../models/workspace";
+import Workspace from "@/models/workspace";
 import LoadingChat from "./LoadingChat";
 import ChatContainer from "./ChatContainer";
-import paths from "../../utils/paths";
 import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
+import ModalWrapper from "@/components/ModalWrapper";
 
 export default function WorkspaceChat({ loading, workspace }) {
   const [history, setHistory] = useState([]);
@@ -29,11 +30,7 @@ export default function WorkspaceChat({ loading, workspace }) {
     return (
       <>
         {loading === false && !workspace && (
-          <dialog
-            open={true}
-            style={{ zIndex: 100 }}
-            className="border-none fixed top-0 flex bg-black bg-opacity-50 w-full md:w-[100vw] h-auto items-center justify-center"
-          >
+          <ModalWrapper isOpen={true}>
             <div className="relative w-full md:max-w-2xl max-h-full bg-main-gradient rounded-lg shadow p-4">
               <div className="flex flex-col gap-y-4 w-full p-6 text-center">
                 <p className="font-semibold text-red-500 text-xl">
@@ -53,7 +50,7 @@ export default function WorkspaceChat({ loading, workspace }) {
                 </div>
               </div>
             </div>
-          </dialog>
+          </ModalWrapper>
         )}
         <LoadingChat />
       </>
