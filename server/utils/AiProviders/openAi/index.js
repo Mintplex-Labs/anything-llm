@@ -52,6 +52,8 @@ class OpenAiLLM {
         return 8192;
       case "gpt-4-1106-preview":
         return 128000;
+      case "gpt-4-turbo-preview":
+        return 128000;
       case "gpt-4-32k":
         return 32000;
       default:
