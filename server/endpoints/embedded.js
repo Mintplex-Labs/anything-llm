@@ -1,7 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { reqBody, userFromSession, multiUserMode } = require("../utils/http");
 const { Workspace } = require("../models/workspace");
-const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { SystemSettings } = require("../models/systemSettings");
 const { Telemetry } = require("../models/telemetry");
@@ -17,9 +16,22 @@ function embeddedEndpoints(app) {
   //http://localhost:3001/api/workspace/${userId}/embedded-chat
   app.post("/workspace/:userId/embedded-chat", async (request, response) => {
     try {
-      const user = await userFromSession(request, response);
+      //   const user = await userFromSession(request, response);
+      const user = {
+        id: 1,
+        username: "admin",
+        password:
+          "$2b$10$nRP1SfL1GnFGdcGmimxTpe2sa3nLVz1msy48O.V5q/zXDRFG4bkJC",
+        pfpFilename: null,
+        role: "admin",
+        suspended: 0,
+        createdAt: "2024-01-23T00:45:53.416Z",
+        lastUpdatedAt: "2024-01-23T00:45:53.416Z",
+      };
       const { userId } = request.params;
       const { message, mode = "query" } = reqBody(request);
+
+      console.log("message:", message);
 
       const slug = "hello";
 

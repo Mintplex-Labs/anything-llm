@@ -20,10 +20,11 @@ function chatEndpoints(app) {
 
   app.post(
     "/workspace/:slug/stream-chat",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    // [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
+        // console.log("user", user);
         const { slug } = request.params;
         const { message, mode = "query" } = reqBody(request);
 

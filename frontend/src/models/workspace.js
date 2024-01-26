@@ -118,6 +118,72 @@ const Workspace = {
       },
     });
   },
+
+  // /workspace/:userId/embedded-chat
+  streamChatEmbedded: async function (
+    { slug },
+    message,
+    mode = "query",
+    handleChat
+  ) {
+    const ctrl = new AbortController();
+    await fetchEventSource(`${API_BASE}/workspace/${slug}/embedded-chat`, {
+      method: "POST",
+      body: JSON.stringify({ message, mode }),
+      headers: baseHeaders(),
+      signal: ctrl.signal,
+      openWhenHidden: true,
+      async onopen(response) {
+        if (response.ok) {
+          return; // everything's good
+        } else if (
+          response.status >= 400 &&
+          response.status < 500 &&
+          response.status !== 429
+        ) {
+          handleChat({
+            id: v4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `An error occurred while streaming response. Code ${response.status}`,
+          });
+          ctrl.abort();
+          throw new Error("Invalid Status code response.");
+        } else {
+          handleChat({
+            id: v4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `An error occurred while streaming response. Unknown Error.`,
+          });
+          ctrl.abort();
+          throw new Error("Unknown error");
+        }
+      },
+      async onmessage(msg) {
+        try {
+          const chatResult = JSON.parse(msg.data);
+          handleChat(chatResult);
+        } catch {}
+      },
+      onerror(err) {
+        handleChat({
+          id: v4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: `An error occurred while streaming response. ${err.message}`,
+        });
+        ctrl.abort();
+        throw new Error();
+      },
+    });
+  },
   all: async function () {
     const workspaces = await fetch(`${API_BASE}/workspaces`, {
       method: "GET",

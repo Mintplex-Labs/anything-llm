@@ -15,25 +15,105 @@ export default function App() {
       id = v4();
       localStorage.setItem("userId", id);
     }
-
     setUserId(id);
   }, []);
 
-  const toggleOpen = () => setIsOpen(!isOpen);
-
-  const streamMessages = () => {
-    const eventSource = fetchEventSource(
-      `http://localhost:3001/api/workspace/${userId}/embedded-chat`
-    );
-
-    eventSource.addEventListener("message", (event) => {
-      const data = JSON.parse(event.data);
-      console.log(data);
-    });
+  const toggleOpen = () => {
+    setIsOpen(!isOpen);
+    // if (!isOpen) {
+    //   streamMessages();
+    // }
   };
 
-  const sendMessage = () => {
-    console.log(message);
+  const streamMessages = async () => {
+    const ctrl = new AbortController();
+    await fetchEventSource(
+      `http://localhost:3001/api/workspace/hello/stream-chat`,
+      {
+        method: "POST",
+        body: JSON.stringify({ message, mode: "query" }),
+        // headers: baseHeaders(),
+        signal: ctrl.signal,
+        openWhenHidden: true,
+        async onopen(response) {
+          if (response.ok) {
+            return; // everything's good
+          } else if (
+            response.status >= 400 &&
+            response.status < 500 &&
+            response.status !== 429
+          ) {
+            handleChat({
+              id: v4(),
+              type: "abort",
+              textResponse: null,
+              sources: [],
+              close: true,
+              error: `An error occurred while streaming response. Code ${response.status}`,
+            });
+            ctrl.abort();
+            throw new Error("Invalid Status code response.");
+          } else {
+            handleChat({
+              id: v4(),
+              type: "abort",
+              textResponse: null,
+              sources: [],
+              close: true,
+              error: `An error occurred while streaming response. Unknown Error.`,
+            });
+            ctrl.abort();
+            throw new Error("Unknown error");
+          }
+        },
+        async onmessage(msg) {
+          try {
+            const chatResult = JSON.parse(msg.data);
+            console.log(chatResult);
+            handleChat(chatResult);
+          } catch {}
+        },
+        onerror(err) {
+          handleChat({
+            id: v4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `An error occurred while streaming response. ${err.message}`,
+          });
+          ctrl.abort();
+          throw new Error();
+        },
+      }
+    );
+    // fetchEventSource(
+    //   `http://localhost:3001/api/workspace/${userId}/embedded-chat`,
+    //   {
+    //     onmessage(event) {
+    //       try {
+    //         // Assuming the data is in the format "data: <actual_JSON_data>"
+    //         // Extracting the JSON part from the data and parsing it.
+    //         const jsonPart = event.data.replace(/^data: /, "");
+    //         const parsedData = JSON.parse(jsonPart);
+    //         console.log("Parsed data:", parsedData);
+    //       } catch (error) {
+    //         console.error("Error parsing event data:", error);
+    //       }
+    //     },
+    //     onopen() {
+    //       console.log("Connection opened");
+    //     },
+    //     onerror(err) {
+    //       console.error("EventSource failed:", err);
+    //     },
+    //   }
+    // );
+  };
+
+  const sendMessage = async () => {
+    console.log("EMBEDDED MESSAGE: ", message);
+    await streamMessages();
     fetch(`http://localhost:3001/api/workspace/${userId}/embedded-chat`, {
       method: "POST",
       headers: {
@@ -43,7 +123,12 @@ export default function App() {
         message: message,
       }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => {
         console.log("Success:", data);
       })
@@ -88,10 +173,7 @@ export default function App() {
           </>
         )}
         <button
-          onClick={() => {
-            toggleOpen();
-            streamMessages();
-          }}
+          onClick={toggleOpen}
           className={`absolute top-0 right-0 w-16 h-16 rounded-full ${
             isOpen ? "bg-white" : "bg-blue-500"
           }`}
