@@ -30,7 +30,8 @@ class OpenAiEmbedder {
         new Promise((resolve) => {
           this.openai
             .createEmbedding({
-              model: "text-embedding-ada-002",
+              model:
+                process.env.EMBEDDING_MODEL_PREF || "text-embedding-ada-002",
               input: chunk,
             })
             .then((res) => {
