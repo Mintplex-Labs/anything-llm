@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { FullScreenLoader } from "@/components/Preloader";
 import Invite from "@/models/invite";
 import NewUserModal from "./NewUserModal";
+import ModalWrapper from "@/components/ModalWrapper";
 
 export default function InvitePage() {
   const { code } = useParams();
@@ -47,7 +48,9 @@ export default function InvitePage() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex items-center justify-center">
-      <NewUserModal />
+      <ModalWrapper isOpen={true}>
+        <NewUserModal />
+      </ModalWrapper>
     </div>
   );
 }

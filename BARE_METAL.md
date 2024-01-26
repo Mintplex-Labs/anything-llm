@@ -23,7 +23,12 @@ Here you can find the scripts and known working process to run AnythingLLM outsi
 
 2. `cd anything-llm` and run `yarn setup`. This will install all dependencies to run in production as well as debug the application.
 
-3. `cp server/.env.example server/.env` to create the basic ENV file for where instance settings will be read from on service start. This file is automatically managed and should not be edited manually.
+3. `cp server/.env.example server/.env` to create the basic ENV file for where instance settings will be read from on service start.
+
+4. Ensure that the `server/.env` file has _at least_ these keys to start. These values will persist and this file will be automatically written and managed after your first successful boot.
+```
+STORAGE_DIR="/your/absolute/path/to/server/.env"
+```
 
 ## To start the application
 
@@ -45,10 +50,10 @@ cd server && npx prisma migrate deploy --schema=./prisma/schema.prisma
 ```
 
 4. Boot the server in production
-`cd server && NODE_ENV=production index.js &` 
+`cd server && NODE_ENV=production node index.js &` 
 
 5. Boot the collection in another process
-`cd collector && NODE_ENV=production index.js &` 
+`cd collector && NODE_ENV=production node index.js &` 
 
 AnythingLLM should now be running on `http://localhost:3001`!
 

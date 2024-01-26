@@ -1,9 +1,11 @@
 import { useRef, useState } from "react";
 import { titleCase } from "text-case";
 import Admin from "@/models/admin";
-import EditUserModal, { EditUserModalId } from "./EditUserModal";
+import EditUserModal from "./EditUserModal";
 import { DotsThreeOutline } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
 
 const ModMap = {
   admin: ["admin", "manager", "default"],
@@ -15,6 +17,7 @@ export default function UserRow({ currUser, user }) {
   const rowRef = useRef(null);
   const canModify = ModMap[currUser?.role || "default"].includes(user.role);
   const [suspended, setSuspended] = useState(user.suspended === 1);
+  const { isOpen, openModal, closeModal } = useModal();
   const handleSuspend = async () => {
     if (
       !window.confirm(
@@ -65,9 +68,7 @@ export default function UserRow({ currUser, user }) {
         <td className="px-6 py-4 flex items-center gap-x-6">
           {canModify && (
             <button
-              onClick={() =>
-                document?.getElementById(EditUserModalId(user))?.showModal()
-              }
+              onClick={openModal}
               className="font-medium text-white text-opacity-80 rounded-lg hover:text-white px-2 py-1 hover:text-opacity-60 hover:bg-white hover:bg-opacity-10"
             >
               <DotsThreeOutline weight="fill" className="h-5 w-5" />
@@ -91,7 +92,13 @@ export default function UserRow({ currUser, user }) {
           )}
         </td>
       </tr>
-      <EditUserModal currentUser={currUser} user={user} />
+      <ModalWrapper isOpen={isOpen}>
+        <EditUserModal
+          currentUser={currUser}
+          user={user}
+          closeModal={closeModal}
+        />
+      </ModalWrapper>
     </>
   );
 }

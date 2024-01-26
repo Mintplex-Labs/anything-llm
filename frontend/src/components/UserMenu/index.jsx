@@ -193,7 +193,7 @@ function AccountModal({ user, hideModal }) {
   return (
     <div
       id="account-modal"
-      className="bg-black/20 fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center"
+      className="bg-black/60 backdrop-blur-sm fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center"
     >
       <div className="relative w-[500px] max-w-2xl max-h-full bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">

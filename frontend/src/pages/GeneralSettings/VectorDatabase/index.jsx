@@ -21,6 +21,8 @@ import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions"
 import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
 import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -31,6 +33,7 @@ export default function GeneralVectorDatabase() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredVDBs, setFilteredVDBs] = useState([]);
   const [selectedVDB, setSelectedVDB] = useState(null);
+  const { isOpen, openModal, closeModal } = useModal();
 
   useEffect(() => {
     async function fetchKeys() {
@@ -107,7 +110,7 @@ export default function GeneralVectorDatabase() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (selectedVDB !== settings?.VectorDB && hasChanges && hasEmbeddings) {
-      document.getElementById("confirmation-modal")?.showModal();
+      openModal();
     } else {
       await handleSaveSettings();
     }
@@ -130,7 +133,7 @@ export default function GeneralVectorDatabase() {
       setHasChanges(false);
     }
     setSaving(false);
-    document.getElementById("confirmation-modal")?.close();
+    closeModal();
   };
 
   useEffect(() => {
@@ -142,11 +145,13 @@ export default function GeneralVectorDatabase() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      <ChangeWarningModal
-        warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. They will need to be re-added to each workspace."
-        onClose={() => document.getElementById("confirmation-modal")?.close()}
-        onConfirm={handleSaveSettings}
-      />
+      <ModalWrapper isOpen={isOpen}>
+        <ChangeWarningModal
+          warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. They will need to be re-added to each workspace."
+          onClose={closeModal}
+          onConfirm={handleSaveSettings}
+        />
+      </ModalWrapper>
       {!isMobile && <Sidebar />}
       {loading ? (
         <div

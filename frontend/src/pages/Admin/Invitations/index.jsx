@@ -7,9 +7,12 @@ import { EnvelopeSimple } from "@phosphor-icons/react";
 import usePrefersDarkMode from "@/hooks/usePrefersDarkMode";
 import Admin from "@/models/admin";
 import InviteRow from "./InviteRow";
-import NewInviteModal, { NewInviteModalId } from "./NewInviteModal";
+import NewInviteModal from "./NewInviteModal";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
 
 export default function AdminInvites() {
+  const { isOpen, openModal, closeModal } = useModal();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       {!isMobile && <Sidebar />}
@@ -23,9 +26,7 @@ export default function AdminInvites() {
             <div className="items-center flex gap-x-4">
               <p className="text-2xl font-semibold text-white">Invitations</p>
               <button
-                onClick={() =>
-                  document?.getElementById(NewInviteModalId)?.showModal()
-                }
+                onClick={openModal}
                 className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
               >
                 <EnvelopeSimple className="h-4 w-4" /> Create Invite Link
@@ -38,7 +39,9 @@ export default function AdminInvites() {
           </div>
           <InvitationsContainer />
         </div>
-        <NewInviteModal />
+        <ModalWrapper isOpen={isOpen}>
+          <NewInviteModal closeModal={closeModal} />
+        </ModalWrapper>
       </div>
     </div>
   );
