@@ -204,6 +204,17 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Astra DB Options
+
+  AstraDBApplicationToken: {
+    envKey: "ASTRA_DB_APPLICATION_TOKEN",
+    checks: [isNotEmpty],
+  },
+  AstraDBEndpoint: {
+    envKey: "ASTRA_DB_ENDPOINT",
+    checks: [isNotEmpty],
+  },
+
   // Together Ai Options
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
@@ -322,6 +333,7 @@ function supportedVectorDB(input = "") {
     "qdrant",
     "milvus",
     "zilliz",
+    "astra",
   ];
   return supported.includes(input)
     ? null

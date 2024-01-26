@@ -44,6 +44,7 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
   const formEl = useRef(null);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const defaults = recommendedSettings(settings?.LLMProvider);
 
   const handleUpdate = async (e) => {
@@ -72,7 +73,15 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
       )
     )
       return false;
-    await Workspace.delete(workspace.slug);
+
+    setDeleting(true);
+    const success = await Workspace.delete(workspace.slug);
+    if (!success) {
+      showToast("Workspace could not be deleted!", "error", { clear: true });
+      setDeleting(false);
+      return;
+    }
+
     workspace.slug === slug
       ? (window.location = paths.home())
       : window.location.reload();
@@ -310,7 +319,11 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
         </div>
       </div>
       <div className="flex items-center justify-between p-2 md:p-6 space-x-2 border-t rounded-b border-gray-600">
-        <DeleteWorkspace workspace={workspace} onClick={deleteWorkspace} />
+        <DeleteWorkspace
+          deleting={deleting}
+          workspace={workspace}
+          onClick={deleteWorkspace}
+        />
         {hasChanges && (
           <button
             type="submit"
@@ -324,7 +337,7 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
   );
 }
 
-function DeleteWorkspace({ workspace, onClick }) {
+function DeleteWorkspace({ deleting, workspace, onClick }) {
   const [canDelete, setCanDelete] = useState(false);
   useEffect(() => {
     async function fetchKeys() {
@@ -337,11 +350,12 @@ function DeleteWorkspace({ workspace, onClick }) {
   if (!canDelete) return null;
   return (
     <button
+      disabled={deleting}
       onClick={onClick}
       type="button"
-      className="transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-transparent text-white hover:text-white hover:bg-red-600"
+      className="transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-transparent text-white hover:text-white hover:bg-red-600 disabled:bg-red-600 disabled:text-red-200 disabled:animate-pulse"
     >
-      Delete Workspace
+      {deleting ? "Deleting Workspace..." : "Delete Workspace"}
     </button>
   );
 }
