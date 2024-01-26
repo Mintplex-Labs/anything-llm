@@ -52,6 +52,8 @@ class OpenAiLLM {
         return 8192;
       case "gpt-4-1106-preview":
         return 128000;
+      case "gpt-4-turbo-preview":
+        return 128000;
       case "gpt-4-32k":
         return 32000;
       default:
@@ -65,6 +67,7 @@ class OpenAiLLM {
       "gpt-3.5-turbo",
       "gpt-3.5-turbo-1106",
       "gpt-4-1106-preview",
+      "gpt-4-turbo-preview",
       "gpt-4-32k",
     ];
     const isPreset = validModels.some((model) => modelName === model);
