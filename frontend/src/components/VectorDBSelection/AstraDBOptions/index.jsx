@@ -4,6 +4,22 @@ export default function AstraDBOptions({ settings }) {
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
+            Astra DB Endpoint
+          </label>
+          <input
+            type="url"
+            name="AstraDBEndpoint"
+            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            placeholder="Astra DB API endpoint"
+            defaultValue={settings?.AstraDBEndpoint}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-4">
             Astra DB Application Token
           </label>
           <input
@@ -14,22 +30,6 @@ export default function AstraDBOptions({ settings }) {
             defaultValue={
               settings?.AstraDBApplicationToken ? "*".repeat(20) : ""
             }
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Astra DB Endpoint
-          </label>
-          <input
-            type="text"
-            name="AstraDBEndpoint"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="Astra DB API endpoint"
-            defaultValue={settings?.AstraDBEndpoint}
             required={true}
             autoComplete="off"
             spellCheck={false}

@@ -104,7 +104,7 @@ export default function VectorDatabaseConnection({
     },
     {
       name: "AstraDB",
-      value: "astraDB",
+      value: "astra",
       logo: AstraDBLogo,
       options: <AstraDBOptions settings={settings} />,
       description: "Vector Search for Real-world GenAI.",

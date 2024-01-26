@@ -68,7 +68,7 @@ const SystemSettings = {
             ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
           }
         : {}),
-      ...(vectorDB === "astraDB"
+      ...(vectorDB === "astra"
         ? {
             AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
             AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,

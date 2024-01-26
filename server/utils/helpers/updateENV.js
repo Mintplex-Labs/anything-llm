@@ -333,7 +333,7 @@ function supportedVectorDB(input = "") {
     "qdrant",
     "milvus",
     "zilliz",
-    "astraDB",
+    "astra",
   ];
   return supported.includes(input)
     ? null

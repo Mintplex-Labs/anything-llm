@@ -22,7 +22,7 @@ function getVectorDbClass() {
     case "zilliz":
       const { Zilliz } = require("../vectorDbProviders/zilliz");
       return Zilliz;
-    case "astraDB":
+    case "astra":
       const { AstraDB } = require("../vectorDbProviders/astra");
       return AstraDB;
     default:
