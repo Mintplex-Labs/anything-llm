@@ -106,6 +106,9 @@ const Document = {
         await prisma.workspace_documents.delete({
           where: { id: document.id, workspaceId: workspace.id },
         });
+        await prisma.document_vectors.deleteMany({
+          where: { docId: document.docId },
+        });
       } catch (error) {
         console.error(error.message);
       }
