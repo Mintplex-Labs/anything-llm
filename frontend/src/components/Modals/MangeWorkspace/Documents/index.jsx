@@ -6,9 +6,14 @@ import Directory from "./Directory";
 import showToast from "../../../../utils/toast";
 import WorkspaceDirectory from "./WorkspaceDirectory";
 
-// OpenAI Cost per token for text-ada-embedding
+// OpenAI Cost per token
 // ref: https://openai.com/pricing#:~:text=%C2%A0/%201K%20tokens-,Embedding%20models,-Build%20advanced%20search
-const COST_PER_TOKEN = 0.0000001; // $0.0001 / 1K tokens
+
+const MODEL_COSTS = {
+  "text-embedding-ada-002": 0.0000001, // $0.0001 / 1K tokens
+  "text-embedding-3-small": 0.00000002, // $0.00002 / 1K tokens
+  "text-embedding-3-large": 0.00000013, // $0.00013 / 1K tokens
+};
 
 export default function DocumentSettings({
   workspace,
@@ -142,10 +147,12 @@ export default function DocumentSettings({
     });
 
     // Do not do cost estimation unless the embedding engine is OpenAi.
-    if (
-      !systemSettings?.EmbeddingEngine ||
-      systemSettings.EmbeddingEngine === "openai"
-    ) {
+    if (systemSettings?.EmbeddingEngine === "openai") {
+      const COST_PER_TOKEN =
+        MODEL_COSTS[
+          systemSettings?.EmbeddingModelPref || "text-embedding-ada-002"
+        ];
+
       const dollarAmount = (totalTokenCount / 1000) * COST_PER_TOKEN;
       setEmbeddingsCost(dollarAmount);
     }
