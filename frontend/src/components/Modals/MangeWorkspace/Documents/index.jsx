@@ -147,10 +147,7 @@ export default function DocumentSettings({
     });
 
     // Do not do cost estimation unless the embedding engine is OpenAi.
-    if (
-      !systemSettings?.EmbeddingEngine ||
-      systemSettings.EmbeddingEngine === "openai"
-    ) {
+    if (systemSettings?.EmbeddingEngine === "openai") {
       const COST_PER_TOKEN =
         MODEL_COSTS[
           systemSettings?.EmbeddingModelPref || "text-embedding-ada-002"
