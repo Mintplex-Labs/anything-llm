@@ -84,6 +84,7 @@ Some cool features of AnythingLLM
 **Supported Vector Databases:**
 
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
+- [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)
 - [Weaviate](https://weaviate.io)
