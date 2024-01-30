@@ -6,9 +6,9 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const [userId, setUserId] = useState("");
-  const [chatMessages, setChatMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [chatLoading, setChatLoading] = useState(false);
   const eventSourceRef = useRef(null);
 
   useEffect(() => {
@@ -22,150 +22,179 @@ export default function App() {
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
-    // if (!isOpen) {
-    //   streamMessages();
-    // }
   };
 
-  const handleChat = (chatResult) => {
-    setChatMessages((prev) => [...prev, chatResult]);
-    if (chatResult.close) {
-      eventSourceRef.current?.abort();
-      console.log("message stream completed");
-    }
+  const addMessage = (newMessage, sender) => {
+    setMessages((prev) => [...prev, { ...newMessage, id: v4(), sender }]);
   };
 
-  const streamMessages = async () => {
+  const addChunkToLastMessage = (textChunk, sender) => {
+    setMessages((prev) => {
+      const lastMessage = prev.length > 0 ? prev[prev.length - 1] : null;
+      if (lastMessage && lastMessage.sender === sender && !lastMessage.close) {
+        return [
+          ...prev.slice(0, -1),
+          {
+            ...lastMessage,
+            textResponse: lastMessage.textResponse + textChunk,
+          },
+        ];
+      } else {
+        return [...prev, { id: v4(), textResponse: textChunk, sender }];
+      }
+    });
+  };
+
+  const streamMessages = async (message) => {
+    addMessage({ textResponse: message, close: false }, "user");
+    setChatLoading(true);
+
     const ctrl = new AbortController();
     eventSourceRef.current = ctrl;
 
     await fetchEventSource(
-      `http://localhost:3001/api/workspace/hello/stream-chat`,
+      `http://localhost:3001/api/workspace/hello/stream-embedded-chat`,
       {
         method: "POST",
         body: JSON.stringify({ message, mode: "chat" }),
-        // headers: baseHeaders(),
         signal: ctrl.signal,
         openWhenHidden: true,
         onopen(response) {
-          if (response.ok) {
-            // everything's good
-          } else {
-            handleChat({
-              id: v4(),
-              type: "abort",
-              textResponse: null,
-              sources: [],
-              close: true,
-              error: `An error occurred while streaming response. Code ${response.status}`,
-            });
+          if (!response.ok) {
+            addMessage(
+              {
+                textResponse: `Error: Response code ${response.status}`,
+                close: true,
+              },
+              "system"
+            );
             ctrl.abort();
           }
         },
         onmessage(msg) {
           try {
             const chatResult = JSON.parse(msg.data);
-            console.log("chatResult: ", chatResult);
-            handleChat(chatResult);
+            addChunkToLastMessage(chatResult.textResponse, "system");
+            if (chatResult.close) {
+              setChatLoading(false);
+              finalizeLastMessage();
+            }
           } catch (error) {
-            console.error("Error parsing message:", error);
+            addMessage(
+              { textResponse: `Error: ${error.message}`, close: true },
+              "system"
+            );
+            setChatLoading(false);
           }
         },
         onerror(err) {
-          handleChat({
-            id: v4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `An error occurred while streaming response. ${err.message}`,
-          });
+          addMessage(
+            { textResponse: `Error: ${err.message}`, close: true },
+            "system"
+          );
           ctrl.abort();
+          setChatLoading(false);
         },
       }
     );
   };
 
-  const sendMessage = async () => {
-    console.log("EMBEDDED MESSAGE: ", message);
-    await streamMessages();
-    fetch(`http://localhost:3001/api/workspace/${userId}/embedded-chat`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message: message,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Success:", data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+  const finalizeLastMessage = () => {
+    setMessages((prev) => {
+      const lastMessage = prev.length > 0 ? prev[prev.length - 1] : null;
+      if (lastMessage) {
+        return [...prev.slice(0, -1), { ...lastMessage, close: true }];
+      }
+      return prev;
+    });
   };
 
-  console.log("chatMessages: ", chatMessages);
-  console.log("isOpen: ", isOpen);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const message = e.target.message.value;
+    e.target.message.value = "";
+    await streamMessages(message);
+  };
 
   return (
-    <div className="fixed bottom-0 right-0 mb-4 mr-4 z-50">
-      <div
-        className={`transition-all duration-300 ease-in-out ${
-          isOpen
-            ? "max-w-sm p-4 bg-white rounded-lg border shadow-lg"
-            : "w-16 h-16 rounded-full"
-        }`}
-      >
-        {isOpen && (
-          <>
-            <div className="flex justify-center">
-              <img
-                className="px-10"
-                src={AnythingLLMLogo}
-                alt="AnythingLLM Logo"
-              />
-            </div>
-            <h1 className="text-md text-center font-semibold">
-              Hello from Embedded App 👋
-            </h1>
-            <div className="card mt-4 p-4 bg-gray-100 rounded flex flex-col items-center justify-center">
-              <div className="flex">
-                <input
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Enter a message..."
-                ></input>
-                <button onClick={sendMessage}>Send message</button>
-              </div>
-              <div className="chat-messages">
-                {chatMessages.map((msg) => (
-                  <p key={msg.id}>{msg.textResponse || msg.error}</p>
-                ))}
-              </div>
-            </div>
-            <p className="mt-4 text-md text-blue-500 hover:text-opacity-30 text-center hover:cursor-pointer">
-              Learn more
-            </p>
-          </>
-        )}
-        <button
-          onClick={toggleOpen}
-          className={`absolute top-0 right-0 w-16 h-16 rounded-full ${
-            isOpen ? "bg-white" : "bg-blue-500"
+    <>
+      <head>
+        <link
+          href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+          rel="stylesheet"
+        />
+      </head>
+      <div className="fixed bottom-0 right-0 mb-4 mr-4 z-50">
+        <div
+          className={`transition-all duration-300 ease-in-out ${
+            isOpen
+              ? "max-w-md p-4 bg-white rounded-lg border shadow-lg"
+              : "w-16 h-16 rounded-full"
           }`}
-          aria-label="Toggle Menu"
         >
-          {isOpen ? "X" : "+"}
-        </button>
+          {isOpen && (
+            <div className="flex flex-col">
+              <div className="flex justify-between items-center">
+                <img
+                  className="h-10"
+                  src={AnythingLLMLogo}
+                  alt="AnythingLLM Logo"
+                />
+                <button onClick={toggleOpen} className="text-xl font-bold">
+                  X
+                </button>
+              </div>
+              <div className="mb-4 p-4 bg-gray-100 rounded flex flex-col items-center">
+                <div className="chat-messages h-64 overflow-y-auto w-full mb-2">
+                  {messages.map((msg, index) => (
+                    <div
+                      key={index}
+                      className={`p-2 my-1 rounded shadow ${
+                        msg.sender === "user" ? "bg-gray-500" : "bg-blue-500"
+                      }`}
+                    >
+                      <p className="text-sm text-white">
+                        {msg.textResponse || msg.error}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <form onSubmit={handleSubmit}>
+                  <div className="flex">
+                    <input
+                      type="text"
+                      name="message"
+                      placeholder="Enter a message..."
+                      className="px-2 py-1 border rounded-l-lg flex-grow disabled:cursor-not-allowed"
+                      disabled={chatLoading}
+                    />
+                    <button
+                      type="submit"
+                      className="bg-blue-500 text-white px-4 rounded-r-lg disabled:cursor-not-allowed"
+                      disabled={chatLoading}
+                    >
+                      Send
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <p className="text-blue-500 hover:text-opacity-70 cursor-pointer text-center">
+                Learn more
+              </p>
+            </div>
+          )}
+          {!isOpen && (
+            <button
+              onClick={toggleOpen}
+              className="w-16 h-16 rounded-full bg-blue-500 text-white text-2xl"
+              aria-label="Toggle Menu"
+            >
+              +
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
