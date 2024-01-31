@@ -37,11 +37,12 @@ systemEndpoints(apiRouter);
 extensionEndpoints(apiRouter);
 workspaceEndpoints(apiRouter);
 chatEndpoints(apiRouter);
-embeddedEndpoints(apiRouter);
 adminEndpoints(apiRouter);
 inviteEndpoints(apiRouter);
 utilEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
+
+embeddedEndpoints(apiRouter);
 
 apiRouter.post("/v/:command", async (request, response) => {
   try {

@@ -4,32 +4,32 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "nodemon -e js,jsx,css --watch src --exec \"yarn run dev:preview\"",
+    "dev:preview": "yarn run build && yarn serve . -p 3080 --no-clipboard",
     "build": "vite build",
-    "serve": "vite build && serve dist -p 5000",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "lint": "yarn prettier --write ./src"
   },
   "dependencies": {
     "@microsoft/fetch-event-source": "^2.0.1",
-    "@rollup/plugin-image": "^3.0.3",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.31",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "serve": "^14.2.1",
-    "tailwindcss": "^3.3.5",
-    "uuid": "^9.0.1",
-    "vite-plugin-singlefile": "^0.13.5"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@rollup/plugin-image": "^3.0.3",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.14",
+    "globals": "^13.21.0",
     "eslint": "^8.53.0",
+    "serve": "^14.2.1",
+    "prettier": "^3.0.3",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
-    "vite": "^5.0.0"
+    "nodemon": "^2.0.22",
+    "vite": "^5.0.0",
+    "vite-plugin-singlefile": "^0.13.5"
   }
 }

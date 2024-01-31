@@ -1,15 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
-import './index.css';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
+const appElement = document.createElement("div");
 
-const appElement = document.createElement('div');
-appElement.id = 'anythingllm-embedded';
 document.body.appendChild(appElement);
-
 const root = ReactDOM.createRoot(appElement);
 root.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
+  </React.StrictMode>
 );
+
+export const embedderSettings = {
+  settings: Object.assign({}, document?.currentScript?.dataset || {}),
+};
