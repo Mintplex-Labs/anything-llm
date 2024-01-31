@@ -208,9 +208,9 @@ const LanceDb = {
 
           vectors.push(vectorRecord);
           submissions.push({
+            ...vectorRecord.metadata,
             id: vectorRecord.id,
             vector: vectorRecord.values,
-            ...vectorRecord.metadata,
           });
           documentVectors.push({ docId, vectorId: vectorRecord.id });
         }

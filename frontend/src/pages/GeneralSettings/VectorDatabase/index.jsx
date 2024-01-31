@@ -9,6 +9,7 @@ import WeaviateLogo from "@/assets/vectordbs/weaviate.png";
 import QDrantLogo from "@/assets/vectordbs/qdrant.png";
 import MilvusLogo from "@/assets/vectordbs/milvus.png";
 import ZillizLogo from "@/assets/vectordbs/zilliz.png";
+import AstraDBLogo from "@/assets/vectordbs/astraDB.png";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
 import { MagnifyingGlass } from "@phosphor-icons/react";
@@ -22,6 +23,7 @@ import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
+import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -98,6 +100,13 @@ export default function GeneralVectorDatabase() {
       logo: MilvusLogo,
       options: <MilvusDBOptions settings={settings} />,
       description: "Open-source, highly scalable, and blazing fast.",
+    },
+    {
+      name: "AstraDB",
+      value: "astra",
+      logo: AstraDBLogo,
+      options: <AstraDBOptions settings={settings} />,
+      description: "Vector Search for Real-world GenAI.",
     },
   ];
 

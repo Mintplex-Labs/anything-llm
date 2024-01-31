@@ -7,6 +7,7 @@ import WeaviateLogo from "@/assets/vectordbs/weaviate.png";
 import QDrantLogo from "@/assets/vectordbs/qdrant.png";
 import MilvusLogo from "@/assets/vectordbs/milvus.png";
 import ZillizLogo from "@/assets/vectordbs/zilliz.png";
+import AstraDBLogo from "@/assets/vectordbs/astraDB.png";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import PineconeDBOptions from "@/components/VectorDBSelection/PineconeDBOptions";
@@ -16,6 +17,7 @@ import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions"
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import MilvusOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
+import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
 import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
@@ -99,6 +101,13 @@ export default function VectorDatabaseConnection({
       logo: MilvusLogo,
       options: <MilvusOptions settings={settings} />,
       description: "Open-source, highly scalable, and blazing fast.",
+    },
+    {
+      name: "AstraDB",
+      value: "astra",
+      logo: AstraDBLogo,
+      options: <AstraDBOptions settings={settings} />,
+      description: "Vector Search for Real-world GenAI.",
     },
   ];
 

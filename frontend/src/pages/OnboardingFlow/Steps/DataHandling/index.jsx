@@ -12,6 +12,7 @@ import LMStudioLogo from "@/assets/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/assets/llmprovider/localai.png";
 import MistralLogo from "@/assets/llmprovider/mistral.jpeg";
 import ZillizLogo from "@/assets/vectordbs/zilliz.png";
+import AstraDBLogo from "@/assets/vectordbs/astraDB.png";
 import ChromaLogo from "@/assets/vectordbs/chroma.png";
 import PineconeLogo from "@/assets/vectordbs/pinecone.png";
 import LanceDbLogo from "@/assets/vectordbs/lancedb.png";
@@ -146,6 +147,13 @@ const VECTOR_DB_PRIVACY = {
       "Your vectors and document text are stored on your Zilliz cloud cluster.",
     ],
     logo: ZillizLogo,
+  },
+  astra: {
+    name: "AstraDB",
+    description: [
+      "Your vectors and document text are stored on your cloud AstraDB database.",
+    ],
+    logo: AstraDBLogo,
   },
   lancedb: {
     name: "LanceDB",
