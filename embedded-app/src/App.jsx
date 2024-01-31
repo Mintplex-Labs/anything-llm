@@ -4,10 +4,13 @@ import { v4 } from "uuid";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 export default function App() {
-  const BASE_API_URL = "http://localhost:3001/api";
-  const SLUG = "yo";
-  const PROMPT =
-    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.";
+  const [isOpen, setIsOpen] = useState(false);
+  const [userId, setUserId] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [chatLoading, setChatLoading] = useState(false);
+  const eventSourceRef = useRef(null);
+  const messagesEndRef = useRef(null);
+
   // system prompt
   // preset history (array of messages)
   // LLM model to select
@@ -15,12 +18,25 @@ export default function App() {
   // chat mode (query or chat)
   // possible option for citations (show or hide)
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [userId, setUserId] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [chatLoading, setChatLoading] = useState(false);
-  const eventSourceRef = useRef(null);
-  const messagesEndRef = useRef(null);
+  // Parameters from script tag
+  const [slug, setSlug] = useState("");
+  const [baseApiUrl, setBaseApiUrl] = useState("");
+  const [prompt, setPrompt] = useState("");
+  const [chatMode, setChatMode] = useState("chat");
+  const [llmModel, setLlmModel] = useState("gpt-3.5-turbo");
+  const [temperature, setTemperature] = useState(0.7);
+
+  useEffect(() => {
+    const script = document.getElementById("embedded-anything-llm");
+    const slugAttribute = script?.getAttribute("slug");
+    const baseApiUrlAttribute = script?.getAttribute("baseApiUrl");
+    const promptAttribute = script?.getAttribute("prompt");
+    const chatModeAttribute = script?.getAttribute("chatMode");
+    setSlug(slugAttribute);
+    setBaseApiUrl(baseApiUrlAttribute);
+    setPrompt(promptAttribute);
+    setChatMode(chatModeAttribute);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -43,7 +59,7 @@ export default function App() {
     if (!isOpen) return;
     const fetchData = async () => {
       try {
-        const url = `${BASE_API_URL}/workspace/${SLUG}/chats-embedded-app`;
+        const url = `${baseApiUrl}/workspace/${slug}/chats-embedded-app`;
 
         const response = await fetch(url);
         if (!response.ok) {
@@ -67,7 +83,7 @@ export default function App() {
     };
 
     fetchData();
-  }, [SLUG, isOpen]);
+  }, [slug, isOpen]);
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
@@ -101,14 +117,14 @@ export default function App() {
     const ctrl = new AbortController();
     eventSourceRef.current = ctrl;
 
-    await fetchEventSource(`${BASE_API_URL}/workspace/stream-embedded-chat`, {
+    await fetchEventSource(`${baseApiUrl}/workspace/stream-embedded-chat`, {
       method: "POST",
       body: JSON.stringify({
-        prompt: PROMPT,
+        prompt,
         message,
-        mode: "chat",
+        mode: chatMode,
         userId,
-        slug: SLUG,
+        slug,
       }),
       signal: ctrl.signal,
       openWhenHidden: true,
@@ -180,7 +196,7 @@ export default function App() {
         <div
           className={`transition-all duration-300 ease-in-out ${
             isOpen
-              ? "max-w-md p-4 bg-white rounded-lg border shadow-lg"
+              ? "max-w-md p-4 bg-white rounded-lg border shadow-lg w-72"
               : "w-16 h-16 rounded-full"
           }`}
         >
@@ -197,7 +213,7 @@ export default function App() {
                 </button>
               </div>
               <div className="mb-4 p-4 bg-gray-100 rounded flex flex-col items-center">
-                <div className="chat-messages h-64 w-72 overflow-y-auto mb-2">
+                <div className="chat-messages h-64 overflow-y-auto mb-2">
                   {messages.map((msg, index) => (
                     <div
                       key={index}
@@ -253,5 +269,10 @@ export default function App() {
 
 // SCRIPT TO LOAD THE EMBEDDED-ANYTHING-LLM.UMD.JS ON PAGE WITH <SCRIPT></SCRIPT>
 // var script = document.createElement('script');
+// script.id = 'embedded-anything-llm';
 // script.src = 'http://localhost:5000/embedded-anything-llm.umd.js';
+// script.setAttribute('slug', 'hello');
+// script.setAttribute('baseApiUrl', 'http://localhost:3001/api');
+// script.setAttribute('chatMode', 'chat');
+// script.setAttribute('prompt', 'Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.');
 // document.head.appendChild(script);
