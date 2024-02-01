@@ -13,6 +13,10 @@ const DEFAULT_SETTINGS = {
   // style parameters
   chatIcon: "plus",
   brandImageUrl: null, // will be forced into 100x50px container
+  greeting: null, // empty chat window greeting.
+
+  // behaviors
+  openOnLoad: 'off', // or "on"
 };
 
 export default function useGetScriptAttributes() {

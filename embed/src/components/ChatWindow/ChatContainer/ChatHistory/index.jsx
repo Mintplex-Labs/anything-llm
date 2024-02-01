@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 
-export default function ChatHistory({ history = [] }) {
+export default function ChatHistory({ settings = {}, history = [] }) {
   const replyRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
@@ -46,10 +46,11 @@ export default function ChatHistory({ history = [] }) {
 
   if (history.length === 0) {
     return (
-      <div className="flex flex-col h-full md:mt-0 pb-48 w-full justify-end items-center">
-        <div className="flex flex-col items-start">
-          <p className="text-white/60 text-lg font-base py-4">
-            send a chat to get started!
+      <div style={{ height: "85vh", paddingBottom: 100, paddingTop: 5 }}
+        className="bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
+        <div className="flex h-full flex-col items-center justify-center">
+          <p className="text-slate-400 text-sm font-base py-4 text-center">
+            {settings?.greeting ?? 'Send a chat to get started!'}
           </p>
         </div>
       </div>
@@ -58,7 +59,7 @@ export default function ChatHistory({ history = [] }) {
 
   return (
     <div
-      style={{ height: "85vh", paddingBottom: 100 }}
+      style={{ height: "85vh", paddingBottom: 100, paddingTop: 5 }}
       className="bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll"
       id="chat-history"
       ref={chatHistoryRef}

@@ -69,8 +69,9 @@ export default function ChatContainer({
 
   return (
     <>
-      <ChatHistory history={chatHistory} />
+      <ChatHistory settings={settings} history={chatHistory} />
       <PromptInput
+        settings={settings}
         message={message}
         submit={handleSubmit}
         onChange={handleMessageChange}
