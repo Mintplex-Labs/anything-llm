@@ -1,7 +1,6 @@
 {
-  "name": "embedded-app",
+  "name": "anythingllm-embedded-chat",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "nodemon -e js,jsx,css --watch src --exec \"yarn run dev:preview\"",

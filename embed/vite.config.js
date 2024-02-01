@@ -36,7 +36,10 @@ export default defineConfig({
       fileName: (format) => `embedded-anything-llm.${format}.js`
     },
     rollupOptions: {
-      external: []
+      external: [
+        // Reduces transformation time by 50% and we don't even use this variant, so we can ignore.
+        /@phosphor-icons\/react\/dist\/ssr/,
+      ]
     },
     commonjsOptions: {
       transformMixedEsModules: true
