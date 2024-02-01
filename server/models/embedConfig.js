@@ -5,6 +5,10 @@ const EmbedConfig = {
     // Used for generic updates so we can validate keys in request body
     "allowlist_domains",
     "allow_model_override",
+    "allow_temperature_override",
+    "allow_prompt_override",
+    "max_chats_per_day",
+    "max_chats_per_session",
     "chat_mode",
   ],
 
@@ -91,6 +95,20 @@ const EmbedConfig = {
       return results;
     } catch (error) {
       console.error(error.message);
+      return [];
+    }
+  },
+
+  // Will return null if process should be skipped
+  // an empty array means the system will check. This
+  // prevents a bad parse from allowing all requests
+  parseAllowedHosts: function (embed) {
+    if (!embed.allowlist_domains) return null;
+
+    try {
+      return JSON.parse(embed.allowlist_domains);
+    } catch {
+      console.error(`Failed to parse allowlist_domains for Embed ${embed.id}!`);
       return [];
     }
   },

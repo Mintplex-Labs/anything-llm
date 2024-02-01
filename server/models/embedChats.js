@@ -1,13 +1,20 @@
 const prisma = require("../utils/prisma");
 
 const EmbedChats = {
-  new: async function ({ embedId, prompt, response = {}, sessionId }) {
+  new: async function ({
+    embedId,
+    prompt,
+    response = {},
+    connection_information = {},
+    sessionId,
+  }) {
     try {
       const chat = await prisma.embed_chats.create({
         data: {
           prompt,
           embed_id: Number(embedId),
           response: JSON.stringify(response),
+          connection_information: JSON.stringify(connection_information),
           session_id: sessionId,
         },
       });

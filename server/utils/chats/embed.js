@@ -85,8 +85,8 @@ async function streamChatWithForEmbed(
     namespace: embed.workspace.slug,
     input: message,
     LLMConnector,
-    similarityThreshold: workspace?.similarityThreshold,
-    topN: workspace?.topN,
+    similarityThreshold: embed.workspace?.similarityThreshold,
+    topN: embed.workspace?.topN,
   });
 
   // Failed similarity search.
@@ -136,7 +136,7 @@ async function streamChatWithForEmbed(
       `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
     );
     completeText = await LLMConnector.getChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
     writeResponseChunk(response, {
       uuid,
@@ -148,7 +148,7 @@ async function streamChatWithForEmbed(
     });
   } else {
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
-      temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,
+      temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
     completeText = await handleStreamResponses(response, stream, {
       uuid,
@@ -160,6 +160,9 @@ async function streamChatWithForEmbed(
     embedId: embed.id,
     prompt: message,
     response: { text: completeText, type: chatMode },
+    connection_information: response.locals.connection
+      ? { ...response.locals.connection }
+      : {},
     sessionId,
   });
   return;
@@ -233,6 +236,9 @@ async function streamEmptyEmbeddingChat({
     embedId: embed.id,
     prompt: message,
     response: { text: completeText, type: "chat" },
+    connection_information: response.locals.connection
+      ? { ...response.locals.connection }
+      : {},
     sessionId,
   });
   return;

@@ -23,21 +23,24 @@ const ChatService = {
       async onopen(response) {
         if (response.ok) {
           return; // everything's good
-        } else if (
-          response.status >= 400 &&
-          response.status < 500 &&
-          response.status !== 429
-        ) {
-          handleChat({
-            id: v4(),
-            type: "abort",
-            textResponse: null,
-            sources: [],
-            close: true,
-            error: `An error occurred while streaming response. Code ${response.status}`,
-          });
+        } else if (response.status >= 400) {
+          await response
+            .json()
+            .then((serverResponse) => {
+              handleChat(serverResponse);
+            })
+            .catch(() => {
+              handleChat({
+                id: v4(),
+                type: "abort",
+                textResponse: null,
+                sources: [],
+                close: true,
+                error: `An error occurred while streaming response. Code ${response.status}`,
+              });
+            });
           ctrl.abort();
-          throw new Error("Invalid Status code response.");
+          throw new Error();
         } else {
           handleChat({
             id: v4(),
@@ -48,7 +51,7 @@ const ChatService = {
             error: `An error occurred while streaming response. Unknown Error.`,
           });
           ctrl.abort();
-          throw new Error("Unknown error");
+          throw new Error("Unknown Error");
         }
       },
       async onmessage(msg) {
