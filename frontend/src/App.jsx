@@ -41,6 +41,7 @@ const DataConnectors = lazy(
 const DataConnectorSetup = lazy(
   () => import("@/pages/GeneralSettings/DataConnectors/Connectors")
 );
+const WorkspaceSettings = lazy(() => import("@/pages/WorkspaceSettings"));
 
 export default function App() {
   return (
@@ -58,6 +59,10 @@ export default function App() {
               <Route path="/accept-invite/:code" element={<InvitePage />} />
 
               {/* Admin */}
+              <Route
+                path="/workspace/:slug/settings"
+                element={<PrivateRoute Component={WorkspaceSettings} />}
+              />
               <Route
                 path="/settings/llm-preference"
                 element={<AdminRoute Component={GeneralLLMPreference} />}

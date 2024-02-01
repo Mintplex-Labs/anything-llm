@@ -6,7 +6,12 @@ import ManageWorkspace from "../../../Modals/MangeWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 
-export default function ChatHistory({ history = [], workspace }) {
+export default function ChatHistory({
+  history = [],
+  workspace,
+  sendCommand,
+  suggestedMessages = [],
+}) {
   const replyRef = useRef(null);
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -46,10 +51,14 @@ export default function ChatHistory({ history = [], workspace }) {
     }
   };
 
+  const handleSendSuggestedMessage = (heading, message) => {
+    sendCommand(`${heading} ${message}`, true);
+  };
+
   if (history.length === 0) {
     return (
-      <div className="flex flex-col h-full md:mt-0 pb-48 w-full justify-end items-center">
-        <div className="flex flex-col items-start">
+      <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
+        <div className="flex flex-col items-start md:max-w-[600px] w-full px-4">
           <p className="text-white/60 text-lg font-base py-4">
             Welcome to your new workspace.
           </p>
@@ -64,6 +73,24 @@ export default function ChatHistory({ history = [], workspace }) {
               </span>
               or <b className="font-medium italic">send a chat.</b>
             </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-white/60 text-xs mt-10 w-full justify-center">
+            {suggestedMessages.map((suggestion, index) => (
+              <button
+                key={index}
+                className="text-left p-2.5 border rounded-xl border-white/20 bg-sidebar hover:bg-workspace-item-selected-gradient"
+                onClick={() =>
+                  handleSendSuggestedMessage(
+                    suggestion.heading,
+                    suggestion.message
+                  )
+                }
+              >
+                <p className="font-semibold">{suggestion.heading}</p>
+                <p>{suggestion.message}</p>
+              </button>
+            ))}
           </div>
         </div>
         {showing && (

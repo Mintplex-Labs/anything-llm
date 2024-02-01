@@ -8,6 +8,7 @@ import ModalWrapper from "../ModalWrapper";
 export default function WorkspaceChat({ loading, workspace }) {
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
+  const [suggestedMessages, setSuggestedMessages] = useState([]);
 
   useEffect(() => {
     async function getHistory() {
@@ -18,6 +19,11 @@ export default function WorkspaceChat({ loading, workspace }) {
       }
 
       const chatHistory = await Workspace.chatHistory(workspace.slug);
+      const workspaceSuggestedMessages = await Workspace.getSuggestedMessages(
+        workspace.slug
+      );
+
+      setSuggestedMessages(workspaceSuggestedMessages);
       setHistory(chatHistory);
       setLoadingHistory(false);
     }
@@ -57,7 +63,13 @@ export default function WorkspaceChat({ loading, workspace }) {
   }
 
   setEventDelegatorForCodeSnippets();
-  return <ChatContainer workspace={workspace} knownHistory={history} />;
+  return (
+    <ChatContainer
+      workspace={workspace}
+      knownHistory={history}
+      suggestedMessages={suggestedMessages}
+    />
+  );
 }
 
 // Enables us to safely markdown and sanitize all responses without risk of injection
