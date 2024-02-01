@@ -10,7 +10,7 @@ const { reqBody } = require("./utils/http");
 const { systemEndpoints } = require("./endpoints/system");
 const { workspaceEndpoints } = require("./endpoints/workspaces");
 const { chatEndpoints } = require("./endpoints/chat");
-const { embeddedEndpoints } = require("./endpoints/embedded");
+const { embeddedEndpoints } = require("./endpoints/embed");
 const { getVectorDbClass } = require("./utils/helpers");
 const { adminEndpoints } = require("./endpoints/admin");
 const { inviteEndpoints } = require("./endpoints/invite");
@@ -42,6 +42,7 @@ inviteEndpoints(apiRouter);
 utilEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
 
+// Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
 
 apiRouter.post("/v/:command", async (request, response) => {

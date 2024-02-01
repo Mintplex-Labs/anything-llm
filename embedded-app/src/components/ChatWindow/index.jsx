@@ -1,44 +1,62 @@
-import { useEffect, useRef } from "react";
-import { v4 } from "uuid";
 import ChatWindowHeader from "./Header";
 import SessionId from "../SessionId";
 import useChatHistory from "@/hooks/chat/useChatHistory";
-import MessageHistory from "./Messages";
-import PromptInput from "./PromptInput";
-
-function scrollToBottom(messagesEndRef = null) {
-  if (!messagesEndRef) return;
-  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-}
+import ChatContainer from "./ChatContainer";
 
 export default function ChatWindow({ closeChat, settings, sessionId }) {
-  const { chatHistory: messages, setChatHistory: setMessages } = useChatHistory(
-    settings,
-    sessionId
-  );
-  const messagesEndRef = useRef(null);
+  const { chatHistory, loading } = useChatHistory(settings, sessionId);
 
-  useEffect(() => {
-    scrollToBottom(messagesEndRef);
-  }, [messages]);
-
-  const appendMessage = (newMessage, sender) => {
-    setMessages((prev) => [...prev, { ...newMessage, id: v4(), sender }]);
-  };
-
+  if (loading)
+    return (
+      <div>
+        <p>loading...</p>
+      </div>
+    );
+  setEventDelegatorForCodeSnippets();
   return (
     <div className="flex flex-col">
       <ChatWindowHeader closeChat={closeChat} />
-      <div className="mb-4 p-4 bg-gray-100 rounded flex flex-col items-center">
-        <MessageHistory messages={messages} messagesEndRef={messagesEndRef} />
-        <PromptInput
-          settings={settings}
-          sessionId={sessionId}
-          appendMessage={appendMessage}
-          setMessages={setMessages}
-        />
-      </div>
+      <ChatContainer
+        sessionId={sessionId}
+        settings={settings}
+        knownHistory={chatHistory}
+      />
       <SessionId />
     </div>
   );
+}
+
+// Enables us to safely markdown and sanitize all responses without risk of injection
+// but still be able to attach a handler to copy code snippets on all elements
+// that are code snippets.
+function copyCodeSnippet(uuid) {
+  const target = document.querySelector(`[data-code="${uuid}"]`);
+  if (!target) return false;
+  const markdown =
+    target.parentElement?.parentElement?.querySelector(
+      "pre:first-of-type"
+    )?.innerText;
+  if (!markdown) return false;
+
+  window.navigator.clipboard.writeText(markdown);
+  target.classList.add("text-green-500");
+  const originalText = target.innerHTML;
+  target.innerText = "Copied!";
+  target.setAttribute("disabled", true);
+
+  setTimeout(() => {
+    target.classList.remove("text-green-500");
+    target.innerHTML = originalText;
+    target.removeAttribute("disabled");
+  }, 2500);
+}
+
+// Listens and hunts for all data-code-snippet clicks.
+function setEventDelegatorForCodeSnippets() {
+  document?.addEventListener("click", function (e) {
+    const target = e.target.closest("[data-code-snippet]");
+    const uuidCode = target?.dataset?.code;
+    if (!uuidCode) return false;
+    copyCodeSnippet(uuidCode);
+  });
 }

@@ -3,8 +3,9 @@ import { embedderSettings } from "../main";
 
 const DEFAULT_SETTINGS = {
   embedId: null, //required
-  slug: null, // required
   baseApiUrl: null, // required
+
+  // Override properties that can be defined.
   prompt: null, // override
   model: null, // override
   temperature: null, //override
@@ -20,7 +21,6 @@ export default function useGetScriptAttributes() {
     function fetchAttribs() {
       if (!document) return false;
       if (
-        !embedderSettings.settings.slug ||
         !embedderSettings.settings.baseApiUrl ||
         !embedderSettings.settings.embedId
       )
