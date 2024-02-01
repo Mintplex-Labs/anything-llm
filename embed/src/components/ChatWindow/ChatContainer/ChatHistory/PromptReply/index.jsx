@@ -24,9 +24,7 @@ const PromptReply = forwardRef(
 
     if (error) {
       return (
-        <div
-          className={`flex justify-center items-end w-full bg-red-200`}
-        >
+        <div className={`flex justify-center items-end w-full bg-red-200`}>
           <div className="py-2 px-4 w-full flex gap-x-5 flex-col">
             <div className="flex gap-x-5">
               <span

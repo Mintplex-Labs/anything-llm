@@ -28,9 +28,7 @@ export default function PromptInput({
     const element = event.target;
     element.style.height = "auto";
     element.style.height =
-      event.target.value.length !== 0
-        ? element.scrollHeight + "px"
-        : "auto";
+      event.target.value.length !== 0 ? element.scrollHeight + "px" : "auto";
   };
 
   return (

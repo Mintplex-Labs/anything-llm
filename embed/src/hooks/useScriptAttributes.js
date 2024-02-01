@@ -9,6 +9,10 @@ const DEFAULT_SETTINGS = {
   prompt: null, // override
   model: null, // override
   temperature: null, //override
+
+  // style parameters
+  chatIcon: "plus",
+  brandImageUrl: null, // will be forced into 100x50px container
 };
 
 export default function useGetScriptAttributes() {

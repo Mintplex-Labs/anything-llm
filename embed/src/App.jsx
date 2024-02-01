@@ -10,6 +10,7 @@ export default function App() {
   const embedSettings = useGetScriptAttributes();
   const sessionId = useSessionId();
 
+  if (!embedSettings.loaded) return null;
   return (
     <>
       <Head />
@@ -19,10 +20,11 @@ export default function App() {
             width: isChatOpen ? 320 : "auto",
             height: isChatOpen ? "93vh" : "auto",
           }}
-          className={`transition-all duration-300 ease-in-out ${isChatOpen
+          className={`transition-all duration-300 ease-in-out ${
+            isChatOpen
               ? "max-w-md p-4 bg-white rounded-lg border shadow-lg w-72"
               : "w-16 h-16 rounded-full"
-            }`}
+          }`}
         >
           {isChatOpen && (
             <ChatWindow
@@ -31,7 +33,11 @@ export default function App() {
               sessionId={sessionId}
             />
           )}
-          <OpenButton isOpen={isChatOpen} toggleOpen={toggleOpenChat} />
+          <OpenButton
+            settings={embedSettings}
+            isOpen={isChatOpen}
+            toggleOpen={toggleOpenChat}
+          />
         </div>
       </div>
     </>

@@ -13,9 +13,13 @@ const HistoricalMessage = forwardRef(
       <div
         key={uuid}
         ref={ref}
-        className={`flex rounded-lg justify-center items-end w-full h-fit ${error ? 'bg-red-200' :
-          role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
-          }`}
+        className={`flex rounded-lg justify-center items-end w-full h-fit ${
+          error
+            ? "bg-red-200"
+            : role === "user"
+              ? USER_BACKGROUND_COLOR
+              : AI_BACKGROUND_COLOR
+        }`}
       >
         <div className={`py-2 px-2 w-full flex flex-col`}>
           <div className="flex">

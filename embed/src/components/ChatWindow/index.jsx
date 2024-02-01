@@ -15,7 +15,10 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
   setEventDelegatorForCodeSnippets();
   return (
     <div className="flex flex-col">
-      <ChatWindowHeader closeChat={closeChat} />
+      <ChatWindowHeader
+        iconUrl={settings.brandImageUrl}
+        closeChat={closeChat}
+      />
       <ChatContainer
         sessionId={sessionId}
         settings={settings}
