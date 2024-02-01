@@ -3,6 +3,7 @@ const slugify = require("slugify");
 const { Document } = require("./documents");
 const { WorkspaceUser } = require("./workspaceUsers");
 const { ROLES } = require("../utils/middleware/multiUserProtected");
+const { v4: uuidv4 } = require("uuid");
 
 const Workspace = {
   writable: [
@@ -22,6 +23,7 @@ const Workspace = {
   new: async function (name = null, creatorId = null) {
     if (!name) return { result: null, message: "name cannot be null" };
     var slug = slugify(name, { lower: true });
+    slug = slug || uuidv4();
 
     const existingBySlug = await this.get({ slug });
     if (existingBySlug !== null) {
