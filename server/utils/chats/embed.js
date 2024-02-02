@@ -50,7 +50,7 @@ async function streamChatWithForEmbed(
         id: uuid,
         type: "textResponse",
         textResponse:
-          "There is no relevant information in this workspace to answer your query.",
+          "I do not have enough information to answer that. Try another question.",
         sources: [],
         close: true,
         error: null,
