@@ -130,7 +130,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
     <div>
       <div className="flex flex-col mb-2">
         <label
-          htmlFor="workspaceId"
+          htmlFor="workspace_id"
           className="block  text-sm font-medium text-white"
         >
           Workspace
@@ -141,13 +141,20 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
         </p>
       </div>
       <select
-        name="workspaceId"
+        name="workspace_id"
         required={true}
         defaultValue={defaultValue}
         className="min-w-[15rem] rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white border border-gray-500 focus:ring-blue-500 focus:border-blue-500"
       >
         {workspaces.map((workspace) => {
-          return <option value={workspace.id}>{workspace.name}</option>;
+          return (
+            <option
+              selected={defaultValue === workspace.id}
+              value={workspace.id}
+            >
+              {workspace.name}
+            </option>
+          );
         })}
       </select>
     </div>

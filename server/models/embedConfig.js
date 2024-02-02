@@ -13,6 +13,7 @@ const EmbedConfig = {
     "max_chats_per_day",
     "max_chats_per_session",
     "chat_mode",
+    "workspace_id",
   ],
 
   new: async function (data, creatorId = null) {
@@ -48,7 +49,7 @@ const EmbedConfig = {
           ),
           createdBy: Number(creatorId) ?? null,
           workspace: {
-            connect: { id: Number(data.workspaceId) },
+            connect: { id: Number(data.workspace_id) },
           },
         },
       });
@@ -185,7 +186,11 @@ const BOOLEAN_KEYS = [
   "enabled",
 ];
 
-const NUMBER_KEYS = ["max_chats_per_day", "max_chats_per_session"];
+const NUMBER_KEYS = [
+  "max_chats_per_day",
+  "max_chats_per_session",
+  "workspace_id",
+];
 
 // Helper to validate a data object strictly into the proper format
 function validatedCreationData(value, field) {
