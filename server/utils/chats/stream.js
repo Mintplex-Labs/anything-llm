@@ -269,6 +269,7 @@ function handleStreamResponses(response, stream, responseProps) {
         for (const choice of event.choices) {
           const delta = choice.delta?.content;
           if (!delta) continue;
+          fullText += delta;
           writeResponseChunk(response, {
             uuid,
             sources: [],
