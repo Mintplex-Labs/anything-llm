@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import { CheckCircle, CopySimple, X } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import hljs from "highlight.js";
-import { encode as HTMLEncode } from "he";
-
-// import hljsHTML from 'highlight.js/lib/languages/vbscript-html';
 import "highlight.js/styles/github-dark-dimmed.min.css";
-// hljs.registerLanguage('html', hljsHTML)
 
 export default function CodeSnippetModal({ embed, closeModal }) {
   return (
