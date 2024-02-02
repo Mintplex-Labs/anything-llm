@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "nodemon -e js,jsx,css --watch src --exec \"yarn run dev:preview\"",
     "dev:preview": "yarn run dev:build && yarn serve . -p 3080 --no-clipboard",
-    "dev:build": "vite build && cat src/static/tailwind@3.4.1.js >> dist/embedded-anything-llm.umd.js",
-    "build": "vite build && cat src/static/tailwind@3.4.1.js >> dist/embedded-anything-llm.umd.js && npx terser --compress -o dist/embedded-anything-llm.umd.min.js -- dist/embedded-anything-llm.umd.js",
+    "dev:build": "vite build && cat src/static/tailwind@3.4.1.js >> dist/anythingllm-chat-widget.js",
+    "build": "vite build && cat src/static/tailwind@3.4.1.js >> dist/anythingllm-chat-widget.js && npx terser --compress -o dist/anythingllm-chat-widget.min.js -- dist/anythingllm-chat-widget.js",
+    "build:publish": "yarn build && mkdir -p ../frontend/public/embed && cp -r dist/anythingllm-chat-widget.min.js ../frontend/public/embed/anythingllm-chat-widget.min.js",
     "lint": "yarn prettier --write ./src"
   },
   "dependencies": {

@@ -115,6 +115,27 @@ const EmbedChats = {
     }
   },
 
+  whereWithEmbed: async function (
+    clause = {},
+    limit = null,
+    orderBy = null,
+    offset = null
+  ) {
+    try {
+      const chats = await prisma.embed_chats.findMany({
+        where: clause,
+        include: { embed_config: true },
+        ...(limit !== null ? { take: limit } : {}),
+        ...(offset !== null ? { skip: offset } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
+      });
+      return chats;
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
+
   count: async function (clause = {}) {
     try {
       const count = await prisma.embed_chats.count({

@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
-const { VALID_CHAT_MODE, writeResponseChunk } = require("../chats/stream");
+const { VALID_CHAT_MODE } = require("../chats/stream");
 const { EmbedChats } = require("../../models/embedChats");
 const { EmbedConfig } = require("../../models/embedConfig");
 const { reqBody } = require("../http");
@@ -28,6 +28,19 @@ function setConnectionMeta(request, response, next) {
   next();
 }
 
+async function validEmbedConfigId(request, response, next) {
+  const { embedId } = request.params;
+
+  const embed = await EmbedConfig.get({ id: Number(embedId) });
+  if (!embed) {
+    response.sendStatus(404).end();
+    return;
+  }
+
+  response.locals.embedConfig = embed;
+  next();
+}
+
 async function canRespond(request, response, next) {
   const embed = response.locals.embedConfig;
   if (!embed) {
@@ -50,7 +63,7 @@ async function canRespond(request, response, next) {
   }
 
   // Check if requester hostname is in the valid allowlist of domains.
-  const host = request.hostname;
+  const host = request.headers.origin ?? "";
   const allowedHosts = EmbedConfig.parseAllowedHosts(embed);
   if (allowedHosts !== null && !allowedHosts.includes(host)) {
     response.status(401).json({
@@ -134,5 +147,6 @@ async function canRespond(request, response, next) {
 module.exports = {
   setConnectionMeta,
   validEmbedConfig,
+  validEmbedConfigId,
   canRespond,
 };

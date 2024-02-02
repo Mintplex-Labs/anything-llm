@@ -33,7 +33,7 @@ export default defineConfig({
       entry: "src/main.jsx",
       name: "EmbeddedAnythingLLM",
       formats: ["umd"],
-      fileName: (format) => `embedded-anything-llm.${format}.js`
+      fileName: (_format) => `anythingllm-chat-widget.js`
     },
     rollupOptions: {
       external: [
