@@ -8,7 +8,7 @@ import ChatRow from "./ChatRow";
 import Embed from "@/models/embed";
 
 export default function EmbedChats() {
-  // TODO: Add export of embed chats
+  // TODO [FEAT]: Add export of embed chats
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       {!isMobile && <Sidebar />}

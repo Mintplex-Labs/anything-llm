@@ -24,7 +24,6 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        // console.log("user", user);
         const { slug } = request.params;
         const { message, mode = "query" } = reqBody(request);
 
