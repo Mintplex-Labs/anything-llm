@@ -93,6 +93,9 @@ export default {
     apiKeys: () => {
       return "/settings/api-keys";
     },
+    logs: () => {
+      return "/settings/logs";
+    },
     dataConnectors: {
       list: () => {
         return "/settings/data-connectors";

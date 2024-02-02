@@ -14,6 +14,7 @@ const {
   ROLES,
   flexUserRoleValid,
 } = require("../utils/middleware/multiUserProtected");
+const { EventLogs } = require("../models/eventLogs");
 
 function chatEndpoints(app) {
   if (!app) return;
@@ -97,6 +98,16 @@ function chatEndpoints(app) {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        });
+        await EventLogs.logEvent({
+          event: "sent_chat",
+          userId: user?.id || null,
+          metadata: {
+            multiUserMode: multiUserMode(response),
+            LLMSelection: process.env.LLM_PROVIDER || "openai",
+            Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+            VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          },
         });
         response.end();
       } catch (e) {

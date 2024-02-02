@@ -131,3 +131,16 @@ model cache_data {
   createdAt     DateTime  @default(now())
   lastUpdatedAt DateTime  @default(now())
 }
+
+model event_logs {
+  id            Int       @id @default(autoincrement())
+  event         String
+  description   String?
+  metadata      String?
+  userId        Int?
+  occurredAt    DateTime  @default(now())
+  ipAddress     String?
+  @@index([userId])
+  @@index([event])
+}
+

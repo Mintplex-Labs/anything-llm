@@ -19,6 +19,7 @@ import {
   List,
   FileCode,
   Plugs,
+  Notepad,
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
@@ -150,6 +151,14 @@ export default function SettingsSidebar() {
                   href={paths.settings.security()}
                   btnText="Security"
                   icon={<Lock className="h-5 w-5 flex-shrink-0" />}
+                  user={user}
+                  flex={true}
+                  allowedRole={["admin", "manager"]}
+                />
+                <Option
+                  href={paths.settings.logs()}
+                  btnText="Logs"
+                  icon={<Notepad className="h-5 w-5 flex-shrink-0" />}
                   user={user}
                   flex={true}
                   allowedRole={["admin", "manager"]}

@@ -48,6 +48,7 @@ const {
   prepareWorkspaceChatsForExport,
   exportChatsAsType,
 } = require("../utils/helpers/chat/convertTo");
+const { EventLogs } = require("../models/eventLogs");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -148,6 +149,12 @@ function systemEndpoints(app) {
           { multiUserMode: false },
           existingUser?.id
         );
+
+        await EventLogs.logEvent({
+          event: "login_event",
+          userId: existingUser?.id || null,
+          metadata: {},
+        });
         response.status(200).json({
           valid: true,
           user: existingUser,
