@@ -1,10 +1,7 @@
 const { EmbedChats } = require("../models/embedChats");
 const { EmbedConfig } = require("../models/embedConfig");
 const { reqBody, userFromSession } = require("../utils/http");
-const {
-  validEmbedConfig,
-  validEmbedConfigId,
-} = require("../utils/middleware/embedMiddleware");
+const { validEmbedConfigId } = require("../utils/middleware/embedMiddleware");
 const {
   flexUserRoleValid,
   ROLES,
@@ -80,18 +77,33 @@ function embedManagementEndpoints(app) {
   app.post(
     "/embed/chats",
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
-    async (_, response) => {
+    async (request, response) => {
       try {
         const { offset = 0, limit = 20 } = reqBody(request);
-        const embedChats = await EmbedChats.whereWithEmbed(
+        const embedChats = await EmbedChats.whereWithEmbedAndWorkspace(
           {},
           limit,
-          offset * limit,
-          { id: "desc" }
+          { id: "desc" },
+          offset * limit
         );
         const totalChats = await EmbedChats.count();
         const hasPages = totalChats > (offset + 1) * limit;
         response.status(200).json({ chats: embedChats, hasPages, totalChats });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/embed/chats/:chatId",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { chatId } = request.params;
+        await EmbedChats.delete({ id: Number(chatId) });
+        response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

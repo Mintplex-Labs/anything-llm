@@ -44,7 +44,7 @@ const DataConnectorSetup = lazy(
 const EmbedConfigSetup = lazy(
   () => import("@/pages/GeneralSettings/EmbedConfigs")
 );
-const EmbedChats = lazy(() => import("@/pages/Admin/Users"));
+const EmbedChats = lazy(() => import("@/pages/GeneralSettings/EmbedChats"));
 
 export default function App() {
   return (

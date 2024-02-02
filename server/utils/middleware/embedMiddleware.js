@@ -21,9 +21,8 @@ async function validEmbedConfig(request, response, next) {
 
 function setConnectionMeta(request, response, next) {
   response.locals.connection = {
-    host: request.hostname,
-    path: request.path,
-    ip: request.ip,
+    host: request.headers?.origin,
+    ip: request?.ip,
   };
   next();
 }

@@ -115,7 +115,7 @@ const EmbedChats = {
     }
   },
 
-  whereWithEmbed: async function (
+  whereWithEmbedAndWorkspace: async function (
     clause = {},
     limit = null,
     orderBy = null,
@@ -124,7 +124,17 @@ const EmbedChats = {
     try {
       const chats = await prisma.embed_chats.findMany({
         where: clause,
-        include: { embed_config: true },
+        include: {
+          embed_config: {
+            select: {
+              workspace: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
         ...(limit !== null ? { take: limit } : {}),
         ...(offset !== null ? { skip: offset } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
