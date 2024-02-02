@@ -5,8 +5,6 @@ export default function SessionId() {
   if (!sessionId) return null;
 
   return (
-    <div className="text-xs text-gray-300 w-full text-center">
-      {sessionId}
-    </div>
+    <div className="text-xs text-gray-300 w-full text-center">{sessionId}</div>
   );
 }

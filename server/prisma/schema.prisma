@@ -160,6 +160,7 @@ model embed_chats {
   prompt                 String
   response               String
   session_id             String
+  include                Boolean       @default(true)
   connection_information String?
   embed_id               Int
   usersId                Int?

@@ -24,6 +24,7 @@ CREATE TABLE "embed_chats" (
     "prompt" TEXT NOT NULL,
     "response" TEXT NOT NULL,
     "session_id" TEXT NOT NULL,
+    "include" BOOLEAN NOT NULL DEFAULT true,
     "connection_information" TEXT,
     "embed_id" INTEGER NOT NULL,
     "usersId" INTEGER,

@@ -16,7 +16,7 @@ const DEFAULT_SETTINGS = {
   greeting: null, // empty chat window greeting.
 
   // behaviors
-  openOnLoad: 'off', // or "on"
+  openOnLoad: "off", // or "on"
 };
 
 export default function useGetScriptAttributes() {

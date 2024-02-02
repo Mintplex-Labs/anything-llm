@@ -38,6 +38,7 @@ const EmbedChats = {
         where: {
           embed_id: embedId,
           session_id: sessionId,
+          include: true,
         },
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : { orderBy: { id: "asc" } }),
@@ -49,45 +50,24 @@ const EmbedChats = {
     }
   },
 
-  // forWorkspace: async function (
-  //   workspaceId = null,
-  //   limit = null,
-  //   orderBy = null
-  // ) {
-  //   if (!workspaceId) return [];
-  //   try {
-  //     const chats = await prisma.embed_chats.findMany({
-  //       where: {
-  //         workspaceId,
-  //         include: true,
-  //       },
-  //       ...(limit !== null ? { take: limit } : {}),
-  //       ...(orderBy !== null ? { orderBy } : { orderBy: { id: "asc" } }),
-  //     });
-  //     return chats;
-  //   } catch (error) {
-  //     console.error(error.message);
-  //     return [];
-  //   }
-  // },
+  markHistoryInvalid: async function (embedId = null, sessionId = null) {
+    if (!embedId || !sessionId) return [];
 
-  // markHistoryInvalid: async function (workspaceId = null, user = null) {
-  //   if (!workspaceId) return;
-  //   try {
-  //     await prisma.embed_chats.updateMany({
-  //       where: {
-  //         workspaceId,
-  //         user_id: user?.id,
-  //       },
-  //       data: {
-  //         include: false,
-  //       },
-  //     });
-  //     return;
-  //   } catch (error) {
-  //     console.error(error.message);
-  //   }
-  // },
+    try {
+      await prisma.embed_chats.updateMany({
+        where: {
+          embed_id: embedId,
+          session_id: sessionId,
+        },
+        data: {
+          include: false,
+        },
+      });
+      return;
+    } catch (error) {
+      console.error(error.message);
+    }
+  },
 
   get: async function (clause = {}, limit = null, orderBy = null) {
     try {

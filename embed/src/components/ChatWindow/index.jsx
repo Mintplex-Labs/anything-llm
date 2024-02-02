@@ -4,20 +4,21 @@ import useChatHistory from "@/hooks/chat/useChatHistory";
 import ChatContainer from "./ChatContainer";
 
 export default function ChatWindow({ closeChat, settings, sessionId }) {
-  const { chatHistory, loading } = useChatHistory(settings, sessionId);
+  const { chatHistory, setChatHistory, loading } = useChatHistory(
+    settings,
+    sessionId
+  );
 
-  if (loading)
-    return (
-      <div>
-        <p>loading...</p>
-      </div>
-    );
+  if (loading) return null;
   setEventDelegatorForCodeSnippets();
   return (
     <div className="flex flex-col">
       <ChatWindowHeader
+        sessionId={sessionId}
+        settings={settings}
         iconUrl={settings.brandImageUrl}
         closeChat={closeChat}
+        setChatHistory={setChatHistory}
       />
       <ChatContainer
         sessionId={sessionId}

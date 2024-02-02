@@ -12,7 +12,7 @@ export default function App() {
   const sessionId = useSessionId();
 
   useEffect(() => {
-    toggleOpenChat(embedSettings.openOnLoad === 'on')
+    toggleOpenChat(embedSettings.openOnLoad === "on");
   }, [embedSettings.loaded]);
 
   if (!embedSettings.loaded) return null;
@@ -25,10 +25,11 @@ export default function App() {
             width: isChatOpen ? 320 : "auto",
             height: isChatOpen ? "93vh" : "auto",
           }}
-          className={`transition-all duration-300 ease-in-out ${isChatOpen
-            ? "max-w-md p-4 bg-white rounded-lg border shadow-lg w-72"
-            : "w-16 h-16 rounded-full"
-            }`}
+          className={`transition-all duration-300 ease-in-out ${
+            isChatOpen
+              ? "max-w-md p-4 bg-white rounded-lg border shadow-lg w-72"
+              : "w-16 h-16 rounded-full"
+          }`}
         >
           {isChatOpen && (
             <ChatWindow

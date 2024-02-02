@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ChatHistory from "./ChatHistory";
 import PromptInput from "./PromptInput";
 import handleChat from "@/utils/chat";
@@ -12,6 +12,14 @@ export default function ChatContainer({
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
+
+  // Resync history if the ref to known history changes
+  // eg: cleared.
+  useEffect(() => {
+    if (knownHistory.length !== chatHistory.length)
+      setChatHistory([...knownHistory]);
+  }, [knownHistory]);
+
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
@@ -68,7 +76,7 @@ export default function ChatContainer({
   }, [loadingResponse, chatHistory]);
 
   return (
-    <>
+    <React.Fragment>
       <ChatHistory settings={settings} history={chatHistory} />
       <PromptInput
         settings={settings}
@@ -78,6 +86,6 @@ export default function ChatContainer({
         inputDisabled={loadingResponse}
         buttonDisabled={loadingResponse}
       />
-    </>
+    </React.Fragment>
   );
 }

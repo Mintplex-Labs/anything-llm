@@ -79,6 +79,23 @@ function embeddedEndpoints(app) {
       }
     }
   );
+
+  app.delete(
+    "/embed/:embedId/:sessionId",
+    [validEmbedConfig],
+    async (request, response) => {
+      try {
+        const { sessionId } = request.params;
+        const embed = response.locals.embedConfig;
+
+        await EmbedChats.markHistoryInvalid(embed.id, sessionId);
+        response.status(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { embeddedEndpoints };
