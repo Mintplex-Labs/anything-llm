@@ -12,7 +12,9 @@ export default function App() {
   const sessionId = useSessionId();
 
   useEffect(() => {
-    toggleOpenChat(embedSettings.openOnLoad === "on");
+    if (embedSettings.openOnLoad === "on") {
+      toggleOpenChat(true);
+    }
   }, [embedSettings.loaded]);
 
   if (!embedSettings.loaded) return null;
@@ -41,7 +43,7 @@ export default function App() {
           <OpenButton
             settings={embedSettings}
             isOpen={isChatOpen}
-            toggleOpen={toggleOpenChat}
+            toggleOpen={() => toggleOpenChat(true)}
           />
         </div>
       </div>

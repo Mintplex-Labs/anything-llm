@@ -54,7 +54,13 @@ REQUIRED data attributes:
 - `data-temperature` — Override the chat model temperature. This must be a valid value for your AnythingLLM LLM provider. If unset it will use the embeds attached workspace model temperature or the system setting.
 
 **Style Overrides**
-- `data-chat-icon` — The chat bubble icon show when chat is closed. Options are `plus`, `chat-circle-dots`, `headset`, `binoculars`, `magnifying`, `magic`.
+- `data-chat-icon` — The chat bubble icon show when chat is closed. Options are `plus`, `chatCircle`, `support`, `search2`, `search`, `magic`.
+
+- `data-button-color` — The chat bubble background color shown when chat is closed. Value must be hex color code.
+
+- `data-user-bg-color` — The background color of the user chat bubbles when chatting. Value must be hex color code.
+
+- `data-assistant-bg-color` — The background color of the assistant response chat bubbles when chatting. Value must be hex color code.
 
 - `data-brand-image-url` — URL to image that will be show at the top of the chat when chat is open.
 

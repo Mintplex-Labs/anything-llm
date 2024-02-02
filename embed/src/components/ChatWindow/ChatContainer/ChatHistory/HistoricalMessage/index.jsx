@@ -2,7 +2,7 @@ import React, { memo, forwardRef } from "react";
 import { Warning } from "@phosphor-icons/react";
 // import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
-import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
+import { embedderSettings } from "@/main";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
 
@@ -17,8 +17,8 @@ const HistoricalMessage = forwardRef(
           error
             ? "bg-red-200"
             : role === "user"
-              ? USER_BACKGROUND_COLOR
-              : AI_BACKGROUND_COLOR
+              ? embedderSettings.USER_BACKGROUND_COLOR
+              : embedderSettings.AI_BACKGROUND_COLOR
         }`}
       >
         <div className={`py-2 px-2 w-full flex flex-col`}>

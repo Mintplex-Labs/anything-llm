@@ -159,14 +159,6 @@ const customCss = `
 .bg-black-900 {
   background: #141414;
 }
-
-.bg-historical-msg-system {
-  background: #2563eb;
-}
-
-.bg-historical-msg-user {
-  background: #2C2F35;
-}
 `;
 
 export default function Head() {

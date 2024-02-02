@@ -1,7 +1,7 @@
 import { forwardRef, memo } from "react";
 import { Warning } from "@phosphor-icons/react";
 import renderMarkdown from "@/utils/chat/markdown";
-import { AI_BACKGROUND_COLOR } from "@/utils/constants";
+import { embedderSettings } from "@/main";
 
 const PromptReply = forwardRef(
   ({ uuid, reply, pending, error, sources = [] }, ref) => {
@@ -11,7 +11,7 @@ const PromptReply = forwardRef(
       return (
         <div
           ref={ref}
-          className={`flex justify-center items-end rounded-lg w-full ${AI_BACKGROUND_COLOR}`}
+          className={`flex justify-center items-end rounded-lg w-full ${embedderSettings.AI_BACKGROUND_COLOR}`}
         >
           <div className="py-2 px-2 w-full flex flex-col">
             <div className="flex gap-x-5">
@@ -44,7 +44,7 @@ const PromptReply = forwardRef(
       <div
         key={uuid}
         ref={ref}
-        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
+        className={`flex justify-center items-end w-full ${embedderSettings.AI_BACKGROUND_COLOR}`}
       >
         <div className="py-2 px-2 w-full flex flex-col">
           <div className="flex gap-x-5">

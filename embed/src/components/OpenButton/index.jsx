@@ -9,10 +9,10 @@ import {
 
 const CHAT_ICONS = {
   plus: Plus,
-  "chat-circle-dots": ChatCircleDots,
-  headset: Headset,
-  binoculars: Binoculars,
-  magnifying: MagnifyingGlass,
+  chatBubble: ChatCircleDots,
+  support: Headset,
+  search2: Binoculars,
+  search: MagnifyingGlass,
   magic: MagicWand,
 };
 
@@ -24,7 +24,7 @@ export default function OpenButton({ settings, isOpen, toggleOpen }) {
   return (
     <button
       onClick={toggleOpen}
-      className="flex items-center justify-center p-4 rounded-full bg-blue-500 text-white text-2xl"
+      className={`flex items-center justify-center p-4 rounded-full bg-[${settings.buttonColor}] text-white text-2xl`}
       aria-label="Toggle Menu"
     >
       <ChatIcon className="text-white" />

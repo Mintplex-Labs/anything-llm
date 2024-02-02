@@ -11,6 +11,12 @@ root.render(
   </React.StrictMode>
 );
 
+const scriptSettings = Object.assign(
+  {},
+  document?.currentScript?.dataset || {}
+);
 export const embedderSettings = {
-  settings: Object.assign({}, document?.currentScript?.dataset || {}),
+  settings: scriptSettings,
+  USER_BACKGROUND_COLOR: `bg-[${scriptSettings?.userBgColor ?? "#2C2F35"}]`,
+  AI_BACKGROUND_COLOR: `bg-[${scriptSettings?.assistantBgColor ?? "#2563eb"}]`,
 };
