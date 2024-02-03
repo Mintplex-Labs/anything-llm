@@ -20,7 +20,7 @@ const AdminUsers = lazy(() => import("@/pages/Admin/Users"));
 const AdminInvites = lazy(() => import("@/pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
 const AdminSystem = lazy(() => import("@/pages/Admin/System"));
-const AdminLogs = lazy(() => import("@/pages/Admin/Logs"));
+const AdminLogs = lazy(() => import("@/pages/Admin/Logging"));
 const GeneralChats = lazy(() => import("@/pages/GeneralSettings/Chats"));
 const GeneralAppearance = lazy(
   () => import("@/pages/GeneralSettings/Appearance")
