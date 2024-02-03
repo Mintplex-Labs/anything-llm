@@ -1,19 +1,13 @@
 const prisma = require("../utils/prisma");
 
 const EventLogs = {
-  logEvent: async function (
-    event,
-    metadata = {},
-    userId = null,
-    ipAddress = null
-  ) {
+  logEvent: async function (event, metadata = {}, userId = null) {
     try {
       const eventLog = await prisma.event_logs.create({
         data: {
           event,
           metadata: metadata ? JSON.stringify(metadata) : null,
           userId: userId ? Number(userId) : null,
-          ipAddress: ipAddress ? ipAddress : null,
           occurredAt: new Date(),
         },
       });
