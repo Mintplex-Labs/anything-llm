@@ -1,6 +1,11 @@
 import AnythingLLMLogo from "@/assets/anything-llm-dark.png";
 import ChatService from "@/models/chatService";
-import { DotsThreeOutlineVertical, Lightning, X } from "@phosphor-icons/react";
+import {
+  DotsThreeOutlineVertical,
+  Envelope,
+  Lightning,
+  X,
+} from "@phosphor-icons/react";
 import { useState } from "react";
 
 export default function ChatWindowHeader({
@@ -46,15 +51,19 @@ export default function ChatWindowHeader({
           <X size={18} />
         </button>
       </div>
-      <OptionsMenu showing={showingOptions} resetChat={handleChatReset} />
+      <OptionsMenu
+        settings={settings}
+        showing={showingOptions}
+        resetChat={handleChatReset}
+      />
     </div>
   );
 }
 
-function OptionsMenu({ showing, resetChat }) {
+function OptionsMenu({ settings, showing, resetChat }) {
   if (!showing) return null;
   return (
-    <div className="absolute bg-white flex flex-col gap-y-2 rounded-lg shadow-lg border border-gray-300 top-[3vh] right-[1vw] max-w-[150px]">
+    <div className="absolute z-10 bg-white flex flex-col gap-y-1 rounded-lg shadow-lg border border-gray-300 top-[23px] right-[20px] max-w-[150px]">
       <button
         onClick={resetChat}
         className="flex items-center gap-x-1 hover:bg-gray-100 text-sm text-gray-700 p-2 rounded-lg"
@@ -62,6 +71,22 @@ function OptionsMenu({ showing, resetChat }) {
         <Lightning size={14} />
         <p>Reset Chat</p>
       </button>
+      <ContactSupport email={settings.supportEmail} />
     </div>
+  );
+}
+
+function ContactSupport({ email = null }) {
+  if (!email) return null;
+
+  const subject = `Inquiry from ${window.location.origin}`;
+  return (
+    <a
+      href={`mailto:${email}?Subject=${encodeURIComponent(subject)}`}
+      className="flex items-center gap-x-1 hover:bg-gray-100 text-sm text-gray-700 p-2 rounded-lg"
+    >
+      <Envelope size={14} />
+      <p>Email support</p>
+    </a>
   );
 }

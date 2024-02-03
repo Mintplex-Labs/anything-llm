@@ -66,8 +66,17 @@ REQUIRED data attributes:
 
 - `data-greeting` — Default text message to be shown when chat is opened and no previous message history is found.
 
+- `data-no-sponsor` — Setting this attribute to anything will hide the custom or default sponsor at the bottom of an open chat window.
+
+- `data-sponsor-link` — A clickable link in the sponsor section in the footer of an open chat window.
+
+- `data-sponsor-text` — The text displays in sponsor text in the footer of an open chat window.
+
+
 **Behavior Overrides**
 - `data-open-on-load` — Once loaded, open the chat as default. It can still be closed by the user.
+
+- `data-support-email` — Shows a support email that the user can used to draft an email via the "three dot" menu in the top right. Option will not appear if it is not set.
 
 
 ### `<iframe>` tag HTML embed

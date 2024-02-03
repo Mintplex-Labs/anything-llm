@@ -33,15 +33,12 @@ export default function PromptInput({
   };
 
   return (
-    <div
-      style={{ bottom: 25 }}
-      className="w-full fixed md:absolute left-0 z-10 flex justify-center items-center"
-    >
+    <div className="w-full absolute left-0 bottom-[5px] z-10 flex justify-center items-center">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl"
+        className="flex flex-col gap-y-1 rounded-t-lg w-full items-center justify-center"
       >
-        <div className="flex items-center rounded-lg md:mb-4">
+        <div className="flex items-center rounded-lg">
           <div className="bg-white border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
             <div className="flex items-center w-full">
               <textarea

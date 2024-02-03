@@ -76,7 +76,7 @@ export default function ChatContainer({
   }, [loadingResponse, chatHistory]);
 
   return (
-    <React.Fragment>
+    <div className="h-full w-full relative">
       <ChatHistory settings={settings} history={chatHistory} />
       <PromptInput
         settings={settings}
@@ -86,6 +86,6 @@ export default function ChatContainer({
         inputDisabled={loadingResponse}
         buttonDisabled={loadingResponse}
       />
-    </React.Fragment>
+    </div>
   );
 }

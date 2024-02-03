@@ -27,9 +27,9 @@ export default function App() {
             width: isChatOpen ? 320 : "auto",
             height: isChatOpen ? "93vh" : "auto",
           }}
-          className={`transition-all duration-300 ease-in-out ${
+          className={`${
             isChatOpen
-              ? "max-w-md p-4 bg-white rounded-lg border shadow-lg w-72"
+              ? "max-w-md px-4 py-2 bg-white rounded-lg border shadow-lg w-72"
               : "w-16 h-16 rounded-full"
           }`}
         >

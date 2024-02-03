@@ -2,6 +2,8 @@ import ChatWindowHeader from "./Header";
 import SessionId from "../SessionId";
 import useChatHistory from "@/hooks/chat/useChatHistory";
 import ChatContainer from "./ChatContainer";
+import Sponsor from "../Sponsor";
+import { ChatHistoryLoading } from "./ChatContainer/ChatHistory";
 
 export default function ChatWindow({ closeChat, settings, sessionId }) {
   const { chatHistory, setChatHistory, loading } = useChatHistory(
@@ -9,10 +11,28 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
     sessionId
   );
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="flex flex-col h-full">
+        <ChatWindowHeader
+          sessionId={sessionId}
+          settings={settings}
+          iconUrl={settings.brandImageUrl}
+          closeChat={closeChat}
+          setChatHistory={setChatHistory}
+        />
+        <ChatHistoryLoading />
+        <div className="pt-4 pb-2 h-fit gap-y-1">
+          <SessionId />
+          <Sponsor settings={settings} />
+        </div>
+      </div>
+    );
+  }
+
   setEventDelegatorForCodeSnippets();
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full">
       <ChatWindowHeader
         sessionId={sessionId}
         settings={settings}
@@ -25,7 +45,10 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
         settings={settings}
         knownHistory={chatHistory}
       />
-      <SessionId />
+      <div className="pt-4 pb-2 h-fit gap-y-1">
+        <SessionId />
+        <Sponsor settings={settings} />
+      </div>
     </div>
   );
 }

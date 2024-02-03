@@ -1,7 +1,7 @@
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown } from "@phosphor-icons/react";
+import { ArrowDown, CircleNotch } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 
 export default function ChatHistory({ settings = {}, history = [] }) {
@@ -46,10 +46,7 @@ export default function ChatHistory({ settings = {}, history = [] }) {
 
   if (history.length === 0) {
     return (
-      <div
-        style={{ height: "85vh", paddingBottom: 100, paddingTop: 5 }}
-        className="bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll"
-      >
+      <div className="h-full max-h-[82vh] pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
         <div className="flex h-full flex-col items-center justify-center">
           <p className="text-slate-400 text-sm font-base py-4 text-center">
             {settings?.greeting ?? "Send a chat to get started!"}
@@ -61,8 +58,7 @@ export default function ChatHistory({ settings = {}, history = [] }) {
 
   return (
     <div
-      style={{ height: "85vh", paddingBottom: 100, paddingTop: 5 }}
-      className="bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll"
+      className="h-full max-h-[82vh] pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll"
       id="chat-history"
       ref={chatHistoryRef}
     >
@@ -98,7 +94,7 @@ export default function ChatHistory({ settings = {}, history = [] }) {
         );
       })}
       {!isAtBottom && (
-        <div className="fixed bottom-[8rem] right-[3rem] z-50 cursor-pointer animate-pulse">
+        <div className="fixed bottom-[10rem] right-[3rem] z-50 cursor-pointer animate-pulse">
           <div className="flex flex-col items-center">
             <div className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white">
               <ArrowDown
@@ -110,6 +106,18 @@ export default function ChatHistory({ settings = {}, history = [] }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+export function ChatHistoryLoading() {
+  return (
+    <div className="h-full w-full relative">
+      <div className="h-full max-h-[82vh] pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
+        <div className="flex h-full flex-col items-center justify-center">
+          <CircleNotch size={14} className="text-slate-400 animate-spin" />
+        </div>
+      </div>
     </div>
   );
 }

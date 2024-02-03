@@ -17,9 +17,13 @@ const DEFAULT_SETTINGS = {
   buttonColor: "#262626", // must be hex color code
   userBgColor: "#2C2F35", // user text bubble color
   assistantBgColor: "#2563eb", // assistant text bubble color
+  noSponsor: null, // Shows sponsor in footer of chat
+  sponsorText: "Powered by AnythingLLM", // default sponsor text
+  sponsorLink: "https://useanything.com", // default sponsor link
 
   // behaviors
   openOnLoad: "off", // or "on"
+  supportEmail: null, // string of email for contact
 };
 
 export default function useGetScriptAttributes() {
