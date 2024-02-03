@@ -21,7 +21,10 @@ const HistoricalMessage = forwardRef(
               : embedderSettings.AI_BACKGROUND_COLOR
         }`}
       >
-        <div className={`py-2 px-2 w-full flex flex-col`}>
+        <div
+          style={{ wordBreak: "break-word" }}
+          className={`py-2 px-2 w-full flex flex-col`}
+        >
           <div className="flex">
             {error ? (
               <div className="p-2 rounded-lg bg-red-50 text-red-500">

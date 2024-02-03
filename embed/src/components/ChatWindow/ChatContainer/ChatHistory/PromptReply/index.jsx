@@ -46,7 +46,10 @@ const PromptReply = forwardRef(
         ref={ref}
         className={`flex justify-center items-end w-full ${embedderSettings.AI_BACKGROUND_COLOR}`}
       >
-        <div className="py-2 px-2 w-full flex flex-col">
+        <div
+          style={{ wordBreak: "break-word" }}
+          className="py-2 px-2 w-full flex flex-col"
+        >
           <div className="flex gap-x-5">
             <span
               className={`reply whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}

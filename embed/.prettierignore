@@ -6,3 +6,4 @@
 
 **/dist
 **/static/**
+src/utils/chat/hljs.js
