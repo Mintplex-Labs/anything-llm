@@ -99,16 +99,17 @@ function chatEndpoints(app) {
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
-        await EventLogs.logEvent({
-          event: "sent_chat",
-          userId: user?.id || null,
-          metadata: {
+
+        await EventLogs.logEvent(
+          "sent_chat",
+          {
             multiUserMode: multiUserMode(response),
             LLMSelection: process.env.LLM_PROVIDER || "openai",
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "pinecone",
           },
-        });
+          user?.id
+        );
         response.end();
       } catch (e) {
         console.error(e);

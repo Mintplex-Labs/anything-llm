@@ -161,7 +161,7 @@ export default function SettingsSidebar() {
                   icon={<Notepad className="h-5 w-5 flex-shrink-0" />}
                   user={user}
                   flex={true}
-                  allowedRole={["admin", "manager"]}
+                  allowedRole={["admin"]}
                 />
               </div>
             </div>

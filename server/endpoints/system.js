@@ -150,11 +150,12 @@ function systemEndpoints(app) {
           existingUser?.id
         );
 
-        await EventLogs.logEvent({
-          event: "login_event",
-          userId: existingUser?.id || null,
-          metadata: {},
-        });
+        await EventLogs.logEvent(
+          "login_event",
+          { multiUserMode: false },
+          existingUser?.id
+        );
+
         response.status(200).json({
           valid: true,
           user: existingUser,
@@ -182,6 +183,7 @@ function systemEndpoints(app) {
         }
 
         await Telemetry.sendTelemetry("login_event", { multiUserMode: false });
+        await EventLogs.logEvent("login_event", { multiUserMode: false });
         response.status(200).json({
           valid: true,
           token: makeJWT({ p: password }, "30d"),
@@ -369,6 +371,9 @@ function systemEndpoints(app) {
         );
         if (process.env.NODE_ENV === "production") await dumpENV();
         await Telemetry.sendTelemetry("enabled_multi_user_mode", {
+          multiUserMode: true,
+        });
+        await EventLogs.logEvent("enabled_multi_user_mode", {
           multiUserMode: true,
         });
         response.status(200).json({ success: !!user, error });
@@ -747,6 +752,26 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error(error);
         response.status(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/logs",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { offset = 0, limit = 20 } = reqBody(request);
+        const logs = await EventLogs.whereWithData({}, limit, offset * limit, {
+          id: "desc",
+        });
+        const totalLogs = await EventLogs.count();
+        const hasPages = totalLogs > (offset + 1) * limit;
+
+        response.status(200).json({ logs: logs, hasPages, totalLogs });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
       }
     }
   );

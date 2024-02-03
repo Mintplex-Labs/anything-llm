@@ -1,22 +1,20 @@
 const prisma = require("../utils/prisma");
 
 const EventLogs = {
-  logEvent: async function ({
+  logEvent: async function (
     event,
-    description = null,
-    metadata = null,
+    metadata = {},
     userId = null,
-    ipAddress = null,
-  }) {
+    ipAddress = null
+  ) {
     try {
       const eventLog = await prisma.event_logs.create({
         data: {
           event,
-          description,
           metadata: metadata ? JSON.stringify(metadata) : null,
-          userId,
+          userId: userId ? Number(userId) : null,
+          ipAddress: ipAddress ? ipAddress : null,
           occurredAt: new Date(),
-          ipAddress,
         },
       });
       return { eventLog, message: null };
@@ -74,6 +72,31 @@ const EventLogs = {
           : { orderBy: { occurredAt: "desc" } }),
       });
       return logs;
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
+
+  whereWithData: async function (
+    clause = {},
+    limit = null,
+    offset = null,
+    orderBy = null
+  ) {
+    const { User } = require("./user");
+
+    try {
+      const results = await this.where(clause, limit, orderBy, offset);
+
+      for (const res of results) {
+        const user = res.userId ? await User.get({ id: res.userId }) : null;
+        res.user = user
+          ? { username: user.username }
+          : { username: "unknown user" };
+      }
+
+      return results;
     } catch (error) {
       console.error(error.message);
       return [];

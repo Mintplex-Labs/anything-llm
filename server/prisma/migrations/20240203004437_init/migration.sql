@@ -2,11 +2,9 @@
 CREATE TABLE "event_logs" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "event" TEXT NOT NULL,
-    "description" TEXT,
     "metadata" TEXT,
     "userId" INTEGER,
-    "occurredAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "ipAddress" TEXT
+    "occurredAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- CreateIndex

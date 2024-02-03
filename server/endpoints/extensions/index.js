@@ -1,3 +1,4 @@
+const { EventLogs } = require("../../models/eventLogs");
 const { Telemetry } = require("../../models/telemetry");
 const {
   forwardExtensionRequest,
@@ -42,6 +43,9 @@ function extensionEndpoints(app) {
         await Telemetry.sendTelemetry("extension_invoked", {
           type: "github_repo",
         });
+        await EventLogs.logEvent("extension_invoked", {
+          type: "github_repo",
+        });
         response.status(200).json(responseFromProcessor);
       } catch (e) {
         console.error(e);
@@ -61,6 +65,9 @@ function extensionEndpoints(app) {
           body: request.body,
         });
         await Telemetry.sendTelemetry("extension_invoked", {
+          type: "youtube_transcript",
+        });
+        await EventLogs.logEvent("extension_invoked", {
           type: "youtube_transcript",
         });
         response.status(200).json(responseFromProcessor);

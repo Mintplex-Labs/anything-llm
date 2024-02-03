@@ -389,6 +389,18 @@ const System = {
         return [];
       });
   },
+  logs: async (offset = 0) => {
+    return await fetch(`${API_BASE}/system/logs`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ offset }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
   deleteChat: async (chatId) => {
     return await fetch(`${API_BASE}/system/workspace-chats/${chatId}`, {
       method: "DELETE",

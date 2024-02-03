@@ -17,6 +17,7 @@ const {
   flexUserRoleValid,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
+const { EventLogs } = require("../models/eventLogs");
 const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
@@ -31,6 +32,17 @@ function workspaceEndpoints(app) {
         const { name = null, onboardingComplete = false } = reqBody(request);
         const { workspace, message } = await Workspace.new(name, user?.id);
         await Telemetry.sendTelemetry(
+          "workspace_created",
+          {
+            multiUserMode: multiUserMode(response),
+            LLMSelection: process.env.LLM_PROVIDER || "openai",
+            Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+            VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          },
+          user?.id
+        );
+
+        await EventLogs.logEvent(
           "workspace_created",
           {
             multiUserMode: multiUserMode(response),
@@ -109,6 +121,7 @@ function workspaceEndpoints(app) {
         `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
       );
       await Telemetry.sendTelemetry("document_uploaded");
+      await EventLogs.logEvent("document_uploaded");
       response.status(200).json({ success: true, error: null });
     }
   );
@@ -141,6 +154,7 @@ function workspaceEndpoints(app) {
         `Link ${link} uploaded processed and successfully. It is now available in documents.`
       );
       await Telemetry.sendTelemetry("link_uploaded");
+      await EventLogs.logEvent("link_uploaded");
       response.status(200).json({ success: true, error: null });
     }
   );

@@ -16,6 +16,7 @@ const {
   writeResponseChunk,
   VALID_CHAT_MODE,
 } = require("../../../utils/chats/stream");
+const { EventLogs } = require("../../../models/eventLogs");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -68,6 +69,12 @@ function apiWorkspaceEndpoints(app) {
       const { name = null } = reqBody(request);
       const { workspace, message } = await Workspace.new(name);
       await Telemetry.sendTelemetry("workspace_created", {
+        multiUserMode: multiUserMode(response),
+        LLMSelection: process.env.LLM_PROVIDER || "openai",
+        Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+        VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+      });
+      await EventLogs.logEvent("workspace_created", {
         multiUserMode: multiUserMode(response),
         LLMSelection: process.env.LLM_PROVIDER || "openai",
         Embedder: process.env.EMBEDDING_ENGINE || "inherit",
@@ -519,6 +526,11 @@ function apiWorkspaceEndpoints(app) {
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
+        await EventLogs.logEvent("sent_chat", {
+          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        });
         response.status(200).json({ ...result });
       } catch (e) {
         response.status(500).json({
@@ -633,6 +645,11 @@ function apiWorkspaceEndpoints(app) {
 
         await streamChatWithWorkspace(response, workspace, message, mode);
         await Telemetry.sendTelemetry("sent_chat", {
+          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        });
+        await EventLogs.logEvent("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",

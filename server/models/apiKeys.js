@@ -1,5 +1,6 @@
 const { Telemetry } = require("./telemetry");
 const prisma = require("../utils/prisma");
+const { EventLogs } = require("./eventLogs");
 
 const ApiKey = {
   tablename: "api_keys",
@@ -20,6 +21,7 @@ const ApiKey = {
       });
 
       await Telemetry.sendTelemetry("api_key_created");
+      await EventLogs.logEvent("api_key_created");
       return { apiKey, error: null };
     } catch (error) {
       console.error("FAILED TO CREATE API KEY.", error.message);

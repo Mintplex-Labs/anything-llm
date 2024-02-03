@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass } = require("../utils/helpers");
 const prisma = require("../utils/prisma");
 const { Telemetry } = require("./telemetry");
+const { EventLogs } = require("./eventLogs");
 
 const Document = {
   forWorkspace: async function (workspaceId = null) {
@@ -84,6 +85,11 @@ const Document = {
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "pinecone",
     });
+    await EventLogs.logEvent("documents_embedded_in_workspace", {
+      LLMSelection: process.env.LLM_PROVIDER || "openai",
+      Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+      VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+    });
     return { failedToEmbed, errors: Array.from(errors), embedded };
   },
 
@@ -115,6 +121,11 @@ const Document = {
     }
 
     await Telemetry.sendTelemetry("documents_removed_in_workspace", {
+      LLMSelection: process.env.LLM_PROVIDER || "openai",
+      Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+      VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+    });
+    await EventLogs.logEvent("documents_removed_in_workspace", {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "pinecone",
