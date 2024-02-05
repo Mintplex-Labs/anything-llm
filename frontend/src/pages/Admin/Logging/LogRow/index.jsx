@@ -19,11 +19,6 @@ export default function LogRow({ log }) {
         <td className="px-6 py-4 font-medium whitespace-nowrap text-white">
           {log.id}
         </td>
-        {/* <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
-          <span className="rounded-full bg-sky-600/20 px-2 py-0.5 text-sm font-medium text-sky-400 shadow-sm">
-            {log.event}
-          </span>
-        </td> */}
         <EventBadge event={log.event} />
         <td className="px-6 py-4 border-transparent transform transition-transform duration-200">
           {log.user.username}
