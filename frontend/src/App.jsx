@@ -76,8 +76,9 @@ export default function App() {
                 element={<AdminRoute Component={GeneralVectorDatabase} />}
               />
               <Route
-                path="/settings/audit-logs"
-                element={<AdminRoute Component={AdminLogs} />} />
+                path="/settings/event-logs"
+                element={<AdminRoute Component={AdminLogs} />}
+              />
               <Route
                 path="/settings/embed-config"
                 element={<AdminRoute Component={EmbedConfigSetup} />}

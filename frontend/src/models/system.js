@@ -389,8 +389,8 @@ const System = {
         return [];
       });
   },
-  logs: async (offset = 0) => {
-    return await fetch(`${API_BASE}/system/logs`, {
+  eventLogs: async (offset = 0) => {
+    return await fetch(`${API_BASE}/system/event-logs`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({ offset }),

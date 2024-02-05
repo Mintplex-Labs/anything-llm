@@ -781,8 +781,8 @@ function systemEndpoints(app) {
   );
 
   app.post(
-    "/system/logs",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    "/system/event-logs",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { offset = 0, limit = 20 } = reqBody(request);

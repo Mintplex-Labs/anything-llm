@@ -18,10 +18,11 @@ export default function AdminLogs() {
         <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
-              <p className="text-2xl font-semibold text-white">Logs</p>
+              <p className="text-2xl font-semibold text-white">Event Logs</p>
             </div>
             <p className="text-sm font-base text-white text-opacity-60">
-              View all logs and events happening on this instance.
+              View all actions and events happening on this instance for
+              monitoring.
             </p>
           </div>
           <ChatsContainer />
@@ -34,7 +35,6 @@ export default function AdminLogs() {
 function ChatsContainer() {
   const query = useQuery();
   const [loading, setLoading] = useState(true);
-  // const [chats, setChats] = useState([]);
   const [logs, setLogs] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
@@ -48,8 +48,7 @@ function ChatsContainer() {
 
   useEffect(() => {
     async function fetchLogs() {
-      const { logs: _logs, hasPages = false } = await System.logs(offset);
-      console.log(_logs);
+      const { logs: _logs, hasPages = false } = await System.eventLogs(offset);
       setLogs(_logs);
       setCanNext(hasPages);
       setLoading(false);
@@ -76,9 +75,6 @@ function ChatsContainer() {
       <table className="md:w-3/4 w-full text-sm text-left rounded-lg mt-5">
         <thead className="text-white text-opacity-80 text-sm font-bold uppercase border-white border-b border-opacity-60">
           <tr>
-            <th scope="col" className="px-6 py-3 rounded-tl-lg">
-              Id
-            </th>
             <th scope="col" className="px-6 py-3">
               Event Type
             </th>
