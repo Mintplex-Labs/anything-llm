@@ -21,7 +21,11 @@ const ApiKey = {
       });
 
       await Telemetry.sendTelemetry("api_key_created");
-      await EventLogs.logEvent("api_key_created");
+      await EventLogs.logEvent(
+        "api_key_created",
+        { apiKey: apiKey?.secret },
+        createdByUserId
+      );
       return { apiKey, error: null };
     } catch (error) {
       console.error("FAILED TO CREATE API KEY.", error.message);

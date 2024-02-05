@@ -35,7 +35,7 @@ const Document = {
     }
   },
 
-  addDocuments: async function (workspace, additions = []) {
+  addDocuments: async function (workspace, additions = [], userId = null) {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
     const embedded = [];
@@ -85,15 +85,19 @@ const Document = {
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "pinecone",
     });
-    await EventLogs.logEvent("documents_embedded_in_workspace", {
-      LLMSelection: process.env.LLM_PROVIDER || "openai",
-      Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-      VectorDbSelection: process.env.VECTOR_DB || "pinecone",
-    });
+    await EventLogs.logEvent(
+      "documents_embedded_in_workspace",
+      {
+        workspaceName: workspace?.name || "Unknown Workspace",
+        documents: additions,
+        numberOfDocuments: additions.length,
+      },
+      userId
+    );
     return { failedToEmbed, errors: Array.from(errors), embedded };
   },
 
-  removeDocuments: async function (workspace, removals = []) {
+  removeDocuments: async function (workspace, removals = [], userId = null) {
     const VectorDb = getVectorDbClass();
     if (removals.length === 0) return;
 
@@ -125,11 +129,15 @@ const Document = {
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "pinecone",
     });
-    await EventLogs.logEvent("documents_removed_in_workspace", {
-      LLMSelection: process.env.LLM_PROVIDER || "openai",
-      Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-      VectorDbSelection: process.env.VECTOR_DB || "pinecone",
-    });
+    await EventLogs.logEvent(
+      "documents_removed_in_workspace",
+      {
+        workspaceName: workspace?.name || "Unknown Workspace",
+        documents: removals,
+        numberOfDocuments: removals.length,
+      },
+      userId
+    );
     return true;
   },
 

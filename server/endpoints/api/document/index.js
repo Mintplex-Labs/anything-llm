@@ -106,7 +106,9 @@ function apiDocumentEndpoints(app) {
           `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
         );
         await Telemetry.sendTelemetry("document_uploaded");
-        await EventLogs.logEvent("document_uploaded");
+        await EventLogs.logEvent("document_uploaded", {
+          documentName: originalname,
+        });
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.log(e.message, e);
@@ -198,8 +200,10 @@ function apiDocumentEndpoints(app) {
         console.log(
           `Link ${link} uploaded processed and successfully. It is now available in documents.`
         );
-        await Telemetry.sendTelemetry("document_uploaded");
-        await EventLogs.logEvent("document_uploaded");
+        await Telemetry.sendTelemetry("link_uploaded");
+        await EventLogs.logEvent("link_uploaded", {
+          link,
+        });
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.log(e.message, e);

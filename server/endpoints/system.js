@@ -125,6 +125,14 @@ function systemEndpoints(app) {
         }
 
         if (!bcrypt.compareSync(password, existingUser.password)) {
+          await EventLogs.logEvent(
+            "attempted_login_invalid_password",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
           response.status(200).json({
             user: null,
             valid: false,
@@ -135,6 +143,14 @@ function systemEndpoints(app) {
         }
 
         if (existingUser.suspended) {
+          await EventLogs.logEvent(
+            "attempted_login_suspended",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
           response.status(200).json({
             user: null,
             valid: false,
@@ -152,7 +168,10 @@ function systemEndpoints(app) {
 
         await EventLogs.logEvent(
           "login_event",
-          { multiUserMode: false },
+          {
+            ip: request.ip || "Unknown IP",
+            username: existingUser.username || "Unknown user",
+          },
           existingUser?.id
         );
 
@@ -174,6 +193,10 @@ function systemEndpoints(app) {
             bcrypt.hashSync(process.env.AUTH_TOKEN, 10)
           )
         ) {
+          await EventLogs.logEvent("attempted_login_invalid_password", {
+            ip: request.ip || "Unknown IP",
+            multiUserMode: false,
+          });
           response.status(401).json({
             valid: false,
             token: null,
@@ -183,7 +206,10 @@ function systemEndpoints(app) {
         }
 
         await Telemetry.sendTelemetry("login_event", { multiUserMode: false });
-        await EventLogs.logEvent("login_event", { multiUserMode: false });
+        await EventLogs.logEvent("login_event", {
+          ip: request.ip || "Unknown IP",
+          multiUserMode: false,
+        });
         response.status(200).json({
           valid: true,
           token: makeJWT({ p: password }, "30d"),
@@ -373,9 +399,7 @@ function systemEndpoints(app) {
         await Telemetry.sendTelemetry("enabled_multi_user_mode", {
           multiUserMode: true,
         });
-        await EventLogs.logEvent("enabled_multi_user_mode", {
-          multiUserMode: true,
-        });
+        await EventLogs.logEvent("enabled_multi_user_mode", {}, user?.id);
         response.status(200).json({ success: !!user, error });
       } catch (e) {
         await User.delete({});

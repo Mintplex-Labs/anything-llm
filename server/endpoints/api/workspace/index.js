@@ -75,10 +75,7 @@ function apiWorkspaceEndpoints(app) {
         VectorDbSelection: process.env.VECTOR_DB || "pinecone",
       });
       await EventLogs.logEvent("workspace_created", {
-        multiUserMode: multiUserMode(response),
-        LLMSelection: process.env.LLM_PROVIDER || "openai",
-        Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-        VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        workspaceName: workspace?.name || "Unknown Workspace",
       });
       response.status(200).json({ workspace, message });
     } catch (e) {
@@ -527,9 +524,8 @@ function apiWorkspaceEndpoints(app) {
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
         await EventLogs.logEvent("sent_chat", {
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
-          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          workspaceName: workspace?.name,
+          chatModel: workspace?.chatModel || "System Default",
         });
         response.status(200).json({ ...result });
       } catch (e) {
@@ -650,9 +646,8 @@ function apiWorkspaceEndpoints(app) {
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
         await EventLogs.logEvent("sent_chat", {
-          LLMSelection: process.env.LLM_PROVIDER || "openai",
-          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          workspaceName: workspace?.name,
+          chatModel: workspace?.chatModel || "System Default",
         });
         response.end();
       } catch (e) {

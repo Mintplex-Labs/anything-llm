@@ -103,10 +103,8 @@ function chatEndpoints(app) {
         await EventLogs.logEvent(
           "sent_chat",
           {
-            multiUserMode: multiUserMode(response),
-            LLMSelection: process.env.LLM_PROVIDER || "openai",
-            Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-            VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+            workspaceName: workspace?.name,
+            chatModel: workspace?.chatModel || "System Default",
           },
           user?.id
         );
