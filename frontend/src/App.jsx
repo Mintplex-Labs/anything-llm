@@ -41,6 +41,10 @@ const DataConnectors = lazy(
 const DataConnectorSetup = lazy(
   () => import("@/pages/GeneralSettings/DataConnectors/Connectors")
 );
+const EmbedConfigSetup = lazy(
+  () => import("@/pages/GeneralSettings/EmbedConfigs")
+);
+const EmbedChats = lazy(() => import("@/pages/GeneralSettings/EmbedChats"));
 
 export default function App() {
   return (
@@ -69,6 +73,14 @@ export default function App() {
               <Route
                 path="/settings/vector-database"
                 element={<AdminRoute Component={GeneralVectorDatabase} />}
+              />
+              <Route
+                path="/settings/embed-config"
+                element={<AdminRoute Component={EmbedConfigSetup} />}
+              />
+              <Route
+                path="/settings/embed-chats"
+                element={<AdminRoute Component={EmbedChats} />}
               />
               {/* Manager */}
               <Route

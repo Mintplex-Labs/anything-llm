@@ -19,6 +19,8 @@ import {
   List,
   FileCode,
   Plugs,
+  CodeBlock,
+  Barcode,
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
@@ -145,6 +147,27 @@ export default function SettingsSidebar() {
                   user={user}
                   flex={true}
                   allowedRole={["admin", "manager"]}
+                />
+                <Option
+                  href={paths.settings.embedSetup()}
+                  childLinks={[paths.settings.embedChats()]}
+                  btnText="Embedded Chat"
+                  icon={<CodeBlock className="h-5 w-5 flex-shrink-0" />}
+                  user={user}
+                  flex={true}
+                  allowedRole={["admin"]}
+                  subOptions={
+                    <>
+                      <Option
+                        href={paths.settings.embedChats()}
+                        btnText="Embedded Chat History"
+                        icon={<Barcode className="h-5 w-5 flex-shrink-0" />}
+                        user={user}
+                        flex={true}
+                        allowedRole={["admin"]}
+                      />
+                    </>
+                  }
                 />
                 <Option
                   href={paths.settings.security()}
@@ -366,6 +389,27 @@ export function SidebarMobileHeader() {
                     allowedRole={["admin", "manager"]}
                   />
                   <Option
+                    href={paths.settings.embedSetup()}
+                    childLinks={[paths.settings.embedChats()]}
+                    btnText="Embedded Chat"
+                    icon={<CodeBlock className="h-5 w-5 flex-shrink-0" />}
+                    user={user}
+                    flex={true}
+                    allowedRole={["admin"]}
+                    subOptions={
+                      <>
+                        <Option
+                          href={paths.settings.embedChats()}
+                          btnText="Embedded Chat History"
+                          icon={<Barcode className="h-5 w-5 flex-shrink-0" />}
+                          user={user}
+                          flex={true}
+                          allowedRole={["admin"]}
+                        />
+                      </>
+                    }
+                  />
+                  <Option
                     href={paths.settings.security()}
                     btnText="Security"
                     icon={<Lock className="h-5 w-5 flex-shrink-0" />}
@@ -418,10 +462,13 @@ const Option = ({
   btnText,
   icon,
   href,
+  childLinks = [],
   flex = false,
   user = null,
   allowedRole = [],
+  subOptions = null,
 }) => {
+  const hasActiveChild = childLinks.includes(window.location.pathname);
   const isActive = window.location.pathname === href;
 
   // Option only for multi-user
@@ -430,10 +477,11 @@ const Option = ({
   // Option is dual-mode, but user exists, we need to check permissions
   if (flex && !!user && !allowedRole.includes(user?.role)) return null;
   return (
-    <div className="flex gap-x-2 items-center justify-between text-white">
-      <a
-        href={href}
-        className={`
+    <>
+      <div className="flex gap-x-2 items-center justify-between text-white">
+        <a
+          href={href}
+          className={`
           transition-all duration-[200ms]
           flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 rounded justify-start items-center border
           ${
@@ -442,12 +490,22 @@ const Option = ({
               : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
           }
         `}
-      >
-        {React.cloneElement(icon, { weight: isActive ? "fill" : "regular" })}
-        <p className="text-sm leading-loose text-opacity-60 whitespace-nowrap overflow-hidden ">
-          {btnText}
-        </p>
-      </a>
-    </div>
+        >
+          {React.cloneElement(icon, { weight: isActive ? "fill" : "regular" })}
+          <p className="text-sm leading-loose text-opacity-60 whitespace-nowrap overflow-hidden ">
+            {btnText}
+          </p>
+        </a>
+      </div>
+      {!!subOptions && (isActive || hasActiveChild) && (
+        <div
+          className={`ml-4 ${
+            hasActiveChild ? "" : "border-l-2 border-slate-400"
+          } rounded-r-lg`}
+        >
+          {subOptions}
+        </div>
+      )}
+    </>
   );
 };
