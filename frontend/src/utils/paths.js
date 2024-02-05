@@ -96,6 +96,12 @@ export default {
     logs: () => {
       return "/settings/logs";
     },
+    embedSetup: () => {
+      return `/settings/embed-config`;
+    },
+    embedChats: () => {
+      return `/settings/embed-chats`;
+    },
     dataConnectors: {
       list: () => {
         return "/settings/data-connectors";
