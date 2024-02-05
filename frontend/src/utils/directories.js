@@ -12,27 +12,22 @@ export function getFileExtension(path) {
 }
 
 export function middleTruncate(str, n) {
-  const fileExtensionPattern = /(\.[^.]*)$/;
-  const extensionMatch = str.match(fileExtensionPattern);
-  let extension = "";
-  let nameWithoutExtension = str;
+  const fileExtensionPattern = /([^.]*)$/;
+  const extensionMatch = str.includes(".") && str.match(fileExtensionPattern);
 
-  if (extensionMatch) {
-    extension = extensionMatch[0];
-    nameWithoutExtension = str.substring(0, str.length - extension.length);
-  }
   if (str.length <= n) return str;
-  const startLength = Math.ceil((n - 3) / 2);
-  const endLength = Math.floor((n - 3) / 2);
-  const adjustedStartLength = extension
-    ? startLength - Math.ceil(extension.length / 2)
-    : startLength;
-  const adjustedEndLength = extension
-    ? endLength - Math.floor(extension.length / 2)
-    : endLength;
-  const truncated =
-    nameWithoutExtension.substr(0, adjustedStartLength) +
-    "..." +
-    nameWithoutExtension.slice(-adjustedEndLength);
-  return truncated + extension;
+
+  if (extensionMatch && extensionMatch[1]) {
+    const extension = extensionMatch[1];
+    const nameWithoutExtension = str.replace(fileExtensionPattern, "");
+    const truncationPoint = Math.max(0, n - extension.length - 4);
+    const truncatedName =
+      nameWithoutExtension.substr(0, truncationPoint) +
+      "..." +
+      nameWithoutExtension.slice(-4);
+
+    return truncatedName + extension;
+  } else {
+    return str.length > n ? str.substr(0, n - 8) + "..." + str.slice(-4) : str;
+  }
 }
