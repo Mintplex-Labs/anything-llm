@@ -1,6 +1,10 @@
 # AnythingLLM Embedded Chat Widget
 
 > [!WARNING]
+> The use of the AnythingLLM embed is currently in beta. Please request a feature or
+> report a bug via a Github Issue if you have any issues.
+
+> [!WARNING]
 > The core AnythingLLM team publishes a pre-built version of the script that is bundled
 > with the main application. You can find it at the frontend URL `/embed/anythingllm-chat-widget.min.js`.
 > You should only be working in this repo if you are wanting to build your own custom embed.
