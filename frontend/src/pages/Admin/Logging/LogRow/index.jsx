@@ -27,7 +27,9 @@ export default function LogRow({ log }) {
     <>
       <tr
         onClick={handleRowClick}
-        className="bg-transparent text-white text-opacity-80 text-sm font-medium cursor-pointer"
+        className={`bg-transparent text-white text-opacity-80 text-sm font-medium ${
+          hasMetadata ? "cursor-pointer hover:bg-slate-600/20" : ""
+        }`}
       >
         <EventBadge event={log.event} />
         <td className="px-6 py-4 border-transparent transform transition-transform duration-200">
@@ -40,14 +42,14 @@ export default function LogRow({ log }) {
           <>
             {expanded ? (
               <td
-                className={`gap-x-1 flex items-center justify-center transform transition-transform duration-200 hover:scale-105`}
+                className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200 hover:scale-105`}
               >
                 <CaretUp weight="bold" size={20} />
                 <p className="text-xs text-slate-500 w-[20px]">hide</p>
               </td>
             ) : (
               <td
-                className={`gap-x-1 flex items-center justify-center transform transition-transform duration-200 hover:scale-105`}
+                className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200 hover:scale-105`}
               >
                 <CaretDown weight="bold" size={20} />
                 <p className="text-xs text-slate-500 w-[20px]">show</p>
@@ -83,7 +85,7 @@ const EventMetadata = ({ metadata, expanded = false }) => {
 };
 
 const EventBadge = ({ event }) => {
-  if (event.includes("attempted")) {
+  if (event.includes("failed_")) {
     return (
       <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
         <span className="rounded-full bg-red-600/20 px-2 py-0.5 text-sm font-medium text-red-400 shadow-sm">

@@ -74,7 +74,7 @@ function apiWorkspaceEndpoints(app) {
         Embedder: process.env.EMBEDDING_ENGINE || "inherit",
         VectorDbSelection: process.env.VECTOR_DB || "pinecone",
       });
-      await EventLogs.logEvent("workspace_created", {
+      await EventLogs.logEvent("api_workspace_created", {
         workspaceName: workspace?.name || "Unknown Workspace",
       });
       response.status(200).json({ workspace, message });
@@ -523,7 +523,7 @@ function apiWorkspaceEndpoints(app) {
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
-        await EventLogs.logEvent("sent_chat", {
+        await EventLogs.logEvent("api_sent_chat", {
           workspaceName: workspace?.name,
           chatModel: workspace?.chatModel || "System Default",
         });
@@ -645,7 +645,7 @@ function apiWorkspaceEndpoints(app) {
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
-        await EventLogs.logEvent("sent_chat", {
+        await EventLogs.logEvent("api_sent_chat", {
           workspaceName: workspace?.name,
           chatModel: workspace?.chatModel || "System Default",
         });

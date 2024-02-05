@@ -126,7 +126,7 @@ function systemEndpoints(app) {
 
         if (!bcrypt.compareSync(password, existingUser.password)) {
           await EventLogs.logEvent(
-            "attempted_login_invalid_password",
+            "failed_login_invalid_password",
             {
               ip: request.ip || "Unknown IP",
               username: username || "Unknown user",
@@ -144,7 +144,7 @@ function systemEndpoints(app) {
 
         if (existingUser.suspended) {
           await EventLogs.logEvent(
-            "attempted_login_suspended",
+            "failed_login_account_suspended",
             {
               ip: request.ip || "Unknown IP",
               username: username || "Unknown user",
@@ -193,7 +193,7 @@ function systemEndpoints(app) {
             bcrypt.hashSync(process.env.AUTH_TOKEN, 10)
           )
         ) {
-          await EventLogs.logEvent("attempted_login_invalid_password", {
+          await EventLogs.logEvent("failed_login_invalid_password", {
             ip: request.ip || "Unknown IP",
             multiUserMode: false,
           });
@@ -399,7 +399,7 @@ function systemEndpoints(app) {
         await Telemetry.sendTelemetry("enabled_multi_user_mode", {
           multiUserMode: true,
         });
-        await EventLogs.logEvent("enabled_multi_user_mode", {}, user?.id);
+        await EventLogs.logEvent("multi_user_mode_enabled", {}, user?.id);
         response.status(200).json({ success: !!user, error });
       } catch (e) {
         await User.delete({});

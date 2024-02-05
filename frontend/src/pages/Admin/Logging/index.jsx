@@ -72,7 +72,7 @@ function ChatsContainer() {
 
   return (
     <>
-      <table className="md:w-3/4 w-full text-sm text-left rounded-lg mt-5">
+      <table className="md:w-5/6 w-full text-sm text-left rounded-lg mt-5">
         <thead className="text-white text-opacity-80 text-sm font-bold uppercase border-white border-b border-opacity-60">
           <tr>
             <th scope="col" className="px-6 py-3">

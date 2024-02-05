@@ -86,11 +86,10 @@ const Document = {
       VectorDbSelection: process.env.VECTOR_DB || "pinecone",
     });
     await EventLogs.logEvent(
-      "documents_embedded_in_workspace",
+      "workspace_documents_added",
       {
         workspaceName: workspace?.name || "Unknown Workspace",
-        documents: additions,
-        numberOfDocuments: additions.length,
+        numberOfDocumentsAdded: additions.length,
       },
       userId
     );
@@ -130,10 +129,9 @@ const Document = {
       VectorDbSelection: process.env.VECTOR_DB || "pinecone",
     });
     await EventLogs.logEvent(
-      "documents_removed_in_workspace",
+      "workspace_documents_removed",
       {
         workspaceName: workspace?.name || "Unknown Workspace",
-        documents: removals,
         numberOfDocuments: removals.length,
       },
       userId
