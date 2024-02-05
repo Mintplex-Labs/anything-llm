@@ -20,6 +20,7 @@ on:
       - '.vscode/**/*'
       - '**/.env.example'
       - '.github/ISSUE_TEMPLATE/**/*'
+      - 'embed/**/*' # Embed should be published to frontend (yarn build:publish) if any changes are introduced
 
 jobs:
   push_multi_platform_to_registries:
