@@ -48,11 +48,11 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 Some cool features of AnythingLLM
 
 - **Multi-user instance support and permissioning**
+- **_New_** [Custom Embeddable Chat widget for your website](./embed/README.md)
 - Multiple document type support (PDF, TXT, DOCX, etc)
 - Manage documents in your vector database from a simple UI
 - Two chat modes `conversation` and `query`. Conversation retains previous questions and amendments. Query is simple QA against your documents
-- In-chat citations linked to the original document source and text
-- Simple technology stack for fast iteration
+- In-chat citations
 - 100% Cloud deployment ready.
 - "Bring your own LLM" model.
 - Extremely efficient cost-saving measures for managing very large documents. You'll never pay to embed a massive document or transcript more than once. 90% more cost effective than other document chatbot solutions.

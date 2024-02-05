@@ -509,4 +509,5 @@ module.exports = {
   VALID_CHAT_MODE,
   streamChatWithWorkspace,
   writeResponseChunk,
+  handleStreamResponses,
 };
