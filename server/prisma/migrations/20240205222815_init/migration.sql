@@ -8,7 +8,4 @@ CREATE TABLE "event_logs" (
 );
 
 -- CreateIndex
-CREATE INDEX "event_logs_userId_idx" ON "event_logs"("userId");
-
--- CreateIndex
 CREATE INDEX "event_logs_event_idx" ON "event_logs"("event");

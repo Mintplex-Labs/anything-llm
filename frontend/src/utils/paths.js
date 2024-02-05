@@ -94,7 +94,13 @@ export default {
       return "/settings/api-keys";
     },
     logs: () => {
-      return "/settings/logs";
+      return "/settings/audit-logs";
+    },
+    embedSetup: () => {
+      return `/settings/embed-config`;
+    },
+    embedChats: () => {
+      return `/settings/embed-chats`;
     },
     dataConnectors: {
       list: () => {
