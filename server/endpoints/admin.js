@@ -130,6 +130,7 @@ function adminEndpoints(app) {
           return;
         }
 
+        await User.delete({ id: Number(id) });
         await EventLogs.logEvent(
           "user_deleted",
           {
@@ -138,8 +139,6 @@ function adminEndpoints(app) {
           },
           currUser.id
         );
-
-        await User.delete({ id: Number(id) });
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);
@@ -319,7 +318,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const updates = reqBody(request);
-        await SystemSettings.updateSettings(updates, response.locals?.user?.id);
+        await SystemSettings.updateSettings(updates);
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);
@@ -379,7 +378,6 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
-        const apiKey = (await ApiKey.get({ id: Number(id) })).secret;
         await ApiKey.delete({ id: Number(id) });
 
         await EventLogs.logEvent(

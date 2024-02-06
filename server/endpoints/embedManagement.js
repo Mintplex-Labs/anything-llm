@@ -37,12 +37,9 @@ function embedManagementEndpoints(app) {
         const user = await userFromSession(request, response);
         const data = reqBody(request);
         const { embed, message: error } = await EmbedConfig.new(data, user?.id);
-        const workspace = await Workspace.get({
-          id: Number(data.workspace_id),
-        });
         await EventLogs.logEvent(
           "embed_created",
-          { workspaceName: workspace.name },
+          { embedId: embed.id },
           user?.id
         );
         response.status(200).json({ embed, error });
@@ -58,9 +55,11 @@ function embedManagementEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin]), validEmbedConfigId],
     async (request, response) => {
       try {
+        const user = await userFromSession(request, response);
         const { embedId } = request.params;
         const updates = reqBody(request);
         const { success, error } = await EmbedConfig.update(embedId, updates);
+        await EventLogs.logEvent("embed_updated", { embedId }, user?.id);
         response.status(200).json({ success, error });
       } catch (e) {
         console.error(e);

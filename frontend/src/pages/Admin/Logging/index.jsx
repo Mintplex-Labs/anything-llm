@@ -123,7 +123,6 @@ function LogsContainer() {
           className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
           disabled={offset === 0}
         >
-          {" "}
           Previous Page
         </button>
         <button
