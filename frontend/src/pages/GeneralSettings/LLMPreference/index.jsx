@@ -13,6 +13,7 @@ import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
+import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -24,6 +25,7 @@ import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
+import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 
@@ -106,6 +108,14 @@ export default function GeneralLLMPreference() {
       logo: GeminiLogo,
       options: <GeminiLLMOptions settings={settings} />,
       description: "Google's largest and most capable AI model",
+    },
+    {
+      name: "HuggingFace",
+      value: "huggingface",
+      logo: HuggingFaceLogo,
+      options: <HuggingFaceOptions settings={settings} />,
+      description:
+        "Access 150,000+ open-source LLMs and the world's AI community",
     },
     {
       name: "Ollama",
