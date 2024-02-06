@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import truncate from "truncate";
 import { X, Trash, LinkSimple } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
