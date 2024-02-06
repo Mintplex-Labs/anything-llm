@@ -24,11 +24,21 @@ import {
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
+import System from "@/models/system";
 
 export default function SettingsSidebar() {
   const { logo } = useLogo();
   const sidebarRef = useRef(null);
   const { user } = useUser();
+  const [multiUserModeEnabled, setMultiUserModeEnabled] = useState(false);
+
+  useEffect(() => {
+    async function fetchIsMultiUserMode() {
+      const multiUserModeEnabled = await System.isMultiUserMode();
+      setMultiUserModeEnabled(multiUserModeEnabled);
+    }
+    fetchIsMultiUserMode();
+  }, []);
 
   return (
     <>
@@ -169,14 +179,16 @@ export default function SettingsSidebar() {
                     </>
                   }
                 />
-                <Option
-                  href={paths.settings.security()}
-                  btnText="Security"
-                  icon={<Lock className="h-5 w-5 flex-shrink-0" />}
-                  user={user}
-                  flex={true}
-                  allowedRole={["admin", "manager"]}
-                />
+                {!multiUserModeEnabled && (
+                  <Option
+                    href={paths.settings.security()}
+                    btnText="Security"
+                    icon={<Lock className="h-5 w-5 flex-shrink-0" />}
+                    user={user}
+                    flex={true}
+                    allowedRole={["admin", "manager"]}
+                  />
+                )}
               </div>
             </div>
             <div>
