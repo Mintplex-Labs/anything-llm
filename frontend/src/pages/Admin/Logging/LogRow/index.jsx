@@ -28,7 +28,7 @@ export default function LogRow({ log }) {
       <tr
         onClick={handleRowClick}
         className={`bg-transparent text-white text-opacity-80 text-sm font-medium ${
-          hasMetadata ? "cursor-pointer hover:bg-slate-600/20" : ""
+          hasMetadata ? "cursor-pointer hover:bg-white/5" : ""
         }`}
       >
         <EventBadge event={log.event} />
@@ -45,14 +45,14 @@ export default function LogRow({ log }) {
                 className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200 hover:scale-105`}
               >
                 <CaretUp weight="bold" size={20} />
-                <p className="text-xs text-slate-500 w-[20px]">hide</p>
+                <p className="text-xs text-white/50 w-[20px]">hide</p>
               </td>
             ) : (
               <td
                 className={`px-2 gap-x-1 flex items-center justify-center transform transition-transform duration-200 hover:scale-105`}
               >
                 <CaretDown weight="bold" size={20} />
-                <p className="text-xs text-slate-500 w-[20px]">show</p>
+                <p className="text-xs text-white/50 w-[20px]">show</p>
               </td>
             )}
           </>

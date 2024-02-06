@@ -43,13 +43,6 @@ function extensionEndpoints(app) {
         await Telemetry.sendTelemetry("extension_invoked", {
           type: "github_repo",
         });
-        await EventLogs.logEvent(
-          "extension_invoked",
-          {
-            type: "github_repo",
-          },
-          response.locals?.user?.id
-        );
         response.status(200).json(responseFromProcessor);
       } catch (e) {
         console.error(e);
@@ -71,13 +64,6 @@ function extensionEndpoints(app) {
         await Telemetry.sendTelemetry("extension_invoked", {
           type: "youtube_transcript",
         });
-        await EventLogs.logEvent(
-          "extension_invoked",
-          {
-            type: "youtube_transcript",
-          },
-          response.locals?.user?.id
-        );
         response.status(200).json(responseFromProcessor);
       } catch (e) {
         console.error(e);

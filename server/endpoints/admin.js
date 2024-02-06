@@ -287,7 +287,7 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const updates = reqBody(request);
-        await SystemSettings.updateSettings(updates);
+        await SystemSettings.updateSettings(updates, response.locals?.user?.id);
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);

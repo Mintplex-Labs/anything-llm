@@ -381,12 +381,15 @@ function systemEndpoints(app) {
           password,
           role: ROLES.admin,
         });
-        await SystemSettings.updateSettings({
-          multi_user_mode: true,
-          users_can_delete_workspaces: false,
-          limit_user_messages: false,
-          message_limit: 25,
-        });
+        await SystemSettings.updateSettings(
+          {
+            multi_user_mode: true,
+            users_can_delete_workspaces: false,
+            limit_user_messages: false,
+            message_limit: 25,
+          },
+          response.locals?.user?.id
+        );
 
         await updateENV(
           {
@@ -403,9 +406,12 @@ function systemEndpoints(app) {
         response.status(200).json({ success: !!user, error });
       } catch (e) {
         await User.delete({});
-        await SystemSettings.updateSettings({
-          multi_user_mode: false,
-        });
+        await SystemSettings.updateSettings(
+          {
+            multi_user_mode: false,
+          },
+          response.locals?.user?.id
+        );
 
         console.log(e.message, e);
         response.sendStatus(500).end();
@@ -579,9 +585,12 @@ function systemEndpoints(app) {
         const existingLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(existingLogoFilename);
 
-        const { success, error } = await SystemSettings.updateSettings({
-          logo_filename: newFilename,
-        });
+        const { success, error } = await SystemSettings.updateSettings(
+          {
+            logo_filename: newFilename,
+          },
+          response.locals?.user?.id
+        );
 
         return response.status(success ? 200 : 500).json({
           message: success

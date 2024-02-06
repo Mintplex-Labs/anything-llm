@@ -3,6 +3,7 @@ process.env.NODE_ENV === "development"
   : require("dotenv").config();
 
 const prisma = require("../utils/prisma");
+const { EventLogs } = require("./eventLogs");
 
 const SystemSettings = {
   supportedFields: [
@@ -220,11 +221,36 @@ const SystemSettings = {
     }
   },
 
-  updateSettings: async function (updates = {}) {
+  updateSettings: async function (updates = {}, userId = null) {
     try {
+      // Ignore these settings in eventLogs
+      const ignoredKeys = ["logo_filename", "telemetry_id"];
+      const currentSettings = await prisma.system_settings.findMany({
+        where: {
+          label: {
+            in: Object.keys(updates),
+          },
+        },
+      });
+      const currentSettingsMap = currentSettings.reduce((acc, cur) => {
+        acc[cur.label] = cur.value;
+        return acc;
+      }, {});
+
+      const changes = [];
       const updatePromises = Object.keys(updates)
         .filter((key) => this.supportedFields.includes(key))
         .map((key) => {
+          if (
+            currentSettingsMap[key] !== String(updates[key]) &&
+            !ignoredKeys.includes(key)
+          ) {
+            changes.push({
+              setting: key,
+              from: currentSettingsMap[key],
+              to: updates[key] === null ? null : String(updates[key]),
+            });
+          }
           return prisma.system_settings.upsert({
             where: { label: key },
             update: {
@@ -238,6 +264,16 @@ const SystemSettings = {
         });
 
       await Promise.all(updatePromises);
+      if (changes.length > 0) {
+        await EventLogs.logEvent(
+          "system_settings_updated",
+          {
+            changes,
+          },
+          userId
+        );
+      }
+
       return { success: true, error: null };
     } catch (error) {
       console.error("FAILED TO UPDATE SYSTEM SETTINGS", error.message);
