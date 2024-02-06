@@ -142,6 +142,10 @@ function ChatsContainer() {
     setOffset(offset + 1);
   };
 
+  const handleDeleteChat = (chatId) => {
+    setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
+  };
+
   useEffect(() => {
     async function fetchChats() {
       const { chats: _chats, hasPages = false } = await System.chats(offset);
@@ -196,7 +200,9 @@ function ChatsContainer() {
         </thead>
         <tbody>
           {!!chats &&
-            chats.map((chat) => <ChatRow key={chat.id} chat={chat} />)}
+            chats.map((chat) => (
+              <ChatRow key={chat.id} chat={chat} onDelete={handleDeleteChat} />
+            ))}
         </tbody>
       </table>
       <div className="flex w-full justify-between items-center">
