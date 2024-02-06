@@ -14,6 +14,7 @@ const {
   ROLES,
   flexUserRoleValid,
 } = require("../utils/middleware/multiUserProtected");
+const { EventLogs } = require("../models/eventLogs");
 
 function chatEndpoints(app) {
   if (!app) return;
@@ -98,6 +99,15 @@ function chatEndpoints(app) {
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
+
+        await EventLogs.logEvent(
+          "sent_chat",
+          {
+            workspaceName: workspace?.name,
+            chatModel: workspace?.chatModel || "System Default",
+          },
+          user?.id
+        );
         response.end();
       } catch (e) {
         console.error(e);

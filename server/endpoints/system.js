@@ -48,6 +48,7 @@ const {
   prepareWorkspaceChatsForExport,
   exportChatsAsType,
 } = require("../utils/helpers/chat/convertTo");
+const { EventLogs } = require("../models/eventLogs");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -114,6 +115,14 @@ function systemEndpoints(app) {
         const existingUser = await User.get({ username });
 
         if (!existingUser) {
+          await EventLogs.logEvent(
+            "failed_login_invalid_username",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
           response.status(200).json({
             user: null,
             valid: false,
@@ -124,6 +133,14 @@ function systemEndpoints(app) {
         }
 
         if (!bcrypt.compareSync(password, existingUser.password)) {
+          await EventLogs.logEvent(
+            "failed_login_invalid_password",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
           response.status(200).json({
             user: null,
             valid: false,
@@ -134,6 +151,14 @@ function systemEndpoints(app) {
         }
 
         if (existingUser.suspended) {
+          await EventLogs.logEvent(
+            "failed_login_account_suspended",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
           response.status(200).json({
             user: null,
             valid: false,
@@ -148,6 +173,16 @@ function systemEndpoints(app) {
           { multiUserMode: false },
           existingUser?.id
         );
+
+        await EventLogs.logEvent(
+          "login_event",
+          {
+            ip: request.ip || "Unknown IP",
+            username: existingUser.username || "Unknown user",
+          },
+          existingUser?.id
+        );
+
         response.status(200).json({
           valid: true,
           user: existingUser,
@@ -166,6 +201,10 @@ function systemEndpoints(app) {
             bcrypt.hashSync(process.env.AUTH_TOKEN, 10)
           )
         ) {
+          await EventLogs.logEvent("failed_login_invalid_password", {
+            ip: request.ip || "Unknown IP",
+            multiUserMode: false,
+          });
           response.status(401).json({
             valid: false,
             token: null,
@@ -175,6 +214,10 @@ function systemEndpoints(app) {
         }
 
         await Telemetry.sendTelemetry("login_event", { multiUserMode: false });
+        await EventLogs.logEvent("login_event", {
+          ip: request.ip || "Unknown IP",
+          multiUserMode: false,
+        });
         response.status(200).json({
           valid: true,
           token: makeJWT({ p: password }, "30d"),
@@ -288,7 +331,11 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const body = reqBody(request);
-        const { newValues, error } = await updateENV(body);
+        const { newValues, error } = await updateENV(
+          body,
+          false,
+          response?.locals?.user?.id
+        );
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
@@ -364,6 +411,7 @@ function systemEndpoints(app) {
         await Telemetry.sendTelemetry("enabled_multi_user_mode", {
           multiUserMode: true,
         });
+        await EventLogs.logEvent("multi_user_mode_enabled", {}, user?.id);
         response.status(200).json({ success: !!user, error });
       } catch (e) {
         await User.delete({});
@@ -694,6 +742,12 @@ function systemEndpoints(app) {
         }
 
         const { apiKey, error } = await ApiKey.create();
+        await Telemetry.sendTelemetry("api_key_created");
+        await EventLogs.logEvent(
+          "api_key_created",
+          {},
+          response?.locals?.user?.id
+        );
         return response.status(200).json({
           apiKey,
           error,
@@ -715,6 +769,11 @@ function systemEndpoints(app) {
       }
 
       await ApiKey.delete();
+      await EventLogs.logEvent(
+        "api_key_deleted",
+        { deletedBy: response.locals?.user?.username },
+        response?.locals?.user?.id
+      );
       return response.status(200).end();
     } catch (error) {
       console.error(error);
@@ -740,6 +799,45 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error(error);
         response.status(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/event-logs",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { offset = 0, limit = 20 } = reqBody(request);
+        const logs = await EventLogs.whereWithData({}, limit, offset * limit, {
+          id: "desc",
+        });
+        const totalLogs = await EventLogs.count();
+        const hasPages = totalLogs > (offset + 1) * limit;
+
+        response.status(200).json({ logs: logs, hasPages, totalLogs });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/system/event-logs",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (_, response) => {
+      try {
+        await EventLogs.delete();
+        await EventLogs.logEvent(
+          "event_logs_cleared",
+          {},
+          response?.locals?.user?.id
+        );
+        response.json({ success: true });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
       }
     }
   );
@@ -790,6 +888,13 @@ function systemEndpoints(app) {
         const { type = "jsonl" } = request.query;
         const chats = await prepareWorkspaceChatsForExport();
         const { contentType, data } = await exportChatsAsType(chats, type);
+        await EventLogs.logEvent(
+          "exported_chats",
+          {
+            type,
+          },
+          response.locals.user?.id
+        );
         response.setHeader("Content-Type", contentType);
         response.status(200).send(data);
       } catch (e) {

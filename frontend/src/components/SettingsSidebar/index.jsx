@@ -19,6 +19,7 @@ import {
   List,
   FileCode,
   Plugs,
+  Notepad,
   CodeBlock,
   Barcode,
 } from "@phosphor-icons/react";
@@ -73,7 +74,7 @@ export default function SettingsSidebar() {
           {/* Primary Body */}
           <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
             <div className="h-auto sidebar-items">
-              <div className="flex flex-col gap-y-2 h-[65vh] pb-8 overflow-y-scroll no-scroll">
+              <div className="flex flex-col gap-y-2 h-[100%] pb-8 overflow-y-scroll no-scroll">
                 <Option
                   href={paths.settings.system()}
                   btnText="System Preferences"
@@ -189,6 +190,14 @@ export default function SettingsSidebar() {
                     allowedRole={["admin", "manager"]}
                   />
                 )}
+                <Option
+                  href={paths.settings.logs()}
+                  btnText="Events Logs"
+                  icon={<Notepad className="h-5 w-5 flex-shrink-0" />}
+                  user={user}
+                  flex={true}
+                  allowedRole={["admin"]}
+                />
               </div>
             </div>
             <div>
@@ -275,11 +284,10 @@ export function SidebarMobileHeader() {
         className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
       >
         <div
-          className={`${
-            showBgOverlay
+          className={`${showBgOverlay
               ? "transition-all opacity-1"
               : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
+            }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div
@@ -311,7 +319,7 @@ export function SidebarMobileHeader() {
             <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-hidden ">
               <div className="h-auto md:sidebar-items md:dark:sidebar-items">
                 <div
-                  style={{ height: "calc(100vw - -3rem)" }}
+                  style={{ height: "calc(100vw-3rem)" }}
                   className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
                 >
                   <Option
@@ -429,6 +437,14 @@ export function SidebarMobileHeader() {
                     flex={true}
                     allowedRole={["admin", "manager"]}
                   />
+                  <Option
+                    href={paths.settings.logs()}
+                    btnText="Events Logs"
+                    icon={<Notepad className="h-5 w-5 flex-shrink-0" />}
+                    user={user}
+                    flex={true}
+                    allowedRole={["admin"]}
+                  />
                 </div>
               </div>
               <div>
@@ -496,11 +512,10 @@ const Option = ({
           className={`
           transition-all duration-[200ms]
           flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 rounded justify-start items-center border
-          ${
-            isActive
+          ${isActive
               ? "bg-menu-item-selected-gradient border-slate-100 border-opacity-50 font-medium"
               : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
-          }
+            }
         `}
         >
           {React.cloneElement(icon, { weight: isActive ? "fill" : "regular" })}
@@ -511,9 +526,8 @@ const Option = ({
       </div>
       {!!subOptions && (isActive || hasActiveChild) && (
         <div
-          className={`ml-4 ${
-            hasActiveChild ? "" : "border-l-2 border-slate-400"
-          } rounded-r-lg`}
+          className={`ml-4 ${hasActiveChild ? "" : "border-l-2 border-slate-400"
+            } rounded-r-lg`}
         >
           {subOptions}
         </div>
