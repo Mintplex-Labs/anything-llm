@@ -162,9 +162,7 @@ export default function WorkspaceSettings() {
                     className=" bg-sidebar text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                     value={newMessage.heading}
                     name="heading"
-                    onChange={(e) => {
-                      onEditChange(e);
-                    }}
+                    onChange={onEditChange}
                   />
                 </div>
                 <div className="w-1/2">
@@ -176,9 +174,7 @@ export default function WorkspaceSettings() {
                     className="bg-sidebar text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
                     value={newMessage.message}
                     name="message"
-                    onChange={(e) => {
-                      onEditChange(e);
-                    }}
+                    onChange={onEditChange}
                   />
                 </div>
               </div>
