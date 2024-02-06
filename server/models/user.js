@@ -1,4 +1,5 @@
 const prisma = require("../utils/prisma");
+const { EventLogs } = require("./eventLogs");
 
 const User = {
   create: async function ({ username, password, role = "default" }) {
@@ -26,23 +27,50 @@ const User = {
 
   update: async function (userId, updates = {}) {
     try {
-      // Rehash new password if it exists as update field
+      const currentUser = await prisma.users.findUnique({
+        where: { id: parseInt(userId) },
+      });
+      if (!currentUser) {
+        return { success: false, error: "User not found" };
+      }
+
+      const changes = [];
+      const sensitiveFields = ["password"];
+      Object.keys(updates).forEach((key) => {
+        if (
+          !sensitiveFields.includes(key) &&
+          updates[key] !== currentUser[key]
+        ) {
+          changes.push({
+            field: key,
+            from: currentUser[key],
+            to: updates[key],
+          });
+        }
+      });
       if (updates.hasOwnProperty("password")) {
         const passwordCheck = this.checkPasswordComplexity(updates.password);
         if (!passwordCheck.checkedOK) {
           return { success: false, error: passwordCheck.error };
         }
-
-        const bcrypt = require("bcrypt");
         updates.password = bcrypt.hashSync(updates.password, 10);
-      } else {
-        delete updates.password;
       }
-
-      await prisma.users.update({
+      const user = await prisma.users.update({
         where: { id: parseInt(userId) },
         data: updates,
       });
+
+      if (changes.length > 0) {
+        await EventLogs.logEvent(
+          "user_updated",
+          {
+            username: user.username,
+            changes,
+          },
+          userId
+        );
+      }
+
       return { success: true, error: null };
     } catch (error) {
       console.error(error.message);

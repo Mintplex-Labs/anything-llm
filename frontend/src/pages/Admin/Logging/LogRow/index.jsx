@@ -85,7 +85,16 @@ const EventMetadata = ({ metadata, expanded = false }) => {
 };
 
 const EventBadge = ({ event }) => {
-  if (event.includes("failed_")) {
+  if (event.includes("updated")) {
+    return (
+      <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
+        <span className="rounded-full bg-yellow-600/20 px-2 py-0.5 text-sm font-medium text-yellow-400 shadow-sm">
+          {event}
+        </span>
+      </td>
+    );
+  }
+  if (event.includes("failed_") || event.includes("deleted")) {
     return (
       <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
         <span className="rounded-full bg-red-600/20 px-2 py-0.5 text-sm font-medium text-red-400 shadow-sm">
@@ -94,8 +103,7 @@ const EventBadge = ({ event }) => {
       </td>
     );
   }
-
-  if (event.includes("login_event")) {
+  if (event.includes("login_event") || event.includes("created")) {
     return (
       <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
         <span className="rounded-full bg-green-600/20 px-2 py-0.5 text-sm font-medium text-green-400 shadow-sm">

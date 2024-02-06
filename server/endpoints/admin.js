@@ -57,6 +57,14 @@ function adminEndpoints(app) {
         }
 
         const { user: newUser, error } = await User.create(newUserParams);
+        await EventLogs.logEvent(
+          "user_created",
+          {
+            userName: newUser.username,
+            createdBy: currUser.username,
+          },
+          currUser.id
+        );
         response.status(200).json({ user: newUser, error });
       } catch (e) {
         console.error(e);
@@ -120,6 +128,15 @@ function adminEndpoints(app) {
           response.status(200).json({ success: false, error: canModify.error });
           return;
         }
+
+        await EventLogs.logEvent(
+          "user_deleted",
+          {
+            userName: user.username,
+            deletedBy: currUser.username,
+          },
+          currUser.id
+        );
 
         await User.delete({ id: Number(id) });
         response.status(200).json({ success: true, error: null });
