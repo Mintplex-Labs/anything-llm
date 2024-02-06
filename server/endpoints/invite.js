@@ -57,7 +57,6 @@ function inviteEndpoints(app) {
       }
 
       await Invite.markClaimed(invite.id, user);
-
       await EventLogs.logEvent(
         "invite_accepted",
         {

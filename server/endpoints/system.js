@@ -115,6 +115,14 @@ function systemEndpoints(app) {
         const existingUser = await User.get({ username });
 
         if (!existingUser) {
+          await EventLogs.logEvent(
+            "failed_login_invalid_username",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
           response.status(200).json({
             user: null,
             valid: false,
@@ -323,21 +331,11 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const body = reqBody(request);
-        const eventMapping = {
-          LLMProvider: "update_llm_provider",
-          EmbeddingEngine: "update_embedding_engine",
-          VectorDB: "update_vector_db",
-        };
-
-        const { newValues, error } = await updateENV(body);
-        const userId = response?.locals?.user?.id;
-
-        for (const [key, eventName] of Object.entries(eventMapping)) {
-          if (newValues[key]) {
-            await EventLogs.logEvent(eventName, { ...newValues }, userId);
-          }
-        }
-
+        const { newValues, error } = await updateENV(
+          body,
+          false,
+          response?.locals?.user?.id
+        );
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
@@ -753,9 +751,10 @@ function systemEndpoints(app) {
         }
 
         const { apiKey, error } = await ApiKey.create();
+        await Telemetry.sendTelemetry("api_key_created");
         await EventLogs.logEvent(
           "api_key_created",
-          { apiKey },
+          {},
           response?.locals?.user?.id
         );
         return response.status(200).json({
@@ -779,6 +778,11 @@ function systemEndpoints(app) {
       }
 
       await ApiKey.delete();
+      await EventLogs.logEvent(
+        "api_key_deleted",
+        { deletedBy: response.locals?.user?.username },
+        response?.locals?.user?.id
+      );
       return response.status(200).end();
     } catch (error) {
       console.error(error);

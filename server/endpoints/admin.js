@@ -3,6 +3,7 @@ const { Document } = require("../models/documents");
 const { EventLogs } = require("../models/eventLogs");
 const { Invite } = require("../models/invite");
 const { SystemSettings } = require("../models/systemSettings");
+const { Telemetry } = require("../models/telemetry");
 const { User } = require("../models/user");
 const { DocumentVectors } = require("../models/vectors");
 const { Workspace } = require("../models/workspace");
@@ -354,6 +355,13 @@ function adminEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const { apiKey, error } = await ApiKey.create(user.id);
+
+        await Telemetry.sendTelemetry("api_key_created");
+        await EventLogs.logEvent(
+          "api_key_created",
+          { createdBy: user?.username },
+          user?.id
+        );
         return response.status(200).json({
           apiKey,
           error,
@@ -373,9 +381,10 @@ function adminEndpoints(app) {
         const { id } = request.params;
         const apiKey = (await ApiKey.get({ id: Number(id) })).secret;
         await ApiKey.delete({ id: Number(id) });
+
         await EventLogs.logEvent(
           "api_key_deleted",
-          { apiKey, deletedBy: response.locals?.user?.username },
+          { deletedBy: response.locals?.user?.username },
           response?.locals?.user?.id
         );
         return response.status(200).end();

@@ -11,9 +11,13 @@ const EventLogs = {
           occurredAt: new Date(),
         },
       });
+      console.log(`\x1b[32m[Event Logged]\x1b[0m - ${event}`);
       return { eventLog, message: null };
     } catch (error) {
-      console.error(error.message);
+      console.error(
+        `\x1b[31m[Event Logging Failed]\x1b[0m - ${event}`,
+        error.message
+      );
       return { eventLog: null, message: error.message };
     }
   },

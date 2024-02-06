@@ -9,10 +9,15 @@ import showToast from "@/utils/toast";
 
 export default function AdminLogs() {
   const handleResetLogs = async () => {
-    if (!window.confirm("Are you sure you want to clear all logs?")) return;
+    if (
+      !window.confirm(
+        "Are you sure you want to clear all event logs? This action is irreversible."
+      )
+    )
+      return;
     const { success, error } = await System.clearEventLogs();
     if (success) {
-      showToast("Event logs cleared successfully. Reloading...", "success");
+      showToast("Event logs cleared successfully.", "success");
       setTimeout(() => {
         window.location.reload();
       }, 1000);
@@ -34,9 +39,9 @@ export default function AdminLogs() {
               <p className="text-2xl font-semibold text-white">Event Logs</p>
               <button
                 onClick={handleResetLogs}
-                className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
+                className="px-4 py-1 rounded-lg text-slate-200/50 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
               >
-                Reset Logs
+                Clear event logs
               </button>
             </div>
             <p className="text-sm font-base text-white text-opacity-60">

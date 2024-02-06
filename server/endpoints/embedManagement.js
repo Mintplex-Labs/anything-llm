@@ -60,11 +60,6 @@ function embedManagementEndpoints(app) {
       try {
         const { embedId } = request.params;
         const updates = reqBody(request);
-        await EventLogs.logEvent(
-          "embed_updated",
-          { ...updates, embedId },
-          response?.locals?.user?.id
-        );
         const { success, error } = await EmbedConfig.update(embedId, updates);
         response.status(200).json({ success, error });
       } catch (e) {

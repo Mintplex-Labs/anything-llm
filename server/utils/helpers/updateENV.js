@@ -430,7 +430,7 @@ async function wipeWorkspaceModelPreference(key, prev, next) {
 // read from an ENV file as this seems to be a complicating step for many so allowing people to write
 // to the process will at least alleviate that issue. It does not perform comprehensive validity checks or sanity checks
 // and is simply for debugging when the .env not found issue many come across.
-async function updateENV(newENVs = {}, force = false) {
+async function updateENV(newENVs = {}, force = false, userId = null) {
   let error = "";
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
@@ -458,7 +458,23 @@ async function updateENV(newENVs = {}, force = false) {
       await postUpdateFunc(key, prevValue, nextValue);
   }
 
+  await logChangesToEventLog(newValues, userId);
   return { newValues, error: error?.length > 0 ? error : false };
+}
+
+async function logChangesToEventLog(newValues = {}, userId = null) {
+  const { EventLogs } = require("../../models/eventLogs");
+  const eventMapping = {
+    LLMProvider: "update_llm_provider",
+    EmbeddingEngine: "update_embedding_engine",
+    VectorDB: "update_vector_db",
+  };
+
+  for (const [key, eventName] of Object.entries(eventMapping)) {
+    if (!newValues.hasOwnProperty(key)) continue;
+    await EventLogs.logEvent(eventName, {}, userId);
+  }
+  return;
 }
 
 async function dumpENV() {

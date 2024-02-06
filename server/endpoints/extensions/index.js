@@ -1,4 +1,3 @@
-const { EventLogs } = require("../../models/eventLogs");
 const { Telemetry } = require("../../models/telemetry");
 const {
   forwardExtensionRequest,

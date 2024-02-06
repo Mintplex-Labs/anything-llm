@@ -262,7 +262,7 @@ function apiAdminEndpoints(app) {
         const { id } = request.params;
         const user = await User.get({ id: Number(id) });
         await User.delete({ id });
-        await EventLogs.logEvent("user_deleted", {
+        await EventLogs.logEvent("api_user_deleted", {
           userName: user.username,
         });
         response.status(200).json({ success: true, error: null });

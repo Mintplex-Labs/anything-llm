@@ -25,6 +25,21 @@ const User = {
     }
   },
 
+  // Log the changes to a user object, but omit sensitive fields
+  // that are not meant to be logged.
+  loggedChanges: function (updates, prev = {}) {
+    const changes = {};
+    const sensitiveFields = ["password"];
+
+    Object.keys(updates).forEach((key) => {
+      if (!sensitiveFields.includes(key) && updates[key] !== prev[key]) {
+        changes[key] = `${prev[key]} => ${updates[key]}`;
+      }
+    });
+
+    return changes;
+  },
+
   update: async function (userId, updates = {}) {
     try {
       const currentUser = await prisma.users.findUnique({
@@ -34,43 +49,28 @@ const User = {
         return { success: false, error: "User not found" };
       }
 
-      const changes = [];
-      const sensitiveFields = ["password"];
-      Object.keys(updates).forEach((key) => {
-        if (
-          !sensitiveFields.includes(key) &&
-          updates[key] !== currentUser[key]
-        ) {
-          changes.push({
-            field: key,
-            from: currentUser[key],
-            to: updates[key],
-          });
-        }
-      });
       if (updates.hasOwnProperty("password")) {
         const passwordCheck = this.checkPasswordComplexity(updates.password);
         if (!passwordCheck.checkedOK) {
           return { success: false, error: passwordCheck.error };
         }
+        const bcrypt = require("bcrypt");
         updates.password = bcrypt.hashSync(updates.password, 10);
       }
+
       const user = await prisma.users.update({
         where: { id: parseInt(userId) },
         data: updates,
       });
 
-      if (changes.length > 0) {
-        await EventLogs.logEvent(
-          "user_updated",
-          {
-            username: user.username,
-            changes,
-          },
-          userId
-        );
-      }
-
+      await EventLogs.logEvent(
+        "user_updated",
+        {
+          username: user.username,
+          changes: this.loggedChanges(updates, currentUser),
+        },
+        userId
+      );
       return { success: true, error: null };
     } catch (error) {
       console.error(error.message);
