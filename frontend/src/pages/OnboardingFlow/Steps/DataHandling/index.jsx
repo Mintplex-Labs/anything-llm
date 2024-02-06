@@ -10,6 +10,7 @@ import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
+import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
@@ -100,6 +101,13 @@ const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to Mistral",
     ],
     logo: MistralLogo,
+  },
+  huggingface: {
+    name: "HuggingFace",
+    description: [
+      "Your prompts and document text used in response are sent to your HuggingFace managed endpoint",
+    ],
+    logo: HuggingFaceLogo,
   },
 };
 
