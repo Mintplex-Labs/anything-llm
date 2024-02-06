@@ -1,5 +1,6 @@
 const { ApiKey } = require("../models/apiKeys");
 const { Document } = require("../models/documents");
+const { EventLogs } = require("../models/eventLogs");
 const { Invite } = require("../models/invite");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
@@ -150,6 +151,14 @@ function adminEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const { invite, error } = await Invite.create(user.id);
+        await EventLogs.logEvent(
+          "invite_created",
+          {
+            inviteCode: invite.code,
+            createdBy: response.locals?.user?.username,
+          },
+          response.locals?.user?.id
+        );
         response.status(200).json({ invite, error });
       } catch (e) {
         console.error(e);
@@ -165,6 +174,11 @@ function adminEndpoints(app) {
       try {
         const { id } = request.params;
         const { success, error } = await Invite.deactivate(id);
+        await EventLogs.logEvent(
+          "invite_deleted",
+          { deletedBy: response.locals?.user?.username },
+          response.locals?.user?.id
+        );
         response.status(200).json({ success, error });
       } catch (e) {
         console.error(e);
