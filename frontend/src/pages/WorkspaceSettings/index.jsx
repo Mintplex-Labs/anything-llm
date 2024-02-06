@@ -15,26 +15,24 @@ export default function WorkspaceSettings() {
   const { slug } = useParams();
 
   useEffect(() => {
-    async function fetchSuggestedMessages() {
-      const workspaceSuggestedMessages =
-        await Workspace.getSuggestedMessages(slug);
-      setSuggestedMessages(workspaceSuggestedMessages || []);
-    }
-    fetchSuggestedMessages();
-  }, [slug]);
-
-  useEffect(() => {
     async function fetchWorkspace() {
+      if (!slug) return;
       const workspace = await Workspace.bySlug(slug);
+      const suggestedMessages = await Workspace.getSuggestedMessages(slug);
       setWorkspace(workspace);
+      setSuggestedMessages(suggestedMessages);
     }
     fetchWorkspace();
   }, [slug]);
 
   const handleSaveSuggestedMessages = async () => {
+    const validMessages = suggestedMessages.filter(
+      (msg) =>
+        msg?.heading?.trim()?.length > 0 || msg?.message?.trim()?.length > 0
+    );
     const { success, error } = await Workspace.setSuggestedMessages(
       slug,
-      suggestedMessages
+      validMessages
     );
     if (!success) {
       showToast(`Failed to update welcome messages: ${error}`, "error");
@@ -56,7 +54,6 @@ export default function WorkspaceSettings() {
     };
     setNewMessage(defaultMessage);
     setSuggestedMessages([...suggestedMessages, { ...defaultMessage }]);
-
     setHasChanges(true);
   };
 

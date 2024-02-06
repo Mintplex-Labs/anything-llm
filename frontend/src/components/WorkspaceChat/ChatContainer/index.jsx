@@ -6,11 +6,7 @@ import handleChat from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
 
-export default function ChatContainer({
-  workspace,
-  knownHistory = [],
-  suggestedMessages = [],
-}) {
+export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
@@ -105,7 +101,6 @@ export default function ChatContainer({
           history={chatHistory}
           workspace={workspace}
           sendCommand={sendCommand}
-          suggestedMessages={suggestedMessages}
         />
         <PromptInput
           workspace={workspace}

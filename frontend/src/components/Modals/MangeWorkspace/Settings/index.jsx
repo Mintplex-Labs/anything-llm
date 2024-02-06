@@ -314,10 +314,10 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
                     </option>
                   </select>
                 </div>
-                <div className="mt-4 w-full flex justify-center">
+                <div className="mt-4 w-full flex justify-start">
                   <Link to={paths.workspace.additionalSettings(workspace.slug)}>
-                    <a className="underline text-sky-400 text-sm font-medium hover:text-sky-600">
-                      Additional Settings
+                    <a className="underline text-white/60 text-sm font-medium hover:text-sky-600">
+                      View additional settings
                     </a>
                   </Link>
                 </div>
