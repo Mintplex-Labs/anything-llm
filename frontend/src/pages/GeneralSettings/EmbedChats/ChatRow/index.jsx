@@ -6,8 +6,7 @@ import { useModal } from "@/hooks/useModal";
 import paths from "@/utils/paths";
 import Embed from "@/models/embed";
 
-export default function ChatRow({ chat }) {
-  const rowRef = useRef(null);
+export default function ChatRow({ chat, onDelete }) {
   const {
     isOpen: isPromptOpen,
     openModal: openPromptModal,
@@ -26,16 +25,13 @@ export default function ChatRow({ chat }) {
       )
     )
       return false;
-    rowRef?.current?.remove();
     await Embed.deleteChat(chat.id);
+    onDelete(chat.id);
   };
 
   return (
     <>
-      <tr
-        ref={rowRef}
-        className="bg-transparent text-white text-opacity-80 text-sm font-medium"
-      >
+      <tr className="bg-transparent text-white text-opacity-80 text-sm font-medium">
         <td className="px-6 py-4 font-medium whitespace-nowrap text-white">
           <a
             href={paths.settings.embedSetup()}
