@@ -1,7 +1,9 @@
 const { ApiKey } = require("../models/apiKeys");
 const { Document } = require("../models/documents");
+const { EventLogs } = require("../models/eventLogs");
 const { Invite } = require("../models/invite");
 const { SystemSettings } = require("../models/systemSettings");
+const { Telemetry } = require("../models/telemetry");
 const { User } = require("../models/user");
 const { DocumentVectors } = require("../models/vectors");
 const { Workspace } = require("../models/workspace");
@@ -56,6 +58,14 @@ function adminEndpoints(app) {
         }
 
         const { user: newUser, error } = await User.create(newUserParams);
+        await EventLogs.logEvent(
+          "user_created",
+          {
+            userName: newUser.username,
+            createdBy: currUser.username,
+          },
+          currUser.id
+        );
         response.status(200).json({ user: newUser, error });
       } catch (e) {
         console.error(e);
@@ -121,6 +131,14 @@ function adminEndpoints(app) {
         }
 
         await User.delete({ id: Number(id) });
+        await EventLogs.logEvent(
+          "user_deleted",
+          {
+            userName: user.username,
+            deletedBy: currUser.username,
+          },
+          currUser.id
+        );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);
@@ -150,6 +168,14 @@ function adminEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const { invite, error } = await Invite.create(user.id);
+        await EventLogs.logEvent(
+          "invite_created",
+          {
+            inviteCode: invite.code,
+            createdBy: response.locals?.user?.username,
+          },
+          response.locals?.user?.id
+        );
         response.status(200).json({ invite, error });
       } catch (e) {
         console.error(e);
@@ -165,6 +191,11 @@ function adminEndpoints(app) {
       try {
         const { id } = request.params;
         const { success, error } = await Invite.deactivate(id);
+        await EventLogs.logEvent(
+          "invite_deleted",
+          { deletedBy: response.locals?.user?.username },
+          response.locals?.user?.id
+        );
         response.status(200).json({ success, error });
       } catch (e) {
         console.error(e);
@@ -323,6 +354,13 @@ function adminEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const { apiKey, error } = await ApiKey.create(user.id);
+
+        await Telemetry.sendTelemetry("api_key_created");
+        await EventLogs.logEvent(
+          "api_key_created",
+          { createdBy: user?.username },
+          user?.id
+        );
         return response.status(200).json({
           apiKey,
           error,
@@ -341,6 +379,12 @@ function adminEndpoints(app) {
       try {
         const { id } = request.params;
         await ApiKey.delete({ id: Number(id) });
+
+        await EventLogs.logEvent(
+          "api_key_deleted",
+          { deletedBy: response.locals?.user?.username },
+          response?.locals?.user?.id
+        );
         return response.status(200).end();
       } catch (e) {
         console.error(e);

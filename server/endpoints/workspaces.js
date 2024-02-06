@@ -17,6 +17,7 @@ const {
   flexUserRoleValid,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
+const { EventLogs } = require("../models/eventLogs");
 const {
   WorkspaceSuggestedMessages,
 } = require("../models/workspacesSuggestedMessages");
@@ -40,6 +41,14 @@ function workspaceEndpoints(app) {
             LLMSelection: process.env.LLM_PROVIDER || "openai",
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          },
+          user?.id
+        );
+
+        await EventLogs.logEvent(
+          "workspace_created",
+          {
+            workspaceName: workspace?.name || "Unknown Workspace",
           },
           user?.id
         );
@@ -112,6 +121,13 @@ function workspaceEndpoints(app) {
         `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
       );
       await Telemetry.sendTelemetry("document_uploaded");
+      await EventLogs.logEvent(
+        "document_uploaded",
+        {
+          documentName: originalname,
+        },
+        response.locals?.user?.id
+      );
       response.status(200).json({ success: true, error: null });
     }
   );
@@ -144,6 +160,11 @@ function workspaceEndpoints(app) {
         `Link ${link} uploaded processed and successfully. It is now available in documents.`
       );
       await Telemetry.sendTelemetry("link_uploaded");
+      await EventLogs.logEvent(
+        "link_uploaded",
+        { link },
+        response.locals?.user?.id
+      );
       response.status(200).json({ success: true, error: null });
     }
   );
@@ -165,10 +186,15 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        await Document.removeDocuments(currWorkspace, deletes);
+        await Document.removeDocuments(
+          currWorkspace,
+          deletes,
+          response.locals?.user?.id
+        );
         const { failedToEmbed = [], errors = [] } = await Document.addDocuments(
           currWorkspace,
-          adds
+          adds,
+          response.locals?.user?.id
         );
         const updatedWorkspace = await Workspace.get({ id: currWorkspace.id });
         response.status(200).json({
@@ -208,6 +234,14 @@ function workspaceEndpoints(app) {
         await DocumentVectors.deleteForWorkspace(workspace.id);
         await Document.delete({ workspaceId: Number(workspace.id) });
         await Workspace.delete({ id: Number(workspace.id) });
+
+        await EventLogs.logEvent(
+          "workspace_deleted",
+          {
+            workspaceName: workspace?.name || "Unknown Workspace",
+          },
+          response.locals?.user?.id
+        );
 
         try {
           await VectorDb["delete-namespace"]({ namespace: slug });
