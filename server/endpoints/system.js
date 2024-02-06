@@ -774,7 +774,7 @@ function systemEndpoints(app) {
       try {
         const { id } = request.params;
         await WorkspaceChats.delete({ id: Number(id) });
-        response.sendStatus(200).end();
+        response.json({ success: true, error: null });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
