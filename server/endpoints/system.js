@@ -855,6 +855,13 @@ function systemEndpoints(app) {
         const { type = "jsonl" } = request.query;
         const chats = await prepareWorkspaceChatsForExport();
         const { contentType, data } = await exportChatsAsType(chats, type);
+        await EventLogs.logEvent(
+          "exported_chats",
+          {
+            type,
+          },
+          response.locals.user?.id
+        );
         response.setHeader("Content-Type", contentType);
         response.status(200).send(data);
       } catch (e) {
