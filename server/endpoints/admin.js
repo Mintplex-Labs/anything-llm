@@ -371,7 +371,13 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
+        const apiKey = (await ApiKey.get({ id: Number(id) })).secret;
         await ApiKey.delete({ id: Number(id) });
+        await EventLogs.logEvent(
+          "api_key_deleted",
+          { apiKey, deletedBy: response.locals?.user?.username },
+          response?.locals?.user?.id
+        );
         return response.status(200).end();
       } catch (e) {
         console.error(e);

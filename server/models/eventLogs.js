@@ -108,6 +108,18 @@ const EventLogs = {
       return 0;
     }
   },
+
+  delete: async function (clause = {}) {
+    try {
+      await prisma.event_logs.deleteMany({
+        where: clause,
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
 };
 
 module.exports = { EventLogs };

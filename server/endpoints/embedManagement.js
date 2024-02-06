@@ -1,5 +1,7 @@
 const { EmbedChats } = require("../models/embedChats");
 const { EmbedConfig } = require("../models/embedConfig");
+const { EventLogs } = require("../models/eventLogs");
+const { Workspace } = require("../models/workspace");
 const { reqBody, userFromSession } = require("../utils/http");
 const { validEmbedConfigId } = require("../utils/middleware/embedMiddleware");
 const {
@@ -32,9 +34,17 @@ function embedManagementEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const user = userFromSession(request, response);
+        const user = await userFromSession(request, response);
         const data = reqBody(request);
         const { embed, message: error } = await EmbedConfig.new(data, user?.id);
+        const workspace = await Workspace.get({
+          id: Number(data.workspace_id),
+        });
+        await EventLogs.logEvent(
+          "embed_created",
+          { workspaceName: workspace.name },
+          user?.id
+        );
         response.status(200).json({ embed, error });
       } catch (e) {
         console.error(e);
@@ -50,6 +60,11 @@ function embedManagementEndpoints(app) {
       try {
         const { embedId } = request.params;
         const updates = reqBody(request);
+        await EventLogs.logEvent(
+          "embed_updated",
+          { ...updates, embedId },
+          response?.locals?.user?.id
+        );
         const { success, error } = await EmbedConfig.update(embedId, updates);
         response.status(200).json({ success, error });
       } catch (e) {
@@ -66,6 +81,11 @@ function embedManagementEndpoints(app) {
       try {
         const { embedId } = request.params;
         await EmbedConfig.delete({ id: Number(embedId) });
+        await EventLogs.logEvent(
+          "embed_deleted",
+          { embedId },
+          response?.locals?.user?.id
+        );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);

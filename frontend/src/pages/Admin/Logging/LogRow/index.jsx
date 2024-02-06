@@ -85,7 +85,7 @@ const EventMetadata = ({ metadata, expanded = false }) => {
 };
 
 const EventBadge = ({ event }) => {
-  if (event.includes("updated")) {
+  if (event.includes("update")) {
     return (
       <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
         <span className="rounded-full bg-yellow-600/20 px-2 py-0.5 text-sm font-medium text-yellow-400 shadow-sm">

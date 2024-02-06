@@ -401,6 +401,17 @@ const System = {
         return [];
       });
   },
+  clearEventLogs: async () => {
+    return await fetch(`${API_BASE}/system/event-logs`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
   deleteChat: async (chatId) => {
     return await fetch(`${API_BASE}/system/workspace-chats/${chatId}`, {
       method: "DELETE",

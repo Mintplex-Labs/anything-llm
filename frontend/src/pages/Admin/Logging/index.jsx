@@ -5,8 +5,21 @@ import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import LogRow from "./LogRow";
+import showToast from "@/utils/toast";
 
 export default function AdminLogs() {
+  const handleResetLogs = async () => {
+    if (!window.confirm("Are you sure you want to clear all logs?")) return;
+    const { success, error } = await System.clearEventLogs();
+    if (success) {
+      showToast("Event logs cleared successfully. Reloading...", "success");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } else {
+      showToast(`Failed to clear logs: ${error}`, "error");
+    }
+  };
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       {!isMobile && <Sidebar />}
@@ -19,20 +32,26 @@ export default function AdminLogs() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
               <p className="text-2xl font-semibold text-white">Event Logs</p>
+              <button
+                onClick={handleResetLogs}
+                className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
+              >
+                Reset Logs
+              </button>
             </div>
             <p className="text-sm font-base text-white text-opacity-60">
               View all actions and events happening on this instance for
               monitoring.
             </p>
           </div>
-          <ChatsContainer />
+          <LogsContainer />
         </div>
       </div>
     </div>
   );
 }
 
-function ChatsContainer() {
+function LogsContainer() {
   const query = useQuery();
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState([]);

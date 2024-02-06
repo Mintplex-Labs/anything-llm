@@ -323,7 +323,21 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const body = reqBody(request);
+        const eventMapping = {
+          LLMProvider: "update_llm_provider",
+          EmbeddingEngine: "update_embedding_engine",
+          VectorDB: "update_vector_db",
+        };
+
         const { newValues, error } = await updateENV(body);
+        const userId = response?.locals?.user?.id;
+
+        for (const [key, eventName] of Object.entries(eventMapping)) {
+          if (newValues[key]) {
+            await EventLogs.logEvent(eventName, { ...newValues }, userId);
+          }
+        }
+
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
@@ -739,6 +753,11 @@ function systemEndpoints(app) {
         }
 
         const { apiKey, error } = await ApiKey.create();
+        await EventLogs.logEvent(
+          "api_key_created",
+          { apiKey },
+          response?.locals?.user?.id
+        );
         return response.status(200).json({
           apiKey,
           error,
@@ -802,6 +821,25 @@ function systemEndpoints(app) {
         const hasPages = totalLogs > (offset + 1) * limit;
 
         response.status(200).json({ logs: logs, hasPages, totalLogs });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/system/event-logs",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (_, response) => {
+      try {
+        await EventLogs.delete();
+        await EventLogs.logEvent(
+          "event_logs_cleared",
+          {},
+          response?.locals?.user?.id
+        );
+        response.json({ success: true });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
