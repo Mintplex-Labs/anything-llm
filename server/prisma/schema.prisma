@@ -85,21 +85,34 @@ model welcome_messages {
 }
 
 model workspaces {
-  id                  Int                   @id @default(autoincrement())
-  name                String
-  slug                String                @unique
-  vectorTag           String?
-  createdAt           DateTime              @default(now())
-  openAiTemp          Float?
-  openAiHistory       Int                   @default(20)
-  lastUpdatedAt       DateTime              @default(now())
-  openAiPrompt        String?
-  similarityThreshold Float?                @default(0.25)
-  chatModel           String?
-  topN                Int?                  @default(4)
-  workspace_users     workspace_users[]
-  documents           workspace_documents[]
-  embed_configs       embed_configs[]
+  id                           Int                            @id @default(autoincrement())
+  name                         String
+  slug                         String                         @unique
+  vectorTag                    String?
+  createdAt                    DateTime                       @default(now())
+  openAiTemp                   Float?
+  openAiHistory                Int                            @default(20)
+  lastUpdatedAt                DateTime                       @default(now())
+  openAiPrompt                 String?
+  similarityThreshold          Float?                         @default(0.25)
+  chatModel                    String?
+  topN                         Int?                           @default(4)
+  workspace_users              workspace_users[]
+  documents                    workspace_documents[]
+  workspace_suggested_messages workspace_suggested_messages[]
+  embed_configs                embed_configs[]
+}
+
+model workspace_suggested_messages {
+  id            Int        @id @default(autoincrement())
+  workspaceId   Int
+  heading       String
+  message       String
+  createdAt     DateTime   @default(now())
+  lastUpdatedAt DateTime   @default(now())
+  workspace     workspaces @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 model workspace_chats {

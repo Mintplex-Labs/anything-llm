@@ -97,7 +97,11 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     >
       {isMobile && <SidebarMobileHeader />}
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
-        <ChatHistory history={chatHistory} workspace={workspace} />
+        <ChatHistory
+          history={chatHistory}
+          workspace={workspace}
+          sendCommand={sendCommand}
+        />
         <PromptInput
           workspace={workspace}
           message={message}

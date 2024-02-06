@@ -7,6 +7,7 @@ import PreLoader from "../../../Preloader";
 import { useParams } from "react-router-dom";
 import showToast from "../../../../utils/toast";
 import ChatModelPreference from "./ChatModelPreference";
+import { Link } from "react-router-dom";
 
 // Ensure that a type is correct before sending the body
 // to the backend.
@@ -312,6 +313,13 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
                       High (similarity score &ge; .75)
                     </option>
                   </select>
+                </div>
+                <div className="mt-4 w-full flex justify-start">
+                  <Link to={paths.workspace.additionalSettings(workspace.slug)}>
+                    <a className="underline text-white/60 text-sm font-medium hover:text-sky-600">
+                      View additional settings
+                    </a>
+                  </Link>
                 </div>
               </div>
             </div>

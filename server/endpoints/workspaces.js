@@ -18,6 +18,9 @@ const {
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 const { EventLogs } = require("../models/eventLogs");
+const {
+  WorkspaceSuggestedMessages,
+} = require("../models/workspacesSuggestedMessages");
 const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
@@ -199,8 +202,8 @@ function workspaceEndpoints(app) {
           message:
             failedToEmbed.length > 0
               ? `${failedToEmbed.length} documents failed to add.\n\n${errors
-                  .map((msg) => `${msg}`)
-                  .join("\n\n")}`
+                .map((msg) => `${msg}`)
+                .join("\n\n")}`
               : null,
         });
       } catch (e) {
@@ -314,6 +317,53 @@ function workspaceEndpoints(app) {
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/workspace/:slug/suggested-messages",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async function (request, response) {
+      try {
+        const { slug } = request.params;
+        const suggestedMessages =
+          await WorkspaceSuggestedMessages.getMessages(slug);
+        response.status(200).json({ success: true, suggestedMessages });
+      } catch (error) {
+        console.error("Error fetching suggested messages:", error);
+        response
+          .status(500)
+          .json({ success: false, message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/suggested-messages",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { messages = [] } = reqBody(request);
+        const { slug } = request.params;
+        if (!Array.isArray(messages)) {
+          return response.status(400).json({
+            success: false,
+            message: "Invalid message format. Expected an array of messages.",
+          });
+        }
+
+        await WorkspaceSuggestedMessages.saveAll(messages, slug);
+        return response.status(200).json({
+          success: true,
+          message: "Suggested messages saved successfully.",
+        });
+      } catch (error) {
+        console.error("Error processing the suggested messages:", error);
+        response.status(500).json({
+          success: true,
+          message: "Error saving the suggested messages.",
+        });
       }
     }
   );
