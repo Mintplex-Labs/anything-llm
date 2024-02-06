@@ -55,6 +55,9 @@ export default {
     chat: (slug) => {
       return `/workspace/${slug}`;
     },
+    additionalSettings: (slug) => {
+      return `/workspace/${slug}/settings`;
+    },
   },
   apiDocs: () => {
     return `${API_BASE}/docs`;
