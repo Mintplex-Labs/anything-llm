@@ -95,7 +95,7 @@ export default function WorkspaceSettings() {
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <a
         href={paths.workspace.chat(slug)}
-        className="absolute top-16 left-10 transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border z-10"
+        className="absolute top-2 left-2 md:top-16 md:left-10 transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border z-10"
       >
         <ArrowUUpLeft className="h-4 w-4" />
       </a>
@@ -131,8 +131,8 @@ export default function WorkspaceSettings() {
                   <button
                     className="transition-all duration-300 absolute z-10 text-neutral-700 bg-white rounded-full hover:bg-zinc-600 hover:border-zinc-600 hover:text-white border-transparent border shadow-lg ml-2"
                     style={{
-                      top: "-8px",
-                      ["left"]: "265px",
+                      top: -8,
+                      left: 265,
                     }}
                     onClick={() => handleRemoveMessage(index)}
                   >
@@ -185,6 +185,7 @@ export default function WorkspaceSettings() {
             )}
             {suggestedMessages.length < 4 && (
               <button
+                type="button"
                 onClick={addMessage}
                 className="flex gap-x-2 items-center justify-center mt-6 text-white text-sm hover:text-sky-400 transition-all duration-300"
               >
@@ -195,6 +196,7 @@ export default function WorkspaceSettings() {
             {hasChanges && (
               <div className="flex justify-center py-6">
                 <button
+                  type="button"
                   className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
                   onClick={handleSaveSuggestedMessages}
                 >
