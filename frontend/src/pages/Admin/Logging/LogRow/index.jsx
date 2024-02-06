@@ -85,37 +85,19 @@ const EventMetadata = ({ metadata, expanded = false }) => {
 };
 
 const EventBadge = ({ event }) => {
-  if (event.includes("update")) {
-    return (
-      <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
-        <span className="rounded-full bg-yellow-600/20 px-2 py-0.5 text-sm font-medium text-yellow-400 shadow-sm">
-          {event}
-        </span>
-      </td>
-    );
-  }
-  if (event.includes("failed_") || event.includes("deleted")) {
-    return (
-      <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
-        <span className="rounded-full bg-red-600/20 px-2 py-0.5 text-sm font-medium text-red-400 shadow-sm">
-          {event}
-        </span>
-      </td>
-    );
-  }
-  if (event.includes("login_event")) {
-    return (
-      <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
-        <span className="rounded-full bg-green-600/20 px-2 py-0.5 text-sm font-medium text-green-400 shadow-sm">
-          {event}
-        </span>
-      </td>
-    );
-  }
+  let colorTheme = { bg: "bg-sky-600/20", text: "text-sky-400 " };
+  if (event.includes("update"))
+    colorTheme = { bg: "bg-yellow-600/20", text: "text-yellow-400 " };
+  if (event.includes("failed_") || event.includes("deleted"))
+    colorTheme = { bg: "bg-red-600/20", text: "text-red-400 " };
+  if (event === "login_event")
+    colorTheme = { bg: "bg-green-600/20", text: "text-green-400 " };
 
   return (
     <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
-      <span className="rounded-full bg-sky-600/20 px-2 py-0.5 text-sm font-medium text-sky-400 shadow-sm">
+      <span
+        className={`rounded-full ${colorTheme.bg} px-2 py-0.5 text-sm font-medium ${colorTheme.text} shadow-sm`}
+      >
         {event}
       </span>
     </td>
