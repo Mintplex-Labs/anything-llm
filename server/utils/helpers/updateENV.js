@@ -95,6 +95,7 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // Mistral AI API Settings
   MistralApiKey: {
     envKey: "MISTRAL_API_KEY",
     checks: [isNotEmpty],
@@ -109,9 +110,22 @@ const KEY_MAPPING = {
     envKey: "NATIVE_LLM_MODEL_PREF",
     checks: [isDownloadedModel],
   },
-
   NativeLLMTokenLimit: {
     envKey: "NATIVE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
+  // Hugging Face LLM Inference Settings
+  HuggingFaceLLMEndpoint: {
+    envKey: "HUGGING_FACE_LLM_ENDPOINT",
+    checks: [isNotEmpty, isValidURL, validHuggingFaceEndpoint],
+  },
+  HuggingFaceLLMAccessToken: {
+    envKey: "HUGGING_FACE_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  HuggingFaceLLMTokenLimit: {
+    envKey: "HUGGING_FACE_LLM_TOKEN_LIMIT",
     checks: [nonZero],
   },
 
@@ -299,6 +313,7 @@ function supportedLLM(input = "") {
     "native",
     "togetherai",
     "mistral",
+    "huggingface",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -394,6 +409,12 @@ function validDockerizedUrl(input = "") {
     return null;
   } catch {}
   return null;
+}
+
+function validHuggingFaceEndpoint(input = "") {
+  return input.slice(-6) !== ".cloud"
+    ? `Your HF Endpoint should end in ".cloud"`
+    : null;
 }
 
 // If the LLMProvider has changed we need to reset all workspace model preferences to
