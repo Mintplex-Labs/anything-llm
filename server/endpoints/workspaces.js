@@ -232,6 +232,14 @@ function workspaceEndpoints(app) {
         await Document.delete({ workspaceId: Number(workspace.id) });
         await Workspace.delete({ id: Number(workspace.id) });
 
+        await EventLogs.logEvent(
+          "workspace_deleted",
+          {
+            workspaceName: workspace?.name || "Unknown Workspace",
+          },
+          response.locals?.user?.id
+        );
+
         try {
           await VectorDb["delete-namespace"]({ namespace: slug });
         } catch (e) {

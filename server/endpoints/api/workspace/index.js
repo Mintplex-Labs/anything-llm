@@ -210,6 +210,10 @@ function apiWorkspaceEndpoints(app) {
         await DocumentVectors.deleteForWorkspace(workspaceId);
         await Document.delete({ workspaceId: workspaceId });
         await Workspace.delete({ id: workspaceId });
+
+        await EventLogs.logEvent("api_workspace_deleted", {
+          workspaceName: workspace?.name || "Unknown Workspace",
+        });
         try {
           await VectorDb["delete-namespace"]({ namespace: slug });
         } catch (e) {

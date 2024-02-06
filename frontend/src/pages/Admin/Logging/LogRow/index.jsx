@@ -103,7 +103,7 @@ const EventBadge = ({ event }) => {
       </td>
     );
   }
-  if (event.includes("login_event") || event.includes("created")) {
+  if (event.includes("login_event")) {
     return (
       <td className="px-6 py-4 font-medium whitespace-nowrap text-white flex items-center">
         <span className="rounded-full bg-green-600/20 px-2 py-0.5 text-sm font-medium text-green-400 shadow-sm">
