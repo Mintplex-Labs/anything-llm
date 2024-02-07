@@ -1,4 +1,5 @@
 const { chatPrompt } = require("../../chats");
+const { handleDefaultStreamResponse } = require("../../chats/stream");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
@@ -172,6 +173,10 @@ class LMStudioLLM {
       { responseType: "stream" }
     );
     return streamRequest;
+  }
+
+  handleStream(response, stream, responseProps) {
+    return handleDefaultStreamResponse(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
