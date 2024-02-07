@@ -96,6 +96,9 @@ export default {
     apiKeys: () => {
       return "/settings/api-keys";
     },
+    logs: () => {
+      return "/settings/event-logs";
+    },
     embedSetup: () => {
       return `/settings/embed-config`;
     },

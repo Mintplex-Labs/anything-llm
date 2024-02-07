@@ -20,9 +20,13 @@ function validRoleSelection(currentUser = {}, newUserParams = {}) {
 // Check to make sure with this update that includes a role change to an existing admin to a non-admin
 // that we still have at least one admin left or else they will lock themselves out.
 async function canModifyAdmin(userToModify, updates) {
-  // if updates don't include role property or the user being modified isn't an admin currently - skip.
+  // if updates don't include role property
+  // or the user being modified isn't an admin currently
+  // or the updates role is equal to the users current role.
+  // skip validation.
   if (!updates.hasOwnProperty("role")) return { valid: true, error: null };
   if (userToModify.role !== ROLES.admin) return { valid: true, error: null };
+  if (updates.role === userToModify.role) return { valid: true, error: null };
 
   const adminCount = await User.count({ role: ROLES.admin });
   if (adminCount - 1 <= 0)

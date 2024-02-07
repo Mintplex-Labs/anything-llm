@@ -1,3 +1,4 @@
+const { EventLogs } = require("../../../models/eventLogs");
 const { Invite } = require("../../../models/invite");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { User } = require("../../../models/user");
@@ -259,7 +260,11 @@ function apiAdminEndpoints(app) {
         }
 
         const { id } = request.params;
-        await User.delete({ id });
+        const user = await User.get({ id: Number(id) });
+        await User.delete({ id: user.id });
+        await EventLogs.logEvent("api_user_deleted", {
+          userName: user.username,
+        });
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);

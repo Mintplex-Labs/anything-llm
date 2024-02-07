@@ -19,6 +19,7 @@ import {
   List,
   FileCode,
   Plugs,
+  Notepad,
   CodeBlock,
   Barcode,
 } from "@phosphor-icons/react";
@@ -63,7 +64,7 @@ export default function SettingsSidebar() {
           {/* Primary Body */}
           <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
             <div className="h-auto sidebar-items">
-              <div className="flex flex-col gap-y-2 h-[65vh] pb-8 overflow-y-scroll no-scroll">
+              <div className="flex flex-col gap-y-2 h-[100%] pb-8 overflow-y-scroll no-scroll">
                 <Option
                   href={paths.settings.system()}
                   btnText="System Preferences"
@@ -176,6 +177,14 @@ export default function SettingsSidebar() {
                   user={user}
                   flex={true}
                   allowedRole={["admin", "manager"]}
+                />
+                <Option
+                  href={paths.settings.logs()}
+                  btnText="Events Logs"
+                  icon={<Notepad className="h-5 w-5 flex-shrink-0" />}
+                  user={user}
+                  flex={true}
+                  allowedRole={["admin"]}
                 />
               </div>
             </div>
@@ -299,7 +308,7 @@ export function SidebarMobileHeader() {
             <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-hidden ">
               <div className="h-auto md:sidebar-items md:dark:sidebar-items">
                 <div
-                  style={{ height: "calc(100vw - -3rem)" }}
+                  style={{ height: "calc(100vw-3rem)" }}
                   className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
                 >
                   <Option
@@ -416,6 +425,14 @@ export function SidebarMobileHeader() {
                     user={user}
                     flex={true}
                     allowedRole={["admin", "manager"]}
+                  />
+                  <Option
+                    href={paths.settings.logs()}
+                    btnText="Events Logs"
+                    icon={<Notepad className="h-5 w-5 flex-shrink-0" />}
+                    user={user}
+                    flex={true}
+                    allowedRole={["admin"]}
                   />
                 </div>
               </div>
