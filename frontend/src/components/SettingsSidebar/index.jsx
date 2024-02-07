@@ -29,8 +29,8 @@ import { isMobile } from "react-device-detect";
 
 export default function SettingsSidebar() {
   const { logo } = useLogo();
-  const sidebarRef = useRef(null);
   const { user } = useUser();
+  const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
 
@@ -109,43 +109,12 @@ export default function SettingsSidebar() {
               {/* Primary Body */}
               <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-hidden ">
                 <div className="h-auto md:sidebar-items md:dark:sidebar-items">
-                  <div
-                    style={{ height: "calc(100vw - -3rem)" }}
-                    className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
-                  >
+                  <div className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll">
                     <SidebarOptions user={user} />
                   </div>
                 </div>
                 <div>
-                  {/* Footer */}
-                  <div className="flex justify-center mt-2">
-                    <div className="flex space-x-4">
-                      <a
-                        href={paths.github()}
-                        className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                      >
-                        <GithubLogo weight="fill" className="h-5 w-5 " />
-                      </a>
-                      <a
-                        href={paths.docs()}
-                        className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                      >
-                        <BookOpen weight="fill" className="h-5 w-5 " />
-                      </a>
-                      <a
-                        href={paths.discord()}
-                        className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                      >
-                        <DiscordLogo
-                          weight="fill"
-                          className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
-                        />
-                      </a>
-                      {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
-                    <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
-                  </button> */}
-                    </div>
-                  </div>
+                  <Footer />
                 </div>
               </div>
             </div>
@@ -186,43 +155,15 @@ export default function SettingsSidebar() {
             Settings
           </div>
           {/* Primary Body */}
-          <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
+          <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-hidden">
             <div className="h-auto sidebar-items">
               {/* Options */}
-              <div className="flex flex-col gap-y-2 h-[65vh] pb-8 overflow-y-scroll no-scroll">
+              <div className="flex flex-col gap-y-2 h-full pb-8 overflow-y-scroll no-scroll">
                 <SidebarOptions user={user} />
               </div>
             </div>
             <div>
-              {/* Footer */}
-              <div className="flex justify-center mt-2">
-                <div className="flex space-x-4">
-                  <a
-                    href={paths.github()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                  >
-                    <GithubLogo weight="fill" className="h-5 w-5 " />
-                  </a>
-                  <a
-                    href={paths.docs()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                  >
-                    <BookOpen weight="fill" className="h-5 w-5 " />
-                  </a>
-                  <a
-                    href={paths.discord()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                  >
-                    <DiscordLogo
-                      weight="fill"
-                      className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
-                    />
-                  </a>
-                  {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
-                    <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
-                  </button> */}
-                </div>
-              </div>
+              <Footer />
             </div>
           </div>
         </div>
@@ -230,6 +171,39 @@ export default function SettingsSidebar() {
     </>
   );
 }
+
+const Footer = () => {
+  return (
+    <div className="flex justify-center mt-2">
+      <div className="flex space-x-4">
+        <a
+          href={paths.github()}
+          className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+        >
+          <GithubLogo weight="fill" className="h-5 w-5 " />
+        </a>
+        <a
+          href={paths.docs()}
+          className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+        >
+          <BookOpen weight="fill" className="h-5 w-5 " />
+        </a>
+        <a
+          href={paths.discord()}
+          className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+        >
+          <DiscordLogo
+            weight="fill"
+            className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
+          />
+        </a>
+        {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
+        <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
+      </button> */}
+      </div>
+    </div>
+  );
+};
 
 const Option = ({
   btnText,
@@ -242,6 +216,8 @@ const Option = ({
   subOptions = null,
   hidden = false,
 }) => {
+  if (hidden) return null;
+
   const hasActiveChild = childLinks.includes(window.location.pathname);
   const isActive = window.location.pathname === href;
 
@@ -251,7 +227,6 @@ const Option = ({
   // Option is dual-mode, but user exists, we need to check permissions
   if (flex && !!user && !allowedRole.includes(user?.role)) return null;
 
-  if (hidden) return null;
   return (
     <>
       <div className="flex gap-x-2 items-center justify-between text-white">
@@ -401,6 +376,14 @@ const SidebarOptions = ({ user = null }) => (
       flex={true}
       allowedRole={["admin", "manager"]}
       hidden={user?.role}
+    />
+    <Option
+      href={paths.settings.logs()}
+      btnText="Event Logs"
+      icon={<Notepad className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
     />
   </>
 );
