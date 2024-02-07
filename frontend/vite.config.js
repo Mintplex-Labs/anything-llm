@@ -48,6 +48,12 @@ export default defineConfig({
     ]
   },
   build: {
+    rollupOptions: {
+      external: [
+        // Reduces transformation time by 50% and we don't even use this variant, so we can ignore.
+        /@phosphor-icons\/react\/dist\/ssr/,
+      ]
+    },
     commonjsOptions: {
       transformMixedEsModules: true
     }
