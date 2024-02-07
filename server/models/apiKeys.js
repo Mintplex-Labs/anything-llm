@@ -1,4 +1,3 @@
-const { Telemetry } = require("./telemetry");
 const prisma = require("../utils/prisma");
 
 const ApiKey = {
@@ -19,7 +18,6 @@ const ApiKey = {
         },
       });
 
-      await Telemetry.sendTelemetry("api_key_created");
       return { apiKey, error: null };
     } catch (error) {
       console.error("FAILED TO CREATE API KEY.", error.message);

@@ -19,6 +19,7 @@ import {
   List,
   FileCode,
   Plugs,
+  Notepad,
   CodeBlock,
   Barcode,
 } from "@phosphor-icons/react";

@@ -181,3 +181,13 @@ model embed_chats {
   embed_config           embed_configs @relation(fields: [embed_id], references: [id], onDelete: Cascade)
   users                  users?        @relation(fields: [usersId], references: [id])
 }
+
+model event_logs {
+  id         Int      @id @default(autoincrement())
+  event      String
+  metadata   String?
+  userId     Int?
+  occurredAt DateTime @default(now())
+
+  @@index([event])
+}
