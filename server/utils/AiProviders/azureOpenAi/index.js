@@ -1,5 +1,6 @@
 const { AzureOpenAiEmbedder } = require("../../EmbeddingEngines/azureOpenAi");
 const { chatPrompt } = require("../../chats");
+const { writeResponseChunk } = require("../../chats/stream");
 
 class AzureOpenAiLLM {
   constructor(embedder = null, _modelPreference = null) {
@@ -135,7 +136,7 @@ class AzureOpenAiLLM {
         n: 1,
       }
     );
-    return { type: "azureStream", stream };
+    return stream;
   }
 
   async getChatCompletion(messages = [], { temperature = 0.7 }) {
@@ -165,7 +166,40 @@ class AzureOpenAiLLM {
         n: 1,
       }
     );
-    return { type: "azureStream", stream };
+    return stream;
+  }
+
+  handleStream(response, stream, responseProps) {
+    const { uuid = uuidv4(), sources = [] } = responseProps;
+
+    return new Promise(async (resolve) => {
+      let fullText = "";
+      for await (const event of stream) {
+        for (const choice of event.choices) {
+          const delta = choice.delta?.content;
+          if (!delta) continue;
+          fullText += delta;
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: delta,
+            close: false,
+            error: false,
+          });
+        }
+      }
+
+      writeResponseChunk(response, {
+        uuid,
+        sources,
+        type: "textResponseChunk",
+        textResponse: "",
+        close: true,
+        error: false,
+      });
+      resolve(fullText);
+    });
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

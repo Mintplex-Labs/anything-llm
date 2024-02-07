@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { chatPrompt, convertToPromptHistory } = require(".");
-const { writeResponseChunk, handleStreamResponses } = require("./stream");
+const { writeResponseChunk } = require("./stream");
 const { EmbedChats } = require("../../models/embedChats");
 
 async function streamChatWithForEmbed(
@@ -150,7 +150,7 @@ async function streamChatWithForEmbed(
     const stream = await LLMConnector.streamGetChatCompletion(messages, {
       temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,
     });
-    completeText = await handleStreamResponses(response, stream, {
+    completeText = await LLMConnector.handleStream(response, stream, {
       uuid,
       sources: [],
     });
@@ -227,7 +227,7 @@ async function streamEmptyEmbeddingChat({
     embed.workspace,
     rawHistory
   );
-  completeText = await handleStreamResponses(response, stream, {
+  completeText = await LLMConnector.handleStream(response, stream, {
     uuid,
     sources: [],
   });

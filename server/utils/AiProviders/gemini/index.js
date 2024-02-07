@@ -1,4 +1,5 @@
 const { chatPrompt } = require("../../chats");
+const { writeResponseChunk } = require("../../chats/stream");
 
 class GeminiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -164,7 +165,7 @@ class GeminiLLM {
     if (!responseStream.stream)
       throw new Error("Could not stream response stream from Gemini.");
 
-    return { type: "geminiStream", ...responseStream };
+    return responseStream.stream;
   }
 
   async streamGetChatCompletion(messages = [], _opts = {}) {
@@ -183,13 +184,42 @@ class GeminiLLM {
     if (!responseStream.stream)
       throw new Error("Could not stream response stream from Gemini.");
 
-    return { type: "geminiStream", ...responseStream };
+    return responseStream.stream;
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {
     const { messageArrayCompressor } = require("../../helpers/chat");
     const messageArray = this.constructPrompt(promptArgs);
     return await messageArrayCompressor(this, messageArray, rawHistory);
+  }
+
+  handleStream(response, stream, responseProps) {
+    const { uuid = uuidv4(), sources = [] } = responseProps;
+
+    return new Promise(async (resolve) => {
+      let fullText = "";
+      for await (const chunk of stream) {
+        fullText += chunk.text();
+        writeResponseChunk(response, {
+          uuid,
+          sources: [],
+          type: "textResponseChunk",
+          textResponse: chunk.text(),
+          close: false,
+          error: false,
+        });
+      }
+
+      writeResponseChunk(response, {
+        uuid,
+        sources,
+        type: "textResponseChunk",
+        textResponse: "",
+        close: true,
+        error: false,
+      });
+      resolve(fullText);
+    });
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
