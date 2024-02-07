@@ -973,13 +973,103 @@
         "requestBody": {
           "description": "Link of web address to be scraped.",
           "required": true,
-          "type": "file",
+          "type": "object",
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "example": {
                   "link": "https://useanything.com"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/document/raw-text": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Upload a file by specifying its raw text content and metadata values without having to upload a file.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null,
+                    "documents": [
+                      {
+                        "id": "c530dbe6-bff1-4b9e-b87f-710d539d20bc",
+                        "url": "file://my-document.txt",
+                        "title": "hello-world.txt",
+                        "docAuthor": "no author found",
+                        "description": "No description found.",
+                        "docSource": "My custom description set during upload",
+                        "chunkSource": "no chunk source specified",
+                        "published": "1/16/2024, 3:46:33 PM",
+                        "wordCount": 252,
+                        "pageContent": "AnythingLLM is the best....",
+                        "token_count_estimate": 447,
+                        "location": "custom-documents/raw-my-doc-text-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Text content and metadata of the file to be saved to the system. Use metadata-schema endpoint to get the possible metadata keys",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
+                  "metadata": {
+                    "keyOne": "valueOne",
+                    "keyTwo": "valueTwo",
+                    "etc": "etc"
+                  }
                 }
               }
             }
@@ -1188,6 +1278,61 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/document/metadata-schema": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Get the known available metadata schema for when doing a raw-text upload and the acceptable type of value for each key.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "schema": {
+                      "keyOne": "string | number | nullable",
+                      "keyTwo": "string | number | nullable",
+                      "specialKey": "number",
+                      "title": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
