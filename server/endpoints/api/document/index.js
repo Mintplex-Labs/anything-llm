@@ -221,9 +221,9 @@ function apiDocumentEndpoints(app) {
     async (request, response) => {
       /*
      #swagger.tags = ['Documents']
-     #swagger.description = 'Upload a file by specifying its raw text and metadata values without having to upload a file.'
+     #swagger.description = 'Upload a file by specifying its raw text content and metadata values without having to upload a file.'
      #swagger.requestBody = {
-      description: 'Body text and metadata of the file to be saved to the system. Use metadata-schema endpoint to get the possible metadata keys',
+      description: 'Text content and metadata of the file to be saved to the system. Use metadata-schema endpoint to get the possible metadata keys',
       required: true,
       type: 'object',
       content: {
@@ -231,7 +231,7 @@ function apiDocumentEndpoints(app) {
           schema: {
             type: 'object',
             example: {
-              "bodyText": "This is the raw text that will be saved as a document in AnythingLLM.",
+              "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
               "metadata": {
                 keyOne: "valueOne",
                 keyTwo: "valueTwo",
