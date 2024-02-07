@@ -242,27 +242,34 @@ function apiDocumentEndpoints(app) {
         }
       }
      }
-     #swagger.responses[200] = {
-       content: {
-         "application/json": {
-           schema: {
-             type: 'object',
-             example: {
-               workspace: {
-                 "id": 79,
-                 "name": "Sample workspace",
-                 "slug": "sample-workspace",
-                 "createdAt": "2023-08-17 00:45:03",
-                 "openAiTemp": null,
-                 "lastUpdatedAt": "2023-08-17 00:45:03",
-                 "openAiHistory": 20,
-                 "openAiPrompt": null
-               },
-               message: 'Workspace created'
-             }
-           }
-         }
-       }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              success: true,
+              error: null,
+              documents: [
+                {
+                  "id": "c530dbe6-bff1-4b9e-b87f-710d539d20bc",
+                  "url": "file://my-document.txt",
+                  "title": "hello-world.txt",
+                  "docAuthor": "no author found",
+                  "description": "No description found.",
+                  "docSource": "My custom description set during upload",
+                  "chunkSource": "no chunk source specified",
+                  "published": "1/16/2024, 3:46:33 PM",
+                  "wordCount": 252,
+                  "pageContent": "AnythingLLM is the best....",
+                  "token_count_estimate": 447,
+                  "location": "custom-documents/raw-my-doc-text-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
+                }
+              ]
+            }
+          }
+        }
+      }
      }
      #swagger.responses[403] = {
        schema: {
