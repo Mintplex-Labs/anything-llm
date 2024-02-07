@@ -973,13 +973,96 @@
         "requestBody": {
           "description": "Link of web address to be scraped.",
           "required": true,
-          "type": "file",
+          "type": "object",
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "example": {
                   "link": "https://useanything.com"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/document/raw-text": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Upload a file by specifying its raw text and metadata values without having to upload a file.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "workspace": {
+                      "id": 79,
+                      "name": "Sample workspace",
+                      "slug": "sample-workspace",
+                      "createdAt": "2023-08-17 00:45:03",
+                      "openAiTemp": null,
+                      "lastUpdatedAt": "2023-08-17 00:45:03",
+                      "openAiHistory": 20,
+                      "openAiPrompt": null
+                    },
+                    "message": "Workspace created"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Body text and metadata of the file to be saved to the system. Use metadata-schema endpoint to get the possible metadata keys",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "bodyText": "This is the raw text that will be saved as a document in AnythingLLM.",
+                  "metadata": {
+                    "keyOne": "valueOne",
+                    "keyTwo": "valueTwo",
+                    "etc": "etc"
+                  }
                 }
               }
             }
@@ -1188,6 +1271,61 @@
           },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/document/metadata-schema": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Get the known available metadata schema for when doing a raw-text upload and the acceptable type of value for each key.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "schema": {
+                      "keyOne": "string | number | nullable",
+                      "keyTwo": "string | number | nullable",
+                      "specialKey": "number",
+                      "title": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"

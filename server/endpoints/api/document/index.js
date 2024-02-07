@@ -6,6 +6,7 @@ const {
   acceptedFileTypes,
   processDocument,
   processLink,
+  processRawText,
 } = require("../../../utils/files/documentProcessor");
 const {
   viewLocalFiles,
@@ -90,6 +91,7 @@ function apiDocumentEndpoints(app) {
               error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
             })
             .end();
+          return;
         }
 
         const { success, reason, documents } =
@@ -127,7 +129,7 @@ function apiDocumentEndpoints(app) {
     #swagger.requestBody = {
       description: 'Link of web address to be scraped.',
       required: true,
-      type: 'file',
+      type: 'object',
       content: {
           "application/json": {
             schema: {
@@ -186,6 +188,7 @@ function apiDocumentEndpoints(app) {
               error: `Document processing API is not online. Link ${link} will not be processed automatically.`,
             })
             .end();
+          return;
         }
 
         const { success, reason, documents } = await processLink(link);
@@ -204,6 +207,131 @@ function apiDocumentEndpoints(app) {
         await EventLogs.logEvent("api_link_uploaded", {
           link,
         });
+        response.status(200).json({ success: true, error: null, documents });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/v1/document/raw-text",
+    [validApiKey],
+    async (request, response) => {
+      /*
+     #swagger.tags = ['Documents']
+     #swagger.description = 'Upload a file by specifying its raw text and metadata values without having to upload a file.'
+     #swagger.requestBody = {
+      description: 'Body text and metadata of the file to be saved to the system. Use metadata-schema endpoint to get the possible metadata keys',
+      required: true,
+      type: 'object',
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+              "bodyText": "This is the raw text that will be saved as a document in AnythingLLM.",
+              "metadata": {
+                keyOne: "valueOne",
+                keyTwo: "valueTwo",
+                etc: "etc"
+              }
+            }
+          }
+        }
+      }
+     }
+     #swagger.responses[200] = {
+       content: {
+         "application/json": {
+           schema: {
+             type: 'object',
+             example: {
+               workspace: {
+                 "id": 79,
+                 "name": "Sample workspace",
+                 "slug": "sample-workspace",
+                 "createdAt": "2023-08-17 00:45:03",
+                 "openAiTemp": null,
+                 "lastUpdatedAt": "2023-08-17 00:45:03",
+                 "openAiHistory": 20,
+                 "openAiPrompt": null
+               },
+               message: 'Workspace created'
+             }
+           }
+         }
+       }
+     }
+     #swagger.responses[403] = {
+       schema: {
+         "$ref": "#/definitions/InvalidAPIKey"
+       }
+     }
+     */
+      try {
+        const requiredMetadata = ["title"];
+        const { textContent, metadata = {} } = reqBody(request);
+        const processingOnline = await checkProcessorAlive();
+
+        if (!processingOnline) {
+          response
+            .status(500)
+            .json({
+              success: false,
+              error: `Document processing API is not online. Request will not be processed.`,
+            })
+            .end();
+          return;
+        }
+
+        if (
+          !requiredMetadata.every(
+            (reqKey) =>
+              Object.keys(metadata).includes(reqKey) && !!metadata[reqKey]
+          )
+        ) {
+          response
+            .status(422)
+            .json({
+              success: false,
+              error: `You are missing required metadata key:value pairs in your request. Required metadata key:values are ${requiredMetadata
+                .map((v) => `'${v}'`)
+                .join(", ")}`,
+            })
+            .end();
+          return;
+        }
+
+        if (!textContent || textContent?.length === 0) {
+          response
+            .status(422)
+            .json({
+              success: false,
+              error: `The 'textContent' key cannot have an empty value.`,
+            })
+            .end();
+          return;
+        }
+
+        const { success, reason, documents } = await processRawText(
+          textContent,
+          metadata
+        );
+        if (!success) {
+          response
+            .status(500)
+            .json({ success: false, error: reason, documents })
+            .end();
+          return;
+        }
+
+        console.log(
+          `Document created successfully. It is now available in documents.`
+        );
+        await Telemetry.sendTelemetry("raw_document_uploaded");
+        await EventLogs.logEvent("api_raw_document_uploaded");
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
         console.log(e.message, e);
@@ -361,6 +489,56 @@ function apiDocumentEndpoints(app) {
         }
 
         response.status(200).json({ types });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/v1/document/metadata-schema",
+    [validApiKey],
+    async (_, response) => {
+      /*
+    #swagger.tags = ['Documents']
+    #swagger.description = 'Get the known available metadata schema for when doing a raw-text upload and the acceptable type of value for each key.'
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+             "schema": {
+                "keyOne": "string | number | nullable",
+                "keyTwo": "string | number | nullable",
+                "specialKey": "number",
+                "title": "string",
+              }
+            }
+          }
+        }
+      }
+    }
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+    */
+      try {
+        response.status(200).json({
+          schema: {
+            // If you are updating this be sure to update the collector METADATA_KEYS constant in /processRawText.
+            url: "string | nullable",
+            title: "string",
+            docAuthor: "string | nullable",
+            description: "string | nullable",
+            docSource: "string | nullable",
+            chunkSource: "string | nullable",
+            published: "epoch timestamp in ms | nullable",
+          },
+        });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
