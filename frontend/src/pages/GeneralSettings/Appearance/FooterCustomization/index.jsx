@@ -30,7 +30,7 @@ export default function FooterCustomization() {
     });
 
     if (!success) {
-      showToast(`Failed to add footer icon - ${error}`, "error", {
+      showToast(`Failed to remove footer icon - ${error}`, "error", {
         clear: true,
       });
       return;
