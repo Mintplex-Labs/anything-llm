@@ -463,7 +463,9 @@ function systemEndpoints(app) {
   app.get("/system/footer-data", [validatedRequest], async (_, response) => {
     try {
       const footerData = await SystemSettings.get({ label: "footer_data" });
-      response.status(200).json({ footerData: footerData.value });
+      response
+        .status(200)
+        .json({ footerData: footerData?.value ?? JSON.stringify([]) });
     } catch (error) {
       console.error("Error fetching footer data:", error);
       response.status(500).json({ message: "Internal server error" });

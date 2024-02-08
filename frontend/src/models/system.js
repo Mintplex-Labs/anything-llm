@@ -3,6 +3,9 @@ import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 
 const System = {
+  cacheKeys: {
+    footerIcons: "anythingllm_footer_links",
+  },
   ping: async function () {
     return await fetch(`${API_BASE}/ping`)
       .then((res) => res.json())
@@ -190,35 +193,37 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  fetchFooterData: async function () {
-    const now = Date.now();
-    const cache = window.localStorage.getItem("footerData");
+  fetchCustomFooterIcons: async function () {
+    const cache = window.localStorage.getItem(this.cacheKeys.footerIcons);
     const { data, lastFetched } = cache
-      ? safeJsonParse(cache, { data: null, lastFetched: 0 })
-      : { data: null, lastFetched: 0 };
+      ? safeJsonParse(cache, { data: [], lastFetched: 0 })
+      : { data: [], lastFetched: 0 };
 
-    if (!data || now - lastFetched > 3600000) {
-      const response = await fetch(`${API_BASE}/system/footer-data`, {
+    if (!!data && Date.now() - lastFetched < 3_600_000)
+      return { footerData: data, error: null };
+
+    const { footerData, error } = await fetch(
+      `${API_BASE}/system/footer-data`,
+      {
         method: "GET",
         cache: "no-cache",
         headers: baseHeaders(),
-      })
-        .then((res) => res.json())
-        .catch((e) => {
-          console.log(e);
-          return { footerData: null, error: e.message };
-        });
-      if (response.footerData) {
-        const newData = JSON.parse(response.footerData);
-        window.localStorage.setItem(
-          "footerData",
-          JSON.stringify({ data: newData, lastFetched: Date.now() })
-        );
-        return { footerData: newData, error: null };
       }
-    } else {
-      return { footerData: data, error: null };
-    }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.log(e);
+        return { footerData: [], error: e.message };
+      });
+
+    if (!footerData || !!error) return { footerData: [], error: null };
+
+    const newData = safeJsonParse(footerData, []);
+    window.localStorage.setItem(
+      this.cacheKeys.footerIcons,
+      JSON.stringify({ data: newData, lastFetched: Date.now() })
+    );
+    return { footerData: newData, error: null };
   },
   fetchLogo: async function () {
     return await fetch(`${API_BASE}/system/logo`, {
