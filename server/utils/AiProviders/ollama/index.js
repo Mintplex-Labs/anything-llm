@@ -119,9 +119,14 @@ class OllamaAILLM {
     });
     const textResponse = await model
       .pipe(new StringOutputParser())
-      .invoke(this.#convertToLangchainPrototypes(messages));
+      .invoke(this.#convertToLangchainPrototypes(messages))
+      .catch((e) => {
+        throw new Error(
+          `Ollama::getChatCompletion failed to communicate with Ollama. ${e.message}`
+        );
+      });
 
-    if (!textResponse.length)
+    if (!textResponse || !textResponse.length)
       throw new Error(`Ollama::sendChat text response was empty.`);
 
     return textResponse;
@@ -150,9 +155,14 @@ class OllamaAILLM {
     const model = this.#ollamaClient({ temperature });
     const textResponse = await model
       .pipe(new StringOutputParser())
-      .invoke(this.#convertToLangchainPrototypes(messages));
+      .invoke(this.#convertToLangchainPrototypes(messages))
+      .catch((e) => {
+        throw new Error(
+          `Ollama::getChatCompletion failed to communicate with Ollama. ${e.message}`
+        );
+      });
 
-    if (!textResponse.length)
+    if (!textResponse || !textResponse.length)
       throw new Error(`Ollama::getChatCompletion text response was empty.`);
 
     return textResponse;
@@ -170,34 +180,49 @@ class OllamaAILLM {
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
     return new Promise(async (resolve) => {
-      let fullText = "";
-      for await (const chunk of stream) {
-        if (chunk === undefined)
-          throw new Error(
-            "Stream returned undefined chunk. Aborting reply - check model provider logs."
-          );
+      try {
+        let fullText = "";
+        for await (const chunk of stream) {
+          if (chunk === undefined)
+            throw new Error(
+              "Stream returned undefined chunk. Aborting reply - check model provider logs."
+            );
 
-        const content = chunk.hasOwnProperty("content") ? chunk.content : chunk;
-        fullText += content;
+          const content = chunk.hasOwnProperty("content")
+            ? chunk.content
+            : chunk;
+          fullText += content;
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: content,
+            close: false,
+            error: false,
+          });
+        }
+
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "textResponseChunk",
+          textResponse: "",
+          close: true,
+          error: false,
+        });
+        resolve(fullText);
+      } catch (error) {
         writeResponseChunk(response, {
           uuid,
           sources: [],
           type: "textResponseChunk",
-          textResponse: content,
-          close: false,
-          error: false,
+          textResponse: "",
+          close: true,
+          error: `Ollama:streaming - could not stream chat. ${
+            error?.cause ?? error.message
+          }`,
         });
       }
-
-      writeResponseChunk(response, {
-        uuid,
-        sources,
-        type: "textResponseChunk",
-        textResponse: "",
-        close: true,
-        error: false,
-      });
-      resolve(fullText);
     });
   }
 
