@@ -304,7 +304,7 @@ function adminEndpoints(app) {
               (await SystemSettings.get({ label: "message_limit" }))?.value
             ) || 10,
           footer_data:
-            (await SystemSettings.get({ label: "footer_data" }))?.value || {},
+            (await SystemSettings.get({ label: "footer_data" }))?.value || [],
         };
         response.status(200).json({ settings });
       } catch (e) {

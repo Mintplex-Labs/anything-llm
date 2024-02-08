@@ -1,5 +1,5 @@
 import { API_BASE, AUTH_TIMESTAMP, fullApiUrl } from "@/utils/constants";
-import { baseHeaders } from "@/utils/request";
+import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 
 const System = {
@@ -191,16 +191,34 @@ const System = {
       });
   },
   fetchFooterData: async function () {
-    return await fetch(`${API_BASE}/system/footer-data`, {
-      method: "GET",
-      cache: "no-cache",
-      headers: baseHeaders(),
-    })
-      .then((res) => res.json())
-      .catch((e) => {
-        console.log(e);
-        return { footerData: null, error: e.message };
-      });
+    const now = Date.now();
+    const cache = window.localStorage.getItem("footerData");
+    const { data, lastFetched } = cache
+      ? safeJsonParse(cache, { data: null, lastFetched: 0 })
+      : { data: null, lastFetched: 0 };
+
+    if (!data || now - lastFetched > 3600000) {
+      const response = await fetch(`${API_BASE}/system/footer-data`, {
+        method: "GET",
+        cache: "no-cache",
+        headers: baseHeaders(),
+      })
+        .then((res) => res.json())
+        .catch((e) => {
+          console.log(e);
+          return { footerData: null, error: e.message };
+        });
+      if (response.footerData) {
+        const newData = JSON.parse(response.footerData);
+        window.localStorage.setItem(
+          "footerData",
+          JSON.stringify({ data: newData, lastFetched: Date.now() })
+        );
+        return { footerData: newData, error: null };
+      }
+    } else {
+      return { footerData: data, error: null };
+    }
   },
   fetchLogo: async function () {
     return await fetch(`${API_BASE}/system/logo`, {

@@ -2,7 +2,9 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 import { safeJsonParse } from "@/utils/request";
 import {
-  BookOpen, DiscordLogo, GithubLogo,
+  BookOpen,
+  DiscordLogo,
+  GithubLogo,
   Briefcase,
   Envelope,
   Globe,
@@ -22,6 +24,7 @@ export const ICON_COMPONENTS = {
   Globe: Globe,
   Briefcase: Briefcase,
   Info: Info,
+  "": () => null, // fallback
 };
 
 export default function Footer() {
@@ -29,31 +32,12 @@ export default function Footer() {
 
   useEffect(() => {
     async function fetchFooterData() {
-      // Move into System model call and fetch is nothing exists or is expired.
-      const now = Date.now();
-      const cache = localStorage.getItem("footerData");
-      const { data, lastFetched } = cache
-        ? safeJsonParse(cache, { data: null, lastFetched: 0 })
-        : { data: null, lastFetched: 0 };
-
-      if (!data || now - lastFetched > 3600000) {
-        const response = await System.fetchFooterData();
-        if (response.footerData) {
-          const newData = JSON.parse(response.footerData);
-          localStorage.setItem(
-            "footerData",
-            JSON.stringify({ data: newData, lastFetched: Date.now() })
-          );
-          setFooterData(newData);
-        }
-      } else {
-        setFooterData(data);
-      }
+      const { footerData } = await System.fetchFooterData();
+      setFooterData(footerData);
     }
     fetchFooterData();
   }, []);
-
-  if (footerData.length === 0) {
+  if (!Array.isArray(footerData) || footerData.length === 0) {
     return (
       <div className="flex justify-center mt-2">
         <div className="flex space-x-4">
