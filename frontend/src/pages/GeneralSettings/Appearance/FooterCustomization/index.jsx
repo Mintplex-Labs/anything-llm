@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import showToast from "@/utils/toast";
 import { Plus, X } from "@phosphor-icons/react";
-import { ICON_COMPONENTS } from "@/components/Footer";
+import { ICON_COMPONENTS, MAX_ICONS } from "@/components/Footer";
 import { safeJsonParse } from "@/utils/request";
 import NewIconForm from "./NewIconForm";
 import Admin from "@/models/admin";
@@ -79,9 +79,9 @@ export default function FooterCustomization() {
       <CurrentIcons footerIcons={footerIcons} remove={removeFooterIcon} />
       <NewIconForm
         handleSubmit={onSubmit}
-        showing={footerIcons.length < 4 && showForm}
+        showing={footerIcons.length < MAX_ICONS && showForm}
       />
-      <div hidden={!(!showForm && footerIcons.length < 4) || loading}>
+      <div hidden={!(!showForm && footerIcons.length < MAX_ICONS) || loading}>
         <div className="flex gap-2 mt-6">
           <button
             onClick={() => setShowForm(true)}

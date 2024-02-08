@@ -14,6 +14,7 @@ import {
 } from "@phosphor-icons/react";
 import React, { useEffect, useState } from "react";
 
+export const MAX_ICONS = 3;
 export const ICON_COMPONENTS = {
   BookOpen: BookOpen,
   DiscordLogo: DiscordLogo,
