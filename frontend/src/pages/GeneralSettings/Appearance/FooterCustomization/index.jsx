@@ -1,31 +1,8 @@
 import React, { useState, useEffect } from "react";
 import showToast from "@/utils/toast";
 import Admin from "@/models/admin";
-import {
-  BookOpen,
-  DiscordLogo,
-  GithubLogo,
-  Envelope,
-  LinkSimple,
-  HouseLine,
-  Globe,
-  Briefcase,
-  Info,
-  Plus,
-  X,
-} from "@phosphor-icons/react";
-
-const iconComponents = {
-  BookOpen: BookOpen,
-  DiscordLogo: DiscordLogo,
-  GithubLogo: GithubLogo,
-  Envelope: Envelope,
-  LinkSimple: LinkSimple,
-  HouseLine: HouseLine,
-  Globe: Globe,
-  Briefcase: Briefcase,
-  Info: Info,
-};
+import { Plus, X } from "@phosphor-icons/react";
+import { ICON_COMPONENTS } from "@/utils/constants";
 
 export default function FooterCustomization() {
   const [footerIcons, setFooterIcons] = useState([]);
@@ -73,6 +50,8 @@ export default function FooterCustomization() {
       showToast(`Failed to update footer: ${error}`, "error");
       return;
     }
+    localStorage.removeItem("footerData");
+
     showToast("Successfully updated footer.", "success");
     setTimeout(() => {
       window.location.reload();
@@ -98,7 +77,7 @@ export default function FooterCustomization() {
             key={index}
             className="flex items-center justify-between bg-zinc-900 p-2 rounded-md mb-2"
           >
-            <IconPreview icon={iconComponents[icon.icon]} />
+            <IconPreview icon={ICON_COMPONENTS[icon.icon]} />
             <span className="text-white ml-4">{icon.url}</span>
             <button
               className="transition-all duration-300 text-neutral-700 bg-white rounded-full hover:bg-zinc-600 hover:border-zinc-600 hover:text-white border-transparent border shadow-lg mr-2"
@@ -113,7 +92,7 @@ export default function FooterCustomization() {
         {footerIcons.length < 4 && (
           <div className="mt-6 mb-6 flex flex-col bg-zinc-900 rounded-lg px-6 py-4">
             <div className="flex gap-2">
-              {Object.keys(iconComponents).map((iconName) => (
+              {Object.keys(ICON_COMPONENTS).map((iconName) => (
                 <IconOption
                   key={iconName}
                   iconName={iconName}
@@ -159,7 +138,7 @@ export default function FooterCustomization() {
 }
 
 const IconOption = ({ iconName, selected, onSelect }) => {
-  const Icon = iconComponents[iconName];
+  const Icon = ICON_COMPONENTS[iconName];
   return (
     <div
       onClick={onSelect}
