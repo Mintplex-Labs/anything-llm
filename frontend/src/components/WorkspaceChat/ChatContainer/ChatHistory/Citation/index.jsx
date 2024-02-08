@@ -1,9 +1,10 @@
-import { memo, useState, useEffect, useRef } from "react";
+import { memo, useState } from "react";
 import { X } from "@phosphor-icons/react";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
 import { CaretRight, FileText } from "@phosphor-icons/react";
 import truncate from "truncate";
+import ModalWrapper from "@/components/ModalWrapper";
 
 function combineLikeSources(sources) {
   const combined = {};
@@ -98,27 +99,10 @@ function SkeletonLine() {
 
 function CitationDetailModal({ source, onClose }) {
   const { references, title, text } = source;
-  const dialogRef = useRef(null);
-
-  useEffect(() => {
-    if (source && dialogRef.current) {
-      dialogRef.current.showModal();
-    }
-  }, [source]);
-
-  const handleModalClose = () => {
-    if (dialogRef.current) {
-      dialogRef.current.close();
-    }
-    onClose();
-  };
 
   return (
-    <dialog
-      ref={dialogRef}
-      className="bg-transparent outline-none fixed top-0 left-0 w-full h-full flex items-center justify-center z-10"
-    >
-      <div className="relative w-full max-w-2xl bg-main-gradient rounded-lg shadow border border-white/10 overflow-hidden">
+    <ModalWrapper isOpen={source}>
+      <div className="w-full max-w-2xl bg-main-gradient rounded-lg shadow border border-white/10 overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-gray-500/50">
           <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
             {truncate(title, 45)}
@@ -129,7 +113,7 @@ function CitationDetailModal({ source, onClose }) {
             </p>
           )}
           <button
-            onClick={handleModalClose}
+            onClick={onClose}
             type="button"
             className="absolute top-6 right-6 transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
@@ -153,7 +137,7 @@ function CitationDetailModal({ source, onClose }) {
           </div>
         </div>
       </div>
-    </dialog>
+    </ModalWrapper>
   );
 }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
+import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -10,6 +10,7 @@ import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import MilvusLogo from "@/media/vectordbs/milvus.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
+import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
 import { MagnifyingGlass } from "@phosphor-icons/react";
@@ -21,6 +22,9 @@ import WeaviateDBOptions from "@/components/VectorDBSelection/WeaviateDBOptions"
 import VectorDBItem from "@/components/VectorDBSelection/VectorDBItem";
 import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
+import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -31,6 +35,7 @@ export default function GeneralVectorDatabase() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredVDBs, setFilteredVDBs] = useState([]);
   const [selectedVDB, setSelectedVDB] = useState(null);
+  const { isOpen, openModal, closeModal } = useModal();
 
   useEffect(() => {
     async function fetchKeys() {
@@ -97,6 +102,13 @@ export default function GeneralVectorDatabase() {
       options: <MilvusDBOptions settings={settings} />,
       description: "Open-source, highly scalable, and blazing fast.",
     },
+    {
+      name: "AstraDB",
+      value: "astra",
+      logo: AstraDBLogo,
+      options: <AstraDBOptions settings={settings} />,
+      description: "Vector Search for Real-world GenAI.",
+    },
   ];
 
   const updateVectorChoice = (selection) => {
@@ -107,7 +119,7 @@ export default function GeneralVectorDatabase() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (selectedVDB !== settings?.VectorDB && hasChanges && hasEmbeddings) {
-      document.getElementById("confirmation-modal")?.showModal();
+      openModal();
     } else {
       await handleSaveSettings();
     }
@@ -130,7 +142,7 @@ export default function GeneralVectorDatabase() {
       setHasChanges(false);
     }
     setSaving(false);
-    document.getElementById("confirmation-modal")?.close();
+    closeModal();
   };
 
   useEffect(() => {
@@ -142,12 +154,14 @@ export default function GeneralVectorDatabase() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      <ChangeWarningModal
-        warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. They will need to be re-added to each workspace."
-        onClose={() => document.getElementById("confirmation-modal")?.close()}
-        onConfirm={handleSaveSettings}
-      />
-      {!isMobile && <Sidebar />}
+      <ModalWrapper isOpen={isOpen}>
+        <ChangeWarningModal
+          warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. They will need to be re-added to each workspace."
+          onClose={closeModal}
+          onConfirm={handleSaveSettings}
+        />
+      </ModalWrapper>
+      <Sidebar />
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -162,7 +176,6 @@ export default function GeneralVectorDatabase() {
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
           className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
         >
-          {isMobile && <SidebarMobileHeader />}
           <form
             id="vectordb-form"
             onSubmit={handleSubmit}

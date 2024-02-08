@@ -10,13 +10,18 @@ const {
   writeResponseChunk,
   VALID_CHAT_MODE,
 } = require("../utils/chats/stream");
+const {
+  ROLES,
+  flexUserRoleValid,
+} = require("../utils/middleware/multiUserProtected");
+const { EventLogs } = require("../models/eventLogs");
 
 function chatEndpoints(app) {
   if (!app) return;
 
   app.post(
     "/workspace/:slug/stream-chat",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -52,7 +57,7 @@ function chatEndpoints(app) {
         response.setHeader("Connection", "keep-alive");
         response.flushHeaders();
 
-        if (multiUserMode(response) && user.role !== "admin") {
+        if (multiUserMode(response) && user.role !== ROLES.admin) {
           const limitMessagesSetting = await SystemSettings.get({
             label: "limit_user_messages",
           });
@@ -94,6 +99,15 @@ function chatEndpoints(app) {
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
+
+        await EventLogs.logEvent(
+          "sent_chat",
+          {
+            workspaceName: workspace?.name,
+            chatModel: workspace?.chatModel || "System Default",
+          },
+          user?.id
+        );
         response.end();
       } catch (e) {
         console.error(e);

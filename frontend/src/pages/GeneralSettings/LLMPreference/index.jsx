@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
+import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -13,6 +13,7 @@ import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
+import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -24,6 +25,7 @@ import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
+import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 
@@ -108,6 +110,14 @@ export default function GeneralLLMPreference() {
       description: "Google's largest and most capable AI model",
     },
     {
+      name: "HuggingFace",
+      value: "huggingface",
+      logo: HuggingFaceLogo,
+      options: <HuggingFaceOptions settings={settings} />,
+      description:
+        "Access 150,000+ open-source LLMs and the world's AI community",
+    },
+    {
       name: "Ollama",
       value: "ollama",
       logo: OllamaLogo,
@@ -155,7 +165,7 @@ export default function GeneralLLMPreference() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      {!isMobile && <Sidebar />}
+      <Sidebar />
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -170,7 +180,6 @@ export default function GeneralLLMPreference() {
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
           className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
         >
-          {isMobile && <SidebarMobileHeader />}
           <form onSubmit={handleSubmit} className="flex w-full">
             <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">

@@ -20,6 +20,7 @@ const AdminUsers = lazy(() => import("@/pages/Admin/Users"));
 const AdminInvites = lazy(() => import("@/pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
 const AdminSystem = lazy(() => import("@/pages/Admin/System"));
+const AdminLogs = lazy(() => import("@/pages/Admin/Logging"));
 const GeneralChats = lazy(() => import("@/pages/GeneralSettings/Chats"));
 const GeneralAppearance = lazy(
   () => import("@/pages/GeneralSettings/Appearance")
@@ -41,6 +42,11 @@ const DataConnectors = lazy(
 const DataConnectorSetup = lazy(
   () => import("@/pages/GeneralSettings/DataConnectors/Connectors")
 );
+const WorkspaceSettings = lazy(() => import("@/pages/WorkspaceSettings"));
+const EmbedConfigSetup = lazy(
+  () => import("@/pages/GeneralSettings/EmbedConfigs")
+);
+const EmbedChats = lazy(() => import("@/pages/GeneralSettings/EmbedChats"));
 
 export default function App() {
   return (
@@ -59,6 +65,10 @@ export default function App() {
 
               {/* Admin */}
               <Route
+                path="/workspace/:slug/settings"
+                element={<PrivateRoute Component={WorkspaceSettings} />}
+              />
+              <Route
                 path="/settings/llm-preference"
                 element={<AdminRoute Component={GeneralLLMPreference} />}
               />
@@ -69,6 +79,18 @@ export default function App() {
               <Route
                 path="/settings/vector-database"
                 element={<AdminRoute Component={GeneralVectorDatabase} />}
+              />
+              <Route
+                path="/settings/event-logs"
+                element={<AdminRoute Component={AdminLogs} />}
+              />
+              <Route
+                path="/settings/embed-config"
+                element={<AdminRoute Component={EmbedConfigSetup} />}
+              />
+              <Route
+                path="/settings/embed-chats"
+                element={<AdminRoute Component={EmbedChats} />}
               />
               {/* Manager */}
               <Route
@@ -81,7 +103,7 @@ export default function App() {
               />
               <Route
                 path="/settings/api-keys"
-                element={<ManagerRoute Component={GeneralApiKeys} />}
+                element={<AdminRoute Component={GeneralApiKeys} />}
               />
               <Route
                 path="/settings/workspace-chats"

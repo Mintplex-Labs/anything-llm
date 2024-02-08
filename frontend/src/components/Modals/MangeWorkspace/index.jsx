@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense, memo } from "react";
+import React, { useState, useEffect, lazy, memo } from "react";
 import { X } from "@phosphor-icons/react";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
@@ -105,22 +105,20 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
               <X className="text-gray-300 text-lg" />
             </button>
           </div>
-          <Suspense fallback={<div>Loading...</div>}>
-            <div className={selectedTab === "documents" ? "" : "hidden"}>
-              <DocumentSettings
-                workspace={workspace}
-                fileTypes={fileTypes}
-                systemSettings={settings}
-              />
-            </div>
-            <div className={selectedTab === "settings" ? "" : "hidden"}>
-              <WorkspaceSettings
-                active={selectedTab === "settings"} // To force reload live sub-components like VectorCount
-                workspace={workspace}
-                settings={settings}
-              />
-            </div>
-          </Suspense>
+          <div className={selectedTab === "documents" ? "" : "hidden"}>
+            <DocumentSettings
+              workspace={workspace}
+              fileTypes={fileTypes}
+              systemSettings={settings}
+            />
+          </div>
+          <div className={selectedTab === "settings" ? "" : "hidden"}>
+            <WorkspaceSettings
+              active={selectedTab === "settings"} // To force reload live sub-components like VectorCount
+              workspace={workspace}
+              settings={settings}
+            />
+          </div>
         </div>
       </div>
     </div>

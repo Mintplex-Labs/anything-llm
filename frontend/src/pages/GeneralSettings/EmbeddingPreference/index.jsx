@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
+import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -15,6 +15,8 @@ import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
 import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
 
 export default function GeneralEmbeddingPreference() {
   const [saving, setSaving] = useState(false);
@@ -25,6 +27,7 @@ export default function GeneralEmbeddingPreference() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredEmbedders, setFilteredEmbedders] = useState([]);
   const [selectedEmbedder, setSelectedEmbedder] = useState(null);
+  const { isOpen, openModal, closeModal } = useModal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +36,7 @@ export default function GeneralEmbeddingPreference() {
       hasChanges &&
       hasEmbeddings
     ) {
-      document.getElementById("confirmation-modal")?.showModal();
+      openModal();
     } else {
       await handleSaveSettings();
     }
@@ -56,7 +59,7 @@ export default function GeneralEmbeddingPreference() {
       setHasChanges(false);
     }
     setSaving(false);
-    document.getElementById("confirmation-modal")?.close();
+    closeModal();
   };
 
   const updateChoice = (selection) => {
@@ -116,12 +119,14 @@ export default function GeneralEmbeddingPreference() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      <ChangeWarningModal
-        warningText=" Switching the embedder may affect previously embedded documents and future similarity search results."
-        onClose={() => document.getElementById("confirmation-modal")?.close()}
-        onConfirm={handleSaveSettings}
-      />
-      {!isMobile && <Sidebar />}
+      <ModalWrapper isOpen={isOpen}>
+        <ChangeWarningModal
+          warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. They will need to be re-added to each workspace."
+          onClose={closeModal}
+          onConfirm={handleSaveSettings}
+        />
+      </ModalWrapper>
+      <Sidebar />
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -136,7 +141,6 @@ export default function GeneralEmbeddingPreference() {
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
           className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
         >
-          {isMobile && <SidebarMobileHeader />}
           <form
             id="embedding-form"
             onSubmit={handleSubmit}

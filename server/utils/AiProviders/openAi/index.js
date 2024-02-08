@@ -1,5 +1,6 @@
 const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
 const { chatPrompt } = require("../../chats");
+const { handleDefaultStreamResponse } = require("../../chats/stream");
 
 class OpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -46,9 +47,13 @@ class OpenAiLLM {
     switch (this.model) {
       case "gpt-3.5-turbo":
         return 4096;
+      case "gpt-3.5-turbo-1106":
+        return 16385;
       case "gpt-4":
         return 8192;
       case "gpt-4-1106-preview":
+        return 128000;
+      case "gpt-4-turbo-preview":
         return 128000;
       case "gpt-4-32k":
         return 32000;
@@ -61,7 +66,9 @@ class OpenAiLLM {
     const validModels = [
       "gpt-4",
       "gpt-3.5-turbo",
+      "gpt-3.5-turbo-1106",
       "gpt-4-1106-preview",
+      "gpt-4-turbo-preview",
       "gpt-4-32k",
     ];
     const isPreset = validModels.some((model) => modelName === model);
@@ -214,6 +221,10 @@ class OpenAiLLM {
       { responseType: "stream" }
     );
     return streamRequest;
+  }
+
+  handleStream(response, stream, responseProps) {
+    return handleDefaultStreamResponse(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

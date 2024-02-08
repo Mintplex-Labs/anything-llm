@@ -64,6 +64,8 @@ model users {
   lastUpdatedAt   DateTime          @default(now())
   workspace_chats workspace_chats[]
   workspace_users workspace_users[]
+  embed_configs   embed_configs[]
+  embed_chats     embed_chats[]
 }
 
 model document_vectors {
@@ -83,20 +85,34 @@ model welcome_messages {
 }
 
 model workspaces {
-  id                  Int                   @id @default(autoincrement())
-  name                String
-  slug                String                @unique
-  vectorTag           String?
-  createdAt           DateTime              @default(now())
-  openAiTemp          Float?
-  openAiHistory       Int                   @default(20)
-  lastUpdatedAt       DateTime              @default(now())
-  openAiPrompt        String?
-  similarityThreshold Float?                @default(0.25)
-  chatModel           String?
-  topN                Int?                  @default(4)
-  workspace_users     workspace_users[]
-  documents           workspace_documents[]
+  id                           Int                            @id @default(autoincrement())
+  name                         String
+  slug                         String                         @unique
+  vectorTag                    String?
+  createdAt                    DateTime                       @default(now())
+  openAiTemp                   Float?
+  openAiHistory                Int                            @default(20)
+  lastUpdatedAt                DateTime                       @default(now())
+  openAiPrompt                 String?
+  similarityThreshold          Float?                         @default(0.25)
+  chatModel                    String?
+  topN                         Int?                           @default(4)
+  workspace_users              workspace_users[]
+  documents                    workspace_documents[]
+  workspace_suggested_messages workspace_suggested_messages[]
+  embed_configs                embed_configs[]
+}
+
+model workspace_suggested_messages {
+  id            Int        @id @default(autoincrement())
+  workspaceId   Int
+  heading       String
+  message       String
+  createdAt     DateTime   @default(now())
+  lastUpdatedAt DateTime   @default(now())
+  workspace     workspaces @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 model workspace_chats {
@@ -130,4 +146,48 @@ model cache_data {
   expiresAt     DateTime?
   createdAt     DateTime  @default(now())
   lastUpdatedAt DateTime  @default(now())
+}
+
+model embed_configs {
+  id                         Int           @id @default(autoincrement())
+  uuid                       String        @unique
+  enabled                    Boolean       @default(false)
+  chat_mode                  String        @default("query")
+  allowlist_domains          String?
+  allow_model_override       Boolean       @default(false)
+  allow_temperature_override Boolean       @default(false)
+  allow_prompt_override      Boolean       @default(false)
+  max_chats_per_day          Int?
+  max_chats_per_session      Int?
+  workspace_id               Int
+  createdBy                  Int?
+  usersId                    Int?
+  createdAt                  DateTime      @default(now())
+  workspace                  workspaces    @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  embed_chats                embed_chats[]
+  users                      users?        @relation(fields: [usersId], references: [id])
+}
+
+model embed_chats {
+  id                     Int           @id @default(autoincrement())
+  prompt                 String
+  response               String
+  session_id             String
+  include                Boolean       @default(true)
+  connection_information String?
+  embed_id               Int
+  usersId                Int?
+  createdAt              DateTime      @default(now())
+  embed_config           embed_configs @relation(fields: [embed_id], references: [id], onDelete: Cascade)
+  users                  users?        @relation(fields: [usersId], references: [id])
+}
+
+model event_logs {
+  id         Int      @id @default(autoincrement())
+  event      String
+  metadata   String?
+  userId     Int?
+  occurredAt DateTime @default(now())
+
+  @@index([event])
 }

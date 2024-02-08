@@ -209,6 +209,7 @@ const System = {
     return await fetch(`${API_BASE}/system/pfp/${id}`, {
       method: "GET",
       cache: "no-cache",
+      headers: baseHeaders(),
     })
       .then((res) => {
         if (res.ok && res.status !== 204) return res.blob();
@@ -283,6 +284,7 @@ const System = {
     return await fetch(`${API_BASE}/system/welcome-messages`, {
       method: "GET",
       cache: "no-cache",
+      headers: baseHeaders(),
     })
       .then((res) => {
         if (!res.ok) throw new Error("Could not fetch welcome messages.");
@@ -387,6 +389,29 @@ const System = {
         return [];
       });
   },
+  eventLogs: async (offset = 0) => {
+    return await fetch(`${API_BASE}/system/event-logs`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ offset }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  clearEventLogs: async () => {
+    return await fetch(`${API_BASE}/system/event-logs`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
   deleteChat: async (chatId) => {
     return await fetch(`${API_BASE}/system/workspace-chats/${chatId}`, {
       method: "DELETE",
@@ -398,8 +423,10 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  exportChats: async () => {
-    return await fetch(`${API_BASE}/system/export-chats`, {
+  exportChats: async (type = "csv") => {
+    const url = new URL(`${fullApiUrl()}/system/export-chats`);
+    url.searchParams.append("type", encodeURIComponent(type));
+    return await fetch(url, {
       method: "GET",
       headers: baseHeaders(),
     })

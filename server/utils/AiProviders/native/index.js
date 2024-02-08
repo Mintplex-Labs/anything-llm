@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { chatPrompt } = require("../../chats");
+const { writeResponseChunk } = require("../../chats/stream");
 
 // Docs: https://api.js.langchain.com/classes/chat_models_llama_cpp.ChatLlamaCpp.html
 const ChatLlamaCpp = (...args) =>
@@ -168,6 +169,41 @@ class NativeLLM {
     const model = await this.#llamaClient({ temperature });
     const responseStream = await model.stream(messages);
     return responseStream;
+  }
+
+  handleStream(response, stream, responseProps) {
+    const { uuid = uuidv4(), sources = [] } = responseProps;
+
+    return new Promise(async (resolve) => {
+      let fullText = "";
+      for await (const chunk of stream) {
+        if (chunk === undefined)
+          throw new Error(
+            "Stream returned undefined chunk. Aborting reply - check model provider logs."
+          );
+
+        const content = chunk.hasOwnProperty("content") ? chunk.content : chunk;
+        fullText += content;
+        writeResponseChunk(response, {
+          uuid,
+          sources: [],
+          type: "textResponseChunk",
+          textResponse: content,
+          close: false,
+          error: false,
+        });
+      }
+
+      writeResponseChunk(response, {
+        uuid,
+        sources,
+        type: "textResponseChunk",
+        textResponse: "",
+        close: true,
+        error: false,
+      });
+      resolve(fullText);
+    });
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

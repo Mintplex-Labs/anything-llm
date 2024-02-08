@@ -32,7 +32,6 @@ const SystemSettings = {
       LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
       ...(vectorDB === "pinecone"
         ? {
-            PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
             PineConeKey: !!process.env.PINECONE_API_KEY,
             PineConeIndex: process.env.PINECONE_INDEX,
           }
@@ -67,6 +66,12 @@ const SystemSettings = {
         ? {
             ZillizEndpoint: process.env.ZILLIZ_ENDPOINT,
             ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
+          }
+        : {}),
+      ...(vectorDB === "astra"
+        ? {
+            AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
+            AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
           }
         : {}),
       LLMProvider: llmProvider,
@@ -183,6 +188,20 @@ const SystemSettings = {
             NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
 
             // For embedding credentials when ollama is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
+
+      ...(llmProvider === "huggingface"
+        ? {
+            HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
+            HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
+            HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
+
+            // For embedding credentials when Anthropic is selected.
             OpenAiKey: !!process.env.OPEN_AI_KEY,
             AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
             AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,

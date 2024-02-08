@@ -1,5 +1,27 @@
 const { SystemSettings } = require("../models/systemSettings");
 
+function utilEndpoints(app) {
+  if (!app) return;
+
+  app.get("/utils/metrics", async (_, response) => {
+    try {
+      const metrics = {
+        online: true,
+        version: getGitVersion(),
+        mode: (await SystemSettings.isMultiUserMode())
+          ? "multi-user"
+          : "single-user",
+        vectorDB: process.env.VECTOR_DB || "lancedb",
+        storage: await getDiskStorage(),
+      };
+      response.status(200).json(metrics);
+    } catch (e) {
+      console.error(e);
+      response.sendStatus(500).end();
+    }
+  });
+}
+
 function getGitVersion() {
   try {
     return require("child_process")
@@ -32,26 +54,7 @@ async function getDiskStorage() {
   }
 }
 
-function utilEndpoints(app) {
-  if (!app) return;
-
-  app.get("/utils/metrics", async (_, response) => {
-    try {
-      const metrics = {
-        online: true,
-        version: getGitVersion(),
-        mode: (await SystemSettings.isMultiUserMode())
-          ? "multi-user"
-          : "single-user",
-        vectorDB: process.env.VECTOR_DB || "lancedb",
-        storage: await getDiskStorage(),
-      };
-      response.status(200).json(metrics);
-    } catch (e) {
-      console.error(e);
-      response.sendStatus(500).end();
-    }
-  });
-}
-
-module.exports = { utilEndpoints, getGitVersion };
+module.exports = {
+  utilEndpoints,
+  getGitVersion,
+};
