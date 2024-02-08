@@ -38,7 +38,7 @@ export default function FooterCustomization() {
 
     window.localStorage.removeItem(System.cacheKeys.footerIcons);
     setFooterIcons(updatedIcons);
-    showToast("Successfully added footer icon.", "success", { clear: true });
+    showToast("Successfully removed footer icon.", "success", { clear: true });
   };
 
   const onSubmit = async (e) => {
