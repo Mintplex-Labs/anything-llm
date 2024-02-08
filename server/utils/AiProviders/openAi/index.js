@@ -1,5 +1,6 @@
 const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
 const { chatPrompt } = require("../../chats");
+const { handleDefaultStreamResponse } = require("../../chats/stream");
 
 class OpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -220,6 +221,10 @@ class OpenAiLLM {
       { responseType: "stream" }
     );
     return streamRequest;
+  }
+
+  handleStream(response, stream, responseProps) {
+    return handleDefaultStreamResponse(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

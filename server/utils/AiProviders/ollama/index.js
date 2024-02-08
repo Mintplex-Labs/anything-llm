@@ -1,5 +1,6 @@
 const { chatPrompt } = require("../../chats");
 const { StringOutputParser } = require("langchain/schema/output_parser");
+const { writeResponseChunk } = require("../../chats/stream");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -163,6 +164,41 @@ class OllamaAILLM {
       .pipe(new StringOutputParser())
       .stream(this.#convertToLangchainPrototypes(messages));
     return stream;
+  }
+
+  handleStream(response, stream, responseProps) {
+    const { uuid = uuidv4(), sources = [] } = responseProps;
+
+    return new Promise(async (resolve) => {
+      let fullText = "";
+      for await (const chunk of stream) {
+        if (chunk === undefined)
+          throw new Error(
+            "Stream returned undefined chunk. Aborting reply - check model provider logs."
+          );
+
+        const content = chunk.hasOwnProperty("content") ? chunk.content : chunk;
+        fullText += content;
+        writeResponseChunk(response, {
+          uuid,
+          sources: [],
+          type: "textResponseChunk",
+          textResponse: content,
+          close: false,
+          error: false,
+        });
+      }
+
+      writeResponseChunk(response, {
+        uuid,
+        sources,
+        type: "textResponseChunk",
+        textResponse: "",
+        close: true,
+        error: false,
+      });
+      resolve(fullText);
+    });
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

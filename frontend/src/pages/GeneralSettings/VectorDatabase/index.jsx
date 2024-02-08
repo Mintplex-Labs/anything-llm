@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
+import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -161,7 +161,7 @@ export default function GeneralVectorDatabase() {
           onConfirm={handleSaveSettings}
         />
       </ModalWrapper>
-      {!isMobile && <Sidebar />}
+      <Sidebar />
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -176,7 +176,6 @@ export default function GeneralVectorDatabase() {
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
           className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
         >
-          {isMobile && <SidebarMobileHeader />}
           <form
             id="vectordb-form"
             onSubmit={handleSubmit}

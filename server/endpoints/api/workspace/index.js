@@ -26,17 +26,17 @@ function apiWorkspaceEndpoints(app) {
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Create a new workspace'
     #swagger.requestBody = {
-        description: 'JSON object containing new display name of workspace.',
-        required: true,
-        type: 'object',
-        content: {
-          "application/json": {
-            example: {
-              name: "My New Workspace",
-            }
+      description: 'JSON object containing new display name of workspace.',
+      required: true,
+      type: 'object',
+      content: {
+        "application/json": {
+          example: {
+            name: "My New Workspace",
           }
         }
       }
+    }
     #swagger.responses[200] = {
       content: {
         "application/json": {
