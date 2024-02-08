@@ -7,7 +7,7 @@ export function userFromStorage() {
     const userString = window.localStorage.getItem(AUTH_USER);
     if (!userString) return null;
     return JSON.parse(userString);
-  } catch {}
+  } catch { }
   return {};
 }
 
@@ -16,4 +16,11 @@ export function baseHeaders(providedToken = null) {
   return {
     Authorization: token ? `Bearer ${token}` : null,
   };
+}
+
+export function safeJsonParse(jsonString, fallback = null) {
+  try {
+    return JSON.parse(jsonString)
+  } catch { }
+  return fallback
 }

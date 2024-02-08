@@ -1,15 +1,3 @@
-import {
-  BookOpen,
-  Briefcase,
-  DiscordLogo,
-  Envelope,
-  GithubLogo,
-  Globe,
-  HouseLine,
-  Info,
-  LinkSimple,
-} from "@phosphor-icons/react";
-
 export const API_BASE = import.meta.env.VITE_API_BASE || "/api";
 
 export const AUTH_USER = "anythingllm_user";
@@ -24,15 +12,3 @@ export function fullApiUrl() {
   if (API_BASE !== "/api") return API_BASE;
   return `${window.location.origin}/api`;
 }
-
-export const ICON_COMPONENTS = {
-  BookOpen: BookOpen,
-  DiscordLogo: DiscordLogo,
-  GithubLogo: GithubLogo,
-  Envelope: Envelope,
-  LinkSimple: LinkSimple,
-  HouseLine: HouseLine,
-  Globe: Globe,
-  Briefcase: Briefcase,
-  Info: Info,
-};

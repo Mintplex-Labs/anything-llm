@@ -1,18 +1,39 @@
 import System from "@/models/system";
-import { ICON_COMPONENTS } from "@/utils/constants";
 import paths from "@/utils/paths";
-import { BookOpen, DiscordLogo, GithubLogo } from "@phosphor-icons/react";
+import { safeJsonParse } from "@/utils/request";
+import {
+  BookOpen, DiscordLogo, GithubLogo,
+  Briefcase,
+  Envelope,
+  Globe,
+  HouseLine,
+  Info,
+  LinkSimple,
+} from "@phosphor-icons/react";
 import React, { useEffect, useState } from "react";
+
+export const ICON_COMPONENTS = {
+  BookOpen: BookOpen,
+  DiscordLogo: DiscordLogo,
+  GithubLogo: GithubLogo,
+  Envelope: Envelope,
+  LinkSimple: LinkSimple,
+  HouseLine: HouseLine,
+  Globe: Globe,
+  Briefcase: Briefcase,
+  Info: Info,
+};
 
 export default function Footer() {
   const [footerData, setFooterData] = useState([]);
 
   useEffect(() => {
     async function fetchFooterData() {
+      // Move into System model call and fetch is nothing exists or is expired.
       const now = Date.now();
       const cache = localStorage.getItem("footerData");
       const { data, lastFetched } = cache
-        ? JSON.parse(cache)
+        ? safeJsonParse(cache, { data: null, lastFetched: 0 })
         : { data: null, lastFetched: 0 };
 
       if (!data || now - lastFetched > 3600000) {
