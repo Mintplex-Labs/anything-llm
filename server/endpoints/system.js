@@ -460,6 +460,18 @@ function systemEndpoints(app) {
     }
   });
 
+  app.get("/system/footer-data", [validatedRequest], async (_, response) => {
+    try {
+      const footerData =
+        (await SystemSettings.get({ label: "footer_data" }))?.value ??
+        JSON.stringify([]);
+      response.status(200).json({ footerData: footerData });
+    } catch (error) {
+      console.error("Error fetching footer data:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.get(
     "/system/pfp/:id",
     [validatedRequest, flexUserRoleValid([ROLES.all])],

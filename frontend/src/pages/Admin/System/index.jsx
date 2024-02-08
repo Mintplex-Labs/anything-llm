@@ -27,7 +27,7 @@ export default function AdminSystem() {
 
   useEffect(() => {
     async function fetchSettings() {
-      const { settings } = await Admin.systemPreferences();
+      const settings = (await Admin.systemPreferences())?.settings;
       if (!settings) return;
       setCanDelete(settings?.users_can_delete_workspaces);
       setMessageLimit({
