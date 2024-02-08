@@ -190,6 +190,18 @@ const System = {
         return { success: false, error: e.message };
       });
   },
+  fetchFooterData: async function () {
+    return await fetch(`${API_BASE}/system/footer-data`, {
+      method: "GET",
+      cache: "no-cache",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.log(e);
+        return { footerData: null, error: e.message };
+      });
+  },
   fetchLogo: async function () {
     return await fetch(`${API_BASE}/system/logo`, {
       method: "GET",
