@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import Admin from "@/models/admin";
 import AnythingLLM from "@/media/logo/anything-llm.png";
 import useLogo from "@/hooks/useLogo";
 import System from "@/models/system";
 import EditingChatBubble from "@/components/EditingChatBubble";
 import showToast from "@/utils/toast";
-import { BookOpen, DiscordLogo, GithubLogo, Plus } from "@phosphor-icons/react";
-import paths from "@/utils/paths";
+import { Plus } from "@phosphor-icons/react";
+import FooterCustomization from "./FooterCustomization";
 
 export default function Appearance() {
   const { logo: _initLogo, setLogo: _setLogo } = useLogo();
@@ -251,41 +250,7 @@ export default function Appearance() {
               </div>
             )}
           </div>
-          <div className="mb-6">
-            <div className="flex flex-col gap-y-2">
-              <h2 className="leading-tight font-medium text-white">
-                Custom Footer Icons
-              </h2>
-              <p className="text-sm font-base text-white/60">
-                Customize the footer icons displayed to your users.
-              </p>
-            </div>
-            <div className="mt-6 flex flex-col gap-y-6 bg-zinc-900 rounded-lg px-6 py-4 w-fit">
-              <div className="flex space-x-4">
-                <a
-                  href={paths.github()}
-                  className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                >
-                  <GithubLogo weight="fill" className="h-5 w-5 " />
-                </a>
-                <a
-                  href={paths.docs()}
-                  className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                >
-                  <BookOpen weight="fill" className="h-5 w-5 " />
-                </a>
-                <a
-                  href={paths.discord()}
-                  className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                >
-                  <DiscordLogo
-                    weight="fill"
-                    className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
-                  />
-                </a>
-              </div>
-            </div>
-          </div>
+          <FooterCustomization />
         </div>
       </div>
     </div>

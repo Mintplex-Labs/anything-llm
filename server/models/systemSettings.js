@@ -12,6 +12,7 @@ const SystemSettings = {
     "message_limit",
     "logo_filename",
     "telemetry_id",
+    "footer_data",
   ],
   currentSettings: async function () {
     const llmProvider = process.env.LLM_PROVIDER;
