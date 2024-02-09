@@ -47,9 +47,9 @@ function workspaceThreadEndpoints(app) {
           user?.id
         );
         response.status(200).json({ thread, message });
-      } catch (e) {
+      catch (e) {
         console.log(e.message, e);
-        response.sendStatus(500).end();
+        response.status(500).json({ error: e.message });
       }
     }
   );
