@@ -54,18 +54,19 @@ model system_settings {
 }
 
 model users {
-  id              Int               @id @default(autoincrement())
-  username        String?           @unique
+  id              Int                 @id @default(autoincrement())
+  username        String?             @unique
   password        String
   pfpFilename     String?
-  role            String            @default("default")
-  suspended       Int               @default(0)
-  createdAt       DateTime          @default(now())
-  lastUpdatedAt   DateTime          @default(now())
+  role            String              @default("default")
+  suspended       Int                 @default(0)
+  createdAt       DateTime            @default(now())
+  lastUpdatedAt   DateTime            @default(now())
   workspace_chats workspace_chats[]
   workspace_users workspace_users[]
   embed_configs   embed_configs[]
   embed_chats     embed_chats[]
+  threads         workspace_threads[]
 }
 
 model document_vectors {
@@ -101,6 +102,22 @@ model workspaces {
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
   embed_configs                embed_configs[]
+  threads                      workspace_threads[]
+}
+
+model workspace_threads {
+  id            Int        @id @default(autoincrement())
+  name          String
+  slug          String     @unique
+  workspace_id  Int
+  user_id       Int?
+  createdAt     DateTime   @default(now())
+  lastUpdatedAt DateTime   @default(now())
+  workspace     workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  user          users?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([workspace_id])
+  @@index([user_id])
 }
 
 model workspace_suggested_messages {
@@ -122,6 +139,7 @@ model workspace_chats {
   response      String
   include       Boolean  @default(true)
   user_id       Int?
+  thread_id     Int? // No relation to prevent whole table migration
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
   users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)

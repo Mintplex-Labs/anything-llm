@@ -61,6 +61,10 @@ export default function App() {
                 path="/workspace/:slug"
                 element={<PrivateRoute Component={WorkspaceChat} />}
               />
+              <Route
+                path="/workspace/:slug/t/:threadSlug"
+                element={<PrivateRoute Component={WorkspaceChat} />}
+              />
               <Route path="/accept-invite/:code" element={<InvitePage />} />
 
               {/* Admin */}

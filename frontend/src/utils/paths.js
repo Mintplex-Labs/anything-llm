@@ -58,6 +58,9 @@ export default {
     additionalSettings: (slug) => {
       return `/workspace/${slug}/settings`;
     },
+    thread: (wsSlug, threadSlug) => {
+      return `/workspace/${wsSlug}/t/${threadSlug}`;
+    },
   },
   apiDocs: () => {
     return `${API_BASE}/docs`;

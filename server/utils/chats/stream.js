@@ -6,6 +6,7 @@ const {
   recentChatHistory,
   VALID_COMMANDS,
   chatPrompt,
+  recentThreadChatHistory,
 } = require(".");
 
 const VALID_CHAT_MODE = ["chat", "query"];
@@ -19,13 +20,20 @@ async function streamChatWithWorkspace(
   workspace,
   message,
   chatMode = "chat",
-  user = null
+  user = null,
+  thread = null
 ) {
   const uuid = uuidv4();
   const command = grepCommand(message);
 
   if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
-    const data = await VALID_COMMANDS[command](workspace, message, uuid, user);
+    const data = await VALID_COMMANDS[command](
+      workspace,
+      message,
+      uuid,
+      user,
+      thread
+    );
     writeResponseChunk(response, data);
     return;
   }
@@ -65,6 +73,8 @@ async function streamChatWithWorkspace(
     }
 
     // If there are no embeddings - chat like a normal LLM chat interface.
+    // no need to pass in chat mode - because if we are here we are in
+    // "chat" mode + have embeddings.
     return await streamEmptyEmbeddingChat({
       response,
       uuid,
@@ -73,16 +83,21 @@ async function streamChatWithWorkspace(
       workspace,
       messageLimit,
       LLMConnector,
+      thread,
     });
   }
 
   let completeText;
-  const { rawHistory, chatHistory } = await recentChatHistory(
-    user,
-    workspace,
-    messageLimit,
-    chatMode
-  );
+  const { rawHistory, chatHistory } = thread
+    ? await recentThreadChatHistory(
+        user,
+        workspace,
+        thread,
+        messageLimit,
+        chatMode
+      )
+    : await recentChatHistory(user, workspace, messageLimit, chatMode);
+
   const {
     contextTexts = [],
     sources = [],
@@ -167,6 +182,7 @@ async function streamChatWithWorkspace(
     prompt: message,
     response: { text: completeText, sources, type: chatMode },
     user,
+    threadId: thread?.id,
   });
   return;
 }
@@ -179,13 +195,12 @@ async function streamEmptyEmbeddingChat({
   workspace,
   messageLimit,
   LLMConnector,
+  thread = null,
 }) {
   let completeText;
-  const { rawHistory, chatHistory } = await recentChatHistory(
-    user,
-    workspace,
-    messageLimit
-  );
+  const { rawHistory, chatHistory } = thread
+    ? await recentThreadChatHistory(user, workspace, thread, messageLimit)
+    : await recentChatHistory(user, workspace, messageLimit);
 
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
@@ -225,6 +240,7 @@ async function streamEmptyEmbeddingChat({
     prompt: message,
     response: { text: completeText, sources: [], type: "chat" },
     user,
+    threadId: thread?.id,
   });
   return;
 }
