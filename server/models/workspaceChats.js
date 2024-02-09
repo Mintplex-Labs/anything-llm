@@ -1,7 +1,13 @@
 const prisma = require("../utils/prisma");
 
 const WorkspaceChats = {
-  new: async function ({ workspaceId, prompt, response = {}, user = null }) {
+  new: async function ({
+    workspaceId,
+    prompt,
+    response = {},
+    user = null,
+    threadId = null,
+  }) {
     try {
       const chat = await prisma.workspace_chats.create({
         data: {
@@ -9,6 +15,7 @@ const WorkspaceChats = {
           prompt,
           response: JSON.stringify(response),
           user_id: user?.id || null,
+          thread_id: threadId,
         },
       });
       return { chat, message: null };
@@ -30,6 +37,7 @@ const WorkspaceChats = {
         where: {
           workspaceId,
           user_id: userId,
+          thread_id: null, // this function is now only used for the default thread on workspaces and users
           include: true,
         },
         ...(limit !== null ? { take: limit } : {}),
@@ -52,6 +60,7 @@ const WorkspaceChats = {
       const chats = await prisma.workspace_chats.findMany({
         where: {
           workspaceId,
+          thread_id: null, // this function is now only used for the default thread on workspaces
           include: true,
         },
         ...(limit !== null ? { take: limit } : {}),
@@ -70,6 +79,29 @@ const WorkspaceChats = {
       await prisma.workspace_chats.updateMany({
         where: {
           workspaceId,
+          user_id: user?.id,
+        },
+        data: {
+          include: false,
+        },
+      });
+      return;
+    } catch (error) {
+      console.error(error.message);
+    }
+  },
+
+  markThreadHistoryInvalid: async function (
+    workspaceId = null,
+    user = null,
+    threadId = null
+  ) {
+    if (!workspaceId || !threadId) return;
+    try {
+      await prisma.workspace_chats.updateMany({
+        where: {
+          workspaceId,
+          thread_id: threadId,
           user_id: user?.id,
         },
         data: {

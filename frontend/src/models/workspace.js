@@ -1,6 +1,7 @@
 import { API_BASE } from "@/utils/constants";
 import { baseHeaders } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import WorkspaceThread from "@/models/workspaceThread";
 import { v4 } from "uuid";
 
 const Workspace = {
@@ -204,6 +205,7 @@ const Workspace = {
         return { success: false, error: e.message };
       });
   },
+  threads: WorkspaceThread,
 };
 
 export default Workspace;

@@ -204,6 +204,8 @@ async function chatWithWorkspace(
 
 // On query we dont return message history. All other chat modes and when chatting
 // with no embeddings we return history.
+// TODO: Refactor to just run a .where on WorkspaceChat to simplify what is going on here.
+// see recentThreadChatHistory
 async function recentChatHistory(
   user = null,
   workspace,
@@ -222,6 +224,30 @@ async function recentChatHistory(
       : await WorkspaceChats.forWorkspace(workspace.id, messageLimit, {
           id: "desc",
         })
+  ).reverse();
+  return { rawHistory, chatHistory: convertToPromptHistory(rawHistory) };
+}
+
+// Extension of recentChatHistory that supports threads
+async function recentThreadChatHistory(
+  user = null,
+  workspace,
+  thread,
+  messageLimit = 20,
+  chatMode = null
+) {
+  if (chatMode === "query") return [];
+  const rawHistory = (
+    await WorkspaceChats.where(
+      {
+        workspaceId: workspace.id,
+        user_id: user?.id || null,
+        thread_id: thread?.id || null,
+        include: true,
+      },
+      messageLimit,
+      { id: "desc" }
+    )
   ).reverse();
   return { rawHistory, chatHistory: convertToPromptHistory(rawHistory) };
 }
@@ -270,6 +296,7 @@ function chatPrompt(workspace) {
 
 module.exports = {
   recentChatHistory,
+  recentThreadChatHistory,
   convertToPromptHistory,
   convertToChatHistory,
   chatWithWorkspace,

@@ -5,8 +5,10 @@ import Workspace from "@/models/workspace";
 import handleChat from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
+import { useParams } from "react-router-dom";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
+  const { threadSlug = null } = useParams();
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
@@ -71,20 +73,39 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         return false;
       }
 
-      await Workspace.streamChat(
-        workspace,
-        promptMessage.userMessage,
-        window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
-          "chat",
-        (chatResult) =>
-          handleChat(
-            chatResult,
-            setLoadingResponse,
-            setChatHistory,
-            remHistory,
-            _chatHistory
-          )
-      );
+      if (!!threadSlug) {
+        await Workspace.threads.streamChat(
+          { workspaceSlug: workspace.slug, threadSlug },
+          promptMessage.userMessage,
+          window.localStorage.getItem(
+            `workspace_chat_mode_${workspace.slug}`
+          ) ?? "chat",
+          (chatResult) =>
+            handleChat(
+              chatResult,
+              setLoadingResponse,
+              setChatHistory,
+              remHistory,
+              _chatHistory
+            )
+        );
+      } else {
+        await Workspace.streamChat(
+          workspace,
+          promptMessage.userMessage,
+          window.localStorage.getItem(
+            `workspace_chat_mode_${workspace.slug}`
+          ) ?? "chat",
+          (chatResult) =>
+            handleChat(
+              chatResult,
+              setLoadingResponse,
+              setChatHistory,
+              remHistory,
+              _chatHistory
+            )
+        );
+      }
       return;
     }
     loadingResponse === true && fetchReply();
