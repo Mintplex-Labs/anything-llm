@@ -80,6 +80,7 @@ const WorkspaceChats = {
         where: {
           workspaceId,
           user_id: user?.id,
+          thread_id: null, // this function is now only used for the default thread on workspaces
         },
         data: {
           include: false,
