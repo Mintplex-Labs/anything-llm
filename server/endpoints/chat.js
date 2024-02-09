@@ -174,6 +174,8 @@ function chatEndpoints(app) {
             const systemLimit = Number(messageLimitSetting?.value);
 
             if (!!systemLimit) {
+              // Chat qty includes all threads because any user can freely
+              // create threads and would bypass this rule.
               const currentChatCount = await WorkspaceChats.count({
                 user_id: user.id,
                 createdAt: {
