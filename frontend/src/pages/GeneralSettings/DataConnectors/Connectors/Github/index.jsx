@@ -3,10 +3,10 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import { DATA_CONNECTORS } from "@/components/DataConnectorOption";
 import System from "@/models/system";
-import { Info } from "@phosphor-icons/react/dist/ssr";
 import showToast from "@/utils/toast";
 import pluralize from "pluralize";
 import { TagsInput } from "react-tag-input-component";
+import { Info } from "@phosphor-icons/react";
 
 const DEFAULT_BRANCHES = ["main", "master"];
 export default function GithubConnectorSetup() {
@@ -46,8 +46,7 @@ export default function GithubConnectorSetup() {
       }
 
       showToast(
-        `${data.files} ${pluralize("file", data.files)} collected from ${
-          data.author
+        `${data.files} ${pluralize("file", data.files)} collected from ${data.author
         }/${data.repo}:${data.branch}. Output folder is ${data.destination}.`,
         "success",
         { clear: true }
