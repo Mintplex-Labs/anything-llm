@@ -106,7 +106,7 @@ export default function SettingsSidebar() {
               </div>
 
               {/* Primary Body */}
-              <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-hidden ">
+              <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll ">
                 <div className="h-auto md:sidebar-items md:dark:sidebar-items">
                   <div className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll">
                     <SidebarOptions user={user} />
@@ -154,7 +154,7 @@ export default function SettingsSidebar() {
             Settings
           </div>
           {/* Primary Body */}
-          <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-hidden">
+          <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll">
             <div className="h-auto sidebar-items">
               {/* Options */}
               <div className="flex flex-col gap-y-2 h-full pb-8 overflow-y-scroll no-scroll">
