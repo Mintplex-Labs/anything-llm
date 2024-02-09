@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import truncate from "truncate";
 
-const THREAD_HEAD_WIDTH = 26;
+const THREAD_CALLOUT_DETAIL_WIDTH = 26;
 export default function ThreadItem({ workspace, thread, onRemove, hasNext }) {
   const optionsContainer = useRef(null);
   const { slug, threadSlug = null } = useParams();
@@ -22,18 +22,21 @@ export default function ThreadItem({ workspace, thread, onRemove, hasNext }) {
     <div className="w-full relative flex h-[40px] items-center border-none hover:bg-slate-600/20 rounded-lg">
       {/* Curved line Element and leader if required */}
       <div
-        style={{ width: THREAD_HEAD_WIDTH / 2 }}
+        style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
         className="border-l border-b border-slate-300 h-[50%] absolute top-0 left-2 rounded-bl-lg"
       ></div>
       {hasNext && (
         <div
-          style={{ width: THREAD_HEAD_WIDTH / 2 }}
+          style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
           className="border-l border-slate-300 h-[100%] absolute top-0 left-2"
         ></div>
       )}
 
       {/* Curved line inline placeholder for spacing */}
-      <div style={{ width: THREAD_HEAD_WIDTH }} className="w-[26px] h-full" />
+      <div
+        style={{ width: THREAD_CALLOUT_DETAIL_WIDTH }}
+        className="w-[26px] h-full"
+      />
       <div className="flex w-full items-center justify-between pr-2 group relative">
         <a href={isActive ? "#" : linkTo} className="w-full">
           <p
@@ -48,7 +51,7 @@ export default function ThreadItem({ workspace, thread, onRemove, hasNext }) {
         </a>
         {!!thread.slug && (
           <div ref={optionsContainer}>
-            <div className="flex items-center w-fit -group-hover:visible -invisible gap-x-1">
+            <div className="flex items-center w-fit group-hover:visible md:invisible gap-x-1">
               <button
                 type="button"
                 onClick={() => setShowOptions(!showOptions)}
@@ -116,7 +119,9 @@ function OptionsMenu({
   }, [menuRef.current, containerRef.current]);
 
   const renameThread = async () => {
-    const name = window.prompt("What would you like to rename this thread to?");
+    const name = window
+      .prompt("What would you like to rename this thread to?")
+      ?.trim();
     if (!name || name.length === 0) {
       close();
       return;

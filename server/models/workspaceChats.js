@@ -37,7 +37,7 @@ const WorkspaceChats = {
         where: {
           workspaceId,
           user_id: userId,
-          thread_id: null, // do not get thread chats if asking the workspace (default thread)
+          thread_id: null, // this function is now only used for the default thread on workspaces and users
           include: true,
         },
         ...(limit !== null ? { take: limit } : {}),
@@ -60,7 +60,7 @@ const WorkspaceChats = {
       const chats = await prisma.workspace_chats.findMany({
         where: {
           workspaceId,
-          thread_id: null, // do not get thread chats if asking the workspace (default thread)
+          thread_id: null, // this function is now only used for the default thread on workspaces
           include: true,
         },
         ...(limit !== null ? { take: limit } : {}),
