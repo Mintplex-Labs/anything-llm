@@ -5,16 +5,18 @@ const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 
 // Todo: make this more useful for export by adding other columns about workspace, user, time, etc for post-filtering.
-async function convertToCSV(workspaceChatsMap) {
-  const rows = ["role,content"];
-  for (const workspaceChats of Object.values(workspaceChatsMap)) {
-    for (const message of workspaceChats.messages) {
-      // Escape double quotes and wrap content in double quotes
-      const escapedContent = `"${message.content
-        .replace(/"/g, '""')
-        .replace(/\n/g, " ")}"`;
-      rows.push(`${message.role},${escapedContent}`);
-    }
+async function convertToCSV(preparedData) {
+  const rows = ["id,username,workspace,prompt,response,sent_at"];
+  for (const item of preparedData) {
+    // Escape double quotes and wrap content in double quotes
+    const escapedPrompt = `"${item.prompt
+      .replace(/"/g, '""')
+      .replace(/\n/g, " ")}"`;
+    const escapedResponse = `"${item.response
+      .replace(/"/g, '""')
+      .replace(/\n/g, " ")}"`;
+    const row = `"${item.id}","${item.username}","${item.workspace}",${escapedPrompt},${escapedResponse},"${item.sent_at}"`;
+    rows.push(row);
   }
   return rows.join("\n");
 }
@@ -33,10 +35,27 @@ async function convertToJSONL(workspaceChatsMap) {
     .join("\n");
 }
 
-async function prepareWorkspaceChatsForExport() {
+async function prepareWorkspaceChatsForExport(type = "jsonl") {
   const chats = await WorkspaceChats.whereWithData({}, null, null, {
     id: "asc",
   });
+
+  if (type === "csv") {
+    const preparedData = chats.map((chat) => {
+      const responseJson = JSON.parse(chat.response);
+      return {
+        id: chat.id,
+        username: chat.user ? chat.user.username : "unknown user",
+        workspace: chat.workspace ? chat.workspace.name : "unknown workspace",
+        prompt: chat.prompt,
+        response: responseJson.text,
+        sent_at: chat.createdAt,
+      };
+    });
+
+    return preparedData;
+  }
+
   const workspaceIds = [...new Set(chats.map((chat) => chat.workspaceId))];
 
   const workspacesWithPrompts = await Promise.all(
