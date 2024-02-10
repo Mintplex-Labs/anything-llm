@@ -321,6 +321,26 @@ function workspaceEndpoints(app) {
     }
   );
 
+  app.post(
+    "/workspace/chat-feedback",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { chatId, feedback } = reqBody(request);
+        const result = await WorkspaceChats.updateFeedbackScore(
+          Number(chatId),
+          Number(feedback)
+        );
+        response.status(200).json({ success: result });
+      } catch (error) {
+        console.error("Error updating chat feedback:", error);
+        response
+          .status(500)
+          .json({ success: false, message: "Internal server error" });
+      }
+    }
+  );
+
   app.get(
     "/workspace/:slug/suggested-messages",
     [validatedRequest, flexUserRoleValid([ROLES.all])],

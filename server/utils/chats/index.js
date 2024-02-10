@@ -7,7 +7,7 @@ const { getVectorDbClass, getLLMProvider } = require("../helpers");
 function convertToChatHistory(history = []) {
   const formattedHistory = [];
   history.forEach((history) => {
-    const { prompt, response, createdAt } = history;
+    const { prompt, response, createdAt, feedbackScore, id } = history;
     const data = JSON.parse(response);
     formattedHistory.push([
       {
@@ -19,6 +19,8 @@ function convertToChatHistory(history = []) {
         role: "assistant",
         content: data.text,
         sources: data.sources || [],
+        feedbackScore,
+        chatId: id,
         sentAt: moment(createdAt).unix(),
       },
     ]);

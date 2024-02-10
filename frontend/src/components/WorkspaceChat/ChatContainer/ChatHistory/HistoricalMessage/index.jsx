@@ -12,7 +12,16 @@ import createDOMPurify from "dompurify";
 const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = forwardRef(
   (
-    { uuid = v4(), message, role, workspace, sources = [], error = false },
+    {
+      uuid = v4(),
+      message,
+      role,
+      workspace,
+      sources = [],
+      error = false,
+      feedbackScore,
+      chatId,
+    },
     ref
   ) => {
     return (
@@ -60,7 +69,11 @@ const HistoricalMessage = forwardRef(
           {role === "assistant" && !error && (
             <div className="flex gap-x-5">
               <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden" />
-              <Actions message={DOMPurify.sanitize(message)} />
+              <Actions
+                message={DOMPurify.sanitize(message)}
+                feedbackScore={feedbackScore}
+                chatId={chatId}
+              />
             </div>
           )}
           {role === "assistant" && <Citations sources={sources} />}

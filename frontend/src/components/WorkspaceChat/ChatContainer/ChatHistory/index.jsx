@@ -117,6 +117,8 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
             role={props.role}
             workspace={workspace}
             sources={props.sources}
+            feedbackScore={props.feedbackScore}
+            chatId={props.chatId}
             error={props.error}
           />
         );
