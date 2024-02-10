@@ -4,19 +4,19 @@
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 
-// Todo: make this more useful for export by adding other columns about workspace, user, time, etc for post-filtering.
+// Todo: add RLHF feedbackScore field support
 async function convertToCSV(preparedData) {
   const rows = ["id,username,workspace,prompt,response,sent_at"];
   for (const item of preparedData) {
-    // Escape double quotes and wrap content in double quotes
-    const escapedPrompt = `"${item.prompt
-      .replace(/"/g, '""')
-      .replace(/\n/g, " ")}"`;
-    const escapedResponse = `"${item.response
-      .replace(/"/g, '""')
-      .replace(/\n/g, " ")}"`;
-    const row = `"${item.id}","${item.username}","${item.workspace}",${escapedPrompt},${escapedResponse},"${item.sent_at}"`;
-    rows.push(row);
+    const record = [
+      item.id,
+      escapeCsv(item.username),
+      escapeCsv(item.workspace),
+      escapeCsv(item.prompt),
+      escapeCsv(item.response),
+      item.sent_at,
+    ].join(",");
+    rows.push(record);
   }
   return rows.join("\n");
 }
@@ -35,12 +35,15 @@ async function convertToJSONL(workspaceChatsMap) {
     .join("\n");
 }
 
-async function prepareWorkspaceChatsForExport(type = "jsonl") {
+async function prepareWorkspaceChatsForExport(format = "jsonl") {
+  if (!exportMap.hasOwnProperty(format)) {
+    format = "jsonl"; // default
+  }
   const chats = await WorkspaceChats.whereWithData({}, null, null, {
     id: "asc",
   });
 
-  if (type === "csv") {
+  if (format === "csv") {
     const preparedData = chats.map((chat) => {
       const responseJson = JSON.parse(chat.response);
       return {
@@ -115,6 +118,10 @@ const exportMap = {
     func: convertToJSONL,
   },
 };
+
+function escapeCsv(str) {
+  return `"${str.replace(/"/g, '""')}"`;
+}
 
 async function exportChatsAsType(workspaceChatsMap, format = "jsonl") {
   const { contentType, func } = exportMap.hasOwnProperty(format)
