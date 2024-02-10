@@ -1,4 +1,5 @@
 const { chatPrompt } = require("../../chats");
+const { handleDefaultStreamResponse } = require("../../chats/stream");
 
 class MistralLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -162,6 +163,10 @@ class MistralLLM {
       { responseType: "stream" }
     );
     return streamRequest;
+  }
+
+  handleStream(response, stream, responseProps) {
+    return handleDefaultStreamResponse(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

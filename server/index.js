@@ -11,6 +11,9 @@ const cors = require("cors");
 const { systemEndpoints } = require("./endpoints/system");
 const { workspaceEndpoints } = require("./endpoints/workspaces");
 const { chatEndpoints } = require("./endpoints/chat");
+const { embeddedEndpoints } = require("./endpoints/embed");
+const { embedManagementEndpoints } = require("./endpoints/embedManagement");
+const { getVectorDbClass } = require("./utils/helpers");
 const { adminEndpoints } = require("./endpoints/admin");
 const { inviteEndpoints } = require("./endpoints/invite");
 const { utilEndpoints } = require("./endpoints/utils");
@@ -18,6 +21,7 @@ const { developerEndpoints } = require("./endpoints/api");
 const { extensionEndpoints } = require("./endpoints/extensions");
 const setupTelemetry = require("./utils/telemetry");
 const { Telemetry } = require("./models/telemetry");
+const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -35,11 +39,16 @@ app.use("/api", apiRouter);
 systemEndpoints(apiRouter);
 extensionEndpoints(apiRouter);
 workspaceEndpoints(apiRouter);
+workspaceThreadEndpoints(apiRouter);
 chatEndpoints(apiRouter);
 adminEndpoints(apiRouter);
 inviteEndpoints(apiRouter);
+embedManagementEndpoints(apiRouter);
 utilEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
+
+// Externally facing embedder endpoints
+embeddedEndpoints(apiRouter);
 
 app.all("*", function (_, response) {
   response.sendStatus(404);

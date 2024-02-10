@@ -19,6 +19,21 @@ const User = {
     }
   },
 
+  // Log the changes to a user object, but omit sensitive fields
+  // that are not meant to be logged.
+  loggedChanges: function (updates, prev = {}) {
+    const changes = {};
+    const sensitiveFields = ["password"];
+
+    Object.keys(updates).forEach((key) => {
+      if (!sensitiveFields.includes(key) && updates[key] !== prev[key]) {
+        changes[key] = `${prev[key]} => ${updates[key]}`;
+      }
+    });
+
+    return changes;
+  },
+
   update: async function (userId, updates = {}) {
     try {
       // Rehash new password if it exists as update

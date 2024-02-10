@@ -171,7 +171,7 @@ export default function GeneralVectorDatabase() {
           </div>
         </div>
       ) : (
-        <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
+        <div className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
           <form
             id="vectordb-form"
             onSubmit={handleSubmit}

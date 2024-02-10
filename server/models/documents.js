@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass } = require("../utils/helpers");
 const prisma = require("../utils/prisma");
 const { Telemetry } = require("./telemetry");
+const { EventLogs } = require("./eventLogs");
 
 const Document = {
   forWorkspace: async function (workspaceId = null) {
@@ -34,7 +35,7 @@ const Document = {
     }
   },
 
-  addDocuments: async function (workspace, additions = []) {
+  addDocuments: async function (workspace, additions = [], userId = null) {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
     const embedded = [];
@@ -83,10 +84,18 @@ const Document = {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
       VectorDbSelection: process.env.VECTOR_DB || "pinecone",
     });
+    await EventLogs.logEvent(
+      "workspace_documents_added",
+      {
+        workspaceName: workspace?.name || "Unknown Workspace",
+        numberOfDocumentsAdded: additions.length,
+      },
+      userId
+    );
     return { failedToEmbed, errors: Array.from(errors), embedded };
   },
 
-  removeDocuments: async function (workspace, removals = []) {
+  removeDocuments: async function (workspace, removals = [], userId = null) {
     const VectorDb = getVectorDbClass();
     if (removals.length === 0) return;
 
@@ -117,6 +126,14 @@ const Document = {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
       VectorDbSelection: process.env.VECTOR_DB || "pinecone",
     });
+    await EventLogs.logEvent(
+      "workspace_documents_removed",
+      {
+        workspaceName: workspace?.name || "Unknown Workspace",
+        numberOfDocuments: removals.length,
+      },
+      userId
+    );
     return true;
   },
 

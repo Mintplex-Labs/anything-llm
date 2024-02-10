@@ -9,7 +9,7 @@ export default function DataConnectors() {
       className="w-screen overflow-hidden bg-sidebar flex"
     >
       <Sidebar />
-      <div className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent">
+      <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
         <div className="flex w-full">
           <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
             <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">

@@ -24,7 +24,7 @@ export default function OpenAiOptions({ settings }) {
           <select
             name="EmbeddingModelPref"
             required={true}
-            className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
             <optgroup label="Available embedding models">
               {[

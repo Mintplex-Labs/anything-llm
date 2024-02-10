@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../../../components/SettingsSidebar";
+import Sidebar from "@/components/SettingsSidebar";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { BookOpen } from "@phosphor-icons/react";
-import usePrefersDarkMode from "../../../hooks/usePrefersDarkMode";
 import Admin from "../../../models/admin";
 import WorkspaceRow from "./WorkspaceRow";
 import NewWorkspaceModal from "./NewWorkspaceModal";
@@ -13,12 +12,12 @@ import ModalWrapper from "@/components/ModalWrapper";
 export default function AdminWorkspaces() {
   const { isOpen, openModal, closeModal } = useModal();
   return (
-    <div
-      style={{ height: "calc(100vh - 40px)" }}
-      className="w-screen overflow-hidden bg-sidebar flex"
-    >
+    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
-      <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
+      <div
+        style={{ height: "calc(100vh - 40px)" }}
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+      >
         <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
@@ -48,7 +47,6 @@ export default function AdminWorkspaces() {
 }
 
 function WorkspacesContainer() {
-  const darkMode = usePrefersDarkMode();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [workspaces, setWorkspaces] = useState([]);

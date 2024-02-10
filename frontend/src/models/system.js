@@ -1,9 +1,12 @@
 import { AUTH_TIMESTAMP } from "@/utils/constants";
-import { baseHeaders } from "@/utils/request";
+import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 import { API_BASE } from "@/utils/api";
 
 const System = {
+  cacheKeys: {
+    footerIcons: "anythingllm_footer_links",
+  },
   ping: async function () {
     return await fetch(`${API_BASE()}/ping`)
       .then((res) => res.json())
@@ -176,6 +179,38 @@ const System = {
         return { success: false, error: e.message };
       });
   },
+  fetchCustomFooterIcons: async function () {
+    const cache = window.localStorage.getItem(this.cacheKeys.footerIcons);
+    const { data, lastFetched } = cache
+      ? safeJsonParse(cache, { data: [], lastFetched: 0 })
+      : { data: [], lastFetched: 0 };
+
+    if (!!data && Date.now() - lastFetched < 3_600_000)
+      return { footerData: data, error: null };
+
+    const { footerData, error } = await fetch(
+      `${API_BASE()}/system/footer-data`,
+      {
+        method: "GET",
+        cache: "no-cache",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.log(e);
+        return { footerData: [], error: e.message };
+      });
+
+    if (!footerData || !!error) return { footerData: [], error: null };
+
+    const newData = safeJsonParse(footerData, []);
+    window.localStorage.setItem(
+      this.cacheKeys.footerIcons,
+      JSON.stringify({ data: newData, lastFetched: Date.now() })
+    );
+    return { footerData: newData, error: null };
+  },
   fetchLogo: async function () {
     return await fetch(`${API_BASE()}/system/logo`, {
       method: "GET",
@@ -346,6 +381,29 @@ const System = {
       .catch((e) => {
         console.error(e);
         return [];
+      });
+  },
+  eventLogs: async (offset = 0) => {
+    return await fetch(`${API_BASE()}/system/event-logs`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ offset }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  clearEventLogs: async () => {
+    return await fetch(`${API_BASE()}/system/event-logs`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
       });
   },
   deleteChat: async (chatId) => {

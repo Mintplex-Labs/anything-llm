@@ -14,7 +14,19 @@ const SystemSettings = {
     "message_limit",
     "logo_filename",
     "telemetry_id",
+    "footer_data",
   ],
+  validations: {
+    footer_data: (updates) => {
+      try {
+        const array = JSON.parse(updates);
+        return JSON.stringify(array.slice(0, 3)); // max of 3 items in footer.
+      } catch (e) {
+        console.error(`Failed to run validation function on footer_data`);
+        return JSON.stringify([]);
+      }
+    },
+  },
   currentSettings: async function () {
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
@@ -196,6 +208,20 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
+
+      ...(llmProvider === "huggingface"
+        ? {
+            HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
+            HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
+            HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
+
+            // For embedding credentials when Anthropic is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
     };
   },
 
@@ -227,14 +253,18 @@ const SystemSettings = {
       const updatePromises = Object.keys(updates)
         .filter((key) => this.supportedFields.includes(key))
         .map((key) => {
+          const validatedValue = this.validations.hasOwnProperty(key)
+            ? this.validations[key](updates[key])
+            : updates[key];
+
           return prisma.system_settings.upsert({
             where: { label: key },
             update: {
-              value: updates[key] === null ? null : String(updates[key]),
+              value: validatedValue === null ? null : String(validatedValue),
             },
             create: {
               label: key,
-              value: updates[key] === null ? null : String(updates[key]),
+              value: validatedValue === null ? null : String(validatedValue),
             },
           });
         });

@@ -78,7 +78,7 @@ export default function FileRow({
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <p className="whitespace-nowrap overflow-hidden">
+          <p className="whitespace-nowrap overflow-hidden max-w-[165px] text-ellipsis">
             {middleTruncate(item.title, 17)}
           </p>
           {showTooltip && (

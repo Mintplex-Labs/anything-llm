@@ -1,5 +1,5 @@
 import React, { Suspense, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { ContextWrapper } from "./AuthContext";
 import { READY_EVENT_NAME } from "./utils/constants";
 import PrivateRoute, {
@@ -7,11 +7,9 @@ import PrivateRoute, {
   ManagerRoute,
 } from "./components/PrivateRoute";
 import { ToastContainer } from "react-toastify";
-
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
 import AnythingLLMLogo from "./assets/logo/anything-llm.png";
-import "react-toastify/dist/ReactToastify.css";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
 import WorkspaceChat from "./pages/WorkspaceChat";
@@ -23,6 +21,10 @@ import GeneralVectorDatabase from "./pages/GeneralSettings/VectorDatabase";
 import OnboardingFlow from "./pages/OnboardingFlow";
 import DataConnectors from "./pages/GeneralSettings/DataConnectors";
 import DataConnectorSetup from "./pages/GeneralSettings/DataConnectors/Connectors";
+import AdminLogs from "./pages/Admin/Logging";
+import WorkspaceSettings from "./pages/WorkspaceSettings";
+
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   return (
@@ -37,6 +39,14 @@ export default function App() {
                 <Route
                   path="/workspace/:slug"
                   element={<PrivateRoute Component={WorkspaceChat} />}
+                />
+                <Route
+                  path="/workspace/:slug/t/:threadSlug"
+                  element={<PrivateRoute Component={WorkspaceChat} />}
+                />
+                <Route
+                  path="/workspace/:slug/settings"
+                  element={<PrivateRoute Component={WorkspaceSettings} />}
                 />
 
                 {/* Admin */}
@@ -95,6 +105,10 @@ export default function App() {
                 <Route
                   path="/settings/data-connectors/:connector"
                   element={<ManagerRoute Component={DataConnectorSetup} />}
+                />
+                <Route
+                  path="/settings/event-logs"
+                  element={<AdminRoute Component={AdminLogs} />}
                 />
                 {/* Onboarding Flow */}
                 <Route path="/onboarding" element={<OnboardingFlow />} />

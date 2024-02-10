@@ -10,6 +10,7 @@ import LocalAiLogo from "@/assets/llmprovider/localai.png";
 import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import TogetherAILogo from "@/assets/llmprovider/togetherai.png";
 import MistralLogo from "@/assets/llmprovider/mistral.jpeg";
+import HuggingFaceLogo from "@/assets/llmprovider/huggingface.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
@@ -19,6 +20,7 @@ import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
+import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
@@ -81,6 +83,14 @@ export default function LLMPreference({
       logo: GeminiLogo,
       options: <GeminiLLMOptions settings={settings} />,
       description: "Google's largest and most capable AI model",
+    },
+    {
+      name: "HuggingFace",
+      value: "huggingface",
+      logo: HuggingFaceLogo,
+      options: <HuggingFaceOptions settings={settings} />,
+      description:
+        "Access 150,000+ open-source LLMs and the world's AI community",
     },
     {
       name: "Ollama",

@@ -49,7 +49,7 @@ export default function NewUserModal({ closeModal }) {
                 <input
                   name="username"
                   type="text"
-                  className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder="User's username"
                   minLength={2}
                   required={true}
@@ -66,7 +66,7 @@ export default function NewUserModal({ closeModal }) {
                 <input
                   name="password"
                   type="text"
-                  className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder="User's initial password"
                   required={true}
                   autoComplete="off"

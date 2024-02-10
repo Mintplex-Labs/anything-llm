@@ -1,5 +1,5 @@
-import { API_BASE } from "../utils/api";
-import { baseHeaders } from "../utils/request";
+import { API_BASE } from "@/utils/api";
+import { baseHeaders } from "@/utils/request";
 
 const Admin = {
   // User Management

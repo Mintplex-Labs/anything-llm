@@ -1,12 +1,10 @@
-import { useRef } from "react";
 import truncate from "truncate";
 import { X, Trash } from "@phosphor-icons/react";
 import System from "@/models/system";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 
-export default function ChatRow({ chat }) {
-  const rowRef = useRef(null);
+export default function ChatRow({ chat, onDelete }) {
   const {
     isOpen: isPromptOpen,
     openModal: openPromptModal,
@@ -25,16 +23,13 @@ export default function ChatRow({ chat }) {
       )
     )
       return false;
-    rowRef?.current?.remove();
     await System.deleteChat(chat.id);
+    onDelete(chat.id);
   };
 
   return (
     <>
-      <tr
-        ref={rowRef}
-        className="bg-transparent text-white text-opacity-80 text-sm font-medium"
-      >
+      <tr className="bg-transparent text-white text-opacity-80 text-sm font-medium">
         <td className="px-6 py-4 font-medium whitespace-nowrap text-white">
           {chat.id}
         </td>

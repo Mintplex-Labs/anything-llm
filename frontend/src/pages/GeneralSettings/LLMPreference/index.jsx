@@ -12,6 +12,7 @@ import LMStudioLogo from "@/assets/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/assets/llmprovider/localai.png";
 import TogetherAILogo from "@/assets/llmprovider/togetherai.png";
 import MistralLogo from "@/assets/llmprovider/mistral.jpeg";
+import HuggingFaceLogo from "@/assets/llmprovider/huggingface.png";
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -23,6 +24,7 @@ import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
+import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 
@@ -107,6 +109,14 @@ export default function GeneralLLMPreference() {
       description: "Google's largest and most capable AI model",
     },
     {
+      name: "HuggingFace",
+      value: "huggingface",
+      logo: HuggingFaceLogo,
+      options: <HuggingFaceOptions settings={settings} />,
+      description:
+        "Access 150,000+ open-source LLMs and the world's AI community",
+    },
+    {
       name: "Ollama",
       value: "ollama",
       logo: OllamaLogo,
@@ -166,11 +176,7 @@ export default function GeneralLLMPreference() {
         </div>
       ) : (
         <div className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
-          <form
-            onSubmit={handleSubmit}
-            onChange={() => setHasChanges(true)}
-            className="flex w-full"
-          >
+          <form onSubmit={handleSubmit} className="flex w-full">
             <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
                 <div className="items-center flex gap-x-4">

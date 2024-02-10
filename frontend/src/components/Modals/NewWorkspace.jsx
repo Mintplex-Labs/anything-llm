@@ -16,6 +16,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
     const { workspace, message } = await Workspace.new(data);
     if (!!workspace) {
       window.location.hash = paths.workspace.chat(workspace.slug);
+      hideModal();
     }
     setError(message);
   };

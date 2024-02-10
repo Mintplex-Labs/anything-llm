@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../../../components/SettingsSidebar";
-import showToast from "../../../utils/toast";
-import System from "../../../models/system";
-import paths from "../../../utils/paths";
-import {
-  AUTH_TIMESTAMP,
-  AUTH_TOKEN,
-  AUTH_USER,
-} from "../../../utils/constants";
-import PreLoader from "../../../components/Preloader";
+import Sidebar from "@/components/SettingsSidebar";
+import showToast from "@/utils/toast";
+import System from "@/models/system";
+import paths from "@/utils/paths";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import PreLoader from "@/components/Preloader";
 
 export default function GeneralSecurity() {
   return (

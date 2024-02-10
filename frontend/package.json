@@ -11,11 +11,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@metamask/jazzicon": "^2.0.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@phosphor-icons/react": "^2.0.13",
-    "buffer": "^6.0.3",
     "dompurify": "^3.0.8",
     "he": "^1.2.0",
     "highlight.js": "^11.9.0",
@@ -26,7 +24,6 @@
     "react-device-detect": "^2.2.2",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
-    "react-loading-icons": "^1.1.0",
     "react-loading-skeleton": "^3.1.0",
     "react-router-dom": "^6.3.0",
     "react-tag-input-component": "^2.0.2",
@@ -37,11 +34,13 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@types/react": "^18.2.23",
     "@types/react-dom": "^18.2.8",
     "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^4.0.0-beta.0",
     "autoprefixer": "^10.4.14",
+    "buffer": "^6.0.3",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-ft-flow": "^3.0.0",

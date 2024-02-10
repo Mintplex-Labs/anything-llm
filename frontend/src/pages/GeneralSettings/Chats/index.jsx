@@ -106,7 +106,7 @@ export default function WorkspaceChats() {
                             setExportType(type);
                             setShowMenu(false);
                           }}
-                          className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+                          className="border-none text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
                         >
                           {type.toUpperCase()}
                         </button>
@@ -139,6 +139,10 @@ function ChatsContainer() {
   };
   const handleNext = () => {
     setOffset(offset + 1);
+  };
+
+  const handleDeleteChat = (chatId) => {
+    setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
   };
 
   useEffect(() => {
@@ -195,7 +199,9 @@ function ChatsContainer() {
         </thead>
         <tbody>
           {!!chats &&
-            chats.map((chat) => <ChatRow key={chat.id} chat={chat} />)}
+            chats.map((chat) => (
+              <ChatRow key={chat.id} chat={chat} onDelete={handleDeleteChat} />
+            ))}
         </tbody>
       </table>
       <div className="flex w-full justify-between items-center">

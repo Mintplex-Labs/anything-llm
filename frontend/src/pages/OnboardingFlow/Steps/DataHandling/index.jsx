@@ -11,6 +11,7 @@ import TogetherAILogo from "@/assets/llmprovider/togetherai.png";
 import LMStudioLogo from "@/assets/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/assets/llmprovider/localai.png";
 import MistralLogo from "@/assets/llmprovider/mistral.jpeg";
+import HuggingFaceLogo from "@/assets/llmprovider/huggingface.png";
 import ZillizLogo from "@/assets/vectordbs/zilliz.png";
 import AstraDBLogo from "@/assets/vectordbs/astraDB.png";
 import ChromaLogo from "@/assets/vectordbs/chroma.png";
@@ -19,6 +20,7 @@ import LanceDbLogo from "@/assets/vectordbs/lancedb.png";
 import WeaviateLogo from "@/assets/vectordbs/weaviate.png";
 import QDrantLogo from "@/assets/vectordbs/qdrant.png";
 import MilvusLogo from "@/assets/vectordbs/milvus.png";
+
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
 
@@ -100,6 +102,13 @@ const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to Mistral",
     ],
     logo: MistralLogo,
+  },
+  huggingface: {
+    name: "HuggingFace",
+    description: [
+      "Your prompts and document text used in response are sent to your HuggingFace managed endpoint",
+    ],
+    logo: HuggingFaceLogo,
   },
 };
 

@@ -16,12 +16,12 @@ import { Link } from "react-router-dom";
 export default function AdminApiKeys() {
   const { isOpen, openModal, closeModal } = useModal();
   return (
-    <div
-      style={{ height: "calc(100vh - 40px)" }}
-      className="w-screen overflow-hidden bg-sidebar flex"
-    >
+    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
-      <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
+      <div
+        style={{ height: "calc(100vh - 40px)" }}
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+      >
         <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">

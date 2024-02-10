@@ -5,8 +5,10 @@ import ChatContainer from "./ChatContainer";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
 import ModalWrapper from "@/components/ModalWrapper";
+import { useParams } from "react-router-dom";
 
 export default function WorkspaceChat({ loading, workspace }) {
+  const { threadSlug = null } = useParams();
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
@@ -18,7 +20,9 @@ export default function WorkspaceChat({ loading, workspace }) {
         return false;
       }
 
-      const chatHistory = await Workspace.chatHistory(workspace.slug);
+      const chatHistory = threadSlug
+        ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
+        : await Workspace.chatHistory(workspace.slug);
       setHistory(chatHistory);
       setLoadingHistory(false);
     }

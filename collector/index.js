@@ -12,6 +12,7 @@ const { processSingleFile } = require("./processSingleFile");
 const { processLink } = require("./processLink");
 const { wipeCollectorStorage } = require("./utils/files");
 const extensions = require("./extensions");
+const { processRawText } = require("./processRawText");
 const app = express();
 
 app.use(cors({ origin: true }));
@@ -58,6 +59,29 @@ app.post("/process-link", async function (request, response) {
     console.error(e);
     response.status(200).json({
       url: link,
+      success: false,
+      reason: "A processing error occurred.",
+      documents: [],
+    });
+  }
+  return;
+});
+
+app.post("/process-raw-text", async function (request, response) {
+  const { textContent, metadata } = reqBody(request);
+  try {
+    const {
+      success,
+      reason,
+      documents = [],
+    } = await processRawText(textContent, metadata);
+    response
+      .status(200)
+      .json({ filename: metadata.title, success, reason, documents });
+  } catch (e) {
+    console.error(e);
+    response.status(200).json({
+      filename: metadata?.title || "Unknown-doc.txt",
       success: false,
       reason: "A processing error occurred.",
       documents: [],

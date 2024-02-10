@@ -16,6 +16,7 @@ const {
   writeResponseChunk,
   VALID_CHAT_MODE,
 } = require("../../../utils/chats/stream");
+const { EventLogs } = require("../../../models/eventLogs");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -25,17 +26,17 @@ function apiWorkspaceEndpoints(app) {
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Create a new workspace'
     #swagger.requestBody = {
-        description: 'JSON object containing new display name of workspace.',
-        required: true,
-        type: 'object',
-        content: {
-          "application/json": {
-            example: {
-              name: "My New Workspace",
-            }
+      description: 'JSON object containing new display name of workspace.',
+      required: true,
+      type: 'object',
+      content: {
+        "application/json": {
+          example: {
+            name: "My New Workspace",
           }
         }
       }
+    }
     #swagger.responses[200] = {
       content: {
         "application/json": {
@@ -71,6 +72,9 @@ function apiWorkspaceEndpoints(app) {
         multiUserMode: multiUserMode(response),
         LLMSelection: process.env.LLM_PROVIDER || "openai",
         VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+      });
+      await EventLogs.logEvent("api_workspace_created", {
+        workspaceName: workspace?.name || "Unknown Workspace",
       });
       response.status(200).json({ workspace, message });
     } catch (e) {
@@ -205,6 +209,10 @@ function apiWorkspaceEndpoints(app) {
         await DocumentVectors.deleteForWorkspace(workspaceId);
         await Document.delete({ workspaceId: workspaceId });
         await Workspace.delete({ id: workspaceId });
+
+        await EventLogs.logEvent("api_workspace_deleted", {
+          workspaceName: workspace?.name || "Unknown Workspace",
+        });
         try {
           await VectorDb["delete-namespace"]({ namespace: slug });
         } catch (e) {
@@ -517,6 +525,10 @@ function apiWorkspaceEndpoints(app) {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
+        await EventLogs.logEvent("api_sent_chat", {
+          workspaceName: workspace?.name,
+          chatModel: workspace?.chatModel || "System Default",
+        });
         response.status(200).json({ ...result });
       } catch (e) {
         response.status(500).json({
@@ -634,6 +646,10 @@ function apiWorkspaceEndpoints(app) {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        });
+        await EventLogs.logEvent("api_sent_chat", {
+          workspaceName: workspace?.name,
+          chatModel: workspace?.chatModel || "System Default",
         });
         response.end();
       } catch (e) {
