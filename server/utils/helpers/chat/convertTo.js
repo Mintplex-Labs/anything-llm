@@ -120,7 +120,7 @@ const exportMap = {
 };
 
 function escapeCsv(str) {
-  return `"${str.replace(/"/g, '""')}"`;
+  return `"${str.replace(/"/g, '""').replace(/\n/g, " ")}"`;
 }
 
 async function exportChatsAsType(workspaceChatsMap, format = "jsonl") {
