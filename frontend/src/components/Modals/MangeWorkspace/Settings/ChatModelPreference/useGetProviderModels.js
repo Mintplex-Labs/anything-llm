@@ -19,7 +19,6 @@ const PROVIDER_DEFAULT_MODELS = {
   localai: [],
   ollama: [],
   togetherai: [],
-  native: [],
 };
 
 // For togetherAi, which has a large model list - we subgroup the options

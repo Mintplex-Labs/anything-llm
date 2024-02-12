@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
-import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/assets/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/assets/llmprovider/azure.png";
 import AnthropicLogo from "@/assets/llmprovider/anthropic.png";
@@ -21,7 +20,6 @@ import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
-import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
@@ -36,7 +34,6 @@ export default function GeneralLLMPreference() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
-  const isHosted = window.location.hostname.includes("useanything.com");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -152,14 +149,6 @@ export default function GeneralLLMPreference() {
       options: <MistralOptions settings={settings} />,
       description: "Run open source models from Mistral AI.",
     },
-    {
-      name: "Native",
-      value: "native",
-      logo: AnythingLLMIcon,
-      options: <NativeLLMOptions settings={settings} />,
-      description:
-        "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
-    },
   ];
 
   return (
@@ -226,7 +215,6 @@ export default function GeneralLLMPreference() {
                   </div>
                   <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
                     {filteredLLMs.map((llm) => {
-                      if (llm.value === "native" && isHosted) return null;
                       return (
                         <LLMItem
                           key={llm.name}

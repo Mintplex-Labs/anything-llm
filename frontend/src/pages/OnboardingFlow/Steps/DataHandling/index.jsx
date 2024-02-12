@@ -81,13 +81,6 @@ const LLM_SELECTION_PRIVACY = {
     ],
     logo: OllamaLogo,
   },
-  native: {
-    name: "Custom Llama Model",
-    description: [
-      "Your model and chats are only accessible on this AnythingLLM instance",
-    ],
-    logo: AnythingLLMIcon,
-  },
   togetherai: {
     name: "TogetherAI",
     description: [
