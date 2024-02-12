@@ -7,7 +7,6 @@ import GeminiLogo from "@/assets/llmprovider/gemini.png";
 import OllamaLogo from "@/assets/llmprovider/ollama.png";
 import LMStudioLogo from "@/assets/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/assets/llmprovider/localai.png";
-import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import TogetherAILogo from "@/assets/llmprovider/togetherai.png";
 import MistralLogo from "@/assets/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/assets/llmprovider/huggingface.png";
@@ -42,7 +41,6 @@ export default function LLMPreference({
   const [settings, setSettings] = useState(null);
   const formRef = useRef(null);
   const hiddenSubmitButtonRef = useRef(null);
-  const isHosted = window.location.hostname.includes("useanything.com");
   const navigate = useNavigate();
 
   useEffect(() => {
