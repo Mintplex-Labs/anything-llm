@@ -105,16 +105,6 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
-  // Native LLM Settings
-  NativeLLMModelPref: {
-    envKey: "NATIVE_LLM_MODEL_PREF",
-    checks: [isDownloadedModel],
-  },
-  NativeLLMTokenLimit: {
-    envKey: "NATIVE_LLM_MODEL_TOKEN_LIMIT",
-    checks: [nonZero],
-  },
-
   // Hugging Face LLM Inference Settings
   HuggingFaceLLMEndpoint: {
     envKey: "HUGGING_FACE_LLM_ENDPOINT",
@@ -310,7 +300,6 @@ function supportedLLM(input = "") {
     "lmstudio",
     "localai",
     "ollama",
-    "native",
     "togetherai",
     "mistral",
     "huggingface",

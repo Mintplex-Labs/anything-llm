@@ -61,9 +61,6 @@ function getLLMProvider(modelPreference = null) {
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return new MistralLLM(embedder, modelPreference);
-    case "native":
-      const { NativeLLM } = require("../AiProviders/native");
-      return new NativeLLM(embedder, modelPreference);
     case "huggingface":
       const { HuggingFaceLLM } = require("../AiProviders/huggingface");
       return new HuggingFaceLLM(embedder, modelPreference);

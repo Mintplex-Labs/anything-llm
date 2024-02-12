@@ -196,19 +196,6 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
-      ...(llmProvider === "native"
-        ? {
-            NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
-            NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
-
-            // For embedding credentials when ollama is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
-        : {}),
-
       ...(llmProvider === "huggingface"
         ? {
             HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
