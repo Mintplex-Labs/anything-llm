@@ -60,12 +60,15 @@ const Workspace = {
       .catch(() => []);
     return history;
   },
-  updateChatFeedback: async function (chatId, feedback) {
-    const result = await fetch(`${API_BASE}/workspace/chat-feedback`, {
-      method: "POST",
-      headers: baseHeaders(),
-      body: JSON.stringify({ chatId, feedback }),
-    })
+  updateChatFeedback: async function (chatId, slug, feedback) {
+    const result = await fetch(
+      `${API_BASE}/workspace/${slug}/chat-feedback/${chatId}`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ feedback }),
+      }
+    )
       .then((res) => res.ok)
       .catch(() => false);
     return result;

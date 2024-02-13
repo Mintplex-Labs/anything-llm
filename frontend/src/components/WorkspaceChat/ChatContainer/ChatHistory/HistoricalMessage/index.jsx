@@ -73,6 +73,7 @@ const HistoricalMessage = forwardRef(
                 message={DOMPurify.sanitize(message)}
                 feedbackScore={feedbackScore}
                 chatId={chatId}
+                slug={workspace?.slug}
               />
             </div>
           )}

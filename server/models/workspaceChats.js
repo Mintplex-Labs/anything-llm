@@ -203,16 +203,15 @@ const WorkspaceChats = {
       return [];
     }
   },
-
   updateFeedbackScore: async function (chatId = null, feedbackScore = null) {
     if (!chatId) return;
     try {
       await prisma.workspace_chats.update({
         where: {
-          id: chatId,
+          id: Number(chatId),
         },
         data: {
-          feedbackScore,
+          feedbackScore: feedbackScore,
         },
       });
       return;

@@ -9,33 +9,37 @@ import {
 import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
 
-const Actions = ({ message, feedbackScore, chatId }) => {
+const Actions = ({ message, feedbackScore, chatId, slug }) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
-  const updateFeedback = async (newFeedback) => {
-    if (selectedFeedback === newFeedback) {
-      newFeedback = 0;
-    }
-    await Workspace.updateChatFeedback(chatId, newFeedback);
-    setSelectedFeedback(newFeedback);
+
+  const handleFeedback = async (newFeedback) => {
+    const updatedFeedback =
+      selectedFeedback === newFeedback ? null : newFeedback;
+    await Workspace.updateChatFeedback(chatId, slug, updatedFeedback);
+    setSelectedFeedback(updatedFeedback);
   };
 
   return (
     <div className="flex justify-start items-center gap-x-4">
-      <FeedbackButton
-        isSelected={selectedFeedback > 0}
-        handleFeedback={() => updateFeedback(1)}
-        tooltipId="thumbs-up"
-        tooltipContent="Thumbs up"
-        IconComponent={ThumbsUp}
-      />
-      <FeedbackButton
-        isSelected={selectedFeedback < 0}
-        handleFeedback={() => updateFeedback(-1)}
-        tooltipId="thumbs-down"
-        tooltipContent="Thumbs down"
-        IconComponent={ThumbsDown}
-      />
       <CopyMessage message={message} />
+      {chatId && (
+        <>
+          <FeedbackButton
+            isSelected={selectedFeedback === true}
+            handleFeedback={() => handleFeedback(true)}
+            tooltipId="thumbs-up"
+            tooltipContent="Good response"
+            IconComponent={ThumbsUp}
+          />
+          <FeedbackButton
+            isSelected={selectedFeedback === false}
+            handleFeedback={() => handleFeedback(false)}
+            tooltipId="thumbs-down"
+            tooltipContent="Bad response"
+            IconComponent={ThumbsDown}
+          />
+        </>
+      )}
     </div>
   );
 };

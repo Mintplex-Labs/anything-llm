@@ -21,6 +21,7 @@ const { EventLogs } = require("../models/eventLogs");
 const {
   WorkspaceSuggestedMessages,
 } = require("../models/workspacesSuggestedMessages");
+const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
 const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
@@ -322,14 +323,27 @@ function workspaceEndpoints(app) {
   );
 
   app.post(
-    "/workspace/chat-feedback",
-    [validatedRequest],
+    "/workspace/:slug/chat-feedback/:chatId",
+    [validatedRequest, validWorkspaceSlug],
     async (request, response) => {
       try {
-        const { chatId, feedback } = reqBody(request);
+        const { chatId } = request.params;
+        const { feedback } = reqBody(request);
+        const existingChat = await WorkspaceChats.get({
+          id: Number(chatId),
+          workspaceId: response.locals.workspace.id,
+        });
+
+        if (!existingChat) {
+          response
+            .status(404)
+            .json({ success: false, message: "Chat not found" });
+          return;
+        }
+
         const result = await WorkspaceChats.updateFeedbackScore(
-          Number(chatId),
-          Number(feedback)
+          chatId,
+          feedback
         );
         response.status(200).json({ success: result });
       } catch (error) {
