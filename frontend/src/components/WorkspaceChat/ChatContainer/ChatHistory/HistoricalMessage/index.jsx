@@ -19,8 +19,8 @@ const HistoricalMessage = forwardRef(
       workspace,
       sources = [],
       error = false,
-      feedbackScore,
-      chatId,
+      feedbackScore = null,
+      chatId = null,
     },
     ref
   ) => {
