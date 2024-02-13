@@ -68,7 +68,7 @@ async function loadYouTubeTranscript({ url }) {
     docAuthor: metadata.author,
     description: metadata.description,
     docSource: url,
-    chunkSource: url,
+    chunkSource: `link://${url}`,
     published: new Date().toLocaleString(),
     wordCount: content.split(" ").length,
     pageContent: content,
@@ -78,7 +78,7 @@ async function loadYouTubeTranscript({ url }) {
   console.log(`[YouTube Loader]: Saving ${metadata.title} to ${outFolder}`);
   writeToServerDocuments(
     data,
-    `${slugify(metadata.title)}-${data.id}`,
+    `${slugify(metadata.title)} -${data.id} `,
     outFolderPath
   );
 

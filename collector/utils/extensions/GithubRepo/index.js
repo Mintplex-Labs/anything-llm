@@ -39,14 +39,17 @@ async function loadGithubRepo(args) {
 
   for (const doc of docs) {
     if (!doc.pageContent) continue;
+    console.log(
+      `link://${doc.metadata.repository}/blob/${doc.metadata.branch}/${doc.metadata.source}`
+    );
     const data = {
       id: v4(),
       url: "github://" + doc.metadata.source,
       title: doc.metadata.source,
       docAuthor: repo.author,
       description: "No description found.",
-      docSource: repo.repo,
-      chunkSource: doc.metadata.source,
+      docSource: doc.metadata.source,
+      chunkSource: `link://${doc.metadata.repository}/blob/${doc.metadata.branch}/${doc.metadata.source}`,
       published: new Date().toLocaleString(),
       wordCount: doc.pageContent.split(" ").length,
       pageContent: doc.pageContent,
