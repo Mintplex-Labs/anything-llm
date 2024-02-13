@@ -6,7 +6,6 @@ import {
   Quotes,
 } from "@phosphor-icons/react";
 import React, { useState, useRef } from "react";
-import { isMobile } from "react-device-detect";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../../Modals/MangeWorkspace";
@@ -15,6 +14,8 @@ import SlashCommandsButton, {
   SlashCommands,
   useSlashCommands,
 } from "./SlashCommands";
+import { isMobile } from "react-device-detect";
+import { Tooltip } from "react-tooltip";
 
 export default function PromptInput({
   workspace,
@@ -98,13 +99,23 @@ export default function PromptInput({
               </button>
             </div>
             <div className="flex justify-between py-3.5">
-              <div className="flex gap-2">
+              <div className="flex gap-x-2">
                 {user?.role !== "default" && (
-                  <Gear
-                    onClick={showModal}
-                    className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"
-                    weight="fill"
-                  />
+                  <div>
+                    <Gear
+                      onClick={showModal}
+                      data-tooltip-id="tooltip-workspace-settings-prompt"
+                      data-tooltip-content={`Open the ${workspace.name} workspace settings`}
+                      className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"
+                      weight="fill"
+                    />
+                    <Tooltip
+                      id="tooltip-workspace-settings-prompt"
+                      place="top"
+                      delayShow={300}
+                      className="tooltip !text-xs z-99"
+                    />
+                  </div>
                 )}
                 <ChatModeSelector workspace={workspace} />
                 <SlashCommandsButton
@@ -128,8 +139,6 @@ function ChatModeSelector({ workspace }) {
   const [chatMode, setChatMode] = useState(
     window.localStorage.getItem(STORAGE_KEY) ?? "chat"
   );
-  const [showToolTip, setShowTooltip] = useState(false);
-  const [delayHandler, setDelayHandler] = useState(null);
 
   function toggleMode() {
     const newChatMode = chatMode === "chat" ? "query" : "chat";
@@ -137,39 +146,24 @@ function ChatModeSelector({ workspace }) {
     window.localStorage.setItem(STORAGE_KEY, newChatMode);
   }
 
-  function handleMouseEnter() {
-    if (isMobile) return false;
-    setDelayHandler(
-      setTimeout(() => {
-        setShowTooltip(true);
-      }, 700)
-    );
-  }
-
-  const cleanupTooltipListener = () => {
-    clearTimeout(delayHandler);
-    setShowTooltip(false);
-  };
-
   const ModeIcon = chatMode === "chat" ? Chats : Quotes;
   return (
     <div
-      className="relative"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={cleanupTooltipListener}
+      data-tooltip-id="chat-mode-toggle"
+      data-tooltip-content={`You are currently in ${chatMode} mode. Click to switch to ${
+        chatMode === "chat" ? "query" : "chat"
+      } mode.`}
     >
-      <div
-        className={`opacity-${
-          showToolTip ? 1 : 0
-        } pointer-events-none transition-all duration-300 tip absolute bottom-10 z-99 left-0 bg-white/50 text-gray-200 text-xs p-1.5 rounded shadow-lg whitespace-nowrap`}
-      >
-        You are currently in {chatMode} mode. Click to switch to{" "}
-        {chatMode === "chat" ? "query" : "chat"} mode.
-      </div>
       <ModeIcon
         onClick={toggleMode}
         className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"
         weight="fill"
+      />
+      <Tooltip
+        id="chat-mode-toggle"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs z-99"
       />
     </div>
   );
