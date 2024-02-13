@@ -35,7 +35,6 @@ const Actions = ({ message, feedbackScore, chatId, slug }) => {
             isSelected={selectedFeedback === false}
             handleFeedback={() => handleFeedback(false)}
             tooltipId={`${chatId}-thumbs-down`}
-            tooltipId="thumbs-down"
             tooltipContent="Bad response"
             IconComponent={ThumbsDown}
           />
