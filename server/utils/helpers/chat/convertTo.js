@@ -36,9 +36,9 @@ async function convertToJSONL(workspaceChatsMap) {
 }
 
 async function prepareWorkspaceChatsForExport(format = "jsonl") {
-  if (!exportMap.hasOwnProperty(format)) {
-    format = "jsonl"; // default
-  }
+  if (!exportMap.hasOwnProperty(format))
+    throw new Error("Invalid export type.");
+
   const chats = await WorkspaceChats.whereWithData({}, null, null, {
     id: "asc",
   });

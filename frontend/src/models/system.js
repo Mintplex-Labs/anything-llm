@@ -465,7 +465,10 @@ const System = {
       method: "GET",
       headers: baseHeaders(),
     })
-      .then((res) => res.text())
+      .then((res) => {
+        if (res.ok) return res.text();
+        throw new Error(res.statusText);
+      })
       .catch((e) => {
         console.error(e);
         return null;

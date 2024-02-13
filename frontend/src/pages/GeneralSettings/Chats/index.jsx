@@ -21,7 +21,7 @@ export default function WorkspaceChats() {
   };
   const handleDumpChats = async () => {
     const chats = await System.exportChats(exportType);
-    if (chats) {
+    if (!!chats) {
       const { mimeType, fileExtension } = exportOptions[exportType];
       const blob = new Blob([chats], { type: mimeType });
       const link = document.createElement("a");
