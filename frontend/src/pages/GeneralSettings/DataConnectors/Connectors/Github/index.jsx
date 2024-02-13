@@ -46,7 +46,8 @@ export default function GithubConnectorSetup() {
       }
 
       showToast(
-        `${data.files} ${pluralize("file", data.files)} collected from ${data.author
+        `${data.files} ${pluralize("file", data.files)} collected from ${
+          data.author
         }/${data.repo}:${data.branch}. Output folder is ${data.destination}.`,
         "success",
         { clear: true }
