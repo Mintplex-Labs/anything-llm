@@ -78,7 +78,7 @@ async function loadYouTubeTranscript({ url }) {
   console.log(`[YouTube Loader]: Saving ${metadata.title} to ${outFolder}`);
   writeToServerDocuments(
     data,
-    `${slugify(metadata.title)} -${data.id} `,
+    `${slugify(metadata.title)}-${data.id} `,
     outFolderPath
   );
 

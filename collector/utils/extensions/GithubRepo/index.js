@@ -39,9 +39,6 @@ async function loadGithubRepo(args) {
 
   for (const doc of docs) {
     if (!doc.pageContent) continue;
-    console.log(
-      `link://${doc.metadata.repository}/blob/${doc.metadata.branch}/${doc.metadata.source}`
-    );
     const data = {
       id: v4(),
       url: "github://" + doc.metadata.source,
