@@ -1,4 +1,4 @@
-// For handling of synchronous chats that are not utilizing streaming or chat requests.
+// For handling of chat responses in the frontend by their various types.
 export default function handleChat(
   chatResult,
   setLoadingResponse,
@@ -13,7 +13,7 @@ export default function handleChat(
     sources = [],
     error,
     close,
-    chatId,
+    chatId = null,
   } = chatResult;
 
   if (type === "abort") {
@@ -103,10 +103,7 @@ export default function handleChat(
       const existingHistory = { ..._chatHistory[chatIdx] };
       const updatedHistory = {
         ...existingHistory,
-        closed: close,
-        animate: !close,
-        pending: false,
-        chatId,
+        chatId, // finalize response stream only has some specific keys for data. we are explicitly listing them here.
       };
       _chatHistory[chatIdx] = updatedHistory;
     }

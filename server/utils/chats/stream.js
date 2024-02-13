@@ -181,9 +181,10 @@ async function streamChatWithWorkspace(
     workspaceId: workspace.id,
     prompt: message,
     response: { text: completeText, sources, type: chatMode },
-    user,
     threadId: thread?.id,
+    user,
   });
+
   writeResponseChunk(response, {
     uuid,
     type: "finalizeResponseStream",
@@ -246,8 +247,8 @@ async function streamEmptyEmbeddingChat({
     workspaceId: workspace.id,
     prompt: message,
     response: { text: completeText, sources: [], type: "chat" },
-    user,
     threadId: thread?.id,
+    user,
   });
 
   writeResponseChunk(response, {
@@ -257,7 +258,6 @@ async function streamEmptyEmbeddingChat({
     error: false,
     chatId: chat.id,
   });
-
   return;
 }
 

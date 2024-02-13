@@ -211,7 +211,8 @@ const WorkspaceChats = {
           id: Number(chatId),
         },
         data: {
-          feedbackScore: feedbackScore,
+          feedbackScore:
+            feedbackScore === null ? null : Number(feedbackScore) === 1,
         },
       });
       return;

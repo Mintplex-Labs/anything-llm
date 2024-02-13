@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from "react";
+import React, { memo, useState } from "react";
 import useCopyText from "@/hooks/useCopyText";
 import {
   Check,
@@ -27,13 +27,14 @@ const Actions = ({ message, feedbackScore, chatId, slug }) => {
           <FeedbackButton
             isSelected={selectedFeedback === true}
             handleFeedback={() => handleFeedback(true)}
-            tooltipId="thumbs-up"
+            tooltipId={`${chatId}-thumbs-up`}
             tooltipContent="Good response"
             IconComponent={ThumbsUp}
           />
           <FeedbackButton
             isSelected={selectedFeedback === false}
             handleFeedback={() => handleFeedback(false)}
+            tooltipId={`${chatId}-thumbs-down`}
             tooltipId="thumbs-down"
             tooltipContent="Bad response"
             IconComponent={ThumbsDown}
