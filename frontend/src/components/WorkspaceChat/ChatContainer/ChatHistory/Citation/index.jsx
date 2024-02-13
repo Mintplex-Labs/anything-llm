@@ -1,11 +1,17 @@
 import { memo, useState } from "react";
-import { ArrowSquareOut, X } from "@phosphor-icons/react";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
 import { CaretRight, FileText } from "@phosphor-icons/react";
 import truncate from "truncate";
 import ModalWrapper from "@/components/ModalWrapper";
 import { middleTruncate } from "@/utils/directories";
+import {
+  ArrowSquareOut,
+  GithubLogo,
+  Link,
+  X,
+  YoutubeLogo,
+} from "@phosphor-icons/react";
 
 function combineLikeSources(sources) {
   const combined = {};
@@ -65,17 +71,20 @@ export default function Citations({ sources = [] }) {
 }
 
 const Citation = memo(({ source, onClick }) => {
-  const { title, chunkSource } = source;
-  if (!title && !chunkSource) return null;
-  const truncatedTitle =
-    parseChunkSource(chunkSource)?.text ?? middleTruncate(title, 25);
+  const { title } = source;
+  if (!title) return null;
+  const chunkSourceInfo = parseChunkSource(source);
+  const truncatedTitle = chunkSourceInfo?.text ?? middleTruncate(title, 25);
+  const CitationIcon = ICONS.hasOwnProperty(chunkSourceInfo?.icon)
+    ? ICONS[chunkSourceInfo.icon]
+    : ICONS.file;
 
   return (
     <div
       className="w-fit flex flex-row justify-center items-center cursor-pointer text-sky-400"
       onClick={onClick}
     >
-      <FileText className="w-6 h-6" weight="bold" />
+      <CitationIcon className="w-6 h-6" weight="bold" />
       <p className="text-sm font-medium whitespace-nowrap">{truncatedTitle}</p>
     </div>
   );
@@ -100,12 +109,8 @@ function SkeletonLine() {
 }
 
 function CitationDetailModal({ source, onClose }) {
-  const { references, title, text, chunkSource = "" } = source;
-  const {
-    isUrl,
-    text: webpageUrl,
-    href: linkTo,
-  } = parseChunkSource(chunkSource);
+  const { references, title, text } = source;
+  const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
 
   return (
     <ModalWrapper isOpen={source}>
@@ -164,13 +169,47 @@ function CitationDetailModal({ source, onClose }) {
   );
 }
 
-function parseChunkSource(chunkSource = "") {
-  const nullResponse = { isUrl: false, text: null, href: null };
-  if (!chunkSource.startsWith("link://")) return nullResponse;
+const ICONS = {
+  file: FileText,
+  link: Link,
+  youtube: YoutubeLogo,
+  github: GithubLogo,
+};
 
+// Show the correct title and/or display text for citations
+// which contain valid outbound links that can be clicked by the
+// user when viewing a citation. Optionally allows various icons
+// to show distinct types of sources.
+function parseChunkSource({ title = "", chunkSource = "" }) {
+  const nullResponse = {
+    isUrl: false,
+    text: null,
+    href: null,
+    icon: "file",
+  };
+
+  if (!chunkSource.startsWith("link://")) return nullResponse;
   try {
     const url = new URL(chunkSource.split("link://")[1]);
-    return { isUrl: true, text: url.host + url.pathname, href: url.toString() };
+    let text = url.host + url.pathname;
+    let icon = "link";
+
+    if (url.host.includes("youtube.com")) {
+      text = title;
+      icon = "youtube";
+    }
+
+    if (url.host.includes("github.com")) {
+      text = title;
+      icon = "github";
+    }
+
+    return {
+      isUrl: true,
+      href: url.toString(),
+      text,
+      icon,
+    };
   } catch {}
   return nullResponse;
 }
