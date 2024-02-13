@@ -177,12 +177,20 @@ async function streamChatWithWorkspace(
     });
   }
 
-  await WorkspaceChats.new({
+  const { chat } = await WorkspaceChats.new({
     workspaceId: workspace.id,
     prompt: message,
     response: { text: completeText, sources, type: chatMode },
-    user,
     threadId: thread?.id,
+    user,
+  });
+
+  writeResponseChunk(response, {
+    uuid,
+    type: "finalizeResponseStream",
+    close: true,
+    error: false,
+    chatId: chat.id,
   });
   return;
 }
@@ -235,12 +243,20 @@ async function streamEmptyEmbeddingChat({
     });
   }
 
-  await WorkspaceChats.new({
+  const { chat } = await WorkspaceChats.new({
     workspaceId: workspace.id,
     prompt: message,
     response: { text: completeText, sources: [], type: "chat" },
-    user,
     threadId: thread?.id,
+    user,
+  });
+
+  writeResponseChunk(response, {
+    uuid,
+    type: "finalizeResponseStream",
+    close: true,
+    error: false,
+    chatId: chat.id,
   });
   return;
 }

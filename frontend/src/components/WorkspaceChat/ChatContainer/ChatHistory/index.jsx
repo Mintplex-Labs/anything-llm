@@ -7,7 +7,6 @@ import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 
 export default function ChatHistory({ history = [], workspace, sendCommand }) {
-  const replyRef = useRef(null);
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
@@ -89,7 +88,6 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
       ref={chatHistoryRef}
     >
       {history.map((props, index) => {
-        const isLastMessage = index === history.length - 1;
         const isLastBotReply =
           index === history.length - 1 && props.role === "assistant";
 
@@ -97,7 +95,6 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
           return (
             <PromptReply
               key={props.uuid}
-              ref={isLastMessage ? replyRef : null}
               uuid={props.uuid}
               reply={props.content}
               pending={props.pending}
@@ -112,11 +109,12 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
         return (
           <HistoricalMessage
             key={index}
-            ref={isLastMessage ? replyRef : null}
             message={props.content}
             role={props.role}
             workspace={workspace}
             sources={props.sources}
+            feedbackScore={props.feedbackScore}
+            chatId={props.chatId}
             error={props.error}
           />
         );

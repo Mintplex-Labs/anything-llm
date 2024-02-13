@@ -60,6 +60,19 @@ const Workspace = {
       .catch(() => []);
     return history;
   },
+  updateChatFeedback: async function (chatId, slug, feedback) {
+    const result = await fetch(
+      `${API_BASE}/workspace/${slug}/chat-feedback/${chatId}`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ feedback }),
+      }
+    )
+      .then((res) => res.ok)
+      .catch(() => false);
+    return result;
+  },
   streamChat: async function ({ slug }, message, mode = "query", handleChat) {
     const ctrl = new AbortController();
     await fetchEventSource(`${API_BASE}/workspace/${slug}/stream-chat`, {

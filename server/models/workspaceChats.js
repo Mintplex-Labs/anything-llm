@@ -203,6 +203,23 @@ const WorkspaceChats = {
       return [];
     }
   },
+  updateFeedbackScore: async function (chatId = null, feedbackScore = null) {
+    if (!chatId) return;
+    try {
+      await prisma.workspace_chats.update({
+        where: {
+          id: Number(chatId),
+        },
+        data: {
+          feedbackScore:
+            feedbackScore === null ? null : Number(feedbackScore) === 1,
+        },
+      });
+      return;
+    } catch (error) {
+      console.error(error.message);
+    }
+  },
 };
 
 module.exports = { WorkspaceChats };

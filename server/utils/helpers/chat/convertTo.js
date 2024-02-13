@@ -6,7 +6,7 @@ const { WorkspaceChats } = require("../../../models/workspaceChats");
 
 // Todo: add RLHF feedbackScore field support
 async function convertToCSV(preparedData) {
-  const rows = ["id,username,workspace,prompt,response,sent_at"];
+  const rows = ["id,username,workspace,prompt,response,sent_at,rating"];
   for (const item of preparedData) {
     const record = [
       item.id,
@@ -15,6 +15,7 @@ async function convertToCSV(preparedData) {
       escapeCsv(item.prompt),
       escapeCsv(item.response),
       item.sent_at,
+      item.feedback,
     ].join(",");
     rows.push(record);
   }
@@ -53,6 +54,12 @@ async function prepareWorkspaceChatsForExport(format = "jsonl") {
         prompt: chat.prompt,
         response: responseJson.text,
         sent_at: chat.createdAt,
+        feedback:
+          chat.feedbackScore === null
+            ? "--"
+            : chat.feedbackScore
+              ? "GOOD"
+              : "BAD",
       };
     });
 

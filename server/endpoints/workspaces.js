@@ -21,6 +21,7 @@ const { EventLogs } = require("../models/eventLogs");
 const {
   WorkspaceSuggestedMessages,
 } = require("../models/workspacesSuggestedMessages");
+const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
 const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
@@ -317,6 +318,35 @@ function workspaceEndpoints(app) {
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/chat-feedback/:chatId",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const { chatId } = request.params;
+        const { feedback = null } = reqBody(request);
+        const existingChat = await WorkspaceChats.get({
+          id: Number(chatId),
+          workspaceId: response.locals.workspace.id,
+        });
+
+        if (!existingChat) {
+          response.status(404).end();
+          return;
+        }
+
+        const result = await WorkspaceChats.updateFeedbackScore(
+          chatId,
+          feedback
+        );
+        response.status(200).json({ success: result });
+      } catch (error) {
+        console.error("Error updating chat feedback:", error);
+        response.status(500).end();
       }
     }
   );

@@ -7,7 +7,7 @@ const { getVectorDbClass, getLLMProvider } = require("../helpers");
 function convertToChatHistory(history = []) {
   const formattedHistory = [];
   history.forEach((history) => {
-    const { prompt, response, createdAt } = history;
+    const { prompt, response, createdAt, feedbackScore = null, id } = history;
     const data = JSON.parse(response);
     formattedHistory.push([
       {
@@ -19,7 +19,9 @@ function convertToChatHistory(history = []) {
         role: "assistant",
         content: data.text,
         sources: data.sources || [],
+        chatId: id,
         sentAt: moment(createdAt).unix(),
+        feedbackScore,
       },
     ]);
   });
@@ -185,8 +187,7 @@ async function chatWithWorkspace(
       error: "No text completion could be completed with this input.",
     };
   }
-
-  await WorkspaceChats.new({
+  const { chat } = await WorkspaceChats.new({
     workspaceId: workspace.id,
     prompt: message,
     response: { text: textResponse, sources, type: chatMode },
@@ -196,9 +197,10 @@ async function chatWithWorkspace(
     id: uuid,
     type: "textResponse",
     close: true,
+    error: null,
+    chatId: chat.id,
     textResponse,
     sources,
-    error,
   };
 }
 
@@ -271,7 +273,7 @@ async function emptyEmbeddingChat({
     workspace,
     rawHistory
   );
-  await WorkspaceChats.new({
+  const { chat } = await WorkspaceChats.new({
     workspaceId: workspace.id,
     prompt: message,
     response: { text: textResponse, sources: [], type: "chat" },
@@ -283,6 +285,7 @@ async function emptyEmbeddingChat({
     sources: [],
     close: true,
     error: null,
+    chatId: chat.id,
     textResponse,
   };
 }
