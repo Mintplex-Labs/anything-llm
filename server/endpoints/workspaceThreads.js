@@ -12,7 +12,7 @@ const {
   validWorkspaceAndThreadSlug,
 } = require("../utils/middleware/validWorkspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { convertToChatHistory } = require("../utils/chats");
+const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 
 function workspaceThreadEndpoints(app) {
   if (!app) return;
