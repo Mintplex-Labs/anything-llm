@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import Workspace from "@/models/workspace";
 import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
 import { isMobile } from "react-device-detect";
 import { FullScreenLoader } from "@/components/Preloader";
-import { ChatText, Database, PencilSimpleLine } from "@phosphor-icons/react";
-import GeneralInfo from "./GeneralInfo";
+import {
+  ArrowUUpLeft,
+  ChatText,
+  Database,
+  PencilSimpleLine,
+} from "@phosphor-icons/react";
+import GeneralAppearance from "./GeneralAppearance";
 import ChatSettings from "./ChatSettings";
 import VectorDatabase from "./VectorDatabase";
+import paths from "@/utils/paths";
+import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export default function WorkspaceSettings() {
   const { loading, requiresAuth, mode } = usePasswordModal();
@@ -25,7 +33,6 @@ function ShowWorkspaceChat() {
   const { slug, tab } = useParams();
   const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     async function getWorkspace() {
@@ -45,17 +52,15 @@ function ShowWorkspaceChat() {
     getWorkspace();
   }, [slug]);
 
-  const tabClickHandler = (selectedTab) => {
-    navigate(`/workspace/${slug}/settings/${selectedTab}`);
-  };
-
   const tabsMapping = {
-    "general-info": GeneralInfo,
+    "general-appearance": GeneralAppearance,
     "chat-settings": ChatSettings,
     "vector-database": VectorDatabase,
   };
 
   const TabContent = tabsMapping[tab];
+
+  if (loading) return <FullScreenLoader />;
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
@@ -64,27 +69,30 @@ function ShowWorkspaceChat() {
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
       >
-        <div className="flex gap-x-10 pt-8 pb-4 mx-8 border-b-2 border-white border-opacity-10">
+        <div className="flex gap-x-10 pt-6 pb-4 ml-16 mr-8 border-b-2 border-white border-opacity-10">
+          <Link
+            to={paths.workspace.chat(slug)}
+            className="absolute top-2 left-2 md:top-4 md:left-4 transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border z-10"
+          >
+            <ArrowUUpLeft className="h-4 w-4" />
+          </Link>
           <TabItem
-            title="General Info"
+            title="General & Appearance"
             icon={<PencilSimpleLine className="h-6 w-6" />}
-            isActive={tab === "general-info"}
-            onClick={() => tabClickHandler("general-info")}
+            to={paths.workspace.settings.generalAppearance(slug)}
           />
           <TabItem
             title="Chat Settings"
             icon={<ChatText className="h-6 w-6" />}
-            isActive={tab === "chat-settings"}
-            onClick={() => tabClickHandler("chat-settings")}
+            to={paths.workspace.settings.chatSettings(slug)}
           />
           <TabItem
             title="Vector Database"
             icon={<Database className="h-6 w-6" />}
-            isActive={tab === "vector-database"}
-            onClick={() => tabClickHandler("vector-database")}
+            to={paths.workspace.settings.vectorDatabase(slug)}
           />
         </div>
-        <div className="px-8 py-6">
+        <div className="px-16 py-6">
           <TabContent slug={slug} workspace={workspace} />
         </div>
       </div>
@@ -92,16 +100,20 @@ function ShowWorkspaceChat() {
   );
 }
 
-function TabItem({ title, icon, isActive, onClick }) {
+function TabItem({ title, icon, to }) {
   return (
-    <button
-      className={`flex gap-x-2 text-sky-400 text-white/60 hover:text-sky-400 font-medium ${
-        isActive ? "text-sky-400" : ""
-      }`}
-      onClick={onClick}
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `${
+          isActive
+            ? "text-sky-400 pb-4 border-b-[4px] -mb-[19px] border-sky-400"
+            : "text-white/60 hover:text-sky-400"
+        } ` + " flex gap-x-2 items-center font-medium"
+      }
     >
       {icon}
       <div>{title}</div>
-    </button>
+    </NavLink>
   );
 }

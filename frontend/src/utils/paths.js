@@ -55,6 +55,17 @@ export default {
     chat: (slug) => {
       return `/workspace/${slug}`;
     },
+    settings: {
+      generalAppearance: (slug) => {
+        return `/workspace/${slug}/settings/general-appearance`;
+      },
+      chatSettings: (slug) => {
+        return `/workspace/${slug}/settings/chat-settings`;
+      },
+      vectorDatabase: (slug) => {
+        return `/workspace/${slug}/settings/vector-database`;
+      },
+    },
     additionalSettings: (slug) => {
       return `/workspace/${slug}/additional-settings`;
     },

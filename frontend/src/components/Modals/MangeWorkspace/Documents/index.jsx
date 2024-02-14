@@ -195,7 +195,7 @@ export default function DocumentSettings({
   };
 
   return (
-    <div className="flex gap-x-6 justify-center">
+    <div className="flex gap-x-6 justify-center -mt-6">
       <Directory
         files={availableDocs}
         loading={loading}
