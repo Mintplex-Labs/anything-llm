@@ -4,19 +4,19 @@ const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
-const {
-  convertToChatHistory,
-  chatWithWorkspace,
-} = require("../../../utils/chats");
+const { chatWithWorkspace } = require("../../../utils/chats");
 const { getVectorDbClass } = require("../../../utils/helpers");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const {
   streamChatWithWorkspace,
-  writeResponseChunk,
   VALID_CHAT_MODE,
 } = require("../../../utils/chats/stream");
 const { EventLogs } = require("../../../models/eventLogs");
+const {
+  convertToChatHistory,
+  writeResponseChunk,
+} = require("../../../utils/helpers/chat/responses");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;

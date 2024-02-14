@@ -7,7 +7,6 @@ const { SystemSettings } = require("../models/systemSettings");
 const { Telemetry } = require("../models/telemetry");
 const {
   streamChatWithWorkspace,
-  writeResponseChunk,
   VALID_CHAT_MODE,
 } = require("../utils/chats/stream");
 const {
@@ -18,6 +17,7 @@ const { EventLogs } = require("../models/eventLogs");
 const {
   validWorkspaceAndThreadSlug,
 } = require("../utils/middleware/validWorkspace");
+const { writeResponseChunk } = require("../utils/helpers/chat/responses");
 
 function chatEndpoints(app) {
   if (!app) return;

@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { chatPrompt } = require("../../chats");
-const { writeResponseChunk } = require("../../chats/stream");
+const { writeResponseChunk } = require("../../helpers/chat/responses");
 
 // Docs: https://api.js.langchain.com/classes/chat_models_llama_cpp.ChatLlamaCpp.html
 const ChatLlamaCpp = (...args) =>

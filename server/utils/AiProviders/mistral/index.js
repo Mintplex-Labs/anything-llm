@@ -1,5 +1,5 @@
 const { chatPrompt } = require("../../chats");
-const { handleDefaultStreamResponse } = require("../../chats/stream");
+const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
 
 class MistralLLM {
   constructor(embedder = null, modelPreference = null) {

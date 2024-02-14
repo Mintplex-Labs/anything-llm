@@ -898,7 +898,7 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { type = "jsonl" } = request.query;
-        const chats = await prepareWorkspaceChatsForExport();
+        const chats = await prepareWorkspaceChatsForExport(type);
         const { contentType, data } = await exportChatsAsType(chats, type);
         await EventLogs.logEvent(
           "exported_chats",

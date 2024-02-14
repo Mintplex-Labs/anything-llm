@@ -1,5 +1,5 @@
 const { chatPrompt } = require("../../chats");
-const { writeResponseChunk } = require("../../chats/stream");
+const { writeResponseChunk } = require("../../helpers/chat/responses");
 
 class GeminiLLM {
   constructor(embedder = null, modelPreference = null) {

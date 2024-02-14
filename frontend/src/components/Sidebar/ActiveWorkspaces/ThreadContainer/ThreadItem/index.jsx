@@ -7,49 +7,71 @@ import { useParams } from "react-router-dom";
 import truncate from "truncate";
 
 const THREAD_CALLOUT_DETAIL_WIDTH = 26;
-export default function ThreadItem({ workspace, thread, onRemove, hasNext }) {
+export default function ThreadItem({
+  idx,
+  activeIdx,
+  isActive,
+  workspace,
+  thread,
+  onRemove,
+  hasNext,
+}) {
   const optionsContainer = useRef(null);
-  const { slug, threadSlug = null } = useParams();
+  const { slug } = useParams();
   const [showOptions, setShowOptions] = useState(false);
   const [name, setName] = useState(thread.name);
 
-  const isActive = threadSlug === thread.slug;
   const linkTo = !thread.slug
     ? paths.workspace.chat(slug)
     : paths.workspace.thread(slug, thread.slug);
 
   return (
-    <div className="w-full relative flex h-[40px] items-center border-none hover:bg-slate-600/20 rounded-lg">
+    <div className="w-full relative flex h-[38px] items-center border-none hover:bg-slate-600/20 rounded-lg">
       {/* Curved line Element and leader if required */}
       <div
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
-        className="border-l border-b border-slate-300 h-[50%] absolute top-0 left-2 rounded-bl-lg"
+        className={`${
+          isActive
+            ? "border-l-2 border-b-2 border-white"
+            : "border-l border-b border-slate-300"
+        } h-[50%] absolute top-0 z-10 left-2 rounded-bl-lg`}
       ></div>
+      {/* Downstroke border for next item */}
       {hasNext && (
         <div
           style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
-          className="border-l border-slate-300 h-[100%] absolute top-0 left-2"
+          className={`${
+            idx <= activeIdx && !isActive
+              ? "border-l-2 border-white"
+              : "border-l border-slate-300"
+          } h-[100%] absolute top-0 z-1 left-2`}
         ></div>
       )}
 
-      {/* Curved line inline placeholder for spacing */}
+      {/* Curved line inline placeholder for spacing - not visible */}
       <div
-        style={{ width: THREAD_CALLOUT_DETAIL_WIDTH }}
-        className="w-[26px] h-full"
+        style={{ width: THREAD_CALLOUT_DETAIL_WIDTH + 8 }}
+        className="h-full"
       />
       <div className="flex w-full items-center justify-between pr-2 group relative">
-        <a href={isActive ? "#" : linkTo} className="w-full">
-          <p
-            className={`text-left text-sm ${
-              isActive
-                ? "font-semibold text-slate-300"
-                : "text-slate-400 italic"
-            }`}
-          >
-            {truncate(name, 25)}
-          </p>
-        </a>
-        {!!thread.slug && (
+        {thread.deleted ? (
+          <a className="w-full">
+            <p className={`text-left text-sm text-slate-400/50 italic`}>
+              deleted thread
+            </p>
+          </a>
+        ) : (
+          <a href={isActive ? "#" : linkTo} className="w-full">
+            <p
+              className={`text-left text-sm ${
+                isActive ? "font-medium text-white" : "text-slate-400"
+              }`}
+            >
+              {truncate(name, 25)}
+            </p>
+          </a>
+        )}
+        {!!thread.slug && !thread.deleted && (
           <div ref={optionsContainer}>
             <div className="flex items-center w-fit group-hover:visible md:invisible gap-x-1">
               <button

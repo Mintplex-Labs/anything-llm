@@ -89,6 +89,8 @@ export default function ChatHistory({ settings = {}, history = [] }) {
             message={props.content}
             role={props.role}
             sources={props.sources}
+            chatId={props.chatId}
+            feedbackScore={props.feedbackScore}
             error={props.error}
           />
         );

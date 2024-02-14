@@ -142,6 +142,7 @@ model workspace_chats {
   thread_id     Int? // No relation to prevent whole table migration
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
+  feedbackScore Boolean?
   users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
