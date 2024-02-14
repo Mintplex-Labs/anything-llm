@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import Workspace from "@/models/workspace";
@@ -11,9 +11,10 @@ import {
   Database,
   PencilSimpleLine,
 } from "@phosphor-icons/react";
-import GeneralAppearance from "./GeneralAppearance";
-import ChatSettings from "./ChatSettings";
-import VectorDatabase from "./VectorDatabase";
+const GeneralAppearance = lazy(() => import("./GeneralAppearance"));
+const ChatSettings = lazy(() => import("./ChatSettings"));
+const VectorDatabase = lazy(() => import("./VectorDatabase"));
+
 import paths from "@/utils/paths";
 import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
