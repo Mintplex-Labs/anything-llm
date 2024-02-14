@@ -1,6 +1,6 @@
 const { chatPrompt } = require("../../chats");
 const { StringOutputParser } = require("langchain/schema/output_parser");
-const { writeResponseChunk } = require("../../../utils/helpers/chat/responses");
+const { writeResponseChunk } = require("../../helpers/chat/responses");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {

@@ -26,7 +26,8 @@ async function chatWithWorkspace(
   workspace,
   message,
   chatMode = "chat",
-  user = null
+  user = null,
+  thread = null
 ) {
   const uuid = uuidv4();
   const command = grepCommand(message);
