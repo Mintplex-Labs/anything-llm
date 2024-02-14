@@ -1,7 +1,7 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
 const { chatPrompt } = require("../../chats");
-const { writeResponseChunk } = require("../../chats/stream");
+const { writeResponseChunk } = require("../../helpers/chat/responses");
 
 class HuggingFaceLLM {
   constructor(embedder = null, _modelPreference = null) {

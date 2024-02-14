@@ -1,5 +1,5 @@
-const { convertToPromptHistory } = require("../../chats");
 const { TokenManager } = require("../tiktoken");
+const { convertToPromptHistory } = require("./responses");
 
 /*
 What is the message Array compressor?

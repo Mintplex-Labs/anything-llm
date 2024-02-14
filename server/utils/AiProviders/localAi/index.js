@@ -1,5 +1,5 @@
 const { chatPrompt } = require("../../chats");
-const { handleDefaultStreamResponse } = require("../../chats/stream");
+const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
 
 class LocalAiLLM {
   constructor(embedder = null, modelPreference = null) {
