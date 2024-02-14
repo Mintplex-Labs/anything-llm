@@ -70,7 +70,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
       <div className="backdrop h-full w-full absolute top-0 z-10" />
       <div className={`absolute max-h-full w-fit transition duration-300 z-20`}>
         <div className="relative bg-main-gradient rounded-[12px] shadow border-2 border-slate-300/10">
-          <div className="flex items-start justify-between p-2 rounded-t border-gray-500/50">
+          <div className="flex items-start justify-between p-2 rounded-t border-gray-500/50 z-40 relative">
             <button
               onClick={hideModal}
               type="button"
