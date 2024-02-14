@@ -80,12 +80,12 @@ export default function ActiveWorkspaces() {
                 href={isActive ? null : paths.workspace.chat(workspace.slug)}
                 className={`
               transition-all duration-[200ms]
-                flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-lg text-slate-200 justify-start items-center border
-                hover:bg-workspace-item-selected-gradient hover:border-slate-100 hover:border-opacity-50
+                flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-lg text-slate-200 justify-start items-center 
+                hover:bg-workspace-item-selected-gradient 
                 ${
                   isActive
-                    ? "bg-workspace-item-selected-gradient border-slate-100 border-opacity-50"
-                    : "bg-workspace-item-gradient bg-opacity-60 border-transparent"
+                    ? "border-2 bg-workspace-item-selected-gradient border-white"
+                    : "border bg-workspace-item-gradient bg-opacity-60 border-transparent hover:border-slate-100 hover:border-opacity-50"
                 }`}
               >
                 <div className="flex flex-row justify-between w-full">
