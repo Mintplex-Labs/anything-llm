@@ -16,11 +16,10 @@ export default function ThreadItem({
   onRemove,
   hasNext,
 }) {
-  const optionsContainer = useRef(null);
   const { slug } = useParams();
+  const optionsContainer = useRef(null);
   const [showOptions, setShowOptions] = useState(false);
   const [name, setName] = useState(thread.name);
-
   const linkTo = !thread.slug
     ? paths.workspace.chat(slug)
     : paths.workspace.thread(slug, thread.slug);
@@ -61,7 +60,10 @@ export default function ThreadItem({
             </p>
           </a>
         ) : (
-          <a href={isActive ? "#" : linkTo} className="w-full">
+          <a
+            href={window.location.pathname === linkTo ? "#" : linkTo}
+            className="w-full"
+          >
             <p
               className={`text-left text-sm ${
                 isActive ? "font-medium text-white" : "text-slate-400"
