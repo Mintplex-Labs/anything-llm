@@ -43,6 +43,9 @@ const DataConnectorSetup = lazy(
   () => import("@/pages/GeneralSettings/DataConnectors/Connectors")
 );
 const WorkspaceSettings = lazy(() => import("@/pages/WorkspaceSettings"));
+const AdditionalWorkspaceSettings = lazy(
+  () => import("@/pages/AdditionalWorkspaceSettings")
+);
 const EmbedConfigSetup = lazy(
   () => import("@/pages/GeneralSettings/EmbedConfigs")
 );
@@ -58,6 +61,10 @@ export default function App() {
               <Route path="/" element={<PrivateRoute Component={Main} />} />
               <Route path="/login" element={<Login />} />
               <Route
+                path="/workspace/:slug/settings/:tab"
+                element={<PrivateRoute Component={WorkspaceSettings} />}
+              />
+              <Route
                 path="/workspace/:slug"
                 element={<PrivateRoute Component={WorkspaceChat} />}
               />
@@ -69,8 +76,10 @@ export default function App() {
 
               {/* Admin */}
               <Route
-                path="/workspace/:slug/settings"
-                element={<PrivateRoute Component={WorkspaceSettings} />}
+                path="/workspace/:slug/additional-settings"
+                element={
+                  <PrivateRoute Component={AdditionalWorkspaceSettings} />
+                }
               />
               <Route
                 path="/settings/llm-preference"

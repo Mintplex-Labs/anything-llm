@@ -56,7 +56,7 @@ export default {
       return `/workspace/${slug}`;
     },
     additionalSettings: (slug) => {
-      return `/workspace/${slug}/settings`;
+      return `/workspace/${slug}/additional-settings`;
     },
     thread: (wsSlug, threadSlug) => {
       return `/workspace/${wsSlug}/t/${threadSlug}`;

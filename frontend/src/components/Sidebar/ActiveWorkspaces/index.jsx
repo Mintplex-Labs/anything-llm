@@ -7,7 +7,7 @@ import ManageWorkspace, {
 } from "../../Modals/MangeWorkspace";
 import paths from "@/utils/paths";
 import { useParams } from "react-router-dom";
-import { GearSix, SquaresFour } from "@phosphor-icons/react";
+import { GearSix, SquaresFour, UploadSimple } from "@phosphor-icons/react";
 import truncate from "truncate";
 import useUser from "@/hooks/useUser";
 import ThreadContainer from "./ThreadContainer";
@@ -104,25 +104,47 @@ export default function ActiveWorkspaces() {
                         : truncate(workspace.name, 20)}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSelectedWs(workspace);
-                      showModal();
-                    }}
-                    onMouseEnter={() => handleGearMouseEnter(workspace.id)}
-                    onMouseLeave={() => handleGearMouseLeave(workspace.id)}
-                    className="rounded-md flex items-center justify-center text-white ml-auto"
-                  >
-                    <GearSix
-                      weight={isGearHovered ? "fill" : "regular"}
-                      hidden={
-                        (!isActive && !isHovered) || user?.role === "default"
-                      }
-                      className="h-[20px] w-[20px] transition-all duration-300"
-                    />
-                  </button>
+                  <div className="flex items-center gap-x-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedWs(workspace);
+                        showModal();
+                      }}
+                      onMouseEnter={() => handleGearMouseEnter(workspace.id)}
+                      onMouseLeave={() => handleGearMouseLeave(workspace.id)}
+                      className="rounded-md flex items-center justify-center text-white ml-auto"
+                    >
+                      <UploadSimple
+                        weight={isGearHovered ? "fill" : "regular"}
+                        hidden={
+                          (!isActive && !isHovered) || user?.role === "default"
+                        }
+                        className="h-[20px] w-[20px] transition-all duration-300"
+                      />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedWs(workspace);
+                        showModal();
+                      }}
+                      onMouseEnter={() => handleGearMouseEnter(workspace.id)}
+                      onMouseLeave={() => handleGearMouseLeave(workspace.id)}
+                      className="rounded-md flex items-center justify-center text-white ml-auto"
+                    >
+                      <GearSix
+                        weight={isGearHovered ? "fill" : "regular"}
+                        hidden={
+                          (!isActive && !isHovered) || user?.role === "default"
+                        }
+                        className="h-[20px] w-[20px] transition-all duration-300"
+                      />
+                    </button>
+                  </div>
                 </div>
               </a>
             </div>
