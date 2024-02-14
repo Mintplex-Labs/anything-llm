@@ -40,9 +40,6 @@ export default function ThreadContainer({ workspace }) {
     );
   }
 
-  // If on default = (-1+1) = 0
-  // then on any valid indx it will be its index+1 which works since we add-one
-  // to the map of real threads.
   const activeThreadIdx = !!threads.find(
     (thread) => thread?.slug === threadSlug
   )
