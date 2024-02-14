@@ -26,7 +26,7 @@ export default function ThreadItem({
     : paths.workspace.thread(slug, thread.slug);
 
   return (
-    <div className="w-full relative flex h-[40px] items-center border-none hover:bg-slate-600/20 rounded-lg">
+    <div className="w-full relative flex h-[38px] items-center border-none hover:bg-slate-600/20 rounded-lg">
       {/* Curved line Element and leader if required */}
       <div
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
@@ -34,7 +34,7 @@ export default function ThreadItem({
           isActive
             ? "border-l-2 border-b-2 border-white"
             : "border-l border-b border-slate-300"
-        } h-[50%] absolute top-0 left-2 rounded-bl-lg`}
+        } h-[50%] absolute top-0 z-10 left-2 rounded-bl-lg`}
       ></div>
       {/* Downstroke border for next item */}
       {hasNext && (
@@ -44,14 +44,14 @@ export default function ThreadItem({
             idx <= activeIdx && !isActive
               ? "border-l-2 border-white"
               : "border-l border-slate-300"
-          } h-[100%] absolute top-0 left-2`}
+          } h-[100%] absolute top-0 z-1 left-2`}
         ></div>
       )}
 
       {/* Curved line inline placeholder for spacing - not visible */}
       <div
-        style={{ width: THREAD_CALLOUT_DETAIL_WIDTH }}
-        className="w-[26px] h-full"
+        style={{ width: THREAD_CALLOUT_DETAIL_WIDTH + 8 }}
+        className="h-full"
       />
       <div className="flex w-full items-center justify-between pr-2 group relative">
         {thread.deleted ? (
@@ -64,7 +64,7 @@ export default function ThreadItem({
           <a href={isActive ? "#" : linkTo} className="w-full">
             <p
               className={`text-left text-sm ${
-                isActive ? "font-bold text-white" : "text-slate-400"
+                isActive ? "font-medium text-white" : "text-slate-400"
               }`}
             >
               {truncate(name, 25)}
