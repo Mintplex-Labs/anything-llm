@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import Workspace from "@/models/workspace";
@@ -9,15 +9,20 @@ import {
   ArrowUUpLeft,
   ChatText,
   Database,
-  PencilSimpleLine,
+  Wrench,
 } from "@phosphor-icons/react";
-const GeneralAppearance = lazy(() => import("./GeneralAppearance"));
-const ChatSettings = lazy(() => import("./ChatSettings"));
-const VectorDatabase = lazy(() => import("./VectorDatabase"));
-
 import paths from "@/utils/paths";
 import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
+import GeneralAppearance from "./GeneralAppearance";
+import ChatSettings from "./ChatSettings";
+import VectorDatabase from "./VectorDatabase";
+
+const TABS = {
+  "general-appearance": GeneralAppearance,
+  "chat-settings": ChatSettings,
+  "vector-database": VectorDatabase,
+};
 
 export default function WorkspaceSettings() {
   const { loading, requiresAuth, mode } = usePasswordModal();
@@ -43,6 +48,7 @@ function ShowWorkspaceChat() {
         setLoading(false);
         return;
       }
+
       const suggestedMessages = await Workspace.getSuggestedMessages(slug);
       setWorkspace({
         ..._workspace,
@@ -53,16 +59,9 @@ function ShowWorkspaceChat() {
     getWorkspace();
   }, [slug]);
 
-  const tabsMapping = {
-    "general-appearance": GeneralAppearance,
-    "chat-settings": ChatSettings,
-    "vector-database": VectorDatabase,
-  };
-
-  const TabContent = tabsMapping[tab];
-
   if (loading) return <FullScreenLoader />;
 
+  const TabContent = TABS[tab];
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       {!isMobile && <Sidebar />}
@@ -78,8 +77,8 @@ function ShowWorkspaceChat() {
             <ArrowUUpLeft className="h-4 w-4" />
           </Link>
           <TabItem
-            title="General & Appearance"
-            icon={<PencilSimpleLine className="h-6 w-6" />}
+            title="General Settings"
+            icon={<Wrench className="h-6 w-6" />}
             to={paths.workspace.settings.generalAppearance(slug)}
           />
           <TabItem

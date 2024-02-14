@@ -66,9 +66,6 @@ export default {
         return `/workspace/${slug}/settings/vector-database`;
       },
     },
-    additionalSettings: (slug) => {
-      return `/workspace/${slug}/additional-settings`;
-    },
     thread: (wsSlug, threadSlug) => {
       return `/workspace/${wsSlug}/t/${threadSlug}`;
     },

@@ -1,12 +1,11 @@
-import React, { useState, useEffect, lazy, memo } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { X } from "@phosphor-icons/react";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
 import System from "../../../models/system";
 import { isMobile } from "react-device-detect";
 import useUser from "../../../hooks/useUser";
-
-const DocumentSettings = lazy(() => import("./Documents"));
+import DocumentSettings from "./Documents";
 
 const noop = () => {};
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
