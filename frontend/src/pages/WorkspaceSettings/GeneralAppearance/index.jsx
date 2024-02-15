@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import VectorCount from "./VectorCount";
 import WorkspaceName from "./WorkspaceName";
 import SuggestedChatMessages from "./SuggestedChatMessages";
+import DeleteWorkspace from "./DeleteWorkspace";
 
 export default function GeneralInfo({ slug }) {
   const [workspace, setWorkspace] = useState(null);
@@ -56,7 +57,6 @@ export default function GeneralInfo({ slug }) {
           workspace={workspace}
           setHasChanges={setHasChanges}
         />
-
         {hasChanges && (
           <button
             type="submit"
@@ -69,6 +69,7 @@ export default function GeneralInfo({ slug }) {
       <div className="mt-6">
         <SuggestedChatMessages slug={workspace.slug} />
       </div>
+      <DeleteWorkspace workspace={workspace} />
     </>
   );
 }
