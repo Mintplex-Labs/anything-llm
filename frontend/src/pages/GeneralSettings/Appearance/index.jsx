@@ -8,6 +8,7 @@ import EditingChatBubble from "@/components/EditingChatBubble";
 import showToast from "@/utils/toast";
 import { Plus } from "@phosphor-icons/react";
 import FooterCustomization from "./FooterCustomization";
+import SupportEmail from "./SupportEmail";
 
 export default function Appearance() {
   const { logo: _initLogo, setLogo: _setLogo } = useLogo();
@@ -250,6 +251,7 @@ export default function Appearance() {
             )}
           </div>
           <FooterCustomization />
+          <SupportEmail />
         </div>
       </div>
     </div>

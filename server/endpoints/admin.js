@@ -307,6 +307,9 @@ function adminEndpoints(app) {
           footer_data:
             (await SystemSettings.get({ label: "footer_data" }))?.value ||
             JSON.stringify([]),
+          support_email:
+            (await SystemSettings.get({ label: "support_email" }))?.value ||
+            null,
         };
         response.status(200).json({ settings });
       } catch (e) {

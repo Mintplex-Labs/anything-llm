@@ -13,6 +13,7 @@ const SystemSettings = {
     "logo_filename",
     "telemetry_id",
     "footer_data",
+    "support_email",
   ],
   validations: {
     footer_data: (updates) => {
