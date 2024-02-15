@@ -8,11 +8,11 @@ const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
+const { insertIntoGraph, knowledgeGraphSearch } = require("../../graphManager/prepare");
 
 const LanceDb = {
-  uri: `${
-    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
-  }lancedb`,
+  uri: `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
+    }lancedb`,
   name: "LanceDb",
   connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
@@ -63,7 +63,7 @@ const LanceDb = {
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN = 4
+    topN = 4,
   ) {
     const collection = await client.openTable(namespace);
     const result = {
@@ -85,6 +85,12 @@ const LanceDb = {
       result.sourceDocuments.push(rest);
       result.scores.push(this.distanceToSimilarity(item.score));
     });
+
+    // Only attempt to expand the original question if we found at least _something_ from the vectorDB
+    // even if it was filtered out by score - because then there is a chance we can expand on it and save the query.
+    result.contextTexts = response.length > 0 ?
+      await knowledgeGraphSearch(namespace, result.contextTexts) :
+      result.contextTexts
 
     return result;
   },
@@ -161,6 +167,7 @@ const LanceDb = {
         const { chunks } = cacheResult;
         const documentVectors = [];
         const submissions = [];
+        const metadatas = []
 
         for (const chunk of chunks) {
           chunk.forEach((chunk) => {
@@ -168,11 +175,13 @@ const LanceDb = {
             const { id: _id, ...metadata } = chunk.metadata;
             documentVectors.push({ docId, vectorId: id });
             submissions.push({ id: id, vector: chunk.values, ...metadata });
+            metadatas.push({ ...metadata, vectorId: id, })
           });
         }
 
         await this.updateOrCreateCollection(client, submissions, namespace);
         await DocumentVectors.bulkInsert(documentVectors);
+        await insertIntoGraph(namespace, metadatas)
         return { vectorized: true, error: null };
       }
 
@@ -261,7 +270,7 @@ const LanceDb = {
       namespace,
       queryVector,
       similarityThreshold,
-      topN
+      topN,
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

@@ -5,6 +5,7 @@ storage/assets/*
 storage/documents/*
 storage/tmp/*
 storage/vector-cache/*.json
+storage/knowledge-graphs/*
 storage/exports
 storage/imports
 !storage/documents/DOCUMENTS.md

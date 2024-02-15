@@ -31,17 +31,16 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
 }
 
 async function openAiModels(apiKey = null) {
-  const { Configuration, OpenAIApi } = require("openai");
-  const config = new Configuration({
+  const OpenAI = require("openai");
+  const openai = new OpenAI({
     apiKey: apiKey || process.env.OPEN_AI_KEY,
   });
-  const openai = new OpenAIApi(config);
+
   const models = (
-    await openai
-      .listModels()
-      .then((res) => res.data.data)
+    await openai.models.list()
+      .then((res) => res.data)
       .catch((e) => {
-        console.error(`OpenAI:listModels`, e.message);
+        console.error(`OpenAI:models.list()`, e.message);
         return [];
       })
   ).filter(

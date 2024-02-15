@@ -2,13 +2,12 @@ const { toChunks } = require("../../helpers");
 
 class OpenAiEmbedder {
   constructor() {
-    const { Configuration, OpenAIApi } = require("openai");
+    const OpenAI = require("openai");
     if (!process.env.OPEN_AI_KEY) throw new Error("No OpenAI API key was set.");
-    const config = new Configuration({
+
+    this.openai = new OpenAI({
       apiKey: process.env.OPEN_AI_KEY,
     });
-    const openai = new OpenAIApi(config);
-    this.openai = openai;
     this.model = process.env.EMBEDDING_MODEL_PREF || "text-embedding-ada-002";
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
@@ -30,7 +29,7 @@ class OpenAiEmbedder {
       embeddingRequests.push(
         new Promise((resolve) => {
           this.openai
-            .createEmbedding({
+            .embeddings.create({
               model: this.model,
               input: chunk,
             })
