@@ -7,6 +7,7 @@ const {
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
+const { GraphManager } = require("../../graphManager");
 
 const Chroma = {
   name: "Chroma",
@@ -70,9 +71,11 @@ const Chroma = {
     similarityThreshold = 0.25,
     topN = 4,
     textQuery = null,
+    useKGExpansion = false,
   }) {
     const collection = await client.getCollection({ name: namespace });
     const result = {
+      allTexts: [],
       contextTexts: [],
       sourceDocuments: [],
       scores: [],
@@ -82,7 +85,11 @@ const Chroma = {
       queryEmbeddings: queryVector,
       nResults: topN,
     });
+
     response.ids[0].forEach((_, i) => {
+      response.documents[0][i]
+        ? result.allTexts.push(response.documents[0][i])
+        : null;
       if (
         this.distanceToSimilarity(response.distances[0][i]) <
         similarityThreshold
@@ -92,6 +99,18 @@ const Chroma = {
       result.sourceDocuments.push(response.metadatas[0][i]);
       result.scores.push(this.distanceToSimilarity(response.distances[0][i]));
     });
+
+    // Only attempt to expand the original question if we found at least _something_ from the vectorDB
+    // even if it was filtered out by score - because then there is a chance we can expand on it and save the query.
+    if (useKGExpansion && result.allTexts.length > 0) {
+      const expansionTexts = textQuery
+        ? [textQuery, ...result.allTexts]
+        : result.allTexts;
+      result.contextTexts = await new GraphManager().knowledgeGraphSearch(
+        namespace,
+        expansionTexts
+      );
+    }
 
     return result;
   },

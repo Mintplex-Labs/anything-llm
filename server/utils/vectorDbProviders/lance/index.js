@@ -66,6 +66,7 @@ const LanceDb = {
     similarityThreshold = 0.25,
     topN = 4,
     textQuery = null,
+    useKGExpansion = false,
   }) {
     const collection = await client.openTable(namespace);
     const result = {
@@ -92,7 +93,7 @@ const LanceDb = {
 
     // Only attempt to expand the original question if we found at least _something_ from the vectorDB
     // even if it was filtered out by score - because then there is a chance we can expand on it and save the query.
-    if (result.allTexts.length > 0) {
+    if (useKGExpansion && result.allTexts.length > 0) {
       const expansionTexts = textQuery
         ? [textQuery, ...result.allTexts]
         : result.allTexts;

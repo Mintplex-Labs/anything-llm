@@ -7,6 +7,7 @@ const {
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
+const { GraphManager } = require("../../graphManager");
 
 const AstraDB = {
   name: "AstraDB",
@@ -282,8 +283,10 @@ const AstraDB = {
     similarityThreshold = 0.25,
     topN = 4,
     textQuery = null,
+    useKGExpansion = false,
   }) {
     const result = {
+      allTexts: [],
       contextTexts: [],
       sourceDocuments: [],
       scores: [],
@@ -302,11 +305,27 @@ const AstraDB = {
       .toArray();
 
     responses.forEach((response) => {
+      response.metadata.text
+        ? result.allTexts.push(response.metadata.text)
+        : null;
       if (response.$similarity < similarityThreshold) return;
       result.contextTexts.push(response.metadata.text);
       result.sourceDocuments.push(response);
       result.scores.push(response.$similarity);
     });
+
+    // Only attempt to expand the original question if we found at least _something_ from the vectorDB
+    // even if it was filtered out by score - because then there is a chance we can expand on it and save the query.
+    if (useKGExpansion && result.allTexts.length > 0) {
+      const expansionTexts = textQuery
+        ? [textQuery, ...result.allTexts]
+        : result.allTexts;
+      result.contextTexts = await new GraphManager().knowledgeGraphSearch(
+        namespace,
+        expansionTexts
+      );
+    }
+
     return result;
   },
   allNamespaces: async function (client) {

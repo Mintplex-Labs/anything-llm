@@ -7,6 +7,7 @@ const {
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
+const { GraphManager } = require("../../graphManager");
 
 const QDrant = {
   name: "QDrant",
@@ -56,9 +57,11 @@ const QDrant = {
     similarityThreshold = 0.25,
     topN = 4,
     textQuery = null,
+    useKGExpansion = false,
   }) {
     const { client } = await this.connect();
     const result = {
+      allTexts: [],
       contextTexts: [],
       sourceDocuments: [],
       scores: [],
@@ -71,6 +74,9 @@ const QDrant = {
     });
 
     responses.forEach((response) => {
+      response?.payload?.text
+        ? result.allTexts.push(response.payload.text)
+        : null;
       if (response.score < similarityThreshold) return;
       result.contextTexts.push(response?.payload?.text || "");
       result.sourceDocuments.push({
@@ -79,6 +85,18 @@ const QDrant = {
       });
       result.scores.push(response.score);
     });
+
+    // Only attempt to expand the original question if we found at least _something_ from the vectorDB
+    // even if it was filtered out by score - because then there is a chance we can expand on it and save the query.
+    if (useKGExpansion && result.allTexts.length > 0) {
+      const expansionTexts = textQuery
+        ? [textQuery, ...result.allTexts]
+        : result.allTexts;
+      result.contextTexts = await new GraphManager().knowledgeGraphSearch(
+        namespace,
+        expansionTexts
+      );
+    }
 
     return result;
   },

@@ -8,6 +8,7 @@ const {
   getEmbeddingEngineSelection,
 } = require("../../helpers");
 const { camelCase } = require("../../helpers/camelcase");
+const { GraphManager } = require("../../graphManager");
 
 const Weaviate = {
   name: "Weaviate",
@@ -83,8 +84,10 @@ const Weaviate = {
     similarityThreshold = 0.25,
     topN = 4,
     textQuery = null,
+    useKGExpansion = false,
   }) {
     const result = {
+      allTexts: [],
       contextTexts: [],
       sourceDocuments: [],
       scores: [],
@@ -108,11 +111,24 @@ const Weaviate = {
         _additional: { id, certainty },
         ...rest
       } = response;
+      rest.text ? result.allTexts.push(rest.text) : null;
       if (certainty < similarityThreshold) return;
       result.contextTexts.push(rest.text);
       result.sourceDocuments.push({ ...rest, id });
       result.scores.push(certainty);
     });
+
+    // Only attempt to expand the original question if we found at least _something_ from the vectorDB
+    // even if it was filtered out by score - because then there is a chance we can expand on it and save the query.
+    if (useKGExpansion && result.allTexts.length > 0) {
+      const expansionTexts = textQuery
+        ? [textQuery, ...result.allTexts]
+        : result.allTexts;
+      result.contextTexts = await new GraphManager().knowledgeGraphSearch(
+        namespace,
+        expansionTexts
+      );
+    }
 
     return result;
   },

@@ -12,6 +12,7 @@ const {
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
+const { GraphManager } = require("../../graphManager");
 
 // Zilliz is basically a copy of Milvus DB class with a different constructor
 // to connect to the cloud
@@ -314,8 +315,10 @@ const Zilliz = {
     similarityThreshold = 0.25,
     topN = 4,
     textQuery = null,
+    useKGExpansion = false,
   }) {
     const result = {
+      allTexts: [],
       contextTexts: [],
       sourceDocuments: [],
       scores: [],
@@ -325,12 +328,27 @@ const Zilliz = {
       vectors: queryVector,
       limit: topN,
     });
+
     response.results.forEach((match) => {
+      match.metadata.text ? result.allTexts.push(match.metadata.text) : null;
       if (match.score < similarityThreshold) return;
       result.contextTexts.push(match.metadata.text);
       result.sourceDocuments.push(match);
       result.scores.push(match.score);
     });
+
+    // Only attempt to expand the original question if we found at least _something_ from the vectorDB
+    // even if it was filtered out by score - because then there is a chance we can expand on it and save the query.
+    if (useKGExpansion && result.allTexts.length > 0) {
+      const expansionTexts = textQuery
+        ? [textQuery, ...result.allTexts]
+        : result.allTexts;
+      result.contextTexts = await new GraphManager().knowledgeGraphSearch(
+        namespace,
+        expansionTexts
+      );
+    }
+
     return result;
   },
   "namespace-stats": async function (reqBody = {}) {
