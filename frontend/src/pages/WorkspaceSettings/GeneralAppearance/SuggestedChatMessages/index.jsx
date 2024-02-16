@@ -91,9 +91,7 @@ export default function SuggestedChatMessages({ slug }) {
   if (loading)
     return (
       <div className="flex flex-col">
-        <label className="block text-sm font-medium text-white">
-          Suggested Chat Messages
-        </label>
+        <label className="block input-label">Suggested Chat Messages</label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           Customize the messages that will be suggested to your workspace users.
         </p>
@@ -105,9 +103,7 @@ export default function SuggestedChatMessages({ slug }) {
   return (
     <div className="w-screen">
       <div className="flex flex-col">
-        <label className="block text-sm font-medium text-white">
-          Suggested Chat Messages
-        </label>
+        <label className="block input-label">Suggested Chat Messages</label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           Customize the messages that will be suggested to your workspace users.
         </p>

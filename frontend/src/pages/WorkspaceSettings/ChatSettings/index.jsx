@@ -7,6 +7,7 @@ import ChatModelSelection from "./ChatModelSelection";
 import ChatHistorySettings from "./ChatHistorySettings";
 import ChatPromptSettings from "./ChatPromptSettings";
 import ChatTemperatureSettings from "./ChatTemperatureSettings";
+import ChatModeSelection from "./ChatModeSelection";
 
 export default function ChatSettings({ workspace }) {
   const [settings, setSettings] = useState({});
@@ -48,6 +49,7 @@ export default function ChatSettings({ workspace }) {
       onSubmit={handleUpdate}
       className="w-1/2 flex flex-col gap-y-6"
     >
+      <ChatModeSelection workspace={workspace} setHasChanges={setHasChanges} />
       <ChatModelSelection
         settings={settings}
         workspace={workspace}

@@ -1,21 +1,10 @@
-import {
-  Chats,
-  CircleNotch,
-  Gear,
-  PaperPlaneRight,
-  Quotes,
-} from "@phosphor-icons/react";
+import { CircleNotch, PaperPlaneRight } from "@phosphor-icons/react";
 import React, { useState, useRef } from "react";
-import ManageWorkspace, {
-  useManageWorkspaceModal,
-} from "../../../Modals/MangeWorkspace";
-import useUser from "@/hooks/useUser";
 import SlashCommandsButton, {
   SlashCommands,
   useSlashCommands,
 } from "./SlashCommands";
 import { isMobile } from "react-device-detect";
-import { Tooltip } from "react-tooltip";
 
 export default function PromptInput({
   workspace,
@@ -27,10 +16,8 @@ export default function PromptInput({
   sendCommand,
 }) {
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
-  const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const formRef = useRef(null);
   const [_, setFocused] = useState(false);
-  const { user } = useUser();
 
   const handleSubmit = (e) => {
     setFocused(false);
@@ -100,24 +87,6 @@ export default function PromptInput({
             </div>
             <div className="flex justify-between py-3.5">
               <div className="flex gap-x-2">
-                {user?.role !== "default" && (
-                  <div>
-                    <Gear
-                      onClick={showModal}
-                      data-tooltip-id="tooltip-workspace-settings-prompt"
-                      data-tooltip-content={`Open the ${workspace.name} workspace settings`}
-                      className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"
-                      weight="fill"
-                    />
-                    <Tooltip
-                      id="tooltip-workspace-settings-prompt"
-                      place="top"
-                      delayShow={300}
-                      className="tooltip !text-xs z-99"
-                    />
-                  </div>
-                )}
-                <ChatModeSelector workspace={workspace} />
                 <SlashCommandsButton
                   showing={showSlashCommand}
                   setShowSlashCommand={setShowSlashCommand}
@@ -127,44 +96,6 @@ export default function PromptInput({
           </div>
         </div>
       </form>
-      {showing && (
-        <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
-      )}
-    </div>
-  );
-}
-
-function ChatModeSelector({ workspace }) {
-  const STORAGE_KEY = `workspace_chat_mode_${workspace.slug}`;
-  const [chatMode, setChatMode] = useState(
-    window.localStorage.getItem(STORAGE_KEY) ?? "chat"
-  );
-
-  function toggleMode() {
-    const newChatMode = chatMode === "chat" ? "query" : "chat";
-    setChatMode(newChatMode);
-    window.localStorage.setItem(STORAGE_KEY, newChatMode);
-  }
-
-  const ModeIcon = chatMode === "chat" ? Chats : Quotes;
-  return (
-    <div
-      data-tooltip-id="chat-mode-toggle"
-      data-tooltip-content={`You are currently in ${chatMode} mode. Click to switch to ${
-        chatMode === "chat" ? "query" : "chat"
-      } mode.`}
-    >
-      <ModeIcon
-        onClick={toggleMode}
-        className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"
-        weight="fill"
-      />
-      <Tooltip
-        id="chat-mode-toggle"
-        place="top"
-        delayShow={300}
-        className="tooltip !text-xs z-99"
-      />
     </div>
   );
 }

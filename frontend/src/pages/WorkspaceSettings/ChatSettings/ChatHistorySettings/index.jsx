@@ -2,10 +2,7 @@ export default function ChatHistorySettings({ workspace, setHasChanges }) {
   return (
     <div>
       <div className="flex flex-col gap-y-1 mb-4">
-        <label
-          htmlFor="name"
-          className="block mb-2 text-sm font-medium text-white"
-        >
+        <label htmlFor="name" className="block mb-2 input-label">
           Chat History
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">

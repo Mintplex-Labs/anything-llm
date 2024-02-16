@@ -77,7 +77,6 @@ const WorkspaceThread = {
   streamChat: async function (
     { workspaceSlug, threadSlug },
     message,
-    mode = "query",
     handleChat
   ) {
     const ctrl = new AbortController();
@@ -85,7 +84,7 @@ const WorkspaceThread = {
       `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/stream-chat`,
       {
         method: "POST",
-        body: JSON.stringify({ message, mode }),
+        body: JSON.stringify({ message }),
         headers: baseHeaders(),
         signal: ctrl.signal,
         openWhenHidden: true,

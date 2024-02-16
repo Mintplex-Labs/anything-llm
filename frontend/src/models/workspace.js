@@ -73,11 +73,11 @@ const Workspace = {
       .catch(() => false);
     return result;
   },
-  streamChat: async function ({ slug }, message, mode = "query", handleChat) {
+  streamChat: async function ({ slug }, message, handleChat) {
     const ctrl = new AbortController();
     await fetchEventSource(`${API_BASE}/workspace/${slug}/stream-chat`, {
       method: "POST",
-      body: JSON.stringify({ message, mode }),
+      body: JSON.stringify({ message }),
       headers: baseHeaders(),
       signal: ctrl.signal,
       openWhenHidden: true,

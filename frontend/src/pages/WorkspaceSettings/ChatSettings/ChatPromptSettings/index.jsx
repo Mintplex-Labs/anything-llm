@@ -4,7 +4,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
   return (
     <div>
       <div className="flex flex-col">
-        <label htmlFor="name" className="block text-sm font-medium text-white">
+        <label htmlFor="name" className="block input-label">
           Prompt
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">

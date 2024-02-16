@@ -18,6 +18,7 @@ const Workspace = {
     "similarityThreshold",
     "chatModel",
     "topN",
+    "chatMode",
   ],
 
   new: async function (name = null, creatorId = null) {
@@ -59,7 +60,7 @@ const Workspace = {
     try {
       const workspace = await prisma.workspaces.update({
         where: { id },
-        data,
+        data, // TODO: strict validation on writables here.
       });
       return { workspace, message: null };
     } catch (error) {

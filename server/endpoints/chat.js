@@ -1,14 +1,10 @@
 const { v4: uuidv4 } = require("uuid");
 const { reqBody, userFromSession, multiUserMode } = require("../utils/http");
-const { Workspace } = require("../models/workspace");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { SystemSettings } = require("../models/systemSettings");
 const { Telemetry } = require("../models/telemetry");
-const {
-  streamChatWithWorkspace,
-  VALID_CHAT_MODE,
-} = require("../utils/chats/stream");
+const { streamChatWithWorkspace } = require("../utils/chats/stream");
 const {
   ROLES,
   flexUserRoleValid,
@@ -16,6 +12,7 @@ const {
 const { EventLogs } = require("../models/eventLogs");
 const {
   validWorkspaceAndThreadSlug,
+  validWorkspaceSlug,
 } = require("../utils/middleware/validWorkspace");
 const { writeResponseChunk } = require("../utils/helpers/chat/responses");
 
@@ -24,32 +21,21 @@ function chatEndpoints(app) {
 
   app.post(
     "/workspace/:slug/stream-chat",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { slug } = request.params;
-        const { message, mode = "query" } = reqBody(request);
+        const { message } = reqBody(request);
+        const workspace = response.locals.workspace;
 
-        const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
-
-        if (!workspace) {
-          response.sendStatus(400).end();
-          return;
-        }
-
-        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+        if (!message?.length) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
             textResponse: null,
             sources: [],
             close: true,
-            error: !message?.length
-              ? "Message is empty."
-              : `${mode} is not a valid mode.`,
+            error: !message?.length ? "Message is empty." : null,
           });
           return;
         }
@@ -95,7 +81,13 @@ function chatEndpoints(app) {
           }
         }
 
-        await streamChatWithWorkspace(response, workspace, message, mode, user);
+        await streamChatWithWorkspace(
+          response,
+          workspace,
+          message,
+          workspace?.chatMode,
+          user
+        );
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
@@ -137,20 +129,18 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { message, mode = "query" } = reqBody(request);
+        const { message } = reqBody(request);
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
 
-        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+        if (!message?.length) {
           response.status(400).json({
             id: uuidv4(),
             type: "abort",
             textResponse: null,
             sources: [],
             close: true,
-            error: !message?.length
-              ? "Message is empty."
-              : `${mode} is not a valid mode.`,
+            error: !message?.length ? "Message is empty." : null,
           });
           return;
         }
@@ -202,7 +192,7 @@ function chatEndpoints(app) {
           response,
           workspace,
           message,
-          mode,
+          workspace?.chatMode,
           user,
           thread
         );
