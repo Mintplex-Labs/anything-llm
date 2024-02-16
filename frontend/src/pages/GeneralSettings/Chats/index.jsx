@@ -8,33 +8,57 @@ import ChatRow from "./ChatRow";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
 import { CaretDown } from "@phosphor-icons/react";
+import { saveAs } from "file-saver";
+
+const exportOptions = {
+  csv: {
+    name: "CSV",
+    mimeType: "text/csv",
+    fileExtension: "csv",
+    filenameFunc: () => {
+      return `anythingllm-chats-${new Date().toLocaleDateString()}`;
+    },
+  },
+  json: {
+    name: "JSON",
+    mimeType: "application/json",
+    fileExtension: "json",
+    filenameFunc: () => {
+      return `anythingllm-chats-${new Date().toLocaleDateString()}`;
+    },
+  },
+  jsonl: {
+    name: "JSONL",
+    mimeType: "application/jsonl",
+    fileExtension: "jsonl",
+    filenameFunc: () => {
+      return `anythingllm-chats-${new Date().toLocaleDateString()}-lines`;
+    },
+  },
+  jsonAlpaca: {
+    name: "JSON (Alpaca)",
+    mimeType: "application/json",
+    fileExtension: "json",
+    filenameFunc: () => {
+      return `anythingllm-chats-${new Date().toLocaleDateString()}-alpaca`;
+    },
+  },
+};
+
 export default function WorkspaceChats() {
   const [showMenu, setShowMenu] = useState(false);
   const [exportType, setExportType] = useState("jsonl");
   const menuRef = useRef();
   const openMenuButton = useRef();
 
-  const exportOptions = {
-    csv: { mimeType: "text/csv", fileExtension: "csv" },
-    json: { mimeType: "application/json", fileExtension: "json" },
-    jsonl: { mimeType: "application/jsonl", fileExtension: "jsonl" },
-  };
   const handleDumpChats = async () => {
     const chats = await System.exportChats(exportType);
     if (!!chats) {
-      const { mimeType, fileExtension } = exportOptions[exportType];
+      const { name, mimeType, fileExtension, filenameFunc } =
+        exportOptions[exportType];
       const blob = new Blob([chats], { type: mimeType });
-      const link = document.createElement("a");
-      link.href = window.URL.createObjectURL(blob);
-      link.download = `chats.${fileExtension}`;
-      document.body.appendChild(link);
-      link.click();
-      window.URL.revokeObjectURL(link.href);
-      document.body.removeChild(link);
-      showToast(
-        `Chats exported successfully as ${fileExtension.toUpperCase()}.`,
-        "success"
-      );
+      saveAs(blob, `${filenameFunc()}.${fileExtension}`);
+      showToast(`Chats exported successfully as ${name}.`, "success");
     } else {
       showToast("Failed to export chats.", "error");
     }
@@ -79,7 +103,7 @@ export default function WorkspaceChats() {
                   onClick={handleDumpChats}
                   className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
                 >
-                  Export Chats to {exportType.toUpperCase()}
+                  Export as {exportOptions[exportType].name}
                 </button>
                 <button
                   ref={openMenuButton}
@@ -97,18 +121,18 @@ export default function WorkspaceChats() {
                   } z-20 w-fit rounded-lg absolute top-full right-0 bg-sidebar p-4 flex items-center justify-center mt-2`}
                 >
                   <div className="flex flex-col gap-y-2">
-                    {Object.keys(exportOptions)
-                      .filter((type) => type !== exportType)
-                      .map((type) => (
+                    {Object.entries(exportOptions)
+                      .filter(([type, _]) => type !== exportType)
+                      .map(([key, data]) => (
                         <button
-                          key={type}
+                          key={key}
                           onClick={() => {
-                            setExportType(type);
+                            setExportType(key);
                             setShowMenu(false);
                           }}
                           className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
                         >
-                          {type.toUpperCase()}
+                          {data.name}
                         </button>
                       ))}
                   </div>

@@ -4,7 +4,6 @@
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 
-// Todo: add RLHF feedbackScore field support
 async function convertToCSV(preparedData) {
   const rows = ["id,username,workspace,prompt,response,sent_at,rating"];
   for (const item of preparedData) {
@@ -27,7 +26,12 @@ async function convertToJSON(workspaceChatsMap) {
     [],
     Object.values(workspaceChatsMap).map((workspace) => workspace.messages)
   );
-  return JSON.stringify(allMessages);
+  return JSON.stringify(allMessages, null, 4);
+}
+
+// ref: https://raw.githubusercontent.com/gururise/AlpacaDataCleaned/main/alpaca_data.json
+async function convertToJSONAlpaca(preparedData) {
+  return JSON.stringify(preparedData, null, 4);
 }
 
 async function convertToJSONL(workspaceChatsMap) {
@@ -60,6 +64,19 @@ async function prepareWorkspaceChatsForExport(format = "jsonl") {
             : chat.feedbackScore
               ? "GOOD"
               : "BAD",
+      };
+    });
+
+    return preparedData;
+  }
+
+  if (format === "jsonAlpaca") {
+    const preparedData = chats.map((chat) => {
+      const responseJson = JSON.parse(chat.response);
+      return {
+        instruction: chat.prompt,
+        input: "",
+        output: responseJson.text,
       };
     });
 
@@ -123,6 +140,10 @@ const exportMap = {
   jsonl: {
     contentType: "application/jsonl",
     func: convertToJSONL,
+  },
+  jsonAlpaca: {
+    contentType: "application/json",
+    func: convertToJSONAlpaca,
   },
 };
 
