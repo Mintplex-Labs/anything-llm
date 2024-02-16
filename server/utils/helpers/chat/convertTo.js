@@ -26,12 +26,12 @@ async function convertToJSON(workspaceChatsMap) {
     [],
     Object.values(workspaceChatsMap).map((workspace) => workspace.messages)
   );
-  return JSON.stringify(allMessages);
+  return JSON.stringify(allMessages, null, 4);
 }
 
 // ref: https://raw.githubusercontent.com/gururise/AlpacaDataCleaned/main/alpaca_data.json
 async function convertToJSONAlpaca(preparedData) {
-  return JSON.stringify(preparedData);
+  return JSON.stringify(preparedData, null, 4);
 }
 
 async function convertToJSONL(workspaceChatsMap) {

@@ -15,6 +15,7 @@
     "@microsoft/fetch-event-source": "^2.0.1",
     "@phosphor-icons/react": "^2.0.13",
     "dompurify": "^3.0.8",
+    "file-saver": "^2.0.5",
     "he": "^1.2.0",
     "highlight.js": "^11.9.0",
     "lodash.debounce": "^4.0.8",

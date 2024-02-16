@@ -8,6 +8,7 @@ import ChatRow from "./ChatRow";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
 import { CaretDown } from "@phosphor-icons/react";
+import { saveAs } from "file-saver";
 
 const exportOptions = {
   csv: {
@@ -56,15 +57,7 @@ export default function WorkspaceChats() {
       const { name, mimeType, fileExtension, filenameFunc } =
         exportOptions[exportType];
       const blob = new Blob([chats], { type: mimeType });
-      const link = document.createElement("a");
-
-      link.href = window.URL.createObjectURL(blob);
-      link.download = `${filenameFunc()}.${fileExtension}`;
-      document.body.appendChild(link);
-      link.click();
-      window.URL.revokeObjectURL(link.href);
-      document.body.removeChild(link);
-
+      saveAs(blob, `${filenameFunc()}.${fileExtension}`);
       showToast(`Chats exported successfully as ${name}.`, "success");
     } else {
       showToast("Failed to export chats.", "error");
