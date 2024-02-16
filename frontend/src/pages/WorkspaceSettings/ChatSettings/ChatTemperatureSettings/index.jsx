@@ -16,7 +16,7 @@ export default function ChatTemperatureSettings({
   return (
     <div>
       <div className="flex flex-col">
-        <label htmlFor="name" className="block text-sm font-medium text-white">
+        <label htmlFor="name" className="block input-label">
           LLM Temperature
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">

@@ -16,10 +16,7 @@ export default function ChatModelSelection({
     return (
       <div>
         <div className="flex flex-col">
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-white"
-          >
+          <label htmlFor="name" className="block input-label">
             Chat model
           </label>
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
@@ -44,7 +41,7 @@ export default function ChatModelSelection({
   return (
     <div>
       <div className="flex flex-col">
-        <label htmlFor="name" className="block text-sm font-medium text-white">
+        <label htmlFor="name" className="block input-label">
           Chat model{" "}
           <span className="font-normal">({settings?.LLMProvider})</span>
         </label>

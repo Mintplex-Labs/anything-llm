@@ -2,7 +2,7 @@ export default function WorkspaceName({ workspace, setHasChanges }) {
   return (
     <div>
       <div className="flex flex-col">
-        <label htmlFor="name" className="block text-sm font-medium text-white">
+        <label htmlFor="name" className="block input-label">
           Workspace Name
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">

@@ -439,3 +439,7 @@ dialog::backdrop {
 .slide-up {
   animation: slideUp 0.3s ease-out forwards;
 }
+
+.input-label {
+  @apply text-[14px] font-bold text-white;
+}
