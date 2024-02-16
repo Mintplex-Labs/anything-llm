@@ -38,13 +38,14 @@ const PineconeDB = {
     const namespace = await this.namespace(pineconeIndex, _namespace);
     return namespace?.recordCount || 0;
   },
-  similarityResponse: async function (
+  similarityResponse: async function ({
     index,
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN = 4
-  ) {
+    topN = 4,
+    textQuery = null,
+  }) {
     const result = {
       contextTexts: [],
       sourceDocuments: [],
@@ -97,7 +98,6 @@ const PineconeDB = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { pineconeIndex } = await this.connect();
@@ -236,13 +236,13 @@ const PineconeDB = {
       );
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse(
+    const { contextTexts, sourceDocuments } = await this.similarityResponse({
       pineconeIndex,
       namespace,
       queryVector,
       similarityThreshold,
-      topN
-    );
+      topN,
+    });
 
     const sources = sourceDocuments.map((metadata, i) => {
       return { ...metadata, text: contextTexts[i] };

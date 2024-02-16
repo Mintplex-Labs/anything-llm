@@ -6,6 +6,7 @@ const {
   normalizePath,
   isWithin,
   documentsPath,
+  purgeKnowledgeGraphCache,
 } = require(".");
 const { Document } = require("../../models/documents");
 const { Workspace } = require("../../models/workspace");
@@ -14,6 +15,7 @@ async function purgeDocument(filename = null) {
   if (!filename || !normalizePath(filename)) return;
 
   await purgeVectorCache(filename);
+  await purgeKnowledgeGraphCache(filename);
   await purgeSourceDocument(filename);
   const workspaces = await Workspace.where();
   for (const workspace of workspaces) {
@@ -59,7 +61,13 @@ async function purgeFolder(folderName = null) {
       new Promise((resolve) =>
         purgeVectorCache(filename).then(() => resolve(true))
       );
+
+    const rmKGCache = () =>
+      new Promise((resolve) =>
+        purgeKnowledgeGraphCache(filename).then(() => resolve(true))
+      );
     purgePromises.push(rmVectorCache);
+    purgePromises.push(rmKGCache);
   }
 
   // Remove workspace document associations

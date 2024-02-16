@@ -6,6 +6,7 @@ storage/documents/*
 storage/tmp/*
 storage/vector-cache/*.json
 storage/knowledge-graphs/*
+storage/knowledge-graph-cache/*.json
 storage/exports
 storage/imports
 !storage/documents/DOCUMENTS.md

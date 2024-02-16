@@ -9,6 +9,10 @@ const vectorCachePath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/vector-cache`)
     : path.resolve(process.env.STORAGE_DIR, `vector-cache`);
+const knowledgeGraphCachePath =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, `../../storage/knowledge-graph-cache`)
+    : path.resolve(process.env.STORAGE_DIR, `knowledge-graph-cache`);
 
 // Should take in a folder that is a subfolder of documents
 // eg: youtube-subject/video-123.json
@@ -76,9 +80,6 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
   if (checkOnly) return exists;
   if (!exists) return { exists, chunks: [] };
 
-  console.log(
-    `Cached vectorized results of ${filename} found! Using cached data to save on embed costs.`
-  );
   const rawData = fs.readFileSync(file, "utf8");
   return { exists: true, chunks: JSON.parse(rawData) };
 }
@@ -87,9 +88,6 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
 // filename is the fullpath to the doc so we can compare by filename to find cached matches.
 async function storeVectorResult(vectorData = [], filename = null) {
   if (!filename) return;
-  console.log(
-    `Caching vectorized results of ${filename} to prevent duplicated embedding.`
-  );
   if (!fs.existsSync(vectorCachePath)) fs.mkdirSync(vectorCachePath);
 
   const digest = uuidv5(filename, uuidv5.URL);
@@ -110,7 +108,6 @@ async function purgeSourceDocument(filename = null) {
   )
     return;
 
-  console.log(`Purging source document of ${filename}.`);
   fs.rmSync(filePath);
   return;
 }
@@ -122,7 +119,16 @@ async function purgeVectorCache(filename = null) {
   const filePath = path.resolve(vectorCachePath, `${digest}.json`);
 
   if (!fs.existsSync(filePath) || !fs.lstatSync(filePath).isFile()) return;
-  console.log(`Purging vector-cache of ${filename}.`);
+  fs.rmSync(filePath);
+  return;
+}
+
+async function purgeKnowledgeGraphCache(filename = null) {
+  if (!filename) return;
+  const digest = uuidv5(filename, uuidv5.URL);
+  const filePath = path.resolve(knowledgeGraphCachePath, `${digest}.json`);
+
+  if (!fs.existsSync(filePath) || !fs.lstatSync(filePath).isFile()) return;
   fs.rmSync(filePath);
   return;
 }
@@ -187,6 +193,7 @@ module.exports = {
   viewLocalFiles,
   purgeSourceDocument,
   purgeVectorCache,
+  purgeKnowledgeGraphCache,
   storeVectorResult,
   fileData,
   normalizePath,

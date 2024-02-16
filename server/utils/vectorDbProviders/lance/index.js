@@ -7,12 +7,13 @@ const {
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
-const { v4: uuidv4 } = require("uuid");
-const { insertIntoGraph, knowledgeGraphSearch } = require("../../graphManager/prepare");
+const { v4: uuidv4, v5: uuidv5 } = require("uuid");
+const { GraphManager } = require("../../graphManager");
 
 const LanceDb = {
-  uri: `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
-    }lancedb`,
+  uri: `${
+    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
+  }lancedb`,
   name: "LanceDb",
   connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
@@ -58,15 +59,17 @@ const LanceDb = {
   embedder: function () {
     return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
   },
-  similarityResponse: async function (
+  similarityResponse: async function ({
     client,
     namespace,
     queryVector,
     similarityThreshold = 0.25,
     topN = 4,
-  ) {
+    textQuery = null,
+  }) {
     const collection = await client.openTable(namespace);
     const result = {
+      allTexts: [],
       contextTexts: [],
       sourceDocuments: [],
       scores: [],
@@ -79,6 +82,7 @@ const LanceDb = {
       .execute();
 
     response.forEach((item) => {
+      item.text ? result.allTexts.push(item.text) : null;
       if (this.distanceToSimilarity(item.score) < similarityThreshold) return;
       const { vector: _, ...rest } = item;
       result.contextTexts.push(rest.text);
@@ -88,9 +92,15 @@ const LanceDb = {
 
     // Only attempt to expand the original question if we found at least _something_ from the vectorDB
     // even if it was filtered out by score - because then there is a chance we can expand on it and save the query.
-    result.contextTexts = response.length > 0 ?
-      await knowledgeGraphSearch(namespace, result.contextTexts) :
-      result.contextTexts
+    if (result.allTexts.length > 0) {
+      const expansionTexts = textQuery
+        ? [textQuery, ...result.allTexts]
+        : result.allTexts;
+      result.contextTexts = await new GraphManager().knowledgeGraphSearch(
+        namespace,
+        expansionTexts
+      );
+    }
 
     return result;
   },
@@ -128,6 +138,7 @@ const LanceDb = {
   deleteVectorsInNamespace: async function (client, namespace = null) {
     const fs = require("fs");
     fs.rm(`${client.uri}/${namespace}.lance`, { recursive: true }, () => null);
+    new GraphManager().deleteGraph(namespace);
     return true;
   },
   deleteDocumentFromNamespace: async function (namespace, docId) {
@@ -148,6 +159,7 @@ const LanceDb = {
 
     if (vectorIds.length === 0) return;
     await table.delete(`id IN (${vectorIds.map((v) => `'${v}'`).join(",")})`);
+    await new GraphManager({ namespace }).$deleteByDocumentId(docId);
     return true;
   },
   addDocumentToNamespace: async function (
@@ -160,14 +172,14 @@ const LanceDb = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
       const cacheResult = await cachedVectorInformation(fullFilePath);
+      const cacheKey = uuidv5(fullFilePath, uuidv5.URL);
       if (cacheResult.exists) {
         const { client } = await this.connect();
         const { chunks } = cacheResult;
         const documentVectors = [];
         const submissions = [];
-        const metadatas = []
+        const metadatas = [];
 
         for (const chunk of chunks) {
           chunk.forEach((chunk) => {
@@ -175,13 +187,17 @@ const LanceDb = {
             const { id: _id, ...metadata } = chunk.metadata;
             documentVectors.push({ docId, vectorId: id });
             submissions.push({ id: id, vector: chunk.values, ...metadata });
-            metadatas.push({ ...metadata, vectorId: id, })
+            metadatas.push({ ...metadata, vectorId: id, docId });
           });
         }
 
         await this.updateOrCreateCollection(client, submissions, namespace);
         await DocumentVectors.bulkInsert(documentVectors);
-        await insertIntoGraph(namespace, metadatas)
+        await new GraphManager().insertIntoGraph(
+          namespace,
+          metadatas,
+          cacheKey
+        );
         return { vectorized: true, error: null };
       }
 
@@ -201,6 +217,7 @@ const LanceDb = {
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
+      const metadatas = [];
       const vectorValues = await LLMConnector.embedChunks(textChunks);
 
       if (!!vectorValues && vectorValues.length > 0) {
@@ -221,6 +238,11 @@ const LanceDb = {
             vector: vectorRecord.values,
           });
           documentVectors.push({ docId, vectorId: vectorRecord.id });
+          metadatas.push({
+            ...vectorRecord.metadata,
+            vectorId: vectorRecord.id,
+            docId,
+          });
         }
       } else {
         throw new Error(
@@ -236,6 +258,11 @@ const LanceDb = {
         const { client } = await this.connect();
         await this.updateOrCreateCollection(client, submissions, namespace);
         await storeVectorResult(chunks, fullFilePath);
+        await new GraphManager().insertIntoGraph(
+          namespace,
+          metadatas,
+          cacheKey
+        );
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
@@ -265,13 +292,14 @@ const LanceDb = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse(
+    const { contextTexts, sourceDocuments } = await this.similarityResponse({
       client,
       namespace,
       queryVector,
       similarityThreshold,
       topN,
-    );
+      textQuery: input,
+    });
 
     const sources = sourceDocuments.map((metadata, i) => {
       return { metadata: { ...metadata, text: contextTexts[i] } };

@@ -4,13 +4,13 @@ const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
 
 class OpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
-    const OpenAI = require("openai");
+    const { Configuration, OpenAIApi } = require("openai");
     if (!process.env.OPEN_AI_KEY) throw new Error("No OpenAI API key was set.");
 
-    this.openai = new OpenAI({
+    const config = new Configuration({
       apiKey: process.env.OPEN_AI_KEY,
-    })
-
+    });
+    this.openai = new OpenAIApi(config);
     this.model =
       modelPreference || process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     this.limits = {
@@ -19,6 +19,10 @@ class OpenAiLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
+    if (!embedder)
+      console.warn(
+        "No embedding provider defined for OpenAiLLM - falling back to OpenAiEmbedder for embedding!"
+      );
     this.embedder = !embedder ? new OpenAiEmbedder() : embedder;
     this.defaultTemp = 0.7;
   }
@@ -70,7 +74,8 @@ class OpenAiLLM {
     const isPreset = validModels.some((model) => modelName === model);
     if (isPreset) return true;
 
-    const model = await openai.models.list()
+    const model = await this.openai
+      .retrieveModel(modelName)
       .then((res) => res.data)
       .catch(() => null);
     return !!model;
@@ -91,17 +96,18 @@ class OpenAiLLM {
 
   async isSafe(input = "") {
     const { flagged = false, categories = {} } = await this.openai
-      .moderations.create({ input })
-      .then((res) => {
+      .createModeration({ input })
+      .then((json) => {
+        const res = json.data;
         if (!res.hasOwnProperty("results"))
-          throw new Error("OpenAI moderations: No results!");
+          throw new Error("OpenAI moderation: No results!");
         if (res.results.length === 0)
-          throw new Error("OpenAI moderations: No results length!");
+          throw new Error("OpenAI moderation: No results length!");
         return res.results[0];
       })
       .catch((error) => {
         throw new Error(
-          `OpenAI::moderations failed with: ${error.message}`
+          `OpenAI::CreateModeration failed with: ${error.message}`
         );
       });
 
@@ -127,7 +133,7 @@ class OpenAiLLM {
       );
 
     const textResponse = await this.openai
-      .chat.completions.create({
+      .createChatCompletion({
         model: this.model,
         temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
@@ -163,7 +169,7 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.chat.completions.create(
+    const streamRequest = await this.openai.createChatCompletion(
       {
         model: this.model,
         stream: true,
@@ -189,7 +195,7 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const { data } = await this.openai.chat.completions.create({
+    const { data } = await this.openai.createChatCompletion({
       model: this.model,
       messages,
       temperature,
@@ -205,7 +211,7 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.chat.completions.create(
+    const streamRequest = await this.openai.createChatCompletion(
       {
         model: this.model,
         stream: true,

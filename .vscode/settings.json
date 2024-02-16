@@ -6,6 +6,7 @@
     "Embeddable",
     "hljs",
     "Langchain",
+    "metadatas",
     "Milvus",
     "Ollama",
     "openai",

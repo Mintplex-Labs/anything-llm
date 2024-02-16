@@ -49,13 +49,14 @@ const QDrant = {
     const namespace = await this.namespace(client, _namespace);
     return namespace?.vectorCount || 0;
   },
-  similarityResponse: async function (
+  similarityResponse: async function ({
     _client,
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN = 4
-  ) {
+    topN = 4,
+    textQuery = null,
+  }) {
     const { client } = await this.connect();
     const result = {
       contextTexts: [],
@@ -139,7 +140,6 @@ const QDrant = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
@@ -317,13 +317,13 @@ const QDrant = {
     }
 
     const queryVector = await LLMConnector.embedTextInput(input);
-    const { contextTexts, sourceDocuments } = await this.similarityResponse(
+    const { contextTexts, sourceDocuments } = await this.similarityResponse({
       client,
       namespace,
       queryVector,
       similarityThreshold,
-      topN
-    );
+      topN,
+    });
 
     const sources = sourceDocuments.map((metadata, i) => {
       return { ...metadata, text: contextTexts[i] };

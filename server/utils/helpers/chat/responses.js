@@ -1,58 +1,9 @@
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 
-function handleDefaultStreamResponse(response, stream, responseProps) {
-  const { uuid = uuidv4(), sources = [] } = responseProps;
-
-  return new Promise(async (resolve) => {
-    let fullText = "";
-
-    for await (const streamChunk of stream) {
-      const data = streamChunk?.choices?.[0];
-      if (!data) continue;
-      const token = data.delta?.content;
-
-      if (data.finish_reason !== null || token === undefined) {
-        writeResponseChunk(response, {
-          uuid,
-          sources,
-          type: "textResponseChunk",
-          textResponse: "",
-          close: true,
-          error: false,
-        });
-        resolve(fullText);
-        return;
-      }
-
-      fullText += token
-      writeResponseChunk(response, {
-        uuid,
-        sources: [],
-        type: "textResponseChunk",
-        textResponse: token,
-        close: false,
-        error: false,
-      });
-    }
-
-    writeResponseChunk(response, {
-      uuid,
-      sources,
-      type: "textResponseChunk",
-      textResponse: "",
-      close: true,
-      error: false,
-    });
-    resolve(fullText)
-    return;
-  })
-}
-
-
 // The default way to handle a stream response. Functions best with OpenAI.
 // Currently used for LMStudio, LocalAI, Mistral API, and OpenAI
-function _handleDefaultStreamResponse(response, stream, responseProps) {
+function handleDefaultStreamResponse(response, stream, responseProps) {
   const { uuid = uuidv4(), sources = [] } = responseProps;
 
   return new Promise((resolve) => {
@@ -74,7 +25,7 @@ function _handleDefaultStreamResponse(response, stream, responseProps) {
         try {
           JSON.parse(message);
           validJSON = true;
-        } catch { }
+        } catch {}
 
         if (!validJSON) {
           // It can be possible that the chunk decoding is running away
