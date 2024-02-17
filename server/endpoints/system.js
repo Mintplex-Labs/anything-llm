@@ -2,10 +2,6 @@ process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
 const { viewLocalFiles, normalizePath } = require("../utils/files");
-const {
-  checkProcessorAlive,
-  acceptedFileTypes,
-} = require("../utils/files/documentProcessor");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
@@ -49,6 +45,7 @@ const {
   exportChatsAsType,
 } = require("../utils/helpers/chat/convertTo");
 const { EventLogs } = require("../models/eventLogs");
+const { CollectorApi } = require("../utils/collectorApi");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -297,7 +294,7 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (_, response) => {
       try {
-        const online = await checkProcessorAlive();
+        const online = await new CollectorApi().online();
         response.sendStatus(online ? 200 : 503);
       } catch (e) {
         console.log(e.message, e);
@@ -311,7 +308,7 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (_, response) => {
       try {
-        const types = await acceptedFileTypes();
+        const types = await new CollectorApi().acceptedFileTypes();
         if (!types) {
           response.sendStatus(404).end();
           return;

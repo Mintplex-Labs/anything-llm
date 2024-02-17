@@ -5,11 +5,6 @@ const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { getVectorDbClass } = require("../utils/helpers");
 const { setupMulter } = require("../utils/files/multer");
-const {
-  checkProcessorAlive,
-  processDocument,
-  processLink,
-} = require("../utils/files/documentProcessor");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
 const {
@@ -22,6 +17,7 @@ const {
 } = require("../models/workspacesSuggestedMessages");
 const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
+const { CollectorApi } = require("../utils/collectorApi");
 const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
@@ -98,8 +94,9 @@ function workspaceEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     handleUploads.single("file"),
     async function (request, response) {
+      const Collector = new CollectorApi();
       const { originalname } = request.file;
-      const processingOnline = await checkProcessorAlive();
+      const processingOnline = await Collector.online();
 
       if (!processingOnline) {
         response
@@ -112,13 +109,13 @@ function workspaceEndpoints(app) {
         return;
       }
 
-      const { success, reason } = await processDocument(originalname);
+      const { success, reason } = await Collector.processDocument(originalname);
       if (!success) {
         response.status(500).json({ success: false, error: reason }).end();
         return;
       }
 
-      console.log(
+      Collector.log(
         `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
       );
       await Telemetry.sendTelemetry("document_uploaded");
@@ -137,8 +134,9 @@ function workspaceEndpoints(app) {
     "/workspace/:slug/upload-link",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
+      const Collector = new CollectorApi();
       const { link = "" } = reqBody(request);
-      const processingOnline = await checkProcessorAlive();
+      const processingOnline = await Collector.online();
 
       if (!processingOnline) {
         response
@@ -151,13 +149,13 @@ function workspaceEndpoints(app) {
         return;
       }
 
-      const { success, reason } = await processLink(link);
+      const { success, reason } = await Collector.processLink(link);
       if (!success) {
         response.status(500).json({ success: false, error: reason }).end();
         return;
       }
 
-      console.log(
+      Collector.log(
         `Link ${link} uploaded processed and successfully. It is now available in documents.`
       );
       await Telemetry.sendTelemetry("link_uploaded");
