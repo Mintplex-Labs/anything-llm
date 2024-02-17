@@ -34,7 +34,7 @@ function extensionEndpoints(app) {
     async (request, response) => {
       try {
         const responseFromProcessor =
-          await CollectorApi().forwardExtensionRequest({
+          await new CollectorApi().forwardExtensionRequest({
             endpoint: "/ext/github-repo",
             method: "POST",
             body: request.body,
@@ -56,7 +56,7 @@ function extensionEndpoints(app) {
     async (request, response) => {
       try {
         const responseFromProcessor =
-          await CollectorApi().forwardExtensionRequest({
+          await new CollectorApi().forwardExtensionRequest({
             endpoint: "/ext/youtube-transcript",
             method: "POST",
             body: request.body,

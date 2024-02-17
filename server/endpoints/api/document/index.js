@@ -432,7 +432,6 @@ function apiDocumentEndpoints(app) {
     }
     */
       try {
-        console.log("finding");
         const types = await new CollectorApi().acceptedFileTypes();
         if (!types) {
           response.sendStatus(404).end();
