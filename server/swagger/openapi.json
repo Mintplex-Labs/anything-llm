@@ -1140,81 +1140,6 @@
         }
       }
     },
-    "/v1/document/{docName}": {
-      "get": {
-        "tags": [
-          "Documents"
-        ],
-        "description": "Get a single document by its unique AnythingLLM document name",
-        "parameters": [
-          {
-            "name": "docName",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Unique document name to find (name in /documents)"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "example": {
-                    "localFiles": {
-                      "name": "documents",
-                      "type": "folder",
-                      "items": [
-                        {
-                          "name": "my-stored-document.txt-uuid1234.json",
-                          "type": "file",
-                          "id": "bb07c334-4dab-4419-9462-9d00065a49a1",
-                          "url": "file://my-stored-document.txt",
-                          "title": "my-stored-document.txt",
-                          "cached": false
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidAPIKey"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidAPIKey"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
     "/v1/document/accepted-file-types": {
       "get": {
         "tags": [
@@ -1333,6 +1258,81 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/document/{docName}": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Get a single document by its unique AnythingLLM document name",
+        "parameters": [
+          {
+            "name": "docName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique document name to find (name in /documents)"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "localFiles": {
+                      "name": "documents",
+                      "type": "folder",
+                      "items": [
+                        {
+                          "name": "my-stored-document.txt-uuid1234.json",
+                          "type": "file",
+                          "id": "bb07c334-4dab-4419-9462-9d00065a49a1",
+                          "url": "file://my-stored-document.txt",
+                          "title": "my-stored-document.txt",
+                          "cached": false
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
