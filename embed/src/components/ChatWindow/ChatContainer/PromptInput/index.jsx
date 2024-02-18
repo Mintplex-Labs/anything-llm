@@ -2,7 +2,6 @@ import { CircleNotch, PaperPlaneRight } from "@phosphor-icons/react";
 import React, { useState, useRef } from "react";
 
 export default function PromptInput({
-  setttings,
   message,
   submit,
   onChange,
