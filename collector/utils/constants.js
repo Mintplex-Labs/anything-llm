@@ -25,11 +25,11 @@ const ACCEPTED_MIMES = {
 };
 
 const SUPPORTED_FILETYPE_CONVERTERS = {
-  ".txt":  "./convert/asTxt.js",
-  ".md":   "./convert/asTxt.js",
-  ".org":  "./convert/asTxt.js",
+  ".txt": "./convert/asTxt.js",
+  ".md": "./convert/asTxt.js",
+  ".org": "./convert/asTxt.js",
   ".adoc": "./convert/asTxt.js",
-  ".rst":  "./convert/asTxt.js",
+  ".rst": "./convert/asTxt.js",
 
   ".html": "./convert/asTxt.js",
   ".pdf": "./convert/asPDF.js",
