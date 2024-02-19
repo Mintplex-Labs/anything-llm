@@ -52,6 +52,7 @@ function UserButton() {
   const { user } = useUser();
   const [showMenu, setShowMenu] = useState(false);
   const [showAccountSettings, setShowAccountSettings] = useState(false);
+  const [supportEmail, setSupportEmail] = useState("");
   const mode = useLoginMode();
   const menuRef = useRef();
   const buttonRef = useRef();
@@ -76,6 +77,18 @@ function UserButton() {
     }
     return () => document.removeEventListener("mousedown", handleClose);
   }, [showMenu]);
+
+  useEffect(() => {
+    const fetchSupportEmail = async () => {
+      const supportEmail = await System.fetchSupportEmail();
+      if (supportEmail.email) {
+        setSupportEmail(`mailto:${supportEmail.email}`);
+      } else {
+        setSupportEmail(paths.mailToMintplex());
+      }
+    };
+    fetchSupportEmail();
+  }, []);
 
   if (mode === null) return null;
 
@@ -105,7 +118,7 @@ function UserButton() {
               </button>
             )}
             <a
-              href={paths.mailToMintplex()}
+              href={supportEmail}
               className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
             >
               Support
