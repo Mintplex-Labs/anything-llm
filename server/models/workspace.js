@@ -3,6 +3,7 @@ const slugify = require("slugify");
 const { Document } = require("./documents");
 const { WorkspaceUser } = require("./workspaceUsers");
 const { ROLES } = require("../utils/middleware/multiUserProtected");
+const { v4: uuidv4 } = require("uuid");
 
 const Workspace = {
   writable: [
@@ -17,11 +18,13 @@ const Workspace = {
     "similarityThreshold",
     "chatModel",
     "topN",
+    "chatMode",
   ],
 
   new: async function (name = null, creatorId = null) {
     if (!name) return { result: null, message: "name cannot be null" };
     var slug = slugify(name, { lower: true });
+    slug = slug || uuidv4();
 
     const existingBySlug = await this.get({ slug });
     if (existingBySlug !== null) {
@@ -57,7 +60,7 @@ const Workspace = {
     try {
       const workspace = await prisma.workspaces.update({
         where: { id },
-        data,
+        data, // TODO: strict validation on writables here.
       });
       return { workspace, message: null };
     } catch (error) {

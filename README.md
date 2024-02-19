@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-👉 AnythingLLM for desktop! <a href="https://mintplexlabs.typeform.com/to/sFgD2TIb" target="_blank"> Sign up</a>
+👉 AnythingLLM for desktop is in <b>public beta</b>! <a href="https://useanything.com/download" target="_blank"> Download Now</a>
 </p>
 
 A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use as well as supporting multi-user management and permissions.
@@ -48,11 +48,11 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 Some cool features of AnythingLLM
 
 - **Multi-user instance support and permissioning**
+- **_New_** [Custom Embeddable Chat widget for your website](./embed/README.md)
 - Multiple document type support (PDF, TXT, DOCX, etc)
 - Manage documents in your vector database from a simple UI
 - Two chat modes `conversation` and `query`. Conversation retains previous questions and amendments. Query is simple QA against your documents
-- In-chat citations linked to the original document source and text
-- Simple technology stack for fast iteration
+- In-chat citations
 - 100% Cloud deployment ready.
 - "Bring your own LLM" model.
 - Extremely efficient cost-saving measures for managing very large documents. You'll never pay to embed a massive document or transcript more than once. 90% more cost effective than other document chatbot solutions.
@@ -84,6 +84,7 @@ Some cool features of AnythingLLM
 **Supported Vector Databases:**
 
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
+- [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)
 - [Weaviate](https://weaviate.io)

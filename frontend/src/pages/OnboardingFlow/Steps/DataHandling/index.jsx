@@ -10,7 +10,9 @@ import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
+import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
+import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
 import PineconeLogo from "@/media/vectordbs/pinecone.png";
 import LanceDbLogo from "@/media/vectordbs/lancedb.png";
@@ -100,6 +102,13 @@ const LLM_SELECTION_PRIVACY = {
     ],
     logo: MistralLogo,
   },
+  huggingface: {
+    name: "HuggingFace",
+    description: [
+      "Your prompts and document text used in response are sent to your HuggingFace managed endpoint",
+    ],
+    logo: HuggingFaceLogo,
+  },
 };
 
 const VECTOR_DB_PRIVACY = {
@@ -146,6 +155,13 @@ const VECTOR_DB_PRIVACY = {
       "Your vectors and document text are stored on your Zilliz cloud cluster.",
     ],
     logo: ZillizLogo,
+  },
+  astra: {
+    name: "AstraDB",
+    description: [
+      "Your vectors and document text are stored on your cloud AstraDB database.",
+    ],
+    logo: AstraDBLogo,
   },
   lancedb: {
     name: "LanceDB",

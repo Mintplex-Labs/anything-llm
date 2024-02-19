@@ -1,22 +1,31 @@
 import { memo, useState } from "react";
-import { X } from "@phosphor-icons/react";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
 import { CaretRight, FileText } from "@phosphor-icons/react";
 import truncate from "truncate";
 import ModalWrapper from "@/components/ModalWrapper";
+import { middleTruncate } from "@/utils/directories";
+import {
+  ArrowSquareOut,
+  GithubLogo,
+  Link,
+  X,
+  YoutubeLogo,
+} from "@phosphor-icons/react";
 
 function combineLikeSources(sources) {
   const combined = {};
   sources.forEach((source) => {
-    const { id, title, text } = source;
+    const { id, title, text, chunkSource = "" } = source;
     if (combined.hasOwnProperty(title)) {
       combined[title].text += `\n\n ---- Chunk ${id || ""} ---- \n\n${text}`;
       combined[title].references += 1;
+      combined[title].chunkSource = chunkSource;
     } else {
-      combined[title] = { title, text, references: 1 };
+      combined[title] = { title, text, chunkSource, references: 1 };
     }
   });
+
   return Object.values(combined);
 }
 
@@ -41,10 +50,10 @@ export default function Citations({ sources = [] }) {
         />
       </button>
       {open && (
-        <div className="flex flex-wrap md:flex-row flex-col items-center gap-4 overflow-x-scroll mt-1 doc__source">
+        <div className="flex flex-wrap md:flex-row flex-col md:items-center gap-4 overflow-x-scroll mt-1 doc__source">
           {combineLikeSources(sources).map((source) => (
             <Citation
-              key={source?.id || v4()}
+              key={v4()}
               source={source}
               onClick={() => setSelectedSource(source)}
             />
@@ -64,16 +73,18 @@ export default function Citations({ sources = [] }) {
 const Citation = memo(({ source, onClick }) => {
   const { title } = source;
   if (!title) return null;
-
-  const truncatedTitle = truncateMiddle(title);
+  const chunkSourceInfo = parseChunkSource(source);
+  const truncatedTitle = chunkSourceInfo?.text ?? middleTruncate(title, 25);
+  const CitationIcon = ICONS.hasOwnProperty(chunkSourceInfo?.icon)
+    ? ICONS[chunkSourceInfo.icon]
+    : ICONS.file;
 
   return (
     <div
-      className="flex flex-row justify-center items-center cursor-pointer text-sky-400"
-      style={{ width: "24%" }}
+      className="w-fit flex flex-row justify-center items-center cursor-pointer text-sky-400"
       onClick={onClick}
     >
-      <FileText className="w-6 h-6" weight="bold" />
+      <CitationIcon className="w-6 h-6" weight="bold" />
       <p className="text-sm font-medium whitespace-nowrap">{truncatedTitle}</p>
     </div>
   );
@@ -99,14 +110,31 @@ function SkeletonLine() {
 
 function CitationDetailModal({ source, onClose }) {
   const { references, title, text } = source;
+  const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
 
   return (
     <ModalWrapper isOpen={source}>
       <div className="w-full max-w-2xl bg-main-gradient rounded-lg shadow border border-white/10 overflow-hidden">
         <div className="relative p-6 border-b rounded-t border-gray-500/50">
-          <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-            {truncate(title, 45)}
-          </h3>
+          <div className="w-full flex gap-x-2 items-center">
+            {isUrl ? (
+              <a
+                href={linkTo}
+                target="_blank"
+                rel="noreferrer"
+                className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline hover:text-blue-300 flex items-center gap-x-1"
+              >
+                <h3 className="flex items-center gap-x-1">
+                  {webpageUrl}
+                  <ArrowSquareOut />
+                </h3>
+              </a>
+            ) : (
+              <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+                {truncate(title, 45)}
+              </h3>
+            )}
+          </div>
           {references > 1 && (
             <p className="text-xs text-gray-400 mt-2">
               Referenced {references} times.
@@ -141,11 +169,47 @@ function CitationDetailModal({ source, onClose }) {
   );
 }
 
-function truncateMiddle(title) {
-  if (title.length <= 18) return title;
+const ICONS = {
+  file: FileText,
+  link: Link,
+  youtube: YoutubeLogo,
+  github: GithubLogo,
+};
 
-  const startStr = title.substr(0, 9);
-  const endStr = title.substr(-9);
+// Show the correct title and/or display text for citations
+// which contain valid outbound links that can be clicked by the
+// user when viewing a citation. Optionally allows various icons
+// to show distinct types of sources.
+function parseChunkSource({ title = "", chunkSource = "" }) {
+  const nullResponse = {
+    isUrl: false,
+    text: null,
+    href: null,
+    icon: "file",
+  };
 
-  return `${startStr}...${endStr}`;
+  if (!chunkSource.startsWith("link://")) return nullResponse;
+  try {
+    const url = new URL(chunkSource.split("link://")[1]);
+    let text = url.host + url.pathname;
+    let icon = "link";
+
+    if (url.host.includes("youtube.com")) {
+      text = title;
+      icon = "youtube";
+    }
+
+    if (url.host.includes("github.com")) {
+      text = title;
+      icon = "github";
+    }
+
+    return {
+      isUrl: true,
+      href: url.toString(),
+      text,
+      icon,
+    };
+  } catch {}
+  return nullResponse;
 }

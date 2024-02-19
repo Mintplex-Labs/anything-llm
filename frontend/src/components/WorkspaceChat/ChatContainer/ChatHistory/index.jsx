@@ -6,8 +6,7 @@ import ManageWorkspace from "../../../Modals/MangeWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 
-export default function ChatHistory({ history = [], workspace }) {
-  const replyRef = useRef(null);
+export default function ChatHistory({ history = [], workspace, sendCommand }) {
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
@@ -46,25 +45,31 @@ export default function ChatHistory({ history = [], workspace }) {
     }
   };
 
+  const handleSendSuggestedMessage = (heading, message) => {
+    sendCommand(`${heading} ${message}`, true);
+  };
+
   if (history.length === 0) {
     return (
-      <div className="flex flex-col h-full md:mt-0 pb-48 w-full justify-end items-center">
-        <div className="flex flex-col items-start">
+      <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
+        <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
           <p className="text-white/60 text-lg font-base py-4">
             Welcome to your new workspace.
           </p>
-          <div className="w-full text-center">
-            <p className="text-white/60 text-lg font-base inline-grid md:inline-flex items-center gap-x-2">
-              To get started either{" "}
-              <span
-                className="underline font-medium cursor-pointer"
-                onClick={showModal}
-              >
-                upload a document
-              </span>
-              or <b className="font-medium italic">send a chat.</b>
-            </p>
-          </div>
+          <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
+            To get started either{" "}
+            <span
+              className="underline font-medium cursor-pointer"
+              onClick={showModal}
+            >
+              upload a document
+            </span>
+            or <b className="font-medium italic">send a chat.</b>
+          </p>
+          <WorkspaceChatSuggestions
+            suggestions={workspace?.suggestedMessages ?? []}
+            sendSuggestion={handleSendSuggestedMessage}
+          />
         </div>
         {showing && (
           <ManageWorkspace
@@ -83,7 +88,6 @@ export default function ChatHistory({ history = [], workspace }) {
       ref={chatHistoryRef}
     >
       {history.map((props, index) => {
-        const isLastMessage = index === history.length - 1;
         const isLastBotReply =
           index === history.length - 1 && props.role === "assistant";
 
@@ -91,7 +95,6 @@ export default function ChatHistory({ history = [], workspace }) {
           return (
             <PromptReply
               key={props.uuid}
-              ref={isLastMessage ? replyRef : null}
               uuid={props.uuid}
               reply={props.content}
               pending={props.pending}
@@ -106,11 +109,12 @@ export default function ChatHistory({ history = [], workspace }) {
         return (
           <HistoricalMessage
             key={index}
-            ref={isLastMessage ? replyRef : null}
             message={props.content}
             role={props.role}
             workspace={workspace}
             sources={props.sources}
+            feedbackScore={props.feedbackScore}
+            chatId={props.chatId}
             error={props.error}
           />
         );
@@ -131,6 +135,24 @@ export default function ChatHistory({ history = [], workspace }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function WorkspaceChatSuggestions({ suggestions = [], sendSuggestion }) {
+  if (suggestions.length === 0) return null;
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-white/60 text-xs mt-10 w-full justify-center">
+      {suggestions.map((suggestion, index) => (
+        <button
+          key={index}
+          className="text-left p-2.5 border rounded-xl border-white/20 bg-sidebar hover:bg-workspace-item-selected-gradient"
+          onClick={() => sendSuggestion(suggestion.heading, suggestion.message)}
+        >
+          <p className="font-semibold">{suggestion.heading}</p>
+          <p>{suggestion.message}</p>
+        </button>
+      ))}
     </div>
   );
 }

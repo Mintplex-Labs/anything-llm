@@ -19,7 +19,7 @@ export default function WorkspaceChat() {
 }
 
 function ShowWorkspaceChat() {
-  const { slug } = useParams();
+  const { slug, threadSlug = null } = useParams();
   const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +27,15 @@ function ShowWorkspaceChat() {
     async function getWorkspace() {
       if (!slug) return;
       const _workspace = await Workspace.bySlug(slug);
-      setWorkspace(_workspace);
+      if (!_workspace) {
+        setLoading(false);
+        return;
+      }
+      const suggestedMessages = await Workspace.getSuggestedMessages(slug);
+      setWorkspace({
+        ..._workspace,
+        suggestedMessages,
+      });
       setLoading(false);
     }
     getWorkspace();

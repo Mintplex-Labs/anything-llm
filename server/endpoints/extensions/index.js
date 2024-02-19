@@ -1,7 +1,5 @@
 const { Telemetry } = require("../../models/telemetry");
-const {
-  forwardExtensionRequest,
-} = require("../../utils/files/documentProcessor");
+const { CollectorApi } = require("../../utils/collectorApi");
 const {
   flexUserRoleValid,
   ROLES,
@@ -16,11 +14,12 @@ function extensionEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        const responseFromProcessor = await forwardExtensionRequest({
-          endpoint: "/ext/github-repo/branches",
-          method: "POST",
-          body: request.body,
-        });
+        const responseFromProcessor =
+          await new CollectorApi().forwardExtensionRequest({
+            endpoint: "/ext/github-repo/branches",
+            method: "POST",
+            body: request.body,
+          });
         response.status(200).json(responseFromProcessor);
       } catch (e) {
         console.error(e);
@@ -34,11 +33,12 @@ function extensionEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        const responseFromProcessor = await forwardExtensionRequest({
-          endpoint: "/ext/github-repo",
-          method: "POST",
-          body: request.body,
-        });
+        const responseFromProcessor =
+          await new CollectorApi().forwardExtensionRequest({
+            endpoint: "/ext/github-repo",
+            method: "POST",
+            body: request.body,
+          });
         await Telemetry.sendTelemetry("extension_invoked", {
           type: "github_repo",
         });
@@ -55,11 +55,12 @@ function extensionEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        const responseFromProcessor = await forwardExtensionRequest({
-          endpoint: "/ext/youtube-transcript",
-          method: "POST",
-          body: request.body,
-        });
+        const responseFromProcessor =
+          await new CollectorApi().forwardExtensionRequest({
+            endpoint: "/ext/youtube-transcript",
+            method: "POST",
+            body: request.body,
+          });
         await Telemetry.sendTelemetry("extension_invoked", {
           type: "youtube_transcript",
         });

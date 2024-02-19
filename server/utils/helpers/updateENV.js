@@ -95,6 +95,7 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // Mistral AI API Settings
   MistralApiKey: {
     envKey: "MISTRAL_API_KEY",
     checks: [isNotEmpty],
@@ -109,9 +110,22 @@ const KEY_MAPPING = {
     envKey: "NATIVE_LLM_MODEL_PREF",
     checks: [isDownloadedModel],
   },
-
   NativeLLMTokenLimit: {
     envKey: "NATIVE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
+  // Hugging Face LLM Inference Settings
+  HuggingFaceLLMEndpoint: {
+    envKey: "HUGGING_FACE_LLM_ENDPOINT",
+    checks: [isNotEmpty, isValidURL, validHuggingFaceEndpoint],
+  },
+  HuggingFaceLLMAccessToken: {
+    envKey: "HUGGING_FACE_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  HuggingFaceLLMTokenLimit: {
+    envKey: "HUGGING_FACE_LLM_TOKEN_LIMIT",
     checks: [nonZero],
   },
 
@@ -204,6 +218,17 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Astra DB Options
+
+  AstraDBApplicationToken: {
+    envKey: "ASTRA_DB_APPLICATION_TOKEN",
+    checks: [isNotEmpty],
+  },
+  AstraDBEndpoint: {
+    envKey: "ASTRA_DB_ENDPOINT",
+    checks: [isNotEmpty],
+  },
+
   // Together Ai Options
   TogetherAiApiKey: {
     envKey: "TOGETHER_AI_API_KEY",
@@ -288,6 +313,7 @@ function supportedLLM(input = "") {
     "native",
     "togetherai",
     "mistral",
+    "huggingface",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -322,6 +348,7 @@ function supportedVectorDB(input = "") {
     "qdrant",
     "milvus",
     "zilliz",
+    "astra",
   ];
   return supported.includes(input)
     ? null
@@ -384,6 +411,12 @@ function validDockerizedUrl(input = "") {
   return null;
 }
 
+function validHuggingFaceEndpoint(input = "") {
+  return input.slice(-6) !== ".cloud"
+    ? `Your HF Endpoint should end in ".cloud"`
+    : null;
+}
+
 // If the LLMProvider has changed we need to reset all workspace model preferences to
 // null since the provider<>model name combination will be invalid for whatever the new
 // provider is.
@@ -397,7 +430,7 @@ async function wipeWorkspaceModelPreference(key, prev, next) {
 // read from an ENV file as this seems to be a complicating step for many so allowing people to write
 // to the process will at least alleviate that issue. It does not perform comprehensive validity checks or sanity checks
 // and is simply for debugging when the .env not found issue many come across.
-async function updateENV(newENVs = {}, force = false) {
+async function updateENV(newENVs = {}, force = false, userId = null) {
   let error = "";
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
@@ -425,7 +458,23 @@ async function updateENV(newENVs = {}, force = false) {
       await postUpdateFunc(key, prevValue, nextValue);
   }
 
+  await logChangesToEventLog(newValues, userId);
   return { newValues, error: error?.length > 0 ? error : false };
+}
+
+async function logChangesToEventLog(newValues = {}, userId = null) {
+  const { EventLogs } = require("../../models/eventLogs");
+  const eventMapping = {
+    LLMProvider: "update_llm_provider",
+    EmbeddingEngine: "update_embedding_engine",
+    VectorDB: "update_vector_db",
+  };
+
+  for (const [key, eventName] of Object.entries(eventMapping)) {
+    if (!newValues.hasOwnProperty(key)) continue;
+    await EventLogs.logEvent(eventName, {}, userId);
+  }
+  return;
 }
 
 async function dumpENV() {

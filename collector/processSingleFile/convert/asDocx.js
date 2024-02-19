@@ -39,7 +39,7 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
     docAuthor: "no author found",
     description: "No description found.",
     docSource: "pdf file uploaded by the user.",
-    chunkSource: filename,
+    chunkSource: "",
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,

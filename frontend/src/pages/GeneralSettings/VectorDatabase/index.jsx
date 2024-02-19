@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
+import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -10,6 +10,7 @@ import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import MilvusLogo from "@/media/vectordbs/milvus.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
+import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
 import { MagnifyingGlass } from "@phosphor-icons/react";
@@ -23,6 +24,7 @@ import MilvusDBOptions from "@/components/VectorDBSelection/MilvusDBOptions";
 import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOptions";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
+import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -100,6 +102,13 @@ export default function GeneralVectorDatabase() {
       options: <MilvusDBOptions settings={settings} />,
       description: "Open-source, highly scalable, and blazing fast.",
     },
+    {
+      name: "AstraDB",
+      value: "astra",
+      logo: AstraDBLogo,
+      options: <AstraDBOptions settings={settings} />,
+      description: "Vector Search for Real-world GenAI.",
+    },
   ];
 
   const updateVectorChoice = (selection) => {
@@ -152,7 +161,7 @@ export default function GeneralVectorDatabase() {
           onConfirm={handleSaveSettings}
         />
       </ModalWrapper>
-      {!isMobile && <Sidebar />}
+      <Sidebar />
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -167,7 +176,6 @@ export default function GeneralVectorDatabase() {
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
           className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
         >
-          {isMobile && <SidebarMobileHeader />}
           <form
             id="vectordb-form"
             onSubmit={handleSubmit}

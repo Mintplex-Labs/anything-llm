@@ -1,6 +1,7 @@
 import { API_BASE } from "@/utils/constants";
 import { baseHeaders } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import WorkspaceThread from "@/models/workspaceThread";
 import { v4 } from "uuid";
 
 const Workspace = {
@@ -59,11 +60,24 @@ const Workspace = {
       .catch(() => []);
     return history;
   },
-  streamChat: async function ({ slug }, message, mode = "query", handleChat) {
+  updateChatFeedback: async function (chatId, slug, feedback) {
+    const result = await fetch(
+      `${API_BASE}/workspace/${slug}/chat-feedback/${chatId}`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ feedback }),
+      }
+    )
+      .then((res) => res.ok)
+      .catch(() => false);
+    return result;
+  },
+  streamChat: async function ({ slug }, message, handleChat) {
     const ctrl = new AbortController();
     await fetchEventSource(`${API_BASE}/workspace/${slug}/stream-chat`, {
       method: "POST",
-      body: JSON.stringify({ message, mode }),
+      body: JSON.stringify({ message }),
       headers: baseHeaders(),
       signal: ctrl.signal,
       openWhenHidden: true,
@@ -168,6 +182,43 @@ const Workspace = {
     const data = await response.json();
     return { response, data };
   },
+
+  getSuggestedMessages: async function (slug) {
+    return await fetch(`${API_BASE}/workspace/${slug}/suggested-messages`, {
+      method: "GET",
+      cache: "no-cache",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not fetch suggested messages.");
+        return res.json();
+      })
+      .then((res) => res.suggestedMessages)
+      .catch((e) => {
+        console.error(e);
+        return null;
+      });
+  },
+  setSuggestedMessages: async function (slug, messages) {
+    return fetch(`${API_BASE}/workspace/${slug}/suggested-messages`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ messages }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(
+            res.statusText || "Error setting suggested messages."
+          );
+        }
+        return { success: true, ...res.json() };
+      })
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+  threads: WorkspaceThread,
 };
 
 export default Workspace;

@@ -9,6 +9,7 @@ class OpenAiEmbedder {
     });
     const openai = new OpenAIApi(config);
     this.openai = openai;
+    this.model = process.env.EMBEDDING_MODEL_PREF || "text-embedding-ada-002";
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 500;
@@ -30,7 +31,7 @@ class OpenAiEmbedder {
         new Promise((resolve) => {
           this.openai
             .createEmbedding({
-              model: "text-embedding-ada-002",
+              model: this.model,
               input: chunk,
             })
             .then((res) => {

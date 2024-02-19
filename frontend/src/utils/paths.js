@@ -55,6 +55,20 @@ export default {
     chat: (slug) => {
       return `/workspace/${slug}`;
     },
+    settings: {
+      generalAppearance: (slug) => {
+        return `/workspace/${slug}/settings/general-appearance`;
+      },
+      chatSettings: (slug) => {
+        return `/workspace/${slug}/settings/chat-settings`;
+      },
+      vectorDatabase: (slug) => {
+        return `/workspace/${slug}/settings/vector-database`;
+      },
+    },
+    thread: (wsSlug, threadSlug) => {
+      return `/workspace/${wsSlug}/t/${threadSlug}`;
+    },
   },
   apiDocs: () => {
     return `${API_BASE}/docs`;
@@ -92,6 +106,15 @@ export default {
     },
     apiKeys: () => {
       return "/settings/api-keys";
+    },
+    logs: () => {
+      return "/settings/event-logs";
+    },
+    embedSetup: () => {
+      return `/settings/embed-config`;
+    },
+    embedChats: () => {
+      return `/settings/embed-chats`;
     },
     dataConnectors: {
       list: () => {

@@ -22,6 +22,9 @@ function getVectorDbClass() {
     case "zilliz":
       const { Zilliz } = require("../vectorDbProviders/zilliz");
       return Zilliz;
+    case "astra":
+      const { AstraDB } = require("../vectorDbProviders/astra");
+      return AstraDB;
     default:
       throw new Error("ENV: No VECTOR_DB value found in environment!");
   }
@@ -61,6 +64,9 @@ function getLLMProvider(modelPreference = null) {
     case "native":
       const { NativeLLM } = require("../AiProviders/native");
       return new NativeLLM(embedder, modelPreference);
+    case "huggingface":
+      const { HuggingFaceLLM } = require("../AiProviders/huggingface");
+      return new HuggingFaceLLM(embedder, modelPreference);
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
   }

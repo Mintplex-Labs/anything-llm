@@ -4,18 +4,19 @@ const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
-const {
-  convertToChatHistory,
-  chatWithWorkspace,
-} = require("../../../utils/chats");
+const { chatWithWorkspace } = require("../../../utils/chats");
 const { getVectorDbClass } = require("../../../utils/helpers");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const {
   streamChatWithWorkspace,
-  writeResponseChunk,
   VALID_CHAT_MODE,
 } = require("../../../utils/chats/stream");
+const { EventLogs } = require("../../../models/eventLogs");
+const {
+  convertToChatHistory,
+  writeResponseChunk,
+} = require("../../../utils/helpers/chat/responses");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -25,17 +26,17 @@ function apiWorkspaceEndpoints(app) {
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Create a new workspace'
     #swagger.requestBody = {
-        description: 'JSON object containing new display name of workspace.',
-        required: true,
-        type: 'object',
-        content: {
-          "application/json": {
-            example: {
-              name: "My New Workspace",
-            }
+      description: 'JSON object containing new display name of workspace.',
+      required: true,
+      type: 'object',
+      content: {
+        "application/json": {
+          example: {
+            name: "My New Workspace",
           }
         }
       }
+    }
     #swagger.responses[200] = {
       content: {
         "application/json": {
@@ -72,6 +73,9 @@ function apiWorkspaceEndpoints(app) {
         LLMSelection: process.env.LLM_PROVIDER || "openai",
         Embedder: process.env.EMBEDDING_ENGINE || "inherit",
         VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+      });
+      await EventLogs.logEvent("api_workspace_created", {
+        workspaceName: workspace?.name || "Unknown Workspace",
       });
       response.status(200).json({ workspace, message });
     } catch (e) {
@@ -206,6 +210,10 @@ function apiWorkspaceEndpoints(app) {
         await DocumentVectors.deleteForWorkspace(workspaceId);
         await Document.delete({ workspaceId: workspaceId });
         await Workspace.delete({ id: workspaceId });
+
+        await EventLogs.logEvent("api_workspace_deleted", {
+          workspaceName: workspace?.name || "Unknown Workspace",
+        });
         try {
           await VectorDb["delete-namespace"]({ namespace: slug });
         } catch (e) {
@@ -519,6 +527,10 @@ function apiWorkspaceEndpoints(app) {
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
+        await EventLogs.logEvent("api_sent_chat", {
+          workspaceName: workspace?.name,
+          chatModel: workspace?.chatModel || "System Default",
+        });
         response.status(200).json({ ...result });
       } catch (e) {
         response.status(500).json({
@@ -636,6 +648,10 @@ function apiWorkspaceEndpoints(app) {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        });
+        await EventLogs.logEvent("api_sent_chat", {
+          workspaceName: workspace?.name,
+          chatModel: workspace?.chatModel || "System Default",
         });
         response.end();
       } catch (e) {
