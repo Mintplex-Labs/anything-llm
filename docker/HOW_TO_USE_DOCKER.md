@@ -26,6 +26,7 @@ Use the Dockerized version of AnythingLLM for a much faster and complete startup
 > **Requires** Docker v18.03+ on Win/Mac and 20.10+ on Linux/Ubuntu for host.docker.internal to resolve!
 >
 > _Linux_: add `--add-host=host.docker.internal:host-gateway` to docker run command for this to resolve.
+>
 > eg: Chroma host URL running on localhost:8000 on host machine needs to be http://host.docker.internal:8000
 > when used in AnythingLLM.
 
