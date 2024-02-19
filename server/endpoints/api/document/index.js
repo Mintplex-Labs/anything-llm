@@ -2,18 +2,12 @@ const { Telemetry } = require("../../../models/telemetry");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { setupMulter } = require("../../../utils/files/multer");
 const {
-  checkProcessorAlive,
-  acceptedFileTypes,
-  processDocument,
-  processLink,
-  processRawText,
-} = require("../../../utils/files/documentProcessor");
-const {
   viewLocalFiles,
   findDocumentInDocuments,
 } = require("../../../utils/files");
 const { reqBody } = require("../../../utils/http");
 const { EventLogs } = require("../../../models/eventLogs");
+const { CollectorApi } = require("../../../utils/collectorApi");
 const { handleUploads } = setupMulter();
 
 function apiDocumentEndpoints(app) {
@@ -80,8 +74,9 @@ function apiDocumentEndpoints(app) {
     }
     */
       try {
+        const Collector = new CollectorApi();
         const { originalname } = request.file;
-        const processingOnline = await checkProcessorAlive();
+        const processingOnline = await Collector.online();
 
         if (!processingOnline) {
           response
@@ -95,7 +90,7 @@ function apiDocumentEndpoints(app) {
         }
 
         const { success, reason, documents } =
-          await processDocument(originalname);
+          await Collector.processDocument(originalname);
         if (!success) {
           response
             .status(500)
@@ -104,7 +99,7 @@ function apiDocumentEndpoints(app) {
           return;
         }
 
-        console.log(
+        Collector.log(
           `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
         );
         await Telemetry.sendTelemetry("document_uploaded");
@@ -177,8 +172,9 @@ function apiDocumentEndpoints(app) {
     }
     */
       try {
+        const Collector = new CollectorApi();
         const { link } = reqBody(request);
-        const processingOnline = await checkProcessorAlive();
+        const processingOnline = await Collector.online();
 
         if (!processingOnline) {
           response
@@ -191,7 +187,8 @@ function apiDocumentEndpoints(app) {
           return;
         }
 
-        const { success, reason, documents } = await processLink(link);
+        const { success, reason, documents } =
+          await Collector.processLink(link);
         if (!success) {
           response
             .status(500)
@@ -200,7 +197,7 @@ function apiDocumentEndpoints(app) {
           return;
         }
 
-        console.log(
+        Collector.log(
           `Link ${link} uploaded processed and successfully. It is now available in documents.`
         );
         await Telemetry.sendTelemetry("link_uploaded");
@@ -278,9 +275,10 @@ function apiDocumentEndpoints(app) {
      }
      */
       try {
+        const Collector = new CollectorApi();
         const requiredMetadata = ["title"];
         const { textContent, metadata = {} } = reqBody(request);
-        const processingOnline = await checkProcessorAlive();
+        const processingOnline = await Collector.online();
 
         if (!processingOnline) {
           response
@@ -322,7 +320,7 @@ function apiDocumentEndpoints(app) {
           return;
         }
 
-        const { success, reason, documents } = await processRawText(
+        const { success, reason, documents } = await Collector.processRawText(
           textContent,
           metadata
         );
@@ -334,7 +332,7 @@ function apiDocumentEndpoints(app) {
           return;
         }
 
-        console.log(
+        Collector.log(
           `Document created successfully. It is now available in documents.`
         );
         await Telemetry.sendTelemetry("raw_document_uploaded");
@@ -391,61 +389,6 @@ function apiDocumentEndpoints(app) {
     }
   });
 
-  app.get("/v1/document/:docName", [validApiKey], async (request, response) => {
-    /*
-    #swagger.tags = ['Documents']
-    #swagger.description = 'Get a single document by its unique AnythingLLM document name'
-    #swagger.parameters['docName'] = {
-        in: 'path',
-        description: 'Unique document name to find (name in /documents)',
-        required: true,
-        type: 'string'
-    }
-    #swagger.responses[200] = {
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
-            example: {
-             "localFiles": {
-              "name": "documents",
-              "type": "folder",
-              items: [
-                {
-                  "name": "my-stored-document.txt-uuid1234.json",
-                  "type": "file",
-                  "id": "bb07c334-4dab-4419-9462-9d00065a49a1",
-                  "url": "file://my-stored-document.txt",
-                  "title": "my-stored-document.txt",
-                  "cached": false
-                },
-              ]
-             }
-            }
-          }
-        }
-      }
-    }
-    #swagger.responses[403] = {
-      schema: {
-        "$ref": "#/definitions/InvalidAPIKey"
-      }
-    }
-    */
-    try {
-      const { docName } = request.params;
-      const document = await findDocumentInDocuments(docName);
-      if (!document) {
-        response.sendStatus(404).end();
-        return;
-      }
-      response.status(200).json({ document });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
-    }
-  });
-
   app.get(
     "/v1/document/accepted-file-types",
     [validApiKey],
@@ -489,7 +432,7 @@ function apiDocumentEndpoints(app) {
     }
     */
       try {
-        const types = await acceptedFileTypes();
+        const types = await new CollectorApi().acceptedFileTypes();
         if (!types) {
           response.sendStatus(404).end();
           return;
@@ -552,6 +495,63 @@ function apiDocumentEndpoints(app) {
       }
     }
   );
+
+  // Be careful and place as last route to prevent override of the other /document/ GET
+  // endpoints!
+  app.get("/v1/document/:docName", [validApiKey], async (request, response) => {
+    /*
+    #swagger.tags = ['Documents']
+    #swagger.description = 'Get a single document by its unique AnythingLLM document name'
+    #swagger.parameters['docName'] = {
+        in: 'path',
+        description: 'Unique document name to find (name in /documents)',
+        required: true,
+        type: 'string'
+    }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+             "localFiles": {
+              "name": "documents",
+              "type": "folder",
+              items: [
+                {
+                  "name": "my-stored-document.txt-uuid1234.json",
+                  "type": "file",
+                  "id": "bb07c334-4dab-4419-9462-9d00065a49a1",
+                  "url": "file://my-stored-document.txt",
+                  "title": "my-stored-document.txt",
+                  "cached": false
+                },
+              ]
+             }
+            }
+          }
+        }
+      }
+    }
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+    */
+    try {
+      const { docName } = request.params;
+      const document = await findDocumentInDocuments(docName);
+      if (!document) {
+        response.sendStatus(404).end();
+        return;
+      }
+      response.status(200).json({ document });
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
 }
 
 module.exports = { apiDocumentEndpoints };

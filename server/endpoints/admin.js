@@ -17,6 +17,7 @@ const {
 const { reqBody, userFromSession } = require("../utils/http");
 const {
   strictMultiUserRoleValid,
+  flexUserRoleValid,
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
@@ -289,8 +290,8 @@ function adminEndpoints(app) {
 
   app.get(
     "/admin/system-preferences",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (_request, response) => {
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (_, response) => {
       try {
         const settings = {
           users_can_delete_workspaces:
@@ -303,6 +304,9 @@ function adminEndpoints(app) {
             Number(
               (await SystemSettings.get({ label: "message_limit" }))?.value
             ) || 10,
+          footer_data:
+            (await SystemSettings.get({ label: "footer_data" }))?.value ||
+            JSON.stringify([]),
         };
         response.status(200).json({ settings });
       } catch (e) {
@@ -314,7 +318,7 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/system-preferences",
-    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const updates = reqBody(request);

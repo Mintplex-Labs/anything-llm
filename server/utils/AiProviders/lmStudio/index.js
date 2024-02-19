@@ -1,5 +1,5 @@
 const { chatPrompt } = require("../../chats");
-const { handleDefaultStreamResponse } = require("../../chats/stream");
+const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {

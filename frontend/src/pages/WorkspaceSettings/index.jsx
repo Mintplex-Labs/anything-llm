@@ -1,208 +1,119 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { isMobile } from "react-device-detect";
-import showToast from "@/utils/toast";
-import { ArrowUUpLeft, Plus, X } from "@phosphor-icons/react";
+import Sidebar from "@/components/Sidebar";
 import Workspace from "@/models/workspace";
+import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
+import { isMobile } from "react-device-detect";
+import { FullScreenLoader } from "@/components/Preloader";
+import {
+  ArrowUUpLeft,
+  ChatText,
+  Database,
+  Wrench,
+} from "@phosphor-icons/react";
 import paths from "@/utils/paths";
+import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import GeneralAppearance from "./GeneralAppearance";
+import ChatSettings from "./ChatSettings";
+import VectorDatabase from "./VectorDatabase";
+
+const TABS = {
+  "general-appearance": GeneralAppearance,
+  "chat-settings": ChatSettings,
+  "vector-database": VectorDatabase,
+};
 
 export default function WorkspaceSettings() {
-  const [hasChanges, setHasChanges] = useState(false);
+  const { loading, requiresAuth, mode } = usePasswordModal();
+
+  if (loading) return <FullScreenLoader />;
+  if (requiresAuth !== false) {
+    return <>{requiresAuth !== null && <PasswordModal mode={mode} />}</>;
+  }
+
+  return <ShowWorkspaceChat />;
+}
+
+function ShowWorkspaceChat() {
+  const { slug, tab } = useParams();
   const [workspace, setWorkspace] = useState(null);
-  const [suggestedMessages, setSuggestedMessages] = useState([]);
-  const [editingIndex, setEditingIndex] = useState(-1);
-  const [newMessage, setNewMessage] = useState({ heading: "", message: "" });
-  const { slug } = useParams();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchWorkspace() {
+    async function getWorkspace() {
       if (!slug) return;
-      const workspace = await Workspace.bySlug(slug);
+      const _workspace = await Workspace.bySlug(slug);
+      if (!_workspace) {
+        setLoading(false);
+        return;
+      }
+
       const suggestedMessages = await Workspace.getSuggestedMessages(slug);
-      setWorkspace(workspace);
-      setSuggestedMessages(suggestedMessages);
+      setWorkspace({
+        ..._workspace,
+        suggestedMessages,
+      });
+      setLoading(false);
     }
-    fetchWorkspace();
+    getWorkspace();
   }, [slug]);
 
-  const handleSaveSuggestedMessages = async () => {
-    const validMessages = suggestedMessages.filter(
-      (msg) =>
-        msg?.heading?.trim()?.length > 0 || msg?.message?.trim()?.length > 0
-    );
-    const { success, error } = await Workspace.setSuggestedMessages(
-      slug,
-      validMessages
-    );
-    if (!success) {
-      showToast(`Failed to update welcome messages: ${error}`, "error");
-      return;
-    }
-    showToast("Successfully updated welcome messages.", "success");
-    setHasChanges(false);
-  };
+  if (loading) return <FullScreenLoader />;
 
-  const addMessage = () => {
-    setEditingIndex(-1);
-    if (suggestedMessages.length >= 4) {
-      showToast("Maximum of 4 messages allowed.", "warning");
-      return;
-    }
-    const defaultMessage = {
-      heading: "Explain to me",
-      message: "the benefits of AnythingLLM",
-    };
-    setNewMessage(defaultMessage);
-    setSuggestedMessages([...suggestedMessages, { ...defaultMessage }]);
-    setHasChanges(true);
-  };
-
-  const removeMessage = (index) => {
-    const messages = [...suggestedMessages];
-    messages.splice(index, 1);
-    setSuggestedMessages(messages);
-    setHasChanges(true);
-  };
-
-  const startEditing = (index) => {
-    setEditingIndex(index);
-    setNewMessage({ ...suggestedMessages[index] });
-  };
-
-  const handleRemoveMessage = (index) => {
-    removeMessage(index);
-    setEditingIndex(-1);
-  };
-
-  const onEditChange = (e) => {
-    const updatedNewMessage = {
-      ...newMessage,
-      [e.target.name]: e.target.value,
-    };
-    setNewMessage(updatedNewMessage);
-    const updatedMessages = suggestedMessages.map((message, index) => {
-      if (index === editingIndex) {
-        return { ...message, [e.target.name]: e.target.value };
-      }
-      return message;
-    });
-
-    setSuggestedMessages(updatedMessages);
-    setHasChanges(true);
-  };
-
+  const TabContent = TABS[tab];
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      <a
-        href={paths.workspace.chat(slug)}
-        className="absolute top-2 left-2 md:top-16 md:left-10 transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border z-10"
-      >
-        <ArrowUUpLeft className="h-4 w-4" />
-      </a>
+      {!isMobile && <Sidebar />}
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[16px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
       >
-        <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
-          <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
-            <div className="items-center flex gap-x-4">
-              <p className="text-2xl font-semibold text-white">
-                Workspace Settings ({workspace?.name})
-              </p>
-            </div>
-            <p className="text-sm font-base text-white text-opacity-60">
-              Customize your workspace.
-            </p>
-          </div>
-          <div className="my-6">
-            <div className="flex flex-col gap-y-2">
-              <h2 className="leading-tight font-medium text-white">
-                Suggested Chat Messages
-              </h2>
-              <p className="text-sm font-base text-white/60">
-                Customize the messages that will be suggested to your workspace
-                users.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-white/60 text-xs mt-6 w-full justify-center max-w-[600px]">
-              {suggestedMessages.map((suggestion, index) => (
-                <div key={index} className="relative w-full">
-                  <button
-                    className="transition-all duration-300 absolute z-10 text-neutral-700 bg-white rounded-full hover:bg-zinc-600 hover:border-zinc-600 hover:text-white border-transparent border shadow-lg ml-2"
-                    style={{
-                      top: -8,
-                      left: 265,
-                    }}
-                    onClick={() => handleRemoveMessage(index)}
-                  >
-                    <X className="m-[1px]" size={20} />
-                  </button>
-                  <button
-                    key={index}
-                    onClick={() => startEditing(index)}
-                    className={`text-left p-2.5 border rounded-xl w-full border-white/20 bg-sidebar hover:bg-workspace-item-selected-gradient ${
-                      editingIndex === index ? "border-sky-400" : ""
-                    }`}
-                  >
-                    <p className="font-semibold">{suggestion.heading}</p>
-                    <p>{suggestion.message}</p>
-                  </button>
-                </div>
-              ))}
-            </div>
-            {editingIndex >= 0 && (
-              <div className="flex flex-col gap-y-4 mr-2 mt-8">
-                <div className="w-1/2">
-                  <label className="text-white text-sm font-semibold block mb-2">
-                    Heading
-                  </label>
-                  <input
-                    placeholder="Message heading"
-                    className=" bg-sidebar text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                    value={newMessage.heading}
-                    name="heading"
-                    onChange={onEditChange}
-                  />
-                </div>
-                <div className="w-1/2">
-                  <label className="text-white text-sm font-semibold block mb-2">
-                    Message
-                  </label>
-                  <input
-                    placeholder="Message"
-                    className="bg-sidebar text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                    value={newMessage.message}
-                    name="message"
-                    onChange={onEditChange}
-                  />
-                </div>
-              </div>
-            )}
-            {suggestedMessages.length < 4 && (
-              <button
-                type="button"
-                onClick={addMessage}
-                className="flex gap-x-2 items-center justify-center mt-6 text-white text-sm hover:text-sky-400 transition-all duration-300"
-              >
-                Add new message <Plus className="" size={24} weight="fill" />
-              </button>
-            )}
-
-            {hasChanges && (
-              <div className="flex justify-center py-6">
-                <button
-                  type="button"
-                  className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                  onClick={handleSaveSuggestedMessages}
-                >
-                  Save Messages
-                </button>
-              </div>
-            )}
-          </div>
+        <div className="flex gap-x-10 pt-6 pb-4 ml-16 mr-8 border-b-2 border-white border-opacity-10">
+          <Link
+            to={paths.workspace.chat(slug)}
+            className="absolute top-2 left-2 md:top-4 md:left-4 transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border z-10"
+          >
+            <ArrowUUpLeft className="h-4 w-4" />
+          </Link>
+          <TabItem
+            title="General Settings"
+            icon={<Wrench className="h-6 w-6" />}
+            to={paths.workspace.settings.generalAppearance(slug)}
+          />
+          <TabItem
+            title="Chat Settings"
+            icon={<ChatText className="h-6 w-6" />}
+            to={paths.workspace.settings.chatSettings(slug)}
+          />
+          <TabItem
+            title="Vector Database"
+            icon={<Database className="h-6 w-6" />}
+            to={paths.workspace.settings.vectorDatabase(slug)}
+          />
+        </div>
+        <div className="px-16 py-6">
+          <TabContent slug={slug} workspace={workspace} />
         </div>
       </div>
     </div>
+  );
+}
+
+function TabItem({ title, icon, to }) {
+  return (
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `${
+          isActive
+            ? "text-sky-400 pb-4 border-b-[4px] -mb-[19px] border-sky-400"
+            : "text-white/60 hover:text-sky-400"
+        } ` + " flex gap-x-2 items-center font-medium"
+      }
+    >
+      {icon}
+      <div>{title}</div>
+    </NavLink>
   );
 }

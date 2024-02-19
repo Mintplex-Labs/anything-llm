@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import paths from "@/utils/paths";
 import useLogo from "@/hooks/useLogo";
 import {
-  DiscordLogo,
   EnvelopeSimple,
   SquaresFour,
   Users,
@@ -13,7 +12,6 @@ import {
   ChatText,
   Database,
   Lock,
-  GithubLogo,
   House,
   X,
   List,
@@ -26,6 +24,7 @@ import {
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { isMobile } from "react-device-detect";
+import Footer from "../Footer";
 
 export default function SettingsSidebar() {
   const { logo } = useLogo();
@@ -107,7 +106,7 @@ export default function SettingsSidebar() {
               </div>
 
               {/* Primary Body */}
-              <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-hidden ">
+              <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll ">
                 <div className="h-auto md:sidebar-items md:dark:sidebar-items">
                   <div className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll">
                     <SidebarOptions user={user} />
@@ -155,7 +154,7 @@ export default function SettingsSidebar() {
             Settings
           </div>
           {/* Primary Body */}
-          <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-hidden">
+          <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll">
             <div className="h-auto sidebar-items">
               {/* Options */}
               <div className="flex flex-col gap-y-2 h-full pb-8 overflow-y-scroll no-scroll">
@@ -171,39 +170,6 @@ export default function SettingsSidebar() {
     </>
   );
 }
-
-const Footer = () => {
-  return (
-    <div className="flex justify-center mt-2">
-      <div className="flex space-x-4">
-        <a
-          href={paths.github()}
-          className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-        >
-          <GithubLogo weight="fill" className="h-5 w-5 " />
-        </a>
-        <a
-          href={paths.docs()}
-          className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-        >
-          <BookOpen weight="fill" className="h-5 w-5 " />
-        </a>
-        <a
-          href={paths.discord()}
-          className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-        >
-          <DiscordLogo
-            weight="fill"
-            className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
-          />
-        </a>
-        {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
-        <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
-      </button> */}
-      </div>
-    </div>
-  );
-};
 
 const Option = ({
   btnText,

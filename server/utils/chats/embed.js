@@ -1,8 +1,11 @@
 const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
-const { chatPrompt, convertToPromptHistory } = require(".");
-const { writeResponseChunk } = require("./stream");
+const { chatPrompt } = require("./index");
 const { EmbedChats } = require("../../models/embedChats");
+const {
+  convertToPromptHistory,
+  writeResponseChunk,
+} = require("../helpers/chat/responses");
 
 async function streamChatWithForEmbed(
   response,
@@ -44,30 +47,20 @@ async function streamChatWithForEmbed(
   const messageLimit = 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(embed.workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(embed.workspace.slug);
-  if (!hasVectorizedSpace || embeddingsCount === 0) {
-    if (chatMode === "query") {
-      writeResponseChunk(response, {
-        id: uuid,
-        type: "textResponse",
-        textResponse:
-          "I do not have enough information to answer that. Try another question.",
-        sources: [],
-        close: true,
-        error: null,
-      });
-      return;
-    }
 
-    // If there are no embeddings - chat like a normal LLM chat interface.
-    return await streamEmptyEmbeddingChat({
-      response,
-      uuid,
-      sessionId,
-      message,
-      embed,
-      messageLimit,
-      LLMConnector,
+  // User is trying to query-mode chat a workspace that has no data in it - so
+  // we should exit early as no information can be found under these conditions.
+  if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
+    writeResponseChunk(response, {
+      id: uuid,
+      type: "textResponse",
+      textResponse:
+        "I do not have enough information to answer that. Try another question.",
+      sources: [],
+      close: true,
+      error: null,
     });
+    return;
   }
 
   let completeText;
@@ -77,17 +70,24 @@ async function streamChatWithForEmbed(
     messageLimit,
     chatMode
   );
+
   const {
     contextTexts = [],
     sources = [],
     message: error,
-  } = await VectorDb.performSimilaritySearch({
-    namespace: embed.workspace.slug,
-    input: message,
-    LLMConnector,
-    similarityThreshold: embed.workspace?.similarityThreshold,
-    topN: embed.workspace?.topN,
-  });
+  } = embeddingsCount !== 0 // if there no embeddings don't bother searching.
+    ? await VectorDb.performSimilaritySearch({
+        namespace: embed.workspace.slug,
+        input: message,
+        LLMConnector,
+        similarityThreshold: embed.workspace?.similarityThreshold,
+        topN: embed.workspace?.topN,
+      })
+    : {
+        contextTexts: [],
+        sources: [],
+        message: null,
+      };
 
   // Failed similarity search.
   if (!!error) {
@@ -176,72 +176,13 @@ async function recentEmbedChatHistory(
   messageLimit = 20,
   chatMode = null
 ) {
-  if (chatMode === "query") return [];
+  if (chatMode === "query") return { rawHistory: [], chatHistory: [] };
   const rawHistory = (
     await EmbedChats.forEmbedByUser(embed.id, sessionId, messageLimit, {
       id: "desc",
     })
   ).reverse();
   return { rawHistory, chatHistory: convertToPromptHistory(rawHistory) };
-}
-
-async function streamEmptyEmbeddingChat({
-  response,
-  uuid,
-  sessionId,
-  message,
-  embed,
-  messageLimit,
-  LLMConnector,
-}) {
-  let completeText;
-  const { rawHistory, chatHistory } = await recentEmbedChatHistory(
-    sessionId,
-    embed,
-    messageLimit
-  );
-
-  if (LLMConnector.streamingEnabled() !== true) {
-    console.log(
-      `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
-    );
-    completeText = await LLMConnector.sendChat(
-      chatHistory,
-      message,
-      embed.workspace,
-      rawHistory
-    );
-    writeResponseChunk(response, {
-      uuid,
-      type: "textResponseChunk",
-      textResponse: completeText,
-      sources: [],
-      close: true,
-      error: false,
-    });
-  }
-
-  const stream = await LLMConnector.streamChat(
-    chatHistory,
-    message,
-    embed.workspace,
-    rawHistory
-  );
-  completeText = await LLMConnector.handleStream(response, stream, {
-    uuid,
-    sources: [],
-  });
-
-  await EmbedChats.new({
-    embedId: embed.id,
-    prompt: message,
-    response: { text: completeText, type: "chat" },
-    connection_information: response.locals.connection
-      ? { ...response.locals.connection }
-      : {},
-    sessionId,
-  });
-  return;
 }
 
 module.exports = {

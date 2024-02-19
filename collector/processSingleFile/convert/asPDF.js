@@ -44,7 +44,7 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
     docAuthor: docs[0]?.metadata?.pdf?.info?.Creator || "no author found",
     description: "No description found.",
     docSource: "pdf file uploaded by the user.",
-    chunkSource: filename,
+    chunkSource: "",
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,

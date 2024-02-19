@@ -1,18 +1,15 @@
-import React, { useState, useEffect, lazy, memo } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { X } from "@phosphor-icons/react";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
 import System from "../../../models/system";
 import { isMobile } from "react-device-detect";
 import useUser from "../../../hooks/useUser";
-
-const DocumentSettings = lazy(() => import("./Documents"));
-const WorkspaceSettings = lazy(() => import("./Settings"));
+import DocumentSettings from "./Documents";
 
 const noop = () => {};
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const { slug } = useParams();
-  const [selectedTab, setSelectedTab] = useState("documents");
   const [workspace, setWorkspace] = useState(null);
   const [fileTypes, setFileTypes] = useState(null);
   const [settings, setSettings] = useState({});
@@ -72,31 +69,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
       <div className="backdrop h-full w-full absolute top-0 z-10" />
       <div className={`absolute max-h-full w-fit transition duration-300 z-20`}>
         <div className="relative bg-main-gradient rounded-[12px] shadow border-2 border-slate-300/10">
-          <div className="absolute top-[-18px] left-1/2 transform -translate-x-1/2 bg-sidebar-button p-1 rounded-xl shadow border-2 border-slate-300/10">
-            <div className="flex gap-x-1">
-              <button
-                onClick={() => setSelectedTab("documents")}
-                className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
-                  selectedTab === "documents"
-                    ? "bg-switch-selected shadow-md"
-                    : "bg-sidebar-button"
-                }`}
-              >
-                Documents
-              </button>
-              <button
-                onClick={() => setSelectedTab("settings")}
-                className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
-                  selectedTab === "settings"
-                    ? "bg-switch-selected shadow-md"
-                    : "bg-sidebar-button"
-                }`}
-              >
-                Settings
-              </button>
-            </div>
-          </div>
-          <div className="flex items-start justify-between p-2 rounded-t border-gray-500/50">
+          <div className="flex items-start justify-between p-2 rounded-t border-gray-500/50 z-40 relative">
             <button
               onClick={hideModal}
               type="button"
@@ -105,20 +78,11 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
               <X className="text-gray-300 text-lg" />
             </button>
           </div>
-          <div className={selectedTab === "documents" ? "" : "hidden"}>
-            <DocumentSettings
-              workspace={workspace}
-              fileTypes={fileTypes}
-              systemSettings={settings}
-            />
-          </div>
-          <div className={selectedTab === "settings" ? "" : "hidden"}>
-            <WorkspaceSettings
-              active={selectedTab === "settings"} // To force reload live sub-components like VectorCount
-              workspace={workspace}
-              settings={settings}
-            />
-          </div>
+          <DocumentSettings
+            workspace={workspace}
+            fileTypes={fileTypes}
+            systemSettings={settings}
+          />
         </div>
       </div>
     </div>

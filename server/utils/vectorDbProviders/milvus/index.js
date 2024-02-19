@@ -15,6 +15,12 @@ const {
 
 const Milvus = {
   name: "Milvus",
+  // Milvus/Zilliz only allows letters, numbers, and underscores in collection names
+  // so we need to enforce that by re-normalizing the names when communicating with
+  // the DB.
+  normalize: function (inputString) {
+    return inputString.replace(/[^a-zA-Z0-9_]/g, "_");
+  },
   connect: async function () {
     if (process.env.VECTOR_DB !== "milvus")
       throw new Error("Milvus::Invalid ENV settings");
@@ -42,7 +48,7 @@ const Milvus = {
     const { collection_names } = await client.listCollections();
     const total = collection_names.reduce(async (acc, collection_name) => {
       const statistics = await client.getCollectionStatistics({
-        collection_name,
+        collection_name: this.normalize(collection_name),
       });
       return Number(acc) + Number(statistics?.data?.row_count ?? 0);
     }, 0);
@@ -51,14 +57,14 @@ const Milvus = {
   namespaceCount: async function (_namespace = null) {
     const { client } = await this.connect();
     const statistics = await client.getCollectionStatistics({
-      collection_name: _namespace,
+      collection_name: this.normalize(_namespace),
     });
     return Number(statistics?.data?.row_count ?? 0);
   },
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
-      .getCollectionStatistics({ collection_name: namespace })
+      .getCollectionStatistics({ collection_name: this.normalize(namespace) })
       .catch(() => null);
     return collection;
   },
@@ -70,7 +76,7 @@ const Milvus = {
   namespaceExists: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const { value } = await client
-      .hasCollection({ collection_name: namespace })
+      .hasCollection({ collection_name: this.normalize(namespace) })
       .catch((e) => {
         console.error("MilvusDB::namespaceExists", e.message);
         return { value: false };
@@ -78,7 +84,7 @@ const Milvus = {
     return value;
   },
   deleteVectorsInNamespace: async function (client, namespace = null) {
-    await client.dropCollection({ collection_name: namespace });
+    await client.dropCollection({ collection_name: this.normalize(namespace) });
     return true;
   },
   // Milvus requires a dimension aspect for collection creation
@@ -93,7 +99,7 @@ const Milvus = {
         );
 
       await client.createCollection({
-        collection_name: namespace,
+        collection_name: this.normalize(namespace),
         fields: [
           {
             name: "id",
@@ -116,13 +122,13 @@ const Milvus = {
         ],
       });
       await client.createIndex({
-        collection_name: namespace,
+        collection_name: this.normalize(namespace),
         field_name: "vector",
         index_type: IndexType.AUTOINDEX,
         metric_type: MetricType.COSINE,
       });
       await client.loadCollectionSync({
-        collection_name: namespace,
+        collection_name: this.normalize(namespace),
       });
     }
   },
@@ -155,7 +161,7 @@ const Milvus = {
             return { id, vector: chunk.values, metadata: chunk.metadata };
           });
           const insertResult = await client.insert({
-            collection_name: namespace,
+            collection_name: this.normalize(namespace),
             data: newChunks,
           });
 
@@ -166,7 +172,9 @@ const Milvus = {
           }
         }
         await DocumentVectors.bulkInsert(documentVectors);
-        await client.flushSync({ collection_names: [namespace] });
+        await client.flushSync({
+          collection_names: [this.normalize(namespace)],
+        });
         return { vectorized: true, error: null };
       }
 
@@ -212,7 +220,7 @@ const Milvus = {
         for (const chunk of toChunks(vectors, 100)) {
           chunks.push(chunk);
           const insertResult = await client.insert({
-            collection_name: namespace,
+            collection_name: this.normalize(namespace),
             data: chunk.map((item) => ({
               id: item.id,
               vector: item.values,
@@ -227,7 +235,9 @@ const Milvus = {
           }
         }
         await storeVectorResult(chunks, fullFilePath);
-        await client.flushSync({ collection_names: [namespace] });
+        await client.flushSync({
+          collection_names: [this.normalize(namespace)],
+        });
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
@@ -247,7 +257,7 @@ const Milvus = {
     const vectorIds = knownDocuments.map((doc) => doc.vectorId);
     const queryIn = vectorIds.map((v) => `'${v}'`).join(",");
     await client.deleteEntities({
-      collection_name: namespace,
+      collection_name: this.normalize(namespace),
       expr: `id in [${queryIn}]`,
     });
 
@@ -257,7 +267,7 @@ const Milvus = {
     // Even after flushing Milvus can take some time to re-calc the count
     // so all we can hope to do is flushSync so that the count can be correct
     // on a later call.
-    await client.flushSync({ collection_names: [namespace] });
+    await client.flushSync({ collection_names: [this.normalize(namespace)] });
     return true;
   },
   performSimilaritySearch: async function ({
@@ -310,7 +320,7 @@ const Milvus = {
       scores: [],
     };
     const response = await client.search({
-      collection_name: namespace,
+      collection_name: this.normalize(namespace),
       vectors: queryVector,
       limit: topN,
     });
