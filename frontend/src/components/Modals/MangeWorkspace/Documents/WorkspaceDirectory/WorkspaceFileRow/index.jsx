@@ -114,7 +114,7 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
 
   const updatePinStatus = async () => {
     try {
-      window.dispatchEvent(pinEvent);
+      if (!pinned) window.dispatchEvent(pinEvent);
       const success = await Workspace.setPinForDocument(
         workspace.slug,
         docPath,

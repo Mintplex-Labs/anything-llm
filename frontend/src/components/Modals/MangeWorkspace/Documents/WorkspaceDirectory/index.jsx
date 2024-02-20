@@ -160,17 +160,17 @@ const PinAlert = memo(() => {
           <div className="w-full p-6 text-white text-md flex flex-col gap-y-2">
             <p>
               When you <b>pin</b> a document in AnythingLLM we will inject the
-              entire content of the document into your prompt window. for your
-              workspace to fully comprehend.
+              entire content of the document into your prompt window for your
+              LLM to fully comprehend.
             </p>
             <p>
               This works best with <b>large-context models</b> or small files
-              that are super important
+              that are critical to its knowledge-base.
             </p>
             <p>
               If you are not getting the answers you desire from AnythingLLM by
-              default then pinning is a great way to get better answers in a
-              click.
+              default then pinning is a great way to get higher quality answers
+              in a click.
             </p>
           </div>
 
