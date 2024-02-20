@@ -3,6 +3,7 @@ import { X, Trash } from "@phosphor-icons/react";
 import System from "@/models/system";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
+import { refocusApplication } from "@/ipc/node-api";
 
 export default function ChatRow({ chat, onDelete }) {
   const {
@@ -21,8 +22,12 @@ export default function ChatRow({ chat, onDelete }) {
       !window.confirm(
         `Are you sure you want to delete this chat?\n\nThis action is irreversible.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
+
+    refocusApplication();
     await System.deleteChat(chat.id);
     onDelete(chat.id);
   };

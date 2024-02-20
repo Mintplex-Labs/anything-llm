@@ -6,6 +6,7 @@ import { DotsThreeOutline, LinkSimple, Trash } from "@phosphor-icons/react";
 import { useModal } from "@/hooks/useModal";
 import { Link } from "react-router-dom";
 import ModalWrapper from "@/components/ModalWrapper";
+import { refocusApplication } from "@/ipc/node-api";
 
 export default function WorkspaceRow({ workspace, users }) {
   const rowRef = useRef(null);
@@ -15,8 +16,12 @@ export default function WorkspaceRow({ workspace, users }) {
       !window.confirm(
         `Are you sure you want to delete ${workspace.name}?\nAfter you do this it will be unavailable in this instance of AnythingLLM.\n\nThis action is irreversible.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
+
+    refocusApplication();
     rowRef?.current?.remove();
     await Admin.deleteWorkspace(workspace.id);
   };

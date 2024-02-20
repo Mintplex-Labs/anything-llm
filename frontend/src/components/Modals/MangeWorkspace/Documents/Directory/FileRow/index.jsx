@@ -7,6 +7,7 @@ import {
 import { File, Trash } from "@phosphor-icons/react";
 import System from "@/models/system";
 import debounce from "lodash.debounce";
+import { refocusApplication } from "@/ipc/node-api";
 
 export default function FileRow({
   item,
@@ -27,10 +28,12 @@ export default function FileRow({
         "Are you sure you want to delete this document?\nThis will require you to re-upload and re-embed it.\nThis document will be removed from any workspace that is currently referencing it.\nThis action is not reversible."
       )
     ) {
+      refocusApplication();
       return false;
     }
 
     try {
+      refocusApplication();
       setLoading(true);
       setLoadingMessage("This may take a while for large documents");
       await System.deleteDocument(`${folderName}/${item.name}`);
