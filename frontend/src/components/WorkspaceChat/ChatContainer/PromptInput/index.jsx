@@ -5,6 +5,7 @@ import SlashCommandsButton, {
   useSlashCommands,
 } from "./SlashCommands";
 import { isMobile } from "react-device-detect";
+import debounce from "lodash.debounce";
 
 export default function PromptInput({
   workspace,
@@ -22,6 +23,13 @@ export default function PromptInput({
   const handleSubmit = (e) => {
     setFocused(false);
     submit(e);
+  };
+
+  const checkForSlash = (e) => {
+    const input = e.target.value;
+    if (input === "/") setShowSlashCommand(true);
+    if (showSlashCommand) setShowSlashCommand(false);
+    return;
   };
 
   const captureEnter = (event) => {
@@ -42,6 +50,7 @@ export default function PromptInput({
         : "1px";
   };
 
+  const watchForSlash = debounce(checkForSlash, 300);
   return (
     <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
       <SlashCommands
@@ -59,7 +68,10 @@ export default function PromptInput({
               <textarea
                 onKeyUp={adjustTextArea}
                 onKeyDown={captureEnter}
-                onChange={onChange}
+                onChange={(e) => {
+                  onChange(e);
+                  watchForSlash(e);
+                }}
                 required={true}
                 disabled={inputDisabled}
                 onFocus={() => setFocused(true)}

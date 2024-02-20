@@ -469,6 +469,21 @@ function systemEndpoints(app) {
     }
   });
 
+  app.get("/system/support-email", [validatedRequest], async (_, response) => {
+    try {
+      const supportEmail =
+        (
+          await SystemSettings.get({
+            label: "support_email",
+          })
+        )?.value ?? null;
+      response.status(200).json({ supportEmail: supportEmail });
+    } catch (error) {
+      console.error("Error fetching support email:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.get(
     "/system/pfp/:id",
     [validatedRequest, flexUserRoleValid([ROLES.all])],

@@ -79,7 +79,6 @@ export default function ChatContainer({
     <div className="h-full w-full relative">
       <ChatHistory settings={settings} history={chatHistory} />
       <PromptInput
-        settings={settings}
         message={message}
         submit={handleSubmit}
         onChange={handleMessageChange}
