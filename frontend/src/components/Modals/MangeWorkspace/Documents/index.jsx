@@ -2,8 +2,8 @@ import { ArrowsDownUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import Workspace from "../../../../models/workspace";
 import System from "../../../../models/system";
-import Directory from "./Directory";
 import showToast from "../../../../utils/toast";
+import Directory from "./Directory";
 import WorkspaceDirectory from "./WorkspaceDirectory";
 
 // OpenAI Cost per token
