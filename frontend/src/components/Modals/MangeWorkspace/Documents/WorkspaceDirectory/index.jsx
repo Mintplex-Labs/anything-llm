@@ -135,7 +135,6 @@ const PinAlert = memo(() => {
   }
 
   function handlePinEvent() {
-    console.log(window?.localStorage?.getItem(SEEN_DOC_PIN_ALERT));
     if (!!window?.localStorage?.getItem(SEEN_DOC_PIN_ALERT)) return;
     setShowAlert(true);
   }

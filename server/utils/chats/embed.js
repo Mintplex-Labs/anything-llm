@@ -122,8 +122,8 @@ async function streamChatWithForEmbed(
     return;
   }
 
-  vectorSearchResults.contextTexts.forEach((text) => contextTexts.push(text));
-  vectorSearchResults.sources.forEach((source) => sources.push(source));
+  contextTexts = [...contextTexts, ...vectorSearchResults.contextTexts];
+  sources = [...sources, ...vectorSearchResults.sources];
 
   // If in query mode and no sources are found, do not
   // let the LLM try to hallucinate a response or use general knowledge
