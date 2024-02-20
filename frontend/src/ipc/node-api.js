@@ -27,3 +27,8 @@ ipcRenderer.on("backend-server-online", async (_evt, message) => {
   // postMessage({ payload: 'removeLoading' }, '*')
   API_BASE();
 });
+
+export function refocusApplication() {
+  ipcRenderer.send("focus-fix");
+  return;
+}

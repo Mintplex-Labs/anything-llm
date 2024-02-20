@@ -1,5 +1,6 @@
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
+import { refocusApplication } from "@/ipc/node-api";
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
@@ -140,8 +141,12 @@ function OptionsMenu({
       !window.confirm(
         "Are you sure you want to delete this thread? All of its chats will be deleted. You cannot undo this."
       )
-    )
+    ) {
+      refocusApplication();
       return;
+    }
+
+    refocusApplication();
     const success = await Workspace.threads.delete(workspace.slug, thread.slug);
     if (!success) {
       showToast("Thread could not be deleted!", "error", { clear: true });
