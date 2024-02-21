@@ -20,8 +20,7 @@ export default function AccountModal({ user, hideModal }) {
 
     const pfpUrl = await System.fetchPfp(user.id);
     setPfp(pfpUrl);
-
-    showToast("Profile picture uploaded successfully.", "success");
+    showToast("Profile picture uploaded.", "success");
   };
 
   const handleRemovePfp = async () => {
@@ -32,7 +31,6 @@ export default function AccountModal({ user, hideModal }) {
     }
 
     setPfp(null);
-    showToast("Profile picture removed successfully.", "success");
   };
 
   const handleUpdate = async (e) => {
@@ -53,7 +51,8 @@ export default function AccountModal({ user, hideModal }) {
         storedUser.username = data.username;
         localStorage.setItem(AUTH_USER, JSON.stringify(storedUser));
       }
-      window.location.reload();
+      showToast("Profile updated.", "success", { clear: true });
+      hideModal();
     } else {
       showToast(`Failed to update user: ${error}`, "error");
     }

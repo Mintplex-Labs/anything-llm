@@ -10,13 +10,14 @@ import AccountModal from "../AccountModal";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 
 export default function UserButton() {
+  const mode = useLoginMode();
   const { user } = useUser();
+  const menuRef = useRef();
+  const buttonRef = useRef();
   const [showMenu, setShowMenu] = useState(false);
   const [showAccountSettings, setShowAccountSettings] = useState(false);
   const [supportEmail, setSupportEmail] = useState("");
-  const mode = useLoginMode();
-  const menuRef = useRef();
-  const buttonRef = useRef();
+
   const handleClose = (event) => {
     if (
       menuRef.current &&
@@ -42,17 +43,16 @@ export default function UserButton() {
   useEffect(() => {
     const fetchSupportEmail = async () => {
       const supportEmail = await System.fetchSupportEmail();
-      if (supportEmail.email) {
-        setSupportEmail(`mailto:${supportEmail.email}`);
-      } else {
-        setSupportEmail(paths.mailToMintplex());
-      }
+      setSupportEmail(
+        supportEmail?.email
+          ? `mailto:${supportEmail.email}`
+          : paths.mailToMintplex()
+      );
     };
     fetchSupportEmail();
   }, []);
 
   if (mode === null) return null;
-
   return (
     <div className="absolute top-9 right-10 w-fit h-fit z-99">
       <button
