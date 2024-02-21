@@ -3,7 +3,6 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
@@ -20,7 +19,6 @@ import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
 import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
-import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
@@ -152,14 +150,6 @@ export default function GeneralLLMPreference() {
       logo: MistralLogo,
       options: <MistralOptions settings={settings} />,
       description: "Run open source models from Mistral AI.",
-    },
-    {
-      name: "Native",
-      value: "native",
-      logo: AnythingLLMIcon,
-      options: <NativeLLMOptions settings={settings} />,
-      description:
-        "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
     },
   ];
 

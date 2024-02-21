@@ -8,7 +8,6 @@ import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
-import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -16,7 +15,6 @@ import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
 import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
 import LocalAiOptions from "@/components/LLMSelection/LocalAiOptions";
-import NativeLLMOptions from "@/components/LLMSelection/NativeLLMOptions";
 import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
@@ -127,14 +125,6 @@ export default function LLMPreference({
       logo: MistralLogo,
       options: <MistralOptions settings={settings} />,
       description: "Run open source models from Mistral AI.",
-    },
-    {
-      name: "Native",
-      value: "native",
-      logo: AnythingLLMIcon,
-      options: <NativeLLMOptions settings={settings} />,
-      description:
-        "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
     },
   ];
 
