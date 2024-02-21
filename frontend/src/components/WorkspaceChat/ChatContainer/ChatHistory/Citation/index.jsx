@@ -180,11 +180,7 @@ function CitationDetailModal({ source, onClose }) {
                 ))}
               </div>
             ))}
-            <div className="mb-6">
-              {/* {[...Array(3)].map((_, idx) => (
-                <SkeletonLine key={idx} />
-              ))} */}
-            </div>
+            <div className="mb-6"></div>
           </div>
         </div>
       </div>
@@ -203,7 +199,7 @@ const ICONS = {
 // which contain valid outbound links that can be clicked by the
 // user when viewing a citation. Optionally allows various icons
 // to show distinct types of sources.
-function parseChunkSource({ title = "", chunkSource = "" }) {
+function parseChunkSource({ title = "", chunks = [] }) {
   const nullResponse = {
     isUrl: false,
     text: null,
@@ -211,9 +207,9 @@ function parseChunkSource({ title = "", chunkSource = "" }) {
     icon: "file",
   };
 
-  if (!chunkSource.startsWith("link://")) return nullResponse;
+  if (!chunks[0].chunkSource.startsWith("link://")) return nullResponse;
   try {
-    const url = new URL(chunkSource.split("link://")[1]);
+    const url = new URL(chunks[0].chunkSource.split("link://")[1]);
     let text = url.host + url.pathname;
     let icon = "link";
 
