@@ -16,13 +16,23 @@ import {
 function combineLikeSources(sources) {
   const combined = {};
   sources.forEach((source) => {
-    const { id, title, text, chunkSource = "" } = source;
+    const { id, title, text, chunkSource = "", score } = source;
     if (combined.hasOwnProperty(title)) {
-      combined[title].text += `\n\n ---- Chunk ${id || ""} ---- \n\n${text}`;
+      combined[title].text += `\n\n ---- Chunk ${
+        id || ""
+      } ---- \n(Similarity: ${score.toFixed(3)})\n\n${text}`;
+      combined[title].score = score;
       combined[title].references += 1;
       combined[title].chunkSource = chunkSource;
     } else {
-      combined[title] = { title, text, chunkSource, references: 1 };
+      const textWithSimilarity = `(Similarity: ${score.toFixed(3)})\n\n${text}`;
+      combined[title] = {
+        title,
+        text: textWithSimilarity,
+        chunkSource,
+        references: 1,
+        score,
+      };
     }
   });
 
