@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
-import { CaretRight, FileText } from "@phosphor-icons/react";
+import { CaretRight, FileText, Info } from "@phosphor-icons/react";
 import truncate from "truncate";
 import ModalWrapper from "@/components/ModalWrapper";
 import { middleTruncate } from "@/utils/directories";
@@ -12,30 +12,23 @@ import {
   X,
   YoutubeLogo,
 } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
 
 function combineLikeSources(sources) {
   const combined = {};
   sources.forEach((source) => {
     const { id, title, text, chunkSource = "", score } = source;
     if (combined.hasOwnProperty(title)) {
-      combined[title].text += `\n\n ---- Chunk ${
-        id || ""
-      } ---- \n(Similarity: ${score.toFixed(3)})\n\n${text}`;
-      combined[title].score = score;
+      combined[title].chunks.push({ id, text, chunkSource, score });
       combined[title].references += 1;
-      combined[title].chunkSource = chunkSource;
     } else {
-      const textWithSimilarity = `(Similarity: ${score.toFixed(3)})\n\n${text}`;
       combined[title] = {
         title,
-        text: textWithSimilarity,
-        chunkSource,
+        chunks: [{ id, text, chunkSource, score }],
         references: 1,
-        score,
       };
     }
   });
-
   return Object.values(combined);
 }
 
@@ -119,7 +112,7 @@ function SkeletonLine() {
 }
 
 function CitationDetailModal({ source, onClose }) {
-  const { references, title, text } = source;
+  const { references, title, chunks } = source;
   const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
 
   return (
@@ -166,11 +159,31 @@ function CitationDetailModal({ source, onClose }) {
             {[...Array(3)].map((_, idx) => (
               <SkeletonLine key={idx} />
             ))}
-            <p className="text-white whitespace-pre-line">{HTMLDecode(text)}</p>
+            {chunks.map((chunk, idx) => (
+              <div key={idx} className="pt-6 text-white">
+                <div className="flex items-center gap-x-1 mb-3 -mt-3 border border-white/80 w-fit px-2 py-1 rounded-md">
+                  <p className="text-white font-semibold">Chunk - {chunk.id}</p>
+                  <Info
+                    data-tooltip-id="similarity-score"
+                    data-tooltip-content={`Similarity score: ${chunk.score.toFixed(
+                      3
+                    )}`}
+                    size={20}
+                  />
+                  <Tooltip id="similarity-score" place="top" delayShow={100} />
+                </div>
+                <p className="text-white whitespace-pre-line pb-6">
+                  {HTMLDecode(chunk.text)}
+                </p>
+                {[...Array(3)].map((_, idx) => (
+                  <SkeletonLine key={idx} />
+                ))}
+              </div>
+            ))}
             <div className="mb-6">
-              {[...Array(3)].map((_, idx) => (
+              {/* {[...Array(3)].map((_, idx) => (
                 <SkeletonLine key={idx} />
-              ))}
+              ))} */}
             </div>
           </div>
         </div>
