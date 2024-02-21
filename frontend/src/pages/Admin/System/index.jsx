@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
+import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
@@ -27,7 +27,7 @@ export default function AdminSystem() {
 
   useEffect(() => {
     async function fetchSettings() {
-      const { settings } = await Admin.systemPreferences();
+      const settings = (await Admin.systemPreferences())?.settings;
       if (!settings) return;
       setCanDelete(settings?.users_can_delete_workspaces);
       setMessageLimit({
@@ -40,12 +40,11 @@ export default function AdminSystem() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      {!isMobile && <Sidebar />}
+      <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
       >
-        {isMobile && <SidebarMobileHeader />}
         <form
           onSubmit={handleSubmit}
           onChange={() => setHasChanges(true)}

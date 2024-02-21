@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
+import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import { DATA_CONNECTORS } from "@/components/DataConnectorOption";
 import System from "@/models/system";
@@ -45,12 +45,11 @@ export default function YouTubeTranscriptConnectorSetup() {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      {!isMobile && <Sidebar />}
+      <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
       >
-        {isMobile && <SidebarMobileHeader />}
         <div className="flex w-full">
           <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
             <div className="flex w-full gap-x-4 items-center  pb-6 border-white border-b-2 border-opacity-10">

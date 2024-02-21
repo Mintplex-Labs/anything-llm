@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-👉 AnythingLLM for desktop! <a href="https://mintplexlabs.typeform.com/to/sFgD2TIb" target="_blank"> Sign up</a>
+👉 AnythingLLM for desktop is in <b>public beta</b>! <a href="https://useanything.com/download" target="_blank"> Download Now</a>
 </p>
 
 A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use as well as supporting multi-user management and permissions.
@@ -48,11 +48,11 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 Some cool features of AnythingLLM
 
 - **Multi-user instance support and permissioning**
+- **_New_** [Custom Embeddable Chat widget for your website](./embed/README.md)
 - Multiple document type support (PDF, TXT, DOCX, etc)
 - Manage documents in your vector database from a simple UI
 - Two chat modes `conversation` and `query`. Conversation retains previous questions and amendments. Query is simple QA against your documents
-- In-chat citations linked to the original document source and text
-- Simple technology stack for fast iteration
+- In-chat citations
 - 100% Cloud deployment ready.
 - "Bring your own LLM" model.
 - Extremely efficient cost-saving measures for managing very large documents. You'll never pay to embed a massive document or transcript more than once. 90% more cost effective than other document chatbot solutions.
@@ -84,6 +84,7 @@ Some cool features of AnythingLLM
 **Supported Vector Databases:**
 
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
+- [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)
 - [Weaviate](https://weaviate.io)
@@ -106,6 +107,12 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----:|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][aws-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
+
+| Railway |
+|----------------------------------------|
+| [![Deploy on Railway][railway-btn]][railway-deploy] |
+
+[or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
 ## How to setup for development
 
@@ -190,3 +197,7 @@ This project is [MIT](./LICENSE) licensed.
 [do-deploy]: ./cloud-deployments/digitalocean/terraform/DEPLOY.md
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
 [render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
+[render-btn]: https://render.com/images/deploy-to-render-button.svg
+[render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
+[railway-btn]: https://railway.app/button.svg
+[railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn

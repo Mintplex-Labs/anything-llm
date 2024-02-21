@@ -80,7 +80,8 @@ const Weaviate = {
     client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
+    topN = 4
   ) {
     const result = {
       contextTexts: [],
@@ -95,7 +96,7 @@ const Weaviate = {
       .withClassName(camelCase(namespace))
       .withFields(`${fields} _additional { id certainty }`)
       .withNearVector({ vector: queryVector })
-      .withLimit(4)
+      .withLimit(topN)
       .do();
 
     const responses = queryResponse?.data?.Get?.[camelCase(namespace)];
@@ -233,7 +234,7 @@ const Weaviate = {
         }
 
         await DocumentVectors.bulkInsert(documentVectors);
-        return true;
+        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.
@@ -316,11 +317,10 @@ const Weaviate = {
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
-      return true;
+      return { vectorized: true, error: null };
     } catch (e) {
-      console.error(e);
       console.error("addDocumentToNamespace", e.message);
-      return false;
+      return { vectorized: false, error: e.message };
     }
   },
   deleteDocumentFromNamespace: async function (namespace, docId) {
@@ -348,6 +348,7 @@ const Weaviate = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
+    topN = 4,
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -366,7 +367,8 @@ const Weaviate = {
       client,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
+      topN
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

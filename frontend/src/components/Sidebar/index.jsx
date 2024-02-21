@@ -1,13 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Wrench,
-  GithubLogo,
-  BookOpen,
-  DiscordLogo,
-  DotsThree,
-  Plus,
-  List,
-} from "@phosphor-icons/react";
+import { Wrench, Plus, List } from "@phosphor-icons/react";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
@@ -16,6 +8,7 @@ import paths from "@/utils/paths";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
 import useLogo from "@/hooks/useLogo";
 import useUser from "@/hooks/useUser";
+import Footer from "../Footer";
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -71,35 +64,7 @@ export default function Sidebar() {
               <ActiveWorkspaces />
             </div>
             <div className="flex flex-col flex-grow justify-end mb-2">
-              {/* Footer */}
-              <div className="flex justify-center mt-2">
-                <div className="flex space-x-4">
-                  <a
-                    href={paths.github()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                  >
-                    <GithubLogo weight="fill" className="h-5 w-5 " />
-                  </a>
-                  <a
-                    href={paths.docs()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                  >
-                    <BookOpen weight="fill" className="h-5 w-5 " />
-                  </a>
-                  <a
-                    href={paths.discord()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                  >
-                    <DiscordLogo
-                      weight="fill"
-                      className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
-                    />
-                  </a>
-                  {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
-                    <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
-                  </button> */}
-                </div>
-              </div>
+              <Footer />
             </div>
           </div>
         </div>
@@ -215,35 +180,7 @@ export function SidebarMobileHeader() {
                 </div>
               </div>
               <div>
-                {/* Footer */}
-                <div className="flex justify-center mt-2">
-                  <div className="flex space-x-4">
-                    <a
-                      href={paths.github()}
-                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                    >
-                      <GithubLogo weight="fill" className="h-5 w-5 " />
-                    </a>
-                    <a
-                      href={paths.docs()}
-                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                    >
-                      <BookOpen weight="fill" className="h-5 w-5 " />
-                    </a>
-                    <a
-                      href={paths.discord()}
-                      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                    >
-                      <DiscordLogo
-                        weight="fill"
-                        className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
-                      />
-                    </a>
-                    {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
-                    <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
-                  </button> */}
-                  </div>
-                </div>
+                <Footer />
               </div>
             </div>
           </div>

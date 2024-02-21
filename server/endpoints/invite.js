@@ -1,3 +1,4 @@
+const { EventLogs } = require("../models/eventLogs");
 const { Invite } = require("../models/invite");
 const { User } = require("../models/user");
 const { reqBody } = require("../utils/http");
@@ -56,6 +57,14 @@ function inviteEndpoints(app) {
       }
 
       await Invite.markClaimed(invite.id, user);
+      await EventLogs.logEvent(
+        "invite_accepted",
+        {
+          username: user.username,
+        },
+        user.id
+      );
+
       response.status(200).json({ success: true, error: null });
     } catch (e) {
       console.error(e);

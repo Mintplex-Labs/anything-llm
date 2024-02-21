@@ -21,22 +21,6 @@ function setupMulter() {
   return { handleUploads: multer({ storage }) };
 }
 
-function setupDataImports() {
-  // Handle File uploads for auto-uploading.
-  const storage = multer.diskStorage({
-    destination: function (_, __, cb) {
-      const uploadOutput = path.resolve(__dirname, `../../storage/imports`);
-      fs.mkdirSync(uploadOutput, { recursive: true });
-      return cb(null, uploadOutput);
-    },
-    filename: function (_, file, cb) {
-      cb(null, file.originalname);
-    },
-  });
-
-  return { handleImports: multer({ storage }) };
-}
-
 function setupLogoUploads() {
   // Handle Logo uploads.
   const storage = multer.diskStorage({
@@ -81,7 +65,6 @@ function setupPfpUploads() {
 
 module.exports = {
   setupMulter,
-  setupDataImports,
   setupLogoUploads,
   setupPfpUploads,
 };

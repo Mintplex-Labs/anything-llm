@@ -1,15 +1,24 @@
 const { ApiKey } = require("../models/apiKeys");
 const { Document } = require("../models/documents");
+const { EventLogs } = require("../models/eventLogs");
 const { Invite } = require("../models/invite");
 const { SystemSettings } = require("../models/systemSettings");
+const { Telemetry } = require("../models/telemetry");
 const { User } = require("../models/user");
 const { DocumentVectors } = require("../models/vectors");
 const { Workspace } = require("../models/workspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { getVectorDbClass } = require("../utils/helpers");
+const {
+  validRoleSelection,
+  canModifyAdmin,
+  validCanModify,
+} = require("../utils/helpers/admin");
 const { reqBody, userFromSession } = require("../utils/http");
 const {
   strictMultiUserRoleValid,
+  flexUserRoleValid,
+  ROLES,
 } = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 
@@ -18,7 +27,7 @@ function adminEndpoints(app) {
 
   app.get(
     "/admin/users",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (_request, response) => {
       try {
         const users = (await User.where()).map((user) => {
@@ -35,11 +44,29 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/users/new",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
+        const currUser = await userFromSession(request, response);
         const newUserParams = reqBody(request);
+        const roleValidation = validRoleSelection(currUser, newUserParams);
+
+        if (!roleValidation.valid) {
+          response
+            .status(200)
+            .json({ user: null, error: roleValidation.error });
+          return;
+        }
+
         const { user: newUser, error } = await User.create(newUserParams);
+        await EventLogs.logEvent(
+          "user_created",
+          {
+            userName: newUser.username,
+            createdBy: currUser.username,
+          },
+          currUser.id
+        );
         response.status(200).json({ user: newUser, error });
       } catch (e) {
         console.error(e);
@@ -50,29 +77,34 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/user/:id",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
+        const currUser = await userFromSession(request, response);
         const { id } = request.params;
         const updates = reqBody(request);
         const user = await User.get({ id: Number(id) });
 
-        // Check to make sure with this update that includes a role change to
-        // something other than admin that we still have at least one admin left.
-        if (
-          updates.hasOwnProperty("role") && // has admin prop to change
-          updates.role !== "admin" && // and we are changing to non-admin
-          user.role === "admin" // and they currently are an admin
-        ) {
-          const adminCount = await User.count({ role: "admin" });
-          if (adminCount - 1 <= 0) {
-            response.status(200).json({
-              success: false,
-              error:
-                "No system admins will remain if you do this. Update failed.",
-            });
-            return;
-          }
+        const canModify = validCanModify(currUser, user);
+        if (!canModify.valid) {
+          response.status(200).json({ success: false, error: canModify.error });
+          return;
+        }
+
+        const roleValidation = validRoleSelection(currUser, updates);
+        if (!roleValidation.valid) {
+          response
+            .status(200)
+            .json({ success: false, error: roleValidation.error });
+          return;
+        }
+
+        const validAdminRoleModification = await canModifyAdmin(user, updates);
+        if (!validAdminRoleModification.valid) {
+          response
+            .status(200)
+            .json({ success: false, error: validAdminRoleModification.error });
+          return;
         }
 
         const { success, error } = await User.update(id, updates);
@@ -86,11 +118,28 @@ function adminEndpoints(app) {
 
   app.delete(
     "/admin/user/:id",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
+        const currUser = await userFromSession(request, response);
         const { id } = request.params;
+        const user = await User.get({ id: Number(id) });
+
+        const canModify = validCanModify(currUser, user);
+        if (!canModify.valid) {
+          response.status(200).json({ success: false, error: canModify.error });
+          return;
+        }
+
         await User.delete({ id: Number(id) });
+        await EventLogs.logEvent(
+          "user_deleted",
+          {
+            userName: user.username,
+            deletedBy: currUser.username,
+          },
+          currUser.id
+        );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);
@@ -101,7 +150,7 @@ function adminEndpoints(app) {
 
   app.get(
     "/admin/invites",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (_request, response) => {
       try {
         const invites = await Invite.whereWithUsers();
@@ -115,11 +164,19 @@ function adminEndpoints(app) {
 
   app.get(
     "/admin/invite/new",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
         const { invite, error } = await Invite.create(user.id);
+        await EventLogs.logEvent(
+          "invite_created",
+          {
+            inviteCode: invite.code,
+            createdBy: response.locals?.user?.username,
+          },
+          response.locals?.user?.id
+        );
         response.status(200).json({ invite, error });
       } catch (e) {
         console.error(e);
@@ -130,11 +187,16 @@ function adminEndpoints(app) {
 
   app.delete(
     "/admin/invite/:id",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { id } = request.params;
         const { success, error } = await Invite.deactivate(id);
+        await EventLogs.logEvent(
+          "invite_deleted",
+          { deletedBy: response.locals?.user?.username },
+          response.locals?.user?.id
+        );
         response.status(200).json({ success, error });
       } catch (e) {
         console.error(e);
@@ -145,7 +207,7 @@ function adminEndpoints(app) {
 
   app.get(
     "/admin/workspaces",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (_request, response) => {
       try {
         const workspaces = await Workspace.whereWithUsers();
@@ -159,7 +221,7 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/workspaces/new",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
@@ -178,7 +240,7 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/workspaces/:workspaceId/update-users",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { workspaceId } = request.params;
@@ -197,7 +259,7 @@ function adminEndpoints(app) {
 
   app.delete(
     "/admin/workspaces/:id",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { id } = request.params;
@@ -228,8 +290,8 @@ function adminEndpoints(app) {
 
   app.get(
     "/admin/system-preferences",
-    [validatedRequest, strictMultiUserRoleValid],
-    async (_request, response) => {
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (_, response) => {
       try {
         const settings = {
           users_can_delete_workspaces:
@@ -242,6 +304,12 @@ function adminEndpoints(app) {
             Number(
               (await SystemSettings.get({ label: "message_limit" }))?.value
             ) || 10,
+          footer_data:
+            (await SystemSettings.get({ label: "footer_data" }))?.value ||
+            JSON.stringify([]),
+          support_email:
+            (await SystemSettings.get({ label: "support_email" }))?.value ||
+            null,
         };
         response.status(200).json({ settings });
       } catch (e) {
@@ -253,7 +321,7 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/system-preferences",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const updates = reqBody(request);
@@ -268,7 +336,7 @@ function adminEndpoints(app) {
 
   app.get(
     "/admin/api-keys",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin])],
     async (_request, response) => {
       try {
         const apiKeys = await ApiKey.whereWithUser({});
@@ -288,11 +356,18 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/generate-api-key",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
         const { apiKey, error } = await ApiKey.create(user.id);
+
+        await Telemetry.sendTelemetry("api_key_created");
+        await EventLogs.logEvent(
+          "api_key_created",
+          { createdBy: user?.username },
+          user?.id
+        );
         return response.status(200).json({
           apiKey,
           error,
@@ -306,11 +381,17 @@ function adminEndpoints(app) {
 
   app.delete(
     "/admin/delete-api-key/:id",
-    [validatedRequest, strictMultiUserRoleValid],
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const { id } = request.params;
         await ApiKey.delete({ id: Number(id) });
+
+        await EventLogs.logEvent(
+          "api_key_deleted",
+          { deletedBy: response.locals?.user?.username },
+          response?.locals?.user?.id
+        );
         return response.status(200).end();
       } catch (e) {
         console.error(e);

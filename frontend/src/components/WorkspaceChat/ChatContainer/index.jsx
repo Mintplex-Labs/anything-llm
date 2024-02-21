@@ -5,8 +5,10 @@ import Workspace from "@/models/workspace";
 import handleChat from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
+import { useParams } from "react-router-dom";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
+  const { threadSlug = null } = useParams();
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
@@ -71,20 +73,33 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         return false;
       }
 
-      await Workspace.streamChat(
-        workspace,
-        promptMessage.userMessage,
-        window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
-          "chat",
-        (chatResult) =>
-          handleChat(
-            chatResult,
-            setLoadingResponse,
-            setChatHistory,
-            remHistory,
-            _chatHistory
-          )
-      );
+      if (!!threadSlug) {
+        await Workspace.threads.streamChat(
+          { workspaceSlug: workspace.slug, threadSlug },
+          promptMessage.userMessage,
+          (chatResult) =>
+            handleChat(
+              chatResult,
+              setLoadingResponse,
+              setChatHistory,
+              remHistory,
+              _chatHistory
+            )
+        );
+      } else {
+        await Workspace.streamChat(
+          workspace,
+          promptMessage.userMessage,
+          (chatResult) =>
+            handleChat(
+              chatResult,
+              setLoadingResponse,
+              setChatHistory,
+              remHistory,
+              _chatHistory
+            )
+        );
+      }
       return;
     }
     loadingResponse === true && fetchReply();
@@ -97,7 +112,11 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     >
       {isMobile && <SidebarMobileHeader />}
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
-        <ChatHistory history={chatHistory} workspace={workspace} />
+        <ChatHistory
+          history={chatHistory}
+          workspace={workspace}
+          sendCommand={sendCommand}
+        />
         <PromptInput
           workspace={workspace}
           message={message}

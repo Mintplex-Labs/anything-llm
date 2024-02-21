@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
+import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -7,17 +7,19 @@ import { BookOpen } from "@phosphor-icons/react";
 import usePrefersDarkMode from "@/hooks/usePrefersDarkMode";
 import Admin from "@/models/admin";
 import WorkspaceRow from "./WorkspaceRow";
-import NewWorkspaceModal, { NewWorkspaceModalId } from "./NewWorkspaceModal";
+import NewWorkspaceModal from "./NewWorkspaceModal";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
 
 export default function AdminWorkspaces() {
+  const { isOpen, openModal, closeModal } = useModal();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      {!isMobile && <Sidebar />}
+      <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
       >
-        {isMobile && <SidebarMobileHeader />}
         <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
@@ -25,9 +27,7 @@ export default function AdminWorkspaces() {
                 Instance workspaces
               </p>
               <button
-                onClick={() =>
-                  document?.getElementById(NewWorkspaceModalId)?.showModal()
-                }
+                onClick={openModal}
                 className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
               >
                 <BookOpen className="h-4 w-4" /> New Workspace
@@ -40,7 +40,9 @@ export default function AdminWorkspaces() {
           </div>
           <WorkspacesContainer />
         </div>
-        <NewWorkspaceModal />
+        <ModalWrapper isOpen={isOpen}>
+          <NewWorkspaceModal closeModal={closeModal} />
+        </ModalWrapper>
       </div>
     </div>
   );

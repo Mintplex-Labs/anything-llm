@@ -20,6 +20,7 @@ const AdminUsers = lazy(() => import("@/pages/Admin/Users"));
 const AdminInvites = lazy(() => import("@/pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
 const AdminSystem = lazy(() => import("@/pages/Admin/System"));
+const AdminLogs = lazy(() => import("@/pages/Admin/Logging"));
 const GeneralChats = lazy(() => import("@/pages/GeneralSettings/Chats"));
 const GeneralAppearance = lazy(
   () => import("@/pages/GeneralSettings/Appearance")
@@ -34,9 +35,6 @@ const GeneralEmbeddingPreference = lazy(
 const GeneralVectorDatabase = lazy(
   () => import("@/pages/GeneralSettings/VectorDatabase")
 );
-const GeneralExportImport = lazy(
-  () => import("@/pages/GeneralSettings/ExportImport")
-);
 const GeneralSecurity = lazy(() => import("@/pages/GeneralSettings/Security"));
 const DataConnectors = lazy(
   () => import("@/pages/GeneralSettings/DataConnectors")
@@ -44,6 +42,11 @@ const DataConnectors = lazy(
 const DataConnectorSetup = lazy(
   () => import("@/pages/GeneralSettings/DataConnectors/Connectors")
 );
+const WorkspaceSettings = lazy(() => import("@/pages/WorkspaceSettings"));
+const EmbedConfigSetup = lazy(
+  () => import("@/pages/GeneralSettings/EmbedConfigs")
+);
+const EmbedChats = lazy(() => import("@/pages/GeneralSettings/EmbedChats"));
 
 export default function App() {
   return (
@@ -55,7 +58,15 @@ export default function App() {
               <Route path="/" element={<PrivateRoute Component={Main} />} />
               <Route path="/login" element={<Login />} />
               <Route
+                path="/workspace/:slug/settings/:tab"
+                element={<PrivateRoute Component={WorkspaceSettings} />}
+              />
+              <Route
                 path="/workspace/:slug"
+                element={<PrivateRoute Component={WorkspaceChat} />}
+              />
+              <Route
+                path="/workspace/:slug/t/:threadSlug"
                 element={<PrivateRoute Component={WorkspaceChat} />}
               />
               <Route path="/accept-invite/:code" element={<InvitePage />} />
@@ -73,11 +84,19 @@ export default function App() {
                 path="/settings/vector-database"
                 element={<AdminRoute Component={GeneralVectorDatabase} />}
               />
-              {/* Manager */}
               <Route
-                path="/settings/export-import"
-                element={<ManagerRoute Component={GeneralExportImport} />}
+                path="/settings/event-logs"
+                element={<AdminRoute Component={AdminLogs} />}
               />
+              <Route
+                path="/settings/embed-config"
+                element={<AdminRoute Component={EmbedConfigSetup} />}
+              />
+              <Route
+                path="/settings/embed-chats"
+                element={<AdminRoute Component={EmbedChats} />}
+              />
+              {/* Manager */}
               <Route
                 path="/settings/security"
                 element={<ManagerRoute Component={GeneralSecurity} />}
@@ -88,7 +107,7 @@ export default function App() {
               />
               <Route
                 path="/settings/api-keys"
-                element={<ManagerRoute Component={GeneralApiKeys} />}
+                element={<AdminRoute Component={GeneralApiKeys} />}
               />
               <Route
                 path="/settings/workspace-chats"

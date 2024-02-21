@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Sidebar, { SidebarMobileHeader } from "@/components/SettingsSidebar";
+import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -7,25 +7,25 @@ import { UserPlus } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
 import UserRow from "./UserRow";
 import useUser from "@/hooks/useUser";
-import NewUserModal, { NewUserModalId } from "./NewUserModal";
+import NewUserModal from "./NewUserModal";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
 
 export default function AdminUsers() {
+  const { isOpen, openModal, closeModal } = useModal();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      {!isMobile && <Sidebar />}
+      <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
       >
-        {isMobile && <SidebarMobileHeader />}
         <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
               <p className="text-2xl font-semibold text-white">Users</p>
               <button
-                onClick={() =>
-                  document?.getElementById(NewUserModalId)?.showModal()
-                }
+                onClick={openModal}
                 className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
               >
                 <UserPlus className="h-4 w-4" /> Add user
@@ -39,7 +39,9 @@ export default function AdminUsers() {
           </div>
           <UsersContainer />
         </div>
-        <NewUserModal />
+        <ModalWrapper isOpen={isOpen}>
+          <NewUserModal closeModal={closeModal} />
+        </ModalWrapper>
       </div>
     </div>
   );
@@ -105,7 +107,8 @@ const ROLE_HINT = {
     "Cannot modify any settings at all.",
   ],
   manager: [
-    "Can view all workspaces and modify all settings.",
+    "Can view, create, and delete any workspaces and modify workspace-specific settings.",
+    "Can create, update and invite new users to the instance.",
     "Cannot modify LLM, vectorDB, embedding, or other connections.",
   ],
   admin: [

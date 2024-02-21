@@ -17,3 +17,10 @@ export function baseHeaders(providedToken = null) {
     Authorization: token ? `Bearer ${token}` : null,
   };
 }
+
+export function safeJsonParse(jsonString, fallback = null) {
+  try {
+    return JSON.parse(jsonString);
+  } catch {}
+  return fallback;
+}
