@@ -159,13 +159,13 @@ function CitationDetailModal({ source, onClose }) {
             {[...Array(3)].map((_, idx) => (
               <SkeletonLine key={idx} />
             ))}
-            {chunks.map((chunk, idx) => (
+            {chunks.map(({ id, text, score }, idx) => (
               <div key={idx} className="pt-6 text-white">
                 <div className="flex items-center gap-x-1 mb-3 -mt-3 border border-white/80 w-fit px-2 py-1 rounded-md">
-                  <p className="text-white font-semibold">Chunk - {chunk.id}</p>
+                  <p className="text-white font-semibold">Chunk - {id}</p>
                   <Info
                     data-tooltip-id="similarity-score"
-                    data-tooltip-content={`Similarity score: ${chunk.score.toFixed(
+                    data-tooltip-content={`Similarity score: ${score.toFixed(
                       3
                     )}`}
                     size={20}
@@ -173,7 +173,7 @@ function CitationDetailModal({ source, onClose }) {
                   <Tooltip id="similarity-score" place="top" delayShow={100} />
                 </div>
                 <p className="text-white whitespace-pre-line pb-6">
-                  {HTMLDecode(chunk.text)}
+                  {HTMLDecode(text)}
                 </p>
                 {[...Array(3)].map((_, idx) => (
                   <SkeletonLine key={idx} />
