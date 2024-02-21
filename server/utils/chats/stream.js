@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
+const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
@@ -74,6 +75,8 @@ async function streamChatWithWorkspace(
   // 1. Chatting in "chat" mode and may or may _not_ have embeddings
   // 2. Chatting in "query" mode and has at least 1 embedding
   let completeText;
+  let contextTexts = [];
+  let sources = [];
   const { rawHistory, chatHistory } = await recentChatHistory({
     user,
     workspace,
@@ -82,36 +85,56 @@ async function streamChatWithWorkspace(
     chatMode,
   });
 
-  const {
-    contextTexts = [],
-    sources = [],
-    message: error,
-  } = embeddingsCount !== 0 // if there no embeddings don't bother searching.
-    ? await VectorDb.performSimilaritySearch({
-        namespace: workspace.slug,
-        input: message,
-        LLMConnector,
-        similarityThreshold: workspace?.similarityThreshold,
-        topN: workspace?.topN,
-      })
-    : {
-        contextTexts: [],
-        sources: [],
-        message: null,
-      };
+  // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
+  // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
+  await new DocumentManager({
+    workspace,
+    maxTokens: LLMConnector.limits.system,
+  })
+    .pinnedDocs()
+    .then((pinnedDocs) => {
+      pinnedDocs.forEach((doc) => {
+        const { pageContent, ...metadata } = doc;
+        contextTexts.push(doc.pageContent);
+        sources.push({
+          text:
+            pageContent.slice(0, 1_000) +
+            "...continued on in source document...",
+          ...metadata,
+        });
+      });
+    });
+
+  const vectorSearchResults =
+    embeddingsCount !== 0
+      ? await VectorDb.performSimilaritySearch({
+          namespace: workspace.slug,
+          input: message,
+          LLMConnector,
+          similarityThreshold: workspace?.similarityThreshold,
+          topN: workspace?.topN,
+        })
+      : {
+          contextTexts: [],
+          sources: [],
+          message: null,
+        };
 
   // Failed similarity search if it was run at all and failed.
-  if (!!error) {
+  if (!!vectorSearchResults.message) {
     writeResponseChunk(response, {
       id: uuid,
       type: "abort",
       textResponse: null,
       sources: [],
       close: true,
-      error,
+      error: vectorSearchResults.message,
     });
     return;
   }
+
+  contextTexts = [...contextTexts, ...vectorSearchResults.contextTexts];
+  sources = [...sources, ...vectorSearchResults.sources];
 
   // If in query mode and no sources are found, do not
   // let the LLM try to hallucinate a response or use general knowledge and exit early

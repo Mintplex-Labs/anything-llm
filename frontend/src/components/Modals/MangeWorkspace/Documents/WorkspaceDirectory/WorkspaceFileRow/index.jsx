@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import {
   formatDate,
   getFileExtension,
   middleTruncate,
 } from "@/utils/directories";
-import { ArrowUUpLeft, File } from "@phosphor-icons/react";
+import {
+  ArrowUUpLeft,
+  File,
+  PushPin,
+  PushPinSlash,
+} from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import debounce from "lodash.debounce";
+import { Tooltip } from "react-tooltip";
+import showToast from "@/utils/toast";
 
 export default function WorkspaceFileRow({
   item,
@@ -80,21 +87,105 @@ export default function WorkspaceFileRow({
       <p className="col-span-2 pl-2 uppercase overflow-x-hidden">
         {getFileExtension(item.url)}
       </p>
-      <div className="col-span-2 flex justify-end items-center">
-        {item?.cached && (
-          <div className="bg-white/10 rounded-3xl">
-            <p className="text-xs px-2 py-0.5">Cached</p>
-          </div>
-        )}
+      <div className="col-span-2 flex justify-center items-center">
         {hasChanges ? (
           <div className="w-4 h-4 ml-2 flex-shrink-0" />
         ) : (
-          <ArrowUUpLeft
-            onClick={onRemoveClick}
-            className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
-          />
+          <div className="flex gap-x-2 items-center">
+            <PinItemToWorkspace
+              workspace={workspace}
+              docPath={`${folderName}/${item.name}`} // how to find documents during pin/unpin
+              item={item}
+            />
+            <RemoveItemFromWorkspace item={item} onClick={onRemoveClick} />
+          </div>
         )}
       </div>
     </div>
   );
 }
+
+const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
+  const [pinned, setPinned] = useState(
+    item?.pinnedWorkspaces?.includes(workspace.id) || false
+  );
+  const [hover, setHover] = useState(false);
+  const pinEvent = new CustomEvent("pinned_document");
+
+  const updatePinStatus = async () => {
+    try {
+      if (!pinned) window.dispatchEvent(pinEvent);
+      const success = await Workspace.setPinForDocument(
+        workspace.slug,
+        docPath,
+        !pinned
+      );
+
+      if (!success) {
+        showToast(`Failed to ${!pinned ? "pin" : "unpin"} document.`, "error", {
+          clear: true,
+        });
+        return;
+      }
+
+      showToast(
+        `Document ${!pinned ? "pinned to" : "unpinned from"} workspace`,
+        "success",
+        { clear: true }
+      );
+      setPinned(!pinned);
+    } catch (error) {
+      showToast(`Failed to pin document. ${error.message}`, "error", {
+        clear: true,
+      });
+      return;
+    }
+  };
+
+  if (!item) return <div />;
+
+  const PinIcon = pinned ? PushPinSlash : PushPin;
+  return (
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <PinIcon
+        data-tooltip-id={`pin-${item.id}`}
+        data-tooltip-content={
+          pinned ? "Unpin document from workspace" : "Pin document to workspace"
+        }
+        onClick={updatePinStatus}
+        weight={hover ? "fill" : "regular"}
+        className={`outline-none text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer ${
+          pinned ? "hover:text-red-300" : ""
+        }`}
+      />
+      <Tooltip
+        id={`pin-${item.id}`}
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
+    </div>
+  );
+});
+
+const RemoveItemFromWorkspace = ({ item, onClick }) => {
+  return (
+    <div>
+      <ArrowUUpLeft
+        data-tooltip-id={`remove-${item.id}`}
+        data-tooltip-content="Remove document from workspace"
+        onClick={onClick}
+        className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
+      />
+      <Tooltip
+        id={`remove-${item.id}`}
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
+    </div>
+  );
+};
