@@ -59,11 +59,6 @@ FROM base as server-deps
 COPY ./server/package.json ./server/yarn.lock ./server/
 RUN cd ./server/ && yarn install --production --network-timeout 100000 && yarn cache clean
 
-# Compile Llama.cpp bindings for node-llama-cpp for this operating system.
-USER root
-RUN cd ./server && npx --no node-llama-cpp download
-USER anythingllm
-
 # Build the frontend
 FROM frontend-deps as build-stage
 COPY ./frontend/ ./frontend/

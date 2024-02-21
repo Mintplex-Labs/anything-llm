@@ -1,4 +1,4 @@
-name: Publish Docker image for Render.com deployments
+name: Publish Docker image for Render & Railway deployments
 
 concurrency:
   group: build-${{ github.ref }}
@@ -18,7 +18,7 @@ on:
 
 jobs:
   push_to_registries:
-    name: Push Docker image to DockerHub for use on Render.com deployments
+    name: Push Docker image to DockerHub for use on Render or Railway deployments
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -26,28 +26,52 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-      
+
+      - name: Check if DockerHub build needed
+        shell: bash
+        run: |
+          # Check if the secret for USERNAME is set (don't even check for the password)
+          if [[ -z "${{ secrets.DOCKER_USERNAME }}" ]]; then
+            echo "DockerHub build not needed"
+            echo "enabled=false" >> $GITHUB_OUTPUT
+          else
+            echo "DockerHub build needed"
+            echo "enabled=true" >> $GITHUB_OUTPUT
+          fi
+        id: dockerhub
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        # Only login to the Docker Hub if the repo is mintplex/anythingllm, to allow for forks to build on GHCR
+        if: steps.dockerhub.outputs.enabled == 'true' 
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: |
-            mintplexlabs/anythingllm
-      
-      - name: Build and push Docker images
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+            ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
+            ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=render
+            type=raw,value=railway
+
+      - name: Build and push multi-platform Docker image
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: ./docker/render.Dockerfile
-          platforms: linux/amd64
           push: true
+          platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           build-args: |
             "STORAGE_DIR=/storage"
