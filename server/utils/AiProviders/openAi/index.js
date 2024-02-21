@@ -195,11 +195,15 @@ class OpenAiLLM {
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const { data } = await this.openai.createChatCompletion({
-      model: this.model,
-      messages,
-      temperature,
-    });
+    const { data } = await this.openai
+      .createChatCompletion({
+        model: this.model,
+        messages,
+        temperature,
+      })
+      .catch((e) => {
+        throw new Error(e.response.data.error.message);
+      });
 
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;

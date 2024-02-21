@@ -395,6 +395,33 @@ function workspaceEndpoints(app) {
       }
     }
   );
+
+  app.post(
+    "/workspace/:slug/update-pin",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async (request, response) => {
+      try {
+        const { docPath, pinStatus = false } = reqBody(request);
+        const workspace = response.locals.workspace;
+
+        const document = await Document.get({
+          workspaceId: workspace.id,
+          docpath: docPath,
+        });
+        if (!document) return response.sendStatus(404).end();
+
+        await Document.update(document.id, { pinned: pinStatus });
+        return response.status(200).end();
+      } catch (error) {
+        console.error("Error processing the pin status update:", error);
+        return response.status(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { workspaceEndpoints };

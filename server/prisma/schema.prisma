@@ -30,6 +30,7 @@ model workspace_documents {
   docpath       String
   workspaceId   Int
   metadata      String?
+  pinned        Boolean?   @default(false)
   createdAt     DateTime   @default(now())
   lastUpdatedAt DateTime   @default(now())
   workspace     workspaces @relation(fields: [workspaceId], references: [id])

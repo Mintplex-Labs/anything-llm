@@ -1,10 +1,10 @@
 import UploadFile from "../UploadFile";
 import PreLoader from "@/components/Preloader";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import FolderRow from "./FolderRow";
 import pluralize from "pluralize";
 
-export default function Directory({
+function Directory({
   files,
   loading,
   setLoading,
@@ -146,3 +146,5 @@ export default function Directory({
     </div>
   );
 }
+
+export default memo(Directory);
