@@ -61,6 +61,7 @@ export default function CustomLogo() {
 
     showToast("Image successfully removed.", "success");
   };
+
   return (
     <div className="my-6">
       <div className="flex flex-col gap-y-2">

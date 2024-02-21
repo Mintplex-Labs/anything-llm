@@ -51,6 +51,7 @@ export default function CustomMessages() {
     showToast("Successfully updated welcome messages.", "success");
     setHasChanges(false);
   };
+
   return (
     <div className="mb-6">
       <div className="flex flex-col gap-y-2">
