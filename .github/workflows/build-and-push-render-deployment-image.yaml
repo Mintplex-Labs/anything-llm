@@ -59,7 +59,6 @@ jobs:
         with:
           images: |
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
-            ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=render
             type=raw,value=railway
