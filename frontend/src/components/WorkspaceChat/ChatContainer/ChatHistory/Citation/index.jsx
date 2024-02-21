@@ -207,7 +207,8 @@ function parseChunkSource({ title = "", chunks = [] }) {
     icon: "file",
   };
 
-  if (!chunks[0].chunkSource.startsWith("link://")) return nullResponse;
+  if (!chunks.length || !chunks[0].chunkSource.startsWith("link://"))
+    return nullResponse;
   try {
     const url = new URL(chunks[0].chunkSource.split("link://")[1]);
     let text = url.host + url.pathname;
