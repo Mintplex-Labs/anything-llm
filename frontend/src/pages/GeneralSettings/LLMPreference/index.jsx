@@ -161,7 +161,8 @@ export default function GeneralLLMPreference() {
       value: "perplexity",
       logo: PerplexityLogo,
       options: <PerplexityOptions settings={settings} />,
-      description: "Run open and closed source models from Perplexity.",
+      description:
+        "Run powerful and internet-connected models hosted by Perplexity AI.",
     },
     {
       name: "Native",

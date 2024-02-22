@@ -1,4 +1,4 @@
-const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { chatPrompt } = require("../../chats");
 const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
 
@@ -19,20 +19,14 @@ class PerplexityLLM {
     });
     this.openai = new OpenAIApi(config);
     this.model =
-      modelPreference ||
-      process.env.PERPLEXITY_MODEL_PREF ||
-      "codellama-34b-instruct";
+      modelPreference || process.env.PERPLEXITY_MODEL_PREF || "pplx-7b-online"; // Give at least a unique model to the provider as last fallback.
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      console.warn(
-        "No embedding provider defined for PerplexityLLM - falling back to OpenAiEmbedder for embedding!"
-      );
-    this.embedder = !embedder ? new OpenAiEmbedder() : embedder;
+    this.embedder = !embedder ? new NativeEmbedder() : embedder;
     this.defaultTemp = 0.7;
   }
 

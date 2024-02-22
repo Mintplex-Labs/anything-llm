@@ -6,8 +6,8 @@ const SUPPORT_CUSTOM_MODELS = [
   "ollama",
   "native-llm",
   "togetherai",
-  "perplexity",
   "mistral",
+  "perplexity",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -23,12 +23,12 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await ollamaAIModels(basePath);
     case "togetherai":
       return await getTogetherAiModels();
-    case "perplexity":
-      return await getPerplexityModels();
     case "mistral":
       return await getMistralModels(apiKey);
     case "native-llm":
       return nativeLLMModels();
+    case "perplexity":
+      return await getPerplexityModels();
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
