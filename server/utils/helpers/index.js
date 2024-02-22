@@ -58,6 +58,9 @@ function getLLMProvider(modelPreference = null) {
     case "togetherai":
       const { TogetherAiLLM } = require("../AiProviders/togetherAi");
       return new TogetherAiLLM(embedder, modelPreference);
+    case "perplexity":
+      const { PerplexityLLM } = require("../AiProviders/perplexity");
+      return new PerplexityLLM(embedder, modelPreference);
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return new MistralLLM(embedder, modelPreference);

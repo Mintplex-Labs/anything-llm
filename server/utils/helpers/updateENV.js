@@ -239,6 +239,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Perplexity Options
+  PerplexityApiKey: {
+    envKey: "PERPLEXITY_API_KEY",
+    checks: [isNotEmpty],
+  },
+  PerplexityModelPref: {
+    envKey: "PERPLEXITY_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
@@ -314,6 +324,7 @@ function supportedLLM(input = "") {
     "togetherai",
     "mistral",
     "huggingface",
+    "perplexity",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
