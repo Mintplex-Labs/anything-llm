@@ -114,10 +114,8 @@ export default function ActiveWorkspaces() {
                         : truncate(workspace.name, 20)}
                     </p>
                   </div>
-                  {isActive ||
-                  isHovered ||
-                  gearHover[workspace.id] ||
-                  user?.role === "default" ? (
+                  {(isActive || isHovered || gearHover[workspace.id]) &&
+                  user?.role !== "default" ? (
                     <div className="flex items-center gap-x-2">
                       <button
                         type="button"
