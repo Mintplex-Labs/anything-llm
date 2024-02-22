@@ -45,10 +45,12 @@ async function openAiModels(apiKey = null) {
     (model) => !model.owned_by.includes("openai") && model.owned_by !== "system"
   );
 
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.OPEN_AI_KEY = apiKey;
   return { models, error: null };
 }
 
-async function localAIModels(basePath = null) {
+async function localAIModels(basePath = null, apiKey = null) {
   const { Configuration, OpenAIApi } = require("openai");
   const config = new Configuration({
     basePath: basePath || process.env.LOCAL_AI_BASE_PATH,
@@ -63,6 +65,8 @@ async function localAIModels(basePath = null) {
       return [];
     });
 
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.LOCAL_AI_API_KEY = apiKey;
   return { models, error: null };
 }
 
