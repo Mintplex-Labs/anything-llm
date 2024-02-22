@@ -133,6 +133,7 @@ COPY --from=build-stage /app/frontend/dist ./server/public
 COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
 
 # Install collector dependencies
+ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public 
 RUN cd /app/collector && yarn install --production --network-timeout 100000 && yarn cache clean
 
 # Migrate and Run Prisma against known schema
