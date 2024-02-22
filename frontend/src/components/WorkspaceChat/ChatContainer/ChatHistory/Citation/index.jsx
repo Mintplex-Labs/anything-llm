@@ -1,11 +1,13 @@
 import { memo, useState } from "react";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
-import { CaretRight, FileText, Info } from "@phosphor-icons/react";
 import truncate from "truncate";
 import ModalWrapper from "@/components/ModalWrapper";
 import { middleTruncate } from "@/utils/directories";
 import {
+  CaretRight,
+  FileText,
+  Info,
   ArrowSquareOut,
   GithubLogo,
   Link,
