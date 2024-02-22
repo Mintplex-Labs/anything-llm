@@ -13,11 +13,12 @@ import {
   YoutubeLogo,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
+import { toPercentString } from "@/utils/numbers";
 
 function combineLikeSources(sources) {
   const combined = {};
   sources.forEach((source) => {
-    const { id, title, text, chunkSource = "", score } = source;
+    const { id, title, text, chunkSource = "", score = null } = source;
     if (combined.hasOwnProperty(title)) {
       combined[title].chunks.push({ id, text, chunkSource, score });
       combined[title].references += 1;
@@ -159,22 +160,33 @@ function CitationDetailModal({ source, onClose }) {
             {[...Array(3)].map((_, idx) => (
               <SkeletonLine key={idx} />
             ))}
-            {chunks.map(({ id, text, score }, idx) => (
+            {chunks.map(({ text, score }, idx) => (
               <div key={idx} className="pt-6 text-white">
-                <div className="flex items-center gap-x-1 mb-3 -mt-3 border border-white/80 w-fit px-2 py-1 rounded-md">
-                  <p className="text-white font-semibold">Chunk - {id}</p>
-                  <Info
-                    data-tooltip-id="similarity-score"
-                    data-tooltip-content={`Similarity score: ${score.toFixed(
-                      3
-                    )}`}
-                    size={20}
-                  />
-                  <Tooltip id="similarity-score" place="top" delayShow={100} />
+                <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
+                  <p className="text-white whitespace-pre-line">
+                    {HTMLDecode(text)}
+                  </p>
+
+                  {!!score && (
+                    <>
+                      <div className="w-full flex items-center text-xs text-white/60 gap-x-2 cursor-default">
+                        <div
+                          data-tooltip-id="similarity-score"
+                          data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
+                          className="flex items-center gap-x-1"
+                        >
+                          <Info size={14} />
+                          <p>{toPercentString(score)} match</p>
+                        </div>
+                      </div>
+                      <Tooltip
+                        id="similarity-score"
+                        place="top"
+                        delayShow={100}
+                      />
+                    </>
+                  )}
                 </div>
-                <p className="text-white whitespace-pre-line pb-6">
-                  {HTMLDecode(text)}
-                </p>
                 {[...Array(3)].map((_, idx) => (
                   <SkeletonLine key={idx} />
                 ))}

@@ -15,6 +15,14 @@ export function dollarFormat(input) {
   }).format(input);
 }
 
+export function toPercentString(input = null, decimals = 0) {
+  if (isNaN(input) || input === null) return "";
+  const percentage = Math.round(input * 100);
+  return (
+    (decimals > 0 ? percentage.toFixed(decimals) : percentage.toString()) + "%"
+  );
+}
+
 export function humanFileSize(bytes, si = false, dp = 1) {
   const thresh = si ? 1000 : 1024;
 
