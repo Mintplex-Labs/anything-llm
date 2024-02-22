@@ -1,0 +1,11 @@
+| Model                     | Context Length | Model Type      |
+| :------------------------ | :------------- | :-------------- |
+| `codellama-34b-instruct`  | 16384          | Chat Completion |
+| `codellama-70b-instruct`  | 16384          | Chat Completion |
+| `llama-2-70b-chat`        | 4096           | Chat Completion |
+| `mistral-7b-instruct` [2] | 8192 [1]       | Chat Completion |
+| `mixtral-8x7b-instruct`   | 8192 [1]       | Chat Completion |
+| `pplx-7b-chat`            | 8192           | Chat Completion |
+| `pplx-70b-chat`           | 8192           | Chat Completion |
+| `pplx-7b-online`          | 8192           | Chat Completion |
+| `pplx-70b-online`         | 8192           | Chat Completion |
