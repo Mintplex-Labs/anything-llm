@@ -111,7 +111,7 @@ const LLM_SELECTION_PRIVACY = {
     logo: HuggingFaceLogo,
   },
   perplexity: {
-    name: "Perplexity",
+    name: "Perplexity AI",
     description: [
       "Your chats will not be used for training",
       "Your prompts and document text used in response creation are visible to Perplexity AI",

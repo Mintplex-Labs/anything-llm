@@ -131,7 +131,7 @@ export default function LLMPreference({
       description: "Run open source models from Mistral AI.",
     },
     {
-      name: "Perplexity",
+      name: "Perplexity AI",
       value: "perplexity",
       logo: PerplexityLogo,
       options: <PerplexityOptions settings={settings} />,
