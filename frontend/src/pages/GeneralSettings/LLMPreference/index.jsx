@@ -14,6 +14,7 @@ import LocalAiLogo from "@/media/llmprovider/localai.png";
 import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
+import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -26,8 +27,10 @@ import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
+
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
+import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -152,6 +155,14 @@ export default function GeneralLLMPreference() {
       logo: MistralLogo,
       options: <MistralOptions settings={settings} />,
       description: "Run open source models from Mistral AI.",
+    },
+    {
+      name: "Perplexity AI",
+      value: "perplexity",
+      logo: PerplexityLogo,
+      options: <PerplexityOptions settings={settings} />,
+      description:
+        "Run powerful and internet-connected models hosted by Perplexity AI.",
     },
     {
       name: "Native",

@@ -11,6 +11,7 @@ import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
+import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
@@ -21,12 +22,13 @@ import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
+import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
+import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
-import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -127,6 +129,14 @@ export default function LLMPreference({
       logo: MistralLogo,
       options: <MistralOptions settings={settings} />,
       description: "Run open source models from Mistral AI.",
+    },
+    {
+      name: "Perplexity AI",
+      value: "perplexity",
+      logo: PerplexityLogo,
+      options: <PerplexityOptions settings={settings} />,
+      description:
+        "Run powerful and internet-connected models hosted by Perplexity AI.",
     },
     {
       name: "Native",
