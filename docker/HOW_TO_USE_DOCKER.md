@@ -145,7 +145,9 @@ VITE_API_BASE="http://<YOUR_REACHABLE_IP_ADDRESS>:3001/api"
 
 For example, if the docker instance is available on `192.186.1.222` your `VITE_API_BASE` would look like `VITE_API_BASE="http://192.186.1.222:3001/api"` in `frontend/.env.production`.
 
-### Getting `llama:streaming - could not stream chat. Error: connect ECONNREFUSED 172.17.0.1:11434` error?
+### Having issues with Ollama?
+
+If you are getting errors like `llama:streaming - could not stream chat. Error: connect ECONNREFUSED 172.17.0.1:11434` then visit the README below.
 
 [Fix common issues with Ollama](../server/utils/AiProviders/ollama/README.md)
 
