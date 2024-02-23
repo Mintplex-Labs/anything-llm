@@ -67,6 +67,7 @@ const Workspace = {
       body: JSON.stringify({ message, mode }),
       headers: baseHeaders(),
       signal: ctrl.signal,
+      openWhenHidden: true,
       async onopen(response) {
         if (response.ok) {
           return; // everything's good
