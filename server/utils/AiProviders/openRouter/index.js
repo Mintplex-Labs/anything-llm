@@ -193,16 +193,18 @@ class OpenRouterLLM {
     return new Promise((resolve) => {
       let fullText = "";
       let chunk = "";
-      let lastChunkTime = Number(new Date());
+      let lastChunkTime = null; // null when first token is still not received.
 
-      // Not all OpenRouter models will return a stop reason at all
+      // NOTICE: Not all OpenRouter models will return a stop reason
       // which keeps the connection open and so the model never finalizes the stream
       // like the traditional OpenAI response schema does. So in the case the response stream
       // never reaches a formal close state we maintain an interval timer that if we go >=timeoutThresholdMs with
-      // no new chunk then we kill the stream and assume it to be complete. OpenRouter is quite fast
+      // no new chunks then we kill the stream and assume it to be complete. OpenRouter is quite fast
       // so this threshold should permit most responses, but we can adjust `timeoutThresholdMs` if
       // we find it is too aggressive.
       const timeoutCheck = setInterval(() => {
+        if (lastChunkTime === null) return;
+
         const now = Number(new Date());
         const diffMs = now - lastChunkTime;
         if (diffMs >= timeoutThresholdMs) {
