@@ -198,7 +198,7 @@ class OpenRouterLLM {
       // Not all OpenRouter models will return a stop reason at all
       // which keeps the connection open and so the model never finalizes the stream
       // like the traditional OpenAI response schema does. So in the case the response stream
-      // never reaches a formal close state we maintain an interval timer that if we got 800ms with
+      // never reaches a formal close state we maintain an interval timer that if we go >=timeoutThresholdMs with
       // no new chunk then we kill the stream and assume it to be complete. OpenRouter is quite fast
       // so this threshold should permit most responses, but we can adjust `timeoutThresholdMs` if
       // we find it is too aggressive.
