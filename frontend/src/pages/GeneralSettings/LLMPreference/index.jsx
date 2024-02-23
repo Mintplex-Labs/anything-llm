@@ -15,6 +15,7 @@ import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
+import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -31,6 +32,7 @@ import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
+import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -161,6 +163,14 @@ export default function GeneralLLMPreference() {
       value: "perplexity",
       logo: PerplexityLogo,
       options: <PerplexityOptions settings={settings} />,
+      description:
+        "Run powerful and internet-connected models hosted by Perplexity AI.",
+    },
+    {
+      name: "OpenRouter",
+      value: "openrouter",
+      logo: OpenRouterLogo,
+      options: <OpenRouterOptions settings={settings} />,
       description:
         "Run powerful and internet-connected models hosted by Perplexity AI.",
     },
