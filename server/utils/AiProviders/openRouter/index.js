@@ -30,6 +30,7 @@ class OpenRouterLLM {
     const config = new Configuration({
       basePath: "https://openrouter.ai/api/v1",
       apiKey: process.env.OPENROUTER_API_KEY,
+      // TODO: not working to update usage dashboard
       defaultHeaders: {
         "HTTP-Referer": "https://useanything.com",
         "X-Title": "AnythingLLM",
