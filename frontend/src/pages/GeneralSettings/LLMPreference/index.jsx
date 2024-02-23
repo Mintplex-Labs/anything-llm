@@ -171,7 +171,7 @@ export default function GeneralLLMPreference() {
       value: "openrouter",
       logo: OpenRouterLogo,
       options: <OpenRouterOptions settings={settings} />,
-      description: "Run any model from OpenRouter.",
+      description: "A unified interface for LLMs.",
     },
     {
       name: "Native",

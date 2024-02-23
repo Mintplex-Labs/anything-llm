@@ -5,7 +5,7 @@
 // To run, cd into this directory and run `node parse.mjs`
 // copy outputs into the export in ../models.js
 
-// Update the date below if you run this again because Perplexity added new models.
+// Update the date below if you run this again because OpenRouter added new models.
 // Last Collected: Feb 23, 2024
 
 import fs from "fs";

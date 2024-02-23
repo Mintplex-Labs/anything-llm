@@ -122,6 +122,7 @@ const LLM_SELECTION_PRIVACY = {
   openrouter: {
     name: "OpenRouter",
     description: [
+      "Your chats will not be used for training",
       "Your prompts and document text used in response creation are visible to OpenRouter",
     ],
     logo: OpenRouterLogo,
