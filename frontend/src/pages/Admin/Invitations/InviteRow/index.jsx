@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { titleCase } from "text-case";
 import Admin from "../../../../models/admin";
 import { Trash } from "@phosphor-icons/react";
+import { refocusApplication } from "@/ipc/node-api";
 
 export default function InviteRow({ invite }) {
   const rowRef = useRef(null);
@@ -12,8 +13,12 @@ export default function InviteRow({ invite }) {
       !window.confirm(
         `Are you sure you want to deactivate this invite?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
+
+    refocusApplication();
     if (rowRef?.current) {
       rowRef.current.children[0].innerText = "Disabled";
     }

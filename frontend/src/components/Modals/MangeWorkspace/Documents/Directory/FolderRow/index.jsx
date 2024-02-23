@@ -3,6 +3,7 @@ import FileRow from "../FileRow";
 import { CaretDown, FolderNotch, Trash } from "@phosphor-icons/react";
 import { middleTruncate } from "@/utils/directories";
 import System from "@/models/system";
+import { refocusApplication } from "@/ipc/node-api";
 
 export default function FolderRow({
   item,
@@ -24,10 +25,12 @@ export default function FolderRow({
         "Are you sure you want to delete this folder?\nThis will require you to re-upload and re-embed it.\nAny documents in this folder will be removed from any workspace that is currently referencing it.\nThis action is not reversible."
       )
     ) {
+      refocusApplication();
       return false;
     }
 
     try {
+      refocusApplication();
       setLoading(true);
       setLoadingMessage("This may take a while for large folders");
       await System.deleteFolder(item.name);

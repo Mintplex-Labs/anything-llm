@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import showToast from "../../../../utils/toast";
 import ChatModelPreference from "./ChatModelPreference";
 import { Link } from "react-router-dom";
+import { refocusApplication } from "@/ipc/node-api";
 
 // Ensure that a type is correct before sending the body
 // to the backend.
@@ -72,9 +73,12 @@ export default function WorkspaceSettings({ active, workspace, settings }) {
       !window.confirm(
         `You are about to delete your entire ${workspace.name} workspace. This will remove all vector embeddings on your vector database.\n\nThe original source files will remain untouched. This action is irreversible.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
 
+    refocusApplication();
     setDeleting(true);
     const success = await Workspace.delete(workspace.slug);
     if (!success) {

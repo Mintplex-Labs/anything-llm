@@ -4,6 +4,7 @@ import showToast from "../../../../utils/toast";
 import { Trash } from "@phosphor-icons/react";
 import { userFromStorage } from "../../../../utils/request";
 import System from "../../../../models/system";
+import { refocusApplication } from "@/ipc/node-api";
 
 export default function ApiKeyRow({ apiKey }) {
   const rowRef = useRef(null);
@@ -13,8 +14,12 @@ export default function ApiKeyRow({ apiKey }) {
       !window.confirm(
         `Are you sure you want to deactivate this api key?\nAfter you do this it will not longer be useable.\n\nThis action is irreversible.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
+
+    refocusApplication();
     if (rowRef?.current) {
       rowRef.current.remove();
     }

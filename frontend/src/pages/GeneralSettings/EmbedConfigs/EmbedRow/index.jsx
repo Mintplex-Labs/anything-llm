@@ -8,6 +8,7 @@ import paths from "@/utils/paths";
 import { nFormatter } from "@/utils/numbers";
 import EditEmbedModal from "./EditEmbedModal";
 import CodeSnippetModal from "./CodeSnippetModal";
+import { refocusApplication } from "@/ipc/node-api";
 
 export default function EmbedRow({ embed }) {
   const rowRef = useRef(null);
@@ -28,9 +29,12 @@ export default function EmbedRow({ embed }) {
       !window.confirm(
         `Are you sure you want to disabled this embed?\nOnce disabled the embed will no longer respond to any chat requests.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
 
+    refocusApplication();
     const { success, error } = await Embed.updateEmbed(embed.id, {
       enabled: !enabled,
     });
@@ -49,8 +53,12 @@ export default function EmbedRow({ embed }) {
       !window.confirm(
         `Are you sure you want to delete this embed?\nOnce deleted this embed will no longer respond to chats or be active.\n\nThis action is irreversible.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
+
+    refocusApplication();
     const { success, error } = await Embed.deleteEmbed(embed.id);
     if (!success) showToast(error, "error", { clear: true });
     if (success) {

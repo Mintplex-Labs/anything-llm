@@ -5,6 +5,7 @@ import { useModal } from "@/hooks/useModal";
 import paths from "@/utils/paths";
 import Embed from "@/models/embed";
 import { Link } from "react-router-dom";
+import { refocusApplication } from "@/ipc/node-api";
 
 export default function ChatRow({ chat, onDelete }) {
   const {
@@ -23,8 +24,12 @@ export default function ChatRow({ chat, onDelete }) {
       !window.confirm(
         `Are you sure you want to delete this chat?\n\nThis action is irreversible.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
+
+    refocusApplication();
     await Embed.deleteChat(chat.id);
     onDelete(chat.id);
   };

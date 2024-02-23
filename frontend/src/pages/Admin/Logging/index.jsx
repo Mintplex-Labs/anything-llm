@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import * as Skeleton from "react-loading-skeleton";
 import LogRow from "./LogRow";
 import showToast from "@/utils/toast";
+import { refocusApplication } from "@/ipc/node-api";
 
 export default function AdminLogs() {
   const handleResetLogs = async () => {
@@ -12,8 +13,12 @@ export default function AdminLogs() {
       !window.confirm(
         "Are you sure you want to clear all event logs? This action is irreversible."
       )
-    )
+    ) {
+      refocusApplication();
       return;
+    }
+
+    refocusApplication();
     const { success, error } = await System.clearEventLogs();
     if (success) {
       showToast("Event logs cleared successfully.", "success");

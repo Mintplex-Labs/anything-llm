@@ -6,6 +6,7 @@ import { DotsThreeOutline } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
+import { refocusApplication } from "@/ipc/node-api";
 
 const ModMap = {
   admin: ["admin", "manager", "default"],
@@ -23,9 +24,12 @@ export default function UserRow({ currUser, user }) {
       !window.confirm(
         `Are you sure you want to suspend ${user.username}?\nAfter you do this they will be logged out and unable to log back into this instance of AnythingLLM until unsuspended by an admin.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
 
+    refocusApplication();
     const { success, error } = await Admin.updateUser(user.id, {
       suspended: suspended ? 0 : 1,
     });
@@ -44,8 +48,12 @@ export default function UserRow({ currUser, user }) {
       !window.confirm(
         `Are you sure you want to delete ${user.username}?\nAfter you do this they will be logged out and unable to use this instance of AnythingLLM.\n\nThis action is irreversible.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
+
+    refocusApplication();
     const { success, error } = await Admin.deleteUser(user.id);
     if (!success) showToast(error, "error", { clear: true });
     if (success) {
