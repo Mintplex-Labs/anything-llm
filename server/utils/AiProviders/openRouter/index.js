@@ -2,23 +2,9 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { chatPrompt } = require("../../chats");
 const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
 
-async function openRouterModels() {
-  try {
-    const response = await fetch("https://openrouter.ai/api/v1/models");
-    const data = await response.json();
-    let MODELS = {};
-    data.data.forEach((model) => {
-      MODELS[model.id] = {
-        id: model.id,
-        name: model.name,
-        maxLength: model.context_length,
-      };
-    });
-    return MODELS;
-  } catch (e) {
-    console.error(e);
-    return {};
-  }
+function openRouterModels() {
+  const { MODELS } = require("./models.js");
+  return MODELS || {};
 }
 
 class OpenRouterLLM {
@@ -30,10 +16,11 @@ class OpenRouterLLM {
     const config = new Configuration({
       basePath: "https://openrouter.ai/api/v1",
       apiKey: process.env.OPENROUTER_API_KEY,
-      // TODO: not working to update usage dashboard
-      defaultHeaders: {
-        "HTTP-Referer": "https://useanything.com",
-        "X-Title": "AnythingLLM",
+      baseOptions: {
+        headers: {
+          "HTTP-Referer": "https://useanything.com",
+          "X-Title": "AnythingLLM",
+        },
       },
     });
     this.openai = new OpenAIApi(config);
@@ -61,8 +48,8 @@ class OpenRouterLLM {
     );
   }
 
-  async allModelInformation() {
-    return await openRouterModels();
+  allModelInformation() {
+    return openRouterModels();
   }
 
   streamingEnabled() {
@@ -70,15 +57,13 @@ class OpenRouterLLM {
   }
 
   promptWindowLimit() {
-    // TODO: get from openRouterModels()
-    // const availableModels = this.allModelInformation();
-    // return availableModels[this.model]?.maxLength || 4096;
-    return 4096;
+    const availableModels = this.allModelInformation();
+    return availableModels[this.model]?.maxLength || 4096;
   }
 
   async isValidChatCompletionModel(model = "") {
-    // TODO: get from openRouterModels()
-    return true;
+    const availableModels = this.allModelInformation();
+    return availableModels.hasOwnProperty(model);
   }
 
   constructPrompt({
