@@ -150,6 +150,7 @@ async function getOpenRouterModels() {
   const models = Object.values(knownModels).map((model) => {
     return {
       id: model.id,
+      organization: model.organization,
       name: model.name,
     };
   });

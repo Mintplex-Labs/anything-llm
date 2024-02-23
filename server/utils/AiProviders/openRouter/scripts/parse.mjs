@@ -18,6 +18,7 @@ async function parseChatModels() {
     models[model.id] = {
       id: model.id,
       name: model.name,
+      organization: model.id.split("/")[0],
       maxLength: model.context_length,
     };
   });
