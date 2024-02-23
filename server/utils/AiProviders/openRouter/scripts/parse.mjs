@@ -18,7 +18,10 @@ async function parseChatModels() {
     models[model.id] = {
       id: model.id,
       name: model.name,
-      organization: model.id.split("/")[0],
+      // capitalize first letter
+      organization:
+        model.id.split("/")[0].charAt(0).toUpperCase() +
+        model.id.split("/")[0].slice(1),
       maxLength: model.context_length,
     };
   });
