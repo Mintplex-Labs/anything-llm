@@ -32,7 +32,6 @@ function OpenRouterModelSelection({ settings }) {
     async function findCustomModels() {
       setLoading(true);
       const { models } = await System.customModels("openrouter");
-      console.log("models", models);
       setCustomModels(models || []);
       setLoading(false);
     }

@@ -171,8 +171,7 @@ export default function GeneralLLMPreference() {
       value: "openrouter",
       logo: OpenRouterLogo,
       options: <OpenRouterOptions settings={settings} />,
-      description:
-        "Run powerful and internet-connected models hosted by Perplexity AI.",
+      description: "Run any model from OpenRouter.",
     },
     {
       name: "Native",
