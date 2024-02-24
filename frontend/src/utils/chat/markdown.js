@@ -43,9 +43,9 @@ const markdown = markdownIt({
       "</pre></div>"
     );
   },
-})
-  // Enable <ol> and <ul> items to not assume an HTML structure so we can keep numbering from responses.
-  // .disable("list");
+});
+// Enable <ol> and <ul> items to not assume an HTML structure so we can keep numbering from responses.
+// .disable("list");
 
 export default function renderMarkdown(text = "") {
   return markdown.render(text);

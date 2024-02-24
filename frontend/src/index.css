@@ -444,23 +444,28 @@ dialog::backdrop {
   @apply text-[14px] font-bold text-white;
 }
 
-
 /**
  * ==============================================
  * Markdown Styles
  * ==============================================
  */
+.markdown,
+.markdown > * {
+  font-weight: 400;
+}
 
- .markdown h1 {
+.markdown h1 {
   font-size: xx-large;
   line-height: 1.7;
   padding-left: 0.3rem;
 }
+
 .markdown h2 {
   line-height: 1.5;
   font-size: x-large;
   padding-left: 0.3rem;
 }
+
 .markdown h3 {
   line-height: 1.4;
   font-size: large;
@@ -498,11 +503,13 @@ dialog::backdrop {
   text-transform: uppercase;
   font-weight: bolder;
 }
+
 .markdown hr {
   border: 0;
   border-top: 1px solid #cdcdcd40;
   margin: 1rem 0;
 }
+
 .markdown table th,
 .markdown table td {
   padding: 8px 15px;
@@ -515,22 +522,21 @@ dialog::backdrop {
 }
 
 @media (max-width: 600px) {
-  table th,
-  table td {
+  .markdown table th,
+  .markdown table td {
     padding: 10px;
   }
 }
 
 /* List Styles */
-ol {
+.markdown ol {
   list-style: decimal-leading-zero;
-  /* color: #dcdcdccf; */
   padding-left: 0px;
   padding-top: 10px;
   margin: 10px;
 }
 
-ol li {
+.markdown ol li {
   margin-left: 20px;
   padding-left: 10px;
   position: relative;
@@ -538,19 +544,16 @@ ol li {
   line-height: 1.4rem;
 }
 
-ol li::marker {
-  color: #d2d2d2cf;
+.markdown ol li::marker {
   padding-top: 10px;
-  font-weight: lighter;
 }
 
-ol li p {
+.markdown ol li p {
   margin: 0.5rem;
   padding-top: 10px;
-  color: #d9d9d9cf;
 }
 
-ul {
+.markdown ul {
   list-style: revert-layer;
   /* color: #cfcfcfcf; */
   padding-left: 0px;
@@ -559,37 +562,38 @@ ul {
   margin: 10px;
 }
 
-ul li::marker {
+.markdown ul li::marker {
   color: #d0d0d0cf;
   padding-top: 10px;
-  font-weight: lighter;
 }
 
-ul li {
+.markdownul li {
   margin-left: 20px;
 
   padding-left: 10px;
   transition: all 0.3s ease;
   line-height: 1.4rem;
 }
-ul li > ul {
+
+.markdown ul li > ul {
   padding-left: 20px;
   margin: 0px;
 }
 
 .markdown p {
+  font-weight: 400;
   margin: 0.35rem;
 }
 
 .markdown {
   text-wrap: wrap;
 }
-pre {
+
+.markdown pre {
   margin: 20px 0;
 }
 
-strong {
+.markdown strong {
   font-weight: 600;
   color: #fff;
 }
- 
