@@ -76,19 +76,21 @@ function OpenRouterModelSelection({ settings }) {
         required={true}
         className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
-        {Object.entries(groupedModels).map(([organization, models]) => (
-          <optgroup key={organization} label={organization}>
-            {models.map((model) => (
-              <option
-                key={model.id}
-                value={model.id}
-                selected={settings.OpenRouterModelPref === model.id}
-              >
-                {model.name}
-              </option>
-            ))}
-          </optgroup>
-        ))}
+        {Object.keys(groupedModels)
+          .sort()
+          .map((organization) => (
+            <optgroup key={organization} label={organization}>
+              {groupedModels[organization].map((model) => (
+                <option
+                  key={model.id}
+                  value={model.id}
+                  selected={settings.OpenRouterModelPref === model.id}
+                >
+                  {model.name}
+                </option>
+              ))}
+            </optgroup>
+          ))}
       </select>
     </div>
   );
