@@ -26,7 +26,7 @@ const markdown = markdownIt({
           hljs.highlight(code, { language: lang, ignoreIllegals: true }).value +
           "</pre></div>"
         );
-      } catch (__) {}
+      } catch (__) { }
     }
 
     return (
@@ -44,8 +44,6 @@ const markdown = markdownIt({
     );
   },
 });
-// Enable <ol> and <ul> items to not assume an HTML structure so we can keep numbering from responses.
-// .disable("list");
 
 export default function renderMarkdown(text = "") {
   return markdown.render(text);
