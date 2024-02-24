@@ -249,6 +249,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // OpenRouter Options
+  OpenRouterApiKey: {
+    envKey: "OPENROUTER_API_KEY",
+    checks: [isNotEmpty],
+  },
+  OpenRouterModelPref: {
+    envKey: "OPENROUTER_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
@@ -325,6 +335,7 @@ function supportedLLM(input = "") {
     "mistral",
     "huggingface",
     "perplexity",
+    "openrouter",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

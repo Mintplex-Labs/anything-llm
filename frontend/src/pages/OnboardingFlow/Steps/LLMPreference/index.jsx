@@ -12,6 +12,7 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
+import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
@@ -29,6 +30,7 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
+import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -137,6 +139,13 @@ export default function LLMPreference({
       options: <PerplexityOptions settings={settings} />,
       description:
         "Run powerful and internet-connected models hosted by Perplexity AI.",
+    },
+    {
+      name: "OpenRouter",
+      value: "openrouter",
+      logo: OpenRouterLogo,
+      options: <OpenRouterOptions settings={settings} />,
+      description: "A unified interface for LLMs.",
     },
     {
       name: "Native",

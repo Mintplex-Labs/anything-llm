@@ -1,37 +1,37 @@
 import System from "@/models/system";
 import { useState, useEffect } from "react";
 
-export default function TogetherAiOptions({ settings }) {
+export default function OpenRouterOptions({ settings }) {
   return (
     <div className="flex gap-x-4">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-4">
-          Together AI API Key
+          OpenRouter API Key
         </label>
         <input
           type="password"
-          name="TogetherAiApiKey"
+          name="OpenRouterApiKey"
           className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-          placeholder="Together AI API Key"
-          defaultValue={settings?.TogetherAiApiKey ? "*".repeat(20) : ""}
+          placeholder="OpenRouter API Key"
+          defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
           required={true}
           autoComplete="off"
           spellCheck={false}
         />
       </div>
-      <TogetherAiModelSelection settings={settings} />
+      <OpenRouterModelSelection settings={settings} />
     </div>
   );
 }
-function TogetherAiModelSelection({ settings }) {
+
+function OpenRouterModelSelection({ settings }) {
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function findCustomModels() {
       setLoading(true);
-      const { models } = await System.customModels("togetherai");
-
+      const { models } = await System.customModels("openrouter");
       if (models?.length > 0) {
         const modelsByOrganization = models.reduce((acc, model) => {
           acc[model.organization] = acc[model.organization] || [];
@@ -54,7 +54,7 @@ function TogetherAiModelSelection({ settings }) {
           Chat Model Selection
         </label>
         <select
-          name="TogetherAiModelPref"
+          name="OpenRouterModelPref"
           disabled={true}
           className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
@@ -72,7 +72,7 @@ function TogetherAiModelSelection({ settings }) {
         Chat Model Selection
       </label>
       <select
-        name="TogetherAiModelPref"
+        name="OpenRouterModelPref"
         required={true}
         className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
