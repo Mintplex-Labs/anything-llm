@@ -8,7 +8,7 @@
 // copy outputs into the export in ../models.js
 
 // Update the date below if you run this again because Perplexity added new models.
-// Last Collected: Feb 22, 2024
+// Last Collected: Feb 23, 2024
 
 import fs from "fs";
 
@@ -18,7 +18,7 @@ function parseChatModels() {
   const rows = tableString.split("\n").slice(2);
 
   rows.forEach((row) => {
-    let [model, contextLength] = row
+    let [model, _, contextLength] = row
       .split("|")
       .slice(1, -1)
       .map((text) => text.trim());

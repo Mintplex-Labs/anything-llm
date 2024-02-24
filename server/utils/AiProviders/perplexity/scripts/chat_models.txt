@@ -1,11 +1,15 @@
-| Model                     | Context Length | Model Type      |
-| :------------------------ | :------------- | :-------------- |
-| `codellama-34b-instruct`  | 16384          | Chat Completion |
-| `codellama-70b-instruct`  | 16384          | Chat Completion |
-| `llama-2-70b-chat`        | 4096           | Chat Completion |
-| `mistral-7b-instruct` [2] | 8192 [1]       | Chat Completion |
-| `mixtral-8x7b-instruct`   | 8192 [1]       | Chat Completion |
-| `pplx-7b-chat`            | 8192           | Chat Completion |
-| `pplx-70b-chat`           | 8192           | Chat Completion |
-| `pplx-7b-online`          | 8192           | Chat Completion |
-| `pplx-70b-online`         | 8192           | Chat Completion |
+| Model                       | Parameter Count | Context Length | Model Type      |
+| :-------------------------- | :-------------- | :------------- | :-------------- |
+| `sonar-small-chat`          | 7B              | 16384          | Chat Completion |
+| `sonar-small-online`        | 7B              | 12000          | Chat Completion |
+| `sonar-medium-chat`         | 8x7B            | 16384          | Chat Completion |
+| `sonar-medium-online`       | 8x7B            | 12000          | Chat Completion |
+| `codellama-34b-instruct`[3] | 34B             | 16384          | Chat Completion |
+| `codellama-70b-instruct`    | 70B             | 16384          | Chat Completion |
+| `llama-2-70b-chat`[3]       | 70B             | 4096           | Chat Completion |
+| `mistral-7b-instruct` [1]   | 7B              | 16384          | Chat Completion |
+| `mixtral-8x7b-instruct`     | 8x7B            | 16384          | Chat Completion |
+| `pplx-7b-chat`[2] [3]       | 7B              | 16384          | Chat Completion |
+| `pplx-7b-online`[2] [3]     | 7B              | 12000          | Chat Completion |
+| `pplx-70b-chat`[3]          | 70B             | 8192           | Chat Completion |
+| `pplx-70b-online`[3]        | 70B             | 4000           | Chat Completion |
