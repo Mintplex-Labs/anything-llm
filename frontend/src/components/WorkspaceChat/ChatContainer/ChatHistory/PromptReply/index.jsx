@@ -70,7 +70,7 @@ const PromptReply = ({
         <div className="flex gap-x-5">
           <Jazzicon size={36} user={{ uid: workspace.slug }} role="assistant" />
           <span
-            className={`reply whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+            className={`reply flex flex-col gap-y-1 mt-2`}
             dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
           />
         </div>
