@@ -180,7 +180,6 @@ export default function LLMPreference({
       showToast(`Failed to save LLM settings: ${error}`, "error");
       return;
     }
-    showToast("LLM settings saved successfully.", "success", { clear: true });
     navigate(paths.onboarding.embeddingPreference());
   };
 

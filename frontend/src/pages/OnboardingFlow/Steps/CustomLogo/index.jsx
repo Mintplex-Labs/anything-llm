@@ -58,8 +58,6 @@ export default function CustomLogo({ setHeader, setForwardBtn, setBackBtn }) {
 
     const logoURL = await System.fetchLogo();
     _setLogo(logoURL);
-
-    showToast("Image uploaded successfully.", "success", { clear: true });
     setIsDefaultLogo(false);
   };
 
@@ -79,8 +77,6 @@ export default function CustomLogo({ setHeader, setForwardBtn, setBackBtn }) {
 
     const logoURL = await System.fetchLogo();
     _setLogo(logoURL);
-
-    showToast("Image successfully removed.", "success", { clear: true });
   };
 
   return (
