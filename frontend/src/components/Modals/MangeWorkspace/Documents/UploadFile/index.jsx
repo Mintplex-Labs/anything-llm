@@ -76,9 +76,6 @@ export default function UploadFile({
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: {
-      ...fileTypes,
-    },
     disabled: !ready,
   });
 
