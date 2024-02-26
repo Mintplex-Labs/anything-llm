@@ -41,6 +41,7 @@ async function processSingleFile(targetFilename) {
     );
     processFileAs = ".txt";
   } else {
+    trashFile(fullFilePath);
     return {
       success: false,
       reason: `File extension ${fileExtension} not supported for parsing and cannot be assumed as text file type.`,
