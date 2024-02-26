@@ -27,11 +27,9 @@ export default function EmbedderItem({
           alt={`${name} logo`}
           className="w-10 h-10 rounded-md"
         />
-        <div className="flex flex-col gap-y-1">
+        <div className="flex flex-col">
           <div className="text-sm font-semibold">{name}</div>
-          <div className="mt-2 text-xs text-white tracking-wide">
-            {description}
-          </div>
+          <div className="mt-1 text-xs text-white/60">{description}</div>
         </div>
       </div>
     </div>
