@@ -123,13 +123,21 @@ export default function CustomLogo({ setHeader, setForwardBtn, setBackBtn }) {
             />
           </div>
         )}
-
-        <button
-          onClick={handleRemoveLogo}
-          className="text-white text-base font-medium hover:text-opacity-60 mt-8"
-        >
-          Remove logo
-        </button>
+        {!isDefaultLogo ? (
+          <button
+            onClick={handleRemoveLogo}
+            className="text-white text-base font-medium hover:text-opacity-60 mt-8"
+          >
+            Remove logo
+          </button>
+        ) : (
+          <button
+            onClick={handleForward}
+            className="text-white text-base font-medium hover:text-opacity-60 mt-8"
+          >
+            Skip
+          </button>
+        )}
       </div>
     </div>
   );
