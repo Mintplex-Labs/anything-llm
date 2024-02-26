@@ -133,9 +133,6 @@ export default function VectorDatabaseConnection({
       showToast(`Failed to save Vector Database settings: ${error}`, "error");
       return;
     }
-    showToast("Vector Database settings saved successfully.", "success", {
-      clear: true,
-    });
     navigate(paths.onboarding.customLogo());
   };
 
