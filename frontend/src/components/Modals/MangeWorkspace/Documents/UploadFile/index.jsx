@@ -7,12 +7,7 @@ import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
 
-export default function UploadFile({
-  workspace,
-  fileTypes,
-  fetchKeys,
-  setLoading,
-}) {
+export default function UploadFile({ workspace, fetchKeys, setLoading }) {
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
@@ -76,9 +71,6 @@ export default function UploadFile({
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: {
-      ...fileTypes,
-    },
     disabled: !ready,
   });
 
@@ -109,9 +101,7 @@ export default function UploadFile({
               Click to upload or drag and drop
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
-              {Object.values(fileTypes ?? [])
-                .flat()
-                .join(" ")}
+              supports text files, csv's, spreadsheets, audio files, and more!
             </div>
           </div>
         ) : (

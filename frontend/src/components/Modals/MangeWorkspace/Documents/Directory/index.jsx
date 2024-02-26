@@ -8,7 +8,6 @@ function Directory({
   files,
   loading,
   setLoading,
-  fileTypes,
   workspace,
   fetchKeys,
   selectedItems,
@@ -135,9 +134,7 @@ function Directory({
             </div>
           )}
         </div>
-
         <UploadFile
-          fileTypes={fileTypes}
           workspace={workspace}
           fetchKeys={fetchKeys}
           setLoading={setLoading}

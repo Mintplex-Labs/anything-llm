@@ -11,17 +11,14 @@ const noop = () => {};
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const { slug } = useParams();
   const [workspace, setWorkspace] = useState(null);
-  const [fileTypes, setFileTypes] = useState(null);
   const [settings, setSettings] = useState({});
 
   useEffect(() => {
-    async function checkSupportedFiletypes() {
-      const acceptedTypes = await System.acceptedDocumentTypes();
+    async function getSettings() {
       const _settings = await System.keys();
-      setFileTypes(acceptedTypes ?? {});
       setSettings(_settings ?? {});
     }
-    checkSupportedFiletypes();
+    getSettings();
   }, []);
 
   useEffect(() => {
@@ -78,11 +75,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
               <X className="text-gray-300 text-lg" />
             </button>
           </div>
-          <DocumentSettings
-            workspace={workspace}
-            fileTypes={fileTypes}
-            systemSettings={settings}
-          />
+          <DocumentSettings workspace={workspace} systemSettings={settings} />
         </div>
       </div>
     </div>
