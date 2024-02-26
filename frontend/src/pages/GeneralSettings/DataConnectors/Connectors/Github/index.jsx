@@ -132,7 +132,7 @@ export default function GithubConnectorSetup() {
                     <input
                       type="url"
                       name="repo"
-                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                       placeholder="https://github.com/Mintplex-Labs/anything-llm"
                       required={true}
                       autoComplete="off"
@@ -156,7 +156,7 @@ export default function GithubConnectorSetup() {
                     <input
                       type="text"
                       name="accessToken"
-                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                       placeholder="github_pat_1234_abcdefg"
                       required={false}
                       autoComplete="off"
@@ -189,7 +189,7 @@ export default function GithubConnectorSetup() {
                     classNames={{
                       tag: "bg-blue-300/10 text-zinc-800 m-1",
                       input:
-                        "flex bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white p-2.5",
+                        "flex bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white p-2.5",
                     }}
                   />
                 </div>
@@ -257,7 +257,7 @@ function GitHubBranchSelection({ repo, accessToken }) {
         <select
           name="branch"
           required={true}
-          className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -278,7 +278,7 @@ function GitHubBranchSelection({ repo, accessToken }) {
       <select
         name="branch"
         required={true}
-        className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {allBranches.map((branch) => {
           return (

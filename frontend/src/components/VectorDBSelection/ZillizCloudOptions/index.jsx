@@ -9,7 +9,7 @@ export default function ZillizCloudOptions({ settings }) {
           <input
             type="text"
             name="ZillizEndpoint"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="https://sample.api.gcp-us-west1.zillizcloud.com"
             defaultValue={settings?.ZillizEndpoint}
             required={true}
@@ -25,7 +25,7 @@ export default function ZillizCloudOptions({ settings }) {
           <input
             type="password"
             name="ZillizApiToken"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="Zilliz cluster API Token"
             defaultValue={settings?.ZillizApiToken ? "*".repeat(20) : ""}
             autoComplete="off"

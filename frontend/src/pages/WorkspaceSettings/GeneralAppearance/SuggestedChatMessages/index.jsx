@@ -143,7 +143,7 @@ export default function SuggestedChatMessages({ slug }) {
             </label>
             <input
               placeholder="Message heading"
-              className=" bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
+              className=" bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
               value={newMessage.heading}
               name="heading"
               onChange={onEditChange}
@@ -155,7 +155,7 @@ export default function SuggestedChatMessages({ slug }) {
             </label>
             <input
               placeholder="Message"
-              className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
+              className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
               value={newMessage.message}
               name="message"
               onChange={onEditChange}
