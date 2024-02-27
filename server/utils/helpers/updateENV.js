@@ -135,7 +135,7 @@ const KEY_MAPPING = {
   },
   EmbeddingBasePath: {
     envKey: "EMBEDDING_BASE_PATH",
-    checks: [isNotEmpty, validLLMExternalBasePath, validDockerizedUrl],
+    checks: [isNotEmpty, validDockerizedUrl],
   },
   EmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
@@ -355,7 +355,7 @@ function validAnthropicModel(input = "") {
 }
 
 function supportedEmbeddingModel(input = "") {
-  const supported = ["openai", "azure", "localai", "native"];
+  const supported = ["openai", "azure", "localai", "native", "ollama"];
   return supported.includes(input)
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;

@@ -221,6 +221,13 @@ const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: LocalAiLogo,
   },
+  ollama: {
+    name: "Ollama",
+    description: [
+      "Your document text is embedded privately on the server running Ollama",
+    ],
+    logo: OllamaLogo,
+  },
 };
 
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
