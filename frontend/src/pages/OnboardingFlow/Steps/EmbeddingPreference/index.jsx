@@ -4,10 +4,12 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
+import OllamaLogo from "@/media/llmprovider/ollama.png";
 import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
 import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
 import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
+import OllamaEmbeddingOptions from "@/components/EmbeddingSelection/OllamaOptions";
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
@@ -68,6 +70,13 @@ export default function EmbeddingPreference({
       value: "localai",
       logo: LocalAiLogo,
       options: <LocalAiOptions settings={settings} />,
+      description: "Run embedding models locally on your own machine.",
+    },
+    {
+      name: "Ollama",
+      value: "ollama",
+      logo: OllamaLogo,
+      options: <OllamaEmbeddingOptions settings={settings} />,
       description: "Run embedding models locally on your own machine.",
     },
   ];
