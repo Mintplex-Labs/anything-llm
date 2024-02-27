@@ -64,7 +64,7 @@ export default function SupportEmail() {
         <input
           name="supportEmail"
           type="email"
-          className="bg-zinc-900 mt-4 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[275px]"
+          className="bg-zinc-900 mt-4 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[275px]"
           placeholder="support@mycompany.com"
           required={true}
           autoComplete="off"

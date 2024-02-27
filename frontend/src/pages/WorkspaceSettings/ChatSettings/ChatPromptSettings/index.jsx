@@ -18,7 +18,7 @@ export default function ChatPromptSettings({ workspace, setHasChanges }) {
         name="openAiPrompt"
         rows={5}
         defaultValue={chatPrompt(workspace)}
-        className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-2"
+        className="bg-zinc-900 placeholder:text-white/20 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-2"
         placeholder="Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
         required={true}
         wrap="soft"
