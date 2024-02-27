@@ -154,7 +154,7 @@ const System = {
       });
   },
   deleteDocuments: async (names = []) => {
-    return await fetch(`${API_BASE}/system/remove-documents`, {
+    return await fetch(`${API_BASE()}/system/remove-documents`, {
       method: "DELETE",
       headers: baseHeaders(),
       body: JSON.stringify({ names }),
@@ -234,7 +234,7 @@ const System = {
       return { email: email, error: null };
 
     const { supportEmail, error } = await fetch(
-      `${API_BASE}/system/support-email`,
+      `${API_BASE()}/system/support-email`,
       {
         method: "GET",
         cache: "no-cache",

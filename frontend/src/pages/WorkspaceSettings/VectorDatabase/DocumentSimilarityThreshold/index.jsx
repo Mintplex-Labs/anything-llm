@@ -17,7 +17,7 @@ export default function DocumentSimilarityThreshold({
       <select
         name="similarityThreshold"
         defaultValue={workspace?.similarityThreshold ?? 0.25}
-        className="bg-zinc-900 text-white text-sm mt-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+        className="border-none bg-zinc-900 text-white text-sm mt-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
         onChange={() => setHasChanges(true)}
         required={true}
       >

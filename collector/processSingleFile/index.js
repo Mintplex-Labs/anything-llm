@@ -48,9 +48,7 @@ async function processSingleFile(targetFilename) {
     }
   }
 
-  const FileTypeProcessor = require(SUPPORTED_FILETYPE_CONVERTERS[
-    processFileAs
-  ]);
+  const FileTypeProcessor = SUPPORTED_FILETYPE_CONVERTERS[processFileAs];
   return await FileTypeProcessor({
     fullFilePath,
     filename: targetFilename,

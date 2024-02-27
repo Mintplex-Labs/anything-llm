@@ -3,7 +3,7 @@ import { API_BASE } from "@/utils/api";
 
 const Embed = {
   embeds: async () => {
-    return await fetch(`${API_BASE}/embeds`, {
+    return await fetch(`${API_BASE()}/embeds`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -15,7 +15,7 @@ const Embed = {
       });
   },
   newEmbed: async (data) => {
-    return await fetch(`${API_BASE}/embeds/new`, {
+    return await fetch(`${API_BASE()}/embeds/new`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),
@@ -27,7 +27,7 @@ const Embed = {
       });
   },
   updateEmbed: async (embedId, data) => {
-    return await fetch(`${API_BASE}/embed/update/${embedId}`, {
+    return await fetch(`${API_BASE()}/embed/update/${embedId}`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify(data),
@@ -39,7 +39,7 @@ const Embed = {
       });
   },
   deleteEmbed: async (embedId) => {
-    return await fetch(`${API_BASE}/embed/${embedId}`, {
+    return await fetch(`${API_BASE()}/embed/${embedId}`, {
       method: "DELETE",
       headers: baseHeaders(),
     })
@@ -53,7 +53,7 @@ const Embed = {
       });
   },
   chats: async (offset = 0) => {
-    return await fetch(`${API_BASE}/embed/chats`, {
+    return await fetch(`${API_BASE()}/embed/chats`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({ offset }),
@@ -65,7 +65,7 @@ const Embed = {
       });
   },
   deleteChat: async (chatId) => {
-    return await fetch(`${API_BASE}/embed/chats/${chatId}`, {
+    return await fetch(`${API_BASE()}/embed/chats/${chatId}`, {
       method: "DELETE",
       headers: baseHeaders(),
     })

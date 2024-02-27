@@ -7,17 +7,12 @@ import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 
 export default function ChatHistory({ history = [], workspace, sendCommand }) {
-  const replyRef = useRef(null);
-  const chatHistoryRef = useRef(null);
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const chatHistoryRef = useRef(null);
 
   useEffect(() => {
-    if (replyRef.current) {
-      setTimeout(() => {
-        replyRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-      }, 700);
-    }
+    scrollToBottom();
   }, [history]);
 
   const handleScroll = () => {
@@ -88,11 +83,12 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
 
   return (
     <div
-      className="markdown text-white/80 font-light text-sm h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
+      className="markdown  text-white/80 font-light text-sm h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
       id="chat-history"
       ref={chatHistoryRef}
     >
       {history.map((props, index) => {
+        const isLastMessage = index === history.length - 1;
         const isLastBotReply =
           index === history.length - 1 && props.role === "assistant";
 

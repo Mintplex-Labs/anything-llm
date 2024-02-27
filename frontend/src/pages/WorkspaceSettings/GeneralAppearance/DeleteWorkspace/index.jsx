@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import System from "@/models/system";
+import { refocusApplication } from "@/ipc/node-api";
 
 export default function DeleteWorkspace({ workspace }) {
   const { slug } = useParams();
@@ -22,9 +23,12 @@ export default function DeleteWorkspace({ workspace }) {
       !window.confirm(
         `You are about to delete your entire ${workspace.name} workspace. This will remove all vector embeddings on your vector database.\n\nThe original source files will remain untouched. This action is irreversible.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
 
+    refocusApplication();
     setDeleting(true);
     const success = await Workspace.delete(workspace.slug);
     if (!success) {

@@ -62,7 +62,7 @@ const Workspace = {
   },
   updateChatFeedback: async function (chatId, slug, feedback) {
     const result = await fetch(
-      `${API_BASE}/workspace/${slug}/chat-feedback/${chatId}`,
+      `${API_BASE()}/workspace/${slug}/chat-feedback/${chatId}`,
       {
         method: "POST",
         headers: baseHeaders(),
@@ -203,7 +203,7 @@ const Workspace = {
       });
   },
   setPinForDocument: async function (slug, docPath, pinStatus) {
-    return fetch(`${API_BASE}/workspace/${slug}/update-pin`, {
+    return fetch(`${API_BASE()}/workspace/${slug}/update-pin`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({ docPath, pinStatus }),

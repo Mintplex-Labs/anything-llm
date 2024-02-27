@@ -5,6 +5,7 @@ import System from "@/models/system";
 import EditingChatBubble from "@/components/EditingChatBubble";
 import showToast from "@/utils/toast";
 import { Plus } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
 
 export default function Appearance() {
   // const { logo: _initLogo, setLogo: _setLogo } = useLogo();

@@ -83,7 +83,10 @@ const LanceDb = {
         return;
       const { vector: _, ...rest } = item;
       result.contextTexts.push(rest.text);
-      result.sourceDocuments.push(rest);
+      result.sourceDocuments.push({
+        ...rest,
+        score: this.distanceToSimilarity(item._distance),
+      });
       result.scores.push(this.distanceToSimilarity(item._distance));
     });
 

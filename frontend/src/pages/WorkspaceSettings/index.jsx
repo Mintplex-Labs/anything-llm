@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, NavLink, useParams } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import Workspace from "@/models/workspace";
 import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
@@ -100,7 +100,7 @@ function ShowWorkspaceChat() {
 
 function TabItem({ title, icon, to }) {
   return (
-    <Link
+    <NavLink
       to={to}
       className={({ isActive }) =>
         `${
@@ -112,6 +112,6 @@ function TabItem({ title, icon, to }) {
     >
       {icon}
       <div>{title}</div>
-    </Link>
+    </NavLink>
   );
 }

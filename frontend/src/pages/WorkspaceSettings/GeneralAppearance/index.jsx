@@ -4,7 +4,6 @@ import showToast from "@/utils/toast";
 import { useEffect, useRef, useState } from "react";
 import VectorCount from "./VectorCount";
 import WorkspaceName from "./WorkspaceName";
-import SuggestedChatMessages from "./SuggestedChatMessages";
 import DeleteWorkspace from "./DeleteWorkspace";
 
 export default function GeneralInfo({ slug }) {
@@ -66,9 +65,6 @@ export default function GeneralInfo({ slug }) {
           </button>
         )}
       </form>
-      <div className="mt-6">
-        <SuggestedChatMessages slug={workspace.slug} />
-      </div>
       <DeleteWorkspace workspace={workspace} />
     </>
   );

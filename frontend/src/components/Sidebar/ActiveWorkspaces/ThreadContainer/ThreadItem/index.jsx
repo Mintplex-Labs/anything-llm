@@ -17,13 +17,13 @@ export default function ThreadItem({
   isActive,
   workspace,
   thread,
+  onUpdate,
   onRemove,
   hasNext,
 }) {
   const { slug } = useParams();
   const optionsContainer = useRef(null);
   const [showOptions, setShowOptions] = useState(false);
-  const [name, setName] = useState(thread.name);
   const linkTo = !thread.slug
     ? paths.workspace.chat(slug)
     : paths.workspace.thread(slug, thread.slug);
@@ -37,7 +37,7 @@ export default function ThreadItem({
           isActive
             ? "border-l-2 border-b-2 border-white"
             : "border-l border-b border-slate-300"
-        } h-[50%] absolute top-0 z-10 left-2 rounded-bl-lg`}
+        } h-[50%] border-l-solid! border-b-solid! absolute top-0 z-10 left-2 rounded-bl-lg`}
       ></div>
       {/* Downstroke border for next item */}
       {hasNext && (
@@ -73,7 +73,7 @@ export default function ThreadItem({
                 isActive ? "font-medium text-white" : "text-slate-400"
               }`}
             >
-              {truncate(name, 25)}
+              {truncate(thread.name, 25)}
             </p>
           </Link>
         )}

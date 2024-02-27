@@ -41,6 +41,11 @@ a {
   border-bottom-style: solid;
 }
 
+.border-l,
+.border-l-2 {
+  border-left-style: solid;
+}
+
 .border-t,
 .border-5-2 {
   border-top-style: solid;

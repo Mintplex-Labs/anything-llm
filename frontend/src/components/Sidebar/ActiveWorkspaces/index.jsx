@@ -21,7 +21,6 @@ export default function ActiveWorkspaces() {
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWs, setSelectedWs] = useState(null);
   const [hoverStates, setHoverStates] = useState({});
-  const [gearHover, setGearHover] = useState({});
   const [uploadHover, setUploadHover] = useState({});
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
 
@@ -115,7 +114,7 @@ export default function ActiveWorkspaces() {
                         : truncate(workspace.name, 20)}
                     </p>
                   </div>
-                  {(isActive || isHovered || gearHover[workspace.id]) &&
+                  {(isActive || isHovered || settingHover[workspace.id]) &&
                   user?.role !== "default" ? (
                     <div className="flex items-center gap-x-2">
                       <button
@@ -131,7 +130,7 @@ export default function ActiveWorkspaces() {
                         onMouseLeave={() =>
                           handleUploadMouseLeave(workspace.id)
                         }
-                        className="rounded-md flex items-center justify-center text-white ml-auto"
+                        className="border-none rounded-md flex items-center justify-center text-white ml-auto"
                       >
                         <UploadSimple
                           weight={
@@ -151,7 +150,9 @@ export default function ActiveWorkspaces() {
                         className="rounded-md flex items-center justify-center text-white ml-auto"
                       >
                         <GearSix
-                          weight={gearHover[workspace.id] ? "fill" : "regular"}
+                          weight={
+                            settingHover[workspace.id] ? "fill" : "regular"
+                          }
                           className="h-[20px] w-[20px] transition-all duration-300"
                         />
                       </Link>

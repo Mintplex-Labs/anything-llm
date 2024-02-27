@@ -4,6 +4,7 @@ import { memo, useEffect, useState } from "react";
 import FolderRow from "./FolderRow";
 import pluralize from "pluralize";
 import System from "@/models/system";
+import { refocusApplication } from "@/ipc/node-api";
 
 function Directory({
   files,
@@ -27,10 +28,12 @@ function Directory({
         "Are you sure you want to delete these files?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible."
       )
     ) {
+      refocusApplication();
       return false;
     }
 
     try {
+      refocusApplication();
       const toRemove = [];
       for (const itemId of Object.keys(selectedItems)) {
         for (const folder of files.items) {

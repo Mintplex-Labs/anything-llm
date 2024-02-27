@@ -20,7 +20,7 @@ const Actions = ({ message, feedbackScore, chatId, slug }) => {
   };
 
   return (
-    <div className="flex justify-start items-center gap-x-4">
+    <div className="flex justify-start items-center">
       <CopyMessage message={message} />
       {chatId && (
         <>
@@ -57,7 +57,7 @@ function FeedbackButton({
         onClick={handleFeedback}
         data-tooltip-id={tooltipId}
         data-tooltip-content={tooltipContent}
-        className="text-zinc-300"
+        className="border-none text-zinc-300"
       >
         <IconComponent
           size={18}

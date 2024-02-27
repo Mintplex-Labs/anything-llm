@@ -113,14 +113,14 @@ export default function SuggestedChatMessages({ slug }) {
         {suggestedMessages.map((suggestion, index) => (
           <div key={index} className="relative w-full">
             <button
-              className="transition-all duration-300 absolute z-10 text-neutral-700 bg-white rounded-full hover:bg-zinc-600 hover:border-zinc-600 hover:text-white border-transparent border shadow-lg ml-2"
+              className="border-none transition-all items-center duration-300 absolute z-10 text-neutral-700 bg-white rounded-full hover:bg-zinc-600 hover:border-zinc-600 hover:text-white border-transparent border shadow-lg ml-2"
               style={{
                 top: -8,
                 left: 265,
               }}
               onClick={() => handleRemoveMessage(index)}
             >
-              <X className="m-[1px]" size={20} />
+              <X size={14} />
             </button>
             <button
               key={index}
@@ -129,7 +129,9 @@ export default function SuggestedChatMessages({ slug }) {
                 editingIndex === index ? "border-sky-400" : ""
               }`}
             >
-              <p className="font-semibold">{suggestion.heading}</p>
+              <p className="font-semibold text-neutral-700 ">
+                {suggestion.heading}
+              </p>
               <p>{suggestion.message}</p>
             </button>
           </div>
@@ -143,7 +145,7 @@ export default function SuggestedChatMessages({ slug }) {
             </label>
             <input
               placeholder="Message heading"
-              className=" bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
+              className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
               value={newMessage.heading}
               name="heading"
               onChange={onEditChange}
@@ -155,7 +157,7 @@ export default function SuggestedChatMessages({ slug }) {
             </label>
             <input
               placeholder="Message"
-              className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
+              className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full"
               value={newMessage.message}
               name="message"
               onChange={onEditChange}
@@ -167,7 +169,7 @@ export default function SuggestedChatMessages({ slug }) {
         <button
           type="button"
           onClick={addMessage}
-          className="flex gap-x-2 items-center justify-center mt-6 text-white text-sm hover:text-sky-400 transition-all duration-300"
+          className="border-none flex gap-x-2 items-center justify-center mt-6 text-white text-sm hover:text-sky-400 transition-all duration-300"
         >
           Add new message <Plus className="" size={24} weight="fill" />
         </button>
