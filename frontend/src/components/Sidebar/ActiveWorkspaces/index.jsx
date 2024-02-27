@@ -23,8 +23,7 @@ export default function ActiveWorkspaces() {
   const [uploadHover, setUploadHover] = useState({});
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const { user } = useUser();
-  const match = useMatch("/workspace/:slug/settings/:tab");
-  const isInWorkspaceSettings = !!match;
+  const isInWorkspaceSettings = !!useMatch("/workspace/:slug/settings/:tab");
 
   useEffect(() => {
     async function getWorkspaces() {
@@ -92,12 +91,12 @@ export default function ActiveWorkspaces() {
                 href={isActive ? null : paths.workspace.chat(workspace.slug)}
                 className={`
               transition-all duration-[200ms]
-                flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-slate-200 justify-start items-center
-                hover:bg-workspace-item-selected-gradient
+                flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-white justify-start items-center
+                hover:bg-workspace-item-selected-gradient hover:font-bold border-2 border-outline
                 ${
                   isActive
-                    ? "bg-workspace-item-selected-gradient"
-                    : "border-[2px] border-outline"
+                    ? "bg-workspace-item-selected-gradient font-bold"
+                    : ""
                 }`}
               >
                 <div className="flex flex-row justify-between w-full">
@@ -108,7 +107,7 @@ export default function ActiveWorkspaces() {
                       size={24}
                     />
                     <p
-                      className={`text-white text-[14px] leading-loose font-bold whitespace-nowrap overflow-hidden ${
+                      className={`text-white text-[14px] leading-loose whitespace-nowrap overflow-hidden ${
                         isActive ? "" : "text-opacity-80"
                       }`}
                     >

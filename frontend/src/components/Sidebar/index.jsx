@@ -9,6 +9,8 @@ import useLogo from "@/hooks/useLogo";
 import useUser from "@/hooks/useUser";
 import Footer from "../Footer";
 import SettingsButton from "../SettingsButton";
+import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -22,14 +24,17 @@ export default function Sidebar() {
 
   return (
     <div>
-      <div className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]">
+      <Link
+        to={paths.home()}
+        className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
+      >
         <img
           src={logo}
           alt="Logo"
           className="rounded max-h-[24px]"
           style={{ objectFit: "contain" }}
         />
-      </div>
+      </Link>
       <div
         ref={sidebarRef}
         style={{ height: "calc(100% - 76px)" }}

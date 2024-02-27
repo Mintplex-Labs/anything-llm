@@ -1,6 +1,5 @@
 import System from "@/models/system";
 import paths from "@/utils/paths";
-import { safeJsonParse } from "@/utils/request";
 import {
   BookOpen,
   DiscordLogo,
