@@ -3,6 +3,7 @@ import PreLoader from "@/components/Preloader";
 import { memo, useEffect, useState } from "react";
 import FolderRow from "./FolderRow";
 import pluralize from "pluralize";
+import System from "@/models/system";
 
 function Directory({
   files,
@@ -18,6 +19,40 @@ function Directory({
   loadingMessage,
 }) {
   const [amountSelected, setAmountSelected] = useState(0);
+
+  const deleteFiles = async (event) => {
+    event.stopPropagation();
+    if (
+      !window.confirm(
+        "Are you sure you want to delete these files?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible."
+      )
+    ) {
+      return false;
+    }
+
+    try {
+      const toRemove = [];
+      for (const itemId of Object.keys(selectedItems)) {
+        for (const folder of files.items) {
+          const foundItem = folder.items.find((file) => file.id === itemId);
+          if (foundItem) {
+            toRemove.push(`${folder.name}/${foundItem.name}`);
+            break;
+          }
+        }
+      }
+      setLoading(true);
+      setLoadingMessage(`Removing ${toRemove.length} documents. Please wait.`);
+      await System.deleteDocuments(toRemove);
+      await fetchKeys(true);
+      setSelectedItems({});
+    } catch (error) {
+      console.error("Failed to delete the document:", error);
+    } finally {
+      setLoading(false);
+      setSelectedItems({});
+    }
+  };
 
   const toggleSelection = (item) => {
     setSelectedItems((prevSelectedItems) => {
@@ -119,18 +154,24 @@ function Directory({
           </div>
 
           {amountSelected !== 0 && (
-            <div className="absolute bottom-0 left-0 w-full flex justify-center items-center h-9 bg-white rounded-b-2xl">
-              <div className="flex gap-x-5">
-                <div
+            <div className="absolute bottom-0 left-0 w-full flex justify-between items-center h-9 bg-white rounded-b-2xl">
+              <div className="flex gap-x-5 w-[80%] justify-center">
+                <button
                   onMouseEnter={() => setHighlightWorkspace(true)}
                   onMouseLeave={() => setHighlightWorkspace(false)}
                   onClick={moveToWorkspace}
-                  className="text-sm font-semibold h-7 px-2.5 rounded-lg transition-all duration-300 hover:text-white hover:bg-neutral-800/80 cursor-pointer flex items-center"
+                  className="border-none text-sm font-semibold h-7 px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80 flex items-center"
                 >
                   Move {amountSelected} {pluralize("file", amountSelected)} to
                   workspace
-                </div>
+                </button>
               </div>
+              <button
+                onClick={deleteFiles}
+                className="border-none text-red-500/50 text-sm font-semibold h-7 px-2.5 rounded-lg hover:text-red-500/80 flex items-center"
+              >
+                Delete
+              </button>
             </div>
           )}
         </div>

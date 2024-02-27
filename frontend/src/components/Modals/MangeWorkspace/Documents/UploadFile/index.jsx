@@ -35,7 +35,7 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
 
   const handleUploadSuccess = () => {
     fetchKeys(true);
-    showToast("File uploaded successfully", "success");
+    showToast("File uploaded successfully", "success", { clear: true });
   };
 
   const handleUploadError = (message) => {
