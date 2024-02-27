@@ -152,6 +152,18 @@ const System = {
         return false;
       });
   },
+  deleteDocuments: async (names = []) => {
+    return await fetch(`${API_BASE}/system/remove-documents`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ names }),
+    })
+      .then((res) => res.ok)
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
   deleteFolder: async (name) => {
     return await fetch(`${API_BASE}/system/remove-folder`, {
       method: "DELETE",
