@@ -153,9 +153,7 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
         size={16}
         onClick={updatePinStatus}
         weight={hover || pinned ? "fill" : "regular"}
-        className={`outline-none text-base font-bold flex-shrink-0 cursor-pointer ${
-          pinned ? "hover:text-white" : ""
-        }`}
+        className="outline-none text-base font-bold flex-shrink-0 cursor-pointer"
       />
       <Tooltip
         id={`pin-${item.id}`}
