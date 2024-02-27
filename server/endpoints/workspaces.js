@@ -3,14 +3,8 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { convertToChatHistory } = require("../utils/chats");
 const { getVectorDbClass } = require("../utils/helpers");
 const { setupMulter } = require("../utils/files/multer");
-const {
-  checkProcessorAlive,
-  processDocument,
-  processLink,
-} = require("../utils/files/documentProcessor");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
 const {
@@ -21,6 +15,9 @@ const { EventLogs } = require("../models/eventLogs");
 const {
   WorkspaceSuggestedMessages,
 } = require("../models/workspacesSuggestedMessages");
+const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
+const { convertToChatHistory } = require("../utils/helpers/chat/responses");
+const { CollectorApi } = require("../utils/collectorApi");
 const { handleUploads } = setupMulter();
 
 function workspaceEndpoints(app) {
@@ -96,8 +93,9 @@ function workspaceEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     handleUploads.single("file"),
     async function (request, response) {
+      const Collector = new CollectorApi();
       const { originalname } = request.file;
-      const processingOnline = await checkProcessorAlive();
+      const processingOnline = await Collector.online();
 
       if (!processingOnline) {
         response
@@ -110,13 +108,13 @@ function workspaceEndpoints(app) {
         return;
       }
 
-      const { success, reason } = await processDocument(originalname);
+      const { success, reason } = await Collector.processDocument(originalname);
       if (!success) {
         response.status(500).json({ success: false, error: reason }).end();
         return;
       }
 
-      console.log(
+      Collector.log(
         `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
       );
       await Telemetry.sendTelemetry("document_uploaded");
@@ -135,8 +133,9 @@ function workspaceEndpoints(app) {
     "/workspace/:slug/upload-link",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
+      const Collector = new CollectorApi();
       const { link = "" } = reqBody(request);
-      const processingOnline = await checkProcessorAlive();
+      const processingOnline = await Collector.online();
 
       if (!processingOnline) {
         response
@@ -149,13 +148,13 @@ function workspaceEndpoints(app) {
         return;
       }
 
-      const { success, reason } = await processLink(link);
+      const { success, reason } = await Collector.processLink(link);
       if (!success) {
         response.status(500).json({ success: false, error: reason }).end();
         return;
       }
 
-      console.log(
+      Collector.log(
         `Link ${link} uploaded processed and successfully. It is now available in documents.`
       );
       await Telemetry.sendTelemetry("link_uploaded");
@@ -320,6 +319,35 @@ function workspaceEndpoints(app) {
     }
   );
 
+  app.post(
+    "/workspace/:slug/chat-feedback/:chatId",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const { chatId } = request.params;
+        const { feedback = null } = reqBody(request);
+        const existingChat = await WorkspaceChats.get({
+          id: Number(chatId),
+          workspaceId: response.locals.workspace.id,
+        });
+
+        if (!existingChat) {
+          response.status(404).end();
+          return;
+        }
+
+        const result = await WorkspaceChats.updateFeedbackScore(
+          chatId,
+          feedback
+        );
+        response.status(200).json({ success: result });
+      } catch (error) {
+        console.error("Error updating chat feedback:", error);
+        response.status(500).end();
+      }
+    }
+  );
+
   app.get(
     "/workspace/:slug/suggested-messages",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
@@ -363,6 +391,33 @@ function workspaceEndpoints(app) {
           success: true,
           message: "Error saving the suggested messages.",
         });
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/update-pin",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      validWorkspaceSlug,
+    ],
+    async (request, response) => {
+      try {
+        const { docPath, pinStatus = false } = reqBody(request);
+        const workspace = response.locals.workspace;
+
+        const document = await Document.get({
+          workspaceId: workspace.id,
+          docpath: docPath,
+        });
+        if (!document) return response.sendStatus(404).end();
+
+        await Document.update(document.id, { pinned: pinStatus });
+        return response.status(200).end();
+      } catch (error) {
+        console.error("Error processing the pin status update:", error);
+        return response.status(500).end();
       }
     }
   );

@@ -79,9 +79,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         await Workspace.threads.streamChat(
           { workspaceSlug: workspace.slug, threadSlug },
           promptMessage.userMessage,
-          window.localStorage.getItem(
-            `workspace_chat_mode_${workspace.slug}`
-          ) ?? "chat",
           (chatResult) =>
             handleChat(
               chatResult,
@@ -95,9 +92,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         await Workspace.streamChat(
           workspace,
           promptMessage.userMessage,
-          window.localStorage.getItem(
-            `workspace_chat_mode_${workspace.slug}`
-          ) ?? "chat",
           (chatResult) =>
             handleChat(
               chatResult,

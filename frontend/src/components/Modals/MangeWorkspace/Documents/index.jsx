@@ -2,8 +2,8 @@ import { ArrowsDownUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import Workspace from "../../../../models/workspace";
 import System from "../../../../models/system";
-import Directory from "./Directory";
 import showToast from "../../../../utils/toast";
+import Directory from "./Directory";
 import WorkspaceDirectory from "./WorkspaceDirectory";
 
 // OpenAI Cost per token
@@ -15,11 +15,7 @@ const MODEL_COSTS = {
   "text-embedding-3-large": 0.00000013, // $0.00013 / 1K tokens
 };
 
-export default function DocumentSettings({
-  workspace,
-  fileTypes,
-  systemSettings,
-}) {
+export default function DocumentSettings({ workspace, systemSettings }) {
   const [highlightWorkspace, setHighlightWorkspace] = useState(false);
   const [availableDocs, setAvailableDocs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -195,13 +191,12 @@ export default function DocumentSettings({
   };
 
   return (
-    <div className="flex gap-x-6 justify-center">
+    <div className="flex gap-x-6 justify-center -mt-6 z-10 relative">
       <Directory
         files={availableDocs}
         loading={loading}
         loadingMessage={loadingMessage}
         setLoading={setLoading}
-        fileTypes={fileTypes}
         workspace={workspace}
         fetchKeys={fetchKeys}
         selectedItems={selectedItems}

@@ -5,11 +5,7 @@ require("dotenv").config({
     : `${path.join(__dirname, ".env")}`,
 });
 
-const { viewLocalFiles, normalizePath } = require("../utils/files");
-const {
-  checkProcessorAlive,
-  acceptedFileTypes,
-} = require("../utils/files/documentProcessor");
+const { viewLocalFiles } = require("../utils/files");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
@@ -49,6 +45,7 @@ const {
   exportChatsAsType,
 } = require("../utils/helpers/chat/convertTo");
 const { EventLogs } = require("../models/eventLogs");
+const { CollectorApi } = require("../utils/collectorApi");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -256,6 +253,21 @@ function systemEndpoints(app) {
   );
 
   app.delete(
+    "/system/remove-documents",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { names } = reqBody(request);
+        for await (const name of names) await purgeDocument(name);
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
     "/system/remove-folder",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
@@ -289,7 +301,7 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (_, response) => {
       try {
-        const online = await checkProcessorAlive();
+        const online = await new CollectorApi().online();
         response.sendStatus(online ? 200 : 503);
       } catch (e) {
         console.log(e.message, e);
@@ -303,7 +315,7 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (_, response) => {
       try {
-        const types = await acceptedFileTypes();
+        const types = await new CollectorApi().acceptedFileTypes();
         if (!types) {
           response.sendStatus(404).end();
           return;
@@ -779,7 +791,7 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { type = "jsonl" } = request.query;
-        const chats = await prepareWorkspaceChatsForExport();
+        const chats = await prepareWorkspaceChatsForExport(type);
         const { contentType, data } = await exportChatsAsType(chats, type);
         await EventLogs.logEvent(
           "exported_chats",

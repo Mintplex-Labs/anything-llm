@@ -17,7 +17,7 @@ export default function OpenAiOptions({ settings }) {
         <input
           type="password"
           name="OpenAiKey"
-          className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
           placeholder="OpenAI API Key"
           defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
           required={true}
@@ -63,7 +63,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
         <select
           name="OpenAiModelPref"
           disabled={true}
-          className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -81,7 +81,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
       <select
         name="OpenAiModelPref"
         required={true}
-        className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         <optgroup label="General LLM models">
           {[

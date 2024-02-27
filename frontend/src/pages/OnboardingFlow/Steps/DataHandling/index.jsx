@@ -12,6 +12,8 @@ import LMStudioLogo from "@/assets/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/assets/llmprovider/localai.png";
 import MistralLogo from "@/assets/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/assets/llmprovider/huggingface.png";
+import PerplexityLogo from "@/assets/llmprovider/perplexity.png";
+import OpenRouterLogo from "@/assets/llmprovider/openrouter.jpeg";
 import ZillizLogo from "@/assets/vectordbs/zilliz.png";
 import AstraDBLogo from "@/assets/vectordbs/astraDB.png";
 import ChromaLogo from "@/assets/vectordbs/chroma.png";
@@ -102,6 +104,22 @@ const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response are sent to your HuggingFace managed endpoint",
     ],
     logo: HuggingFaceLogo,
+  },
+  perplexity: {
+    name: "Perplexity AI",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to Perplexity AI",
+    ],
+    logo: PerplexityLogo,
+  },
+  openrouter: {
+    name: "OpenRouter",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to OpenRouter",
+    ],
+    logo: OpenRouterLogo,
   },
 };
 
@@ -196,6 +214,13 @@ const EMBEDDING_ENGINE_PRIVACY = {
       "Your document text is embedded privately on the server running LocalAI",
     ],
     logo: LocalAiLogo,
+  },
+  ollama: {
+    name: "Ollama",
+    description: [
+      "Your document text is embedded privately on the server running Ollama",
+    ],
+    logo: OllamaLogo,
   },
 };
 

@@ -38,7 +38,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
           <input
             type="url"
             name="LocalAiBasePath"
-            className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="http://localhost:1234/v1"
             defaultValue={settings?.LocalAiBasePath}
             required={true}
@@ -56,7 +56,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
           <input
             type="number"
             name="LocalAiTokenLimit"
-            className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="4096"
             min={1}
             onScroll={(e) => e.target.blur()}
@@ -78,7 +78,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
           <input
             type="password"
             name="LocalAiApiKey"
-            className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="sk-mysecretkey"
             defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
             autoComplete="off"
@@ -120,7 +120,7 @@ function LocalAIModelSelection({ settings, basePath = null }) {
         <select
           name="LocalAiModelPref"
           disabled={true}
-          className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
@@ -140,7 +140,7 @@ function LocalAIModelSelection({ settings, basePath = null }) {
       <select
         name="LocalAiModelPref"
         required={true}
-        className="border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">

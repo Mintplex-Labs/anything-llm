@@ -88,12 +88,11 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
 
   return (
     <div
-      className="h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
+      className="markdown text-white/80 font-light text-sm h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
       id="chat-history"
       ref={chatHistoryRef}
     >
       {history.map((props, index) => {
-        const isLastMessage = index === history.length - 1;
         const isLastBotReply =
           index === history.length - 1 && props.role === "assistant";
 
@@ -101,7 +100,6 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
           return (
             <PromptReply
               key={props.uuid}
-              ref={isLastMessage ? replyRef : null}
               uuid={props.uuid}
               reply={props.content}
               pending={props.pending}
@@ -116,11 +114,12 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
         return (
           <HistoricalMessage
             key={index}
-            ref={isLastMessage ? replyRef : null}
             message={props.content}
             role={props.role}
             workspace={workspace}
             sources={props.sources}
+            feedbackScore={props.feedbackScore}
+            chatId={props.chatId}
             error={props.error}
           />
         );

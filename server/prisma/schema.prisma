@@ -30,6 +30,7 @@ model workspace_documents {
   docpath       String
   workspaceId   Int
   metadata      String?
+  pinned        Boolean?   @default(false)
   createdAt     DateTime   @default(now())
   lastUpdatedAt DateTime   @default(now())
   workspace     workspaces @relation(fields: [workspaceId], references: [id])
@@ -98,6 +99,7 @@ model workspaces {
   similarityThreshold          Float?                         @default(0.25)
   chatModel                    String?
   topN                         Int?                           @default(4)
+  chatMode                     String?                        @default("chat")
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
@@ -142,6 +144,7 @@ model workspace_chats {
   thread_id     Int? // No relation to prevent whole table migration
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
+  feedbackScore Boolean?
   users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 

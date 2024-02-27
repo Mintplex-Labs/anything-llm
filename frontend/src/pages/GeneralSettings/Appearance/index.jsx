@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 // import AnythingLLM from "@/assets/logo/anything-llm.png";
 // import useLogo from "@/hooks/useLogo";

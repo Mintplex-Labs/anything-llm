@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import SlashCommandIcon from "./icons/slash-commands-icon.svg";
+import { Tooltip } from "react-tooltip";
 
 export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
   return (
     <div
       id="slash-cmd-btn"
+      data-tooltip-id="tooltip-slash-cmd-btn"
+      data-tooltip-content="View all available slash commands for chatting."
       onClick={() => setShowSlashCommand(!showing)}
       className={`flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
         showing ? "!opacity-100" : ""
@@ -14,6 +17,12 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
         src={SlashCommandIcon}
         className="w-6 h-6 pointer-events-none"
         alt="Slash commands button"
+      />
+      <Tooltip
+        id="tooltip-slash-cmd-btn"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs z-99"
       />
     </div>
   );

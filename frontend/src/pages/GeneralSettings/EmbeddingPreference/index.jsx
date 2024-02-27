@@ -6,12 +6,14 @@ import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/assets/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/assets/llmprovider/azure.png";
 import LocalAiLogo from "@/assets/llmprovider/localai.png";
+import OllamaLogo from "@/assets/llmprovider/ollama.png";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
 import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
 import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
 import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
+import OllamaEmbeddingOptions from "@/components/EmbeddingSelection/OllamaOptions";
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useModal } from "@/hooks/useModal";
@@ -107,6 +109,13 @@ export default function GeneralEmbeddingPreference() {
       options: <LocalAiOptions settings={settings} />,
       description: "Run embedding models locally on your own machine.",
     },
+    {
+      name: "Ollama",
+      value: "ollama",
+      logo: OllamaLogo,
+      options: <OllamaEmbeddingOptions settings={settings} />,
+      description: "Run embedding models locally on your own machine.",
+    },
   ];
 
   useEffect(() => {
@@ -185,7 +194,7 @@ export default function GeneralEmbeddingPreference() {
                         <input
                           type="text"
                           placeholder="Search Embedding providers"
-                          className="border-none bg-zinc-600 z-20 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
+                          className="border-none bg-zinc-600 z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           autoComplete="off"
                           onKeyDown={(e) => {

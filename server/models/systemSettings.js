@@ -15,6 +15,7 @@ const SystemSettings = {
     "logo_filename",
     "telemetry_id",
     "footer_data",
+    "support_email",
   ],
   validations: {
     footer_data: (updates) => {
@@ -176,6 +177,30 @@ const SystemSettings = {
         ? {
             TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
             TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
+
+            // For embedding credentials when ollama is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
+      ...(llmProvider === "perplexity"
+        ? {
+            PerplexityApiKey: !!process.env.PERPLEXITY_API_KEY,
+            PerplexityModelPref: process.env.PERPLEXITY_MODEL_PREF,
+
+            // For embedding credentials when ollama is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
+      ...(llmProvider === "openrouter"
+        ? {
+            OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
+            OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
 
             // For embedding credentials when ollama is selected.
             OpenAiKey: !!process.env.OPEN_AI_KEY,

@@ -5,7 +5,7 @@ const WATCH_DIRECTORY =
     : path.resolve(process.env.STORAGE_DIR, `hotdir`);
 
 const ACCEPTED_MIMES = {
-  "text/plain": [".txt", ".md"],
+  "text/plain": [".txt", ".md", ".org", ".adoc", ".rst"],
   "text/html": [".html"],
 
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
@@ -38,6 +38,10 @@ const asAudio = require("../processSingleFile/convert/asAudio.js");
 const SUPPORTED_FILETYPE_CONVERTERS = {
   ".txt": asText,
   ".md": asText,
+  ".org": asText,
+  ".adoc": asText,
+  ".rst": asText,
+
   ".html": asText,
   ".pdf": asPdf,
 

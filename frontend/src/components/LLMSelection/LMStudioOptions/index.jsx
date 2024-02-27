@@ -30,7 +30,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
           <input
             type="url"
             name="LMStudioBasePath"
-            className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="http://localhost:1234/v1"
             defaultValue={settings?.LMStudioBasePath}
             required={true}
@@ -45,7 +45,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
           <input
             type="number"
             name="LMStudioTokenLimit"
-            className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="4096"
             min={1}
             onScroll={(e) => e.target.blur()}

@@ -7,12 +7,7 @@ import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
 
-export default function UploadFile({
-  workspace,
-  fileTypes,
-  fetchKeys,
-  setLoading,
-}) {
+export default function UploadFile({ workspace, fetchKeys, setLoading }) {
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
@@ -40,7 +35,7 @@ export default function UploadFile({
 
   const handleUploadSuccess = () => {
     fetchKeys(true);
-    showToast("File uploaded successfully", "success");
+    showToast("File uploaded successfully", "success", { clear: true });
   };
 
   const handleUploadError = (message) => {
@@ -76,9 +71,6 @@ export default function UploadFile({
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: {
-      ...fileTypes,
-    },
     disabled: !ready,
   });
 
@@ -109,9 +101,7 @@ export default function UploadFile({
               Click to upload or drag and drop
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
-              {Object.values(fileTypes ?? [])
-                .flat()
-                .join(" ")}
+              supports text files, csv's, spreadsheets, audio files, and more!
             </div>
           </div>
         ) : (
@@ -138,7 +128,7 @@ export default function UploadFile({
           disabled={fetchingUrl}
           name="link"
           type="url"
-          className="border-none disabled:bg-zinc-600 disabled:text-slate-300 bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5"
+          className="border-none disabled:bg-zinc-600 disabled:text-slate-300 bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5"
           placeholder={"https://example.com"}
           autoComplete="off"
         />

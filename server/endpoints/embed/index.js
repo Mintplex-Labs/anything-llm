@@ -1,15 +1,17 @@
 const { v4: uuidv4 } = require("uuid");
 const { reqBody, multiUserMode } = require("../../utils/http");
 const { Telemetry } = require("../../models/telemetry");
-const { writeResponseChunk } = require("../../utils/chats/stream");
 const { streamChatWithForEmbed } = require("../../utils/chats/embed");
-const { convertToChatHistory } = require("../../utils/chats");
 const { EmbedChats } = require("../../models/embedChats");
 const {
   validEmbedConfig,
   canRespond,
   setConnectionMeta,
 } = require("../../utils/middleware/embedMiddleware");
+const {
+  convertToChatHistory,
+  writeResponseChunk,
+} = require("../../utils/helpers/chat/responses");
 
 function embeddedEndpoints(app) {
   if (!app) return;

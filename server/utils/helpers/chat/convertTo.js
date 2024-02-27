@@ -4,17 +4,19 @@
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
 
-// Todo: make this more useful for export by adding other columns about workspace, user, time, etc for post-filtering.
-async function convertToCSV(workspaceChatsMap) {
-  const rows = ["role,content"];
-  for (const workspaceChats of Object.values(workspaceChatsMap)) {
-    for (const message of workspaceChats.messages) {
-      // Escape double quotes and wrap content in double quotes
-      const escapedContent = `"${message.content
-        .replace(/"/g, '""')
-        .replace(/\n/g, " ")}"`;
-      rows.push(`${message.role},${escapedContent}`);
-    }
+async function convertToCSV(preparedData) {
+  const rows = ["id,username,workspace,prompt,response,sent_at,rating"];
+  for (const item of preparedData) {
+    const record = [
+      item.id,
+      escapeCsv(item.username),
+      escapeCsv(item.workspace),
+      escapeCsv(item.prompt),
+      escapeCsv(item.response),
+      item.sent_at,
+      item.feedback,
+    ].join(",");
+    rows.push(record);
   }
   return rows.join("\n");
 }
@@ -24,7 +26,12 @@ async function convertToJSON(workspaceChatsMap) {
     [],
     Object.values(workspaceChatsMap).map((workspace) => workspace.messages)
   );
-  return JSON.stringify(allMessages);
+  return JSON.stringify(allMessages, null, 4);
+}
+
+// ref: https://raw.githubusercontent.com/gururise/AlpacaDataCleaned/main/alpaca_data.json
+async function convertToJSONAlpaca(preparedData) {
+  return JSON.stringify(preparedData, null, 4);
 }
 
 async function convertToJSONL(workspaceChatsMap) {
@@ -33,10 +40,49 @@ async function convertToJSONL(workspaceChatsMap) {
     .join("\n");
 }
 
-async function prepareWorkspaceChatsForExport() {
+async function prepareWorkspaceChatsForExport(format = "jsonl") {
+  if (!exportMap.hasOwnProperty(format))
+    throw new Error("Invalid export type.");
+
   const chats = await WorkspaceChats.whereWithData({}, null, null, {
     id: "asc",
   });
+
+  if (format === "csv") {
+    const preparedData = chats.map((chat) => {
+      const responseJson = JSON.parse(chat.response);
+      return {
+        id: chat.id,
+        username: chat.user ? chat.user.username : "unknown user",
+        workspace: chat.workspace ? chat.workspace.name : "unknown workspace",
+        prompt: chat.prompt,
+        response: responseJson.text,
+        sent_at: chat.createdAt,
+        feedback:
+          chat.feedbackScore === null
+            ? "--"
+            : chat.feedbackScore
+              ? "GOOD"
+              : "BAD",
+      };
+    });
+
+    return preparedData;
+  }
+
+  if (format === "jsonAlpaca") {
+    const preparedData = chats.map((chat) => {
+      const responseJson = JSON.parse(chat.response);
+      return {
+        instruction: chat.prompt,
+        input: "",
+        output: responseJson.text,
+      };
+    });
+
+    return preparedData;
+  }
+
   const workspaceIds = [...new Set(chats.map((chat) => chat.workspaceId))];
 
   const workspacesWithPrompts = await Promise.all(
@@ -95,7 +141,15 @@ const exportMap = {
     contentType: "application/jsonl",
     func: convertToJSONL,
   },
+  jsonAlpaca: {
+    contentType: "application/json",
+    func: convertToJSONAlpaca,
+  },
 };
+
+function escapeCsv(str) {
+  return `"${str.replace(/"/g, '""').replace(/\n/g, " ")}"`;
+}
 
 async function exportChatsAsType(workspaceChatsMap, format = "jsonl") {
   const { contentType, func } = exportMap.hasOwnProperty(format)

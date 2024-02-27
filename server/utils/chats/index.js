@@ -1,44 +1,9 @@
 const { v4: uuidv4 } = require("uuid");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { resetMemory } = require("./commands/reset");
-const moment = require("moment");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
-
-function convertToChatHistory(history = []) {
-  const formattedHistory = [];
-  history.forEach((history) => {
-    const { prompt, response, createdAt } = history;
-    const data = JSON.parse(response);
-    formattedHistory.push([
-      {
-        role: "user",
-        content: prompt,
-        sentAt: moment(createdAt).unix(),
-      },
-      {
-        role: "assistant",
-        content: data.text,
-        sources: data.sources || [],
-        sentAt: moment(createdAt).unix(),
-      },
-    ]);
-  });
-
-  return formattedHistory.flat();
-}
-
-function convertToPromptHistory(history = []) {
-  const formattedHistory = [];
-  history.forEach((history) => {
-    const { prompt, response } = history;
-    const data = JSON.parse(response);
-    formattedHistory.push([
-      { role: "user", content: prompt },
-      { role: "assistant", content: data.text },
-    ]);
-  });
-  return formattedHistory.flat();
-}
+const { convertToPromptHistory } = require("../helpers/chat/responses");
+const { DocumentManager } = require("../DocumentManager");
 
 const VALID_COMMANDS = {
   "/reset": resetMemory,
@@ -62,7 +27,8 @@ async function chatWithWorkspace(
   workspace,
   message,
   chatMode = "chat",
-  user = null
+  user = null,
+  thread = null
 ) {
   const uuid = uuidv4();
   const command = grepCommand(message);
@@ -90,62 +56,86 @@ async function chatWithWorkspace(
   const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
   const embeddingsCount = await VectorDb.namespaceCount(workspace.slug);
-  if (!hasVectorizedSpace || embeddingsCount === 0) {
-    if (chatMode === "query") {
-      return {
-        id: uuid,
-        type: "textResponse",
-        sources: [],
-        close: true,
-        error: null,
-        textResponse:
-          "There is no relevant information in this workspace to answer your query.",
-      };
-    }
 
-    // If there are no embeddings - chat like a normal LLM chat interface.
-    return await emptyEmbeddingChat({
-      uuid,
-      user,
-      message,
-      workspace,
-      messageLimit,
-      LLMConnector,
-    });
+  // User is trying to query-mode chat a workspace that has no data in it - so
+  // we should exit early as no information can be found under these conditions.
+  if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
+    return {
+      id: uuid,
+      type: "textResponse",
+      sources: [],
+      close: true,
+      error: null,
+      textResponse:
+        "There is no relevant information in this workspace to answer your query.",
+    };
   }
 
-  const { rawHistory, chatHistory } = await recentChatHistory(
+  // If we are here we know that we are in a workspace that is:
+  // 1. Chatting in "chat" mode and may or may _not_ have embeddings
+  // 2. Chatting in "query" mode and has at least 1 embedding
+  let contextTexts = [];
+  let sources = [];
+  const { rawHistory, chatHistory } = await recentChatHistory({
     user,
     workspace,
+    thread,
     messageLimit,
-    chatMode
-  );
-  const {
-    contextTexts = [],
-    sources = [],
-    message: error,
-  } = await VectorDb.performSimilaritySearch({
-    namespace: workspace.slug,
-    input: message,
-    LLMConnector,
-    similarityThreshold: workspace?.similarityThreshold,
-    topN: workspace?.topN,
+    chatMode,
   });
 
-  // Failed similarity search.
-  if (!!error) {
+  // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
+  // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
+  await new DocumentManager({
+    workspace,
+    maxTokens: LLMConnector.limits.system,
+  })
+    .pinnedDocs()
+    .then((pinnedDocs) => {
+      pinnedDocs.forEach((doc) => {
+        const { pageContent, ...metadata } = doc;
+        contextTexts.push(doc.pageContent);
+        sources.push({
+          text:
+            pageContent.slice(0, 1_000) +
+            "...continued on in source document...",
+          ...metadata,
+        });
+      });
+    });
+
+  const vectorSearchResults =
+    embeddingsCount !== 0
+      ? await VectorDb.performSimilaritySearch({
+          namespace: workspace.slug,
+          input: message,
+          LLMConnector,
+          similarityThreshold: workspace?.similarityThreshold,
+          topN: workspace?.topN,
+        })
+      : {
+          contextTexts: [],
+          sources: [],
+          message: null,
+        };
+
+  // Failed similarity search if it was run at all and failed.
+  if (!!vectorSearchResults.message) {
     return {
       id: uuid,
       type: "abort",
       textResponse: null,
       sources: [],
       close: true,
-      error,
+      error: vectorSearchResults.message,
     };
   }
 
+  contextTexts = [...contextTexts, ...vectorSearchResults.contextTexts];
+  sources = [...sources, ...vectorSearchResults.sources];
+
   // If in query mode and no sources are found, do not
-  // let the LLM try to hallucinate a response or use general knowledge
+  // let the LLM try to hallucinate a response or use general knowledge and exit early
   if (chatMode === "query" && sources.length === 0) {
     return {
       id: uuid,
@@ -158,7 +148,7 @@ async function chatWithWorkspace(
     };
   }
 
-  // Compress message to ensure prompt passes token limit with room for response
+  // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages(
     {
@@ -186,57 +176,32 @@ async function chatWithWorkspace(
     };
   }
 
-  await WorkspaceChats.new({
+  const { chat } = await WorkspaceChats.new({
     workspaceId: workspace.id,
     prompt: message,
     response: { text: textResponse, sources, type: chatMode },
+    threadId: thread?.id || null,
     user,
   });
   return {
     id: uuid,
     type: "textResponse",
     close: true,
+    error: null,
+    chatId: chat.id,
     textResponse,
     sources,
-    error,
   };
 }
 
-// On query we dont return message history. All other chat modes and when chatting
-// with no embeddings we return history.
-// TODO: Refactor to just run a .where on WorkspaceChat to simplify what is going on here.
-// see recentThreadChatHistory
-async function recentChatHistory(
+async function recentChatHistory({
   user = null,
   workspace,
+  thread = null,
   messageLimit = 20,
-  chatMode = null
-) {
-  if (chatMode === "query") return [];
-  const rawHistory = (
-    user
-      ? await WorkspaceChats.forWorkspaceByUser(
-          workspace.id,
-          user.id,
-          messageLimit,
-          { id: "desc" }
-        )
-      : await WorkspaceChats.forWorkspace(workspace.id, messageLimit, {
-          id: "desc",
-        })
-  ).reverse();
-  return { rawHistory, chatHistory: convertToPromptHistory(rawHistory) };
-}
-
-// Extension of recentChatHistory that supports threads
-async function recentThreadChatHistory(
-  user = null,
-  workspace,
-  thread,
-  messageLimit = 20,
-  chatMode = null
-) {
-  if (chatMode === "query") return [];
+  chatMode = null,
+}) {
+  if (chatMode === "query") return { rawHistory: [], chatHistory: [] };
   const rawHistory = (
     await WorkspaceChats.where(
       {
@@ -252,41 +217,6 @@ async function recentThreadChatHistory(
   return { rawHistory, chatHistory: convertToPromptHistory(rawHistory) };
 }
 
-async function emptyEmbeddingChat({
-  uuid,
-  user,
-  message,
-  workspace,
-  messageLimit,
-  LLMConnector,
-}) {
-  const { rawHistory, chatHistory } = await recentChatHistory(
-    user,
-    workspace,
-    messageLimit
-  );
-  const textResponse = await LLMConnector.sendChat(
-    chatHistory,
-    message,
-    workspace,
-    rawHistory
-  );
-  await WorkspaceChats.new({
-    workspaceId: workspace.id,
-    prompt: message,
-    response: { text: textResponse, sources: [], type: "chat" },
-    user,
-  });
-  return {
-    id: uuid,
-    type: "textResponse",
-    sources: [],
-    close: true,
-    error: null,
-    textResponse,
-  };
-}
-
 function chatPrompt(workspace) {
   return (
     workspace?.openAiPrompt ??
@@ -296,9 +226,6 @@ function chatPrompt(workspace) {
 
 module.exports = {
   recentChatHistory,
-  recentThreadChatHistory,
-  convertToPromptHistory,
-  convertToChatHistory,
   chatWithWorkspace,
   chatPrompt,
   grepCommand,

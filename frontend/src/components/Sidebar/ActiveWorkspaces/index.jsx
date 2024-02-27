@@ -6,7 +6,7 @@ import ManageWorkspace, {
 } from "../../Modals/MangeWorkspace";
 import paths from "@/utils/paths";
 import { useParams } from "react-router-dom";
-import { GearSix, SquaresFour } from "@phosphor-icons/react";
+import { GearSix, SquaresFour, UploadSimple } from "@phosphor-icons/react";
 import truncate from "truncate";
 import useUser from "@/hooks/useUser";
 import ThreadContainer from "./ThreadContainer";
@@ -21,6 +21,8 @@ export default function ActiveWorkspaces() {
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWs, setSelectedWs] = useState(null);
   const [hoverStates, setHoverStates] = useState({});
+  const [gearHover, setGearHover] = useState({});
+  const [uploadHover, setUploadHover] = useState({});
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
 
   useEffect(() => {
@@ -48,6 +50,14 @@ export default function ActiveWorkspaces() {
     setSettingHover((prev) => ({ ...prev, [workspaceId]: false }));
   }, []);
 
+  const handleUploadMouseEnter = useCallback((workspaceId) => {
+    setUploadHover((prev) => ({ ...prev, [workspaceId]: true }));
+  }, []);
+
+  const handleUploadMouseLeave = useCallback((workspaceId) => {
+    setUploadHover((prev) => ({ ...prev, [workspaceId]: false }));
+  }, []);
+
   if (loading) {
     return (
       <>
@@ -68,15 +78,15 @@ export default function ActiveWorkspaces() {
       {workspaces.map((workspace) => {
         const isActive = workspace.slug === slug;
         const isHovered = hoverStates[workspace.id];
-        const isGearHovered = settingHover[workspace.id];
 
         return (
-          <div key={workspace.id} className="flex flex-col w-full">
-            <div
-              className="flex gap-x-2 items-center justify-between"
-              onMouseEnter={() => handleMouseEnter(workspace.id)}
-              onMouseLeave={() => handleMouseLeave(workspace.id)}
-            >
+          <div
+            className="flex flex-col w-full"
+            onMouseEnter={() => handleMouseEnter(workspace.id)}
+            onMouseLeave={() => handleMouseLeave(workspace.id)}
+            key={workspace.id}
+          >
+            <div className="flex gap-x-2 items-center justify-between">
               <Link
                 to={isActive ? null : paths.workspace.chat(workspace.slug)}
                 className={`
@@ -100,30 +110,53 @@ export default function ActiveWorkspaces() {
                         isActive ? "" : "text-opacity-80"
                       }`}
                     >
-                      {isActive
+                      {isActive || isHovered
                         ? truncate(workspace.name, 17)
                         : truncate(workspace.name, 20)}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSelectedWs(workspace);
-                      showModal();
-                    }}
-                    onMouseEnter={() => handleGearMouseEnter(workspace.id)}
-                    onMouseLeave={() => handleGearMouseLeave(workspace.id)}
-                    className="border-none rounded-md flex items-center justify-center text-white ml-auto"
-                  >
-                    <GearSix
-                      weight={isGearHovered ? "fill" : "regular"}
-                      hidden={
-                        (!isActive && !isHovered) || user?.role === "default"
-                      }
-                      className="h-[20px] w-[20px] transition-all duration-300"
-                    />
-                  </button>
+                  {(isActive || isHovered || gearHover[workspace.id]) &&
+                  user?.role !== "default" ? (
+                    <div className="flex items-center gap-x-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setSelectedWs(workspace);
+                          showModal();
+                        }}
+                        onMouseEnter={() =>
+                          handleUploadMouseEnter(workspace.id)
+                        }
+                        onMouseLeave={() =>
+                          handleUploadMouseLeave(workspace.id)
+                        }
+                        className="rounded-md flex items-center justify-center text-white ml-auto"
+                      >
+                        <UploadSimple
+                          weight={
+                            uploadHover[workspace.id] ? "fill" : "regular"
+                          }
+                          className="h-[20px] w-[20px] transition-all duration-300"
+                        />
+                      </button>
+
+                      <Link
+                        type="button"
+                        to={paths.workspace.settings.generalAppearance(
+                          workspace.slug
+                        )}
+                        onMouseEnter={() => handleGearMouseEnter(workspace.id)}
+                        onMouseLeave={() => handleGearMouseLeave(workspace.id)}
+                        className="rounded-md flex items-center justify-center text-white ml-auto"
+                      >
+                        <GearSix
+                          weight={gearHover[workspace.id] ? "fill" : "regular"}
+                          className="h-[20px] w-[20px] transition-all duration-300"
+                        />
+                      </Link>
+                    </div>
+                  ) : null}
                 </div>
               </Link>
             </div>

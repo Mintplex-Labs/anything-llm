@@ -1,21 +1,13 @@
-import {
-  Chats,
-  CircleNotch,
-  Gear,
-  PaperPlaneRight,
-  Quotes,
-} from "@phosphor-icons/react";
+import { CircleNotch, PaperPlaneRight } from "@phosphor-icons/react";
 import React, { useState, useRef } from "react";
-import ManageWorkspace, {
-  useManageWorkspaceModal,
-} from "../../../Modals/MangeWorkspace";
 import SlashCommandsButton, {
   SlashCommands,
   useSlashCommands,
 } from "./SlashCommands";
+import debounce from "lodash.debounce";
 
 export default function PromptInput({
-  workspace,
+  // workspace,
   message,
   submit,
   onChange,
@@ -24,13 +16,19 @@ export default function PromptInput({
   sendCommand,
 }) {
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
-  const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const formRef = useRef(null);
   const [_, setFocused] = useState(false);
 
   const handleSubmit = (e) => {
     setFocused(false);
     submit(e);
+  };
+
+  const checkForSlash = (e) => {
+    const input = e.target.value;
+    if (input === "/") setShowSlashCommand(true);
+    if (showSlashCommand) setShowSlashCommand(false);
+    return;
   };
 
   const captureEnter = (event) => {
@@ -50,6 +48,7 @@ export default function PromptInput({
         : "1px";
   };
 
+  const watchForSlash = debounce(checkForSlash, 300);
   return (
     <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
       <SlashCommands
@@ -67,7 +66,10 @@ export default function PromptInput({
               <textarea
                 onKeyUp={adjustTextArea}
                 onKeyDown={captureEnter}
-                onChange={onChange}
+                onChange={(e) => {
+                  onChange(e);
+                  watchForSlash(e);
+                }}
                 required={true}
                 disabled={inputDisabled}
                 onFocus={() => setFocused(true)}
@@ -94,13 +96,7 @@ export default function PromptInput({
               </button>
             </div>
             <div className="flex justify-between py-3.5">
-              <div className="flex gap-2">
-                <Gear
-                  onClick={showModal}
-                  className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"
-                  weight="fill"
-                />
-                <ChatModeSelector workspace={workspace} />
+              <div className="flex gap-x-2">
                 <SlashCommandsButton
                   showing={showSlashCommand}
                   setShowSlashCommand={setShowSlashCommand}
@@ -110,61 +106,6 @@ export default function PromptInput({
           </div>
         </div>
       </form>
-      {showing && (
-        <ManageWorkspace hideModal={hideModal} providedSlug={workspace.slug} />
-      )}
-    </div>
-  );
-}
-
-function ChatModeSelector({ workspace }) {
-  const STORAGE_KEY = `workspace_chat_mode_${workspace.slug}`;
-  const [chatMode, setChatMode] = useState(
-    window.localStorage.getItem(STORAGE_KEY) ?? "chat"
-  );
-  const [showToolTip, setShowTooltip] = useState(false);
-  const [delayHandler, setDelayHandler] = useState(null);
-
-  function toggleMode() {
-    const newChatMode = chatMode === "chat" ? "query" : "chat";
-    setChatMode(newChatMode);
-    window.localStorage.setItem(STORAGE_KEY, newChatMode);
-  }
-
-  function handleMouseEnter() {
-    setDelayHandler(
-      setTimeout(() => {
-        setShowTooltip(true);
-      }, 700)
-    );
-  }
-
-  const cleanupTooltipListener = () => {
-    clearTimeout(delayHandler);
-    setShowTooltip(false);
-  };
-
-  const ModeIcon = chatMode === "chat" ? Chats : Quotes;
-  return (
-    <div
-      className="relative"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={cleanupTooltipListener}
-    >
-      <i className="hidden opacity-1 opacity-0" />
-      <div
-        className={`opacity-${
-          showToolTip ? 1 : 0
-        } pointer-events-none transition-all duration-300 tip absolute bottom-10 z-99 left-0 bg-white/50 text-gray-200 text-xs p-1.5 rounded shadow-lg whitespace-nowrap`}
-      >
-        You are currently in {chatMode} mode. Click to switch to{" "}
-        {chatMode === "chat" ? "query" : "chat"} mode.
-      </div>
-      <ModeIcon
-        onClick={toggleMode}
-        className="w-7 h-7 text-white/60 hover:text-white cursor-pointer"
-        weight="fill"
-      />
     </div>
   );
 }

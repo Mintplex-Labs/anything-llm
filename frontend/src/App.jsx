@@ -37,16 +37,16 @@ export default function App() {
                 <Route path="/" element={<PrivateRoute Component={Main} />} />
                 <Route path="/login" element={<Login />} />
                 <Route
+                  path="/workspace/:slug/settings/:tab"
+                  element={<ManagerRoute Component={WorkspaceSettings} />}
+                />
+                <Route
                   path="/workspace/:slug"
                   element={<PrivateRoute Component={WorkspaceChat} />}
                 />
                 <Route
                   path="/workspace/:slug/t/:threadSlug"
                   element={<PrivateRoute Component={WorkspaceChat} />}
-                />
-                <Route
-                  path="/workspace/:slug/settings"
-                  element={<PrivateRoute Component={WorkspaceSettings} />}
                 />
 
                 {/* Admin */}

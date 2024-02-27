@@ -1,4 +1,4 @@
-// For handling of synchronous chats that are not utilizing streaming or chat requests.
+// For handling of chat responses in the frontend by their various types.
 export default function handleChat(
   chatResult,
   setLoadingResponse,
@@ -6,7 +6,15 @@ export default function handleChat(
   remHistory,
   _chatHistory
 ) {
-  const { uuid, textResponse, type, sources = [], error, close } = chatResult;
+  const {
+    uuid,
+    textResponse,
+    type,
+    sources = [],
+    error,
+    close,
+    chatId = null,
+  } = chatResult;
 
   if (type === "abort") {
     setLoadingResponse(false);
@@ -46,6 +54,7 @@ export default function handleChat(
         error,
         animate: !close,
         pending: false,
+        chatId,
       },
     ]);
     _chatHistory.push({
@@ -57,6 +66,7 @@ export default function handleChat(
       error,
       animate: !close,
       pending: false,
+      chatId,
     });
   } else if (type === "textResponseChunk") {
     const chatIdx = _chatHistory.findIndex((chat) => chat.uuid === uuid);
@@ -70,6 +80,7 @@ export default function handleChat(
         closed: close,
         animate: !close,
         pending: false,
+        chatId,
       };
       _chatHistory[chatIdx] = updatedHistory;
     } else {
@@ -82,7 +93,19 @@ export default function handleChat(
         closed: close,
         animate: !close,
         pending: false,
+        chatId,
       });
+    }
+    setChatHistory([..._chatHistory]);
+  } else if (type === "finalizeResponseStream") {
+    const chatIdx = _chatHistory.findIndex((chat) => chat.uuid === uuid);
+    if (chatIdx !== -1) {
+      const existingHistory = { ..._chatHistory[chatIdx] };
+      const updatedHistory = {
+        ...existingHistory,
+        chatId, // finalize response stream only has some specific keys for data. we are explicitly listing them here.
+      };
+      _chatHistory[chatIdx] = updatedHistory;
     }
     setChatHistory([..._chatHistory]);
   }

@@ -34,7 +34,7 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
     docAuthor: "Unknown", // TODO: Find a better author
     description: "Unknown", // TODO: Find a better description
     docSource: "a text file uploaded by the user.",
-    chunkSource: filename,
+    chunkSource: "",
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,

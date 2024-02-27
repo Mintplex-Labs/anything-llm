@@ -49,7 +49,7 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
       docAuthor: mail?.from?.text,
       description: "No description found.",
       docSource: "Mbox message file uploaded by the user.",
-      chunkSource: filename,
+      chunkSource: "",
       published: createdDate(fullFilePath),
       wordCount: content.split(" ").length,
       pageContent: content,

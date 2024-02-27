@@ -60,11 +60,24 @@ const Workspace = {
       .catch(() => []);
     return history;
   },
-  streamChat: async function ({ slug }, message, mode = "query", handleChat) {
+  updateChatFeedback: async function (chatId, slug, feedback) {
+    const result = await fetch(
+      `${API_BASE}/workspace/${slug}/chat-feedback/${chatId}`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ feedback }),
+      }
+    )
+      .then((res) => res.ok)
+      .catch(() => false);
+    return result;
+  },
+  streamChat: async function ({ slug }, message, handleChat) {
     const ctrl = new AbortController();
     await fetchEventSource(`${API_BASE()}/workspace/${slug}/stream-chat`, {
       method: "POST",
-      body: JSON.stringify({ message, mode }),
+      body: JSON.stringify({ message }),
       headers: baseHeaders(),
       signal: ctrl.signal,
       openWhenHidden: true,
@@ -187,6 +200,25 @@ const Workspace = {
       .catch((e) => {
         console.error(e);
         return { success: false, error: e.message };
+      });
+  },
+  setPinForDocument: async function (slug, docPath, pinStatus) {
+    return fetch(`${API_BASE}/workspace/${slug}/update-pin`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ docPath, pinStatus }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(
+            res.statusText || "Error setting pin status for document."
+          );
+        }
+        return true;
+      })
+      .catch((e) => {
+        console.error(e);
+        return false;
       });
   },
   threads: WorkspaceThread,
