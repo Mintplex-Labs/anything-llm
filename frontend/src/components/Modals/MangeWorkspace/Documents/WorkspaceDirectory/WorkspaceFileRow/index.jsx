@@ -159,7 +159,7 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
         id={`pin-${item.id}`}
         place="bottom"
         delayShow={300}
-        className="tooltip !text-xs"
+        className="tooltip invert !text-xs"
       />
     </div>
   );
@@ -178,7 +178,7 @@ const RemoveItemFromWorkspace = ({ item, onClick }) => {
         id={`remove-${item.id}`}
         place="bottom"
         delayShow={300}
-        className="tooltip !text-xs"
+        className="tooltip invert !text-xs"
       />
     </div>
   );
