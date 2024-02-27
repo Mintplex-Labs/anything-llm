@@ -1,6 +1,5 @@
 import System from "@/models/system";
 import paths from "@/utils/paths";
-import { safeJsonParse } from "@/utils/request";
 import {
   BookOpen,
   DiscordLogo,
@@ -13,6 +12,7 @@ import {
   LinkSimple,
 } from "@phosphor-icons/react";
 import React, { useEffect, useState } from "react";
+import SettingsButton from "../SettingsButton";
 
 export const MAX_ICONS = 3;
 export const ICON_COMPONENTS = {
@@ -49,6 +49,7 @@ export default function Footer() {
           <a
             href={paths.github()}
             target="_blank"
+            rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
             <GithubLogo weight="fill" className="h-5 w-5 " />
@@ -56,6 +57,7 @@ export default function Footer() {
           <a
             href={paths.docs()}
             target="_blank"
+            rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
             <BookOpen weight="fill" className="h-5 w-5 " />
@@ -63,6 +65,7 @@ export default function Footer() {
           <a
             href={paths.discord()}
             target="_blank"
+            rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
             <DiscordLogo
@@ -70,6 +73,7 @@ export default function Footer() {
               className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
             />
           </a>
+          <SettingsButton />
         </div>
       </div>
     );
@@ -83,6 +87,7 @@ export default function Footer() {
             key={index}
             href={item.url}
             target="_blank"
+            rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
             {React.createElement(ICON_COMPONENTS[item.icon], {
@@ -91,6 +96,7 @@ export default function Footer() {
             })}
           </a>
         ))}
+        <SettingsButton />
       </div>
     </div>
   );
