@@ -90,55 +90,58 @@ export default function ActiveWorkspaces() {
                 href={isActive ? null : paths.workspace.chat(workspace.slug)}
                 className={`
               transition-all duration-[200ms]
-                flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-lg text-slate-200 justify-start items-center 
-                hover:bg-workspace-item-selected-gradient 
+                flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-slate-200 justify-start items-center
+                hover:bg-workspace-item-selected-gradient
                 ${
                   isActive
-                    ? "border-2 bg-workspace-item-selected-gradient border-white"
-                    : "border bg-workspace-item-gradient bg-opacity-60 border-transparent hover:border-slate-100 hover:border-opacity-50"
+                    ? "bg-workspace-item-selected-gradient"
+                    : "border-[2px] border-outline"
                 }`}
               >
                 <div className="flex flex-row justify-between w-full">
                   <div className="flex items-center space-x-2">
                     <SquaresFour
                       weight={isActive ? "fill" : "regular"}
-                      className="h-5 w-5 flex-shrink-0"
+                      className="flex-shrink-0"
+                      size={24}
                     />
                     <p
-                      className={`text-white text-sm leading-loose font-medium whitespace-nowrap overflow-hidden ${
+                      className={`text-white text-[14px] leading-loose font-bold whitespace-nowrap overflow-hidden ${
                         isActive ? "" : "text-opacity-80"
                       }`}
                     >
                       {isActive || isHovered
-                        ? truncate(workspace.name, 17)
+                        ? truncate(workspace.name, 15)
                         : truncate(workspace.name, 20)}
                     </p>
                   </div>
                   {(isActive || isHovered || gearHover[workspace.id]) &&
                   user?.role !== "default" ? (
-                    <div className="flex items-center gap-x-2">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setSelectedWs(workspace);
-                          showModal();
-                        }}
-                        onMouseEnter={() =>
-                          handleUploadMouseEnter(workspace.id)
-                        }
-                        onMouseLeave={() =>
-                          handleUploadMouseLeave(workspace.id)
-                        }
-                        className="rounded-md flex items-center justify-center text-white ml-auto"
-                      >
-                        <UploadSimple
-                          weight={
-                            uploadHover[workspace.id] ? "fill" : "regular"
+                    <div className="flex items-center">
+                      <div className="flex hover:bg-[#646768] p-[2px] rounded-[4px]">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setSelectedWs(workspace);
+                            showModal();
+                          }}
+                          onMouseEnter={() =>
+                            handleUploadMouseEnter(workspace.id)
                           }
-                          className="h-[20px] w-[20px] transition-all duration-300"
-                        />
-                      </button>
+                          onMouseLeave={() =>
+                            handleUploadMouseLeave(workspace.id)
+                          }
+                          className="rounded-md flex items-center justify-center text-white ml-auto"
+                        >
+                          <UploadSimple
+                            weight={
+                              uploadHover[workspace.id] ? "fill" : "regular"
+                            }
+                            className="h-[20px] w-[20px] transition-all duration-300"
+                          />
+                        </button>
+                      </div>
 
                       <Link
                         type="button"
@@ -149,10 +152,14 @@ export default function ActiveWorkspaces() {
                         onMouseLeave={() => handleGearMouseLeave(workspace.id)}
                         className="rounded-md flex items-center justify-center text-white ml-auto"
                       >
-                        <GearSix
-                          weight={gearHover[workspace.id] ? "fill" : "regular"}
-                          className="h-[20px] w-[20px] transition-all duration-300"
-                        />
+                        <div className="flex hover:bg-[#646768] p-[2px] rounded-[4px]">
+                          <GearSix
+                            // weight={gearHover[workspace.id] ? "fill" : "regular"}
+                            className={`h-[20px] w-[20px]  ${
+                              gearHover[workspace.id] ? "" : ""
+                            }`}
+                          />
+                        </div>
                       </Link>
                     </div>
                   ) : null}
