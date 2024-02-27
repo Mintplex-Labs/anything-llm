@@ -11,7 +11,7 @@ import { GearSix, SquaresFour, UploadSimple } from "@phosphor-icons/react";
 import truncate from "truncate";
 import useUser from "@/hooks/useUser";
 import ThreadContainer from "./ThreadContainer";
-import { Link } from "react-router-dom";
+import { Link, useMatch } from "react-router-dom";
 
 export default function ActiveWorkspaces() {
   const { slug } = useParams();
@@ -23,6 +23,8 @@ export default function ActiveWorkspaces() {
   const [uploadHover, setUploadHover] = useState({});
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const { user } = useUser();
+  const match = useMatch("/workspace/:slug/settings/:tab");
+  const isInWorkspaceSettings = !!match;
 
   useEffect(() => {
     async function getWorkspaces() {
@@ -117,8 +119,12 @@ export default function ActiveWorkspaces() {
                   </div>
                   {(isActive || isHovered || gearHover[workspace.id]) &&
                   user?.role !== "default" ? (
-                    <div className="flex items-center">
-                      <div className="flex hover:bg-[#646768] p-[2px] rounded-[4px]">
+                    <div className="flex items-center gap-x-[2px]">
+                      <div
+                        className={`flex hover:bg-[#646768] p-[2px] rounded-[4px] text-[#A7A8A9] hover:text-white ${
+                          uploadHover[workspace.id] ? "bg-[#646768]" : ""
+                        }`}
+                      >
                         <button
                           type="button"
                           onClick={(e) => {
@@ -132,13 +138,11 @@ export default function ActiveWorkspaces() {
                           onMouseLeave={() =>
                             handleUploadMouseLeave(workspace.id)
                           }
-                          className="rounded-md flex items-center justify-center text-white ml-auto"
+                          className="rounded-md flex items-center justify-center ml-auto"
                         >
                           <UploadSimple
-                            weight={
-                              uploadHover[workspace.id] ? "fill" : "regular"
-                            }
-                            className="h-[20px] w-[20px] transition-all duration-300"
+                            className="h-[20px] w-[20px]"
+                            weight="bold"
                           />
                         </button>
                       </div>
@@ -150,14 +154,19 @@ export default function ActiveWorkspaces() {
                         )}
                         onMouseEnter={() => handleGearMouseEnter(workspace.id)}
                         onMouseLeave={() => handleGearMouseLeave(workspace.id)}
-                        className="rounded-md flex items-center justify-center text-white ml-auto"
+                        className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto"
                       >
                         <div className="flex hover:bg-[#646768] p-[2px] rounded-[4px]">
                           <GearSix
-                            // weight={gearHover[workspace.id] ? "fill" : "regular"}
-                            className={`h-[20px] w-[20px]  ${
-                              gearHover[workspace.id] ? "" : ""
-                            }`}
+                            color={
+                              isInWorkspaceSettings && workspace.slug === slug
+                                ? "#46C8FF"
+                                : gearHover[workspace.id]
+                                ? "#FFFFFF"
+                                : "#A7A8A9"
+                            }
+                            weight="bold"
+                            className="h-[20px] w-[20px]"
                           />
                         </div>
                       </Link>
