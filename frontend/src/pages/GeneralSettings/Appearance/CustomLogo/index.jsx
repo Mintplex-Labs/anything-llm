@@ -63,10 +63,12 @@ export default function CustomLogo() {
   };
 
   return (
-    <div className="my-6">
-      <div className="flex flex-col gap-y-2">
-        <h2 className="leading-tight font-medium text-white">Custom Logo</h2>
-        <p className="text-sm font-base text-white/60">
+    <div className="mt-6 mb-8">
+      <div className="flex flex-col gap-y-1">
+        <h2 className="text-base leading-6 font-bold text-white">
+          Custom Logo
+        </h2>
+        <p className="text-xs leading-[18px] font-base text-white/60">
           Upload your custom logo to make your chatbot yours.
         </p>
       </div>
@@ -80,7 +82,7 @@ export default function CustomLogo() {
         />
         <div className="flex flex-row gap-x-8">
           <label
-            className="mt-5 transition-all duration-300 hover:opacity-60"
+            className="mt-3 transition-all duration-300 hover:opacity-60"
             hidden={!isDefaultLogo}
           >
             <input

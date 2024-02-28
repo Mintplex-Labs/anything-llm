@@ -20,7 +20,7 @@ export default function NewIconForm({ handleSubmit, showing }) {
   if (!showing) return null;
   return (
     <form onSubmit={handleSubmit} className="flex justify-start">
-      <div className="mt-6 mb-6 flex flex-col bg-zinc-900 rounded-lg px-6 py-4">
+      <div className="mt-3 flex flex-col bg-zinc-900 rounded-lg px-6 py-4">
         <div className="flex gap-x-4 items-center">
           <div
             className="relative flex flex-col items-center gap-y-4"

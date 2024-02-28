@@ -67,12 +67,12 @@ export default function FooterCustomization() {
   };
 
   return (
-    <div className="mb-6">
-      <div className="flex flex-col gap-y-2">
-        <h2 className="leading-tight font-medium text-white">
+    <div className="mb-8">
+      <div className="flex flex-col gap-y-1">
+        <h2 className="text-base leading-6 font-bold text-white">
           Custom Footer Icons
         </h2>
-        <p className="text-sm font-base text-white/60">
+        <p className="text-xs leading-[18px] font-base text-white/60">
           Customize the footer icons displayed on the bottom of the sidebar.
         </p>
       </div>
@@ -99,7 +99,7 @@ export default function FooterCustomization() {
 function CurrentIcons({ footerIcons, remove }) {
   if (footerIcons.length === 0) return null;
   return (
-    <div className="flex flex-col w-fit gap-y-2 mt-4">
+    <div className="flex flex-col w-fit gap-y-2 mt-3">
       {footerIcons.map((icon, index) => (
         <div
           key={index}
