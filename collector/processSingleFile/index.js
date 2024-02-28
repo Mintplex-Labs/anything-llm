@@ -9,12 +9,14 @@ const RESERVED_FILES = ["__HOTDIR__.md"];
 
 async function processSingleFile(targetFilename) {
   const fullFilePath = path.resolve(WATCH_DIRECTORY, targetFilename);
-  if (RESERVED_FILES.includes(targetFilename))
+  if (RESERVED_FILES.includes(targetFilename)) {
     return {
       success: false,
       reason: "Filename is a reserved filename and cannot be processed.",
       documents: [],
     };
+  }
+
   if (!fs.existsSync(fullFilePath))
     return {
       success: false,
