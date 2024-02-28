@@ -17,7 +17,6 @@ async function processSingleFile(targetFilename) {
     };
   }
 
-  console.log({ WATCH_DIRECTORY, fullFilePath })
   if (!fs.existsSync(fullFilePath)) {
     return {
       success: false,
