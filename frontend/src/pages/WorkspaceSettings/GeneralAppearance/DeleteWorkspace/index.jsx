@@ -38,7 +38,7 @@ export default function DeleteWorkspace({ workspace }) {
     }
 
     workspace.slug === slug
-      ? (window.location = paths.home())
+      ? (window.location.hash = paths.home())
       : window.location.reload();
   };
 
