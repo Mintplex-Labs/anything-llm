@@ -17,12 +17,14 @@ async function processSingleFile(targetFilename) {
     };
   }
 
-  if (!fs.existsSync(fullFilePath))
+  console.log({ WATCH_DIRECTORY, fullFilePath })
+  if (!fs.existsSync(fullFilePath)) {
     return {
       success: false,
       reason: "File does not exist in upload directory.",
       documents: [],
     };
+  }
 
   const fileExtension = path.extname(fullFilePath).toLowerCase();
   if (!fileExtension) {
