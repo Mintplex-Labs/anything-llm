@@ -9,7 +9,7 @@ networks:
 services:
   anything-llm:
     container_name: anything-llm
-    image: anything-llm:latest
+    image: mintplexlabs/anythingllm:latest
     build:
       context: ../.
       dockerfile: ./docker/Dockerfile
