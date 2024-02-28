@@ -1,4 +1,4 @@
-import { AUTH_TIMESTAMP } from "@/utils/constants";
+import { AUTH_TIMESTAMP, REMOTE_APP_VERSION_URL } from "@/utils/constants";
 import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 import { API_BASE } from "@/utils/api";
@@ -7,6 +7,7 @@ const System = {
   cacheKeys: {
     footerIcons: "anythingllm_footer_links",
     supportEmail: "anythingllm_support_email",
+    remoteVersion: "anythingllm_remote_version",
   },
   ping: async function () {
     return await fetch(`${API_BASE()}/ping`)
@@ -473,6 +474,49 @@ const System = {
         console.error(e);
         return null;
       });
+  },
+  remoteAppVersion: async function () {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const cache = window.localStorage.getItem(this.cacheKeys.remoteVersion);
+    const { version, lastFetched } = cache
+      ? safeJsonParse(cache, { version: "", lastFetched: 0 })
+      : { version: "", lastFetched: 0 };
+
+    if (!!version && Date.now() - lastFetched < 3_600_000) return version;
+    const versionText = await fetch(REMOTE_APP_VERSION_URL, {
+      signal: controller.signal,
+      method: "GET",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    })
+      .then((res) => {
+        return {
+          ok: res.ok,
+          code: res.status,
+          statusText: res.statusText,
+          text: res.text(),
+        };
+      })
+      .then(({ ok, code, statusText, text }) => {
+        if (!ok) throw new Error(`${code}: ${statusText}`);
+        return text;
+      })
+      .catch((e) => {
+        console.log("remoteAppVersion", e.message);
+        return "";
+      });
+
+    clearTimeout(timeoutId);
+    if (!versionText) return versionText;
+    window.localStorage.setItem(
+      this.cacheKeys.remoteVersion,
+      JSON.stringify({ version: versionText, lastFetched: Date.now() })
+    );
+    return versionText;
   },
   dataConnectors: DataConnector,
 };
