@@ -1,3 +1,5 @@
+const { openRouterModels } = require("../AiProviders/openRouter");
+const { perplexityModels } = require("../AiProviders/perplexity");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
@@ -6,6 +8,8 @@ const SUPPORT_CUSTOM_MODELS = [
   "native-llm",
   "togetherai",
   "mistral",
+  "perplexity",
+  "openrouter",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -25,6 +29,10 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getMistralModels(apiKey);
     case "native-llm":
       return nativeLLMModels();
+    case "perplexity":
+      return await getPerplexityModels();
+    case "openrouter":
+      return await getOpenRouterModels();
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -107,6 +115,35 @@ async function ollamaAIModels(basePath = null) {
 
 async function getTogetherAiModels() {
   const knownModels = togetherAiModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      organization: model.organization,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getPerplexityModels() {
+  const knownModels = perplexityModels();
+  if (!Object.keys(knownModels).length === 0)
+    return { models: [], error: null };
+
+  const models = Object.values(knownModels).map((model) => {
+    return {
+      id: model.id,
+      name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getOpenRouterModels() {
+  const knownModels = await openRouterModels();
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 

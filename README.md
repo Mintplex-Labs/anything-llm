@@ -71,6 +71,8 @@ Some cool features of AnythingLLM
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAi (all models)](https://localai.io/)
 - [Together AI (chat models)](https://www.together.ai/)
+- [Perplexity (chat models)](https://www.perplexity.ai/)
+- [OpenRouter (chat models)](https://openrouter.ai/)
 - [Mistral](https://mistral.ai/)
 
 **Supported Embedding models:**
@@ -80,6 +82,7 @@ Some cool features of AnythingLLM
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LM Studio (all)](https://lmstudio.ai)
 - [LocalAi (all)](https://localai.io/)
+- [Ollama (all)](https://ollama.ai/)
 
 **Supported Vector Databases:**
 
@@ -108,8 +111,8 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 |----------------------------------------|----:|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][aws-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway |
-|----------------------------------------|
+| Railway                                             |
+| --------------------------------------------------- |
 | [![Deploy on Railway][railway-btn]][railway-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)

@@ -443,3 +443,157 @@ dialog::backdrop {
 .input-label {
   @apply text-[14px] font-bold text-white;
 }
+
+/**
+ * ==============================================
+ * Markdown Styles
+ * ==============================================
+ */
+.markdown,
+.markdown > * {
+  font-weight: 400;
+}
+
+.markdown h1 {
+  font-size: xx-large;
+  line-height: 1.7;
+  padding-left: 0.3rem;
+}
+
+.markdown h2 {
+  line-height: 1.5;
+  font-size: x-large;
+  padding-left: 0.3rem;
+}
+
+.markdown h3 {
+  line-height: 1.4;
+  font-size: large;
+  padding-left: 0.3rem;
+}
+
+/* Table Styles */
+
+.markdown table {
+  border-collapse: separate;
+}
+
+.markdown th {
+  border-top: none;
+}
+
+.markdown td:first-child,
+.markdown th:first-child {
+  border-left: none;
+}
+
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #bdbdbe;
+  font-size: 13px;
+  margin: 30px 0px;
+  border-radius: 10px;
+  overflow: hidden;
+  font-weight: normal;
+}
+
+.markdown table thead {
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: bolder;
+}
+
+.markdown hr {
+  border: 0;
+  border-top: 1px solid #cdcdcd40;
+  margin: 1rem 0;
+}
+
+.markdown table th,
+.markdown table td {
+  padding: 8px 15px;
+  border-bottom: 1px solid #cdcdcd2e;
+  text-align: left;
+}
+
+.markdown table th {
+  padding: 14px 15px;
+}
+
+@media (max-width: 600px) {
+  .markdown table th,
+  .markdown table td {
+    padding: 10px;
+  }
+}
+
+/* List Styles */
+.markdown ol {
+  list-style: decimal-leading-zero;
+  padding-left: 0px;
+  padding-top: 10px;
+  margin: 10px;
+}
+
+.markdown ol li {
+  margin-left: 20px;
+  padding-left: 10px;
+  position: relative;
+  transition: all 0.3s ease;
+  line-height: 1.4rem;
+}
+
+.markdown ol li::marker {
+  padding-top: 10px;
+}
+
+.markdown ol li p {
+  margin: 0.5rem;
+  padding-top: 10px;
+}
+
+.markdown ul {
+  list-style: revert-layer;
+  /* color: #cfcfcfcf; */
+  padding-left: 0px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin: 10px;
+}
+
+.markdown ul li::marker {
+  color: #d0d0d0cf;
+  padding-top: 10px;
+}
+
+.markdownul li {
+  margin-left: 20px;
+
+  padding-left: 10px;
+  transition: all 0.3s ease;
+  line-height: 1.4rem;
+}
+
+.markdown ul li > ul {
+  padding-left: 20px;
+  margin: 0px;
+}
+
+.markdown p {
+  font-weight: 400;
+  margin: 0.35rem;
+}
+
+.markdown {
+  text-wrap: wrap;
+}
+
+.markdown pre {
+  margin: 20px 0;
+}
+
+.markdown strong {
+  font-weight: 600;
+  color: #fff;
+}

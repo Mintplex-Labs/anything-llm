@@ -11,6 +11,8 @@ import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
+import PerplexityLogo from "@/media/llmprovider/perplexity.png";
+import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
@@ -109,6 +111,22 @@ const LLM_SELECTION_PRIVACY = {
     ],
     logo: HuggingFaceLogo,
   },
+  perplexity: {
+    name: "Perplexity AI",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to Perplexity AI",
+    ],
+    logo: PerplexityLogo,
+  },
+  openrouter: {
+    name: "OpenRouter",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to OpenRouter",
+    ],
+    logo: OpenRouterLogo,
+  },
 };
 
 const VECTOR_DB_PRIVACY = {
@@ -202,6 +220,13 @@ const EMBEDDING_ENGINE_PRIVACY = {
       "Your document text is embedded privately on the server running LocalAI",
     ],
     logo: LocalAiLogo,
+  },
+  ollama: {
+    name: "Ollama",
+    description: [
+      "Your document text is embedded privately on the server running Ollama",
+    ],
+    logo: OllamaLogo,
   },
 };
 

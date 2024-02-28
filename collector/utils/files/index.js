@@ -1,9 +1,37 @@
 const fs = require("fs");
 const path = require("path");
+const { getType } = require("mime");
 const documentsFolder =
   process.env.NODE_ENV === "production"
     ? path.resolve("/storage/documents") // hardcoded to Render storage mount.
     : path.resolve(__dirname, "../../../server/storage/documents");
+
+function isTextType(filepath) {
+  if (!fs.existsSync(filepath)) return false;
+  // These are types of mime primary classes that for sure
+  // cannot also for forced into a text type.
+  const nonTextTypes = ["multipart", "image", "model", "audio", "video"];
+  // These are full-mimes we for sure cannot parse or interpret as text
+  // documents
+  const BAD_MIMES = [
+    "application/octet-stream",
+    "application/zip",
+    "application/pkcs8",
+    "application/vnd.microsoft.portable-executable",
+    "application/x-msdownload",
+  ];
+
+  try {
+    const mime = getType(filepath);
+    if (BAD_MIMES.includes(mime)) return false;
+
+    const type = mime.split("/")[0];
+    if (nonTextTypes.includes(type)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 function trashFile(filepath) {
   if (!fs.existsSync(filepath)) return;
@@ -97,6 +125,7 @@ async function wipeCollectorStorage() {
 module.exports = {
   documentsFolder,
   trashFile,
+  isTextType,
   createdDate,
   writeToServerDocuments,
   wipeCollectorStorage,

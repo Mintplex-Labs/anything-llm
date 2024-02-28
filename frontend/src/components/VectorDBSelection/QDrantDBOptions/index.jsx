@@ -9,7 +9,7 @@ export default function QDrantDBOptions({ settings }) {
           <input
             type="url"
             name="QdrantEndpoint"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="http://localhost:6633"
             defaultValue={settings?.QdrantEndpoint}
             required={true}
@@ -25,7 +25,7 @@ export default function QDrantDBOptions({ settings }) {
           <input
             type="password"
             name="QdrantApiKey"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="wOeqxsYP4....1244sba"
             defaultValue={settings?.QdrantApiKey}
             autoComplete="off"

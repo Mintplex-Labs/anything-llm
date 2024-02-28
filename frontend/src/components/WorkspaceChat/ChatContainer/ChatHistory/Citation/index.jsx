@@ -1,31 +1,37 @@
 import { memo, useState } from "react";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
-import { CaretRight, FileText } from "@phosphor-icons/react";
 import truncate from "truncate";
 import ModalWrapper from "@/components/ModalWrapper";
 import { middleTruncate } from "@/utils/directories";
 import {
+  CaretRight,
+  FileText,
+  Info,
   ArrowSquareOut,
   GithubLogo,
   Link,
   X,
   YoutubeLogo,
 } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
+import { toPercentString } from "@/utils/numbers";
 
 function combineLikeSources(sources) {
   const combined = {};
   sources.forEach((source) => {
-    const { id, title, text, chunkSource = "" } = source;
+    const { id, title, text, chunkSource = "", score = null } = source;
     if (combined.hasOwnProperty(title)) {
-      combined[title].text += `\n\n ---- Chunk ${id || ""} ---- \n\n${text}`;
+      combined[title].chunks.push({ id, text, chunkSource, score });
       combined[title].references += 1;
-      combined[title].chunkSource = chunkSource;
     } else {
-      combined[title] = { title, text, chunkSource, references: 1 };
+      combined[title] = {
+        title,
+        chunks: [{ id, text, chunkSource, score }],
+        references: 1,
+      };
     }
   });
-
   return Object.values(combined);
 }
 
@@ -109,7 +115,7 @@ function SkeletonLine() {
 }
 
 function CitationDetailModal({ source, onClose }) {
-  const { references, title, text } = source;
+  const { references, title, chunks } = source;
   const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
 
   return (
@@ -156,12 +162,39 @@ function CitationDetailModal({ source, onClose }) {
             {[...Array(3)].map((_, idx) => (
               <SkeletonLine key={idx} />
             ))}
-            <p className="text-white whitespace-pre-line">{HTMLDecode(text)}</p>
-            <div className="mb-6">
-              {[...Array(3)].map((_, idx) => (
-                <SkeletonLine key={idx} />
-              ))}
-            </div>
+            {chunks.map(({ text, score }, idx) => (
+              <div key={idx} className="pt-6 text-white">
+                <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
+                  <p className="text-white whitespace-pre-line">
+                    {HTMLDecode(text)}
+                  </p>
+
+                  {!!score && (
+                    <>
+                      <div className="w-full flex items-center text-xs text-white/60 gap-x-2 cursor-default">
+                        <div
+                          data-tooltip-id="similarity-score"
+                          data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
+                          className="flex items-center gap-x-1"
+                        >
+                          <Info size={14} />
+                          <p>{toPercentString(score)} match</p>
+                        </div>
+                      </div>
+                      <Tooltip
+                        id="similarity-score"
+                        place="top"
+                        delayShow={100}
+                      />
+                    </>
+                  )}
+                </div>
+                {[...Array(3)].map((_, idx) => (
+                  <SkeletonLine key={idx} />
+                ))}
+              </div>
+            ))}
+            <div className="mb-6"></div>
           </div>
         </div>
       </div>
@@ -180,7 +213,7 @@ const ICONS = {
 // which contain valid outbound links that can be clicked by the
 // user when viewing a citation. Optionally allows various icons
 // to show distinct types of sources.
-function parseChunkSource({ title = "", chunkSource = "" }) {
+function parseChunkSource({ title = "", chunks = [] }) {
   const nullResponse = {
     isUrl: false,
     text: null,
@@ -188,9 +221,10 @@ function parseChunkSource({ title = "", chunkSource = "" }) {
     icon: "file",
   };
 
-  if (!chunkSource.startsWith("link://")) return nullResponse;
+  if (!chunks.length || !chunks[0].chunkSource.startsWith("link://"))
+    return nullResponse;
   try {
-    const url = new URL(chunkSource.split("link://")[1]);
+    const url = new URL(chunks[0].chunkSource.split("link://")[1]);
     let text = url.host + url.pathname;
     let icon = "link";
 

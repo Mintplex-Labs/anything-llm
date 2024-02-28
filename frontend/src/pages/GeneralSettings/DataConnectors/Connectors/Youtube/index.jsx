@@ -79,7 +79,7 @@ export default function YouTubeTranscriptConnectorSetup() {
                     <input
                       type="url"
                       name="url"
-                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                       placeholder="https://youtube.com/watch?v=abc123"
                       required={true}
                       autoComplete="off"

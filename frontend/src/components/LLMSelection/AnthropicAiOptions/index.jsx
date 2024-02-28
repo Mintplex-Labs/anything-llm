@@ -29,7 +29,7 @@ export default function AnthropicAiOptions({ settings, showAlert = false }) {
           <input
             type="password"
             name="AnthropicApiKey"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="Anthropic Claude-2 API Key"
             defaultValue={settings?.AnthropicApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -46,7 +46,7 @@ export default function AnthropicAiOptions({ settings, showAlert = false }) {
             name="AnthropicModelPref"
             defaultValue={settings?.AnthropicModelPref || "claude-2"}
             required={true}
-            className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
             {["claude-2", "claude-instant-1"].map((model) => {
               return (

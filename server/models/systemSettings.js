@@ -187,6 +187,30 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
+      ...(llmProvider === "perplexity"
+        ? {
+            PerplexityApiKey: !!process.env.PERPLEXITY_API_KEY,
+            PerplexityModelPref: process.env.PERPLEXITY_MODEL_PREF,
+
+            // For embedding credentials when ollama is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
+      ...(llmProvider === "openrouter"
+        ? {
+            OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
+            OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
+
+            // For embedding credentials when ollama is selected.
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
       ...(llmProvider === "mistral"
         ? {
             MistralApiKey: !!process.env.MISTRAL_API_KEY,
