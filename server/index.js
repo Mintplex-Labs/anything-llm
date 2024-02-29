@@ -23,7 +23,7 @@ const { Telemetry } = require("./models/telemetry");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const {
   preloadOllamaService,
-} = require("./utils/AiProviders/anythingLLM/utils");
+} = require("./utils/AiProviders/anythingLLM/utils/preload");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -61,10 +61,8 @@ app
     await setupTelemetry();
     await preloadOllamaService();
     console.log(
-      `[${
-        process.env.NODE_ENV || "development"
-      }] AnythingLLM Standalone Backend listening on port ${
-        process.env.SERVER_PORT || 3001
+      `[${process.env.NODE_ENV || "development"
+      }] AnythingLLM Standalone Backend listening on port ${process.env.SERVER_PORT || 3001
       }`
     );
   })
