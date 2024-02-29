@@ -112,11 +112,11 @@ export default function CustomLogo() {
         </div>
       ) : (
         <div className="flex md:flex-row flex-col items-center relative">
-          <div className="group w-80 mt-3  overflow-hidden">
+          <div className="group w-80 h-[130px] mt-3 overflow-hidden">
             <img
               src={logo}
               alt="Uploaded Logo"
-              className="w-full border-2 border-white/20 border-dashed p-1 rounded-2xl"
+              className="w-full h-full object-cover border-2 border-white/20 border-dashed p-1 rounded-2xl"
             />
 
             <div className="absolute w-80 top-0 left-0 right-0 bottom-0 flex flex-col gap-y-3 justify-center items-center rounded-2xl mt-3 bg-black bg-opacity-80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out border-2 border-transparent hover:border-white">
