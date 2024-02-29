@@ -30,6 +30,7 @@ import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
+import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -82,6 +83,14 @@ export default function GeneralLLMPreference() {
   }, [searchQuery, selectedLLM]);
 
   const LLMS = [
+    {
+      name: "AnythingLLM",
+      value: "anythingllm_ollama",
+      logo: OpenAiLogo,
+      options: <LanceDBOptions />,
+      description:
+        "Run models from Meta, Mistral and more on your computer. Powered by Ollama.",
+    },
     {
       name: "OpenAI",
       value: "openai",

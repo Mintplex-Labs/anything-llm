@@ -2,7 +2,7 @@ const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
     checks: [isNotEmpty, supportedLLM],
-    postUpdate: [wipeWorkspaceModelPreference],
+    postUpdate: [wipeWorkspaceModelPreference, manageOllamaService],
   },
   // OpenAI Settings
   OpenAiKey: {
@@ -313,6 +313,7 @@ function validOllamaLLMBasePath(input = "") {
 
 function supportedLLM(input = "") {
   const validSelection = [
+    "anythingllm_ollama",
     "openai",
     "azure",
     "anthropic",
@@ -431,10 +432,30 @@ function validHuggingFaceEndpoint(input = "") {
 // If the LLMProvider has changed we need to reset all workspace model preferences to
 // null since the provider<>model name combination will be invalid for whatever the new
 // provider is.
-async function wipeWorkspaceModelPreference(key, prev, next) {
+async function wipeWorkspaceModelPreference(_key, prev, next) {
   if (prev === next) return;
   const { Workspace } = require("../../models/workspace");
   await Workspace.resetWorkspaceChatModels();
+}
+
+// When toggling between models there is no reason to have the Background AnythingLLMOllama
+// service running since its just extra overhead for nothing. So we can send a pkill or boot
+// to the main thread.
+async function manageOllamaService(_key, prev, next) {
+  if (prev === next) return;
+  if (prev !== "anythingllm_ollama" && next !== "anythingllm_ollama") return;
+
+  const { AnythingLLMOllama } = require("../AiProviders/anythingLLM");
+  const anythingLLMOllama = new AnythingLLMOllama();
+  if (next !== "anythingllm_ollama") {
+    await anythingLLMOllama.kill();
+    return;
+  }
+
+  if (next === "anythingllm_ollama") {
+    await anythingLLMOllama.bootOrContinue();
+    return;
+  }
 }
 
 // This will force update .env variables which for any which reason were not able to be parsed or
