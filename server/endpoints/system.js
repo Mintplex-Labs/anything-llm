@@ -261,6 +261,21 @@ function systemEndpoints(app) {
   );
 
   app.delete(
+    "/system/remove-documents",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { names } = reqBody(request);
+        for await (const name of names) await purgeDocument(name);
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
     "/system/remove-folder",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
@@ -465,6 +480,21 @@ function systemEndpoints(app) {
       response.status(200).json({ footerData: footerData });
     } catch (error) {
       console.error("Error fetching footer data:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/system/support-email", [validatedRequest], async (_, response) => {
+    try {
+      const supportEmail =
+        (
+          await SystemSettings.get({
+            label: "support_email",
+          })
+        )?.value ?? null;
+      response.status(200).json({ supportEmail: supportEmail });
+    } catch (error) {
+      console.error("Error fetching support email:", error);
       response.status(500).json({ message: "Internal server error" });
     }
   });

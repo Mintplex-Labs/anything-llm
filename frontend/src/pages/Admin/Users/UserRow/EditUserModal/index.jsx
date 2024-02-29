@@ -50,7 +50,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                 <input
                   name="username"
                   type="text"
-                  className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder="User's username"
                   minLength={2}
                   defaultValue={user.username}
@@ -68,7 +68,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                 <input
                   name="password"
                   type="text"
-                  className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder={`${user.username}'s new password`}
                   autoComplete="off"
                 />
@@ -85,7 +85,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   required={true}
                   defaultValue={user.role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white border border-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                  className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white border-gray-500 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="default">Default</option>
                   <option value="manager">Manager</option>

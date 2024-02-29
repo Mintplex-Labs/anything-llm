@@ -11,6 +11,8 @@ import TogetherAILogo from "@/media/llmprovider/togetherai.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
+import PerplexityLogo from "@/media/llmprovider/perplexity.png";
+import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
@@ -21,12 +23,14 @@ import GeminiLLMOptions from "@/components/LLMSelection/GeminiLLMOptions";
 import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
+import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
+import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
-import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
+import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -129,6 +133,21 @@ export default function LLMPreference({
       description: "Run open source models from Mistral AI.",
     },
     {
+      name: "Perplexity AI",
+      value: "perplexity",
+      logo: PerplexityLogo,
+      options: <PerplexityOptions settings={settings} />,
+      description:
+        "Run powerful and internet-connected models hosted by Perplexity AI.",
+    },
+    {
+      name: "OpenRouter",
+      value: "openrouter",
+      logo: OpenRouterLogo,
+      options: <OpenRouterOptions settings={settings} />,
+      description: "A unified interface for LLMs.",
+    },
+    {
       name: "Native",
       value: "native",
       logo: AnythingLLMIcon,
@@ -161,7 +180,6 @@ export default function LLMPreference({
       showToast(`Failed to save LLM settings: ${error}`, "error");
       return;
     }
-    showToast("LLM settings saved successfully.", "success", { clear: true });
     navigate(paths.onboarding.embeddingPreference());
   };
 
@@ -192,7 +210,7 @@ export default function LLMPreference({
               <input
                 type="text"
                 placeholder="Search LLM providers"
-                className="bg-zinc-600 z-20 pl-10 rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
+                className="bg-zinc-600 z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoComplete="off"
                 onKeyDown={(e) => {

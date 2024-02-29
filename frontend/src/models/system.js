@@ -5,6 +5,7 @@ import DataConnector from "./dataConnector";
 const System = {
   cacheKeys: {
     footerIcons: "anythingllm_footer_links",
+    supportEmail: "anythingllm_support_email",
   },
   ping: async function () {
     return await fetch(`${API_BASE}/ping`)
@@ -151,6 +152,18 @@ const System = {
         return false;
       });
   },
+  deleteDocuments: async (names = []) => {
+    return await fetch(`${API_BASE}/system/remove-documents`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ names }),
+    })
+      .then((res) => res.ok)
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
   deleteFolder: async (name) => {
     return await fetch(`${API_BASE}/system/remove-folder`, {
       method: "DELETE",
@@ -224,6 +237,36 @@ const System = {
       JSON.stringify({ data: newData, lastFetched: Date.now() })
     );
     return { footerData: newData, error: null };
+  },
+  fetchSupportEmail: async function () {
+    const cache = window.localStorage.getItem(this.cacheKeys.supportEmail);
+    const { email, lastFetched } = cache
+      ? safeJsonParse(cache, { email: "", lastFetched: 0 })
+      : { email: "", lastFetched: 0 };
+
+    if (!!email && Date.now() - lastFetched < 3_600_000)
+      return { email: email, error: null };
+
+    const { supportEmail, error } = await fetch(
+      `${API_BASE}/system/support-email`,
+      {
+        method: "GET",
+        cache: "no-cache",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.log(e);
+        return { email: "", error: e.message };
+      });
+
+    if (!supportEmail || !!error) return { email: "", error: null };
+    window.localStorage.setItem(
+      this.cacheKeys.supportEmail,
+      JSON.stringify({ email: supportEmail, lastFetched: Date.now() })
+    );
+    return { email: supportEmail, error: null };
   },
   fetchLogo: async function () {
     return await fetch(`${API_BASE}/system/logo`, {

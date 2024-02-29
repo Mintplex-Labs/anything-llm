@@ -1,4 +1,3 @@
-const { fileData } = require("../utils/files");
 const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass } = require("../utils/helpers");
 const prisma = require("../utils/prisma");
@@ -6,6 +5,8 @@ const { Telemetry } = require("./telemetry");
 const { EventLogs } = require("./eventLogs");
 
 const Document = {
+  writable: ["pinned"],
+
   forWorkspace: async function (workspaceId = null) {
     if (!workspaceId) return [];
     return await prisma.workspace_documents.findMany({
@@ -23,7 +24,7 @@ const Document = {
     }
   },
 
-  firstWhere: async function (clause = {}) {
+  get: async function (clause = {}) {
     try {
       const document = await prisma.workspace_documents.findFirst({
         where: clause,
@@ -35,9 +36,39 @@ const Document = {
     }
   },
 
+  getPins: async function (clause = {}) {
+    try {
+      const workspaceIds = await prisma.workspace_documents.findMany({
+        where: clause,
+        select: {
+          workspaceId: true,
+        },
+      });
+      return workspaceIds.map((pin) => pin.workspaceId) || [];
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
+
+  where: async function (clause = {}, limit = null, orderBy = null) {
+    try {
+      const results = await prisma.workspace_documents.findMany({
+        where: clause,
+        ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
+      });
+      return results;
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
+
   addDocuments: async function (workspace, additions = [], userId = null) {
     const VectorDb = getVectorDbClass();
     if (additions.length === 0) return { failed: [], embedded: [] };
+    const { fileData } = require("../utils/files");
     const embedded = [];
     const failedToEmbed = [];
     const errors = new Set();
@@ -101,7 +132,7 @@ const Document = {
     if (removals.length === 0) return;
 
     for (const path of removals) {
-      const document = await this.firstWhere({
+      const document = await this.get({
         docpath: path,
         workspaceId: workspace.id,
       });
@@ -149,6 +180,26 @@ const Document = {
     } catch (error) {
       console.error("FAILED TO COUNT DOCUMENTS.", error.message);
       return 0;
+    }
+  },
+  update: async function (id = null, data = {}) {
+    if (!id) throw new Error("No workspace document id provided for update");
+
+    const validKeys = Object.keys(data).filter((key) =>
+      this.writable.includes(key)
+    );
+    if (validKeys.length === 0)
+      return { document: { id }, message: "No valid fields to update!" };
+
+    try {
+      const document = await prisma.workspace_documents.update({
+        where: { id },
+        data,
+      });
+      return { document, message: null };
+    } catch (error) {
+      console.error(error.message);
+      return { document: null, message: error.message };
     }
   },
 };

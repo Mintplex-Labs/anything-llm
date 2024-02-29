@@ -102,7 +102,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
             type="email"
             placeholder="you@gmail.com"
             required={true}
-            className="mt-2 bg-zinc-900 text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight w-full h-11 p-2.5 bg-zinc-900 rounded-lg"
+            className="mt-2 bg-zinc-900 text-white placeholder:text-white/20 text-sm font-medium font-['Plus Jakarta Sans'] leading-tight w-full h-11 p-2.5 bg-zinc-900 rounded-lg"
           />
         </div>
 
@@ -269,7 +269,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           <textarea
             name="comment"
             rows={5}
-            className="mt-2 bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            className="mt-2 bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             placeholder="If you have any questions or comments right now, you can leave them here and we will get back to you. You can also email team@mintplexlabs.com"
             wrap="soft"
             autoComplete="off"

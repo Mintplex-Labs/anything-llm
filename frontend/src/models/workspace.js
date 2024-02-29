@@ -218,6 +218,25 @@ const Workspace = {
         return { success: false, error: e.message };
       });
   },
+  setPinForDocument: async function (slug, docPath, pinStatus) {
+    return fetch(`${API_BASE}/workspace/${slug}/update-pin`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ docPath, pinStatus }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(
+            res.statusText || "Error setting pin status for document."
+          );
+        }
+        return true;
+      })
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
   threads: WorkspaceThread,
 };
 
