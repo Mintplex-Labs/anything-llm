@@ -67,9 +67,7 @@ export default function GeneralInfo({ slug }) {
           </button>
         )}
       </form>
-      <div className="mt-6">
-        <SuggestedChatMessages slug={workspace.slug} />
-      </div>
+      <SuggestedChatMessages slug={workspace.slug} />
       <WorkspacePfp workspace={workspace} slug={slug} />
       <DeleteWorkspace workspace={workspace} />
     </>
