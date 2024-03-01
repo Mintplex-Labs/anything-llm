@@ -19,7 +19,7 @@ export default function GeneralInfo({ slug }) {
   useEffect(() => {
     async function fetchWorkspace() {
       const workspace = await Workspace.bySlug(slug);
-      const pfpUrl = await Workspace.fetchPfp(workspace.slug);
+      const pfpUrl = await Workspace.fetchPfp(slug);
       setPfp(pfpUrl);
       setWorkspace(workspace);
       setLoading(false);
@@ -105,7 +105,6 @@ export default function GeneralInfo({ slug }) {
       </div>
       <DeleteWorkspace workspace={workspace} />
 
-      {/* Image */}
       <div className="flex flex-col md:flex-row items-center gap-8">
         <div className="flex flex-col items-center">
           <label className="w-36 h-36 flex flex-col items-center justify-center bg-zinc-900/50 transition-all duration-300 rounded-full mt-8 border-2 border-dashed border-white border-opacity-60 cursor-pointer hover:opacity-60">
@@ -120,7 +119,7 @@ export default function GeneralInfo({ slug }) {
               <img
                 src={pfp}
                 alt="User profile picture"
-                className="w-48 h-48 rounded-full object-cover bg-white"
+                className="w-36 h-36 rounded-full object-cover bg-white"
               />
             ) : (
               <div className="flex flex-col items-center justify-center p-3">
