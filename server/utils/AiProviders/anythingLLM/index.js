@@ -8,6 +8,7 @@ class AnythingLLMOllama {
     this.model = modelPreference || process.env.ANYTHINGLLM_MODEL_PREF;
     this.basePath = () =>
       `http://127.0.0.1:${process.env.ANYTHING_LLM_OLLAMA_PORT}`;
+
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -130,9 +131,34 @@ class AnythingLLMOllama {
     const ollamaOnline = new Promise((resolve) => {
       const requestHandler = ({ data }) => {
         const { type, success, port } = data;
-        this.#log(`Boot ${success ? "success" : "failure"} for port ${port}`);
-        !!port ? (process.env.ANYTHING_LLM_OLLAMA_PORT = port) : null;
-        if (type === "boot-ollama") resolve(success);
+        if (type === "boot-ollama") {
+          if (!success) {
+            this.#log(`Boot failure for port ${port}`);
+            resolve(false);
+            return;
+          }
+
+          !!port ? (process.env.ANYTHING_LLM_OLLAMA_PORT = port) : null;
+
+          // Once the system boots it can take a few ms for the API
+          // to be ready so we have to wait for it to resolve.
+          const fetchRetry = require("fetch-retry")(global.fetch);
+          fetchRetry(this.basePath(), {
+            retries: 3,
+            retryOn: function (attempt, error, response) {
+              if (error !== null || response.status >= 400) {
+                console.log(`OllamaAPI offline - retrying. ${attempt + 1}/3`);
+                return true;
+              }
+            },
+            retryDelay: function (attempt, _error, _response) {
+              return Math.pow(2, attempt) * 500;
+            },
+          })
+            .then((res) => res.text())
+            .then(() => resolve(true))
+            .catch(() => resolve(false));
+        }
       };
 
       process?.parentPort?.once("message", requestHandler);
@@ -146,10 +172,13 @@ class AnythingLLMOllama {
 
   async availableModels() {
     await this.bootOrContinue();
-    return await fetch(`${this.basePath}/api/tags`, { method: "GET" })
+    return await fetch(`${this.basePath()}/api/tags`, { method: "GET" })
       .then((res) => res.json())
       .then((json) => json.models || [])
-      .catch(() => []);
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
   }
 
   async kill() {

@@ -119,6 +119,12 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // AnythingLLM x Ollama embedded:
+  AnythingLLMOllamaModelPref: {
+    envKey: "ANYTHINGLLM_MODEL_PREF",
+    checks: [],
+  },
+
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],

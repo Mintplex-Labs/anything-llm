@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/assets/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/assets/llmprovider/azure.png";
 import AnthropicLogo from "@/assets/llmprovider/anthropic.png";
@@ -27,10 +28,10 @@ import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
+import AnythingLLMOptions from "@/components/LLMSelection/AnythingLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
-import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -86,10 +87,10 @@ export default function GeneralLLMPreference() {
     {
       name: "AnythingLLM",
       value: "anythingllm_ollama",
-      logo: OpenAiLogo,
-      options: <LanceDBOptions />,
+      logo: AnythingLLMIcon,
+      options: <AnythingLLMOptions settings={settings} />,
       description:
-        "Run models from Meta, Mistral and more on your computer. Powered by Ollama.",
+        "Run models from Meta, Mistral and more on this device. Powered by Ollama.",
     },
     {
       name: "OpenAI",
