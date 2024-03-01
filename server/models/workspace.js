@@ -19,6 +19,7 @@ const Workspace = {
     "chatModel",
     "topN",
     "chatMode",
+    "pfpFilename",
   ],
 
   new: async function (name = null, creatorId = null) {
