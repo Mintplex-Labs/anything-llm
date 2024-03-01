@@ -10,3 +10,7 @@ frontend/bundleinspector.html
 
 #server
 server/swagger/openapi.json
+
+#embed
+**/static/**
+embed/src/utils/chat/hljs.js
