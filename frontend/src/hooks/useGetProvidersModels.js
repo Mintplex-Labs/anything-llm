@@ -19,6 +19,7 @@ const PROVIDER_DEFAULT_MODELS = {
   localai: [],
   ollama: [],
   togetherai: [],
+  groq: ["llama2-70b-4096", "mixtral-8x7b-32768"],
   native: [],
 };
 
