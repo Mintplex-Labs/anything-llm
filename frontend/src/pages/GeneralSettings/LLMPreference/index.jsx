@@ -16,6 +16,7 @@ import MistralLogo from "@/media/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
+import GroqLogo from "@/media/llmprovider/groq.png";
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -33,6 +34,7 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
+import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -172,6 +174,13 @@ export default function GeneralLLMPreference() {
       logo: OpenRouterLogo,
       options: <OpenRouterOptions settings={settings} />,
       description: "A unified interface for LLMs.",
+    },
+    {
+      name: "Groq",
+      value: "groq",
+      logo: GroqLogo,
+      options: <GroqAiOptions settings={settings} />,
+      description: "Run high performance LLMs.",
     },
     {
       name: "Native",
