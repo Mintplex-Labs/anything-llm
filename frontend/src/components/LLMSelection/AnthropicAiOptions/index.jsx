@@ -48,7 +48,13 @@ export default function AnthropicAiOptions({ settings, showAlert = false }) {
             required={true}
             className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
-            {["claude-2", "claude-instant-1"].map((model) => {
+            {[
+              "claude-instant-1.2",
+              "claude-2.0",
+              "claude-2.1",
+              "claude-3-opus-20240229",
+              "claude-3-sonnet-20240229",
+            ].map((model) => {
               return (
                 <option key={model} value={model}>
                   {model}

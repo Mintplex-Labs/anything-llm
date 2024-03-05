@@ -93,6 +93,48 @@ function handleDefaultStreamResponse(response, stream, responseProps) {
   });
 }
 
+// Used for Anthropic Streaming
+function handleAnthropicStream(response, stream, responseProps) {
+  return new Promise((resolve) => {
+    let fullText = "";
+    const { uuid = uuidv4(), sources = [] } = responseProps;
+
+    stream.on("streamEvent", (message) => {
+      const data = message;
+      if (
+        data.type === "content_block_delta" &&
+        data.delta.type === "text_delta"
+      ) {
+        const text = data.delta.text;
+        fullText += text;
+
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "textResponseChunk",
+          textResponse: text,
+          close: false,
+          error: false,
+        });
+      }
+
+      if (
+        message.type === "message_stop" ||
+        (data.stop_reason && data.stop_reason === "end_turn")
+      ) {
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "textResponseChunk",
+          textResponse: "",
+          close: true,
+          error: false,
+        });
+        resolve(fullText);
+      }
+    });
+  });
+}
 function convertToChatHistory(history = []) {
   const formattedHistory = [];
   history.forEach((history) => {
@@ -138,6 +180,7 @@ function writeResponseChunk(response, data) {
 
 module.exports = {
   handleDefaultStreamResponse,
+  handleAnthropicStream,
   convertToChatHistory,
   convertToPromptHistory,
   writeResponseChunk,
