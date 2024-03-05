@@ -1,6 +1,6 @@
 const { v4 } = require("uuid");
 const { chatPrompt } = require("../../chats");
-const { handleAnthropicStream } = require("../../helpers/chat/responses");
+const { writeResponseChunk } = require("../../helpers/chat/responses");
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
@@ -146,7 +146,45 @@ class AnthropicLLM {
   }
 
   handleStream(response, stream, responseProps) {
-    return handleAnthropicStream(response, stream, responseProps);
+    return new Promise((resolve) => {
+      let fullText = "";
+      const { uuid = v4(), sources = [] } = responseProps;
+
+      stream.on("streamEvent", (message) => {
+        const data = message;
+        if (
+          data.type === "content_block_delta" &&
+          data.delta.type === "text_delta"
+        ) {
+          const text = data.delta.text;
+          fullText += text;
+
+          writeResponseChunk(response, {
+            uuid,
+            sources,
+            type: "textResponseChunk",
+            textResponse: text,
+            close: false,
+            error: false,
+          });
+        }
+
+        if (
+          message.type === "message_stop" ||
+          (data.stop_reason && data.stop_reason === "end_turn")
+        ) {
+          writeResponseChunk(response, {
+            uuid,
+            sources,
+            type: "textResponseChunk",
+            textResponse: "",
+            close: true,
+            error: false,
+          });
+          resolve(fullText);
+        }
+      });
+    });
   }
 
   #appendContext(contextTexts = []) {
