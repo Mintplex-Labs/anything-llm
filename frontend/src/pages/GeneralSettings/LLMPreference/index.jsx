@@ -29,12 +29,12 @@ import OllamaLLMOptions from "@/components/LLMSelection/OllamaLLMOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
-
-import LLMItem from "@/components/LLMSelection/LLMItem";
-import { MagnifyingGlass } from "@phosphor-icons/react";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
+
+import LLMItem from "@/components/LLMSelection/LLMItem";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -180,7 +180,8 @@ export default function GeneralLLMPreference() {
       value: "groq",
       logo: GroqLogo,
       options: <GroqAiOptions settings={settings} />,
-      description: "Run high performance LLMs.",
+      description:
+        "The fastest LLM inferencing available for real-time AI applications.",
     },
     {
       name: "Native",

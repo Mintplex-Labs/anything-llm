@@ -259,7 +259,7 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
-  // OpenRouter Options
+  // Groq Options
   GroqApiKey: {
     envKey: "GROQ_API_KEY",
     checks: [isNotEmpty],

@@ -1,4 +1,4 @@
-const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { chatPrompt } = require("../../chats");
 const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
 
@@ -21,11 +21,7 @@ class GroqLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      console.warn(
-        "No embedding provider defined for GroqLLM - falling back to OpenAiEmbedder for embedding!"
-      );
-    this.embedder = !embedder ? new OpenAiEmbedder() : embedder;
+    this.embedder = !embedder ? new NativeEmbedder() : embedder;
     this.defaultTemp = 0.7;
   }
 
@@ -109,14 +105,14 @@ class GroqLLM {
       .then((json) => {
         const res = json.data;
         if (!res.hasOwnProperty("choices"))
-          throw new Error("OpenAI chat: No results!");
+          throw new Error("GroqAI chat: No results!");
         if (res.choices.length === 0)
-          throw new Error("OpenAI chat: No results length!");
+          throw new Error("GroqAI chat: No results length!");
         return res.choices[0].message.content;
       })
       .catch((error) => {
         throw new Error(
-          `Groq::createChatCompletion failed with: ${error.message}`
+          `GroqAI::createChatCompletion failed with: ${error.message}`
         );
       });
 
@@ -126,7 +122,7 @@ class GroqLLM {
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `Groq chat: ${this.model} is not valid for chat completion!`
+        `GroqAI:streamChat: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.createChatCompletion(
@@ -152,7 +148,7 @@ class GroqLLM {
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `Groq chat: ${this.model} is not valid for chat completion!`
+        `GroqAI:chatCompletion: ${this.model} is not valid for chat completion!`
       );
 
     const { data } = await this.openai
@@ -172,7 +168,7 @@ class GroqLLM {
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
-        `Groq chat: ${this.model} is not valid for chat completion!`
+        `GroqAI:streamChatCompletion: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.openai.createChatCompletion(

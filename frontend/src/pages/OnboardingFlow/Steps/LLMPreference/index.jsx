@@ -26,13 +26,13 @@ import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
+import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
+import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
-import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
-import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -154,7 +154,8 @@ export default function LLMPreference({
       value: "groq",
       logo: GroqLogo,
       options: <GroqAiOptions settings={settings} />,
-      description: "Run high performance LLMs.",
+      description:
+        "The fastest LLM inferencing available for real-time AI applications.",
     },
     {
       name: "Native",
