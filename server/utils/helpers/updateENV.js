@@ -359,7 +359,13 @@ function validGeminiModel(input = "") {
 }
 
 function validAnthropicModel(input = "") {
-  const validModels = ["claude-2", "claude-instant-1"];
+  const validModels = [
+    "claude-instant-1.2",
+    "claude-2.0",
+    "claude-2.1",
+    "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+  ];
   return validModels.includes(input)
     ? null
     : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
