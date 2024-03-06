@@ -259,6 +259,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Groq Options
+  GroqApiKey: {
+    envKey: "GROQ_API_KEY",
+    checks: [isNotEmpty],
+  },
+  GroqModelPref: {
+    envKey: "GROQ_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
@@ -336,6 +346,7 @@ function supportedLLM(input = "") {
     "huggingface",
     "perplexity",
     "openrouter",
+    "groq",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
