@@ -112,9 +112,7 @@ export default function SettingsSidebar() {
                     <SidebarOptions user={user} />
                   </div>
                 </div>
-                <div>
-                  <Footer />
-                </div>
+                <Footer />
               </div>
             </div>
           </div>
@@ -151,9 +149,7 @@ export default function SettingsSidebar() {
                 <SidebarOptions user={user} />
               </div>
             </div>
-            <div className="mb-2">
-              <Footer />
-            </div>
+            <Footer />
           </div>
         </div>
       </div>
@@ -185,22 +181,22 @@ const Option = ({
 
   return (
     <>
-      <div className="flex gap-x-2 items-center justify-between text-white">
+      <div className="flex gap-x-2 items-center justify-between">
         <Link
           to={href}
           className={`
           transition-all duration-[200ms]
-          flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-white justify-start items-center
-          hover:bg-workspace-item-selected-gradient hover:text-white hover:font-bold
+          flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] justify-start items-center
+          hover:bg-workspace-item-selected-gradient hover:text-white hover:font-medium
           ${
             isActive
-              ? "bg-menu-item-selected-gradient font-bold border-outline"
-              : "hover:bg-menu-item-selected-gradient text-white/30"
+              ? "bg-menu-item-selected-gradient font-medium border-outline text-white"
+              : "hover:bg-menu-item-selected-gradient text-zinc-200"
           }
         `}
         >
           {React.cloneElement(icon, { weight: isActive ? "fill" : "regular" })}
-          <p className="text-sm leading-loose text-opacity-60 whitespace-nowrap overflow-hidden ">
+          <p className="text-sm leading-loose whitespace-nowrap overflow-hidden ">
             {btnText}
           </p>
         </Link>

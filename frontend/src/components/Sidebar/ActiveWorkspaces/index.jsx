@@ -92,8 +92,12 @@ export default function ActiveWorkspaces() {
                 className={`
               transition-all duration-[200ms]
                 flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-white justify-start items-center
-                hover:bg-workspace-item-selected-gradient hover:font-bold border-2 border-outline
-                ${isActive && "bg-workspace-item-selected-gradient font-bold"}`}
+                hover:bg-workspace-item-selected-gradient  border-outline
+                ${
+                  isActive
+                    ? "bg-workspace-item-selected-gradient font-medium border-none"
+                    : "border-[1px]"
+                }`}
               >
                 <div className="flex flex-row justify-between w-full">
                   <div className="flex items-center space-x-2">
@@ -103,8 +107,8 @@ export default function ActiveWorkspaces() {
                       size={24}
                     />
                     <p
-                      className={`text-white text-[14px] leading-loose whitespace-nowrap overflow-hidden ${
-                        isActive ? "" : "text-opacity-80"
+                      className={`text-[14px] leading-loose whitespace-nowrap overflow-hidden ${
+                        isActive ? "text-white " : "text-zinc-200"
                       }`}
                     >
                       {isActive || isHovered
