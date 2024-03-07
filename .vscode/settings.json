@@ -18,5 +18,6 @@
     "Weaviate",
     "Zilliz"
   ],
-  "eslint.experimental.useFlatConfig": true
+  "eslint.experimental.useFlatConfig": true,
+  "docker.languageserver.formatter.ignoreMultilineInstructions": true
 }
