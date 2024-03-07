@@ -12,7 +12,7 @@ export default function OllamaEmbeddingOptions({ settings }) {
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
-            LocalAI Base URL
+            Ollama Base URL
           </label>
           <input
             type="url"

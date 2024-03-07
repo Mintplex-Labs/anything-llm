@@ -73,7 +73,7 @@ export default function NewIconForm({ handleSubmit, showing }) {
               name="url"
               required={true}
               placeholder="https://example.com"
-              className="bg-sidebar text-white placeholder-white/60 rounded-md p-2"
+              className="bg-sidebar text-white placeholder:text-white/20 rounded-md p-2"
             />
           </div>
           {selectedIcon !== "" && (

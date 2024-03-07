@@ -35,7 +35,7 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
 
   const handleUploadSuccess = () => {
     fetchKeys(true);
-    showToast("File uploaded successfully", "success");
+    showToast("File uploaded successfully", "success", { clear: true });
   };
 
   const handleUploadError = (message) => {
@@ -105,7 +105,7 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[400px] p-1 overflow-y-auto">
+          <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[180px] p-1 overflow-y-scroll no-scroll">
             {files.map((file) => (
               <FileUploadProgress
                 key={file.uid}
@@ -128,7 +128,7 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
           disabled={fetchingUrl}
           name="link"
           type="url"
-          className="disabled:bg-zinc-600 disabled:text-slate-300 bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5"
+          className="disabled:bg-zinc-600 disabled:text-slate-300 bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5"
           placeholder={"https://example.com"}
           autoComplete="off"
         />

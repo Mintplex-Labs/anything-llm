@@ -11,7 +11,7 @@ export default function OpenRouterOptions({ settings }) {
         <input
           type="password"
           name="OpenRouterApiKey"
-          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
           placeholder="OpenRouter API Key"
           defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -56,7 +56,7 @@ function OpenRouterModelSelection({ settings }) {
         <select
           name="OpenRouterModelPref"
           disabled={true}
-          className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -74,7 +74,7 @@ function OpenRouterModelSelection({ settings }) {
       <select
         name="OpenRouterModelPref"
         required={true}
-        className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {Object.keys(groupedModels)
           .sort()
