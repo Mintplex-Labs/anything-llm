@@ -42,7 +42,7 @@ class AnythingLLMOllama {
       }, 30_000);
     });
 
-    process.parentPort.postMessage({ message: "get-ollama-port" });
+    process.parentPort?.postMessage({ message: "get-ollama-port" });
     const ollamaPort = await getOllamaPortFromMain
       .then((res) => res)
       .catch(() => null);
@@ -127,7 +127,7 @@ class AnythingLLMOllama {
   async bootOrContinue() {
     if (await this.#ollamaProcessRunning()) return;
 
-    process.parentPort.postMessage({ message: "boot-ollama" });
+    process.parentPort?.postMessage({ message: "boot-ollama" });
     const ollamaOnline = new Promise((resolve) => {
       const requestHandler = ({ data }) => {
         const { type, success, port } = data;
