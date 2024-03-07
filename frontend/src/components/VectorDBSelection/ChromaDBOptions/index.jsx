@@ -9,7 +9,7 @@ export default function ChromaDBOptions({ settings }) {
           <input
             type="url"
             name="ChromaEndpoint"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="http://localhost:8000"
             defaultValue={settings?.ChromaEndpoint}
             required={true}
@@ -27,7 +27,7 @@ export default function ChromaDBOptions({ settings }) {
             autoComplete="off"
             type="text"
             defaultValue={settings?.ChromaApiHeader}
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="X-Api-Key"
           />
         </div>
@@ -41,7 +41,7 @@ export default function ChromaDBOptions({ settings }) {
             autoComplete="off"
             type="password"
             defaultValue={settings?.ChromaApiKey ? "*".repeat(20) : ""}
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="sk-myApiKeyToAccessMyChromaInstance"
           />
         </div>

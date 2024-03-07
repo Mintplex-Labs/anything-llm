@@ -7,12 +7,14 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
+import OllamaLogo from "@/media/llmprovider/ollama.png";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
 import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
 import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
 import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
+import OllamaEmbeddingOptions from "@/components/EmbeddingSelection/OllamaOptions";
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useModal } from "@/hooks/useModal";
@@ -106,6 +108,13 @@ export default function GeneralEmbeddingPreference() {
       value: "localai",
       logo: LocalAiLogo,
       options: <LocalAiOptions settings={settings} />,
+      description: "Run embedding models locally on your own machine.",
+    },
+    {
+      name: "Ollama",
+      value: "ollama",
+      logo: OllamaLogo,
+      options: <OllamaEmbeddingOptions settings={settings} />,
       description: "Run embedding models locally on your own machine.",
     },
   ];

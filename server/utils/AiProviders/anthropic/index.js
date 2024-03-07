@@ -1,6 +1,6 @@
 const { v4 } = require("uuid");
 const { chatPrompt } = require("../../chats");
-
+const { writeResponseChunk } = require("../../helpers/chat/responses");
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
@@ -13,7 +13,7 @@ class AnthropicLLM {
     });
     this.anthropic = anthropic;
     this.model =
-      modelPreference || process.env.ANTHROPIC_MODEL_PREF || "claude-2";
+      modelPreference || process.env.ANTHROPIC_MODEL_PREF || "claude-2.0";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -35,17 +35,29 @@ class AnthropicLLM {
 
   promptWindowLimit() {
     switch (this.model) {
-      case "claude-instant-1":
-        return 72_000;
-      case "claude-2":
+      case "claude-instant-1.2":
         return 100_000;
+      case "claude-2.0":
+        return 100_000;
+      case "claude-2.1":
+        return 200_000;
+      case "claude-3-opus-20240229":
+        return 200_000;
+      case "claude-3-sonnet-20240229":
+        return 200_000;
       default:
-        return 72_000; // assume a claude-instant-1 model
+        return 100_000; // assume a claude-instant-1.2 model
     }
   }
 
   isValidChatCompletionModel(modelName = "") {
-    const validModels = ["claude-2", "claude-instant-1"];
+    const validModels = [
+      "claude-instant-1.2",
+      "claude-2.0",
+      "claude-2.1",
+      "claude-3-opus-20240229",
+      "claude-3-sonnet-20240229",
+    ];
     return validModels.includes(modelName);
   }
 
@@ -62,36 +74,43 @@ class AnthropicLLM {
     chatHistory = [],
     userPrompt = "",
   }) {
-    return `\n\nHuman: Please read question supplied within the <question> tags. Using all information generate an answer to the question and output it within <${
-      this.answerKey
-    }> tags. Previous conversations can be used within the <history> tags and can be used to influence the output. Content between the <system> tag is additional information and instruction that will impact how answers are formatted or responded to. Additional contextual information retrieved to help answer the users specific query is available to use for answering and can be found between <context> tags. When no <context> tags may are present use the knowledge available and in the conversation to answer. When one or more <context> tags are available you will use those to help answer the question or augment pre-existing knowledge. You should never say "Based on the provided context" or other phrasing that is not related to the user question.
-    <system>${systemPrompt}</system>
-    ${contextTexts
-      .map((text, i) => {
-        return `<context>${text}</context>\n`;
-      })
-      .join("")}
-    <history>${chatHistory.map((history) => {
-      switch (history.role) {
-        case "assistant":
-          return `\n\nAssistant: ${history.content}`;
-        case "user":
-          return `\n\nHuman: ${history.content}`;
-        default:
-          return "\n";
-      }
-    })}</history>
-    <question>${userPrompt}</question>
-    \n\nAssistant:`;
+    const prompt = {
+      role: "system",
+      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
+    };
+
+    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
+  async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
         `Anthropic chat: ${this.model} is not valid for chat completion!`
       );
 
-    const compressedPrompt = await this.compressMessages(
+    try {
+      const response = await this.anthropic.messages.create({
+        model: this.model,
+        max_tokens: 4096,
+        system: messages[0].content, // Strip out the system message
+        messages: messages.slice(1), // Pop off the system message
+        temperature: Number(temperature ?? this.defaultTemp),
+      });
+
+      return response.content[0].text;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
+
+  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
+    if (!this.isValidChatCompletionModel(this.model))
+      throw new Error(
+        `Anthropic chat: ${this.model} is not valid for chat completion!`
+      );
+
+    const messages = await this.compressMessages(
       {
         systemPrompt: chatPrompt(workspace),
         userPrompt: prompt,
@@ -99,58 +118,85 @@ class AnthropicLLM {
       },
       rawHistory
     );
-    const { content, error } = await this.anthropic.completions
-      .create({
-        model: this.model,
-        max_tokens_to_sample: 300,
-        prompt: compressedPrompt,
-      })
-      .then((res) => {
-        const { completion } = res;
-        const re = new RegExp(
-          "(?:<" + this.answerKey + ">)([\\s\\S]*)(?:</" + this.answerKey + ">)"
-        );
-        const response = completion.match(re)?.[1]?.trim();
-        if (!response)
-          throw new Error("Anthropic: No response could be parsed.");
-        return { content: response, error: null };
-      })
-      .catch((e) => {
-        return { content: null, error: e.message };
-      });
 
-    if (error) throw new Error(error);
-    return content;
+    const streamRequest = await this.anthropic.messages.stream({
+      model: this.model,
+      max_tokens: 4096,
+      system: messages[0].content, // Strip out the system message
+      messages: messages.slice(1), // Pop off the system message
+      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
+    });
+    return streamRequest;
   }
 
-  async getChatCompletion(prompt = "", _opts = {}) {
+  async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `Anthropic chat: ${this.model} is not valid for chat completion!`
+        `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const { content, error } = await this.anthropic.completions
-      .create({
-        model: this.model,
-        max_tokens_to_sample: 300,
-        prompt,
-      })
-      .then((res) => {
-        const { completion } = res;
-        const re = new RegExp(
-          "(?:<" + this.answerKey + ">)([\\s\\S]*)(?:</" + this.answerKey + ">)"
-        );
-        const response = completion.match(re)?.[1]?.trim();
-        if (!response)
-          throw new Error("Anthropic: No response could be parsed.");
-        return { content: response, error: null };
-      })
-      .catch((e) => {
-        return { content: null, error: e.message };
-      });
+    const streamRequest = await this.anthropic.messages.stream({
+      model: this.model,
+      max_tokens: 4096,
+      system: messages[0].content, // Strip out the system message
+      messages: messages.slice(1), // Pop off the system message
+      temperature: Number(temperature ?? this.defaultTemp),
+    });
+    return streamRequest;
+  }
 
-    if (error) throw new Error(error);
-    return content;
+  handleStream(response, stream, responseProps) {
+    return new Promise((resolve) => {
+      let fullText = "";
+      const { uuid = v4(), sources = [] } = responseProps;
+
+      stream.on("streamEvent", (message) => {
+        const data = message;
+        if (
+          data.type === "content_block_delta" &&
+          data.delta.type === "text_delta"
+        ) {
+          const text = data.delta.text;
+          fullText += text;
+
+          writeResponseChunk(response, {
+            uuid,
+            sources,
+            type: "textResponseChunk",
+            textResponse: text,
+            close: false,
+            error: false,
+          });
+        }
+
+        if (
+          message.type === "message_stop" ||
+          (data.stop_reason && data.stop_reason === "end_turn")
+        ) {
+          writeResponseChunk(response, {
+            uuid,
+            sources,
+            type: "textResponseChunk",
+            textResponse: "",
+            close: true,
+            error: false,
+          });
+          resolve(fullText);
+        }
+      });
+    });
+  }
+
+  #appendContext(contextTexts = []) {
+    if (!contextTexts || !contextTexts.length) return "";
+    return (
+      "\nContext:\n" +
+      contextTexts
+        .map((text, i) => {
+          return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+        })
+        .join("")
+    );
   }
 
   async compressMessages(promptArgs = {}, rawHistory = []) {

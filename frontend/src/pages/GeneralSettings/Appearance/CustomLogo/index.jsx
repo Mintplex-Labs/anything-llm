@@ -107,12 +107,14 @@ export default function CustomLogo() {
               </div>
             </div>
           </label>
-          <button
-            onClick={handleRemoveLogo}
-            className="text-white text-base font-medium hover:text-opacity-60"
-          >
-            Delete
-          </button>
+          {!isDefaultLogo && (
+            <button
+              onClick={handleRemoveLogo}
+              className="text-white text-base font-medium hover:text-opacity-60"
+            >
+              Delete
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -4,12 +4,7 @@ import {
   getFileExtension,
   middleTruncate,
 } from "@/utils/directories";
-import {
-  ArrowUUpLeft,
-  File,
-  PushPin,
-  PushPinSlash,
-} from "@phosphor-icons/react";
+import { ArrowUUpLeft, File, PushPin } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import debounce from "lodash.debounce";
 import { Tooltip } from "react-tooltip";
@@ -144,28 +139,27 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
 
   if (!item) return <div />;
 
-  const PinIcon = pinned ? PushPinSlash : PushPin;
   return (
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      className="flex gap-x-2 items-center hover:bg-main-gradient p-[2px] rounded ml-2"
     >
-      <PinIcon
+      <PushPin
         data-tooltip-id={`pin-${item.id}`}
         data-tooltip-content={
-          pinned ? "Unpin document from workspace" : "Pin document to workspace"
+          pinned ? "Un-Pin from workspace" : "Pin to workspace"
         }
+        size={16}
         onClick={updatePinStatus}
-        weight={hover ? "fill" : "regular"}
-        className={`outline-none text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer ${
-          pinned ? "hover:text-red-300" : ""
-        }`}
+        weight={hover || pinned ? "fill" : "regular"}
+        className="outline-none text-base font-bold flex-shrink-0 cursor-pointer"
       />
       <Tooltip
         id={`pin-${item.id}`}
         place="bottom"
         delayShow={300}
-        className="tooltip !text-xs"
+        className="tooltip invert !text-xs"
       />
     </div>
   );
@@ -184,7 +178,7 @@ const RemoveItemFromWorkspace = ({ item, onClick }) => {
         id={`remove-${item.id}`}
         place="bottom"
         delayShow={300}
-        className="tooltip !text-xs"
+        className="tooltip invert !text-xs"
       />
     </div>
   );

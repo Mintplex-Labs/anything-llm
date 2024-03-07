@@ -82,6 +82,7 @@ Some cool features of AnythingLLM
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LM Studio (all)](https://lmstudio.ai)
 - [LocalAi (all)](https://localai.io/)
+- [Ollama (all)](https://ollama.ai/)
 
 **Supported Vector Databases:**
 

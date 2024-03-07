@@ -144,7 +144,7 @@ export const WorkspaceSelection = ({ defaultValue = null }) => {
         name="workspace_id"
         required={true}
         defaultValue={defaultValue}
-        className="min-w-[15rem] rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white border border-gray-500 focus:ring-blue-500 focus:border-blue-500"
+        className="min-w-[15rem] rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white focus:ring-blue-500 focus:border-blue-500"
       >
         {workspaces.map((workspace) => {
           return (
@@ -274,7 +274,7 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
         classNames={{
           tag: "bg-blue-300/10 text-zinc-800 m-1",
           input:
-            "flex bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white p-2.5",
+            "flex bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white p-2.5",
         }}
       />
     </div>
@@ -293,7 +293,7 @@ export const NumberInput = ({ name, title, hint, defaultValue = 0 }) => {
       <input
         type="number"
         name={name}
-        className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-[15rem] p-2.5"
+        className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-[15rem] p-2.5"
         min={0}
         defaultValue={defaultValue}
         onScroll={(e) => e.target.blur()}

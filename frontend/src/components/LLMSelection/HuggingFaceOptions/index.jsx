@@ -9,7 +9,7 @@ export default function HuggingFaceOptions({ settings }) {
           <input
             type="url"
             name="HuggingFaceLLMEndpoint"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="https://example.endpoints.huggingface.cloud"
             defaultValue={settings?.HuggingFaceLLMEndpoint}
             required={true}
@@ -24,7 +24,7 @@ export default function HuggingFaceOptions({ settings }) {
           <input
             type="password"
             name="HuggingFaceLLMAccessToken"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="HuggingFace Access Token"
             defaultValue={
               settings?.HuggingFaceLLMAccessToken ? "*".repeat(20) : ""
@@ -41,7 +41,7 @@ export default function HuggingFaceOptions({ settings }) {
           <input
             type="number"
             name="HuggingFaceLLMTokenLimit"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="4096"
             min={1}
             onScroll={(e) => e.target.blur()}

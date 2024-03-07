@@ -73,6 +73,9 @@ function getLLMProvider(modelPreference = null) {
     case "huggingface":
       const { HuggingFaceLLM } = require("../AiProviders/huggingface");
       return new HuggingFaceLLM(embedder, modelPreference);
+    case "groq":
+      const { GroqLLM } = require("../AiProviders/groq");
+      return new GroqLLM(embedder, modelPreference);
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
   }
@@ -92,6 +95,9 @@ function getEmbeddingEngineSelection() {
     case "localai":
       const { LocalAiEmbedder } = require("../EmbeddingEngines/localAi");
       return new LocalAiEmbedder();
+    case "ollama":
+      const { OllamaEmbedder } = require("../EmbeddingEngines/ollama");
+      return new OllamaEmbedder();
     case "native":
       const { NativeEmbedder } = require("../EmbeddingEngines/native");
       console.log("\x1b[34m[INFO]\x1b[0m Using Native Embedder");
