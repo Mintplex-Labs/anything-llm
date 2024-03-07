@@ -1,5 +1,10 @@
+const { EventLogs } = require("../../../models/eventLogs");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { getVectorDbClass } = require("../../../utils/helpers");
+const {
+  prepareWorkspaceChatsForExport,
+  exportChatsAsType,
+} = require("../../../utils/helpers/chat/convertTo");
 const { dumpENV, updateENV } = require("../../../utils/helpers/updateENV");
 const { reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
@@ -141,6 +146,60 @@ function apiSystemEndpoints(app) {
         const { newValues, error } = await updateENV(body);
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/v1/system/export-chats",
+    [validApiKey],
+    async (request, response) => {
+      /*
+    #swagger.tags = ['System Settings']
+    #swagger.description = 'Export all of the chats from the system in a known format. Output depends on the type sent. Will be send with the correct header for the output.'
+   #swagger.parameters['type'] = {
+      in: 'query',
+      description: "Export format jsonl, json, csv, jsonAlpaca",
+      required: false,
+      type: 'string'
+    }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: [
+              {
+                "role": "user",
+                "content": "What is AnythinglLM?"
+              },
+              {
+                "role": "assistant",
+                "content": "AnythingLLM is a knowledge graph and vector database management system built using NodeJS express server. It provides an interface for handling all interactions, including vectorDB management and LLM (Language Model) interactions."
+              },
+            ]
+          }
+        }
+      }
+    }
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+    */
+      try {
+        const { type = "jsonl" } = request.query;
+        const chats = await prepareWorkspaceChatsForExport(type);
+        const { contentType, data } = await exportChatsAsType(chats, type);
+        await EventLogs.logEvent("exported_chats", {
+          type,
+        });
+        response.setHeader("Content-Type", contentType);
+        response.status(200).send(data);
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();

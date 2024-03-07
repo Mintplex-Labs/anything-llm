@@ -85,11 +85,35 @@ async function messageArrayCompressor(llm, messages = [], rawHistory = []) {
     // Split context from system prompt - cannonball since its over the window.
     // We assume the context + user prompt is enough tokens to fit.
     const [prompt, context = ""] = system.content.split("Context:");
-    system.content = `${cannonball({
-      input: prompt,
-      targetTokenSize: llm.limits.system,
-      tiktokenInstance: tokenManager,
-    })}${context ? `\nContext: ${context}` : ""}`;
+    let compressedPrompt;
+    let compressedContext;
+
+    // If the user system prompt contribution's to the system prompt is more than
+    // 25% of the system limit, we will cannonball it - this favors the context
+    // over the instruction from the user.
+    if (tokenManager.countFromString(prompt) >= llm.limits.system * 0.25) {
+      compressedPrompt = cannonball({
+        input: prompt,
+        targetTokenSize: llm.limits.system * 0.25,
+        tiktokenInstance: tokenManager,
+      });
+    } else {
+      compressedPrompt = prompt;
+    }
+
+    if (tokenManager.countFromString(context) >= llm.limits.system * 0.75) {
+      compressedContext = cannonball({
+        input: context,
+        targetTokenSize: llm.limits.system * 0.75,
+        tiktokenInstance: tokenManager,
+      });
+    } else {
+      compressedContext = context;
+    }
+
+    system.content = `${compressedPrompt}${
+      compressedContext ? `\nContext: ${compressedContext}` : ""
+    }`;
     resolve(system);
   });
 

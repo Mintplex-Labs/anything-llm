@@ -1,5 +1,21 @@
 const fs = require("fs");
 const path = require("path");
+const { MimeDetector } = require("./mime");
+
+function isTextType(filepath) {
+  try {
+    if (!fs.existsSync(filepath)) return false;
+    const mimeLib = new MimeDetector();
+    const mime = mimeLib.getType(filepath);
+    if (mimeLib.badMimes.includes(mime)) return false;
+
+    const type = mime.split("/")[0];
+    if (mimeLib.nonTextTypes.includes(type)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 function trashFile(filepath) {
   if (!fs.existsSync(filepath)) return;
@@ -94,6 +110,7 @@ async function wipeCollectorStorage() {
 
 module.exports = {
   trashFile,
+  isTextType,
   createdDate,
   writeToServerDocuments,
   wipeCollectorStorage,

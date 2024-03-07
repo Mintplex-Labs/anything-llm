@@ -52,7 +52,7 @@ export default function EditWorkspaceUsersModal({
         </div>
         <form onSubmit={handleUpdate}>
           <div className="p-6 space-y-6 flex h-full w-full">
-            <div className="w-full flex flex-col gap-y-4">
+            <div className="w-full flex flex-col gap-y-4 max-h-[350px] overflow-y-scroll">
               {users
                 .filter((user) => user.role !== "admin")
                 .map((user) => {

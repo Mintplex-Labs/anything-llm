@@ -58,6 +58,12 @@ function getLLMProvider(modelPreference = null) {
     case "togetherai":
       const { TogetherAiLLM } = require("../AiProviders/togetherAi");
       return new TogetherAiLLM(embedder, modelPreference);
+    case "perplexity":
+      const { PerplexityLLM } = require("../AiProviders/perplexity");
+      return new PerplexityLLM(embedder, modelPreference);
+    case "openrouter":
+      const { OpenRouterLLM } = require("../AiProviders/openRouter");
+      return new OpenRouterLLM(embedder, modelPreference);
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
       return new MistralLLM(embedder, modelPreference);
@@ -67,6 +73,9 @@ function getLLMProvider(modelPreference = null) {
     case "huggingface":
       const { HuggingFaceLLM } = require("../AiProviders/huggingface");
       return new HuggingFaceLLM(embedder, modelPreference);
+    case "groq":
+      const { GroqLLM } = require("../AiProviders/groq");
+      return new GroqLLM(embedder, modelPreference);
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
   }
@@ -86,6 +95,9 @@ function getEmbeddingEngineSelection() {
     case "localai":
       const { LocalAiEmbedder } = require("../EmbeddingEngines/localAi");
       return new LocalAiEmbedder();
+    case "ollama":
+      const { OllamaEmbedder } = require("../EmbeddingEngines/ollama");
+      return new OllamaEmbedder();
     case "native":
       const { NativeEmbedder } = require("../EmbeddingEngines/native");
       console.log("\x1b[34m[INFO]\x1b[0m Using Native Embedder");

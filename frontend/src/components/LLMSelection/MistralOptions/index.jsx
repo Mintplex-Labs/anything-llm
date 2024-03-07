@@ -14,7 +14,7 @@ export default function MistralOptions({ settings }) {
         <input
           type="password"
           name="MistralApiKey"
-          className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
           placeholder="Mistral API Key"
           defaultValue={settings?.MistralApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -60,7 +60,7 @@ function MistralModelSelection({ apiKey, settings }) {
         <select
           name="MistralModelPref"
           disabled={true}
-          className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {!!apiKey
@@ -80,7 +80,7 @@ function MistralModelSelection({ apiKey, settings }) {
       <select
         name="MistralModelPref"
         required={true}
-        className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Available Mistral Models">

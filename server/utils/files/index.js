@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { v5: uuidv5 } = require("uuid");
+const { Document } = require("../../models/documents");
 const documentsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/documents`)
@@ -55,6 +56,10 @@ async function viewLocalFiles() {
           type: "file",
           ...metadata,
           cached: await cachedVectorInformation(cachefilename, true),
+          pinnedWorkspaces: await Document.getPins({
+            docpath: cachefilename,
+            pinned: true,
+          }),
         });
       }
       directory.items.push(subdocs);

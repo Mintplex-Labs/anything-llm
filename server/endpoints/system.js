@@ -261,6 +261,21 @@ function systemEndpoints(app) {
   );
 
   app.delete(
+    "/system/remove-documents",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { names } = reqBody(request);
+        for await (const name of names) await purgeDocument(name);
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
     "/system/remove-folder",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {

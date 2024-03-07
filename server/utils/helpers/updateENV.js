@@ -135,7 +135,7 @@ const KEY_MAPPING = {
   },
   EmbeddingBasePath: {
     envKey: "EMBEDDING_BASE_PATH",
-    checks: [isNotEmpty, validLLMExternalBasePath, validDockerizedUrl],
+    checks: [isNotEmpty, validDockerizedUrl],
   },
   EmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
@@ -239,6 +239,36 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Perplexity Options
+  PerplexityApiKey: {
+    envKey: "PERPLEXITY_API_KEY",
+    checks: [isNotEmpty],
+  },
+  PerplexityModelPref: {
+    envKey: "PERPLEXITY_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // OpenRouter Options
+  OpenRouterApiKey: {
+    envKey: "OPENROUTER_API_KEY",
+    checks: [isNotEmpty],
+  },
+  OpenRouterModelPref: {
+    envKey: "OPENROUTER_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Groq Options
+  GroqApiKey: {
+    envKey: "GROQ_API_KEY",
+    checks: [isNotEmpty],
+  },
+  GroqModelPref: {
+    envKey: "GROQ_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
@@ -314,6 +344,9 @@ function supportedLLM(input = "") {
     "togetherai",
     "mistral",
     "huggingface",
+    "perplexity",
+    "openrouter",
+    "groq",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -326,14 +359,20 @@ function validGeminiModel(input = "") {
 }
 
 function validAnthropicModel(input = "") {
-  const validModels = ["claude-2", "claude-instant-1"];
+  const validModels = [
+    "claude-instant-1.2",
+    "claude-2.0",
+    "claude-2.1",
+    "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+  ];
   return validModels.includes(input)
     ? null
     : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
 }
 
 function supportedEmbeddingModel(input = "") {
-  const supported = ["openai", "azure", "localai", "native"];
+  const supported = ["openai", "azure", "localai", "native", "ollama"];
   return supported.includes(input)
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;

@@ -13,12 +13,19 @@ const PROVIDER_DEFAULT_MODELS = {
     "gpt-4-32k",
   ],
   gemini: ["gemini-pro"],
-  anthropic: ["claude-2", "claude-instant-1"],
+  anthropic: [
+    "claude-instant-1.2",
+    "claude-2.0",
+    "claude-2.1",
+    "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+  ],
   azure: [],
   lmstudio: [],
   localai: [],
   ollama: [],
   togetherai: [],
+  groq: ["llama2-70b-4096", "mixtral-8x7b-32768"],
   native: [],
 };
 

@@ -6,11 +6,15 @@ const { v4 } = require("uuid");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 
-function validYoutubeVideoUrl(url) {
+function validYoutubeVideoUrl(link) {
   const UrlPattern = require("url-pattern");
+  const opts = new URL(link);
+  const url = `${opts.protocol}//${opts.host}${
+    opts.pathname
+  }?v=${opts.searchParams.get("v")}`;
 
   const shortPatternMatch = new UrlPattern(
-    "https\\://youtu.be/(:videoId)"
+    "https\\://(www.)youtu.be/(:videoId)"
   ).match(url);
   const fullPatternMatch = new UrlPattern(
     "https\\://(www.)youtube.com/watch?v=(:videoId)"
@@ -32,12 +36,22 @@ async function loadYouTubeTranscript({ url }) {
 
   console.log(`-- Working YouTube ${url} --`);
   const loader = YoutubeLoader.createFromUrl(url, { addVideoInfo: true });
-  const docs = await loader.load();
+  const { docs, error } = await loader
+    .load()
+    .then((docs) => {
+      return { docs, error: null };
+    })
+    .catch((e) => {
+      return {
+        docs: [],
+        error: e.message?.split("Error:")?.[1] || e.message,
+      };
+    });
 
-  if (!docs.length) {
+  if (!docs.length || !!error) {
     return {
       success: false,
-      reason: "No transcript found for that YouTube video.",
+      reason: error ?? "No transcript found for that YouTube video.",
     };
   }
 
