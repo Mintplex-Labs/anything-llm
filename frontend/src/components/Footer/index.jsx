@@ -13,6 +13,7 @@ import {
 } from "@phosphor-icons/react";
 import React, { useEffect, useState } from "react";
 import SettingsButton from "../SettingsButton";
+import { isMobile } from "react-device-detect";
 
 export const MAX_ICONS = 3;
 export const ICON_COMPONENTS = {
@@ -44,11 +45,12 @@ export default function Footer() {
 
   if (!Array.isArray(footerData) || footerData.length === 0) {
     return (
-      <div className="flex justify-center mt-2">
+      <div className="flex justify-center mb-2">
         <div className="flex space-x-4">
           <a
             href={paths.github()}
             target="_blank"
+            rel="noreferrer"
             rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
@@ -58,6 +60,7 @@ export default function Footer() {
             href={paths.docs()}
             target="_blank"
             rel="noreferrer"
+            rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
             <BookOpen weight="fill" className="h-5 w-5 " />
@@ -66,6 +69,7 @@ export default function Footer() {
             href={paths.discord()}
             target="_blank"
             rel="noreferrer"
+            rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
             <DiscordLogo
@@ -73,14 +77,14 @@ export default function Footer() {
               className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
             />
           </a>
-          <SettingsButton />
+          {!isMobile && <SettingsButton />}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex justify-center mt-2">
+    <div className="flex justify-center mb-2">
       <div className="flex space-x-4">
         {footerData.map((item, index) => (
           <a
@@ -96,7 +100,7 @@ export default function Footer() {
             })}
           </a>
         ))}
-        <SettingsButton />
+        {!isMobile && <SettingsButton />}
       </div>
     </div>
   );

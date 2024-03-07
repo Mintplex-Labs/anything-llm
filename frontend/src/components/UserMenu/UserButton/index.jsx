@@ -61,7 +61,7 @@ export default function UserButton() {
         type="button"
         className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient justify-center text-white p-2 hover:border-slate-100 hover:border-opacity-50 border-transparent border"
       >
-        {mode === "multi" ? userDisplay() : <Person size={14} />}
+        {mode === "multi" ? <UserDisplay /> : <Person size={14} />}
       </button>
 
       {showMenu && (
@@ -109,7 +109,7 @@ export default function UserButton() {
   );
 }
 
-function userDisplay() {
+function UserDisplay() {
   const { pfp } = usePfp();
   const user = userFromStorage();
 

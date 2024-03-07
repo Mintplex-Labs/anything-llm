@@ -103,8 +103,8 @@ export default function ActiveWorkspaces() {
                       size={24}
                     />
                     <p
-                      className={`text-white text-[14px] leading-loose whitespace-nowrap overflow-hidden ${
-                        isActive ? "" : "text-opacity-80"
+                      className={`text-[14px] leading-loose whitespace-nowrap overflow-hidden ${
+                        isActive ? "text-white " : "text-zinc-200"
                       }`}
                     >
                       {isActive || isHovered

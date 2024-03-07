@@ -8,6 +8,8 @@ export default function SettingsButton() {
   const isInSettings = !!useMatch("/settings/*");
   const { user } = useUser();
 
+  if (user && user?.role === "default") return null;
+
   if (isInSettings)
     return (
       <Link
