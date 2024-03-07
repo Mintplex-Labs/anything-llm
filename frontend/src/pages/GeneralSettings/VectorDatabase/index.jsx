@@ -197,7 +197,7 @@ export default function GeneralVectorDatabase() {
                 </p>
               </div>
               <div className="text-sm font-medium text-white mt-6 mb-4">
-                Select your preferred vector database provider
+                Vector Database Providers
               </div>
               <div className="w-full">
                 <div className="w-full relative border-slate-300/20 shadow border-4 rounded-xl text-white">
