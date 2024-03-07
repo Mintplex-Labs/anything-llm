@@ -1,32 +1,20 @@
 const fs = require("fs");
 const path = require("path");
-const { getType } = require("mime");
+const { MimeDetector } = require("./mime");
 const documentsFolder =
   process.env.NODE_ENV === "production"
     ? path.resolve("/storage/documents") // hardcoded to Render storage mount.
     : path.resolve(__dirname, "../../../server/storage/documents");
 
 function isTextType(filepath) {
-  if (!fs.existsSync(filepath)) return false;
-  // These are types of mime primary classes that for sure
-  // cannot also for forced into a text type.
-  const nonTextTypes = ["multipart", "image", "model", "audio", "video"];
-  // These are full-mimes we for sure cannot parse or interpret as text
-  // documents
-  const BAD_MIMES = [
-    "application/octet-stream",
-    "application/zip",
-    "application/pkcs8",
-    "application/vnd.microsoft.portable-executable",
-    "application/x-msdownload",
-  ];
-
   try {
-    const mime = getType(filepath);
-    if (BAD_MIMES.includes(mime)) return false;
+    if (!fs.existsSync(filepath)) return false;
+    const mimeLib = new MimeDetector();
+    const mime = mimeLib.getType(filepath);
+    if (mimeLib.badMimes.includes(mime)) return false;
 
     const type = mime.split("/")[0];
-    if (nonTextTypes.includes(type)) return false;
+    if (mimeLib.nonTextTypes.includes(type)) return false;
     return true;
   } catch {
     return false;
@@ -96,7 +84,7 @@ async function wipeCollectorStorage() {
         if (file === "__HOTDIR__.md") continue;
         try {
           fs.rmSync(path.join(directory, file));
-        } catch {}
+        } catch { }
       }
       resolve();
     });
@@ -111,7 +99,7 @@ async function wipeCollectorStorage() {
         if (file === ".placeholder") continue;
         try {
           fs.rmSync(path.join(directory, file));
-        } catch {}
+        } catch { }
       }
       resolve();
     });

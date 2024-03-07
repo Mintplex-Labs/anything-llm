@@ -20,7 +20,7 @@
     "seed": "node prisma/seed.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.8.1",
+    "@anthropic-ai/sdk": "^0.16.1",
     "@azure/openai": "1.0.0-beta.10",
     "@datastax/astra-db-ts": "^0.1.3",
     "@google/generative-ai": "^0.1.3",
