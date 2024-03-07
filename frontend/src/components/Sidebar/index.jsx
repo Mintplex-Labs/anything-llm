@@ -144,7 +144,7 @@ export function SidebarMobileHeader() {
                   style={{ objectFit: "contain" }}
                 />
               </div>
-              <div className="flex gap-x-2 items-center text-slate-500 shink-0">
+              <div className="flex gap-x-2 items-center text-slate-500 shrink-0">
                 <SettingsButton />
               </div>
             </div>
