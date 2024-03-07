@@ -150,7 +150,7 @@ export default function GeneralEmbeddingPreference() {
           >
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
-                <div className="flex justify-between items-center">
+                <div className="flex gap-x-4 items-center">
                   <p className="text-lg leading-6 font-bold text-white">
                     Embedding Preference
                   </p>
