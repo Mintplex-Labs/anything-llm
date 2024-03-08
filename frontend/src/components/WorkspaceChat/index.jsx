@@ -19,9 +19,20 @@ export default function WorkspaceChat({ loading, workspace }) {
         return false;
       }
 
-      const chatHistory = threadSlug
+      let chatHistory = threadSlug
         ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
         : await Workspace.chatHistory(workspace.slug);
+
+      // TODO: add conditional if dynamic input is enabled in the workspace by default is false
+      // Append metadata to the chat history
+      chatHistory = chatHistory.map((message) => {
+        if (message.role === "assistant") {
+          const { remainingText, metaData } = extractMetaData(message.content);
+          return { ...message, content: remainingText, metaData };
+        }
+        return message;
+      });
+
       setHistory(chatHistory);
       setLoadingHistory(false);
     }
