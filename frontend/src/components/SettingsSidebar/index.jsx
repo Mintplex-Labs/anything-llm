@@ -13,7 +13,6 @@ import {
   Database,
   Lock,
   House,
-  X,
   List,
   FileCode,
   Plugs,
@@ -25,6 +24,7 @@ import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { isMobile } from "react-device-detect";
 import Footer from "../Footer";
+import { Link } from "react-router-dom";
 
 export default function SettingsSidebar() {
   const { logo } = useLogo();
@@ -112,9 +112,7 @@ export default function SettingsSidebar() {
                     <SidebarOptions user={user} />
                   </div>
                 </div>
-                <div>
-                  <Footer />
-                </div>
+                <Footer />
               </div>
             </div>
           </div>
@@ -124,50 +122,38 @@ export default function SettingsSidebar() {
   }
 
   return (
-    <>
+    <div>
+      <Link
+        to={paths.home()}
+        className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
+      >
+        <img
+          src={logo}
+          alt="Logo"
+          className="rounded max-h-[24px]"
+          style={{ objectFit: "contain" }}
+        />
+      </Link>
       <div
         ref={sidebarRef}
-        style={{ height: "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px]"
+        style={{ height: "calc(100% - 76px)" }}
+        className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px]"
       >
-        <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
-          {/* Header Information */}
-          <div className="flex w-full items-center justify-between">
-            <div className="flex shrink-0 max-w-[65%] items-center justify-start ml-2">
-              <img
-                src={logo}
-                alt="Logo"
-                className="rounded max-h-[40px]"
-                style={{ objectFit: "contain" }}
-              />
-            </div>
-            <div className="flex gap-x-2 items-center text-slate-500">
-              <a
-                href={paths.home()}
-                className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-              >
-                <X className="h-4 w-4" />
-              </a>
-            </div>
+        <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
+          <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
+            Instance Settings
           </div>
-          <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-4 mb-0 ml-2">
-            Settings
-          </div>
-          {/* Primary Body */}
-          <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll">
+          <div className="relative h-full flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
             <div className="h-auto sidebar-items">
-              {/* Options */}
               <div className="flex flex-col gap-y-2 h-full pb-8 overflow-y-scroll no-scroll">
                 <SidebarOptions user={user} />
               </div>
             </div>
-            <div>
-              <Footer />
-            </div>
+            <Footer />
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -195,24 +181,25 @@ const Option = ({
 
   return (
     <>
-      <div className="flex gap-x-2 items-center justify-between text-white">
-        <a
-          href={href}
+      <div className="flex gap-x-2 items-center justify-between">
+        <Link
+          to={href}
           className={`
           transition-all duration-[200ms]
-          flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 rounded justify-start items-center border
+          flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] justify-start items-center
+          hover:bg-workspace-item-selected-gradient hover:text-white hover:font-medium
           ${
             isActive
-              ? "bg-menu-item-selected-gradient border-slate-100 border-opacity-50 font-medium"
-              : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
+              ? "bg-menu-item-selected-gradient font-medium border-outline text-white"
+              : "hover:bg-menu-item-selected-gradient text-zinc-200"
           }
         `}
         >
           {React.cloneElement(icon, { weight: isActive ? "fill" : "regular" })}
-          <p className="text-sm leading-loose text-opacity-60 whitespace-nowrap overflow-hidden ">
+          <p className="text-sm leading-loose whitespace-nowrap overflow-hidden ">
             {btnText}
           </p>
-        </a>
+        </Link>
       </div>
       {!!subOptions && (isActive || hasActiveChild) && (
         <div
