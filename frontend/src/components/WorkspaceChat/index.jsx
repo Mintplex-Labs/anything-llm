@@ -12,6 +12,8 @@ export default function WorkspaceChat({ loading, workspace }) {
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
+  const isDynamicInput = false;
+
   useEffect(() => {
     async function getHistory() {
       if (loading) return;
@@ -26,13 +28,17 @@ export default function WorkspaceChat({ loading, workspace }) {
 
       // TODO: add conditional if dynamic input is enabled in the workspace by default is false
       // Append metadata to the chat history
-      chatHistory = chatHistory.map((message) => {
-        if (message.role === "assistant") {
-          const { remainingText, metaData } = extractMetaData(message.content);
-          return { ...message, content: remainingText, metaData };
-        }
-        return message;
-      });
+      if (isDynamicInput) {
+        chatHistory = chatHistory.map((message) => {
+          if (message.role === "assistant") {
+            const { remainingText, metaData } = extractMetaData(
+              message.content
+            );
+            return { ...message, content: remainingText, metaData };
+          }
+          return message;
+        });
+      }
 
       setHistory(chatHistory);
       setLoadingHistory(false);
@@ -73,7 +79,7 @@ export default function WorkspaceChat({ loading, workspace }) {
   }
 
   setEventDelegatorForCodeSnippets();
-  return <ChatContainer workspace={workspace} knownHistory={history} />;
+  return <ChatContainer workspace={workspace} knownHistory={history} isDynamicInput={isDynamicInput} />;
 }
 
 // Enables us to safely markdown and sanitize all responses without risk of injection

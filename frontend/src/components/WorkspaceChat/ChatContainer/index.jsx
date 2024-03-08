@@ -6,12 +6,18 @@ import handleChat from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
 import { useParams } from "react-router-dom";
+import { extractMetaData } from "@/utils/chat/extractMetaData";
 
-export default function ChatContainer({ workspace, knownHistory = [] }) {
+
+
+export default function ChatContainer({ workspace, knownHistory = [], isDynamicInput}) {
   const { threadSlug = null } = useParams();
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
+  const [finalizedChatHistory, setFinalizedChatHistory] =
+    useState(knownHistory);
+  const [currentInputMeta, setCurrentInputMeta] = useState(null);
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
@@ -33,6 +39,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     ];
 
     setChatHistory(prevChatHistory);
+    setFinalizedChatHistory(prevChatHistory);
     setMessage("");
     setLoadingResponse(true);
   };
@@ -100,6 +107,17 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
             )
         );
       }
+
+      if (isDynamicInput) {
+        const { remainingText, metaData } = extractMetaData(
+          _chatHistory[_chatHistory.length - 1].content
+        );
+        _chatHistory[_chatHistory.length - 1].content = remainingText;
+        setFinalizedChatHistory(_chatHistory);
+        setCurrentInputMeta(metaData);
+        console.log("metaData", metaData);
+      }
+
       return;
     }
     loadingResponse === true && fetchReply();
@@ -113,7 +131,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       {isMobile && <SidebarMobileHeader />}
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
         <ChatHistory
-          history={chatHistory}
+          history={isDynamicInput ? finalizedChatHistory : chatHistory}
           workspace={workspace}
           sendCommand={sendCommand}
         />

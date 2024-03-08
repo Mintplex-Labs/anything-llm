@@ -56,6 +56,7 @@ export function SlashCommands({ showing, setShowing, sendCommand }) {
           onClick={() => {
             setShowing(false);
             sendCommand("/reset", true);
+            window.location.reload();
           }}
           className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-col justify-start"
         >
