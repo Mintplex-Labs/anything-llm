@@ -518,6 +518,54 @@ const System = {
     );
     return versionText;
   },
+
+  downloadOllamaModel: async function (modelName, progressCallback) {
+    return new Promise(async (resolve) => {
+      try {
+        const response = await fetch(
+          `${API_BASE()}/system/download-ollama-model`,
+          {
+            method: "POST",
+            headers: baseHeaders(),
+            body: JSON.stringify({ modelName }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Error downloading model");
+        }
+
+        const reader = response.body.getReader();
+        let done = false;
+
+        while (!done) {
+          const { value, done: readerDone } = await reader.read();
+          if (readerDone) {
+            done = true;
+            resolve({ success: true, error: null });
+          } else {
+            const chunk = new TextDecoder("utf-8").decode(value);
+            const lines = chunk.split("\n");
+            for (const line of lines) {
+              if (line.startsWith("data:")) {
+                const data = safeJsonParse(line.slice(5));
+                if (data?.done) {
+                  resolve({ success: true, error: null });
+                } else if (data?.error) {
+                  resolve({ success: false, error: data?.error });
+                } else {
+                  progressCallback(data?.percentage, data?.status);
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error downloading model:", error);
+        resolve({ success: false, error: "Error downloading model" });
+      }
+    });
+  },
   dataConnectors: DataConnector,
 };
 

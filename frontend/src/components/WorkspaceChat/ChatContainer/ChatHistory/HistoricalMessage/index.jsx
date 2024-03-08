@@ -50,7 +50,9 @@ const HistoricalMessage = ({
                 respond to message.
               </span>
               <p className="text-xs font-mono mt-2 border-l-2 border-red-300 pl-2 bg-red-200 p-2 rounded-sm">
-                {error}
+                {error?.includes("try pulling it first")
+                  ? "Please wait until model is downloaded and try again."
+                  : error}
               </p>
             </div>
           ) : (

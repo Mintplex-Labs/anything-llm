@@ -2,6 +2,7 @@ const { chatPrompt } = require("../../chats");
 const { StringOutputParser } = require("langchain/schema/output_parser");
 const { writeResponseChunk } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const { safeJsonParse } = require("../../http");
 
 class AnythingLLMOllama {
   constructor(embedder = null, modelPreference = null) {
@@ -179,6 +180,47 @@ class AnythingLLMOllama {
         console.error(e);
         return [];
       });
+  }
+
+  async pullModel(modelName = "llama2", progressCallback, successCallback) {
+    await this.bootOrContinue();
+
+    const response = await fetch(`${this.basePath()}/api/pull`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: modelName, stream: true }),
+    });
+
+    const reader = response.body.getReader();
+    let receivedLength = 0;
+    let chunks = [];
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        break;
+      }
+
+      chunks.push(value);
+      receivedLength += value.length;
+
+      const receivedText = new TextDecoder("utf-8").decode(value);
+      try {
+        const json = safeJsonParse(receivedText);
+        if (json?.status && json?.total && json?.completed) {
+          const percentage = Math.round((json.completed / json.total) * 100);
+          progressCallback(percentage, json.status);
+        }
+
+        if (json?.status === "success") {
+          successCallback();
+        }
+      } catch (e) {
+        console.error("Error parsing JSON", e);
+      }
+    }
   }
 
   async kill() {

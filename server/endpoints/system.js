@@ -46,6 +46,9 @@ const {
 } = require("../utils/helpers/chat/convertTo");
 const { EventLogs } = require("../models/eventLogs");
 const { CollectorApi } = require("../utils/collectorApi");
+const {
+  downloadAnythingOllamaModel,
+} = require("../utils/helpers/anythingOllama");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -805,6 +808,62 @@ function systemEndpoints(app) {
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/download-ollama-model",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { modelName } = reqBody(request);
+        console.log("Downloading Ollama model:", modelName);
+        response.writeHead(200, {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        });
+
+        const progressCallback = (percentage, status) => {
+          response.write(
+            `event: progress\ndata: ${JSON.stringify({
+              percentage,
+              status,
+            })}\n\n`
+          );
+        };
+
+        const successCallback = (modelName) => {
+          response.write(
+            `event: done\ndata: ${JSON.stringify({
+              done: true,
+            })}\n\n`
+          );
+          response.end();
+        };
+
+        const errorCallback = (error) => {
+          response.write(
+            `event: error\ndata: ${JSON.stringify({ error })}\n\n`
+          );
+          response.end();
+        };
+
+        await downloadAnythingOllamaModel(
+          modelName,
+          progressCallback,
+          successCallback,
+          errorCallback
+        );
+      } catch (error) {
+        console.error("Error downloading Ollama model:", error);
+        response.write(
+          `event: error\ndata: ${JSON.stringify({
+            error: "Internal server error",
+          })}\n\n`
+        );
+        response.end();
       }
     }
   );

@@ -100,7 +100,7 @@ export const DOWNLOADABLE_MODELS = [
     ],
   },
   {
-    id: "gemma:latest",
+    id: "gemma:2b",
     name: "Gemma 2B",
     description:
       "Gemma is a family of lightweight, state-of-the-art open models built by Google DeepMind.",

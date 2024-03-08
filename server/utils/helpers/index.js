@@ -34,6 +34,9 @@ function getLLMProvider(modelPreference = null) {
   const vectorSelection = process.env.LLM_PROVIDER || "openai";
   const embedder = getEmbeddingEngineSelection();
   switch (vectorSelection) {
+    case "anythingllm_ollama":
+      const { AnythingLLMOllama } = require("../AiProviders/anythingLLM");
+      return new AnythingLLMOllama(embedder, modelPreference);
     case "openai":
       const { OpenAiLLM } = require("../AiProviders/openAi");
       return new OpenAiLLM(embedder, modelPreference);

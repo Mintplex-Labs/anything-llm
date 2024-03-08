@@ -62,6 +62,13 @@ function parseAuthHeader(headerValue = null, apiKey = null) {
   return { [headerValue]: apiKey };
 }
 
+function safeJsonParse(jsonString, fallback = null) {
+  try {
+    return JSON.parse(jsonString);
+  } catch {}
+  return fallback;
+}
+
 module.exports = {
   reqBody,
   multiUserMode,
@@ -70,4 +77,5 @@ module.exports = {
   decodeJWT,
   userFromSession,
   parseAuthHeader,
+  safeJsonParse,
 };
