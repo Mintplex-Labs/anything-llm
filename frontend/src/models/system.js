@@ -3,6 +3,9 @@ import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 import { API_BASE } from "@/utils/api";
 
+let currentAbortController = null;
+let killed = false;
+
 const System = {
   cacheKeys: {
     footerIcons: "anythingllm_footer_links",
@@ -522,17 +525,24 @@ const System = {
   downloadOllamaModel: async function (modelName, progressCallback) {
     return new Promise(async (resolve) => {
       try {
+        if (currentAbortController) {
+          currentAbortController.abort();
+          killed = true;
+        }
+
+        currentAbortController = new AbortController();
         const response = await fetch(
           `${API_BASE()}/system/download-ollama-model`,
           {
             method: "POST",
             headers: baseHeaders(),
             body: JSON.stringify({ modelName }),
+            signal: currentAbortController.signal,
           }
         );
 
         if (!response.ok) {
-          throw new Error("Error downloading model");
+          throw new Error("Error downloading model 1.");
         }
 
         const reader = response.body.getReader();
@@ -562,7 +572,12 @@ const System = {
         }
       } catch (error) {
         console.error("Error downloading model:", error);
-        resolve({ success: false, error: "Error downloading model" });
+
+        resolve({
+          success: false,
+          error: "Error downloading model 2.",
+          killed,
+        });
       }
     });
   },

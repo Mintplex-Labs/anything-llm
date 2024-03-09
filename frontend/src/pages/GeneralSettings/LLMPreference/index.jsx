@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -41,12 +41,17 @@ export default function GeneralLLMPreference() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
+  const downloadButtonRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
     const data = { LLMProvider: selectedLLM };
     const formData = new FormData(form);
+
+    if (selectedLLM === "anythingllm_ollama" && downloadButtonRef.current) {
+      downloadButtonRef.current.click();
+    }
 
     for (var [key, value] of formData.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
@@ -88,7 +93,12 @@ export default function GeneralLLMPreference() {
       name: "AnythingLLM",
       value: "anythingllm_ollama",
       logo: AnythingLLMIcon,
-      options: <AnythingLLMOptions settings={settings} />,
+      options: (
+        <AnythingLLMOptions
+          settings={settings}
+          downloadButtonRef={downloadButtonRef}
+        />
+      ),
       description:
         "Run models from Meta, Mistral and more on this device. Powered by Ollama.",
     },
