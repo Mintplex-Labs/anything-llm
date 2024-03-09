@@ -52,7 +52,7 @@ export default function PromptInput({
 
   const watchForSlash = debounce(checkForSlash, 300);
   return (
-    <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
+    <div className="w-full fixed md:absolute bottom-4 left-0 z-10 md:z-0 flex justify-center items-center">
       <SlashCommands
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}

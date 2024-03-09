@@ -11,8 +11,9 @@ export default function WorkspaceChat({ loading, workspace }) {
   const { threadSlug = null } = useParams();
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
+  const [currentInputMeta, setCurrentInputMeta] = useState(null);
 
-  const isDynamicInput = false;
+  const isDynamicInput = true;
 
   useEffect(() => {
     async function getHistory() {
@@ -34,6 +35,7 @@ export default function WorkspaceChat({ loading, workspace }) {
             const { remainingText, metaData } = extractMetaData(
               message.content
             );
+            setCurrentInputMeta(metaData);
             return { ...message, content: remainingText, metaData };
           }
           return message;
@@ -79,7 +81,15 @@ export default function WorkspaceChat({ loading, workspace }) {
   }
 
   setEventDelegatorForCodeSnippets();
-  return <ChatContainer workspace={workspace} knownHistory={history} isDynamicInput={isDynamicInput} />;
+  return (
+    <ChatContainer
+      workspace={workspace}
+      knownHistory={history}
+      isDynamicInput={isDynamicInput}
+      currentInputMeta={currentInputMeta}
+      setCurrentInputMeta={setCurrentInputMeta}
+    />
+  );
 }
 
 // Enables us to safely markdown and sanitize all responses without risk of injection

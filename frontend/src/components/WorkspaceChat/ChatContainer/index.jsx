@@ -7,17 +7,24 @@ import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
 import { useParams } from "react-router-dom";
 import { extractMetaData } from "@/utils/chat/extractMetaData";
+import DynamicInput from "./DynamicInput";
+import { ArrowUUpLeft, Keyboard } from "@phosphor-icons/react";
 
-
-
-export default function ChatContainer({ workspace, knownHistory = [], isDynamicInput}) {
+export default function ChatContainer({
+  workspace,
+  knownHistory = [],
+  isDynamicInput,
+  currentInputMeta,
+  setCurrentInputMeta,
+}) {
   const { threadSlug = null } = useParams();
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const [finalizedChatHistory, setFinalizedChatHistory] =
     useState(knownHistory);
-  const [currentInputMeta, setCurrentInputMeta] = useState(null);
+  const [isForcedTextInput, setIsForcedTextInput] = useState(false);
+
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
@@ -123,6 +130,31 @@ export default function ChatContainer({ workspace, knownHistory = [], isDynamicI
     loadingResponse === true && fetchReply();
   }, [loadingResponse, chatHistory, workspace]);
 
+  const renderInputComponent = () => {
+    if (
+      !isDynamicInput ||
+      currentInputMeta?.inputs?.type === "text" ||
+      currentInputMeta?.inputs === undefined ||
+      isForcedTextInput
+    ) {
+      return (
+        <PromptInput
+          workspace={workspace}
+          message={message}
+          submit={handleSubmit}
+          onChange={handleMessageChange}
+          inputDisabled={loadingResponse}
+          buttonDisabled={loadingResponse}
+          sendCommand={sendCommand}
+        />
+      );
+    }
+
+    if (currentInputMeta?.inputs?.type !== "text") {
+      return <DynamicInput {...currentInputMeta} />;
+    }
+  };
+
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -135,15 +167,26 @@ export default function ChatContainer({ workspace, knownHistory = [], isDynamicI
           workspace={workspace}
           sendCommand={sendCommand}
         />
-        <PromptInput
-          workspace={workspace}
-          message={message}
-          submit={handleSubmit}
-          onChange={handleMessageChange}
-          inputDisabled={loadingResponse}
-          buttonDisabled={loadingResponse}
-          sendCommand={sendCommand}
-        />
+        {renderInputComponent()}
+        {isDynamicInput && currentInputMeta?.inputs != undefined && (
+          <div className="w-full fixed md:absolute -bottom-1 left-0 z-10 md:z-0 flex justify-center items-center">
+            <button
+              type="button"
+              className="transition-all w-fit duration-300 px-5 py-2.5 rounded-lg text-white/50 text-xs items-center flex gap-x-2 hover:text-white focus:ring-gray-800"
+              onClick={() => setIsForcedTextInput(!isForcedTextInput)}
+            >
+              {isForcedTextInput ? (
+                <>
+                  <ArrowUUpLeft className="h-5 w-5" /> back to options
+                </>
+              ) : (
+                <>
+                  <Keyboard className="h-5 w-5" /> Type another answer
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
