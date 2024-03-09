@@ -11,10 +11,10 @@ const OptionSelect = ({ data, settings }) => {
         {data.options.map((option, index) => (
           <button
             key={index}
-            className="text-left p-2.5 border rounded-xl border-white/20 bg-sidebar hover:bg-workspace-item-selected-gradient"
+            className="shadow-lg hover:shadow-sm  transition-all duration-200 hover:animate-shine ease-in-out text-left p-2.5 border rounded-xl border-white/20 bg-sidebar hover:bg-workspace-item-selected-gradient"
             onClick={() => handleSelection(option.value)}
           >
-            <p className="font-semibold">{option.label}</p>
+            <p className="">{option.label}</p>
           </button>
         ))}
       </div>
@@ -58,7 +58,7 @@ const OptionSelect = ({ data, settings }) => {
         multiple={settings.allowMultiple}
         required={true}
         disabled={settings.disabled}
-        className="bg-sidebar text-white text-xs rounded-xl p-2.5 w-full border border-white/20 focus:ring-blue-500 focus:border-blue-500"
+        className="shadow-xl bg-sidebar text-white text-xs rounded-xl p-2.5 w-full border border-white/20 focus:ring-blue-500 focus:border-blue-500"
       >
         {settings.waitingForModels ? (
           <option disabled={true} selected={true}>

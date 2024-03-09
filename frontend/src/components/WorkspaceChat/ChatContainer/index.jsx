@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import ChatHistory from "./ChatHistory";
-import PromptInput from "./PromptInput";
 import Workspace from "@/models/workspace";
 import handleChat from "@/utils/chat";
-import { isMobile } from "react-device-detect";
-import { SidebarMobileHeader } from "../../Sidebar";
-import { useParams } from "react-router-dom";
 import { extractMetaData } from "@/utils/chat/extractMetaData";
+import { CursorClick, Keyboard } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
+import { isMobile } from "react-device-detect";
+import { useParams } from "react-router-dom";
+import { SidebarMobileHeader } from "../../Sidebar";
+import ChatHistory from "./ChatHistory";
 import DynamicInput from "./DynamicInput";
-import { ArrowUUpLeft, Keyboard } from "@phosphor-icons/react";
+import PromptInput from "./PromptInput";
 
 export default function ChatContainer({
   workspace,
@@ -139,6 +139,7 @@ export default function ChatContainer({
     ) {
       return (
         <PromptInput
+          className={isDynamicInput && currentInputMeta?.inputs !== undefined ? "bottom-4" : "-bottom-2"}
           workspace={workspace}
           message={message}
           submit={handleSubmit}
@@ -177,11 +178,11 @@ export default function ChatContainer({
             >
               {isForcedTextInput ? (
                 <>
-                  <ArrowUUpLeft className="h-5 w-5" /> back to options
+                  <CursorClick className="h-5 w-5" /> use dynamic input
                 </>
               ) : (
                 <>
-                  <Keyboard className="h-5 w-5" /> Type another answer
+                  <Keyboard className="h-5 w-5" /> use keyboard input
                 </>
               )}
             </button>
