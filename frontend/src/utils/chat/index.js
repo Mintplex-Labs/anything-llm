@@ -1,3 +1,5 @@
+export const ABORT_STREAM_EVENT = "abort-chat-stream";
+
 // For handling of chat responses in the frontend by their various types.
 export default function handleChat(
   chatResult,
@@ -108,6 +110,22 @@ export default function handleChat(
       _chatHistory[chatIdx] = updatedHistory;
     }
     setChatHistory([..._chatHistory]);
+    setLoadingResponse(false);
+  } else if (type === "stopGeneration") {
+    const chatIdx = _chatHistory.length - 1;
+    const existingHistory = { ..._chatHistory[chatIdx] };
+    const updatedHistory = {
+      ...existingHistory,
+      sources: [],
+      closed: true,
+      error: null,
+      animate: false,
+      pending: false,
+    };
+    _chatHistory[chatIdx] = updatedHistory;
+
+    setChatHistory([..._chatHistory]);
+    setLoadingResponse(false);
   }
 }
 

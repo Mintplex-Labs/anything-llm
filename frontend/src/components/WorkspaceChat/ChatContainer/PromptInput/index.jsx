@@ -1,4 +1,4 @@
-import { CircleNotch, PaperPlaneRight } from "@phosphor-icons/react";
+import { PaperPlaneRight, PauseCircle } from "@phosphor-icons/react";
 import React, { useState, useRef } from "react";
 import SlashCommandsButton, {
   SlashCommands,
@@ -6,6 +6,7 @@ import SlashCommandsButton, {
 } from "./SlashCommands";
 import { isMobile } from "react-device-detect";
 import debounce from "lodash.debounce";
+import { ABORT_STREAM_EVENT } from "@/utils/chat";
 
 export default function PromptInput({
   workspace,
@@ -83,19 +84,18 @@ export default function PromptInput({
                 className="cursor-text max-h-[100px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
                 placeholder={"Send a message"}
               />
-              <button
-                ref={formRef}
-                type="submit"
-                disabled={buttonDisabled}
-                className="inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
-              >
-                {buttonDisabled ? (
-                  <CircleNotch className="w-6 h-6 animate-spin" />
-                ) : (
+              {buttonDisabled ? (
+                <StopGenerationButton />
+              ) : (
+                <button
+                  ref={formRef}
+                  type="submit"
+                  className="inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
+                >
                   <PaperPlaneRight className="w-7 h-7 my-3" weight="fill" />
-                )}
-                <span className="sr-only">Send message</span>
-              </button>
+                  <span className="sr-only">Send message</span>
+                </button>
+              )}
             </div>
             <div className="flex justify-between py-3.5">
               <div className="flex gap-x-2">
@@ -111,3 +111,19 @@ export default function PromptInput({
     </div>
   );
 }
+
+const StopGenerationButton = () => {
+  function emitHaltEvent() {
+    window.dispatchEvent(new CustomEvent(ABORT_STREAM_EVENT));
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={emitHaltEvent}
+      className="text-white/60 cursor-pointer"
+    >
+      <PauseCircle className="w-7 h-7" />
+    </button>
+  );
+};
