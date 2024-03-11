@@ -8,7 +8,7 @@ import { isMobile } from "react-device-detect";
 import debounce from "lodash.debounce";
 
 export default function PromptInput({
-  className,
+  className = "bottom-0",
   workspace,
   message,
   submit,

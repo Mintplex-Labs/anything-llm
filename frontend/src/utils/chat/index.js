@@ -97,7 +97,6 @@ export default function handleChat(
       });
     }
     setChatHistory([..._chatHistory]);
-    console.log("chunk:  ", [..._chatHistory]);
   } else if (type === "finalizeResponseStream") {
     const chatIdx = _chatHistory.findIndex((chat) => chat.uuid === uuid);
     if (chatIdx !== -1) {
@@ -109,7 +108,6 @@ export default function handleChat(
       _chatHistory[chatIdx] = updatedHistory;
     }
     setChatHistory([..._chatHistory]);
-    console.log("final:  ", [..._chatHistory]);
   }
 }
 

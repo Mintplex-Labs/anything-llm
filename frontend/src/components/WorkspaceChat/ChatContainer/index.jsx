@@ -1,7 +1,6 @@
 import Workspace from "@/models/workspace";
 import handleChat from "@/utils/chat";
 import { extractMetaData } from "@/utils/chat/extractMetaData";
-import { CursorClick, Keyboard } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import { useParams } from "react-router-dom";
@@ -21,16 +20,14 @@ export default function ChatContainer({
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
-  const [finalizedChatHistory, setFinalizedChatHistory] =
-    useState(knownHistory);
-  const [isForcedTextInput, setIsForcedTextInput] = useState(false);
+  const [finalizedChatHistory, setFinalizedChatHistory] = useState(knownHistory);
 
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event?.preventDefault();
     if (!message || message === "") return false;
 
     const prevChatHistory = [
@@ -122,39 +119,12 @@ export default function ChatContainer({
         _chatHistory[_chatHistory.length - 1].content = remainingText;
         setFinalizedChatHistory(_chatHistory);
         setCurrentInputMeta(metaData);
-        console.log("metaData", metaData);
       }
 
       return;
     }
     loadingResponse === true && fetchReply();
   }, [loadingResponse, chatHistory, workspace]);
-
-  const renderInputComponent = () => {
-    if (
-      !isDynamicInput ||
-      currentInputMeta?.inputs?.type === "text" ||
-      currentInputMeta?.inputs === undefined ||
-      isForcedTextInput
-    ) {
-      return (
-        <PromptInput
-          className={isDynamicInput && currentInputMeta?.inputs !== undefined ? "bottom-4" : "-bottom-2"}
-          workspace={workspace}
-          message={message}
-          submit={handleSubmit}
-          onChange={handleMessageChange}
-          inputDisabled={loadingResponse}
-          buttonDisabled={loadingResponse}
-          sendCommand={sendCommand}
-        />
-      );
-    }
-
-    if (currentInputMeta?.inputs?.type !== "text") {
-      return <DynamicInput {...currentInputMeta} />;
-    }
-  };
 
   return (
     <div
@@ -168,25 +138,29 @@ export default function ChatContainer({
           workspace={workspace}
           sendCommand={sendCommand}
         />
-        {renderInputComponent()}
-        {isDynamicInput && currentInputMeta?.inputs != undefined && (
-          <div className="w-full fixed md:absolute -bottom-1 left-0 z-10 md:z-0 flex justify-center items-center">
-            <button
-              type="button"
-              className="transition-all w-fit duration-300 px-5 py-2.5 rounded-lg text-white/50 text-xs items-center flex gap-x-2 hover:text-white focus:ring-gray-800"
-              onClick={() => setIsForcedTextInput(!isForcedTextInput)}
-            >
-              {isForcedTextInput ? (
-                <>
-                  <CursorClick className="h-5 w-5" /> use dynamic input
-                </>
-              ) : (
-                <>
-                  <Keyboard className="h-5 w-5" /> use keyboard input
-                </>
-              )}
-            </button>
-          </div>
+        {isDynamicInput && currentInputMeta?.inputs?.type !== undefined ? (
+          <DynamicInput
+            inputs={currentInputMeta?.inputs}
+            isDynamicInput={isDynamicInput}
+            submit={handleSubmit}
+            setMessage={setMessage}
+            workspace={workspace}
+            message={message}
+            onChange={handleMessageChange}
+            inputDisabled={loadingResponse}
+            buttonDisabled={loadingResponse}
+            sendCommand={sendCommand}
+          />
+        ) : (
+          <PromptInput
+            workspace={workspace}
+            message={message}
+            submit={handleSubmit}
+            onChange={handleMessageChange}
+            inputDisabled={loadingResponse}
+            buttonDisabled={loadingResponse}
+            sendCommand={sendCommand}
+          />
         )}
       </div>
     </div>

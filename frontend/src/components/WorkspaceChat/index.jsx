@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
 import Workspace from "@/models/workspace";
-import LoadingChat from "./LoadingChat";
-import ChatContainer from "./ChatContainer";
-import paths from "@/utils/paths";
-import ModalWrapper from "../ModalWrapper";
-import { useParams } from "react-router-dom";
 import { extractMetaData } from "@/utils/chat/extractMetaData";
+import paths from "@/utils/paths";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import ModalWrapper from "../ModalWrapper";
+import ChatContainer from "./ChatContainer";
+import LoadingChat from "./LoadingChat";
 
 export default function WorkspaceChat({ loading, workspace }) {
   const { threadSlug = null } = useParams();
