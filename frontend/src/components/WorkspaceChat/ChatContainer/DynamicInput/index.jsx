@@ -12,7 +12,7 @@ import PromptInput from "../PromptInput";
 // import Checkbox from './Checkbox';
 
 const inputComponents = {
-  //   text: TextInput,
+  text: PromptInput,
   options: OptionSelect,
   //   range: RangeSlider,
   //   date: DatePicker,
@@ -38,51 +38,50 @@ const DynamicInput = ({
   const [isForcedTextInput, setIsForcedTextInput] = useState(false);
 
   useEffect(() => {
-    if (inputs?.type !== "text") {
-      setIsForcedTextInput(false);
-    }
+    setIsForcedTextInput(inputs?.type === "text");
   }, [inputs]);
 
-  const InputComponent = inputComponents[inputs?.type] || null;
-  if (!InputComponent) {
-    return null; // or any fallback UI
-  }
-  const renderPromptInput = () => {
-    if (inputs?.type === "text" || inputs === undefined || isForcedTextInput) {
-      return (
-        <PromptInput
-          className={
-            inputs !== undefined ? "bottom-8 md:-bottom-5" : "-bottom-2"
-          }
-          workspace={workspace}
-          message={message}
-          submit={submit}
-          onChange={onChange}
-          inputDisabled={inputDisabled}
-          buttonDisabled={buttonDisabled}
-          sendCommand={sendCommand}
-        />
-      );
-    }
-  };
+  // Select the appropriate input component based on inputs.type or force text input
+  const InputComponent =
+    inputs && (isForcedTextInput || inputs.type === "text")
+      ? inputComponents["text"]
+      : inputComponents[inputs?.type] || null;
+
+  // Condition to show the dynamic input or the forced text input
+  const shouldShowDynamicInput =
+    isDynamicInput && inputs !== undefined && !isForcedTextInput;
+
   return (
     <div className="w-full md:px-4 fixed md:absolute bottom-10 left-0 z-10 md:z-0 flex justify-center items-center">
       <div className="w-[600px]">
-        {inputs?.type !== "text" &&
-        isDynamicInput &&
-        inputs !== undefined &&
-        !isForcedTextInput ? (
+        {shouldShowDynamicInput ? (
           <InputComponent
             submit={submit}
             setMessage={setMessage}
             message={message}
+            workspace={workspace}
+            onChange={onChange}
+            inputDisabled={inputDisabled}
+            buttonDisabled={buttonDisabled}
+            sendCommand={sendCommand}
             {...inputs}
           />
         ) : (
-          renderPromptInput()
+          <PromptInput
+            className={
+              inputs === undefined ? "-bottom-2" : "bottom-8 md:-bottom-5"
+            }
+            workspace={workspace}
+            message={message}
+            submit={submit}
+            onChange={onChange}
+            inputDisabled={inputDisabled}
+            buttonDisabled={buttonDisabled}
+            sendCommand={sendCommand}
+          />
         )}
         {isDynamicInput && inputs != undefined && (
-          <div className="w-full fixed absolute -bottom-8 left-0 z-10 md:z-0 flex justify-center items-center">
+          <div className="w-full  absolute -bottom-8 left-0 z-10 md:z-0 flex justify-center items-center">
             <button
               type="button"
               className="transition-all w-fit duration-300 px-5 py-2.5 rounded-lg text-white/40 text-xs items-center flex gap-x-2 shadow-sm hover:text-white/60 focus:ring-gray-800"
