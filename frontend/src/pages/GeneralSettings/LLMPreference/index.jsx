@@ -199,7 +199,7 @@ export default function GeneralLLMPreference() {
       {loading ? (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient p-[18px] h-full overflow-y-scroll animate-pulse border-4 border-accent"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
         >
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
@@ -208,33 +208,33 @@ export default function GeneralLLMPreference() {
       ) : (
         <div
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
         >
           <form onSubmit={handleSubmit} className="flex w-full">
-            <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
+            <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
-                <div className="items-center flex gap-x-4">
-                  <p className="text-2xl font-semibold text-white">
+                <div className="flex gap-x-4 items-center">
+                  <p className="text-lg leading-6 font-bold text-white">
                     LLM Preference
                   </p>
                   {hasChanges && (
                     <button
                       type="submit"
                       disabled={saving}
-                      className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
+                      className="flex items-center gap-x-2 px-4 py-2 rounded-lg bg-[#2C2F36] text-white text-sm hover:bg-[#3D4147] shadow-md border border-[#3D4147]"
                     >
                       {saving ? "Saving..." : "Save changes"}
                     </button>
                   )}
                 </div>
-                <p className="text-sm font-base text-white text-opacity-60">
+                <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
                   These are the credentials and settings for your preferred LLM
                   chat & embedding provider. Its important these keys are
                   current and correct or else AnythingLLM will not function
                   properly.
                 </p>
               </div>
-              <div className="text-white text-sm font-medium py-4">
+              <div className="text-sm font-medium text-white mt-6 mb-4">
                 LLM Providers
               </div>
               <div className="w-full">
