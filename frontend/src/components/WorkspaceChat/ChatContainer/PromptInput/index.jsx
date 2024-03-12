@@ -1,4 +1,3 @@
-import { PaperPlaneRight, PauseCircle } from "@phosphor-icons/react";
 import React, { useState, useRef } from "react";
 import SlashCommandsButton, {
   SlashCommands,
@@ -6,7 +5,8 @@ import SlashCommandsButton, {
 } from "./SlashCommands";
 import { isMobile } from "react-device-detect";
 import debounce from "lodash.debounce";
-import { ABORT_STREAM_EVENT } from "@/utils/chat";
+import { PaperPlaneRight } from "@phosphor-icons/react";
+import StopGenerationButton from "./StopGenerationButton";
 
 export default function PromptInput({
   workspace,
@@ -111,19 +111,3 @@ export default function PromptInput({
     </div>
   );
 }
-
-const StopGenerationButton = () => {
-  function emitHaltEvent() {
-    window.dispatchEvent(new CustomEvent(ABORT_STREAM_EVENT));
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={emitHaltEvent}
-      className="text-white/60 cursor-pointer"
-    >
-      <PauseCircle className="w-7 h-7" />
-    </button>
-  );
-};
