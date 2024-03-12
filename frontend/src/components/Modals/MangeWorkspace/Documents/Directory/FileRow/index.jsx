@@ -56,7 +56,7 @@ export default function FileRow({
   return (
     <tr
       onClick={() => toggleSelection(item)}
-      className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-white/20 hover:bg-sky-500/20 cursor-pointer file-row ${
+      className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer file-row ${
         selected ? "selected" : ""
       }`}
     >
