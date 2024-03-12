@@ -1,3 +1,4 @@
+import { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { API_BASE } from "@/utils/constants";
 import { baseHeaders } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
@@ -80,6 +81,16 @@ const WorkspaceThread = {
     handleChat
   ) {
     const ctrl = new AbortController();
+
+    // Listen for the ABORT_STREAM_EVENT key to be emitted by the client
+    // to early abort the streaming response. On abort we send a special `stopGeneration`
+    // event to be handled which resets the UI for us to be able to send another message.
+    // The backend response abort handling is done in each LLM's handleStreamResponse.
+    window.addEventListener(ABORT_STREAM_EVENT, () => {
+      ctrl.abort();
+      handleChat({ id: v4(), type: "stopGeneration" });
+    });
+
     await fetchEventSource(
       `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/stream-chat`,
       {
