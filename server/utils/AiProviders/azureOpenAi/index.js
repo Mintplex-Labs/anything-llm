@@ -1,6 +1,9 @@
 const { AzureOpenAiEmbedder } = require("../../EmbeddingEngines/azureOpenAi");
 const { chatPrompt } = require("../../chats");
-const { writeResponseChunk } = require("../../helpers/chat/responses");
+const {
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
 
 class AzureOpenAiLLM {
   constructor(embedder = null, _modelPreference = null) {
@@ -174,6 +177,14 @@ class AzureOpenAiLLM {
 
     return new Promise(async (resolve) => {
       let fullText = "";
+
+      // Establish listener to early-abort a streaming response
+      // in case things go sideways or the user does not like the response.
+      // We preserve the generated text but continue as if chat was completed
+      // to preserve previously generated content.
+      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      response.on("close", handleAbort);
+
       for await (const event of stream) {
         for (const choice of event.choices) {
           const delta = choice.delta?.content;
@@ -198,6 +209,7 @@ class AzureOpenAiLLM {
         close: true,
         error: false,
       });
+      response.removeListener("close", handleAbort);
       resolve(fullText);
     });
   }
