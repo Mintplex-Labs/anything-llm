@@ -4,6 +4,7 @@ import { memo, useEffect, useState } from "react";
 import FolderRow from "./FolderRow";
 import pluralize from "pluralize";
 import System from "@/models/system";
+import { FolderNotchOpen, Plus, Trash } from "@phosphor-icons/react";
 
 function Directory({
   files,
@@ -101,6 +102,15 @@ function Directory({
       <div className="flex flex-col gap-y-6">
         <div className="flex items-center justify-between w-[560px] px-5">
           <h3 className="text-white text-base font-bold">My Documents</h3>
+          <button
+            className="flex items-center gap-x-2 cursor-pointer"
+            onClick={() => console.log("New Folder clicked")}
+          >
+            <Plus size={18} weight="bold" color="#D3D4D4" />
+            <div className="text-[#D3D4D4] text-xs font-bold leading-[18px]">
+              New Folder
+            </div>
+          </button>
         </div>
 
         <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl">
@@ -153,7 +163,7 @@ function Directory({
             )}
           </div>
 
-          {amountSelected !== 0 && (
+          {/* {amountSelected !== 0 && (
             <div className="absolute bottom-0 left-0 w-full flex justify-between items-center h-9 bg-white rounded-b-2xl">
               <div className="flex gap-x-5 w-[80%] justify-center">
                 <button
@@ -172,6 +182,21 @@ function Directory({
               >
                 Delete
               </button>
+            </div>
+          )} */}
+          {amountSelected !== 0 && (
+            <div className="w-full justify-center absolute bottom-[12px] flex">
+              <div className=" justify-center flex flex-row items-center bg-white/40 rounded-lg py-1 px-2 gap-x-2">
+                <button className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80">
+                  Move to Workspace
+                </button>
+                <button className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg hover:text-white hover:bg-neutral-800/80 flex justify-center items-center">
+                  <FolderNotchOpen size={18} weight="bold" color="#222628" />
+                </button>
+                <button className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg hover:text-white hover:bg-neutral-800/80 flex justify-center items-center">
+                  <Trash size={18} weight="bold" color="#222628" />
+                </button>
+              </div>
             </div>
           )}
         </div>
