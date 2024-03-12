@@ -649,17 +649,17 @@
   resolved "https://registry.yarnpkg.com/@pkgr/core/-/core-0.1.0.tgz#7d8dacb7fdef0e4387caf7396cbd77f179867d06"
   integrity sha512-Zwq5OCzuwJC2jwqmpEQt7Ds1DTi6BWSwoGkbb1n9pO3hzb35BoJELx7c0T23iDkBGkh2e7tvOtjF3tr3OaQHDQ==
 
-"@prisma/client@5.3.0":
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-5.3.0.tgz#47f07e5639993cffcf1c740a144495410562f279"
-  integrity sha512-cduYBlwj6oBfAUx2OI5i7t3NlpVeOtkN7pAqv0cw0B6gs4y8cY1mr8ZYywja0NUCOCqEWDkcZWBTVBwm6mnRIw==
+"@prisma/client@5.3.1":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-5.3.1.tgz#fc7fc2d91e814cc4fe18a4bc5e78bf851c26985e"
+  integrity sha512-ArOKjHwdFZIe1cGU56oIfy7wRuTn0FfZjGuU/AjgEBOQh+4rDkB6nF+AGHP8KaVpkBIiHGPQh3IpwQ3xDMdO0Q==
   dependencies:
-    "@prisma/engines-version" "5.3.0-36.e90b936d84779543cbe0e494bc8b9d7337fad8e4"
+    "@prisma/engines-version" "5.3.1-2.61e140623197a131c2a6189271ffee05a7aa9a59"
 
-"@prisma/engines-version@5.3.0-36.e90b936d84779543cbe0e494bc8b9d7337fad8e4":
-  version "5.3.0-36.e90b936d84779543cbe0e494bc8b9d7337fad8e4"
-  resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-5.3.0-36.e90b936d84779543cbe0e494bc8b9d7337fad8e4.tgz#46ee2884e04cdba1163461ef856cec882d31c836"
-  integrity sha512-uftIog5FQ/OUR8Vb9TzpNBJ6L+zJnBgmd1A0uPJUzuvGMU32UmeyobpdXVzST5UprKryTdWOYXQFVyiQ2OU4Nw==
+"@prisma/engines-version@5.3.1-2.61e140623197a131c2a6189271ffee05a7aa9a59":
+  version "5.3.1-2.61e140623197a131c2a6189271ffee05a7aa9a59"
+  resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-5.3.1-2.61e140623197a131c2a6189271ffee05a7aa9a59.tgz#7eb6f5c6b7628b8b39df55c903f411528a6f761c"
+  integrity sha512-y5qbUi3ql2Xg7XraqcXEdMHh0MocBfnBzDn5GbV1xk23S3Mq8MGs+VjacTNiBh3dtEdUERCrUUG7Z3QaJ+h79w==
 
 "@prisma/engines@5.3.1":
   version "5.3.1"
@@ -4455,7 +4455,7 @@ prettier@^3.0.3:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.1.1.tgz#6ba9f23165d690b6cbdaa88cb0807278f7019848"
   integrity sha512-22UbSzg8luF4UuZtzgiUOfcGM8s4tjBv6dJRT7j275NXsy2jb4aJa4NNveul5x4eqlF1wuhuR2RElK71RvmVaw==
 
-prisma@^5.3.1:
+prisma@5.3.1:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/prisma/-/prisma-5.3.1.tgz#a0932c1c1a5ed4ff449d064b193d9c7e94e8bf77"
   integrity sha512-Wp2msQIlMPHe+5k5Od6xnsI/WNG7UJGgFUJgqv/ygc7kOECZapcSz/iU4NIEzISs3H1W9sFLjAPbg/gOqqtB7A==
