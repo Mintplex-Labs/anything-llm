@@ -101,7 +101,7 @@ export default function SuggestedChatMessages({ slug }) {
       </div>
     );
   return (
-    <div className="w-screen">
+    <div className="w-screen mt-6">
       <div className="flex flex-col">
         <label className="block input-label">Suggested Chat Messages</label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">

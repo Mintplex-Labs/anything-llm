@@ -238,6 +238,54 @@ const Workspace = {
       });
   },
   threads: WorkspaceThread,
+
+  uploadPfp: async function (formData, slug) {
+    return await fetch(`${API_BASE}/workspace/${slug}/upload-pfp`, {
+      method: "POST",
+      body: formData,
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error uploading pfp.");
+        return { success: true, error: null };
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
+
+  fetchPfp: async function (slug) {
+    return await fetch(`${API_BASE}/workspace/${slug}/pfp`, {
+      method: "GET",
+      cache: "no-cache",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (res.ok && res.status !== 204) return res.blob();
+        throw new Error("Failed to fetch pfp.");
+      })
+      .then((blob) => (blob ? URL.createObjectURL(blob) : null))
+      .catch((e) => {
+        console.log(e);
+        return null;
+      });
+  },
+
+  removePfp: async function (slug) {
+    return await fetch(`${API_BASE}/workspace/${slug}/remove-pfp`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (res.ok) return { success: true, error: null };
+        throw new Error("Failed to remove pfp.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
 };
 
 export default Workspace;
