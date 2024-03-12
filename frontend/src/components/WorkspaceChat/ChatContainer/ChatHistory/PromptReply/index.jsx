@@ -1,8 +1,9 @@
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { Warning } from "@phosphor-icons/react";
 import Jazzicon from "../../../../UserIcon";
 import renderMarkdown from "@/utils/chat/markdown";
 import Citations from "../Citation";
+import Workspace from "@/models/workspace";
 
 const PromptReply = ({
   uuid,
@@ -14,6 +15,14 @@ const PromptReply = ({
   closed = true,
 }) => {
   const assistantBackgroundColor = "bg-historical-msg-system";
+  const [workspacePfp, setWorkspacePfp] = useState(null);
+  useEffect(() => {
+    async function fetchWorkspacePfp() {
+      const pfpUrl = await Workspace.fetchPfp(workspace.slug);
+      setWorkspacePfp(pfpUrl);
+    }
+    fetchWorkspacePfp();
+  }, [workspace.slug]);
 
   if (!reply && sources.length === 0 && !pending && !error) return null;
 
@@ -28,6 +37,7 @@ const PromptReply = ({
               size={36}
               user={{ uid: workspace.slug }}
               role="assistant"
+              workspacePfp={workspacePfp}
             />
             <div className="mt-3 ml-5 dot-falling"></div>
           </div>
@@ -47,6 +57,7 @@ const PromptReply = ({
               size={36}
               user={{ uid: workspace.slug }}
               role="assistant"
+              workspacePfp={workspacePfp}
             />
             <span
               className={`inline-block p-2 rounded-lg bg-red-50 text-red-500`}
@@ -68,7 +79,12 @@ const PromptReply = ({
     >
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
         <div className="flex gap-x-5">
-          <Jazzicon size={36} user={{ uid: workspace.slug }} role="assistant" />
+          <Jazzicon
+            size={36}
+            user={{ uid: workspace.slug }}
+            role="assistant"
+            workspacePfp={workspacePfp}
+          />
           <span
             className={`reply flex flex-col gap-y-1 mt-2`}
             dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}

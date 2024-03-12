@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { Warning } from "@phosphor-icons/react";
 import Jazzicon from "../../../../UserIcon";
 import Actions from "./Actions";
@@ -8,6 +8,7 @@ import Citations from "../Citation";
 import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
+import Workspace from "@/models/workspace";
 
 const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = ({
@@ -20,6 +21,15 @@ const HistoricalMessage = ({
   feedbackScore = null,
   chatId = null,
 }) => {
+  const [workspacePfp, setWorkspacePfp] = useState(null);
+  useEffect(() => {
+    async function fetchWorkspacePfp() {
+      if (role !== "assistant") return false;
+      const pfpUrl = await Workspace.fetchPfp(workspace.slug);
+      setWorkspacePfp(pfpUrl);
+    }
+    fetchWorkspacePfp();
+  }, [workspace.slug, role]);
   return (
     <div
       key={uuid}
@@ -38,6 +48,7 @@ const HistoricalMessage = ({
                 role === "user" ? userFromStorage()?.username : workspace.slug,
             }}
             role={role}
+            workspacePfp={workspacePfp}
           />
 
           {error ? (

@@ -32,6 +32,8 @@ const {
 function workspaceEndpoints(app) {
   if (!app) return;
 
+  const responseCache = new Map();
+
   app.post(
     "/workspace/new",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
@@ -432,47 +434,22 @@ function workspaceEndpoints(app) {
     }
   );
 
-  // app.get(
-  //   "/workspace/:slug/pfp",
-  //   [validatedRequest, flexUserRoleValid([ROLES.all])],
-  //   async function (request, response) {
-  //     try {
-  //       const { slug } = request.params;
-  //       const pfpPath = await determineWorkspacePfpFilepath(slug);
-
-  //       if (!pfpPath) {
-  //         response.sendStatus(204).end();
-  //         return;
-  //       }
-
-  //       const { found, buffer, size, mime } = fetchPfp(pfpPath);
-  //       if (!found) {
-  //         response.sendStatus(204).end();
-  //         return;
-  //       }
-
-  //       response.writeHead(200, {
-  //         "Content-Type": mime || "image/png",
-  //         "Content-Disposition": `attachment; filename=${path.basename(
-  //           pfpPath
-  //         )}`,
-  //         "Content-Length": size,
-  //       });
-  //       response.end(Buffer.from(buffer, "base64"));
-  //       return;
-  //     } catch (error) {
-  //       console.error("Error processing the logo request:", error);
-  //       response.status(500).json({ message: "Internal server error" });
-  //     }
-  //   }
-  // );
-
   app.get(
     "/workspace/:slug/pfp",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async function (request, response) {
       try {
         const { slug } = request.params;
+        const cachedResponse = responseCache.get(slug);
+
+        if (cachedResponse) {
+          response.writeHead(200, {
+            "Content-Type": cachedResponse.mime || "image/png",
+          });
+          response.end(cachedResponse.buffer);
+          return;
+        }
+
         const pfpPath = await determineWorkspacePfpFilepath(slug);
 
         if (!pfpPath) {
@@ -486,10 +463,12 @@ function workspaceEndpoints(app) {
           return;
         }
 
+        responseCache.set(slug, { buffer, mime });
+
         response.writeHead(200, {
           "Content-Type": mime || "image/png",
         });
-        response.end(Buffer.from(buffer, "base64"));
+        response.end(buffer);
         return;
       } catch (error) {
         console.error("Error processing the logo request:", error);

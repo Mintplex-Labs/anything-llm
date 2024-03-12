@@ -1,10 +1,8 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import JAZZ from "@metamask/jazzicon";
 import usePfp from "../../hooks/usePfp";
-import Workspace from "@/models/workspace";
 
-export default function Jazzicon({ size = 10, user, role }) {
-  const [workspacePfp, setWorkspacePfp] = useState(null);
+export default function Jazzicon({ size = 10, user, role, workspacePfp }) {
   const { pfp } = usePfp();
   const divRef = useRef(null);
   const seed = user?.uid
@@ -17,16 +15,6 @@ export default function Jazzicon({ size = 10, user, role }) {
     const result = JAZZ(size, seed);
     divRef.current.appendChild(result);
   }, [pfp, role, seed, size]);
-
-  useEffect(() => {
-    async function fetchWorkspacePfp() {
-      const pfpUrl = await Workspace.fetchPfp(user?.uid);
-      setWorkspacePfp(pfpUrl);
-    }
-    if (role === "assistant") {
-      fetchWorkspacePfp();
-    }
-  }, [role, user?.uid]);
 
   return (
     <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden">
