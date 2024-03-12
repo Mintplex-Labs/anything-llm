@@ -1,6 +1,14 @@
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 
+function clientAbortedHandler(resolve, fullText) {
+  console.log(
+    "\x1b[43m\x1b[34m[STREAM ABORTED]\x1b[0m Client requested to abort stream. Exiting LLM stream handler early."
+  );
+  resolve(fullText);
+  return;
+}
+
 // The default way to handle a stream response. Functions best with OpenAI.
 // Currently used for LMStudio, LocalAI, Mistral API, and OpenAI
 function handleDefaultStreamResponse(response, stream, responseProps) {
@@ -9,6 +17,14 @@ function handleDefaultStreamResponse(response, stream, responseProps) {
   return new Promise((resolve) => {
     let fullText = "";
     let chunk = "";
+
+    // Establish listener to early-abort a streaming response
+    // in case things go sideways or the user does not like the response.
+    // We preserve the generated text but continue as if chat was completed
+    // to preserve previously generated content.
+    const handleAbort = () => clientAbortedHandler(resolve, fullText);
+    response.on("close", handleAbort);
+
     stream.data.on("data", (data) => {
       const lines = data
         ?.toString()
@@ -52,6 +68,7 @@ function handleDefaultStreamResponse(response, stream, responseProps) {
             close: true,
             error: false,
           });
+          response.removeListener("close", handleAbort);
           resolve(fullText);
         } else {
           let finishReason = null;
@@ -85,6 +102,7 @@ function handleDefaultStreamResponse(response, stream, responseProps) {
               close: true,
               error: false,
             });
+            response.removeListener("close", handleAbort);
             resolve(fullText);
           }
         }
@@ -141,4 +159,5 @@ module.exports = {
   convertToChatHistory,
   convertToPromptHistory,
   writeResponseChunk,
+  clientAbortedHandler,
 };

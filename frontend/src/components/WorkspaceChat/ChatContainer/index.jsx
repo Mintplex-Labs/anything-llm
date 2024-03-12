@@ -68,11 +68,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       const remHistory = chatHistory.length > 0 ? chatHistory.slice(0, -1) : [];
       var _chatHistory = [...remHistory];
 
-      if (!promptMessage || !promptMessage?.userMessage) {
-        setLoadingResponse(false);
-        return false;
-      }
-
+      if (!promptMessage || !promptMessage?.userMessage) return false;
       if (!!threadSlug) {
         await Workspace.threads.streamChat(
           { workspaceSlug: workspace.slug, threadSlug },

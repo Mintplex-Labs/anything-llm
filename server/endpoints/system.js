@@ -548,8 +548,6 @@ function systemEndpoints(app) {
 
         const userRecord = await User.get({ id: user.id });
         const oldPfpFilename = userRecord.pfpFilename;
-
-        console.log("oldPfpFilename", oldPfpFilename);
         if (oldPfpFilename) {
           const oldPfpPath = path.join(
             __dirname,
