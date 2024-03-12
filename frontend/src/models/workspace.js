@@ -3,6 +3,10 @@ import { baseHeaders } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import WorkspaceThread from "@/models/workspaceThread";
 import { v4 } from "uuid";
+import {
+  cacheWorkspacePfp,
+  getWorkspacePfpFromCache,
+} from "@/utils/workspacePfp";
 
 const Workspace = {
   new: async function (data = {}) {
@@ -255,7 +259,29 @@ const Workspace = {
       });
   },
 
+  // fetchPfp: async function (slug) {
+  //   return await fetch(`${API_BASE}/workspace/${slug}/pfp`, {
+  //     method: "GET",
+  //     cache: "no-cache",
+  //     headers: baseHeaders(),
+  //   })
+  //     .then((res) => {
+  //       if (res.ok && res.status !== 204) return res.blob();
+  //       throw new Error("Failed to fetch pfp.");
+  //     })
+  //     .then((blob) => (blob ? URL.createObjectURL(blob) : null))
+  //     .catch((e) => {
+  //       console.log(e);
+  //       return null;
+  //     });
+  // },
+
   fetchPfp: async function (slug) {
+    const cachedPfp = getWorkspacePfpFromCache(slug);
+    if (cachedPfp) {
+      return cachedPfp;
+    }
+
     return await fetch(`${API_BASE}/workspace/${slug}/pfp`, {
       method: "GET",
       cache: "no-cache",
@@ -265,7 +291,20 @@ const Workspace = {
         if (res.ok && res.status !== 204) return res.blob();
         throw new Error("Failed to fetch pfp.");
       })
-      .then((blob) => (blob ? URL.createObjectURL(blob) : null))
+      .then((blob) => {
+        if (blob) {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const base64Image = reader.result;
+              cacheWorkspacePfp(slug, base64Image);
+              resolve(base64Image);
+            };
+            reader.readAsDataURL(blob);
+          });
+        }
+        return null;
+      })
       .catch((e) => {
         console.log(e);
         return null;

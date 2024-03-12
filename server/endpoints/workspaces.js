@@ -432,6 +432,41 @@ function workspaceEndpoints(app) {
     }
   );
 
+  // app.get(
+  //   "/workspace/:slug/pfp",
+  //   [validatedRequest, flexUserRoleValid([ROLES.all])],
+  //   async function (request, response) {
+  //     try {
+  //       const { slug } = request.params;
+  //       const pfpPath = await determineWorkspacePfpFilepath(slug);
+
+  //       if (!pfpPath) {
+  //         response.sendStatus(204).end();
+  //         return;
+  //       }
+
+  //       const { found, buffer, size, mime } = fetchPfp(pfpPath);
+  //       if (!found) {
+  //         response.sendStatus(204).end();
+  //         return;
+  //       }
+
+  //       response.writeHead(200, {
+  //         "Content-Type": mime || "image/png",
+  //         "Content-Disposition": `attachment; filename=${path.basename(
+  //           pfpPath
+  //         )}`,
+  //         "Content-Length": size,
+  //       });
+  //       response.end(Buffer.from(buffer, "base64"));
+  //       return;
+  //     } catch (error) {
+  //       console.error("Error processing the logo request:", error);
+  //       response.status(500).json({ message: "Internal server error" });
+  //     }
+  //   }
+  // );
+
   app.get(
     "/workspace/:slug/pfp",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
@@ -445,7 +480,7 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        const { found, buffer, size, mime } = fetchPfp(pfpPath);
+        const { found, buffer, mime } = fetchPfp(pfpPath);
         if (!found) {
           response.sendStatus(204).end();
           return;
@@ -453,10 +488,6 @@ function workspaceEndpoints(app) {
 
         response.writeHead(200, {
           "Content-Type": mime || "image/png",
-          "Content-Disposition": `attachment; filename=${path.basename(
-            pfpPath
-          )}`,
-          "Content-Length": size,
         });
         response.end(Buffer.from(buffer, "base64"));
         return;
@@ -469,7 +500,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/upload-pfp",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     handlePfpUploads.single("file"),
     async function (request, response) {
       try {
@@ -516,7 +547,7 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug/remove-pfp",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async function (request, response) {
       try {
         const { slug } = request.params;

@@ -38,7 +38,7 @@ export default function Jazzicon({ size = 10, user, role }) {
           className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-white"
         />
       )}
-      {role === "assistant" && workspacePfp && (
+      {workspacePfp && (
         <img
           src={workspacePfp}
           alt="Workspace profile picture"
