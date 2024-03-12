@@ -149,7 +149,9 @@ export default function SettingsSidebar() {
                 <SidebarOptions user={user} />
               </div>
             </div>
-            <Footer />
+            <div className="mb-2">
+              <Footer />
+            </div>
           </div>
         </div>
       </div>
