@@ -40,7 +40,7 @@
     "uuid": "^9.0.0",
     "wavefile": "^11.0.0",
     "youtube-transcript": "^1.0.6",
-    "youtubei.js": "^8.0.0"
+    "youtubei.js": "^9.1.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",

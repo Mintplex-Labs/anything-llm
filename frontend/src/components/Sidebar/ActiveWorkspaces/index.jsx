@@ -92,11 +92,11 @@ export default function ActiveWorkspaces() {
                 className={`
               transition-all duration-[200ms]
                 flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-white justify-start items-center
-                hover:bg-workspace-item-selected-gradient  border-outline
+                hover:bg-workspace-item-selected-gradient hover:font-bold border-2 border-outline
                 ${
                   isActive
-                    ? "bg-workspace-item-selected-gradient font-medium border-none"
-                    : "border-[1px]"
+                    ? "bg-workspace-item-selected-gradient font-bold"
+                    : ""
                 }`}
               >
                 <div className="flex flex-row justify-between w-full">

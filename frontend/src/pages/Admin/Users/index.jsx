@@ -13,25 +13,26 @@ import ModalWrapper from "@/components/ModalWrapper";
 
 export default function AdminUsers() {
   const { isOpen, openModal, closeModal } = useModal();
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-2 border-outline"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
       >
-        <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
+        <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
-              <p className="text-2xl font-semibold text-white">Users</p>
+              <p className="text-lg leading-6 font-bold text-white">Users</p>
               <button
                 onClick={openModal}
-                className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
+                className="flex items-center gap-x-2 px-4 py-2 rounded-lg bg-[#2C2F36] text-white text-sm hover:bg-[#3D4147] shadow-md border border-[#3D4147]"
               >
                 <UserPlus className="h-4 w-4" /> Add user
               </button>
             </div>
-            <p className="text-sm font-base text-white text-opacity-60">
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
               These are all the accounts which have an account on this instance.
               Removing an account will instantly remove their access to this
               instance.
@@ -51,6 +52,7 @@ function UsersContainer() {
   const { user: currUser } = useUser();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
+
   useEffect(() => {
     async function fetchUsers() {
       const _users = await Admin.users();
@@ -75,8 +77,8 @@ function UsersContainer() {
   }
 
   return (
-    <table className="md:w-3/4 w-full text-sm text-left rounded-lg mt-5">
-      <thead className="text-white text-opacity-80 text-sm font-bold uppercase border-white border-b border-opacity-60">
+    <table className="w-full text-sm text-left rounded-lg mt-6">
+      <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
         <tr>
           <th scope="col" className="px-6 py-3 rounded-tl-lg">
             Username
@@ -120,7 +122,7 @@ const ROLE_HINT = {
 export function RoleHintDisplay({ role }) {
   return (
     <div className="flex flex-col gap-y-1 py-1 pb-4">
-      <p className="text-white/60 font-semibold text-sm">Permissions</p>
+      <p className="text-sm font-medium text-white">Permissions</p>
       <ul className="flex flex-col gap-y-1 list-disc px-4">
         {ROLE_HINT[role ?? "default"].map((hints, i) => {
           return (

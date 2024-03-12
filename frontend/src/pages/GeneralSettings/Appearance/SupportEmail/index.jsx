@@ -53,9 +53,11 @@ export default function SupportEmail() {
   if (loading || !user?.role) return null;
   return (
     <form className="mb-6" onSubmit={updateSupportEmail}>
-      <div className="flex flex-col gap-y-2">
-        <h2 className="leading-tight font-medium text-white">Support Email</h2>
-        <p className="text-sm font-base text-white/60">
+      <div className="flex flex-col gap-y-1">
+        <h2 className="text-base leading-6 font-bold text-white">
+          Support Email
+        </h2>
+        <p className="text-xs leading-[18px] font-base text-white/60">
           Set the support email address that shows up in the user menu while
           logged into this instance.
         </p>
@@ -64,7 +66,7 @@ export default function SupportEmail() {
         <input
           name="supportEmail"
           type="email"
-          className="bg-zinc-900 mt-4 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[275px]"
+          className="bg-zinc-900 mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[275px] placeholder:text-white/20"
           placeholder="support@mycompany.com"
           required={true}
           autoComplete="off"
