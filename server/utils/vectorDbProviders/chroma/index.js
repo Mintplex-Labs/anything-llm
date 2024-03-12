@@ -7,6 +7,7 @@ const {
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
+const { parseAuthHeader } = require("../../http");
 
 const Chroma = {
   name: "Chroma",
