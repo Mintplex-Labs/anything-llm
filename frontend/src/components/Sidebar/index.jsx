@@ -38,10 +38,10 @@ export default function Sidebar() {
       <div
         ref={sidebarRef}
         style={{ height: "calc(100% - 76px)" }}
-        className="transition-all pt-[11px] px-[10px] duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px]"
+        className="relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px]"
       >
         <div className="flex flex-col h-full overflow-x-hidden">
-          <div className="flex-grow flex flex-col w-[235px]">
+          <div className="flex-grow flex flex-col min-w-[235px]">
             <div className="flex flex-col gap-y-2 pb-8 overflow-y-scroll no-scroll">
               <div className="flex gap-x-2 items-center justify-between">
                 {(!user || user?.role !== "default") && (
@@ -144,9 +144,11 @@ export function SidebarMobileHeader() {
                   style={{ objectFit: "contain" }}
                 />
               </div>
-              <div className="flex gap-x-2 items-center text-slate-500 shrink-0">
-                <SettingsButton />
-              </div>
+              {(!user || user?.role !== "default") && (
+                <div className="flex gap-x-2 items-center text-slate-500 shink-0">
+                  <SettingsButton />
+                </div>
+              )}
             </div>
 
             {/* Primary Body */}

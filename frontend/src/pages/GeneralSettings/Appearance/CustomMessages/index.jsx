@@ -53,16 +53,16 @@ export default function CustomMessages() {
   };
 
   return (
-    <div className="mb-6">
-      <div className="flex flex-col gap-y-2">
-        <h2 className="leading-tight font-medium text-white">
+    <div className="mb-8">
+      <div className="flex flex-col gap-y-1">
+        <h2 className="text-base leading-6 font-bold text-white">
           Custom Messages
         </h2>
-        <p className="text-sm font-base text-white/60">
+        <p className="text-xs leading-[18px] font-base text-white/60">
           Customize the automatic messages displayed to your users.
         </p>
       </div>
-      <div className="mt-6 flex flex-col gap-y-6 bg-zinc-900 rounded-lg px-6 pt-4 max-w-[700px]">
+      <div className="mt-3 flex flex-col gap-y-6 bg-[#1C1E21] rounded-lg pr-[31px] pl-[12px] pt-4 max-w-[700px]">
         {messages.map((message, index) => (
           <div key={index} className="flex flex-col gap-y-2">
             {message.user && (
@@ -85,27 +85,34 @@ export default function CustomMessages() {
             )}
           </div>
         ))}
-        <div className="flex gap-4 mt-12 justify-between pb-7">
+        <div className="flex gap-4 mt-12 justify-between pb-[15px]">
           <button
             className="self-end text-white hover:text-white/60 transition"
             onClick={() => addMessage("response")}
           >
-            <div className="flex items-center justify-start">
-              <Plus className="w-5 h-5 m-2" weight="fill" /> New System Message
+            <div className="flex items-center justify-start text-sm font-normal -ml-2">
+              <Plus className="m-2" size={16} weight="bold" />
+              <span className="leading-5">
+                New <span className="font-bold italic mr-1">system</span>{" "}
+                message
+              </span>
             </div>
           </button>
           <button
-            className="self-end text-sky-400 hover:text-sky-400/60 transition"
+            className="self-end text-white hover:text-white/60 transition"
             onClick={() => addMessage("user")}
           >
-            <div className="flex items-center">
-              <Plus className="w-5 h-5 m-2" weight="fill" /> New User Message
+            <div className="flex items-center justify-start text-sm font-normal">
+              <Plus className="m-2" size={16} weight="bold" />
+              <span className="leading-5">
+                New <span className="font-bold italic mr-1">user</span> message
+              </span>
             </div>
           </button>
         </div>
       </div>
       {hasChanges && (
-        <div className="flex justify-center py-6">
+        <div className="flex justify-start pt-6">
           <button
             className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             onClick={handleMessageSave}

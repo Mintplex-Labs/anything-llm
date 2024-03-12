@@ -19,9 +19,20 @@ const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { CollectorApi } = require("../utils/collectorApi");
 const { handleUploads } = setupMulter();
+const { setupPfpUploads } = require("../utils/files/multer");
+const { normalizePath } = require("../utils/files");
+const { handlePfpUploads } = setupPfpUploads();
+const path = require("path");
+const fs = require("fs");
+const {
+  determineWorkspacePfpFilepath,
+  fetchPfp,
+} = require("../utils/files/pfp");
 
 function workspaceEndpoints(app) {
   if (!app) return;
+
+  const responseCache = new Map();
 
   app.post(
     "/workspace/new",
@@ -419,6 +430,138 @@ function workspaceEndpoints(app) {
       } catch (error) {
         console.error("Error processing the pin status update:", error);
         return response.status(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/workspace/:slug/pfp",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async function (request, response) {
+      try {
+        const { slug } = request.params;
+        const cachedResponse = responseCache.get(slug);
+
+        if (cachedResponse) {
+          response.writeHead(200, {
+            "Content-Type": cachedResponse.mime || "image/png",
+          });
+          response.end(cachedResponse.buffer);
+          return;
+        }
+
+        const pfpPath = await determineWorkspacePfpFilepath(slug);
+
+        if (!pfpPath) {
+          response.sendStatus(204).end();
+          return;
+        }
+
+        const { found, buffer, mime } = fetchPfp(pfpPath);
+        if (!found) {
+          response.sendStatus(204).end();
+          return;
+        }
+
+        responseCache.set(slug, { buffer, mime });
+
+        response.writeHead(200, {
+          "Content-Type": mime || "image/png",
+        });
+        response.end(buffer);
+        return;
+      } catch (error) {
+        console.error("Error processing the logo request:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/upload-pfp",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    handlePfpUploads.single("file"),
+    async function (request, response) {
+      try {
+        const { slug } = request.params;
+        const uploadedFileName = request.randomFileName;
+        if (!uploadedFileName) {
+          return response.status(400).json({ message: "File upload failed." });
+        }
+
+        const workspaceRecord = await Workspace.get({
+          slug,
+        });
+
+        const oldPfpFilename = workspaceRecord.pfpFilename;
+        if (oldPfpFilename) {
+          const oldPfpPath = path.join(
+            __dirname,
+            `../storage/assets/pfp/${normalizePath(
+              workspaceRecord.pfpFilename
+            )}`
+          );
+
+          if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
+        }
+
+        const { workspace, message } = await Workspace.update(
+          workspaceRecord.id,
+          {
+            pfpFilename: uploadedFileName,
+          }
+        );
+
+        return response.status(workspace ? 200 : 500).json({
+          message: workspace
+            ? "Profile picture uploaded successfully."
+            : message,
+        });
+      } catch (error) {
+        console.error("Error processing the profile picture upload:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.delete(
+    "/workspace/:slug/remove-pfp",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async function (request, response) {
+      try {
+        const { slug } = request.params;
+        const workspaceRecord = await Workspace.get({
+          slug,
+        });
+        const oldPfpFilename = workspaceRecord.pfpFilename;
+
+        if (oldPfpFilename) {
+          const oldPfpPath = path.join(
+            __dirname,
+            `../storage/assets/pfp/${normalizePath(oldPfpFilename)}`
+          );
+
+          if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
+        }
+
+        const { workspace, message } = await Workspace.update(
+          workspaceRecord.id,
+          {
+            pfpFilename: null,
+          }
+        );
+
+        // Clear the cache
+        responseCache.delete(slug);
+
+        return response.status(workspace ? 200 : 500).json({
+          message: workspace
+            ? "Profile picture removed successfully."
+            : message,
+        });
+      } catch (error) {
+        console.error("Error processing the profile picture removal:", error);
+        response.status(500).json({ message: "Internal server error" });
       }
     }
   );
