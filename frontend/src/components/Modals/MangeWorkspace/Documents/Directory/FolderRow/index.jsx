@@ -91,10 +91,9 @@ export default function FolderRow({
       </tr>
       {expanded && (
         <div className="col-span-full">
-          {item.items.map((fileItem, index) => (
+          {item.items.map((fileItem) => (
             <FileRow
               key={fileItem.id}
-              index={index}
               item={fileItem}
               folderName={item.name}
               selected={isSelected(fileItem.id)}

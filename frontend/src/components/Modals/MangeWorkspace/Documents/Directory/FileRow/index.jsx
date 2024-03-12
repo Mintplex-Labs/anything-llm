@@ -9,12 +9,10 @@ import System from "@/models/system";
 import debounce from "lodash.debounce";
 
 export default function FileRow({
-  index,
   item,
   folderName,
   selected,
   toggleSelection,
-  expanded,
   fetchKeys,
   setLoading,
   setLoadingMessage,
@@ -54,9 +52,6 @@ export default function FileRow({
 
   const handleMouseEnter = debounce(handleShowTooltip, 500);
   const handleMouseLeave = debounce(handleHideTooltip, 500);
-
-  const lightColorRow = selected ? "bg-sky-500/20" : "";
-  const darkColorRow = selected ? "bg-sky-500/10" : "";
 
   return (
     <tr
