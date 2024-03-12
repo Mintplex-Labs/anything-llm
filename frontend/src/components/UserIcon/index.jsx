@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import JAZZ from "@metamask/jazzicon";
 import usePfp from "../../hooks/usePfp";
 
-export default function Jazzicon({ size = 10, user, role, workspacePfp }) {
+export default function Jazzicon({ size = 10, user, role }) {
   const { pfp } = usePfp();
   const divRef = useRef(null);
   const seed = user?.uid
@@ -23,13 +23,6 @@ export default function Jazzicon({ size = 10, user, role, workspacePfp }) {
         <img
           src={pfp}
           alt="User profile picture"
-          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-white"
-        />
-      )}
-      {workspacePfp && (
-        <img
-          src={workspacePfp}
-          alt="Workspace profile picture"
           className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-white"
         />
       )}
