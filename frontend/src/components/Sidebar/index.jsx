@@ -38,7 +38,7 @@ export default function Sidebar() {
       <div
         ref={sidebarRef}
         style={{ height: "calc(100% - 76px)" }}
-        className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px]"
+        className="relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px]"
       >
         <div className="flex flex-col h-full overflow-x-hidden">
           <div className="flex-grow flex flex-col min-w-[235px]">
