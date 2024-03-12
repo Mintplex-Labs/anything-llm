@@ -51,7 +51,6 @@ export default function Footer() {
             href={paths.github()}
             target="_blank"
             rel="noreferrer"
-            rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
             <GithubLogo weight="fill" className="h-5 w-5 " />
@@ -60,7 +59,6 @@ export default function Footer() {
             href={paths.docs()}
             target="_blank"
             rel="noreferrer"
-            rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
             <BookOpen weight="fill" className="h-5 w-5 " />
@@ -68,7 +66,6 @@ export default function Footer() {
           <a
             href={paths.discord()}
             target="_blank"
-            rel="noreferrer"
             rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
