@@ -551,6 +551,9 @@ function workspaceEndpoints(app) {
           }
         );
 
+        // Clear the cache
+        responseCache.delete(slug);
+
         return response.status(workspace ? 200 : 500).json({
           message: workspace
             ? "Profile picture removed successfully."

@@ -3,10 +3,6 @@ import { baseHeaders } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import WorkspaceThread from "@/models/workspaceThread";
 import { v4 } from "uuid";
-import {
-  cacheWorkspacePfp,
-  getWorkspacePfpFromCache,
-} from "@/utils/workspacePfp";
 
 const Workspace = {
   new: async function (data = {}) {
