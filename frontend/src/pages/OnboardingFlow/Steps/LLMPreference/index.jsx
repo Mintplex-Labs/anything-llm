@@ -12,6 +12,7 @@ import MistralLogo from "@/assets/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/assets/llmprovider/huggingface.png";
 import PerplexityLogo from "@/assets/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/assets/llmprovider/openrouter.jpeg";
+import GroqLogo from "@/assets/llmprovider/groq.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
@@ -23,12 +24,13 @@ import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
+import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
+import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
-import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -152,6 +154,14 @@ export default function LLMPreference({
     //   description:
     //     "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
     // },
+    {
+      name: "Groq",
+      value: "groq",
+      logo: GroqLogo,
+      options: <GroqAiOptions settings={settings} />,
+      description:
+        "The fastest LLM inferencing available for real-time AI applications.",
+    },
   ];
 
   function handleForward() {

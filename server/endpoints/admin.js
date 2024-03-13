@@ -59,14 +59,17 @@ function adminEndpoints(app) {
         }
 
         const { user: newUser, error } = await User.create(newUserParams);
-        await EventLogs.logEvent(
-          "user_created",
-          {
-            userName: newUser.username,
-            createdBy: currUser.username,
-          },
-          currUser.id
-        );
+        if (!!newUser) {
+          await EventLogs.logEvent(
+            "user_created",
+            {
+              userName: newUser.username,
+              createdBy: currUser.username,
+            },
+            currUser.id
+          );
+        }
+
         response.status(200).json({ user: newUser, error });
       } catch (e) {
         console.error(e);

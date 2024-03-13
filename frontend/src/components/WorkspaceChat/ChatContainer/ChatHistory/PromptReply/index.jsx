@@ -14,7 +14,6 @@ const PromptReply = ({
   closed = true,
 }) => {
   const assistantBackgroundColor = "bg-historical-msg-system";
-
   if (!reply && sources.length === 0 && !pending && !error) return null;
 
   if (pending) {
@@ -24,11 +23,7 @@ const PromptReply = ({
       >
         <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
           <div className="flex gap-x-5">
-            <Jazzicon
-              size={36}
-              user={{ uid: workspace.slug }}
-              role="assistant"
-            />
+            <WorkspaceProfileImage workspace={workspace} />
             <div className="mt-3 ml-5 dot-falling"></div>
           </div>
         </div>
@@ -43,11 +38,7 @@ const PromptReply = ({
       >
         <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
           <div className="flex gap-x-5">
-            <Jazzicon
-              size={36}
-              user={{ uid: workspace.slug }}
-              role="assistant"
-            />
+            <WorkspaceProfileImage workspace={workspace} />
             <span
               className={`inline-block p-2 rounded-lg bg-red-50 text-red-500`}
             >
@@ -68,7 +59,7 @@ const PromptReply = ({
     >
       <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
         <div className="flex gap-x-5">
-          <Jazzicon size={36} user={{ uid: workspace.slug }} role="assistant" />
+          <WorkspaceProfileImage workspace={workspace} />
           <span
             className={`reply flex flex-col gap-y-1 mt-2`}
             dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
@@ -79,5 +70,21 @@ const PromptReply = ({
     </div>
   );
 };
+
+function WorkspaceProfileImage({ workspace }) {
+  if (!!workspace.pfpUrl) {
+    return (
+      <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden">
+        <img
+          src={workspace.pfpUrl}
+          alt="Workspace profile picture"
+          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-white"
+        />
+      </div>
+    );
+  }
+
+  return <Jazzicon size={36} user={{ uid: workspace.slug }} role="assistant" />;
+}
 
 export default memo(PromptReply);

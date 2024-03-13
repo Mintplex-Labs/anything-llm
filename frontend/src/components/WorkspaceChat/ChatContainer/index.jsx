@@ -70,11 +70,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       const remHistory = chatHistory.length > 0 ? chatHistory.slice(0, -1) : [];
       var _chatHistory = [...remHistory];
 
-      if (!promptMessage || !promptMessage?.userMessage) {
-        setLoadingResponse(false);
-        return false;
-      }
-
+      if (!promptMessage || !promptMessage?.userMessage) return false;
       if (!!threadSlug) {
         await Workspace.threads.streamChat(
           { workspaceSlug: workspace.slug, threadSlug },
@@ -108,7 +104,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   }, [loadingResponse, chatHistory, workspace]);
 
   return (
-    <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
+    <div className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
         <ChatHistory
           history={chatHistory}

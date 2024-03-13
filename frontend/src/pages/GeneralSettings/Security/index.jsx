@@ -9,11 +9,11 @@ import PreLoader from "@/components/Preloader";
 export default function GeneralSecurity() {
   return (
     <div
-      style={{ height: "calc(100vh - 40px)" }}
+      style={{ height: "calc(100vh - 32px)" }}
       className="w-screen overflow-hidden bg-sidebar flex"
     >
       <Sidebar />
-      <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
+      <div className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent">
         <MultiUserMode />
         <PasswordProtection />
       </div>

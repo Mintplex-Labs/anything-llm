@@ -34,9 +34,11 @@ function ShowWorkspaceChat() {
         return;
       }
       const suggestedMessages = await Workspace.getSuggestedMessages(slug);
+      // const pfpUrl = await Workspace.fetchPfp(slug);
       setWorkspace({
         ..._workspace,
         suggestedMessages,
+        // pfpUrl,
       });
       setLoading(false);
     }

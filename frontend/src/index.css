@@ -36,6 +36,12 @@ a {
   box-sizing: border-box;
 }
 
+.border-bb-only {
+  border-top: transparent !important;
+  border-left: transparent !important;
+  border-right: transparent !important;
+}
+
 .border-b,
 .border-b-2 {
   border-bottom-style: solid;
@@ -655,4 +661,24 @@ p {
 .markdown strong {
   font-weight: 600;
   color: #fff;
+}
+
+/* Flex upload modal to be a column when on small screens so that the UI
+does not extend the close button beyond the viewport. */
+@media (max-width: 1330px) {
+  .upload-modal {
+    @apply !flex-col !items-center !py-4 no-scroll;
+  }
+
+  .upload-modal-arrow {
+    margin-top: 0px !important;
+  }
+}
+
+.upload-modal {
+  @apply flex-row items-start gap-x-6 justify-center;
+}
+
+.upload-modal-arrow {
+  margin-top: 25%;
 }
