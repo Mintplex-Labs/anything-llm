@@ -97,7 +97,6 @@ export default function FolderRow({
               item={fileItem}
               folderName={item.name}
               selected={isSelected(fileItem.id)}
-              expanded={expanded}
               toggleSelection={toggleSelection}
               fetchKeys={fetchKeys}
               setLoading={setLoading}
