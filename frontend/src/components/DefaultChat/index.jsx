@@ -331,7 +331,7 @@ export default function DefaultChatContainer() {
   }, []);
 
   return (
-    <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent">
+    <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
       {fetchedMessages.length === 0
         ? mockMsgs.map((content, i) => {
             return <React.Fragment key={i}>{content}</React.Fragment>;

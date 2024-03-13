@@ -36,7 +36,7 @@ export default function SettingsSidebar() {
       <div
         ref={sidebarRef}
         style={{ height: "calc(100% - 76px)" }}
-        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px]"
+        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px]"
       >
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
           <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">

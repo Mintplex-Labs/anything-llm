@@ -37,26 +37,9 @@ export default function Sidebar() {
       <div
         ref={sidebarRef}
         style={{ height: "calc(100vh - 116px)" }}
-        className="relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[10px]"
+        className="relative m-[16px] rounded-[26px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px]"
       >
         <div className="flex flex-col h-full overflow-x-hidden">
-          {/* Header Information */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex shrink-0 max-w-[65%] items-center justify-start">
-              <img
-                src={logo}
-                alt="Logo"
-                className="rounded max-h-[40px] max-w-[100%]"
-                style={{ objectFit: "contain" }}
-              />
-            </div>
-            {(!user || user?.role !== "default") && (
-              <div className="flex gap-x-2 items-center text-slate-200">
-                <SettingsButton />
-              </div>
-            )}
-          </div>
-
           {/* Primary Body */}
           <div className="flex-grow flex flex-col">
             <div className="flex flex-col gap-y-2 pb-8 overflow-y-scroll no-scroll">

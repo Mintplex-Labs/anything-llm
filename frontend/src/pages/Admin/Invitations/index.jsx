@@ -17,7 +17,7 @@ export default function AdminInvites() {
       <Sidebar />
       <div
         style={{ height: "calc(100vh - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-2 border-outline"
       >
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">

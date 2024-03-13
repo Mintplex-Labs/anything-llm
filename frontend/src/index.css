@@ -63,6 +63,10 @@ div.border-4 {
   border-style: solid;
 }
 
+.border-outline {
+  border-color: #4e5153 !important;
+}
+
 input,
 button,
 textarea {

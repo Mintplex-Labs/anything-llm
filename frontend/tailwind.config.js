@@ -25,7 +25,7 @@ export default {
         sidebar: "#25272C",
         "historical-msg-system": "rgba(255, 255, 255, 0.05);",
         "historical-msg-user": "#2C2F35",
-        outline: "#4E5153"
+        outline: "#4E5153",
       },
       backgroundImage: {
         "preference-gradient":

@@ -60,12 +60,12 @@ function ShowWorkspaceChat() {
 
   const TabContent = TABS[tab];
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+    <div
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex"
+    >
       <Sidebar />
-      <div
-        style={{ height: "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
-      >
+      <div className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
         <div className="flex gap-x-10 pt-6 pb-4 ml-16 mr-8 border-b-2 border-white border-opacity-10">
           <Link
             to={paths.workspace.chat(slug)}
@@ -104,7 +104,7 @@ function TabItem({ title, icon, to }) {
       className={({ isActive }) =>
         `${
           isActive
-            ? "text-sky-400 pb-4 border-b-[4px] -mb-[19px] border-sky-400"
+            ? "text-sky-400 pb-4 border-b-2 -mb-[19px] border-sky-400"
             : "text-white/60 hover:text-sky-400"
         } ` + " flex gap-x-2 items-center font-medium"
       }

@@ -43,7 +43,7 @@ export default function AdminSystem() {
       <Sidebar />
       <div
         style={{ height: "calc(100vh - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-2 border-outline"
       >
         <form
           onSubmit={handleSubmit}

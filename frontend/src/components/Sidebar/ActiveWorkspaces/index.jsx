@@ -92,7 +92,7 @@ export default function ActiveWorkspaces() {
                 className={`
               transition-all duration-[200ms]
                 flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-white justify-start items-center
-                hover:bg-workspace-item-selected-gradient hover:font-bold border-2 border-outline
+                hover:bg-workspace-item-selected-gradient hover:font-bold border-solid border-2 border-outline
                 ${
                   isActive
                     ? "bg-workspace-item-selected-gradient font-bold"
@@ -118,34 +118,27 @@ export default function ActiveWorkspaces() {
                   </div>
                   {(isActive || isHovered || settingHover[workspace.id]) &&
                   user?.role !== "default" ? (
-                    <div className="flex items-center gap-x-[2px]">
-                      <div
-                        className={`group flex hover:bg-[#646768] p-[2px] rounded-[4px] ${
-                          uploadHover[workspace.id] ? "bg-[#646768]" : ""
-                        }`}
+                    <div className="flex items-center gap-x-[4px]">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setSelectedWs(workspace);
+                          showModal();
+                        }}
+                        onMouseEnter={() =>
+                          handleUploadMouseEnter(workspace.id)
+                        }
+                        onMouseLeave={() =>
+                          handleUploadMouseLeave(workspace.id)
+                        }
+                        className="group p-[2px] hover:bg-[#646768] rounded-[4px] border-none rounded-md flex items-center justify-center"
                       >
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setSelectedWs(workspace);
-                            showModal();
-                          }}
-                          onMouseEnter={() =>
-                            handleUploadMouseEnter(workspace.id)
-                          }
-                          onMouseLeave={() =>
-                            handleUploadMouseLeave(workspace.id)
-                          }
-                          className="border-none rounded-md flex items-center justify-center ml-auto"
-                        >
-                          <UploadSimple
-                            className="h-[20px] w-[20px] text-[#A7A8A9] group-hover:text-white"
-                            weight="bold"
-                          />
-                        </button>
-                      </div>
-
+                        <UploadSimple
+                          className=" h-[20px] w-[20px] text-[#A7A8A9] group-hover:text-white"
+                          weight="bold"
+                        />
+                      </button>
                       <Link
                         type="button"
                         to={paths.workspace.settings.generalAppearance(
