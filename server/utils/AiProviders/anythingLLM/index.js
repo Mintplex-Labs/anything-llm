@@ -48,13 +48,13 @@ class AnythingLLMOllama {
       .then((res) => res)
       .catch(() => null);
     if (ollamaPort) {
-      console.log(
-        `\x1b[36m[AnythingLLMOllama]\x1b[0m Main process is intending to run local AnythingLLMOllama on port ${ollamaPort}`
+      this.#log(
+        `Main process is intending to run local AnythingLLMOllama on port ${ollamaPort}`
       );
       process.env.ANYTHING_LLM_OLLAMA_PORT = ollamaPort;
     } else {
-      console.error(
-        `\x1b[36m[AnythingLLMOllama]\x1b[0m Failed to communicate. Will assume AnythingLLMOllama with bind to 11434.`
+      this.#log(
+        ` Failed to communicate. Will assume AnythingLLMOllama with bind to 11434.`
       );
       process.env.ANYTHING_LLM_OLLAMA_PORT = "11434";
     }
@@ -317,12 +317,12 @@ class AnythingLLMOllama {
       .invoke(this.#convertToLangchainPrototypes(messages))
       .catch((e) => {
         throw new Error(
-          `Ollama::getChatCompletion failed to communicate with Ollama. ${e.message}`
+          `AnythingLLM::getChatCompletion failed to communicate with Ollama. ${e.message}`
         );
       });
 
     if (!textResponse || !textResponse.length)
-      throw new Error(`Ollama::sendChat text response was empty.`);
+      throw new Error(`AnythingLLM::sendChat text response was empty.`);
 
     return textResponse;
   }
@@ -353,12 +353,14 @@ class AnythingLLMOllama {
       .invoke(this.#convertToLangchainPrototypes(messages))
       .catch((e) => {
         throw new Error(
-          `Ollama::getChatCompletion failed to communicate with Ollama. ${e.message}`
+          `AnythingLLM::getChatCompletion failed to communicate with AnythingLLM. ${e.message}`
         );
       });
 
     if (!textResponse || !textResponse.length)
-      throw new Error(`Ollama::getChatCompletion text response was empty.`);
+      throw new Error(
+        `AnythingLLM::getChatCompletion text response was empty.`
+      );
 
     return textResponse;
   }
@@ -414,7 +416,7 @@ class AnythingLLMOllama {
           textResponse: "",
           close: true,
           error: this.#errorHandler(
-            `Ollama:streaming - could not stream chat. ${
+            `AnythingLLM:streaming - could not stream chat. ${
               error?.cause ?? error.message
             }`
           ),
