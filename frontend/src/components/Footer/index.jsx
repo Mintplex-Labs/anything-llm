@@ -13,7 +13,6 @@ import {
 } from "@phosphor-icons/react";
 import React, { useEffect, useState } from "react";
 import SettingsButton from "../SettingsButton";
-import { isMobile } from "react-device-detect";
 
 export const MAX_ICONS = 3;
 export const ICON_COMPONENTS = {
@@ -74,7 +73,7 @@ export default function Footer() {
               className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
             />
           </a>
-          {!isMobile && <SettingsButton />}
+          <SettingsButton />
         </div>
       </div>
     );
@@ -97,7 +96,7 @@ export default function Footer() {
             })}
           </a>
         ))}
-        {!isMobile && <SettingsButton />}
+        <SettingsButton />
       </div>
     </div>
   );
