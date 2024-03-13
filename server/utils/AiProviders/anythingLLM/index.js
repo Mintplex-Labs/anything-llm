@@ -123,6 +123,20 @@ class AnythingLLMOllama {
     );
   }
 
+  #errorHandler(errorMessage = "") {
+    if (errorMessage?.includes("try pulling it first")) {
+      return `AnythingLLM:404: ${this.model} has not completed downloading. Please wait for it to complete to send your first chat.`;
+    }
+    return errorMessage;
+  }
+
+  // Send signal to ollama process in electron and tell the worker to reboot ollama
+  // so that it stops the download process since it cannot be killed via API.
+  async rebootOllama() {
+    if (!(await this.#ollamaProcessRunning())) return;
+    process.parentPort?.postMessage({ message: "boot-ollama" });
+  }
+
   // Before running anything just call this to either boot up the Ollama service
   // or check if alive.
   async bootOrContinue() {
@@ -182,9 +196,15 @@ class AnythingLLMOllama {
       });
   }
 
-  async pullModel(modelName = "llama2", progressCallback, successCallback) {
+  async pullModel(
+    modelName = "llama2",
+    progressCallback,
+    successCallback,
+    errorCallback
+  ) {
     await this.bootOrContinue();
 
+    this.#log(`Starting pull of model tag "${modelName}".`);
     const response = await fetch(`${this.basePath()}/api/pull`, {
       method: "POST",
       headers: {
@@ -211,16 +231,33 @@ class AnythingLLMOllama {
         const json = safeJsonParse(receivedText);
         if (json?.status && json?.total && json?.completed) {
           const percentage = Math.round((json.completed / json.total) * 100);
-          progressCallback(percentage, json.status);
+          progressCallback?.(percentage, json.status);
         }
 
         if (json?.status === "success") {
-          successCallback();
+          successCallback?.();
         }
       } catch (e) {
         console.error("Error parsing JSON", e);
+        errorCallback?.(e.message);
       }
     }
+  }
+
+  async deleteModel(modelName = null) {
+    if (!modelName) return true;
+    await this.bootOrContinue();
+
+    this.#log(`Removing model tag "${modelName}".`);
+    return await fetch(`${this.basePath()}/api/delete`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: modelName }),
+    })
+      .then((res) => res.json())
+      .catch(() => false);
   }
 
   async kill() {
@@ -376,9 +413,11 @@ class AnythingLLMOllama {
           type: "textResponseChunk",
           textResponse: "",
           close: true,
-          error: `Ollama:streaming - could not stream chat. ${
-            error?.cause ?? error.message
-          }`,
+          error: this.#errorHandler(
+            `Ollama:streaming - could not stream chat. ${
+              error?.cause ?? error.message
+            }`
+          ),
         });
       }
     });

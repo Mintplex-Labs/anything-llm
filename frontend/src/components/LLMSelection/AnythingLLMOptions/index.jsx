@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import System from "../../../models/system";
+import { ANYTHINGLLM_OLLAMA } from "@/utils/constants";
 import { DOWNLOADABLE_MODELS } from "./downloadable";
 import { safeJsonParse } from "@/utils/request";
 import { Info } from "@phosphor-icons/react";
@@ -20,11 +21,18 @@ export default function AnythingLLMOptions({
 
   function startDownload(modelId, modelName) {
     window.localStorage.setItem(
-      "anythingllm_model_download",
+      ANYTHINGLLM_OLLAMA.localStorageKey,
       JSON.stringify({ isDownloading: true, modelName, modelId })
     );
-    window.dispatchEvent(new CustomEvent("modelDownloadStart"));
+    window.dispatchEvent(new CustomEvent(ANYTHINGLLM_OLLAMA.startEvent));
     setIsDownloading(true);
+  }
+
+  async function uninstallModel(modelName) {
+    await System.deleteOllamaModel(modelName);
+    const { models } = await System.customModels("anythingllm_ollama");
+    setIsDownloading(false);
+    setDownloadedModels(models || []);
   }
 
   useEffect(() => {
@@ -32,7 +40,7 @@ export default function AnythingLLMOptions({
       const { models } = await System.customModels("anythingllm_ollama");
       setDownloadedModels(models || []);
       const downloadState = window.localStorage.getItem(
-        "anythingllm_model_download"
+        ANYTHINGLLM_OLLAMA.localStorageKey
       );
 
       if (downloadState) {
@@ -49,12 +57,26 @@ export default function AnythingLLMOptions({
       findModels();
     };
 
-    window.addEventListener("modelDownloadComplete", handleDownloadComplete);
+    const handleDownloadAbort = () => {
+      window.localStorage.removeItem(ANYTHINGLLM_OLLAMA.localStorageKey);
+      setIsDownloading(false);
+      findModels();
+    };
+
+    window.addEventListener(
+      ANYTHINGLLM_OLLAMA.completeEvent,
+      handleDownloadComplete
+    );
+    window.addEventListener(ANYTHINGLLM_OLLAMA.abortEvent, handleDownloadAbort);
 
     return () => {
       window.removeEventListener(
-        "modelDownloadComplete",
+        ANYTHINGLLM_OLLAMA.completeEvent,
         handleDownloadComplete
+      );
+      window.removeEventListener(
+        ANYTHINGLLM_OLLAMA.abortEvent,
+        handleDownloadAbort
       );
     };
   }, []);
@@ -99,11 +121,9 @@ export default function AnythingLLMOptions({
               <optgroup label="Downloaded">
                 {downloadedModels.map((model) => (
                   <option key={model.id} value={model.id}>
-                    {
-                      DOWNLOADABLE_MODELS.find(
-                        (downloadableModel) => downloadableModel.id === model.id
-                      ).name
-                    }
+                    {DOWNLOADABLE_MODELS.find(
+                      (downloadableModel) => downloadableModel.id === model.id
+                    )?.name || "unknown model"}
                   </option>
                 ))}
               </optgroup>
@@ -141,13 +161,19 @@ export default function AnythingLLMOptions({
           selectedModel={selectedModel}
           isDownloading={isDownloading}
           isModelDownloaded={isModelDownloaded(selectedModel)}
+          uninstall={uninstallModel}
         />
       </div>
     </div>
   );
 }
 
-function ModelInformation({ selectedModel, isDownloading, isModelDownloaded }) {
+function ModelInformation({
+  selectedModel,
+  isDownloading,
+  isModelDownloaded,
+  uninstall,
+}) {
   const modelInfo = DOWNLOADABLE_MODELS.find(
     (model) => model.id === selectedModel
   );
@@ -185,20 +211,28 @@ function ModelInformation({ selectedModel, isDownloading, isModelDownloaded }) {
         </div>
         {!isModelDownloaded && !isDownloading && (
           <div className="flex items-center gap-x-2 mb-4">
-            <div className="text-sm italic text-white/80">
-              Pressing save changes will begin the model download
+            <div className="text-xs italic text-white/80">
+              Download of model ({modelInfo.size}) will begin once changes are
+              saved.
             </div>
           </div>
         )}
         {isDownloading && (
           <div className="flex items-center gap-x-2 mb-4">
-            <div className="text-sm">Status: Pulling</div>
+            <div className="text-xs">Status: Pulling</div>
             <PreLoader size="3" />
           </div>
         )}
         {isModelDownloaded && (
           <div className="flex items-center gap-x-2 mb-4">
-            <div className="text-sm">Status: Downloaded & ready to use</div>
+            <div className="text-xs">Status: Downloaded & ready to use</div>
+
+            <button
+              onClick={() => uninstall(modelInfo.id)}
+              className="border-none bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white px-4 py-1 rounded-lg text-white"
+            >
+              Uninstall
+            </button>
           </div>
         )}
       </div>

@@ -46,9 +46,6 @@ const {
 } = require("../utils/helpers/chat/convertTo");
 const { EventLogs } = require("../models/eventLogs");
 const { CollectorApi } = require("../utils/collectorApi");
-const {
-  downloadAnythingOllamaModel,
-} = require("../utils/helpers/anythingOllama");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -817,8 +814,10 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
+        const {
+          AnythingLLMOllama,
+        } = require("../utils/AiProviders/anythingLLM");
         const { modelName } = reqBody(request);
-        console.log("Downloading Ollama model:", modelName);
         response.writeHead(200, {
           "Content-Type": "text/event-stream",
           "Cache-Control": "no-cache",
@@ -834,7 +833,7 @@ function systemEndpoints(app) {
           );
         };
 
-        const successCallback = (modelName) => {
+        const successCallback = () => {
           response.write(
             `event: done\ndata: ${JSON.stringify({
               done: true,
@@ -850,20 +849,41 @@ function systemEndpoints(app) {
           response.end();
         };
 
-        await downloadAnythingOllamaModel(
+        await new AnythingLLMOllama().pullModel(
           modelName,
           progressCallback,
           successCallback,
           errorCallback
         );
       } catch (error) {
-        console.error("Error downloading Ollama model:", error);
+        console.error(
+          "Error downloading Ollama model - it may have been killed manually.",
+          error.message
+        );
         response.write(
           `event: error\ndata: ${JSON.stringify({
             error: "Internal server error",
           })}\n\n`
         );
         response.end();
+      }
+    }
+  );
+
+  app.delete(
+    "/system/remove-ollama-model",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const {
+          AnythingLLMOllama,
+        } = require("../utils/AiProviders/anythingLLM");
+        const { modelName } = reqBody(request);
+        await new AnythingLLMOllama().deleteModel(modelName);
+        response.status(200).json({ success: true });
+      } catch (error) {
+        console.error("Error aborting Ollama model removal:", error);
+        response.status(500).json({ success: false });
       }
     }
   );

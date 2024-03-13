@@ -1,4 +1,8 @@
-import { AUTH_TIMESTAMP, REMOTE_APP_VERSION_URL } from "@/utils/constants";
+import {
+  ANYTHINGLLM_OLLAMA,
+  AUTH_TIMESTAMP,
+  REMOTE_APP_VERSION_URL,
+} from "@/utils/constants";
 import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 import { API_BASE } from "@/utils/api";
@@ -528,6 +532,12 @@ const System = {
         if (currentAbortController) {
           currentAbortController.abort();
           killed = true;
+        } else {
+          window.addEventListener(ANYTHINGLLM_OLLAMA.abortEvent, () => {
+            if (!currentAbortController) return;
+            currentAbortController.abort();
+            killed = true;
+          });
         }
 
         currentAbortController = new AbortController();
@@ -580,6 +590,23 @@ const System = {
         });
       }
     });
+  },
+  abortOllamaModelDownload: async function () {
+    return await fetch(`${API_BASE()}/system/download-ollama-model`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch(() => false);
+  },
+  deleteOllamaModel: async function (modelName) {
+    return await fetch(`${API_BASE()}/system/remove-ollama-model`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ modelName }),
+    })
+      .then((res) => res.json())
+      .catch(() => false);
   },
   dataConnectors: DataConnector,
 };

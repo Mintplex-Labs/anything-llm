@@ -444,7 +444,7 @@ async function wipeWorkspaceModelPreference(_key, prev, next) {
   await Workspace.resetWorkspaceChatModels();
 }
 
-// When toggling between models there is no reason to have the Background AnythingLLMOllama
+// When toggling between model providers there is no reason to have the Background AnythingLLMOllama
 // service running since its just extra overhead for nothing. So we can send a pkill or boot
 // to the main thread.
 async function manageOllamaService(_key, prev, next) {
