@@ -70,7 +70,7 @@ function MultiUserMode() {
 
   if (loading) {
     return (
-      <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] p-[18px] h-full overflow-y-scroll">
+      <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[16px] p-[18px] h-full overflow-y-scroll">
         <div className="w-full h-full flex justify-center items-center">
           <PreLoader />
         </div>
@@ -234,7 +234,7 @@ function PasswordProtection() {
 
   if (loading) {
     return (
-      <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] p-[18px] h-full overflow-y-scroll">
+      <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[16px] p-[18px] h-full overflow-y-scroll">
         <div className="w-full h-full flex justify-center items-center">
           <PreLoader />
         </div>

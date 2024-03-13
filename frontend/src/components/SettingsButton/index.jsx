@@ -14,7 +14,7 @@ export default function SettingsButton() {
     return (
       <Link
         to={paths.home()}
-        className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+        className="transition-all duration-300 flex w-fit h-fit p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
       >
         <ArrowUUpLeft className="h-5 w-5" weight="fill" />
       </Link>
@@ -23,7 +23,7 @@ export default function SettingsButton() {
   return (
     <Link
       to={!!user?.role ? paths.settings.system() : paths.settings.appearance()}
-      className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+      className="transition-all duration-300 p-2 flex w-fit h-fit rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
     >
       <Wrench className="h-5 w-5" weight="fill" />
     </Link>
