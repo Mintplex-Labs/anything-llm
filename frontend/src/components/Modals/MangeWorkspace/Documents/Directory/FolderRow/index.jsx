@@ -47,10 +47,10 @@ export default function FolderRow({
 
   return (
     <>
-      <div
+      <tr
         onClick={onRowClick}
-        className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 border-b border-white/20 hover:bg-sky-500/20 cursor-pointer w-full ${
-          selected ? "bg-sky-500/20" : ""
+        className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 bg-[#2C2C2C] hover:bg-sky-500/20 cursor-pointer w-full file-row:0 ${
+          selected ? "selected" : ""
         }`}
       >
         <div className="col-span-6 flex gap-x-[4px] items-center">
@@ -88,7 +88,7 @@ export default function FolderRow({
             />
           )}
         </div>
-      </div>
+      </tr>
       {expanded && (
         <div className="col-span-full">
           {item.items.map((fileItem) => (
@@ -97,7 +97,6 @@ export default function FolderRow({
               item={fileItem}
               folderName={item.name}
               selected={isSelected(fileItem.id)}
-              expanded={expanded}
               toggleSelection={toggleSelection}
               fetchKeys={fetchKeys}
               setLoading={setLoading}

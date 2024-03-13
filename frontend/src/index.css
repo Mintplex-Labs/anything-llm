@@ -597,3 +597,19 @@ dialog::backdrop {
   font-weight: 600;
   color: #fff;
 }
+
+.file-row:nth-child(odd) {
+  @apply bg-[#1C1E21];
+}
+
+.file-row:nth-child(even) {
+  @apply bg-[#2C2C2C];
+}
+
+.file-row.selected:nth-child(odd) {
+  @apply bg-sky-500/20;
+}
+
+.file-row.selected:nth-child(even) {
+  @apply bg-sky-500/10;
+}
