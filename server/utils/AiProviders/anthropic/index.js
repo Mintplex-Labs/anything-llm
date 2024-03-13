@@ -1,6 +1,9 @@
 const { v4 } = require("uuid");
 const { chatPrompt } = require("../../chats");
-const { writeResponseChunk } = require("../../helpers/chat/responses");
+const {
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
@@ -150,6 +153,13 @@ class AnthropicLLM {
       let fullText = "";
       const { uuid = v4(), sources = [] } = responseProps;
 
+      // Establish listener to early-abort a streaming response
+      // in case things go sideways or the user does not like the response.
+      // We preserve the generated text but continue as if chat was completed
+      // to preserve previously generated content.
+      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      response.on("close", handleAbort);
+
       stream.on("streamEvent", (message) => {
         const data = message;
         if (
@@ -181,6 +191,7 @@ class AnthropicLLM {
             close: true,
             error: false,
           });
+          response.removeListener("close", handleAbort);
           resolve(fullText);
         }
       });

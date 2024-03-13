@@ -57,8 +57,7 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
         reason: file.errors[0].code,
       };
     });
-
-    setFiles([...files, ...newAccepted, ...newRejected]);
+    setFiles([...newAccepted, ...newRejected]);
   };
 
   useEffect(() => {
