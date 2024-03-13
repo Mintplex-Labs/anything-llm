@@ -1,5 +1,8 @@
 const { chatPrompt } = require("../../chats");
-const { writeResponseChunk } = require("../../helpers/chat/responses");
+const {
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
 
 function togetherAiModels() {
   const { MODELS } = require("./models.js");
@@ -185,6 +188,14 @@ class TogetherAiLLM {
     return new Promise((resolve) => {
       let fullText = "";
       let chunk = "";
+
+      // Establish listener to early-abort a streaming response
+      // in case things go sideways or the user does not like the response.
+      // We preserve the generated text but continue as if chat was completed
+      // to preserve previously generated content.
+      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      response.on("close", handleAbort);
+
       stream.data.on("data", (data) => {
         const lines = data
           ?.toString()
@@ -230,6 +241,7 @@ class TogetherAiLLM {
               close: true,
               error: false,
             });
+            response.removeListener("close", handleAbort);
             resolve(fullText);
           } else {
             let finishReason = null;
@@ -263,6 +275,7 @@ class TogetherAiLLM {
                 close: true,
                 error: false,
               });
+              response.removeListener("close", handleAbort);
               resolve(fullText);
             }
           }

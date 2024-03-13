@@ -1,10 +1,11 @@
-import { CircleNotch, PaperPlaneRight } from "@phosphor-icons/react";
 import React, { useState, useRef } from "react";
 import SlashCommandsButton, {
   SlashCommands,
   useSlashCommands,
 } from "./SlashCommands";
 import debounce from "lodash.debounce";
+import { PaperPlaneRight } from "@phosphor-icons/react";
+import StopGenerationButton from "./StopGenerationButton";
 
 export default function PromptInput({
   // workspace,
@@ -62,7 +63,7 @@ export default function PromptInput({
       >
         <div className="flex items-center rounded-lg md:mb-4">
           <div className="border-none w-[600px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
-            <div className="flex items-center w-full border-none">
+            <div className="flex items-center w-full border-bb-only border-b border-solid border-gray-500/50">
               <textarea
                 onKeyUp={adjustTextArea}
                 onKeyDown={captureEnter}
@@ -81,19 +82,18 @@ export default function PromptInput({
                 className="font-normal border-none cursor-text max-h-[100px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
                 placeholder={"Send a message"}
               />
-              <button
-                ref={formRef}
-                type="submit"
-                disabled={buttonDisabled}
-                className="border-none inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
-              >
-                {buttonDisabled ? (
-                  <CircleNotch className="w-6 h-6 animate-spin" />
-                ) : (
+              {buttonDisabled ? (
+                <StopGenerationButton />
+              ) : (
+                <button
+                  ref={formRef}
+                  type="submit"
+                  className="border-none inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
+                >
                   <PaperPlaneRight className="w-7 h-7 my-3" weight="fill" />
-                )}
-                <span className="sr-only">Send message</span>
-              </button>
+                  <span className="sr-only">Send message</span>
+                </button>
+              )}
             </div>
             <div className="flex justify-between py-3.5">
               <div className="flex gap-x-2">

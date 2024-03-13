@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import VectorCount from "./VectorCount";
 import WorkspaceName from "./WorkspaceName";
 import DeleteWorkspace from "./DeleteWorkspace";
+import WorkspacePfp from "./WorkspacePfp";
 
 export default function GeneralInfo({ slug }) {
   const [workspace, setWorkspace] = useState(null);
@@ -65,6 +66,10 @@ export default function GeneralInfo({ slug }) {
           </button>
         )}
       </form>
+      {/* Not needed for desktop */}
+      {/* <SuggestedMessages.../> */}
+      {/* Does not work on desktop. */}
+      {/* <WorkspacePfp workspace={workspace} slug={slug} /> */}
       <DeleteWorkspace workspace={workspace} />
     </>
   );

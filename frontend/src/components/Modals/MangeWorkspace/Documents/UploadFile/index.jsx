@@ -57,8 +57,7 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
         reason: file.errors[0].code,
       };
     });
-
-    setFiles([...files, ...newAccepted, ...newRejected]);
+    setFiles([...newAccepted, ...newRejected]);
   };
 
   useEffect(() => {
@@ -105,7 +104,7 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[400px] p-1 overflow-y-auto">
+          <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[180px] p-1 overflow-y-scroll no-scroll">
             {files.map((file) => (
               <FileUploadProgress
                 key={file.uid}

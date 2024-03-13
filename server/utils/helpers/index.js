@@ -73,6 +73,9 @@ function getLLMProvider(modelPreference = null) {
     case "huggingface":
       const { HuggingFaceLLM } = require("../AiProviders/huggingface");
       return new HuggingFaceLLM(embedder, modelPreference);
+    case "groq":
+      const { GroqLLM } = require("../AiProviders/groq");
+      return new GroqLLM(embedder, modelPreference);
     default:
       throw new Error("ENV: No LLM_PROVIDER value found in environment!");
   }

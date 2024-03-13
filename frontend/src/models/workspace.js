@@ -3,6 +3,7 @@ import { baseHeaders } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import WorkspaceThread from "@/models/workspaceThread";
 import { v4 } from "uuid";
+import { ABORT_STREAM_EVENT } from "@/utils/chat";
 
 const Workspace = {
   new: async function (data = {}) {
@@ -75,6 +76,16 @@ const Workspace = {
   },
   streamChat: async function ({ slug }, message, handleChat) {
     const ctrl = new AbortController();
+
+    // Listen for the ABORT_STREAM_EVENT key to be emitted by the client
+    // to early abort the streaming response. On abort we send a special `stopGeneration`
+    // event to be handled which resets the UI for us to be able to send another message.
+    // The backend response abort handling is done in each LLM's handleStreamResponse.
+    window.addEventListener(ABORT_STREAM_EVENT, () => {
+      ctrl.abort();
+      handleChat({ id: v4(), type: "stopGeneration" });
+    });
+
     await fetchEventSource(`${API_BASE()}/workspace/${slug}/stream-chat`, {
       method: "POST",
       body: JSON.stringify({ message }),
@@ -222,6 +233,54 @@ const Workspace = {
       });
   },
   threads: WorkspaceThread,
+
+  uploadPfp: async function (formData, slug) {
+    return await fetch(`${API_BASE}/workspace/${slug}/upload-pfp`, {
+      method: "POST",
+      body: formData,
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error uploading pfp.");
+        return { success: true, error: null };
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
+
+  fetchPfp: async function (slug) {
+    return await fetch(`${API_BASE}/workspace/${slug}/pfp`, {
+      method: "GET",
+      cache: "no-cache",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (res.ok && res.status !== 204) return res.blob();
+        throw new Error("Failed to fetch pfp.");
+      })
+      .then((blob) => (blob ? URL.createObjectURL(blob) : null))
+      .catch((e) => {
+        console.log(e);
+        return null;
+      });
+  },
+
+  removePfp: async function (slug) {
+    return await fetch(`${API_BASE}/workspace/${slug}/remove-pfp`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (res.ok) return { success: true, error: null };
+        throw new Error("Failed to remove pfp.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
 };
 
 export default Workspace;

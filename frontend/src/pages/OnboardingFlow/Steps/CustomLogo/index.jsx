@@ -3,7 +3,7 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { Plus } from "@phosphor-icons/react";
 import React, { useState, useEffect } from "react";
-import AnythingLLM from "@/media/logo/anything-llm.png";
+import AnythingLLM from "@/assets/logo/anything-llm.png";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
 

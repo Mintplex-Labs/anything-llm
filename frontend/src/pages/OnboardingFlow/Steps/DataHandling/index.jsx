@@ -14,6 +14,8 @@ import MistralLogo from "@/assets/llmprovider/mistral.jpeg";
 import HuggingFaceLogo from "@/assets/llmprovider/huggingface.png";
 import PerplexityLogo from "@/assets/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/assets/llmprovider/openrouter.jpeg";
+import GroqLogo from "@/assets/llmprovider/groq.png";
+
 import ZillizLogo from "@/assets/vectordbs/zilliz.png";
 import AstraDBLogo from "@/assets/vectordbs/astraDB.png";
 import ChromaLogo from "@/assets/vectordbs/chroma.png";
@@ -120,6 +122,14 @@ const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to OpenRouter",
     ],
     logo: OpenRouterLogo,
+  },
+  groq: {
+    name: "Groq",
+    description: [
+      "Your chats will not be used for training",
+      "Your prompts and document text used in response creation are visible to Groq",
+    ],
+    logo: GroqLogo,
   },
 };
 

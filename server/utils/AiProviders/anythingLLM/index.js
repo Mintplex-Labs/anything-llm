@@ -1,6 +1,9 @@
 const { chatPrompt } = require("../../chats");
 const { StringOutputParser } = require("langchain/schema/output_parser");
-const { writeResponseChunk } = require("../../helpers/chat/responses");
+const {
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { safeJsonParse } = require("../../http");
 
@@ -379,6 +382,14 @@ class AnythingLLMOllama {
     return new Promise(async (resolve) => {
       try {
         let fullText = "";
+
+        // Establish listener to early-abort a streaming response
+        // in case things go sideways or the user does not like the response.
+        // We preserve the generated text but continue as if chat was completed
+        // to preserve previously generated content.
+        const handleAbort = () => clientAbortedHandler(resolve, fullText);
+        response.on("close", handleAbort);
+
         for await (const chunk of stream) {
           if (chunk === undefined)
             throw new Error(
@@ -407,6 +418,7 @@ class AnythingLLMOllama {
           close: true,
           error: false,
         });
+        response.removeListener("close", handleAbort);
         resolve(fullText);
       } catch (error) {
         writeResponseChunk(response, {
@@ -421,6 +433,7 @@ class AnythingLLMOllama {
             }`
           ),
         });
+        response.removeListener("close", handleAbort);
       }
     });
   }
