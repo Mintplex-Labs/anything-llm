@@ -2,12 +2,12 @@ import UploadFile from "../UploadFile";
 import PreLoader from "@/components/Preloader";
 import { memo, useEffect, useState } from "react";
 import FolderRow from "./FolderRow";
-import pluralize from "pluralize";
 import System from "@/models/system";
-import { FolderNotchOpen, Plus, Trash } from "@phosphor-icons/react";
+import { FolderNotchOpen, Plus, Trash, X } from "@phosphor-icons/react";
 
 function Directory({
   files,
+  setFiles,
   loading,
   setLoading,
   workspace,
@@ -20,6 +20,10 @@ function Directory({
   loadingMessage,
 }) {
   const [amountSelected, setAmountSelected] = useState(0);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [showNewFolderInput, setShowNewFolderInput] = useState(false);
+
+  console.log(files);
 
   const deleteFiles = async (event) => {
     event.stopPropagation();
@@ -93,6 +97,33 @@ function Directory({
     return !!selectedItems[id];
   };
 
+  const createNewFolder = () => {
+    setShowNewFolderInput(true);
+  };
+
+  const confirmNewFolder = () => {
+    if (newFolderName.trim() !== "") {
+      const newFolder = {
+        name: newFolderName,
+        type: "folder",
+        items: [],
+      };
+
+      setFiles({
+        ...files,
+        items: [...files.items, newFolder],
+      });
+
+      // TODO: Make a backend call to create the folder
+
+      setNewFolderName("");
+      setShowNewFolderInput(false);
+      // Update the files prop with the new folder
+      // You can pass a callback function to update the files in the parent component
+      // or use a state management solution like Redux or Context API
+    }
+  };
+
   useEffect(() => {
     setAmountSelected(Object.keys(selectedItems).length);
   }, [selectedItems]);
@@ -100,17 +131,37 @@ function Directory({
   return (
     <div className="px-8 pb-8">
       <div className="flex flex-col gap-y-6">
-        <div className="flex items-center justify-between w-[560px] px-5">
+        <div className="flex items-center justify-between w-[560px] px-5 relative">
           <h3 className="text-white text-base font-bold">My Documents</h3>
-          <button
-            className="flex items-center gap-x-2 cursor-pointer"
-            onClick={() => console.log("New Folder clicked")}
-          >
-            <Plus size={18} weight="bold" color="#D3D4D4" />
-            <div className="text-[#D3D4D4] text-xs font-bold leading-[18px]">
-              New Folder
+          {showNewFolderInput ? (
+            <div className="flex items-center gap-x-2 z-50">
+              <input
+                type="text"
+                placeholder="Folder name"
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-[150px] h-[32px]"
+              />
+              <div className="flex gap-x-2">
+                <button
+                  onClick={confirmNewFolder}
+                  className="text-sky-400 rounded-md text-sm font-bold hover:text-sky-500"
+                >
+                  Create
+                </button>
+              </div>
             </div>
-          </button>
+          ) : (
+            <button
+              className="flex items-center gap-x-2 cursor-pointer z-50 px-[14px] py-[7px] rounded-lg hover:bg-[#222628]/60"
+              onClick={createNewFolder}
+            >
+              <Plus size={18} weight="bold" color="#D3D4D4" />
+              <div className="text-[#D3D4D4] text-xs font-bold leading-[18px]">
+                New Folder
+              </div>
+            </button>
+          )}
         </div>
 
         <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl">
@@ -136,7 +187,8 @@ function Directory({
               files.items.map(
                 (item, index) =>
                   (item.name === "custom-documents" ||
-                    (item.type === "folder" && item.items.length > 0)) && (
+                    item.type === "folder") && (
+                    // (item.type === "folder" && item.items.length > 0)) && (
                     <FolderRow
                       key={index}
                       item={item}
@@ -187,14 +239,22 @@ function Directory({
           {amountSelected !== 0 && (
             <div className="w-full justify-center absolute bottom-[12px] flex">
               <div className=" justify-center flex flex-row items-center bg-white/40 rounded-lg py-1 px-2 gap-x-2">
-                <button className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80">
+                <button
+                  onClick={moveToWorkspace}
+                  onMouseEnter={() => setHighlightWorkspace(true)}
+                  onMouseLeave={() => setHighlightWorkspace(false)}
+                  className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80"
+                >
                   Move to Workspace
                 </button>
-                <button className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg hover:text-white hover:bg-neutral-800/80 flex justify-center items-center">
-                  <FolderNotchOpen size={18} weight="bold" color="#222628" />
+                <button className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:text-white hover:bg-neutral-800/80 flex justify-center items-center">
+                  <FolderNotchOpen size={18} weight="bold" />
                 </button>
-                <button className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg hover:text-white hover:bg-neutral-800/80 flex justify-center items-center">
-                  <Trash size={18} weight="bold" color="#222628" />
+                <button
+                  onClick={deleteFiles}
+                  className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:text-white hover:bg-neutral-800/80 flex justify-center items-center"
+                >
+                  <Trash size={18} weight="bold" />
                 </button>
               </div>
             </div>
