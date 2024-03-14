@@ -50,6 +50,9 @@ const EmbedConfigSetup = lazy(
   () => import("@/pages/GeneralSettings/EmbedConfigs")
 );
 const EmbedChats = lazy(() => import("@/pages/GeneralSettings/EmbedChats"));
+const PrivacyAndData = lazy(
+  () => import("@/pages/GeneralSettings/PrivacyAndData")
+);
 
 export default function App() {
   return (
@@ -109,6 +112,10 @@ export default function App() {
               <Route
                 path="/settings/security"
                 element={<ManagerRoute Component={GeneralSecurity} />}
+              />
+              <Route
+                path="/settings/privacy"
+                element={<AdminRoute Component={PrivacyAndData} />}
               />
               <Route
                 path="/settings/appearance"

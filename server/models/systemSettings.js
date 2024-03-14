@@ -43,6 +43,7 @@ const SystemSettings = {
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
+      DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
       ...(vectorDB === "pinecone"
         ? {
             PineConeKey: !!process.env.PINECONE_API_KEY,
