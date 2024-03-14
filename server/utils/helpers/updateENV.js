@@ -285,6 +285,10 @@ const KEY_MAPPING = {
     envKey: "JWT_SECRET",
     checks: [requiresForceMode],
   },
+  DisableTelemetry: {
+    envKey: "DISABLE_TELEMETRY",
+    checks: [],
+  },
 };
 
 function isNotEmpty(input = "") {

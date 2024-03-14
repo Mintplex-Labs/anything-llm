@@ -113,6 +113,9 @@ export default {
     logs: () => {
       return "/settings/event-logs";
     },
+    privacy: () => {
+      return "/settings/privacy";
+    },
     embedSetup: () => {
       return `/settings/embed-config`;
     },
