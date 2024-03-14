@@ -269,6 +269,13 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Whisper (transcription) providers
+  WhisperProvider: {
+    envKey: "WHISPER_PROVIDER",
+    checks: [isNotEmpty, supportedTranscriptionProvider],
+    postUpdate: [],
+  },
+
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
@@ -349,6 +356,13 @@ function supportedLLM(input = "") {
     "groq",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
+}
+
+function supportedTranscriptionProvider(input = "") {
+  const validSelection = ["openai", "local"].includes(input);
+  return validSelection
+    ? null
+    : `${input} is not a valid transcription model provider.`;
 }
 
 function validGeminiModel(input = "") {

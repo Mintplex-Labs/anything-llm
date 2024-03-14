@@ -5,11 +5,18 @@
 
 class CollectorApi {
   constructor() {
-    this.endpoint = "http://0.0.0.0:8888";
+    this.endpoint = `http://0.0.0.0:${process.env.COLLECTOR_PORT || 8888}`;
   }
 
   log(text, ...args) {
     console.log(`\x1b[36m[CollectorApi]\x1b[0m ${text}`, ...args);
+  }
+
+  #attachOptions() {
+    return {
+      whisperProvider: process.env.WHISPER_PROVIDER || "local",
+      openAiKey: process.env.OPEN_AI_KEY || null,
+    };
   }
 
   async online() {
@@ -38,7 +45,10 @@ class CollectorApi {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ filename }),
+      body: JSON.stringify({
+        filename,
+        options: this.#attachOptions(),
+      }),
     })
       .then((res) => {
         if (!res.ok) throw new Error("Response could not be completed");
