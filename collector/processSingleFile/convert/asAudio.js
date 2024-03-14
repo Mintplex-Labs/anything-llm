@@ -35,7 +35,7 @@ async function asAudio({ fullFilePath = "", filename = "", options = {} }) {
     };
   }
 
-  if (!content.length) {
+  if (!content?.length) {
     console.error(`Resulting text content was empty for ${filename}.`);
     trashFile(fullFilePath);
     return {

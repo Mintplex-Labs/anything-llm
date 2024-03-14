@@ -153,7 +153,10 @@ class LocalWhisper {
 
       if (!audioData) {
         this.#log(`Failed to parse content from ${filename}.`);
-        return null;
+        return {
+          content: null,
+          error: `Failed to parse content from ${filename}.`,
+        };
       }
 
       this.#log(`Transcribing audio data to text...`);
