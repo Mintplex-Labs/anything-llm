@@ -258,6 +258,7 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
+      WhisperProvider: process.env.WHISPER_PROVIDER || "local",
     };
   },
 

@@ -92,6 +92,9 @@ export default {
     llmPreference: () => {
       return "/settings/llm-preference";
     },
+    transcriptionPreference: () => {
+      return "/settings/transcription-preference";
+    },
     embeddingPreference: () => {
       return "/settings/embedding-preference";
     },

@@ -29,6 +29,9 @@ const GeneralApiKeys = lazy(() => import("@/pages/GeneralSettings/ApiKeys"));
 const GeneralLLMPreference = lazy(
   () => import("@/pages/GeneralSettings/LLMPreference")
 );
+const GeneralTranscriptionPreference = lazy(
+  () => import("@/pages/GeneralSettings/TranscriptionPreference")
+);
 const GeneralEmbeddingPreference = lazy(
   () => import("@/pages/GeneralSettings/EmbeddingPreference")
 );
@@ -75,6 +78,12 @@ export default function App() {
               <Route
                 path="/settings/llm-preference"
                 element={<AdminRoute Component={GeneralLLMPreference} />}
+              />
+              <Route
+                path="/settings/transcription-preference"
+                element={
+                  <AdminRoute Component={GeneralTranscriptionPreference} />
+                }
               />
               <Route
                 path="/settings/embedding-preference"

@@ -14,6 +14,9 @@ AnythingLLM allows you to upload various audio and video formats as source docum
 
 Once transcribed you can embed these transcriptions into your workspace like you would any other file! 
 
+**Other external model/transcription providers are also live.**
+- [OpenAI Whisper via API key.](https://openai.com/research/whisper)
+
 ## Text generation (LLM selection)
 > [!IMPORTANT]
 > Use of a locally running LLM model is **experimental** and may behave unexpectedly, crash, or not function at all.
