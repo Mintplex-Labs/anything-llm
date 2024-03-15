@@ -83,6 +83,9 @@ export default {
     llmPreference: () => {
       return "/settings/llm-preference";
     },
+    transcriptionPreference: () => {
+      return "/settings/transcription-preference";
+    },
     embeddingPreference: () => {
       return "/settings/embedding-preference";
     },
@@ -100,6 +103,9 @@ export default {
     },
     logs: () => {
       return "/settings/event-logs";
+    },
+    privacy: () => {
+      return "/settings/privacy";
     },
     embedSetup: () => {
       return `/settings/embed-config`;

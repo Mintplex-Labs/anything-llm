@@ -29,7 +29,7 @@ function WorkspaceDirectory({
           </h3>
         </div>
         <div className="relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5">
-          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20">
+          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8">
             <p className="col-span-5">Name</p>
             <p className="col-span-3">Date</p>
             <p className="col-span-2">Kind</p>
@@ -148,7 +148,7 @@ const PinAlert = memo(() => {
     <ModalWrapper isOpen={showAlert}>
       <div className="relative w-full max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">
-          <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
+          <div className="flex items-start justify-between p-4 rounded-t border-gray-500/50">
             <div className="flex items-center gap-2">
               <PushPin className="text-red-600 text-lg w-6 h-6" weight="fill" />
               <h3 className="text-xl font-semibold text-white">
