@@ -25,7 +25,7 @@ export default function NativeTranscriptionOptions() {
           </label>
           <select
             disabled={true}
-            className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
             <option disabled={true} selected={true}>
               Xenova/whisper-small

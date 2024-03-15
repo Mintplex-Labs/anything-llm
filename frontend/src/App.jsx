@@ -25,7 +25,7 @@ import DataConnectors from "./pages/GeneralSettings/DataConnectors";
 import DataConnectorSetup from "./pages/GeneralSettings/DataConnectors/Connectors";
 import AdminLogs from "./pages/Admin/Logging";
 import WorkspaceSettings from "./pages/WorkspaceSettings";
-import PrivacyAndData from "./pages/PrivacyAndData";
+import PrivacyAndData from "./pages/GeneralSettings/PrivacyAndData";
 
 import "react-toastify/dist/ReactToastify.css";
 
