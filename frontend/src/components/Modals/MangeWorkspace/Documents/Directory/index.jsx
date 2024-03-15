@@ -246,12 +246,9 @@ function Directory({
                         item.id,
                         item.type === "folder" ? item : null
                       )}
-                      fetchKeys={fetchKeys}
                       onRowClick={() => toggleSelection(item)}
                       toggleSelection={toggleSelection}
                       isSelected={isSelected}
-                      setLoading={setLoading}
-                      setLoadingMessage={setLoadingMessage}
                       autoExpanded={index === 0}
                     />
                   )

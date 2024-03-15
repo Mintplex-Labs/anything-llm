@@ -9,9 +9,6 @@ export default function FolderRow({
   onRowClick,
   toggleSelection,
   isSelected,
-  fetchKeys,
-  setLoading,
-  setLoadingMessage,
   autoExpanded = false,
 }) {
   const [expanded, setExpanded] = useState(autoExpanded);
