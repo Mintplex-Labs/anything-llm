@@ -3,7 +3,10 @@ import PreLoader from "@/components/Preloader";
 import { memo, useEffect, useState } from "react";
 import FolderRow from "./FolderRow";
 import System from "@/models/system";
-import { FolderNotchOpen, Plus, Trash, X } from "@phosphor-icons/react";
+import { FolderNotchOpen, Plus, Trash } from "@phosphor-icons/react";
+import Document from "@/models/document";
+import showToast from "@/utils/toast";
+import FolderSelectionPopup from "./FolderSelectionPopup";
 
 function Directory({
   files,
@@ -22,14 +25,17 @@ function Directory({
   const [amountSelected, setAmountSelected] = useState(0);
   const [newFolderName, setNewFolderName] = useState("");
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
+  const [showFolderSelection, setShowFolderSelection] = useState(false);
 
-  console.log(files);
+  useEffect(() => {
+    setAmountSelected(Object.keys(selectedItems).length);
+  }, [selectedItems]);
 
   const deleteFiles = async (event) => {
     event.stopPropagation();
     if (
       !window.confirm(
-        "Are you sure you want to delete these files?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible."
+        "Are you sure you want to delete these files and folders?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible."
       )
     ) {
       return false;
@@ -37,6 +43,8 @@ function Directory({
 
     try {
       const toRemove = [];
+      const foldersToRemove = [];
+
       for (const itemId of Object.keys(selectedItems)) {
         for (const folder of files.items) {
           const foundItem = folder.items.find((file) => file.id === itemId);
@@ -46,13 +54,29 @@ function Directory({
           }
         }
       }
+      for (const folder of files.items) {
+        if (folder.name === "custom-documents") {
+          continue;
+        }
+
+        if (isSelected(folder.id, folder)) {
+          foldersToRemove.push(folder.name);
+        }
+      }
+
       setLoading(true);
-      setLoadingMessage(`Removing ${toRemove.length} documents. Please wait.`);
+      setLoadingMessage(
+        `Removing ${toRemove.length} documents and ${foldersToRemove.length} folders. Please wait.`
+      );
       await System.deleteDocuments(toRemove);
+      for (const folderName of foldersToRemove) {
+        await System.deleteFolder(folderName);
+      }
+
       await fetchKeys(true);
       setSelectedItems({});
     } catch (error) {
-      console.error("Failed to delete the document:", error);
+      console.error("Failed to delete files and folders:", error);
     } finally {
       setLoading(false);
       setSelectedItems({});
@@ -64,10 +88,11 @@ function Directory({
       const newSelectedItems = { ...prevSelectedItems };
 
       if (item.type === "folder") {
-        const isCurrentlySelected = isFolderCompletelySelected(item);
-        if (isCurrentlySelected) {
+        if (newSelectedItems[item.name]) {
+          delete newSelectedItems[item.name];
           item.items.forEach((file) => delete newSelectedItems[file.id]);
         } else {
+          newSelectedItems[item.name] = true;
           item.items.forEach((file) => (newSelectedItems[file.id] = true));
         }
       } else {
@@ -83,7 +108,7 @@ function Directory({
   };
 
   const isFolderCompletelySelected = (folder) => {
-    if (folder.items.length === 0) {
+    if (!selectedItems[folder.name]) {
       return false;
     }
     return folder.items.every((file) => selectedItems[file.id]);
@@ -101,7 +126,7 @@ function Directory({
     setShowNewFolderInput(true);
   };
 
-  const confirmNewFolder = () => {
+  const confirmNewFolder = async () => {
     if (newFolderName.trim() !== "") {
       const newFolder = {
         name: newFolderName,
@@ -114,19 +139,47 @@ function Directory({
         items: [...files.items, newFolder],
       });
 
-      // TODO: Make a backend call to create the folder
+      await Document.createFolder(newFolderName);
 
       setNewFolderName("");
       setShowNewFolderInput(false);
-      // Update the files prop with the new folder
-      // You can pass a callback function to update the files in the parent component
-      // or use a state management solution like Redux or Context API
     }
   };
 
-  useEffect(() => {
-    setAmountSelected(Object.keys(selectedItems).length);
-  }, [selectedItems]);
+  const moveToFolder = async (folder) => {
+    const toMove = [];
+    for (const itemId of Object.keys(selectedItems)) {
+      for (const currentFolder of files.items) {
+        const foundItem = currentFolder.items.find(
+          (file) => file.id === itemId
+        );
+        if (foundItem) {
+          toMove.push({ ...foundItem, folderName: currentFolder.name });
+          break;
+        }
+      }
+    }
+    setLoading(true);
+    setLoadingMessage(`Moving ${toMove.length} documents. Please wait.`);
+    const { success, message } = await Document.moveToFolder(
+      toMove,
+      folder.name
+    );
+    if (!success) {
+      showToast(`Error moving files: ${message}`, "error");
+      setLoading(false);
+      return;
+    }
+
+    if (success && message) {
+      showToast(message, "info");
+    } else {
+      showToast(`Successfully moved ${toMove.length} documents.`, "success");
+    }
+    await fetchKeys(true);
+    setSelectedItems({});
+    setLoading(false);
+  };
 
   return (
     <div className="px-8 pb-8">
@@ -153,7 +206,7 @@ function Directory({
             </div>
           ) : (
             <button
-              className="flex items-center gap-x-2 cursor-pointer z-50 px-[14px] py-[7px] rounded-lg hover:bg-[#222628]/60"
+              className="flex items-center gap-x-2 cursor-pointer z-50 px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-[#222628]/60"
               onClick={createNewFolder}
             >
               <Plus size={18} weight="bold" color="#D3D4D4" />
@@ -166,10 +219,9 @@ function Directory({
 
         <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl">
           <div className="rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900 sticky top-0 z-10">
-            <p className="col-span-5">Name</p>
+            <p className="col-span-6">Name</p>
             <p className="col-span-3">Date</p>
             <p className="col-span-2">Kind</p>
-            <p className="col-span-2">Cached</p>
           </div>
 
           <div
@@ -183,12 +235,10 @@ function Directory({
                   {loadingMessage}
                 </p>
               </div>
-            ) : !!files.items ? (
+            ) : files.items ? (
               files.items.map(
                 (item, index) =>
-                  (item.name === "custom-documents" ||
-                    item.type === "folder") && (
-                    // (item.type === "folder" && item.items.length > 0)) && (
+                  item.type === "folder" && (
                     <FolderRow
                       key={index}
                       item={item}
@@ -215,30 +265,9 @@ function Directory({
             )}
           </div>
 
-          {/* {amountSelected !== 0 && (
-            <div className="absolute bottom-0 left-0 w-full flex justify-between items-center h-9 bg-white rounded-b-2xl">
-              <div className="flex gap-x-5 w-[80%] justify-center">
-                <button
-                  onMouseEnter={() => setHighlightWorkspace(true)}
-                  onMouseLeave={() => setHighlightWorkspace(false)}
-                  onClick={moveToWorkspace}
-                  className="border-none text-sm font-semibold h-7 px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80 flex items-center"
-                >
-                  Move {amountSelected} {pluralize("file", amountSelected)} to
-                  workspace
-                </button>
-              </div>
-              <button
-                onClick={deleteFiles}
-                className="border-none text-red-500/50 text-sm font-semibold h-7 px-2.5 rounded-lg hover:text-red-500/80 flex items-center"
-              >
-                Delete
-              </button>
-            </div>
-          )} */}
           {amountSelected !== 0 && (
             <div className="w-full justify-center absolute bottom-[12px] flex">
-              <div className=" justify-center flex flex-row items-center bg-white/40 rounded-lg py-1 px-2 gap-x-2">
+              <div className="justify-center flex flex-row items-center bg-white/40 rounded-lg py-1 px-2 gap-x-2">
                 <button
                   onClick={moveToWorkspace}
                   onMouseEnter={() => setHighlightWorkspace(true)}
@@ -247,9 +276,23 @@ function Directory({
                 >
                   Move to Workspace
                 </button>
-                <button className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:text-white hover:bg-neutral-800/80 flex justify-center items-center">
-                  <FolderNotchOpen size={18} weight="bold" />
-                </button>
+                <div className="relative">
+                  <button
+                    onClick={() => setShowFolderSelection(!showFolderSelection)}
+                    className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:text-white hover:bg-neutral-800/80 flex justify-center items-center"
+                  >
+                    <FolderNotchOpen size={18} weight="bold" />
+                  </button>
+                  {showFolderSelection && (
+                    <FolderSelectionPopup
+                      folders={files.items.filter(
+                        (item) => item.type === "folder"
+                      )}
+                      onSelect={moveToFolder}
+                      onClose={() => setShowFolderSelection(false)}
+                    />
+                  )}
+                </div>
                 <button
                   onClick={deleteFiles}
                   className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:text-white hover:bg-neutral-800/80 flex justify-center items-center"
