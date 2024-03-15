@@ -12,17 +12,18 @@ import System from "@/models/system";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import { Link } from "react-router-dom";
+import { openElectronWindow } from "@/ipc/node-api";
 
 export default function AdminApiKeys() {
   const { isOpen, openModal, closeModal } = useModal();
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+    <div
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex"
+    >
       <Sidebar />
-      <div
-        style={{ height: "calc(100vh - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-2 border-outline"
-      >
+      <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
         <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
@@ -39,7 +40,7 @@ export default function AdminApiKeys() {
               this AnythingLLM instance.
             </p>
             <Link
-              to={paths.apiDocs()}
+              onClick={() => openElectronWindow(paths.apiDocs())}
               target="_blank"
               rel="noreferrer"
               className="text-xs leading-[18px] font-base text-blue-300 hover:underline"

@@ -13,6 +13,7 @@ import AnythingLLMLogo from "./assets/logo/anything-llm.png";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
 import WorkspaceChat from "./pages/WorkspaceChat";
+import GeneralApiKeys from "./pages/GeneralSettings/ApiKeys";
 import GeneralChats from "./pages/GeneralSettings/Chats";
 import GeneralAppearance from "./pages/GeneralSettings/Appearance";
 import GeneralLLMPreference from "./pages/GeneralSettings/LLMPreference";
@@ -74,10 +75,10 @@ export default function App() {
                   path="/settings/appearance"
                   element={<ManagerRoute Component={GeneralAppearance} />}
                 />
-                {/* <Route
+                <Route
                   path="/settings/api-keys"
                   element={<ManagerRoute Component={GeneralApiKeys} />}
-                /> */}
+                />
                 <Route
                   path="/settings/workspace-chats"
                   element={<ManagerRoute Component={GeneralChats} />}

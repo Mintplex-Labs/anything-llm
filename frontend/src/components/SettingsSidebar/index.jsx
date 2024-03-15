@@ -11,6 +11,7 @@ import {
   FileCode,
   Plugs,
   Notepad,
+  Key,
 } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import Footer from "../Footer";
@@ -119,6 +120,14 @@ const Option = ({
 
 const SidebarOptions = ({ user = null }) => (
   <>
+    <Option
+      href={paths.settings.apiKeys()}
+      btnText="API Keys"
+      icon={<Key className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
     <Option
       href={paths.settings.chats()}
       btnText="Workspace Chat"
