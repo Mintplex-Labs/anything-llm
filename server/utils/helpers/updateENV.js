@@ -269,6 +269,13 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Whisper (transcription) providers
+  WhisperProvider: {
+    envKey: "WHISPER_PROVIDER",
+    checks: [isNotEmpty, supportedTranscriptionProvider],
+    postUpdate: [],
+  },
+
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
@@ -277,6 +284,10 @@ const KEY_MAPPING = {
   JWTSecret: {
     envKey: "JWT_SECRET",
     checks: [requiresForceMode],
+  },
+  DisableTelemetry: {
+    envKey: "DISABLE_TELEMETRY",
+    checks: [],
   },
 };
 
@@ -351,6 +362,13 @@ function supportedLLM(input = "") {
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
 
+function supportedTranscriptionProvider(input = "") {
+  const validSelection = ["openai", "local"].includes(input);
+  return validSelection
+    ? null
+    : `${input} is not a valid transcription model provider.`;
+}
+
 function validGeminiModel(input = "") {
   const validModels = ["gemini-pro"];
   return validModels.includes(input)
@@ -365,6 +383,7 @@ function validAnthropicModel(input = "") {
     "claude-2.1",
     "claude-3-opus-20240229",
     "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307",
   ];
   return validModels.includes(input)
     ? null

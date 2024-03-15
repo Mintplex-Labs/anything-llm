@@ -19,6 +19,7 @@ const PROVIDER_DEFAULT_MODELS = {
     "claude-2.1",
     "claude-3-opus-20240229",
     "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307",
   ],
   azure: [],
   lmstudio: [],

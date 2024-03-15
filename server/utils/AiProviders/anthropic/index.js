@@ -48,6 +48,8 @@ class AnthropicLLM {
         return 200_000;
       case "claude-3-sonnet-20240229":
         return 200_000;
+      case "claude-3-haiku-20240307":
+        return 200_000;
       default:
         return 100_000; // assume a claude-instant-1.2 model
     }
@@ -60,6 +62,7 @@ class AnthropicLLM {
       "claude-2.1",
       "claude-3-opus-20240229",
       "claude-3-sonnet-20240229",
+      "claude-3-haiku-20240307",
     ];
     return validModels.includes(modelName);
   }

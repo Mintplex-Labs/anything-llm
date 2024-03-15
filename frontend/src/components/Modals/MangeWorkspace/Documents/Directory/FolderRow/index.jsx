@@ -67,12 +67,8 @@ export default function FolderRow({
             <FileRow
               key={fileItem.id}
               item={fileItem}
-              folderName={item.name}
               selected={isSelected(fileItem.id)}
               toggleSelection={toggleSelection}
-              fetchKeys={fetchKeys}
-              setLoading={setLoading}
-              setLoadingMessage={setLoadingMessage}
             />
           ))}
         </div>
