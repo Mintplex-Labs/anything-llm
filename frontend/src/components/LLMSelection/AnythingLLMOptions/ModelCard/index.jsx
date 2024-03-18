@@ -72,9 +72,7 @@ export default function ModelCard({
           )}
         </div>
         {/* End Model Header */}
-
         <ModelDescription description={modelInfo.description} />
-
         <div className="flex w-full items-center justify-between">
           {modelInfo.licenses?.length > 0 ? (
             <button
@@ -94,8 +92,7 @@ export default function ModelCard({
           ) : (
             <div className="invisible" />
           )}
-
-          {downloaded && (
+          {downloaded ? (
             <button
               type="button"
               onClick={(e) => {
@@ -108,10 +105,12 @@ export default function ModelCard({
             >
               Uninstall
             </button>
-          )}
-
-          {downloading && (
-            <CircleNotch size={20} className="animate-spin text-white" />
+          ) : (
+            <>
+              {downloading && (
+                <CircleNotch size={20} className="animate-spin text-white" />
+              )}
+            </>
           )}
         </div>
       </div>

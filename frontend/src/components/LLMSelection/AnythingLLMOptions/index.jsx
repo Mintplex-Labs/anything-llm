@@ -31,6 +31,14 @@ function AnythingLLMOptions({ settings, setHasChanges }) {
     const downloaded = !!downloadedModels.find(
       (mdl) => mdl.id === formInputValue
     );
+    if (!formInputValue) return;
+
+    // If model is downloaded, skip auto-downloading.
+    if (downloaded) {
+      setHasComponentChanges(false);
+      return;
+    }
+
     if (downloaded || !formInputValue) return;
     const modelInfo = DOWNLOADABLE_MODELS.find(
       (mdl) => mdl.id === formInputValue
@@ -124,7 +132,7 @@ function AnythingLLMOptions({ settings, setHasChanges }) {
           )}
         </div>
 
-        <div className="flex gap-[12px] flex-wrap w-fit max-w-[calc((330px*3) + 36px)] p-0">
+        <div className="flex gap-[12px] w-fit flex-wrap p-0">
           <input
             className="hidden"
             type="text"
