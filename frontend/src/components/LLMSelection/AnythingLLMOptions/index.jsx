@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import System from "../../../models/system";
+import { useState, useEffect, memo } from "react";
+import System from "@/models/system";
 import { ANYTHINGLLM_OLLAMA } from "@/utils/constants";
 import { DOWNLOADABLE_MODELS } from "./downloadable";
 import { safeJsonParse } from "@/utils/request";
@@ -7,7 +7,7 @@ import ModelCard from "./ModelCard";
 import showToast from "@/utils/toast";
 import { refocusApplication } from "@/ipc/node-api";
 
-export default function AnythingLLMOptions({ settings, setHasChanges }) {
+function AnythingLLMOptions({ settings, setHasChanges }) {
   const [hasComponentChanges, setHasComponentChanges] = useState(false);
   const [modelDownloading, setModelDownloading] = useState(null);
   const [downloadedModels, setDownloadedModels] = useState([]);
@@ -23,6 +23,26 @@ export default function AnythingLLMOptions({ settings, setHasChanges }) {
     window.dispatchEvent(new CustomEvent(ANYTHINGLLM_OLLAMA.startEvent));
     setModelDownloading(modelId);
   }
+
+  const autoDownloadModel = () => {
+    const formInputValue = document.getElementsByName(
+      "AnythingLLMOllamaModelPref"
+    )?.[0]?.value;
+    const downloaded = !!downloadedModels.find(
+      (mdl) => mdl.id === formInputValue
+    );
+    if (downloaded || !formInputValue) return;
+    const modelInfo = DOWNLOADABLE_MODELS.find(
+      (mdl) => mdl.id === formInputValue
+    );
+
+    startDownload(formInputValue, modelInfo.name);
+    setHasComponentChanges(false);
+    showToast(
+      `${modelInfo.name} will download in the background. You can check it's progress or cancel the download via the progress bar at the top. Chatting will be disabled until the model is ready.`,
+      "info"
+    );
+  };
 
   async function uninstallModel(modelName) {
     if (
@@ -57,22 +77,6 @@ export default function AnythingLLMOptions({ settings, setHasChanges }) {
       }
     }
     findModels();
-
-    const autoDownloadModel = () => {
-      const downloaded = !!downloadedModels.find(
-        (mdl) => mdl.id === selectedModel
-      );
-      if (downloaded) return;
-      const modelInfo = DOWNLOADABLE_MODELS.find(
-        (mdl) => mdl.id === selectedModel
-      );
-      startDownload(selectedModel, modelInfo.name);
-      setHasComponentChanges(false);
-      showToast(
-        `${selectedModel} will download in the background. You can check it's progress or cancel the download via the progress bar at the top. Chatting will be disabled until the model is ready.`,
-        "info"
-      );
-    };
 
     const handleDownloadComplete = () => {
       setModelDownloading(null);
@@ -125,7 +129,8 @@ export default function AnythingLLMOptions({ settings, setHasChanges }) {
             className="hidden"
             type="text"
             name="AnythingLLMOllamaModelPref"
-            defaultValue={selectedModel}
+            readOnly={true}
+            value={selectedModel}
           />
           {DOWNLOADABLE_MODELS.map((model) => {
             const downloaded = !!downloadedModels.find(
@@ -153,3 +158,5 @@ export default function AnythingLLMOptions({ settings, setHasChanges }) {
     </div>
   );
 }
+
+export default memo(AnythingLLMOptions);

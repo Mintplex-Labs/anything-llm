@@ -20,6 +20,9 @@ async function preloadOllamaService() {
     return;
   }
 
+  console.log(
+    `Hot loading of AnythingLLMOllama - LLM_PROVIDER is ${process.env.LLM_PROVIDER}.`
+  );
   const manager = new AnythingLLMOllama();
   manager.bootOrContinue();
   return;

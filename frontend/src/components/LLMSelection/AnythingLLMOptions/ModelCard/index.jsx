@@ -18,7 +18,7 @@ export default function ModelCard({
   const onClick = (e) => {
     if (disabled) {
       showToast(
-        "You cannot change models while downloading a model. Cancel your download first by click on the progress bar in the top right",
+        "You cannot change models while downloading a model. Cancel your download first by clicking on the progress bar in the top right",
         "info",
         { clear: true }
       );
@@ -60,7 +60,7 @@ export default function ModelCard({
                 </p>
               </div>
               <p className="text-[10px] italic text-gray-300">
-                Hosted by Ollama
+                Compiled by Ollama
               </p>
             </div>
           </div>
