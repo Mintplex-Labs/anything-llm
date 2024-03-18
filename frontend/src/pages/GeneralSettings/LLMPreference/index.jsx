@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -43,17 +43,12 @@ export default function GeneralLLMPreference() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(null);
-  const downloadButtonRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
     const data = { LLMProvider: selectedLLM };
     const formData = new FormData(form);
-
-    if (selectedLLM === "anythingllm_ollama" && downloadButtonRef.current) {
-      downloadButtonRef.current.click();
-    }
 
     for (var [key, value] of formData.entries()) data[key] = value;
     const { error } = await System.updateSystem(data);
@@ -96,10 +91,7 @@ export default function GeneralLLMPreference() {
       value: "anythingllm_ollama",
       logo: AnythingLLMIcon,
       options: (
-        <AnythingLLMOptions
-          settings={settings}
-          downloadButtonRef={downloadButtonRef}
-        />
+        <AnythingLLMOptions settings={settings} setHasChanges={setHasChanges} />
       ),
       description:
         "Run models from Meta, Mistral and more on this device. Powered by Ollama.",
@@ -223,7 +215,11 @@ export default function GeneralLLMPreference() {
         </div>
       ) : (
         <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
-          <form onSubmit={handleSubmit} className="flex w-full">
+          <form
+            name="LLMPreferenceForm"
+            onSubmit={handleSubmit}
+            className="flex w-full"
+          >
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">

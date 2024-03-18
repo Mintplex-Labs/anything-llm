@@ -9,11 +9,11 @@ export const DOWNLOADABLE_MODELS = [
     licenses: [
       {
         title: "Llama 2 Acceptable Use Policy",
-        link: "https://ollama.com/library/llama2-uncensored/blobs/sha256:7c23fb36d80141c4ab8cdbb61ee4790102ebd2bf7aeff414453177d4f2110e5d",
+        link: "https://ai.meta.com/llama/use-policy/",
       },
       {
         title: "LLAMA 2 COMMUNITY LICENSE AGREEMENT",
-        link: "https://ollama.com/library/llama2-uncensored/blobs/sha256:8c17c2ebb0ea011be9981cc3922db8ca8fa61e828c5d3f44cb6ae342bf80460b",
+        link: "https://ai.meta.com/llama/license/",
       },
     ],
   },
@@ -27,11 +27,11 @@ export const DOWNLOADABLE_MODELS = [
     licenses: [
       {
         title: "Llama 2 Acceptable Use Policy",
-        link: "https://ollama.com/library/llama2-uncensored/blobs/sha256:7c23fb36d80141c4ab8cdbb61ee4790102ebd2bf7aeff414453177d4f2110e5d",
+        link: "https://ai.meta.com/llama/use-policy/",
       },
       {
         title: "LLAMA 2 COMMUNITY LICENSE AGREEMENT",
-        link: "https://ollama.com/library/llama2-uncensored/blobs/sha256:8c17c2ebb0ea011be9981cc3922db8ca8fa61e828c5d3f44cb6ae342bf80460b",
+        link: "https://ai.meta.com/llama/license/",
       },
     ],
   },
@@ -45,11 +45,11 @@ export const DOWNLOADABLE_MODELS = [
     licenses: [
       {
         title: "Llama 2 Acceptable Use Policy",
-        link: "https://ollama.com/library/llama2-uncensored/blobs/sha256:7c23fb36d80141c4ab8cdbb61ee4790102ebd2bf7aeff414453177d4f2110e5d",
+        link: "https://ai.meta.com/llama/use-policy/",
       },
       {
         title: "LLAMA 2 COMMUNITY LICENSE AGREEMENT",
-        link: "https://ollama.com/library/llama2-uncensored/blobs/sha256:8c17c2ebb0ea011be9981cc3922db8ca8fa61e828c5d3f44cb6ae342bf80460b",
+        link: "https://ai.meta.com/llama/license/",
       },
     ],
   },
@@ -63,11 +63,11 @@ export const DOWNLOADABLE_MODELS = [
     licenses: [
       {
         title: "Llama 2 Acceptable Use Policy",
-        link: "https://ollama.com/library/llama2-uncensored/blobs/sha256:7c23fb36d80141c4ab8cdbb61ee4790102ebd2bf7aeff414453177d4f2110e5d",
+        link: "https://ai.meta.com/llama/use-policy/",
       },
       {
         title: "LLAMA 2 COMMUNITY LICENSE AGREEMENT",
-        link: "https://ollama.com/library/llama2-uncensored/blobs/sha256:8c17c2ebb0ea011be9981cc3922db8ca8fa61e828c5d3f44cb6ae342bf80460b",
+        link: "https://ai.meta.com/llama/license/",
       },
     ],
   },
@@ -109,7 +109,7 @@ export const DOWNLOADABLE_MODELS = [
     licenses: [
       {
         title: "Gemma Terms of Use",
-        link: "https://ollama.com/library/gemma:2b#:~:text=Terms%20of%20Use-,View%20license%20%E2%86%97,-8.4kB",
+        link: "https://ai.google.dev/gemma/terms",
       },
     ],
   },
@@ -123,7 +123,7 @@ export const DOWNLOADABLE_MODELS = [
     licenses: [
       {
         title: "Gemma Terms of Use",
-        link: "https://ollama.com/library/gemma:2b#:~:text=Terms%20of%20Use-,View%20license%20%E2%86%97,-8.4kB",
+        link: "https://ai.google.dev/gemma/terms",
       },
     ],
   },
@@ -137,7 +137,7 @@ export const DOWNLOADABLE_MODELS = [
     licenses: [
       {
         title: "MIT License",
-        link: "https://ollama.com/library/phi/blobs/sha256:7908abcab772a6e503cfe014b6399bd58dea04576aaf79412fa66347c72bdd3f",
+        link: "https://opensource.org/license/mit",
       },
     ],
   },
@@ -178,7 +178,7 @@ export const DOWNLOADABLE_MODELS = [
     licenses: [
       {
         title: "Apache License",
-        link: "https://ollama.com/library/dolphin-mixtral/blobs/sha256:43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1",
+        link: "https://www.apache.org/licenses/LICENSE-2.0",
       },
     ],
   },

@@ -128,7 +128,7 @@ class AnythingLLMOllama {
 
   #errorHandler(errorMessage = "") {
     if (errorMessage?.includes("try pulling it first")) {
-      return `AnythingLLM:404: ${this.model} has not completed downloading. Please wait for it to complete to send your first chat.`;
+      return `AnythingLLM:404: ${this.model} has not completed downloading. Please wait for it to complete to send a chat.`;
     }
     return errorMessage;
   }
@@ -380,16 +380,16 @@ class AnythingLLMOllama {
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
     return new Promise(async (resolve) => {
+      let fullText = "";
+
+      // Establish listener to early-abort a streaming response
+      // in case things go sideways or the user does not like the response.
+      // We preserve the generated text but continue as if chat was completed
+      // to preserve previously generated content.
+      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      response.on("close", handleAbort);
+
       try {
-        let fullText = "";
-
-        // Establish listener to early-abort a streaming response
-        // in case things go sideways or the user does not like the response.
-        // We preserve the generated text but continue as if chat was completed
-        // to preserve previously generated content.
-        const handleAbort = () => clientAbortedHandler(resolve, fullText);
-        response.on("close", handleAbort);
-
         for await (const chunk of stream) {
           if (chunk === undefined)
             throw new Error(
@@ -424,7 +424,7 @@ class AnythingLLMOllama {
         writeResponseChunk(response, {
           uuid,
           sources: [],
-          type: "textResponseChunk",
+          type: "abort",
           textResponse: "",
           close: true,
           error: this.#errorHandler(
