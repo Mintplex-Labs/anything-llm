@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from "react";
 import System from "@/models/system";
-import { ANYTHINGLLM_OLLAMA } from "@/utils/constants";
+import { ANYTHINGLLM_OLLAMA, _APP_PLATFORM } from "@/utils/constants";
 import { DOWNLOADABLE_MODELS } from "./downloadable";
 import { safeJsonParse } from "@/utils/request";
 import ModelCard from "./ModelCard";
@@ -132,36 +132,44 @@ function AnythingLLMOptions({ settings, setHasChanges }) {
           )}
         </div>
 
-        <div className="flex gap-[12px] w-fit flex-wrap p-0">
-          <input
-            className="hidden"
-            type="text"
-            name="AnythingLLMOllamaModelPref"
-            readOnly={true}
-            value={selectedModel}
-          />
-          {DOWNLOADABLE_MODELS.map((model) => {
-            const downloaded = !!downloadedModels.find(
-              (mdl) => mdl.id === model.id
-            );
-            return (
-              <ModelCard
-                key={model.id}
-                model={model}
-                disabled={modelDownloading !== null}
-                isActive={model.id === selectedModel}
-                downloaded={downloaded}
-                downloading={model.id === modelDownloading}
-                uninstallModel={uninstallModel}
-                handleClick={() => {
-                  setSelectedModel(model.id);
-                  setHasComponentChanges(true);
-                  setHasChanges(true);
-                }}
-              />
-            );
-          })}
-        </div>
+        {["windows", "mac"].includes(_APP_PLATFORM.value) ? (
+          <div className="flex gap-[12px] w-fit flex-wrap p-0">
+            <input
+              className="hidden"
+              type="text"
+              name="AnythingLLMOllamaModelPref"
+              readOnly={true}
+              value={selectedModel}
+            />
+            {DOWNLOADABLE_MODELS.map((model) => {
+              const downloaded = !!downloadedModels.find(
+                (mdl) => mdl.id === model.id
+              );
+              return (
+                <ModelCard
+                  key={model.id}
+                  model={model}
+                  disabled={modelDownloading !== null}
+                  isActive={model.id === selectedModel}
+                  downloaded={downloaded}
+                  downloading={model.id === modelDownloading}
+                  uninstallModel={uninstallModel}
+                  handleClick={() => {
+                    setSelectedModel(model.id);
+                    setHasComponentChanges(true);
+                    setHasChanges(true);
+                  }}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <div className="w-full h-10 items-center justify-center flex">
+            <p className="text-sm font-base text-white text-opacity-60">
+              This feature is disabled on Linux operating systems.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

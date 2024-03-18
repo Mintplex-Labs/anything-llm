@@ -23,3 +23,6 @@ export const _APP_VERSION = {
 export const _API_BASE_URL = {
   value: import.meta.env.VITE_API_BASE || "/api",
 };
+export const _APP_PLATFORM = {
+  value: null,
+};

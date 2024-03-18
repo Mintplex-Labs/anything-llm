@@ -3,6 +3,7 @@ import {
   READY_EVENT_NAME,
   _API_BASE_URL,
   _APP_VERSION,
+  _APP_PLATFORM,
 } from "@/utils/constants";
 import { API_BASE } from "@/utils/api";
 import System from "@/models/system";
@@ -18,14 +19,18 @@ ipcRenderer.on("backend-server-online", async (_evt, message) => {
   );
   _API_BASE_URL.value = message.API_BASE;
   _APP_VERSION.value = message.APP_VERSION;
+  _APP_PLATFORM.value = message.APP_PLATFORM;
   Object.freeze(_API_BASE_URL);
   Object.freeze(_APP_VERSION);
+  Object.freeze(_APP_PLATFORM);
 
   let polling = true;
   while (polling) {
     console.log(
       `\x1b[32m[AnythingLLM${
-        _APP_VERSION.value ? ` v${_APP_VERSION.value}` : ""
+        _APP_VERSION.value
+          ? ` v${_APP_VERSION.value} for ${_APP_PLATFORM.value}`
+          : ""
       }]\x1b[0m Polling for server...`
     );
     const online = await System.ping();
