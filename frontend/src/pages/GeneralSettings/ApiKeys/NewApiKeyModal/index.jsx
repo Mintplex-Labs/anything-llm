@@ -5,6 +5,7 @@ import paths from "../../../../utils/paths";
 import { userFromStorage } from "../../../../utils/request";
 import System from "../../../../models/system";
 import { Link } from "react-router-dom";
+import { openElectronWindow } from "@/ipc/node-api";
 
 export default function NewApiKeyModal({ closeModal }) {
   const [apiKey, setApiKey] = useState(null);
@@ -69,7 +70,7 @@ export default function NewApiKeyModal({ closeModal }) {
                 and configure this AnythingLLM instance.
               </p>
               <Link
-                href={paths.apiDocs()}
+                onClick={() => openElectronWindow(paths.apiDocs())}
                 target="_blank"
                 rel="noreferrer"
                 className="text-blue-400 hover:underline"
@@ -84,7 +85,7 @@ export default function NewApiKeyModal({ closeModal }) {
                 <button
                   onClick={closeModal}
                   type="button"
-                  className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
+                  className="border-none px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
                 >
                   Cancel
                 </button>

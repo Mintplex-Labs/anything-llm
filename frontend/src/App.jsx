@@ -13,9 +13,11 @@ import AnythingLLMLogo from "./assets/logo/anything-llm.png";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
 import WorkspaceChat from "./pages/WorkspaceChat";
+import GeneralApiKeys from "./pages/GeneralSettings/ApiKeys";
 import GeneralChats from "./pages/GeneralSettings/Chats";
 import GeneralAppearance from "./pages/GeneralSettings/Appearance";
 import GeneralLLMPreference from "./pages/GeneralSettings/LLMPreference";
+import GeneralTranscriptionPreference from "./pages/GeneralSettings/TranscriptionPreference";
 import GeneralEmbeddingPreference from "./pages/GeneralSettings/EmbeddingPreference";
 import GeneralVectorDatabase from "./pages/GeneralSettings/VectorDatabase";
 import OnboardingFlow from "./pages/OnboardingFlow";
@@ -23,6 +25,7 @@ import DataConnectors from "./pages/GeneralSettings/DataConnectors";
 import DataConnectorSetup from "./pages/GeneralSettings/DataConnectors/Connectors";
 import AdminLogs from "./pages/Admin/Logging";
 import WorkspaceSettings from "./pages/WorkspaceSettings";
+import PrivacyAndData from "./pages/GeneralSettings/PrivacyAndData";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -55,6 +58,12 @@ export default function App() {
                   element={<AdminRoute Component={GeneralLLMPreference} />}
                 />
                 <Route
+                  path="/settings/transcription-preference"
+                  element={
+                    <AdminRoute Component={GeneralTranscriptionPreference} />
+                  }
+                />
+                <Route
                   path="/settings/embedding-preference"
                   element={
                     <AdminRoute Component={GeneralEmbeddingPreference} />
@@ -74,14 +83,15 @@ export default function App() {
                   path="/settings/appearance"
                   element={<ManagerRoute Component={GeneralAppearance} />}
                 />
-                {/* <Route
+                <Route
                   path="/settings/api-keys"
                   element={<ManagerRoute Component={GeneralApiKeys} />}
-                /> */}
+                />
                 <Route
                   path="/settings/workspace-chats"
                   element={<ManagerRoute Component={GeneralChats} />}
                 />
+
                 {/* <Route
                   path="/settings/system-preferences"
                   element={<ManagerRoute Component={AdminSystem} />}
@@ -109,6 +119,10 @@ export default function App() {
                 <Route
                   path="/settings/event-logs"
                   element={<AdminRoute Component={AdminLogs} />}
+                />
+                <Route
+                  path="/settings/privacy"
+                  element={<AdminRoute Component={PrivacyAndData} />}
                 />
                 {/* Onboarding Flow */}
                 <Route path="/onboarding" element={<OnboardingFlow />} />

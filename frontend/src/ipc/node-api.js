@@ -44,3 +44,8 @@ export function refocusApplication() {
   ipcRenderer.send("focus-fix");
   return;
 }
+
+export function openElectronWindow(url) {
+  ipcRenderer.send("open-child-win", { url });
+  return;
+}

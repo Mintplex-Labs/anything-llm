@@ -31,7 +31,7 @@ import { useNavigate } from "react-router-dom";
 const TITLE = "Data Handling & Privacy";
 const DESCRIPTION =
   "We are committed to transparency and control when it comes to your personal data.";
-const LLM_SELECTION_PRIVACY = {
+export const LLM_SELECTION_PRIVACY = {
   openai: {
     name: "OpenAI",
     description: [
@@ -133,7 +133,7 @@ const LLM_SELECTION_PRIVACY = {
   },
 };
 
-const VECTOR_DB_PRIVACY = {
+export const VECTOR_DB_PRIVACY = {
   chroma: {
     name: "Chroma",
     description: [
@@ -194,7 +194,7 @@ const VECTOR_DB_PRIVACY = {
   },
 };
 
-const EMBEDDING_ENGINE_PRIVACY = {
+export const EMBEDDING_ENGINE_PRIVACY = {
   native: {
     name: "AnythingLLM Embedder",
     description: [

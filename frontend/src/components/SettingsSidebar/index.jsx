@@ -7,10 +7,12 @@ import {
   Eye,
   ChatText,
   Database,
-  X,
   FileCode,
   Plugs,
   Notepad,
+  Key,
+  ClosedCaptioning,
+  EyeSlash,
 } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import Footer from "../Footer";
@@ -120,6 +122,14 @@ const Option = ({
 const SidebarOptions = ({ user = null }) => (
   <>
     <Option
+      href={paths.settings.apiKeys()}
+      btnText="API Keys"
+      icon={<Key className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
       href={paths.settings.chats()}
       btnText="Workspace Chat"
       icon={<ChatCenteredText className="h-5 w-5 flex-shrink-0" />}
@@ -145,8 +155,16 @@ const SidebarOptions = ({ user = null }) => (
       allowedRole={["admin"]}
     />
     <Option
+      href={paths.settings.transcriptionPreference()}
+      btnText="Transcription Model"
+      icon={<ClosedCaptioning className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
       href={paths.settings.embeddingPreference()}
-      btnText="Embedding Preference"
+      btnText="Embedding Model"
       icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -172,6 +190,14 @@ const SidebarOptions = ({ user = null }) => (
       href={paths.settings.logs()}
       btnText="Event Logs"
       icon={<Notepad className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
+      href={paths.settings.privacy()}
+      btnText="Privacy & Data"
+      icon={<EyeSlash className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
       allowedRole={["admin"]}
