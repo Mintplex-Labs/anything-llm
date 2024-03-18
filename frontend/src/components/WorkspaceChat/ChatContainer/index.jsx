@@ -6,13 +6,14 @@ import { isMobile } from "react-device-detect";
 import { useParams } from "react-router-dom";
 import { SidebarMobileHeader } from "../../Sidebar";
 import ChatHistory from "./ChatHistory";
-import DynamicInput from "./DynamicInput";
+
 import PromptInput from "./PromptInput";
+import MetaInputs from "./MetaInputs";
 
 export default function ChatContainer({
   workspace,
   knownHistory = [],
-  isDynamicInput,
+  isMetaInputs,
   currentInputMeta,
   setCurrentInputMeta,
 }) {
@@ -108,7 +109,7 @@ export default function ChatContainer({
         );
       }
 
-      if (isDynamicInput) {
+      if (isMetaInputs) {
         const { remainingText, metaData } = extractMetaData(
           _chatHistory[_chatHistory.length - 1].content
         );
@@ -130,14 +131,14 @@ export default function ChatContainer({
       {isMobile && <SidebarMobileHeader />}
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
         <ChatHistory
-          history={isDynamicInput ? finalizedChatHistory : chatHistory}
+          history={isMetaInputs ? finalizedChatHistory : chatHistory}
           workspace={workspace}
           sendCommand={sendCommand}
         />
-        {isDynamicInput && currentInputMeta?.inputs?.type !== undefined ? (
-          <DynamicInput
+        {isMetaInputs && currentInputMeta?.inputs?.type !== undefined ? (
+          <MetaInputs
             inputs={currentInputMeta?.inputs}
-            isDynamicInput={isDynamicInput}
+            isMetaInputs={isMetaInputs}
             submit={handleSubmit}
             setMessage={setMessage}
             workspace={workspace}

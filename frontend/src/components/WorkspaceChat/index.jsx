@@ -13,7 +13,7 @@ export default function WorkspaceChat({ loading, workspace }) {
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [currentInputMeta, setCurrentInputMeta] = useState(null);
 
-  const isDynamicInput = true;
+  const isMetaInputs = true;
 
   useEffect(() => {
     async function getHistory() {
@@ -29,7 +29,7 @@ export default function WorkspaceChat({ loading, workspace }) {
 
       // TODO: add conditional if dynamic input is enabled in the workspace by default is false
       // Append metadata to the chat history
-      if (isDynamicInput) {
+      if (isMetaInputs) {
         chatHistory = chatHistory.map((message) => {
           if (message.role === "assistant") {
             const { remainingText, metaData } = extractMetaData(
@@ -85,7 +85,7 @@ export default function WorkspaceChat({ loading, workspace }) {
     <ChatContainer
       workspace={workspace}
       knownHistory={history}
-      isDynamicInput={isDynamicInput}
+      isMetaInputs={isMetaInputs}
       currentInputMeta={currentInputMeta}
       setCurrentInputMeta={setCurrentInputMeta}
     />

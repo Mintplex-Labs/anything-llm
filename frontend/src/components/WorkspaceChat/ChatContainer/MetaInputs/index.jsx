@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import TextInput from './TextInput';
-import OptionSelect from "@/components/WorkspaceChat/ChatContainer/DynamicInput/OptionSelect";
+import OptionSelect from "@/components/WorkspaceChat/ChatContainer/MetaInputs/OptionSelect";
 import { Cursor, Keyboard } from "@phosphor-icons/react";
 import PromptInput from "../PromptInput";
 // import RangeSlider from './RangeSlider';
@@ -9,7 +9,6 @@ import PromptInput from "../PromptInput";
 // import DateTimePicker from './DateTimePicker';
 // import FileUpload from './FileUpload';
 // import Rating from './Rating';
-// import Checkbox from './Checkbox';
 
 const inputComponents = {
   text: PromptInput,
@@ -20,12 +19,11 @@ const inputComponents = {
   //   datetime: DateTimePicker,
   //   file: FileUpload,
   //   rating: Rating,
-  //   checkbox: Checkbox
 };
 
-const DynamicInput = ({
+const MetaInputs = ({
   inputs,
-  isDynamicInput,
+  isMetaInputs,
   submit,
   setMessage,
   workspace,
@@ -48,13 +46,13 @@ const DynamicInput = ({
       : inputComponents[inputs?.type] || null;
 
   // Condition to show the dynamic input or the forced text input
-  const shouldShowDynamicInput =
-    isDynamicInput && inputs !== undefined && !isForcedTextInput;
+  const shouldShowMetaInputs =
+    isMetaInputs && inputs !== undefined && !isForcedTextInput;
 
   return (
     <div className="w-full md:px-4 fixed md:absolute bottom-10 left-0 z-10 md:z-0 flex justify-center items-center">
       <div className="w-[600px]">
-        {shouldShowDynamicInput ? (
+        {shouldShowMetaInputs ? (
           <InputComponent
             submit={submit}
             setMessage={setMessage}
@@ -80,7 +78,7 @@ const DynamicInput = ({
             sendCommand={sendCommand}
           />
         )}
-        {isDynamicInput && inputs != undefined && (
+        {isMetaInputs && inputs != undefined && (
           <div className="w-full  absolute -bottom-8 left-0 z-10 md:z-0 flex justify-center items-center">
             <button
               type="button"
@@ -104,4 +102,4 @@ const DynamicInput = ({
   );
 };
 
-export default DynamicInput;
+export default MetaInputs;
