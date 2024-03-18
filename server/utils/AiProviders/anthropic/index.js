@@ -1,6 +1,9 @@
 const { v4 } = require("uuid");
 const { chatPrompt } = require("../../chats");
-const { writeResponseChunk } = require("../../helpers/chat/responses");
+const {
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
@@ -45,6 +48,8 @@ class AnthropicLLM {
         return 200_000;
       case "claude-3-sonnet-20240229":
         return 200_000;
+      case "claude-3-haiku-20240307":
+        return 200_000;
       default:
         return 100_000; // assume a claude-instant-1.2 model
     }
@@ -57,6 +62,7 @@ class AnthropicLLM {
       "claude-2.1",
       "claude-3-opus-20240229",
       "claude-3-sonnet-20240229",
+      "claude-3-haiku-20240307",
     ];
     return validModels.includes(modelName);
   }
@@ -150,6 +156,13 @@ class AnthropicLLM {
       let fullText = "";
       const { uuid = v4(), sources = [] } = responseProps;
 
+      // Establish listener to early-abort a streaming response
+      // in case things go sideways or the user does not like the response.
+      // We preserve the generated text but continue as if chat was completed
+      // to preserve previously generated content.
+      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      response.on("close", handleAbort);
+
       stream.on("streamEvent", (message) => {
         const data = message;
         if (
@@ -181,6 +194,7 @@ class AnthropicLLM {
             close: true,
             error: false,
           });
+          response.removeListener("close", handleAbort);
           resolve(fullText);
         }
       });

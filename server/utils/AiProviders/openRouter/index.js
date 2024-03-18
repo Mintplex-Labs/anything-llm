@@ -1,7 +1,10 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { chatPrompt } = require("../../chats");
 const { v4: uuidv4 } = require("uuid");
-const { writeResponseChunk } = require("../../helpers/chat/responses");
+const {
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
 
 function openRouterModels() {
   const { MODELS } = require("./models.js");
@@ -195,6 +198,13 @@ class OpenRouterLLM {
       let chunk = "";
       let lastChunkTime = null; // null when first token is still not received.
 
+      // Establish listener to early-abort a streaming response
+      // in case things go sideways or the user does not like the response.
+      // We preserve the generated text but continue as if chat was completed
+      // to preserve previously generated content.
+      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      response.on("close", handleAbort);
+
       // NOTICE: Not all OpenRouter models will return a stop reason
       // which keeps the connection open and so the model never finalizes the stream
       // like the traditional OpenAI response schema does. So in the case the response stream
@@ -220,6 +230,7 @@ class OpenRouterLLM {
             error: false,
           });
           clearInterval(timeoutCheck);
+          response.removeListener("close", handleAbort);
           resolve(fullText);
         }
       }, 500);
@@ -269,6 +280,7 @@ class OpenRouterLLM {
               error: false,
             });
             clearInterval(timeoutCheck);
+            response.removeListener("close", handleAbort);
             resolve(fullText);
           } else {
             let finishReason = null;
@@ -305,6 +317,7 @@ class OpenRouterLLM {
                 error: false,
               });
               clearInterval(timeoutCheck);
+              response.removeListener("close", handleAbort);
               resolve(fullText);
             }
           }

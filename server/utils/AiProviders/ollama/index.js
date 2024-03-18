@@ -1,6 +1,9 @@
 const { chatPrompt } = require("../../chats");
 const { StringOutputParser } = require("langchain/schema/output_parser");
-const { writeResponseChunk } = require("../../helpers/chat/responses");
+const {
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
 
 // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
 class OllamaAILLM {
@@ -180,8 +183,16 @@ class OllamaAILLM {
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
     return new Promise(async (resolve) => {
+      let fullText = "";
+
+      // Establish listener to early-abort a streaming response
+      // in case things go sideways or the user does not like the response.
+      // We preserve the generated text but continue as if chat was completed
+      // to preserve previously generated content.
+      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      response.on("close", handleAbort);
+
       try {
-        let fullText = "";
         for await (const chunk of stream) {
           if (chunk === undefined)
             throw new Error(
@@ -210,6 +221,7 @@ class OllamaAILLM {
           close: true,
           error: false,
         });
+        response.removeListener("close", handleAbort);
         resolve(fullText);
       } catch (error) {
         writeResponseChunk(response, {
@@ -222,6 +234,7 @@ class OllamaAILLM {
             error?.cause ?? error.message
           }`,
         });
+        response.removeListener("close", handleAbort);
       }
     });
   }

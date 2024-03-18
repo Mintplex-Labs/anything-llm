@@ -19,6 +19,8 @@ import {
   Notepad,
   CodeBlock,
   Barcode,
+  ClosedCaptioning,
+  EyeSlash,
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
@@ -279,8 +281,16 @@ const SidebarOptions = ({ user = null }) => (
       allowedRole={["admin"]}
     />
     <Option
+      href={paths.settings.transcriptionPreference()}
+      btnText="Transcription Model"
+      icon={<ClosedCaptioning className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
       href={paths.settings.embeddingPreference()}
-      btnText="Embedding Preference"
+      btnText="Embedding Model"
       icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -336,6 +346,14 @@ const SidebarOptions = ({ user = null }) => (
       href={paths.settings.logs()}
       btnText="Event Logs"
       icon={<Notepad className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
+      href={paths.settings.privacy()}
+      btnText="Privacy & Data"
+      icon={<EyeSlash className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
       allowedRole={["admin"]}

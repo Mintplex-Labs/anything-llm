@@ -5,8 +5,10 @@ import { useManageWorkspaceModal } from "../../../Modals/MangeWorkspace";
 import ManageWorkspace from "../../../Modals/MangeWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
+import useUser from "@/hooks/useUser";
 
 export default function ChatHistory({ history = [], workspace, sendCommand }) {
+  const { user } = useUser();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
@@ -56,16 +58,22 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
           <p className="text-white/60 text-lg font-base py-4">
             Welcome to your new workspace.
           </p>
-          <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
-            To get started either{" "}
-            <span
-              className="underline font-medium cursor-pointer"
-              onClick={showModal}
-            >
-              upload a document
-            </span>
-            or <b className="font-medium italic">send a chat.</b>
-          </p>
+          {!user || user.role !== "default" ? (
+            <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
+              To get started either{" "}
+              <span
+                className="underline font-medium cursor-pointer"
+                onClick={showModal}
+              >
+                upload a document
+              </span>
+              or <b className="font-medium italic">send a chat.</b>
+            </p>
+          ) : (
+            <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
+              To get started <b className="font-medium italic">send a chat.</b>
+            </p>
+          )}
           <WorkspaceChatSuggestions
             suggestions={workspace?.suggestedMessages ?? []}
             sendSuggestion={handleSendSuggestedMessage}
