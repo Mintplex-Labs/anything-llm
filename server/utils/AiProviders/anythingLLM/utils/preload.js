@@ -21,7 +21,9 @@ async function preloadOllamaService() {
   }
 
   console.log(
-    `Hot loading of AnythingLLMOllama - LLM_PROVIDER is ${process.env.LLM_PROVIDER}.`
+    `Hot loading of AnythingLLMOllama - LLM_PROVIDER is ${
+      process.env.LLM_PROVIDER ?? "anythingllm_ollama"
+    }.`
   );
   const manager = new AnythingLLMOllama();
   manager.bootOrContinue();

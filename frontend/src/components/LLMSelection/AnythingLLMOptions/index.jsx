@@ -7,7 +7,7 @@ import ModelCard from "./ModelCard";
 import showToast from "@/utils/toast";
 import { refocusApplication } from "@/ipc/node-api";
 
-function AnythingLLMOptions({ settings, setHasChanges }) {
+function AnythingLLMOptions({ short = false, settings, setHasChanges }) {
   const [hasComponentChanges, setHasComponentChanges] = useState(false);
   const [modelDownloading, setModelDownloading] = useState(null);
   const [downloadedModels, setDownloadedModels] = useState([]);
@@ -97,7 +97,7 @@ function AnythingLLMOptions({ settings, setHasChanges }) {
       findModels();
     };
 
-    const formEl = document.getElementsByName("LLMPreferenceForm")[0];
+    const formEl = document.getElementsByName("LLMPreferenceForm")?.[0];
     window.addEventListener(
       ANYTHINGLLM_OLLAMA.completeEvent,
       handleDownloadComplete
@@ -114,7 +114,7 @@ function AnythingLLMOptions({ settings, setHasChanges }) {
         ANYTHINGLLM_OLLAMA.abortEvent,
         handleDownloadAbort
       );
-      formEl.removeEventListener("submit", autoDownloadModel);
+      formEl?.removeEventListener("submit", autoDownloadModel);
     };
   }, []);
 
@@ -127,13 +127,15 @@ function AnythingLLMOptions({ settings, setHasChanges }) {
           </label>
           {hasComponentChanges && (
             <p className="text-white italic font-thin text-sm text-gray-200">
-              Pressing save changes will begin the model download
+              {short
+                ? "Model will begin downloading in background"
+                : "Pressing save changes will begin the model download"}
             </p>
           )}
         </div>
 
         {["windows", "mac"].includes(_APP_PLATFORM.value) ? (
-          <div className="flex gap-[12px] w-fit flex-wrap p-0">
+          <div className="flex gap-[12px] w-fill flex-wrap p-0">
             <input
               className="hidden"
               type="text"
@@ -141,7 +143,14 @@ function AnythingLLMOptions({ settings, setHasChanges }) {
               readOnly={true}
               value={selectedModel}
             />
-            {DOWNLOADABLE_MODELS.map((model) => {
+            {(short
+              ? [
+                  DOWNLOADABLE_MODELS[0],
+                  DOWNLOADABLE_MODELS[4],
+                  DOWNLOADABLE_MODELS[6],
+                ]
+              : DOWNLOADABLE_MODELS
+            ).map((model) => {
               const downloaded = !!downloadedModels.find(
                 (mdl) => mdl.id === model.id
               );
@@ -157,7 +166,7 @@ function AnythingLLMOptions({ settings, setHasChanges }) {
                   handleClick={() => {
                     setSelectedModel(model.id);
                     setHasComponentChanges(true);
-                    setHasChanges(true);
+                    setHasChanges?.(true);
                   }}
                 />
               );
