@@ -36,8 +36,10 @@ export default function ModelCard({
     <>
       <div
         onClick={onClick}
-        className={`transition-all duration-300 w-[300px] min-h-[130px] rounded-[8px] border-2 hover:cursor-pointer hover:border-[#46C8FF] ${
-          isActive ? "border-[#46C8FF]" : "border-transparent"
+        className={`transition-all duration-300 w-[300px] min-h-[130px] h-fit rounded-[8px] border-2 hover:cursor-pointer ${
+          isActive
+            ? "border-[#46C8FF] hover:border-[#46C8FF] "
+            : "border-transparent hover:border-white "
         } bg-zinc-900 p-[12px]`}
       >
         {/* Model Header */}
@@ -124,7 +126,7 @@ function ModelDescription({ description }) {
   return (
     <div className="py-[8px]">
       <p className="text-gray-400 text-[12px]">
-        {truncate(description, expanded ? Number.POSITIVE_INFINITY : 69)}
+        {truncate(description, expanded ? Number.POSITIVE_INFINITY : 78)}
         <button
           type="button"
           onClick={(e) => {
@@ -135,7 +137,7 @@ function ModelDescription({ description }) {
           }}
           className="border-none"
         >
-          <p className="text-white font-bold">
+          <p className="text-white font-bold text-[12px]">
             {expanded ? "Show less" : "Read more"}
           </p>
         </button>
