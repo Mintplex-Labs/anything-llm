@@ -99,7 +99,7 @@ export default function GeneralLLMPreference() {
             />
           ),
           description:
-            "Run models from Meta, Mistral and more on this device. Powered by Ollama.",
+            "Download & run models from Meta, Mistral and more on this device with zero setup. Powered by Ollama.",
         }
       : null,
     {

@@ -71,7 +71,7 @@ export default function LLMPreference({
           logo: AnythingLLMIcon,
           options: <AnythingLLMOptions short={true} settings={settings} />,
           description:
-            "Run models from Meta, Mistral and more on this device. Powered by Ollama.",
+            "Download & run models from Meta, Mistral and more on this device with zero setup. Powered by Ollama.",
         }
       : null,
     {
