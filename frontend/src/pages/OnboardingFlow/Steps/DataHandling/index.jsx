@@ -32,6 +32,13 @@ const TITLE = "Data Handling & Privacy";
 const DESCRIPTION =
   "We are committed to transparency and control when it comes to your personal data.";
 export const LLM_SELECTION_PRIVACY = {
+  anythingllm_ollama: {
+    name: "AnythingLLM x Ollama",
+    description: [
+      "Your chats, model, and document text are only accessible on this machine",
+    ],
+    logo: AnythingLLMIcon,
+  },
   openai: {
     name: "OpenAI",
     description: [

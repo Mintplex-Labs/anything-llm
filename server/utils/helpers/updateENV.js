@@ -2,7 +2,7 @@ const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
     checks: [isNotEmpty, supportedLLM],
-    postUpdate: [wipeWorkspaceModelPreference],
+    postUpdate: [wipeWorkspaceModelPreference, manageOllamaService],
   },
   // OpenAI Settings
   OpenAiKey: {
@@ -117,6 +117,12 @@ const KEY_MAPPING = {
   HuggingFaceLLMTokenLimit: {
     envKey: "HUGGING_FACE_LLM_TOKEN_LIMIT",
     checks: [nonZero],
+  },
+
+  // AnythingLLM x Ollama embedded:
+  AnythingLLMOllamaModelPref: {
+    envKey: "ANYTHINGLLM_MODEL_PREF",
+    checks: [],
   },
 
   EmbeddingEngine: {
@@ -334,6 +340,7 @@ function validOllamaLLMBasePath(input = "") {
 
 function supportedLLM(input = "") {
   const validSelection = [
+    "anythingllm_ollama",
     "openai",
     "azure",
     "anthropic",
@@ -431,22 +438,6 @@ function requiresForceMode(_, forceModeEnabled = false) {
   return forceModeEnabled === true ? null : "Cannot set this setting.";
 }
 
-function isDownloadedModel(input = "") {
-  const fs = require("fs");
-  const path = require("path");
-  const storageDir = path.resolve(
-    process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
-      : path.resolve(__dirname, `../../storage/models/downloaded`)
-  );
-  if (!fs.existsSync(storageDir)) return false;
-
-  const files = fs
-    .readdirSync(storageDir)
-    .filter((file) => file.includes(".gguf"));
-  return files.includes(input);
-}
-
 function validDockerizedUrl(input = "") {
   if (process.env.ANYTHING_LLM_RUNTIME !== "docker") return null;
   try {
@@ -467,10 +458,30 @@ function validHuggingFaceEndpoint(input = "") {
 // If the LLMProvider has changed we need to reset all workspace model preferences to
 // null since the provider<>model name combination will be invalid for whatever the new
 // provider is.
-async function wipeWorkspaceModelPreference(key, prev, next) {
+async function wipeWorkspaceModelPreference(_key, prev, next) {
   if (prev === next) return;
   const { Workspace } = require("../../models/workspace");
   await Workspace.resetWorkspaceChatModels();
+}
+
+// When toggling between model providers there is no reason to have the Background AnythingLLMOllama
+// service running since its just extra overhead for nothing. So we can send a pkill or boot
+// to the main thread.
+async function manageOllamaService(_key, prev, next) {
+  if (prev === next) return;
+  if (prev !== "anythingllm_ollama" && next !== "anythingllm_ollama") return;
+
+  const { AnythingLLMOllama } = require("../AiProviders/anythingLLM");
+  const anythingLLMOllama = new AnythingLLMOllama();
+  if (next !== "anythingllm_ollama") {
+    await anythingLLMOllama.kill();
+    return;
+  }
+
+  if (next === "anythingllm_ollama") {
+    await anythingLLMOllama.bootOrContinue();
+    return;
+  }
 }
 
 // This will force update .env variables which for any which reason were not able to be parsed or

@@ -808,6 +808,102 @@ function systemEndpoints(app) {
       }
     }
   );
+
+  app.post(
+    "/system/download-ollama-model",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const {
+          AnythingLLMOllama,
+        } = require("../utils/AiProviders/anythingLLM");
+        const { modelName } = reqBody(request);
+        response.writeHead(200, {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        });
+
+        const progressCallback = (percentage, status) => {
+          response.write(
+            `event: progress\ndata: ${JSON.stringify({
+              percentage,
+              status,
+            })}\n\n`
+          );
+        };
+
+        const successCallback = () => {
+          response.write(
+            `event: done\ndata: ${JSON.stringify({
+              done: true,
+            })}\n\n`
+          );
+          response.end();
+        };
+
+        const errorCallback = (error) => {
+          response.write(
+            `event: error\ndata: ${JSON.stringify({ error })}\n\n`
+          );
+          response.end();
+        };
+
+        await new AnythingLLMOllama().pullModel(
+          modelName,
+          progressCallback,
+          successCallback,
+          errorCallback
+        );
+      } catch (error) {
+        console.error(
+          "Error downloading Ollama model - it may have been killed manually.",
+          error.message
+        );
+        response.write(
+          `event: error\ndata: ${JSON.stringify({
+            error: "Internal server error",
+          })}\n\n`
+        );
+        response.end();
+      }
+    }
+  );
+
+  app.delete(
+    "/system/download-ollama-model",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (_request, response) => {
+      try {
+        const {
+          AnythingLLMOllama,
+        } = require("../utils/AiProviders/anythingLLM");
+        await new AnythingLLMOllama().rebootOllama();
+        response.status(200).json({ success: true });
+      } catch (error) {
+        console.error("Error aborting Ollama model download:", error);
+        response.status(500).json({ success: false });
+      }
+    }
+  );
+
+  app.delete(
+    "/system/remove-ollama-model",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const {
+          AnythingLLMOllama,
+        } = require("../utils/AiProviders/anythingLLM");
+        const { modelName } = reqBody(request);
+        await new AnythingLLMOllama().deleteModel(modelName);
+        response.status(200).json({ success: true });
+      } catch (error) {
+        console.error("Error aborting Ollama model removal:", error);
+        response.status(500).json({ success: false });
+      }
+    }
+  );
 }
 
 module.exports = { systemEndpoints };

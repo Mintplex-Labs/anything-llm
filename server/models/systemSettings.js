@@ -235,12 +235,21 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
+      ...(llmProvider === "anythingllm_ollama"
+        ? {
+            AnythingLLMOllamaModelPref: process.env.ANYTHINGLLM_MODEL_PREF,
+
+            OpenAiKey: !!process.env.OPEN_AI_KEY,
+            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          }
+        : {}),
       ...(llmProvider === "groq"
         ? {
             GroqApiKey: !!process.env.GROQ_API_KEY,
             GroqModelPref: process.env.GROQ_MODEL_PREF,
 
-            // For embedding credentials when groq is selected.
             OpenAiKey: !!process.env.OPEN_AI_KEY,
             AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
             AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,

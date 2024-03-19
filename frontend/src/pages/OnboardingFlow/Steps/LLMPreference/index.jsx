@@ -1,5 +1,6 @@
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useEffect, useState, useRef } from "react";
+import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/assets/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/assets/llmprovider/azure.png";
 import AnthropicLogo from "@/assets/llmprovider/anthropic.png";
@@ -26,11 +27,13 @@ import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
+import AnythingLLMOptions from "@/components/LLMSelection/AnythingLLMOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
+import { _APP_PLATFORM } from "@/utils/constants";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -52,13 +55,25 @@ export default function LLMPreference({
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
+      const defaultLLM =
+        _APP_PLATFORM.value === "linux" ? "openai" : "anythingllm_ollama";
       setSettings(_settings);
-      setSelectedLLM(_settings?.LLMProvider || "openai");
+      setSelectedLLM(_settings?.LLMProvider || defaultLLM);
     }
     fetchKeys();
   }, []);
 
   const LLMS = [
+    _APP_PLATFORM.value !== "linux"
+      ? {
+          name: "AnythingLLM",
+          value: "anythingllm_ollama",
+          logo: AnythingLLMIcon,
+          options: <AnythingLLMOptions short={true} settings={settings} />,
+          description:
+            "Download & run models from Meta, Mistral and more on this device with zero setup. Powered by Ollama.",
+        }
+      : null,
     {
       name: "OpenAI",
       value: "openai",
@@ -162,7 +177,7 @@ export default function LLMPreference({
       description:
         "The fastest LLM inferencing available for real-time AI applications.",
     },
-  ];
+  ].filter((el) => !!el);
 
   function handleForward() {
     if (hiddenSubmitButtonRef.current) {
@@ -205,7 +220,12 @@ export default function LLMPreference({
 
   return (
     <div>
-      <form ref={formRef} onSubmit={handleSubmit} className="w-full">
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit}
+        name="LLMPreferenceForm"
+        className="w-full"
+      >
         <div className="w-full relative border-slate-300/40 shadow border-2 rounded-lg text-white">
           <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
             <div className="w-full flex items-center sticky top-0">

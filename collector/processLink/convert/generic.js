@@ -50,7 +50,7 @@ async function getPageContent(link) {
   try {
     const requestUuid = v4();
     let requestHandler = null;
-    process.parentPort.postMessage({
+    process.parentPort?.postMessage({
       message: "process-link",
       params: { reqId: requestUuid, link },
     });
@@ -70,7 +70,7 @@ async function getPageContent(link) {
     const pageContents = await fetchPageContent.then((res) => res);
     if (!!pageContents && !!requestHandler) {
       console.log(`Cleaning up request handler for request ID.`);
-      process.parentPort.removeListener("message", requestHandler);
+      process.parentPort?.removeListener("message", requestHandler);
       requestHandler = null;
     }
 

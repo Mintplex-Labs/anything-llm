@@ -40,11 +40,11 @@ const PromptReply = ({
           <div className="flex gap-x-5">
             <WorkspaceProfileImage workspace={workspace} />
             <span
-              className={`inline-block p-2 rounded-lg bg-red-50 text-red-500`}
+              className={`flex items-center p-2 rounded-lg bg-red-50 text-red-500`}
             >
-              <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
-              respond to message.
-              <span className="text-xs">Reason: {error || "unknown"}</span>
+              <Warning className="h-4 w-4 inline-block" /> Could not respond to
+              message.
+              <span className="text-xs">{`Reason: ${error || "unknown"}`}</span>
             </span>
           </div>
         </div>

@@ -1,3 +1,4 @@
+const { AnythingLLMOllama } = require("../AiProviders/anythingLLM");
 const { openRouterModels } = require("../AiProviders/openRouter");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
@@ -9,6 +10,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "mistral",
   "perplexity",
   "openrouter",
+  "anythingllm_ollama",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -32,6 +34,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getPerplexityModels();
     case "openrouter":
       return await getOpenRouterModels();
+    case "anythingllm_ollama":
+      return await getAnythingOllamaModels();
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -151,6 +155,18 @@ async function getOpenRouterModels() {
       id: model.id,
       organization: model.organization,
       name: model.name,
+    };
+  });
+  return { models, error: null };
+}
+
+async function getAnythingOllamaModels() {
+  const downloadedModels = await new AnythingLLMOllama().availableModels();
+  const models = Object.values(downloadedModels).map((model) => {
+    return {
+      id: model.model,
+      organization: model.details.family,
+      name: `${model.name} (${model.details?.parameter_size}) ${model.details?.quantization_level}`,
     };
   });
   return { models, error: null };

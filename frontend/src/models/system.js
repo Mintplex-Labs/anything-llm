@@ -1,7 +1,14 @@
-import { AUTH_TIMESTAMP, REMOTE_APP_VERSION_URL } from "@/utils/constants";
+import {
+  ANYTHINGLLM_OLLAMA,
+  AUTH_TIMESTAMP,
+  REMOTE_APP_VERSION_URL,
+} from "@/utils/constants";
 import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
 import { API_BASE } from "@/utils/api";
+
+let currentAbortController = null;
+let killed = false;
 
 const System = {
   cacheKeys: {
@@ -517,6 +524,89 @@ const System = {
       JSON.stringify({ version: versionText, lastFetched: Date.now() })
     );
     return versionText;
+  },
+
+  downloadOllamaModel: async function (modelName, progressCallback) {
+    return new Promise(async (resolve) => {
+      try {
+        if (currentAbortController) {
+          currentAbortController.abort();
+          killed = true;
+        } else {
+          window.addEventListener(ANYTHINGLLM_OLLAMA.abortEvent, () => {
+            if (!currentAbortController) return;
+            currentAbortController.abort();
+            killed = true;
+          });
+        }
+
+        currentAbortController = new AbortController();
+        const response = await fetch(
+          `${API_BASE()}/system/download-ollama-model`,
+          {
+            method: "POST",
+            headers: baseHeaders(),
+            body: JSON.stringify({ modelName }),
+            signal: currentAbortController.signal,
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Error downloading model 1.");
+        }
+
+        const reader = response.body.getReader();
+        let done = false;
+
+        while (!done) {
+          const { value, done: readerDone } = await reader.read();
+          if (readerDone) {
+            done = true;
+            resolve({ success: true, error: null });
+          } else {
+            const chunk = new TextDecoder("utf-8").decode(value);
+            const lines = chunk.split("\n");
+            for (const line of lines) {
+              if (line.startsWith("data:")) {
+                const data = safeJsonParse(line.slice(5));
+                if (data?.done) {
+                  resolve({ success: true, error: null });
+                } else if (data?.error) {
+                  resolve({ success: false, error: data?.error });
+                } else {
+                  progressCallback(data?.percentage, data?.status);
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error downloading model:", error);
+
+        resolve({
+          success: false,
+          error: "Error downloading model 2.",
+          killed,
+        });
+      }
+    });
+  },
+  abortOllamaModelDownload: async function () {
+    return await fetch(`${API_BASE()}/system/download-ollama-model`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch(() => false);
+  },
+  deleteOllamaModel: async function (modelName) {
+    return await fetch(`${API_BASE()}/system/remove-ollama-model`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ modelName }),
+    })
+      .then((res) => res.json())
+      .catch(() => false);
   },
   dataConnectors: DataConnector,
 };

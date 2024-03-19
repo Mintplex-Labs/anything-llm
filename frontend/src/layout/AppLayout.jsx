@@ -1,4 +1,5 @@
 import UserButton from "../components/UserMenu";
+import DownloadIndicator from "./DownloadIndicator";
 import VersionStatus from "./VersionStatus";
 
 export default function AppLayout({ children }) {
@@ -21,6 +22,7 @@ export default function AppLayout({ children }) {
             className="w-[calc(100%-6%*0.05)] h-full flex items-center justify-end mr-4"
           >
             <div className="frame-header flex grow h-full" />
+            <DownloadIndicator />
             <VersionStatus />
             <UserButton />
           </div>

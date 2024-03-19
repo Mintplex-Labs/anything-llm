@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/assets/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/assets/llmprovider/azure.png";
 import AnthropicLogo from "@/assets/llmprovider/anthropic.png";
@@ -28,10 +29,12 @@ import MistralOptions from "@/components/LLMSelection/MistralOptions";
 import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
+import AnythingLLMOptions from "@/components/LLMSelection/AnythingLLMOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
+import { _APP_PLATFORM } from "@/utils/constants";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -84,6 +87,21 @@ export default function GeneralLLMPreference() {
   }, [searchQuery, selectedLLM]);
 
   const LLMS = [
+    _APP_PLATFORM.value !== "linux"
+      ? {
+          name: "AnythingLLM",
+          value: "anythingllm_ollama",
+          logo: AnythingLLMIcon,
+          options: (
+            <AnythingLLMOptions
+              settings={settings}
+              setHasChanges={setHasChanges}
+            />
+          ),
+          description:
+            "Download & run models from Meta, Mistral and more on this device with zero setup. Powered by Ollama.",
+        }
+      : null,
     {
       name: "OpenAI",
       value: "openai",
@@ -187,7 +205,7 @@ export default function GeneralLLMPreference() {
       description:
         "The fastest LLM inferencing available for real-time AI applications.",
     },
-  ];
+  ].filter((el) => !!el);
 
   return (
     <div
@@ -203,7 +221,11 @@ export default function GeneralLLMPreference() {
         </div>
       ) : (
         <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
-          <form onSubmit={handleSubmit} className="flex w-full">
+          <form
+            name="LLMPreferenceForm"
+            onSubmit={handleSubmit}
+            className="flex w-full"
+          >
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">

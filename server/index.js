@@ -13,7 +13,6 @@ const { workspaceEndpoints } = require("./endpoints/workspaces");
 const { chatEndpoints } = require("./endpoints/chat");
 const { embeddedEndpoints } = require("./endpoints/embed");
 const { embedManagementEndpoints } = require("./endpoints/embedManagement");
-const { getVectorDbClass } = require("./utils/helpers");
 const { adminEndpoints } = require("./endpoints/admin");
 const { inviteEndpoints } = require("./endpoints/invite");
 const { utilEndpoints } = require("./endpoints/utils");
@@ -22,6 +21,9 @@ const { extensionEndpoints } = require("./endpoints/extensions");
 const setupTelemetry = require("./utils/telemetry");
 const { Telemetry } = require("./models/telemetry");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
+const {
+  preloadOllamaService,
+} = require("./utils/AiProviders/anythingLLM/utils/preload");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -57,6 +59,7 @@ app.all("*", function (_, response) {
 app
   .listen(process.env.SERVER_PORT || 3001, async () => {
     await setupTelemetry();
+    await preloadOllamaService();
     console.log(
       `[${
         process.env.NODE_ENV || "development"
