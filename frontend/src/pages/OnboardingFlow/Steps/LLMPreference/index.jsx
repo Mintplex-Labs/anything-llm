@@ -33,6 +33,7 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
+import { _APP_PLATFORM } from "@/utils/constants";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -54,21 +55,25 @@ export default function LLMPreference({
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
+      const defaultLLM =
+        _APP_PLATFORM.value === "linux" ? "openai" : "anythingllm_ollama";
       setSettings(_settings);
-      setSelectedLLM(_settings?.LLMProvider || "anythingllm_ollama");
+      setSelectedLLM(_settings?.LLMProvider || defaultLLM);
     }
     fetchKeys();
   }, []);
 
   const LLMS = [
-    {
-      name: "AnythingLLM",
-      value: "anythingllm_ollama",
-      logo: AnythingLLMIcon,
-      options: <AnythingLLMOptions short={true} settings={settings} />,
-      description:
-        "Run models from Meta, Mistral and more on this device. Powered by Ollama.",
-    },
+    _APP_PLATFORM.value !== "linux"
+      ? {
+          name: "AnythingLLM",
+          value: "anythingllm_ollama",
+          logo: AnythingLLMIcon,
+          options: <AnythingLLMOptions short={true} settings={settings} />,
+          description:
+            "Run models from Meta, Mistral and more on this device. Powered by Ollama.",
+        }
+      : null,
     {
       name: "OpenAI",
       value: "openai",
@@ -172,7 +177,7 @@ export default function LLMPreference({
       description:
         "The fastest LLM inferencing available for real-time AI applications.",
     },
-  ];
+  ].filter((el) => !!el);
 
   function handleForward() {
     if (hiddenSubmitButtonRef.current) {

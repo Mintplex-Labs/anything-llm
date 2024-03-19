@@ -438,22 +438,6 @@ function requiresForceMode(_, forceModeEnabled = false) {
   return forceModeEnabled === true ? null : "Cannot set this setting.";
 }
 
-function isDownloadedModel(input = "") {
-  const fs = require("fs");
-  const path = require("path");
-  const storageDir = path.resolve(
-    process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
-      : path.resolve(__dirname, `../../storage/models/downloaded`)
-  );
-  if (!fs.existsSync(storageDir)) return false;
-
-  const files = fs
-    .readdirSync(storageDir)
-    .filter((file) => file.includes(".gguf"));
-  return files.includes(input);
-}
-
 function validDockerizedUrl(input = "") {
   if (process.env.ANYTHING_LLM_RUNTIME !== "docker") return null;
   try {

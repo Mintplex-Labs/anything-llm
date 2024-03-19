@@ -23,6 +23,14 @@ class AnythingLLMOllama {
     this.defaultTemp = 0.7;
   }
 
+  async #supportedPlatform() {
+    if (process.env.APP_PLATFORM === "linux") {
+      this.#log(`${process.env.APP_PLATFORM} not supported.`);
+      return false;
+    }
+    return true;
+  }
+
   // Get the port that the main process is reported to be
   // running the embedded ollama service on. This will
   // always hit the main process in case the port moved
@@ -65,6 +73,7 @@ class AnythingLLMOllama {
   }
 
   async #ollamaProcessRunning() {
+    if (!this.#supportedPlatform()) return false;
     if (!process.env.ANYTHING_LLM_OLLAMA_PORT) {
       this.#log("Current port is unknown. Fetching from main process.");
       await this.#getProcessPort();
@@ -136,6 +145,7 @@ class AnythingLLMOllama {
   // Send signal to ollama process in electron and tell the worker to reboot ollama
   // so that it stops the download process since it cannot be killed via API.
   async rebootOllama() {
+    if (!this.#supportedPlatform()) return false;
     if (!(await this.#ollamaProcessRunning())) return;
     process.parentPort?.postMessage({ message: "boot-ollama" });
   }
@@ -143,6 +153,7 @@ class AnythingLLMOllama {
   // Before running anything just call this to either boot up the Ollama service
   // or check if alive.
   async bootOrContinue() {
+    if (!this.#supportedPlatform()) return false;
     if (await this.#ollamaProcessRunning()) return;
 
     process.parentPort?.postMessage({ message: "boot-ollama" });
@@ -189,6 +200,7 @@ class AnythingLLMOllama {
   }
 
   async availableModels() {
+    if (!this.#supportedPlatform()) return [];
     await this.bootOrContinue();
     return await fetch(`${this.basePath()}/api/tags`, { method: "GET" })
       .then((res) => res.json())
@@ -205,6 +217,10 @@ class AnythingLLMOllama {
     successCallback,
     errorCallback
   ) {
+    if (!this.#supportedPlatform()) {
+      errorCallback?.(`${this.process.APP_PLATFORM} is not supported.`);
+      return;
+    }
     await this.bootOrContinue();
 
     this.#log(`Starting pull of model tag "${modelName}".`);
@@ -248,6 +264,7 @@ class AnythingLLMOllama {
   }
 
   async deleteModel(modelName = null) {
+    if (!this.#supportedPlatform()) return [];
     if (!modelName) return true;
     await this.bootOrContinue();
 
@@ -264,6 +281,7 @@ class AnythingLLMOllama {
   }
 
   async kill() {
+    if (!this.#supportedPlatform()) return [];
     if (!process.parentPort) return;
     process.parentPort.postMessage({ message: "kill-ollama" });
     return;

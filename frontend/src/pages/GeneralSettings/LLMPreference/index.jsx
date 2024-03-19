@@ -34,6 +34,7 @@ import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { MagnifyingGlass } from "@phosphor-icons/react";
+import { _APP_PLATFORM } from "@/utils/constants";
 
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
@@ -86,16 +87,21 @@ export default function GeneralLLMPreference() {
   }, [searchQuery, selectedLLM]);
 
   const LLMS = [
-    {
-      name: "AnythingLLM",
-      value: "anythingllm_ollama",
-      logo: AnythingLLMIcon,
-      options: (
-        <AnythingLLMOptions settings={settings} setHasChanges={setHasChanges} />
-      ),
-      description:
-        "Run models from Meta, Mistral and more on this device. Powered by Ollama.",
-    },
+    _APP_PLATFORM.value !== "linux"
+      ? {
+          name: "AnythingLLM",
+          value: "anythingllm_ollama",
+          logo: AnythingLLMIcon,
+          options: (
+            <AnythingLLMOptions
+              settings={settings}
+              setHasChanges={setHasChanges}
+            />
+          ),
+          description:
+            "Run models from Meta, Mistral and more on this device. Powered by Ollama.",
+        }
+      : null,
     {
       name: "OpenAI",
       value: "openai",
@@ -199,7 +205,7 @@ export default function GeneralLLMPreference() {
       description:
         "The fastest LLM inferencing available for real-time AI applications.",
     },
-  ];
+  ].filter((el) => !!el);
 
   return (
     <div
