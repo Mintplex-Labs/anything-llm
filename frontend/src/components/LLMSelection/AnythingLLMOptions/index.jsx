@@ -7,12 +7,16 @@ import ModelCard from "./ModelCard";
 import showToast from "@/utils/toast";
 import { refocusApplication } from "@/ipc/node-api";
 
+// Highlighted and/or recommended models for use.
+const SHORT_MODELS = ["llama2:latest", "mistral:latest", "gemma:2b"];
+
 export default function AnythingLLMOptions({
   short = false,
   settings,
   setHasChanges,
 }) {
   const [loading, setLoading] = useState(true);
+  const [showShortList, setShowShortList] = useState(short);
   const [hasComponentChanges, setHasComponentChanges] = useState(false);
   const [modelDownloading, setModelDownloading] = useState(null);
   const [downloadedModels, setDownloadedModels] = useState([]);
@@ -152,43 +156,49 @@ export default function AnythingLLMOptions({
         </div>
 
         {["windows", "mac"].includes(_APP_PLATFORM.value) ? (
-          <div className="flex gap-[12px] w-fill flex-wrap p-0">
-            <input
-              className="hidden"
-              type="text"
-              name="AnythingLLMOllamaModelPref"
-              readOnly={true}
-              value={selectedModel}
-            />
-            {(short
-              ? [
-                  DOWNLOADABLE_MODELS[0],
-                  DOWNLOADABLE_MODELS[4],
-                  DOWNLOADABLE_MODELS[6],
-                ]
-              : DOWNLOADABLE_MODELS
-            ).map((model) => {
-              const downloaded = !!downloadedModels.find(
-                (mdl) => mdl.id === model.id
-              );
-              return (
-                <ModelCard
-                  key={model.id}
-                  model={model}
-                  disabled={modelDownloading !== null}
-                  isActive={model.id === selectedModel}
-                  downloaded={downloaded}
-                  downloading={model.id === modelDownloading}
-                  uninstallModel={uninstallModel}
-                  handleClick={() => {
-                    setSelectedModel(model.id);
-                    setHasComponentChanges(true);
-                    setHasChanges?.(true);
-                  }}
-                />
-              );
-            })}
-          </div>
+          <>
+            <div className="flex gap-[12px] w-fill flex-wrap p-0">
+              <input
+                className="hidden"
+                type="text"
+                name="AnythingLLMOllamaModelPref"
+                readOnly={true}
+                value={selectedModel}
+              />
+              {DOWNLOADABLE_MODELS.map((model) => {
+                if (showShortList && !SHORT_MODELS.includes(model.id))
+                  return null;
+                const downloaded = !!downloadedModels.find(
+                  (mdl) => mdl.id === model.id
+                );
+                return (
+                  <ModelCard
+                    key={model.id}
+                    model={model}
+                    disabled={modelDownloading !== null}
+                    isActive={model.id === selectedModel}
+                    downloaded={downloaded}
+                    downloading={model.id === modelDownloading}
+                    uninstallModel={uninstallModel}
+                    handleClick={() => {
+                      setSelectedModel(model.id);
+                      setHasComponentChanges(true);
+                      setHasChanges?.(true);
+                    }}
+                  />
+                );
+              })}
+            </div>
+            {showShortList && (
+              <button
+                type="button"
+                className="mx-auto w-fit border-none text-[12px] text-gray-400 font-base"
+                onClick={() => setShowShortList(false)}
+              >
+                Show all models
+              </button>
+            )}
+          </>
         ) : (
           <div className="w-full h-10 items-center justify-center flex">
             <p className="text-sm font-base text-white text-opacity-60">
