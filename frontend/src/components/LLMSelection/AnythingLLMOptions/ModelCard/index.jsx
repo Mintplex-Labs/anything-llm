@@ -36,7 +36,7 @@ export default function ModelCard({
     <>
       <div
         onClick={onClick}
-        className={`w-[300px] min-h-[130px] rounded-[8px] border-2 ${
+        className={`transition-all duration-300 w-[300px] min-h-[130px] rounded-[8px] border-2 hover:cursor-pointer hover:border-[#46C8FF] ${
           isActive ? "border-[#46C8FF]" : "border-transparent"
         } bg-zinc-900 p-[12px]`}
       >
