@@ -86,8 +86,8 @@ function Directory({
   const toggleSelection = (item) => {
     setSelectedItems((prevSelectedItems) => {
       const newSelectedItems = { ...prevSelectedItems };
+
       if (item.type === "folder") {
-        // select all files in the folder
         if (newSelectedItems[item.name]) {
           delete newSelectedItems[item.name];
           item.items.forEach((file) => delete newSelectedItems[file.id]);
@@ -96,7 +96,6 @@ function Directory({
           item.items.forEach((file) => (newSelectedItems[file.id] = true));
         }
       } else {
-        // single file selections
         if (newSelectedItems[item.id]) {
           delete newSelectedItems[item.id];
         } else {
@@ -108,13 +107,16 @@ function Directory({
     });
   };
 
-  // check if item is selected based on selectedItems state
+  const isFolderCompletelySelected = (folder) => {
+    if (!selectedItems[folder.name]) {
+      return false;
+    }
+    return folder.items.every((file) => selectedItems[file.id]);
+  };
+
   const isSelected = (id, item) => {
     if (item && item.type === "folder") {
-      if (!selectedItems[item.name]) {
-        return false;
-      }
-      return item.items.every((file) => selectedItems[file.id]);
+      return isFolderCompletelySelected(item);
     }
 
     return !!selectedItems[id];
@@ -170,7 +172,6 @@ function Directory({
     }
 
     if (success && message) {
-      // show info if some files were not moved due to being embedded
       showToast(message, "info");
     } else {
       showToast(`Successfully moved ${toMove.length} documents.`, "success");

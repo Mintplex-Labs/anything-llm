@@ -191,7 +191,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
   };
 
   return (
-    <div className="flex upload-modal -mt-6 z-10 relative">
+    <div className="flex gap-x-6 justify-center -mt-6 z-10">
       <Directory
         files={availableDocs}
         setFiles={setAvailableDocs}
@@ -208,7 +208,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
         moveToWorkspace={moveSelectedItemsToWorkspace}
         setLoadingMessage={setLoadingMessage}
       />
-      <div className="upload-modal-arrow">
+      <div className="flex items-center">
         <ArrowsDownUp className="text-white text-base font-bold rotate-90 w-11 h-11" />
       </div>
       <WorkspaceDirectory
