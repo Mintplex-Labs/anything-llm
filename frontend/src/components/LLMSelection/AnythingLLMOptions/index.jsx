@@ -6,6 +6,8 @@ import { safeJsonParse } from "@/utils/request";
 import ModelCard from "./ModelCard";
 import showToast from "@/utils/toast";
 import { refocusApplication } from "@/ipc/node-api";
+import * as Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 // Highlighted and/or recommended models for use.
 const SHORT_MODELS = ["llama2:latest", "mistral:latest", "gemma:2b"];
@@ -155,56 +157,71 @@ export default function AnythingLLMOptions({
           )}
         </div>
 
-        {["windows", "mac"].includes(_APP_PLATFORM.value) ? (
+        {/* Short mode is onboarding only where the user will have no downloads */}
+        {loading && !short ? (
+          <Skeleton.default
+            height={130}
+            width={280}
+            count={12}
+            baseColor="#18181b"
+            highlightColor="#4c4948"
+            enableAnimation={true}
+            containerClassName="w-fill flex gap-[12px] flex-wrap p-0"
+          />
+        ) : (
           <>
-            <div className="flex gap-[12px] w-fill flex-wrap p-0">
-              <input
-                className="hidden"
-                type="text"
-                name="AnythingLLMOllamaModelPref"
-                readOnly={true}
-                value={selectedModel}
-              />
-              {DOWNLOADABLE_MODELS.map((model) => {
-                if (showShortList && !SHORT_MODELS.includes(model.id))
-                  return null;
-                const downloaded = !!downloadedModels.find(
-                  (mdl) => mdl.id === model.id
-                );
-                return (
-                  <ModelCard
-                    key={model.id}
-                    model={model}
-                    disabled={modelDownloading !== null}
-                    isActive={model.id === selectedModel}
-                    downloaded={downloaded}
-                    downloading={model.id === modelDownloading}
-                    uninstallModel={uninstallModel}
-                    handleClick={() => {
-                      setSelectedModel(model.id);
-                      setHasComponentChanges(true);
-                      setHasChanges?.(true);
-                    }}
+            {["windows", "mac"].includes(_APP_PLATFORM.value) ? (
+              <>
+                <div className="flex gap-[12px] w-fill flex-wrap p-0">
+                  <input
+                    className="hidden"
+                    type="text"
+                    name="AnythingLLMOllamaModelPref"
+                    readOnly={true}
+                    value={selectedModel}
                   />
-                );
-              })}
-            </div>
-            {showShortList && (
-              <button
-                type="button"
-                className="mx-auto w-fit border-none text-[12px] text-gray-400 font-base"
-                onClick={() => setShowShortList(false)}
-              >
-                Show all models
-              </button>
+                  {DOWNLOADABLE_MODELS.map((model) => {
+                    if (showShortList && !SHORT_MODELS.includes(model.id))
+                      return null;
+                    const downloaded = !!downloadedModels.find(
+                      (mdl) => mdl.id === model.id
+                    );
+                    return (
+                      <ModelCard
+                        key={model.id}
+                        model={model}
+                        disabled={modelDownloading !== null}
+                        isActive={model.id === selectedModel}
+                        downloaded={downloaded}
+                        downloading={model.id === modelDownloading}
+                        uninstallModel={uninstallModel}
+                        handleClick={() => {
+                          setSelectedModel(model.id);
+                          setHasComponentChanges(true);
+                          setHasChanges?.(true);
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+                {showShortList && (
+                  <button
+                    type="button"
+                    className="mx-auto w-fit border-none text-[12px] text-gray-400 font-base"
+                    onClick={() => setShowShortList(false)}
+                  >
+                    Show all models
+                  </button>
+                )}
+              </>
+            ) : (
+              <div className="w-full h-10 items-center justify-center flex">
+                <p className="text-sm font-base text-white text-opacity-60">
+                  This feature is disabled on Linux operating systems.
+                </p>
+              </div>
             )}
           </>
-        ) : (
-          <div className="w-full h-10 items-center justify-center flex">
-            <p className="text-sm font-base text-white text-opacity-60">
-              This feature is disabled on Linux operating systems.
-            </p>
-          </div>
         )}
       </div>
     </div>
