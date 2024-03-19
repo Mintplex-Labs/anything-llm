@@ -8,6 +8,7 @@ import ChatHistorySettings from "./ChatHistorySettings";
 import ChatPromptSettings from "./ChatPromptSettings";
 import ChatTemperatureSettings from "./ChatTemperatureSettings";
 import ChatModeSelection from "./ChatModeSelection";
+import ChatEnableMetaResponse from "./ChatEnableMetaResponse";
 
 export default function ChatSettings({ workspace }) {
   const [settings, setSettings] = useState({});
@@ -28,7 +29,14 @@ export default function ChatSettings({ workspace }) {
     e.preventDefault();
     const data = {};
     const form = new FormData(formEl.current);
-    for (var [key, value] of form.entries()) data[key] = castToType(key, value);
+    data["metaResponse"] = form.get("metaResponse") === "on" ? true : false;
+    for (var [key, value] of form.entries()) {
+      if (key === "metaResponse") {
+        data[key] = value === "on" ? true : false;
+      } else {
+        data[key] = castToType(key, value);
+      }
+    }
     const { workspace: updatedWorkspace, message } = await Workspace.update(
       workspace.slug,
       data
@@ -62,6 +70,10 @@ export default function ChatSettings({ workspace }) {
       <ChatPromptSettings workspace={workspace} setHasChanges={setHasChanges} />
       <ChatTemperatureSettings
         settings={settings}
+        workspace={workspace}
+        setHasChanges={setHasChanges}
+      />
+      <ChatEnableMetaResponse
         workspace={workspace}
         setHasChanges={setHasChanges}
       />

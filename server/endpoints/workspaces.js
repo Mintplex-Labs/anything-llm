@@ -87,6 +87,23 @@ function workspaceEndpoints(app) {
           response.sendStatus(400).end();
           return;
         }
+        if (
+          !currWorkspace.metaResponse &&
+          !currWorkspace.metaResponseSettings
+        ) {
+          metaResponseDefaultSettings.inputs.config.systemPrompt.openAiPrompt =
+            currWorkspace.openAiPrompt || "";
+          data.metaResponseSettings = JSON.stringify(
+            metaResponseDefaultSettings
+          );
+          await EventLogs.logEvent(
+            "workspace_meta_response_enabled",
+            {
+              workspaceName: currWorkspace?.name || "Unknown Workspace",
+            },
+            user?.id
+          );
+        }
 
         const { workspace, message } = await Workspace.update(
           currWorkspace.id,
@@ -212,8 +229,8 @@ function workspaceEndpoints(app) {
           message:
             failedToEmbed.length > 0
               ? `${failedToEmbed.length} documents failed to add.\n\n${errors
-                  .map((msg) => `${msg}`)
-                  .join("\n\n")}`
+                .map((msg) => `${msg}`)
+                .join("\n\n")}`
               : null,
         });
       } catch (e) {
@@ -566,5 +583,77 @@ function workspaceEndpoints(app) {
     }
   );
 }
+
+const metaResponseDefaultSettings = {
+  inputs: {
+    isEnabled: false,
+    config: {
+      systemPrompt: {
+        isEnabled: false,
+        content: "",
+        openAiPrompt: "",
+        overrideSystemPrompt: false,
+        suggestionsList: [
+          {
+            title: "",
+            content: "",
+          },
+        ],
+        canEdit: ["admin", "manager"],
+      },
+      promptSchema: {
+        content: "",
+        suggestionsList: [
+          {
+            title: "",
+            content: "",
+          },
+        ],
+        overrideWorkspacePrompt: false,
+        canEdit: ["admin", "manager"],
+      },
+      components: {
+        dropDownMenu: {
+          isEnabled: false,
+          options: [],
+
+        },
+        optionsList: {
+          isEnabled: false,
+          options: [],
+        },
+        optionsButtons: {
+          isEnabled: false,
+          options: [],
+        },
+        multiSelectCheckboxes: {
+          isEnabled: false,
+          options: [],
+        },
+      },
+    },
+    permissions: ["user"],
+  },
+  sentiments: {
+    isEnabled: false,
+    config: {
+      sentimentAnalysis: {
+        isEnabled: false,
+
+        scoreThreshold: 0.5,
+      },
+    },
+    permissions: ["user"],
+  },
+  avatars: {
+    isEnabled: false,
+    config: {
+      avatarType: "circle",
+      avatarSize: "medium",
+      avatarName: "user",
+    },
+    permissions: ["user"],
+  },
+};
 
 module.exports = { workspaceEndpoints };
