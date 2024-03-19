@@ -871,6 +871,23 @@ function systemEndpoints(app) {
   );
 
   app.delete(
+    "/system/download-ollama-model",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (_request, response) => {
+      try {
+        const {
+          AnythingLLMOllama,
+        } = require("../utils/AiProviders/anythingLLM");
+        await new AnythingLLMOllama().rebootOllama();
+        response.status(200).json({ success: true });
+      } catch (error) {
+        console.error("Error aborting Ollama model download:", error);
+        response.status(500).json({ success: false });
+      }
+    }
+  );
+
+  app.delete(
     "/system/remove-ollama-model",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {

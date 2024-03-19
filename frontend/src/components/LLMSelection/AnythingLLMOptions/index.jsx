@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect } from "react";
 import System from "@/models/system";
 import { ANYTHINGLLM_OLLAMA, _APP_PLATFORM } from "@/utils/constants";
 import { DOWNLOADABLE_MODELS } from "./downloadable";
@@ -7,7 +7,12 @@ import ModelCard from "./ModelCard";
 import showToast from "@/utils/toast";
 import { refocusApplication } from "@/ipc/node-api";
 
-function AnythingLLMOptions({ short = false, settings, setHasChanges }) {
+export default function AnythingLLMOptions({
+  short = false,
+  settings,
+  setHasChanges,
+}) {
+  const [loading, setLoading] = useState(true);
   const [hasComponentChanges, setHasComponentChanges] = useState(false);
   const [modelDownloading, setModelDownloading] = useState(null);
   const [downloadedModels, setDownloadedModels] = useState([]);
@@ -39,7 +44,6 @@ function AnythingLLMOptions({ short = false, settings, setHasChanges }) {
       return;
     }
 
-    if (downloaded || !formInputValue) return;
     const modelInfo = DOWNLOADABLE_MODELS.find(
       (mdl) => mdl.id === formInputValue
     );
@@ -83,40 +87,53 @@ function AnythingLLMOptions({ short = false, settings, setHasChanges }) {
           setModelDownloading(parsedData.modelId);
         }
       }
+      setLoading(false);
     }
     findModels();
+  }, []);
 
-    const handleDownloadComplete = () => {
-      setModelDownloading(null);
-      findModels();
-    };
+  useEffect(() => {
+    async function setListeners() {
+      if (loading) return;
 
-    const handleDownloadAbort = () => {
-      window.localStorage.removeItem(ANYTHINGLLM_OLLAMA.localStorageKey);
-      setModelDownloading(null);
-      findModels();
-    };
+      const handleDownloadComplete = async () => {
+        setModelDownloading(null);
+        const { models } = await System.customModels("anythingllm_ollama");
+        setDownloadedModels(models || []);
+      };
 
-    const formEl = document.getElementsByName("LLMPreferenceForm")?.[0];
-    window.addEventListener(
-      ANYTHINGLLM_OLLAMA.completeEvent,
-      handleDownloadComplete
-    );
-    window.addEventListener(ANYTHINGLLM_OLLAMA.abortEvent, handleDownloadAbort);
+      const handleDownloadAbort = async () => {
+        window.localStorage.removeItem(ANYTHINGLLM_OLLAMA.localStorageKey);
+        setModelDownloading(null);
+        const { models } = await System.customModels("anythingllm_ollama");
+        setDownloadedModels(models || []);
+      };
 
-    formEl?.addEventListener("submit", autoDownloadModel);
-    return () => {
-      window.removeEventListener(
+      const formEl = document.getElementsByName("LLMPreferenceForm")?.[0];
+      window.addEventListener(
         ANYTHINGLLM_OLLAMA.completeEvent,
         handleDownloadComplete
       );
-      window.removeEventListener(
+      window.addEventListener(
         ANYTHINGLLM_OLLAMA.abortEvent,
         handleDownloadAbort
       );
-      formEl?.removeEventListener("submit", autoDownloadModel);
-    };
-  }, []);
+
+      formEl?.addEventListener("submit", autoDownloadModel);
+      return () => {
+        window.removeEventListener(
+          ANYTHINGLLM_OLLAMA.completeEvent,
+          handleDownloadComplete
+        );
+        window.removeEventListener(
+          ANYTHINGLLM_OLLAMA.abortEvent,
+          handleDownloadAbort
+        );
+        formEl?.removeEventListener("submit", autoDownloadModel);
+      };
+    }
+    setListeners();
+  }, [loading]);
 
   return (
     <div className="w-full flex flex-col">
@@ -183,5 +200,3 @@ function AnythingLLMOptions({ short = false, settings, setHasChanges }) {
     </div>
   );
 }
-
-export default memo(AnythingLLMOptions);
