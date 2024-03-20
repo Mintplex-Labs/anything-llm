@@ -66,6 +66,12 @@ async function viewLocalFiles() {
     }
   }
 
+  // Make sure custom-documents is always the first folder in picker
+  directory.items = [
+    directory.items.find((folder) => folder.name === "custom-documents"),
+    ...directory.items.filter((folder) => folder.name !== "custom-documents"),
+  ];
+
   return directory;
 }
 
