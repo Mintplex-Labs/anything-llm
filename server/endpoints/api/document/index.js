@@ -607,12 +607,10 @@ function apiDocumentEndpoints(app) {
         );
 
         if (fs.existsSync(storagePath)) {
-          response
-            .status(500)
-            .json({
-              success: false,
-              message: "Folder by that name already exists",
-            });
+          response.status(500).json({
+            success: false,
+            message: "Folder by that name already exists",
+          });
           return;
         }
 
