@@ -1,23 +1,34 @@
-import { useState, useEffect } from "react";
-import ChatHistory from "./ChatHistory";
-import PromptInput from "./PromptInput";
 import Workspace from "@/models/workspace";
 import handleChat from "@/utils/chat";
+import { extractMetaData } from "@/utils/chat/extractMetaData";
+import { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
-import { SidebarMobileHeader } from "../../Sidebar";
 import { useParams } from "react-router-dom";
+import { SidebarMobileHeader } from "../../Sidebar";
+import ChatHistory from "./ChatHistory";
 
-export default function ChatContainer({ workspace, knownHistory = [] }) {
+import PromptInput from "./PromptInput";
+import MetaInputs from "./MetaInputs";
+
+export default function ChatContainer({
+  workspace,
+  knownHistory = [],
+  isMetaInputs,
+  currentInputMeta,
+  setCurrentInputMeta,
+}) {
   const { threadSlug = null } = useParams();
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
+  const [finalizedChatHistory, setFinalizedChatHistory] = useState(knownHistory);
+
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event?.preventDefault();
     if (!message || message === "") return false;
 
     const prevChatHistory = [
@@ -33,6 +44,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     ];
 
     setChatHistory(prevChatHistory);
+    setFinalizedChatHistory(prevChatHistory);
     setMessage("");
     setLoadingResponse(true);
   };
@@ -96,6 +108,16 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
             )
         );
       }
+
+      if (isMetaInputs) {
+        const { remainingText, metaData } = extractMetaData(
+          _chatHistory[_chatHistory.length - 1].content
+        );
+        _chatHistory[_chatHistory.length - 1].content = remainingText;
+        setFinalizedChatHistory(_chatHistory);
+        setCurrentInputMeta(metaData);
+      }
+
       return;
     }
     loadingResponse === true && fetchReply();
@@ -109,19 +131,34 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       {isMobile && <SidebarMobileHeader />}
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
         <ChatHistory
-          history={chatHistory}
+          history={isMetaInputs ? finalizedChatHistory : chatHistory}
           workspace={workspace}
           sendCommand={sendCommand}
         />
-        <PromptInput
-          workspace={workspace}
-          message={message}
-          submit={handleSubmit}
-          onChange={handleMessageChange}
-          inputDisabled={loadingResponse}
-          buttonDisabled={loadingResponse}
-          sendCommand={sendCommand}
-        />
+        {isMetaInputs && currentInputMeta?.inputs?.type !== undefined ? (
+          <MetaInputs
+            inputs={currentInputMeta?.inputs}
+            isMetaInputs={isMetaInputs}
+            submit={handleSubmit}
+            setMessage={setMessage}
+            workspace={workspace}
+            message={message}
+            onChange={handleMessageChange}
+            inputDisabled={loadingResponse}
+            buttonDisabled={loadingResponse}
+            sendCommand={sendCommand}
+          />
+        ) : (
+          <PromptInput
+            workspace={workspace}
+            message={message}
+            submit={handleSubmit}
+            onChange={handleMessageChange}
+            inputDisabled={loadingResponse}
+            buttonDisabled={loadingResponse}
+            sendCommand={sendCommand}
+          />
+        )}
       </div>
     </div>
   );

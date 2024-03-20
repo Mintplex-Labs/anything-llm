@@ -9,7 +9,7 @@ export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
       data-tooltip-id="tooltip-slash-cmd-btn"
       data-tooltip-content="View all available slash commands for chatting."
       onClick={() => setShowSlashCommand(!showing)}
-      className={`flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
+      className={`flex justify-center items-center opacity-30 hover:opacity-100 cursor-pointer ${
         showing ? "!opacity-100" : ""
       }`}
     >
@@ -56,6 +56,7 @@ export function SlashCommands({ showing, setShowing, sendCommand }) {
           onClick={() => {
             setShowing(false);
             sendCommand("/reset", true);
+            window.location.reload();
           }}
           className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-col justify-start"
         >

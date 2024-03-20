@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from "react";
 import Workspace from "@/models/workspace";
-import LoadingChat from "./LoadingChat";
-import ChatContainer from "./ChatContainer";
+import { extractMetaData } from "@/utils/chat/extractMetaData";
 import paths from "@/utils/paths";
-import ModalWrapper from "../ModalWrapper";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import ModalWrapper from "../ModalWrapper";
+import ChatContainer from "./ChatContainer";
+import LoadingChat from "./LoadingChat";
 
 export default function WorkspaceChat({ loading, workspace }) {
   const { threadSlug = null } = useParams();
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
+  const [currentInputMeta, setCurrentInputMeta] = useState(null);
+
+  const isMetaInputs = true;
 
   useEffect(() => {
     async function getHistory() {
@@ -19,9 +23,25 @@ export default function WorkspaceChat({ loading, workspace }) {
         return false;
       }
 
-      const chatHistory = threadSlug
+      let chatHistory = threadSlug
         ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
         : await Workspace.chatHistory(workspace.slug);
+
+      // TODO: add conditional if dynamic input is enabled in the workspace by default is false
+      // Append metadata to the chat history
+      if (isMetaInputs) {
+        chatHistory = chatHistory.map((message) => {
+          if (message.role === "assistant") {
+            const { remainingText, metaData } = extractMetaData(
+              message.content
+            );
+            setCurrentInputMeta(metaData);
+            return { ...message, content: remainingText, metaData };
+          }
+          return message;
+        });
+      }
+
       setHistory(chatHistory);
       setLoadingHistory(false);
     }
@@ -61,7 +81,15 @@ export default function WorkspaceChat({ loading, workspace }) {
   }
 
   setEventDelegatorForCodeSnippets();
-  return <ChatContainer workspace={workspace} knownHistory={history} />;
+  return (
+    <ChatContainer
+      workspace={workspace}
+      knownHistory={history}
+      isMetaInputs={isMetaInputs}
+      currentInputMeta={currentInputMeta}
+      setCurrentInputMeta={setCurrentInputMeta}
+    />
+  );
 }
 
 // Enables us to safely markdown and sanitize all responses without risk of injection

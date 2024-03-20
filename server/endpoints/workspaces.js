@@ -87,6 +87,23 @@ function workspaceEndpoints(app) {
           response.sendStatus(400).end();
           return;
         }
+        if (
+          !currWorkspace.metaResponse &&
+          !currWorkspace.metaResponseSettings
+        ) {
+          metaResponseDefaultSettings.inputs.config.systemPrompt.openAiPrompt =
+            currWorkspace.openAiPrompt || "";
+          data.metaResponseSettings = JSON.stringify(
+            metaResponseDefaultSettings
+          );
+          await EventLogs.logEvent(
+            "workspace_meta_response_enabled",
+            {
+              workspaceName: currWorkspace?.name || "Unknown Workspace",
+            },
+            user?.id
+          );
+        }
 
         const { workspace, message } = await Workspace.update(
           currWorkspace.id,
@@ -212,8 +229,8 @@ function workspaceEndpoints(app) {
           message:
             failedToEmbed.length > 0
               ? `${failedToEmbed.length} documents failed to add.\n\n${errors
-                  .map((msg) => `${msg}`)
-                  .join("\n\n")}`
+                .map((msg) => `${msg}`)
+                .join("\n\n")}`
               : null,
         });
       } catch (e) {
@@ -566,5 +583,158 @@ function workspaceEndpoints(app) {
     }
   );
 }
+
+const metaResponseDefaultSettings = {
+  inputs: {
+    isEnabled: false,
+    config: {
+      systemPrompt: {
+        isEnabled: false,
+        content: "",
+        openAiPrompt: "",
+        overrideSystemPrompt: false,
+        suggestionsList: [
+          {
+            title: "",
+            content: "",
+          },
+        ],
+        canEdit: ["admin", "manager"],
+      },
+      promptSchema: {
+        content: "",
+        suggestionsList: [
+          {
+            title: "",
+            content: "",
+          },
+        ],
+        overrideWorkspacePrompt: false,
+        canEdit: ["admin", "manager"],
+      },
+      components: {
+        dropDownMenu: {
+          isEnabled: false,
+          options: [],
+
+        },
+        optionsList: {
+          isEnabled: false,
+          options: [],
+        },
+        optionsButtons: {
+          isEnabled: false,
+          options: [],
+        },
+        multiSelectCheckboxes: {
+          isEnabled: false,
+          options: [],
+        },
+      },
+    },
+    permissions: ["user"],
+    description: "Traditionally, interaction with AnythingLLM occurs through a text area. Meta Inputs enhance this by offering alternative interaction methods, including option buttons, multi-select checkboxes, sliders, drop-down menus, and date/time selectors. To utilize these components, you'll need to guide the LLM on incorporating them into its responses with a specific schema",
+  },
+  sentiments: {
+    isEnabled: false,
+    config: {
+      systemPrompt: {
+        isEnabled: false,
+        content: "",
+        openAiPrompt: "",
+        overrideSystemPrompt: false,
+        suggestionsList: [
+          {
+            title: "",
+            content: "",
+          },
+        ],
+        canEdit: ["admin", "manager"],
+      },
+      promptSchema: {
+        content: "",
+        suggestionsList: [
+          {
+            title: "",
+            content: "",
+          },
+        ],
+        overrideWorkspacePrompt: false,
+        canEdit: ["admin", "manager"],
+      },
+      components: {
+        dropDownMenu: {
+          isEnabled: false,
+          options: [],
+
+        },
+        optionsList: {
+          isEnabled: false,
+          options: [],
+        },
+        optionsButtons: {
+          isEnabled: false,
+          options: [],
+        },
+        multiSelectCheckboxes: {
+          isEnabled: false,
+          options: [],
+        },
+      },
+    },
+    permissions: ["user"],
+    description: "Activate to enable the AI to analyze and adapt its responses based on the emotional tone of the conversation, enhancing interaction personalization",
+  },
+  avatars: {
+    isEnabled: false,
+    config: {
+      systemPrompt: {
+        isEnabled: false,
+        content: "",
+        openAiPrompt: "",
+        overrideSystemPrompt: false,
+        suggestionsList: [
+          {
+            title: "",
+            content: "",
+          },
+        ],
+        canEdit: ["admin", "manager"],
+      },
+      promptSchema: {
+        content: "",
+        suggestionsList: [
+          {
+            title: "",
+            content: "",
+          },
+        ],
+        overrideWorkspacePrompt: false,
+        canEdit: ["admin", "manager"],
+      },
+      components: {
+        dropDownMenu: {
+          isEnabled: false,
+          options: [],
+
+        },
+        optionsList: {
+          isEnabled: false,
+          options: [],
+        },
+        optionsButtons: {
+          isEnabled: false,
+          options: [],
+        },
+        multiSelectCheckboxes: {
+          isEnabled: false,
+          options: [],
+        },
+      },
+    },
+    permissions: ["user"],
+    description: "Enable avatars to reflect user sentiments, allowing the AI to visually empathize and convey understanding through changes in its profile image based on the meta object's sentiment data.",
+  },
+};
 
 module.exports = { workspaceEndpoints };

@@ -65,6 +65,9 @@ export default {
       vectorDatabase: (slug) => {
         return `/workspace/${slug}/settings/vector-database`;
       },
+      metaResponse: (slug) => {
+        return `/workspace/${slug}/settings/meta-response`;
+      },
     },
     thread: (wsSlug, threadSlug) => {
       return `/workspace/${wsSlug}/t/${threadSlug}`;

@@ -57,11 +57,11 @@ function FeedbackButton({
         onClick={handleFeedback}
         data-tooltip-id={tooltipId}
         data-tooltip-content={tooltipContent}
-        className="text-zinc-300"
+        className="text-white/40"
       >
         <IconComponent
           size={18}
-          className="mb-1"
+          className={`mb-1  hover:text-white/80 ${isSelected ? "text-white" : "text-white/40"}`}
           weight={isSelected ? "fill" : "regular"}
         />
       </button>
@@ -85,10 +85,10 @@ function CopyMessage({ message }) {
           onClick={() => copyText(message)}
           data-tooltip-id="copy-assistant-text"
           data-tooltip-content="Copy"
-          className="text-zinc-300"
+          className="text-white/40  hover:text-white/80"
         >
           {copied ? (
-            <Check size={18} className="mb-1" />
+            <Check size={18} className="mb-1 text-white/80" />
           ) : (
             <ClipboardText size={18} className="mb-1" />
           )}
@@ -97,7 +97,7 @@ function CopyMessage({ message }) {
           id="copy-assistant-text"
           place="bottom"
           delayShow={300}
-          className="tooltip !text-xs"
+          className="tooltip !text-xs "
         />
       </div>
     </>
