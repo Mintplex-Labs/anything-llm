@@ -24,12 +24,12 @@ export default function App() {
       <div className="fixed bottom-0 right-0 mb-4 mr-4 z-50">
         <div
           style={{
-            width: isChatOpen ? 320 : "auto",
-            height: isChatOpen ? "93vh" : "auto",
+            width: isChatOpen ? 400 : "auto",
+            height: isChatOpen ? 700 : "auto",
           }}
           className={`${
             isChatOpen
-              ? "max-w-md px-4 py-2 bg-white rounded-lg border shadow-lg w-72"
+              ? "max-w-md px-4 py-2 bg-white rounded-lg border shadow-lg"
               : "w-16 h-16 rounded-full"
           }`}
         >

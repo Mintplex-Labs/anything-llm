@@ -24,7 +24,7 @@ export default function ChatWindowHeader({
   };
 
   return (
-    <div className="flex justify-between items-center relative">
+    <div className="flex justify-between items-center relative bg-black h-[760px]">
       <img
         style={{ maxWidth: 100, maxHeight: 20 }}
         src={iconUrl ?? AnythingLLMLogo}
