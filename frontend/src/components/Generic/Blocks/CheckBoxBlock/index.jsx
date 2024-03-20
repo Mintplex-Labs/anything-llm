@@ -1,9 +1,8 @@
 import React from "react";
 import Badge from "@/components/Generic/Badges/Badge";
-import ToggleButton from "@/components/Generic/Inputs/ToggleSwitch";
+import CheckBox from "../../Inputs/CheckBox";
 
-export default function ToggleBlock({
-  content, // toggle content goes here
+export default function CheckBoxBlock({
   initialChecked,
   label,
   onToggle,
@@ -33,13 +32,13 @@ export default function ToggleBlock({
           <div className="w-full flex flex-col gap-y-4">
             <div className="flex gap-4">
               {Icon && (
-                <Icon className="w-16 h-16  text-white text-opacity-60" />
+                <Icon className="w-16 h-16 text-white text-opacity-60" />
               )}
               <div>
                 <div className="flex flex-row gap-4">
                   {inline && (
                     <div>
-                      <ToggleButton
+                      <CheckBox
                         initialChecked={initialChecked}
                         onToggle={onToggle}
                         name={name}
@@ -47,7 +46,7 @@ export default function ToggleBlock({
                       />
                     </div>
                   )}
-                  <label className="block input-label mb-4 first-letter:capitalize">
+                  <label className="block  input-label mb-4 first-letter:capitalize">
                     {label}
                   </label>
                   {badge && (
@@ -60,7 +59,7 @@ export default function ToggleBlock({
                   )}
                 </div>
                 {!inline && (
-                  <ToggleButton
+                  <CheckBox
                     initialChecked={initialChecked}
                     onToggle={onToggle}
                     name={name}
@@ -76,7 +75,7 @@ export default function ToggleBlock({
             {description}
           </p>
         </div>
-        {content}
+        
       </div>
     </div>
   );

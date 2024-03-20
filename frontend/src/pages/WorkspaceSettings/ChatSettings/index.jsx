@@ -10,7 +10,7 @@ import ChatTemperatureSettings from "./ChatTemperatureSettings";
 import ChatModeSelection from "./ChatModeSelection";
 import ChatEnableMetaResponse from "./ChatEnableMetaResponse";
 
-export default function ChatSettings({ workspace }) {
+export default function ChatSettings({ workspace, setWorkspace }) {
   const [settings, setSettings] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -43,6 +43,7 @@ export default function ChatSettings({ workspace }) {
     );
     if (!!updatedWorkspace) {
       showToast("Workspace updated!", "success", { clear: true });
+      setWorkspace(updatedWorkspace);
     } else {
       showToast(`Error: ${message}`, "error", { clear: true });
     }
@@ -75,6 +76,7 @@ export default function ChatSettings({ workspace }) {
       />
       <ChatEnableMetaResponse
         workspace={workspace}
+
         setHasChanges={setHasChanges}
       />
       {hasChanges && (

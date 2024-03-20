@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
+import { FullScreenLoader } from "@/components/Preloader";
 import Sidebar from "@/components/Sidebar";
 import Workspace from "@/models/workspace";
-import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
-import { isMobile } from "react-device-detect";
-import { FullScreenLoader } from "@/components/Preloader";
+import paths from "@/utils/paths";
 import {
   ArrowUUpLeft,
   ChatText,
+  Cube,
   Database,
   Wrench,
 } from "@phosphor-icons/react";
-import paths from "@/utils/paths";
-import { Link } from "react-router-dom";
-import { NavLink } from "react-router-dom";
-import GeneralAppearance from "./GeneralAppearance";
+import React, { useEffect, useState } from "react";
+import { isMobile } from "react-device-detect";
+import { Link, NavLink, useParams } from "react-router-dom";
 import ChatSettings from "./ChatSettings";
+import GeneralAppearance from "./GeneralAppearance";
 import VectorDatabase from "./VectorDatabase";
+import MetaResponse from "./MetaResponse";
 
 const TABS = {
   "general-appearance": GeneralAppearance,
   "chat-settings": ChatSettings,
   "vector-database": VectorDatabase,
+  "meta-response": MetaResponse,
 };
 
 export default function WorkspaceSettings() {
@@ -91,9 +92,20 @@ function ShowWorkspaceChat() {
             icon={<Database className="h-6 w-6" />}
             to={paths.workspace.settings.vectorDatabase(slug)}
           />
+          {workspace.metaResponse && (
+            <TabItem
+              title="Meta Response"
+              icon={<Cube className="h-6 w-6" />}
+              to={paths.workspace.settings.metaResponse(slug)}
+            />
+          )}
         </div>
         <div className="px-16 py-6">
-          <TabContent slug={slug} workspace={workspace} />
+          <TabContent
+            slug={slug}
+            workspace={workspace}
+            setWorkspace={setWorkspace}
+          />
         </div>
       </div>
     </div>
