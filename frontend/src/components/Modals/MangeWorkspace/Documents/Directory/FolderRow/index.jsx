@@ -22,7 +22,7 @@ export default function FolderRow({
     <>
       <tr
         onClick={onRowClick}
-        className={`transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 bg-[#1C1E21] hover:bg-sky-500/20 cursor-pointer w-full file-row ${selected ? "selected" : ""
+        className={`text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 bg-[#1C1E21] hover:bg-sky-500/20 cursor-pointer w-full file-row ${selected ? "selected" : ""
           }`}
       >
         <div className="col-span-6 flex gap-x-[4px] items-center">

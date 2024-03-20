@@ -55,9 +55,8 @@ function WorkspaceDirectory({
           </h3>
         </div>
         <div
-          className={`relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5 overflow-y-auto border-4 transition-all duration-300 ${
-            highlightWorkspace ? "border-cyan-300/80" : "border-transparent"
-          }`}
+          className={`relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5 overflow-y-auto border-4 ${highlightWorkspace ? "border-cyan-300/80" : "border-transparent"
+            }`}
         >
           <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 bg-zinc-900 sticky top-0 z-10">
             <p className="col-span-5">Name</p>
@@ -96,16 +95,15 @@ function WorkspaceDirectory({
           </div>
         </div>
         {hasChanges && (
-          <div className="flex items-center justify-between py-6 transition-all duration-300">
+          <div className="flex items-center justify-between py-6">
             <div className="text-white/80">
               <p className="text-sm font-semibold">
                 {embeddingCosts === 0
                   ? ""
-                  : `Estimated Cost: ${
-                      embeddingCosts < 0.01
-                        ? `< $0.01`
-                        : dollarFormat(embeddingCosts)
-                    }`}
+                  : `Estimated Cost: ${embeddingCosts < 0.01
+                    ? `< $0.01`
+                    : dollarFormat(embeddingCosts)
+                  }`}
               </p>
               <p className="mt-2 text-xs italic" hidden={embeddingCosts === 0}>
                 *One time cost for embeddings
@@ -114,7 +112,7 @@ function WorkspaceDirectory({
 
             <button
               onClick={saveChanges}
-              className="transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              className="border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
               Save and Embed
             </button>
@@ -177,7 +175,7 @@ const PinAlert = memo(() => {
             <button disabled={true} className="invisible" />
             <button
               onClick={dismissAlert}
-              className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              className="border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
               Okay, got it
             </button>
