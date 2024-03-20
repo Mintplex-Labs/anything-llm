@@ -4,6 +4,7 @@ const { setupMulter } = require("../../../utils/files/multer");
 const {
   viewLocalFiles,
   findDocumentInDocuments,
+  normalizePath,
 } = require("../../../utils/files");
 const { reqBody } = require("../../../utils/http");
 const { EventLogs } = require("../../../models/eventLogs");
@@ -602,18 +603,21 @@ function apiDocumentEndpoints(app) {
         const storagePath = path.join(
           __dirname,
           "../../../storage/documents",
-          name
+          normalizePath(name)
         );
-        fs.mkdir(storagePath, { recursive: true }, (err) => {
-          if (err) {
-            console.error("Error creating folder:", err);
-            response
-              .status(500)
-              .json({ success: false, message: "Failed to create folder" });
-          } else {
-            response.status(200).json({ success: true, message: null });
-          }
-        });
+
+        if (fs.existsSync(storagePath)) {
+          response
+            .status(500)
+            .json({
+              success: false,
+              message: "Folder by that name already exists",
+            });
+          return;
+        }
+
+        fs.mkdirSync(storagePath, { recursive: true });
+        response.status(200).json({ success: true, message: null });
       } catch (e) {
         console.error(e);
         response.status(500).json({
@@ -682,12 +686,12 @@ function apiDocumentEndpoints(app) {
           const sourcePath = path.join(
             __dirname,
             "../../../storage/documents",
-            from
+            normalizePath(from)
           );
           const destinationPath = path.join(
             __dirname,
             "../../../storage/documents",
-            to
+            normalizePath(to)
           );
           return new Promise((resolve, reject) => {
             fs.rename(sourcePath, destinationPath, (err) => {

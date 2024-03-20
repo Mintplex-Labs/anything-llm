@@ -134,12 +134,14 @@ function Directory({
         items: [],
       };
 
-      setFiles({
-        ...files,
-        items: [...files.items, newFolder],
-      });
-
-      await Document.createFolder(newFolderName);
+      // If folder failed to create - silently fail.
+      const { success } = await Document.createFolder(newFolderName);
+      if (success) {
+        setFiles({
+          ...files,
+          items: [...files.items, newFolder],
+        });
+      }
 
       setNewFolderName("");
       setShowNewFolderInput(false);

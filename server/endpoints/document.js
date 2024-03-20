@@ -1,4 +1,5 @@
 const { Document } = require("../models/documents");
+const { normalizePath } = require("../utils/files");
 const { reqBody } = require("../utils/http");
 const {
   flexUserRoleValid,
@@ -16,18 +17,24 @@ function documentEndpoints(app) {
     async (request, response) => {
       try {
         const { name } = reqBody(request);
-        const storagePath = path.join(__dirname, "../storage/documents", name);
+        const storagePath = path.join(
+          __dirname,
+          "../storage/documents",
+          normalizePath(name)
+        );
 
-        fs.mkdir(storagePath, { recursive: true }, (err) => {
-          if (err) {
-            console.error("Error creating folder:", err);
-            response
-              .status(500)
-              .json({ success: false, message: "Failed to create folder" });
-          } else {
-            response.status(200).json({ success: true, message: null });
-          }
-        });
+        if (fs.existsSync(storagePath)) {
+          response
+            .status(500)
+            .json({
+              success: false,
+              message: "Folder by that name already exists",
+            });
+          return;
+        }
+
+        fs.mkdirSync(storagePath, { recursive: true });
+        response.status(200).json({ success: true, message: null });
       } catch (e) {
         console.error(e);
         response.status(500).json({
@@ -53,11 +60,15 @@ function documentEndpoints(app) {
         );
 
         const movePromises = moveableFiles.map(({ from, to }) => {
-          const sourcePath = path.join(__dirname, "../storage/documents", from);
+          const sourcePath = path.join(
+            __dirname,
+            "../storage/documents",
+            normalizePath(from)
+          );
           const destinationPath = path.join(
             __dirname,
             "../storage/documents",
-            to
+            normalizePath(to)
           );
 
           return new Promise((resolve, reject) => {
