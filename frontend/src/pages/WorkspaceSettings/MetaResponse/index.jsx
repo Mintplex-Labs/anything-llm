@@ -2,7 +2,11 @@ import MetaResponse from "@/models/metaResponse";
 import { ChatText, Heart, UserCircle } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import EnableFeatures from "./EnableFeatures";
-import InputsFeature from "./InputsFeature";
+// import InputsFeature from "./InputsFeature";
+import EnableSystemPrompt from "./InputsFeature/EnableSystemPrompt";
+import TextAreaBlock from "@/components/Generic/Blocks/TextAreaBlock";
+import CheckBoxBlock from "@/components/Generic/Blocks/CheckBoxBlock";
+import showToast from "@/utils/toast";
 
 export default function MetaResponseSettings({ workspace }) {
   const [settings, setSettings] = useState({});
@@ -33,6 +37,27 @@ export default function MetaResponseSettings({ workspace }) {
 
     console.log("updatedSettings: ", updatedSettings);
     setSettings(updatedSettings);
+    showToast(
+      `${feature} has been ${enabled ? "enabled" : "disabled"}`,
+      "success",
+      { clear: true }
+    );
+  };
+
+  const handleUpdateFeatureSettings = async (
+    feature,
+    updatedFeatureSettings
+  ) => {
+    const updatedSettings = await MetaResponse.updateMetaResponseSettings(
+      workspace.slug,
+      {
+        ...settings,
+        [feature]: updatedFeatureSettings,
+      }
+    );
+
+    console.log("updatedSettings: ", updatedSettings);
+    setSettings(updatedSettings);
   };
 
   const mapIcons = {
@@ -45,8 +70,9 @@ export default function MetaResponseSettings({ workspace }) {
     inputs: InputsFeature,
   };
 
+
   return (
-    <div className="relative w-full gap-4 max-h-full grid  grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
+    <div className="relative w-full gap-4 max-h-full grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
       {Object.keys(settings).map((feature) => {
         const featureSettings = settings[feature];
         const IconComponent = mapIcons[feature];
@@ -73,14 +99,51 @@ export default function MetaResponseSettings({ workspace }) {
                 FeatureComponent && (
                   <FeatureComponent
                     workspace={workspace}
+                    feature={feature}
                     config={featureSettings.config}
+                    settings={featureSettings}
+                    onUpdateSettings={(updatedFeatureSettings) =>
+                      handleUpdateFeatureSettings(
+                        feature,
+                        updatedFeatureSettings
+                      )
+                    }
                   />
                 )
               }
+              bg={featureSettings.isEnabled}
             />
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/*export default*/ function InputsFeature({
+  workspace,
+  feature,
+  settings,
+  onUpdateSettings,
+}) {
+  return (
+    <div className="flex flex-col gap-2 mt-4">
+      <EnableSystemPrompt
+        workspace={workspace}
+        settings={settings}
+        onUpdateSettings={onUpdateSettings}
+      />
+      {settings.config.systemPrompt.isEnabled && (
+        <>
+          <TextAreaBlock workspace={workspace} />
+          <CheckBoxBlock
+            workspace={workspace}
+            label="override workspace prompt"
+            inline
+            name="systemPrompt"
+          />
+        </>
+      )}
     </div>
   );
 }

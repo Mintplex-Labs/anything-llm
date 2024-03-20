@@ -4,13 +4,6 @@ import React from "react";
 const colorMapping = (bg) => {
   const mappings = {
     "emerald-600": { text: "text-emerald-100", icon: "text-emerald-200 group-hover:text-emerald-50" },
-    "red-600": { text: "text-red-100", icon: "text-red-200 group-hover:text-red-50" },
-    "blue-600": { text: "text-blue-100", icon: "text-blue-200 group-hover:text-blue-50" },
-    "yellow-600": { text: "text-yellow-100", icon: "text-yellow-200 group-hover:text-yellow-50" },
-    "gray-600": { text: "text-gray-100", icon: "text-gray-200 group-hover:text-gray-50" },
-    "purple-600": { text: "text-purple-100", icon: "text-purple-200 group-hover:text-purple-50" },
-    "pink-600": { text: "text-pink-100", icon: "text-pink-200 group-hover:text-pink-50" },
-    "indigo-600": { text: "text-indigo-100", icon: "text-indigo-200 group-hover:text-indigo-50" },
   };
 
   return mappings[bg] || { text: "text-gray-100", icon: "text-gray-200" };

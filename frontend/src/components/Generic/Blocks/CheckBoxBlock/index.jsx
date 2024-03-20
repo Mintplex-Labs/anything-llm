@@ -2,6 +2,23 @@ import React from "react";
 import Badge from "@/components/Generic/Badges/Badge";
 import CheckBox from "../../Inputs/CheckBox";
 
+/**
+ * @description A block that contains a checkbox and its label and description
+ * @param {boolean} initialChecked - initial state of the checkbox
+ * @param {string} label - label for the checkbox
+ * @param {function} onToggle - function to call when the checkbox is toggled
+ * @param {string} description - description of the checkbox
+ * @param {string} name - name of the checkbox
+ * @param {boolean} badge - whether to show a badge
+ * @param {string} badgeLabel - label for the badge
+ * @param {boolean} badgeAnimated - whether the badge should be animated
+ * @param {string} badgeBg - background color for the badge
+ * @param {boolean} border - whether to show a border
+ * @param {React.Component} Icon - icon to show next to the checkbox
+ * @param {string} contentLocation - location of the content
+ * @param {boolean} disabled - whether the checkbox is disabled
+ * @param {boolean} inline - whether the checkbox should be inline
+ */
 export default function CheckBoxBlock({
   initialChecked,
   label,
@@ -75,7 +92,6 @@ export default function CheckBoxBlock({
             {description}
           </p>
         </div>
-        
       </div>
     </div>
   );

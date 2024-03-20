@@ -8,6 +8,7 @@ export default function EnableFeatures({
   Icon,
   content,
   disabled,
+  bg,
 }) {
   return (
     <div className="relative w-full max-h-full ">
@@ -21,6 +22,7 @@ export default function EnableFeatures({
         Icon={Icon}
         content={content}
         disabled={disabled}
+        bg={bg}
       />
     </div>
   );
