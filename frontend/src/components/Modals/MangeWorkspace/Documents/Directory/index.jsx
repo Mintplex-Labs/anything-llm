@@ -109,13 +109,6 @@ function Directory({
     });
   };
 
-  const isFolderCompletelySelected = (folder) => {
-    if (!selectedItems[folder.name]) {
-      return false;
-    }
-    return folder.items.every((file) => selectedItems[file.id]);
-  };
-
   // check if item is selected based on selectedItems state
   const isSelected = (id, item) => {
     if (item && item.type === "folder") {
@@ -282,7 +275,6 @@ function Directory({
                 >
                   Move to Workspace
                 </button>
-
                 <div className="relative">
                   <button
                     onClick={() => setShowFolderSelection(!showFolderSelection)}
@@ -306,17 +298,18 @@ function Directory({
                 >
                   <Trash size={18} weight="bold" />
                 </button>
-              </div>
-            </div>
-          )}
-        </div>
+              </div >
+            </div >
+          )
+          }
+        </div >
         <UploadFile
           workspace={workspace}
           fetchKeys={fetchKeys}
           setLoading={setLoading}
         />
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 
