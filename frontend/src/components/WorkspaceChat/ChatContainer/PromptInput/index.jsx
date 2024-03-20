@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import SlashCommandsButton, {
   SlashCommands,
   useSlashCommands,
@@ -7,9 +7,7 @@ import { isMobile } from "react-device-detect";
 import debounce from "lodash.debounce";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import StopGenerationButton from "./StopGenerationButton";
-
 export default function PromptInput({
-  workspace,
   message,
   submit,
   onChange,
@@ -19,11 +17,25 @@ export default function PromptInput({
 }) {
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const formRef = useRef(null);
+  const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
+
+  useEffect(() => {
+    if (!inputDisabled && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+    resetTextAreaHeight();
+  }, [inputDisabled]);
 
   const handleSubmit = (e) => {
     setFocused(false);
     submit(e);
+  };
+
+  const resetTextAreaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
   };
 
   const checkForSlash = (e) => {
@@ -44,14 +56,12 @@ export default function PromptInput({
   const adjustTextArea = (event) => {
     if (isMobile) return false;
     const element = event.target;
-    element.style.height = "1px";
-    element.style.height =
-      event.target.value.length !== 0
-        ? 25 + element.scrollHeight + "px"
-        : "1px";
+    element.style.height = "auto";
+    element.style.height = `${element.scrollHeight}px`;
   };
 
   const watchForSlash = debounce(checkForSlash, 300);
+
   return (
     <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
       <SlashCommands
@@ -67,12 +77,13 @@ export default function PromptInput({
           <div className="w-[600px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
             <div className="flex items-center w-full border-b-2 border-gray-500/50">
               <textarea
-                onKeyUp={adjustTextArea}
-                onKeyDown={captureEnter}
+                ref={textareaRef}
                 onChange={(e) => {
                   onChange(e);
                   watchForSlash(e);
+                  adjustTextArea(e);
                 }}
+                onKeyDown={captureEnter}
                 required={true}
                 disabled={inputDisabled}
                 onFocus={() => setFocused(true)}

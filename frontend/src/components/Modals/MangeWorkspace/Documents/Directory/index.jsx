@@ -3,10 +3,11 @@ import PreLoader from "@/components/Preloader";
 import { memo, useEffect, useState } from "react";
 import FolderRow from "./FolderRow";
 import System from "@/models/system";
-import { FolderNotchOpen, Plus, Trash } from "@phosphor-icons/react";
+import { Plus, Trash } from "@phosphor-icons/react";
 import Document from "@/models/document";
 import showToast from "@/utils/toast";
 import FolderSelectionPopup from "./FolderSelectionPopup";
+import MoveToFolderIcon from "./MoveToFolderIcon";
 
 function Directory({
   files,
@@ -108,6 +109,13 @@ function Directory({
     });
   };
 
+  const isFolderCompletelySelected = (folder) => {
+    if (!selectedItems[folder.name]) {
+      return false;
+    }
+    return folder.items.every((file) => selectedItems[file.id]);
+  };
+
   // check if item is selected based on selectedItems state
   const isSelected = (id, item) => {
     if (item && item.type === "folder") {
@@ -132,12 +140,14 @@ function Directory({
         items: [],
       };
 
-      setFiles({
-        ...files,
-        items: [...files.items, newFolder],
-      });
-
-      await Document.createFolder(newFolderName);
+      // If folder failed to create - silently fail.
+      const { success } = await Document.createFolder(newFolderName);
+      if (success) {
+        setFiles({
+          ...files,
+          items: [...files.items, newFolder],
+        });
+      }
 
       setNewFolderName("");
       setShowNewFolderInput(false);
@@ -205,7 +215,7 @@ function Directory({
             </div>
           ) : (
             <button
-              className="flex items-center gap-x-2 cursor-pointer z-50 px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-[#222628]/60"
+              className="flex items-center gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-[#222628]/60"
               onClick={createNewFolder}
             >
               <Plus size={18} weight="bold" color="#D3D4D4" />
@@ -272,12 +282,13 @@ function Directory({
                 >
                   Move to Workspace
                 </button>
+
                 <div className="relative">
                   <button
                     onClick={() => setShowFolderSelection(!showFolderSelection)}
-                    className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:text-white hover:bg-neutral-800/80 flex justify-center items-center"
+                    className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:bg-neutral-800/80 flex justify-center items-center group"
                   >
-                    <FolderNotchOpen size={18} weight="bold" />
+                    <MoveToFolderIcon className="text-[#222628] group-hover:text-white" />
                   </button>
                   {showFolderSelection && (
                     <FolderSelectionPopup

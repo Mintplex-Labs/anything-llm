@@ -7,7 +7,7 @@ import { isMobile } from "react-device-detect";
 import useUser from "../../../hooks/useUser";
 import DocumentSettings from "./Documents";
 
-const noop = () => {};
+const noop = () => { };
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const { slug } = useParams();
   const [workspace, setWorkspace] = useState(null);
@@ -66,11 +66,12 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
       <div className="backdrop h-full w-full absolute top-0 z-10" />
       <div className="absolute max-h-full w-fit transition duration-300 z-20">
         <div className="relative bg-main-gradient rounded-[12px] shadow border-2 border-slate-300/10">
-          <div className="flex items-start justify-between p-2 rounded-t border-gray-500/50 z-20 relative">
+          <div className="flex items-start justify-between p-2 rounded-t border-gray-500/50 relative">
+            <div />
             <button
               onClick={hideModal}
               type="button"
-              className="transition-all duration-300 text-gray-400 bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:border-white/60 bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+              className="z-50 text-gray-400 bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:border-white/60 bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
             >
               <X className="text-gray-300 text-lg" />
             </button>
