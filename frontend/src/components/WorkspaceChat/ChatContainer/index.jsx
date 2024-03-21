@@ -112,7 +112,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           sendCommand={sendCommand}
         />
         <PromptInput
-          workspace={workspace}
           message={message}
           submit={handleSubmit}
           onChange={handleMessageChange}

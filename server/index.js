@@ -18,6 +18,7 @@ const { inviteEndpoints } = require("./endpoints/invite");
 const { utilEndpoints } = require("./endpoints/utils");
 const { developerEndpoints } = require("./endpoints/api");
 const { extensionEndpoints } = require("./endpoints/extensions");
+const { documentEndpoints } = require("./endpoints/document");
 const setupTelemetry = require("./utils/telemetry");
 const { Telemetry } = require("./models/telemetry");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
@@ -47,6 +48,7 @@ adminEndpoints(apiRouter);
 inviteEndpoints(apiRouter);
 embedManagementEndpoints(apiRouter);
 utilEndpoints(apiRouter);
+documentEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
 
 // Externally facing embedder endpoints

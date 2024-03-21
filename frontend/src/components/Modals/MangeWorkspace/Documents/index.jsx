@@ -194,6 +194,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
     <div className="flex upload-modal -mt-6 z-10 relative">
       <Directory
         files={availableDocs}
+        setFiles={setAvailableDocs}
         loading={loading}
         loadingMessage={loadingMessage}
         setLoading={setLoading}
