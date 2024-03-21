@@ -87,7 +87,7 @@ function workspaceEndpoints(app) {
           response.sendStatus(400).end();
           return;
         }
-
+        await Workspace.trackChange(data, currWorkspace, user);
         const { workspace, message } = await Workspace.update(
           currWorkspace.id,
           data

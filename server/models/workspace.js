@@ -4,6 +4,8 @@ const { Document } = require("./documents");
 const { WorkspaceUser } = require("./workspaceUsers");
 const { ROLES } = require("../utils/middleware/multiUserProtected");
 const { v4: uuidv4 } = require("uuid");
+const { Telemetry } = require("./telemetry");
+const { EventLogs } = require("./eventLogs");
 
 const Workspace = {
   writable: [
@@ -211,6 +213,19 @@ const Workspace = {
     } catch (error) {
       console.error("Error resetting workspace chat models:", error.message);
       return { success: false, error: error.message };
+    }
+  },
+
+  trackChange: async function (newData, currWorkspace, user) {
+    try {
+      if (newData.openAiPrompt !== currWorkspace.openAiPrompt) {
+        await Telemetry.sendTelemetry("workspace_prompt_changed");
+        await EventLogs.logEvent("workspace_prompt_changed", {}, user?.id);
+      }
+      return;
+    } catch (error) {
+      console.error("Error tracking workspace change:", error.message);
+      return;
     }
   },
 };
