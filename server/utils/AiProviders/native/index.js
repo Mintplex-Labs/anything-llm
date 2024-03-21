@@ -2,7 +2,10 @@ const fs = require("fs");
 const path = require("path");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { chatPrompt } = require("../../chats");
-const { writeResponseChunk } = require("../../helpers/chat/responses");
+const {
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
 
 // Docs: https://api.js.langchain.com/classes/chat_models_llama_cpp.ChatLlamaCpp.html
 const ChatLlamaCpp = (...args) =>
@@ -176,6 +179,14 @@ class NativeLLM {
 
     return new Promise(async (resolve) => {
       let fullText = "";
+
+      // Establish listener to early-abort a streaming response
+      // in case things go sideways or the user does not like the response.
+      // We preserve the generated text but continue as if chat was completed
+      // to preserve previously generated content.
+      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      response.on("close", handleAbort);
+
       for await (const chunk of stream) {
         if (chunk === undefined)
           throw new Error(
@@ -202,6 +213,7 @@ class NativeLLM {
         close: true,
         error: false,
       });
+      response.removeListener("close", handleAbort);
       resolve(fullText);
     });
   }

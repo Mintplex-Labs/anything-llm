@@ -1,10 +1,19 @@
 import { ICON_COMPONENTS } from "@/components/Footer";
 import React, { useEffect, useRef, useState } from "react";
+import { Plus, X } from "@phosphor-icons/react";
 
-export default function NewIconForm({ handleSubmit, showing }) {
-  const [selectedIcon, setSelectedIcon] = useState("Info");
+export default function NewIconForm({ icon, url, onSave, onRemove }) {
+  const [selectedIcon, setSelectedIcon] = useState(icon || "Plus");
+  const [selectedUrl, setSelectedUrl] = useState(url || "");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isEdited, setIsEdited] = useState(false);
   const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    setSelectedIcon(icon || "Plus");
+    setSelectedUrl(url || "");
+    setIsEdited(false);
+  }, [icon, url]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -17,82 +26,90 @@ export default function NewIconForm({ handleSubmit, showing }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [dropdownRef]);
 
-  if (!showing) return null;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (selectedIcon !== "Plus" && selectedUrl) {
+      onSave(selectedIcon, selectedUrl);
+      setIsEdited(false);
+    }
+  };
+
+  const handleRemove = () => {
+    onRemove();
+    setSelectedIcon("Plus");
+    setSelectedUrl("");
+    setIsEdited(false);
+  };
+
+  const handleIconChange = (iconName) => {
+    setSelectedIcon(iconName);
+    setIsDropdownOpen(false);
+    setIsEdited(true);
+  };
+
+  const handleUrlChange = (e) => {
+    setSelectedUrl(e.target.value);
+    setIsEdited(true);
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="flex justify-start">
-      <div className="mt-6 mb-6 flex flex-col bg-zinc-900 rounded-lg px-6 py-4">
-        <div className="flex gap-x-4 items-center">
-          <div
-            className="relative flex flex-col items-center gap-y-4"
-            ref={dropdownRef}
-          >
-            <input type="hidden" name="icon" value={selectedIcon} />
-            <label className="text-sm font-medium text-white">Icon</label>
+    <form onSubmit={handleSubmit} className="flex items-center gap-x-1.5">
+      <div className="relative" ref={dropdownRef}>
+        <div
+          className="h-[34px] w-[34px] bg-[#1C1E21] rounded-full flex items-center justify-center cursor-pointer"
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+        >
+          {React.createElement(ICON_COMPONENTS[selectedIcon] || Plus, {
+            className: "h-5 w-5 text-white",
+            weight: selectedIcon === "Plus" ? "bold" : "fill",
+          })}
+        </div>
+        {isDropdownOpen && (
+          <div className="absolute z-10 grid grid-cols-4 bg-[#41444C] mt-2 rounded-md w-[150px] h-[78px] overflow-y-auto border border-white/20 shadow-lg">
+            {Object.keys(ICON_COMPONENTS).map((iconName) => (
+              <button
+                key={iconName}
+                type="button"
+                className="flex justify-center items-center border border-transparent hover:bg-[#1C1E21] hover:border-slate-100 rounded-full p-2"
+                onClick={() => handleIconChange(iconName)}
+              >
+                {React.createElement(ICON_COMPONENTS[iconName], {
+                  className: "h-5 w-5 text-white",
+                  weight: "fill",
+                })}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <input
+        type="url"
+        value={selectedUrl}
+        onChange={handleUrlChange}
+        placeholder="https://example.com"
+        className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-[300px] h-[32px]"
+        required
+      />
+      {selectedIcon !== "Plus" && (
+        <>
+          {isEdited ? (
+            <button
+              type="submit"
+              className="text-sky-400 px-2 py-2 rounded-md text-sm font-bold hover:text-sky-500"
+            >
+              Save
+            </button>
+          ) : (
             <button
               type="button"
-              className={`${
-                isDropdownOpen
-                  ? "bg-menu-item-selected-gradient border-slate-100/50"
-                  : ""
-              }border-transparent transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border`}
-              onClick={(e) => {
-                e.preventDefault();
-                setIsDropdownOpen(!isDropdownOpen);
-              }}
+              onClick={handleRemove}
+              className="hover:text-red-500 text-white/80 px-2 py-2 rounded-md text-sm font-bold"
             >
-              {React.createElement(ICON_COMPONENTS[selectedIcon], {
-                className: "h-5 w-5 text-white",
-                weight: "fill",
-              })}
+              <X size={20} />
             </button>
-            {isDropdownOpen && (
-              <div className="absolute z-10 grid grid-cols-4 gap-4 bg-zinc-800 -mt-20 ml-44 p-1 rounded-md w-56 h-28 overflow-y-auto border border-slate-100/10">
-                {Object.keys(ICON_COMPONENTS).map((iconName) => (
-                  <button
-                    key={iconName}
-                    type="button"
-                    className="flex justify-center items-center border border-transparent hover:bg-menu-item-selected-gradient hover:border-slate-100 rounded-full"
-                    onClick={() => {
-                      setSelectedIcon(iconName);
-                      setIsDropdownOpen(false);
-                    }}
-                  >
-                    {React.createElement(ICON_COMPONENTS[iconName], {
-                      className: "h-5 w-5 text-white m-2.5",
-                      weight: "fill",
-                    })}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="flex flex-col gap-y-4">
-            <label className="text-sm font-medium text-white">Link</label>
-            <input
-              type="url"
-              name="url"
-              required={true}
-              placeholder="https://example.com"
-              className="bg-sidebar text-white placeholder:text-white/20 rounded-md p-2"
-            />
-          </div>
-          {selectedIcon !== "" && (
-            <div className="flex flex-col gap-y-4">
-              <label className="text-sm font-medium text-white invisible">
-                Submit
-              </label>
-              <div className="flex justify-center">
-                <button
-                  type="submit"
-                  className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                >
-                  Save
-                </button>
-              </div>
-            </div>
           )}
-        </div>
-      </div>
+        </>
+      )}
     </form>
   );
 }

@@ -29,7 +29,7 @@ function WorkspaceDirectory({
           </h3>
         </div>
         <div className="relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5">
-          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20">
+          <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8">
             <p className="col-span-5">Name</p>
             <p className="col-span-3">Date</p>
             <p className="col-span-2">Kind</p>
@@ -55,7 +55,7 @@ function WorkspaceDirectory({
           </h3>
         </div>
         <div
-          className={`relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5 overflow-y-auto border-4 transition-all duration-300 ${
+          className={`relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5 overflow-y-auto border-4 ${
             highlightWorkspace ? "border-cyan-300/80" : "border-transparent"
           }`}
         >
@@ -96,7 +96,7 @@ function WorkspaceDirectory({
           </div>
         </div>
         {hasChanges && (
-          <div className="flex items-center justify-between py-6 transition-all duration-300">
+          <div className="flex items-center justify-between py-6">
             <div className="text-white/80">
               <p className="text-sm font-semibold">
                 {embeddingCosts === 0
@@ -114,7 +114,7 @@ function WorkspaceDirectory({
 
             <button
               onClick={saveChanges}
-              className="transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              className="border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
               Save and Embed
             </button>
@@ -148,7 +148,7 @@ const PinAlert = memo(() => {
     <ModalWrapper isOpen={showAlert}>
       <div className="relative w-full max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">
-          <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
+          <div className="flex items-start justify-between p-4 rounded-t border-gray-500/50">
             <div className="flex items-center gap-2">
               <PushPin className="text-red-600 text-lg w-6 h-6" weight="fill" />
               <h3 className="text-xl font-semibold text-white">
@@ -177,7 +177,7 @@ const PinAlert = memo(() => {
             <button disabled={true} className="invisible" />
             <button
               onClick={dismissAlert}
-              className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              className="border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
               Okay, got it
             </button>

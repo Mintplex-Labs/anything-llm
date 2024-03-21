@@ -597,3 +597,39 @@ dialog::backdrop {
   font-weight: 600;
   color: #fff;
 }
+
+.file-row:nth-child(even) {
+  @apply bg-[#1C1E21];
+}
+
+.file-row:nth-child(odd) {
+  @apply bg-[#2C2C2C];
+}
+
+.file-row.selected:nth-child(even) {
+  @apply bg-sky-500/20;
+}
+
+.file-row.selected:nth-child(odd) {
+  @apply bg-sky-500/10;
+}
+
+/* Flex upload modal to be a column when on small screens so that the UI
+does not extend the close button beyond the viewport. */
+@media (max-width: 1330px) {
+  .upload-modal {
+    @apply !flex-col !items-center !py-4 no-scroll;
+  }
+
+  .upload-modal-arrow {
+    margin-top: 0px !important;
+  }
+}
+
+.upload-modal {
+  @apply flex-row items-start gap-x-6 justify-center;
+}
+
+.upload-modal-arrow {
+  margin-top: 25%;
+}

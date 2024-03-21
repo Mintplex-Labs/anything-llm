@@ -21,12 +21,8 @@ async function convertToCSV(preparedData) {
   return rows.join("\n");
 }
 
-async function convertToJSON(workspaceChatsMap) {
-  const allMessages = [].concat.apply(
-    [],
-    Object.values(workspaceChatsMap).map((workspace) => workspace.messages)
-  );
-  return JSON.stringify(allMessages, null, 4);
+async function convertToJSON(preparedData) {
+  return JSON.stringify(preparedData, null, 4);
 }
 
 // ref: https://raw.githubusercontent.com/gururise/AlpacaDataCleaned/main/alpaca_data.json
@@ -48,7 +44,7 @@ async function prepareWorkspaceChatsForExport(format = "jsonl") {
     id: "asc",
   });
 
-  if (format === "csv") {
+  if (format === "csv" || format === "json") {
     const preparedData = chats.map((chat) => {
       const responseJson = JSON.parse(chat.response);
       return {

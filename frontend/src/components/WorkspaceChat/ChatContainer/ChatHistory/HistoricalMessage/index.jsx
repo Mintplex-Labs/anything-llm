@@ -31,15 +31,7 @@ const HistoricalMessage = ({
         className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
       >
         <div className="flex gap-x-5">
-          <Jazzicon
-            size={36}
-            user={{
-              uid:
-                role === "user" ? userFromStorage()?.username : workspace.slug,
-            }}
-            role={role}
-          />
-
+          <ProfileImage role={role} workspace={workspace} />
           {error ? (
             <div className="p-2 rounded-lg bg-red-50 text-red-500">
               <span className={`inline-block `}>
@@ -75,5 +67,29 @@ const HistoricalMessage = ({
     </div>
   );
 };
+
+function ProfileImage({ role, workspace }) {
+  if (role === "assistant" && workspace.pfpUrl) {
+    return (
+      <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden">
+        <img
+          src={workspace.pfpUrl}
+          alt="Workspace profile picture"
+          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-white"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <Jazzicon
+      size={36}
+      user={{
+        uid: role === "user" ? userFromStorage()?.username : workspace.slug,
+      }}
+      role={role}
+    />
+  );
+}
 
 export default memo(HistoricalMessage);
