@@ -24,8 +24,9 @@ export default function FileRow({ item, selected, toggleSelection }) {
   return (
     <tr
       onClick={() => toggleSelection(item)}
-      className={`text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer file-row ${selected ? "selected" : ""
-        }`}
+      className={`text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer file-row ${
+        selected ? "selected" : ""
+      }`}
     >
       <div className="pl-2 col-span-6 flex gap-x-[4px] items-center">
         <div

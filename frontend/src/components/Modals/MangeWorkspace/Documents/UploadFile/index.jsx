@@ -76,8 +76,9 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
   return (
     <div>
       <div
-        className={`w-[560px] border-2 border-dashed rounded-2xl bg-zinc-900/50 p-3 ${ready ? "cursor-pointer" : "cursor-not-allowed"
-          } hover:bg-zinc-900/90`}
+        className={`w-[560px] border-2 border-dashed rounded-2xl bg-zinc-900/50 p-3 ${
+          ready ? "cursor-pointer" : "cursor-not-allowed"
+        } hover:bg-zinc-900/90`}
         {...getRootProps()}
       >
         <input {...getInputProps()} />
