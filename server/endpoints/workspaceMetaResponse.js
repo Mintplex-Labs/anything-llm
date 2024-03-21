@@ -251,19 +251,23 @@ const metaResponseDefaultSettings = {
         dropDownMenu: {
           isEnabled: false,
           options: [],
+          description: "Drop Down menu best to select  between functional derisions, ie: continue, Repeat or Move to a new sequence.. etc",
 
         },
         optionsList: {
           isEnabled: false,
           options: [],
+          description: "Best suited  for expansion on a topic",
         },
         optionsButtons: {
           isEnabled: false,
           options: [],
+          description: "Chat will provide answers with the LLM's general knowledge and document context that is found.",
         },
         multiSelectCheckboxes: {
           isEnabled: false,
           options: [],
+          description: "Chat will provide answers with the LLM's general knowledge and document context that is found.",
         },
       },
     },

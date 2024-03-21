@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import ModalWrapper from "../ModalWrapper";
 import ChatContainer from "./ChatContainer";
 import LoadingChat from "./LoadingChat";
+import MetaResponse from "@/models/metaResponse";
 
 export default function WorkspaceChat({ loading, workspace }) {
   const { threadSlug = null } = useParams();
@@ -27,19 +28,26 @@ export default function WorkspaceChat({ loading, workspace }) {
         ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
         : await Workspace.chatHistory(workspace.slug);
 
-      // TODO: add conditional if dynamic input is enabled in the workspace by default is false
       // Append metadata to the chat history
-      if (isMetaInputs) {
-        chatHistory = chatHistory.map((message) => {
-          if (message.role === "assistant") {
-            const { remainingText, metaData } = extractMetaData(
-              message.content
-            );
-            setCurrentInputMeta(metaData);
-            return { ...message, content: remainingText, metaData };
-          }
-          return message;
-        });
+      if (workspace?.metaResponse) {
+        let metaResponseSettings = await MetaResponse.getMetaResponseSettings(
+          workspace.slug
+        );
+
+        console.log("meta Response Settings:", metaResponseSettings);
+        if (Object.values(metaResponseSettings).some((settings) => settings.isEnabled)
+        ) {
+          chatHistory = chatHistory.map((message) => {
+            if (message.role === "assistant") {
+              const { remainingText, metaData } = extractMetaData(
+                message.content
+              );
+              setCurrentInputMeta(metaData);
+              return { ...message, content: remainingText, metaData };
+            }
+            return message;
+          });
+        }
       }
 
       setHistory(chatHistory);

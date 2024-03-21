@@ -1,12 +1,9 @@
 import MetaResponse from "@/models/metaResponse";
+import showToast from "@/utils/toast";
 import { ChatText, Heart, UserCircle } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import EnableFeatures from "./EnableFeatures";
-// import InputsFeature from "./InputsFeature";
-import EnableSystemPrompt from "./InputsFeature/EnableSystemPrompt";
-import TextAreaBlock from "@/components/Generic/Blocks/TextAreaBlock";
-import CheckBoxBlock from "@/components/Generic/Blocks/CheckBoxBlock";
-import showToast from "@/utils/toast";
+import FeatureSettings from "./FeatureSettings";
 
 export default function MetaResponseSettings({ workspace }) {
   const [settings, setSettings] = useState({});
@@ -66,23 +63,22 @@ export default function MetaResponseSettings({ workspace }) {
     avatars: UserCircle,
   };
 
-  const mapFeatures = {
-    inputs: InputsFeature,
-  };
-
+  //   const mapFeatures = {
+  //     inputs: InputsFeature,
+  //     sentiments: InputsFeature,
+  //     avatars: InputsFeature,
+  //   };
 
   return (
-    <div className="relative w-full gap-4 max-h-full grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
+    <div className="relative w-full gap-4 max-h-full grid grid-cols-1 lg:grid-cols-2  2xl:max-w-6xl ">
       {Object.keys(settings).map((feature) => {
         const featureSettings = settings[feature];
         const IconComponent = mapIcons[feature];
-        const FeatureComponent = mapFeatures[feature];
+        // const FeatureComponent = mapFeatures[feature];
         return (
           <div
             key={feature}
-            className={
-              featureSettings.isEnabled ? "lg:col-span-2 2xl:col-span-3" : ""
-            }
+            className={featureSettings.isEnabled ? "lg:col-span-2 " : ""}
           >
             <EnableFeatures
               feature={feature}
@@ -95,9 +91,8 @@ export default function MetaResponseSettings({ workspace }) {
               disabled={!workspace.metaResponse}
               Icon={IconComponent}
               content={
-                featureSettings.isEnabled &&
-                FeatureComponent && (
-                  <FeatureComponent
+                featureSettings.isEnabled && (
+                  <FeatureSettings
                     workspace={workspace}
                     feature={feature}
                     config={featureSettings.config}
@@ -116,34 +111,6 @@ export default function MetaResponseSettings({ workspace }) {
           </div>
         );
       })}
-    </div>
-  );
-}
-
-/*export default*/ function InputsFeature({
-  workspace,
-  feature,
-  settings,
-  onUpdateSettings,
-}) {
-  return (
-    <div className="flex flex-col gap-2 mt-4">
-      <EnableSystemPrompt
-        workspace={workspace}
-        settings={settings}
-        onUpdateSettings={onUpdateSettings}
-      />
-      {settings.config.systemPrompt.isEnabled && (
-        <>
-          <TextAreaBlock workspace={workspace} />
-          <CheckBoxBlock
-            workspace={workspace}
-            label="override workspace prompt"
-            inline
-            name="systemPrompt"
-          />
-        </>
-      )}
     </div>
   );
 }
