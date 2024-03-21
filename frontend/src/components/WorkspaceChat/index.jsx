@@ -35,7 +35,10 @@ export default function WorkspaceChat({ loading, workspace }) {
         );
 
         console.log("meta Response Settings:", metaResponseSettings);
-        if (Object.values(metaResponseSettings).some((settings) => settings.isEnabled)
+        if (
+          Object.values(metaResponseSettings).some(
+            (settings) => settings.isEnabled
+          )
         ) {
           chatHistory = chatHistory.map((message) => {
             if (message.role === "assistant") {

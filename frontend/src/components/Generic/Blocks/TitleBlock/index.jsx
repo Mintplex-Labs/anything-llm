@@ -24,7 +24,7 @@ export default function TitleBlock({
       <div className="relative rounded-lg">
         <div className="space-y-6 flex h-full w-full">
           <div className="w-full flex flex-col gap-y-4">
-            <div className="flex gap-4">
+            <div className={`flex ${Icon ? "gap-4" : ""}`}>
               {Icon && <Icon className="w-16 h-16  text-white/30" />}
               <div>
                 <div className="flex flex-row gap-4">
