@@ -1,5 +1,5 @@
 const { Document } = require("../models/documents");
-const { normalizePath } = require("../utils/files");
+const { normalizePath, documentsPath } = require("../utils/files");
 const { reqBody } = require("../utils/http");
 const {
   flexUserRoleValid,
@@ -17,11 +17,7 @@ function documentEndpoints(app) {
     async (request, response) => {
       try {
         const { name } = reqBody(request);
-        const storagePath = path.join(
-          __dirname,
-          "../storage/documents",
-          normalizePath(name)
-        );
+        const storagePath = path.join(documentsPath, normalizePath(name));
 
         if (fs.existsSync(storagePath)) {
           response.status(500).json({
@@ -58,16 +54,8 @@ function documentEndpoints(app) {
         );
 
         const movePromises = moveableFiles.map(({ from, to }) => {
-          const sourcePath = path.join(
-            __dirname,
-            "../storage/documents",
-            normalizePath(from)
-          );
-          const destinationPath = path.join(
-            __dirname,
-            "../storage/documents",
-            normalizePath(to)
-          );
+          const sourcePath = path.join(documentsPath, normalizePath(from));
+          const destinationPath = path.join(documentsPath, normalizePath(to));
 
           return new Promise((resolve, reject) => {
             fs.rename(sourcePath, destinationPath, (err) => {
