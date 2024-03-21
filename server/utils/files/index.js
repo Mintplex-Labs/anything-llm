@@ -70,7 +70,7 @@ async function viewLocalFiles() {
   directory.items = [
     directory.items.find((folder) => folder.name === "custom-documents"),
     ...directory.items.filter((folder) => folder.name !== "custom-documents"),
-  ];
+  ].filter((i) => !!i);
 
   return directory;
 }
