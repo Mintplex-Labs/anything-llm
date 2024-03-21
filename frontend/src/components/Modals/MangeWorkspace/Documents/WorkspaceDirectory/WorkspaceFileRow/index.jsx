@@ -53,7 +53,7 @@ export default function WorkspaceFileRow({
   const handleMouseLeave = debounce(handleHideTooltip, 500);
   return (
     <div
-      className={`items-center transition-all duration-200 text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer
+      className={`items-center text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer
           ${isMovedItem ? "bg-green-800/40" : "file-row"}`}
     >
       <div className="col-span-5 flex gap-x-[4px] items-center">
