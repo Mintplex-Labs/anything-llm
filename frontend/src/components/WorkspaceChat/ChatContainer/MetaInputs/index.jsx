@@ -51,7 +51,7 @@ const MetaInputs = ({
 
   return (
     <div className="w-full md:px-4 fixed md:absolute bottom-10 left-0 z-10 md:z-0 flex justify-center items-center">
-      <div className="w-[600px]">
+      <div className="w-[700px]">
         {shouldShowMetaInputs ? (
           <InputComponent
             submit={submit}

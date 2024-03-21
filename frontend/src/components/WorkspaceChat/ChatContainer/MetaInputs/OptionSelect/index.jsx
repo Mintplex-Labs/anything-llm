@@ -35,7 +35,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage }) => {
     return (
       <div className=" mb-2 w-full p-4 backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
         <Label label={data?.label} />
-        <div className=" pb-0 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-white/80 text-xs  ">
+        <div className=" pb-0 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-white/70 text-sm  ">
           {data.options.map((option, index) => (
             <button
               key={index}
@@ -51,7 +51,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage }) => {
                 <span className="text-white/50 mr-1">{index + 1}.</span>{" "}
                 {option.label}
               </p>
-              <span className="absolute invisible group-hover:visible bg-black text-white text-xs rounded-lg p-2 left-0 bottom-full mb-2">
+              <span className="absolute invisible group-hover:visible bg-black text-white text-sm rounded-lg p-2 left-0 bottom-full mb-2">
                 <span className="text-white/50 mr-1">{index + 1}.</span>{" "}
                 {option.label}
               </span>
@@ -65,7 +65,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage }) => {
   // Normal List with Hyperlinks
   if (settings.displayType === "list") {
     return (
-      <div className=" text-white/70 text-xs w-full backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
+      <div className=" text-white/70 text-sm w-full backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
         <Label {...data} />
         {data.options.map((option, index) => (
           <a
@@ -94,7 +94,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage }) => {
     return (
       <div className="w-full p-4 backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
         <Label label={data?.label} />
-        <div className="pb-0 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-white/80 text-xs">
+        <div className="pb-0 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-white/80 text-sm">
           {data.options.map((option, index) => (
             <label key={index} className="flex items-center space-x-2">
               <input
@@ -135,7 +135,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage }) => {
         multiple={settings.allowMultiple}
         required={true}
         disabled={settings.disabled}
-        className="shadow-xl mt-3 bg-sidebar text-white text-xs rounded-xl p-2.5 w-full border border-white/20 focus:ring-blue-500 focus:border-blue-500"
+        className="shadow-xl mt-3 bg-sidebar text-white text-sm rounded-xl p-2.5 w-full border border-white/20 focus:ring-blue-500 focus:border-blue-500"
         onChange={(e) => {
           handleSelection(e.target.value);
           handleSubmit();
@@ -167,13 +167,13 @@ const Label = ({ label, description }) => {
       {label && (
         <label
           htmlFor="chatModel"
-          className="block input-label text-white text-opacity-60 text-xs font-medium py-1.5"
+          className="block input-label text-white text-opacity-60 text-md font-medium py-1.5"
         >
           {label}
         </label>
       )}
       {description && (
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        <p className="text-white text-opacity-60 text-sm font-medium py-1.5">
           {description}
         </p>
       )}
