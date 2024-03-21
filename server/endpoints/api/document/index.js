@@ -13,6 +13,10 @@ const { handleUploads } = setupMulter();
 const fs = require("fs");
 const path = require("path");
 const { Document } = require("../../../models/documents");
+const documentsPath =
+  process.env.NODE_ENV === "development"
+    ? path.resolve(__dirname, "../../../storage/documents")
+    : path.resolve(process.env.STORAGE_DIR, `documents`);
 
 function apiDocumentEndpoints(app) {
   if (!app) return;
@@ -600,11 +604,7 @@ function apiDocumentEndpoints(app) {
       */
       try {
         const { name } = reqBody(request);
-        const storagePath = path.join(
-          __dirname,
-          "../../../storage/documents",
-          normalizePath(name)
-        );
+        const storagePath = path.join(documentsPath, normalizePath(name));
 
         if (fs.existsSync(storagePath)) {
           response.status(500).json({
@@ -681,16 +681,8 @@ function apiDocumentEndpoints(app) {
           ({ from }) => !embeddedFiles.includes(from)
         );
         const movePromises = moveableFiles.map(({ from, to }) => {
-          const sourcePath = path.join(
-            __dirname,
-            "../../../storage/documents",
-            normalizePath(from)
-          );
-          const destinationPath = path.join(
-            __dirname,
-            "../../../storage/documents",
-            normalizePath(to)
-          );
+          const sourcePath = path.join(documentsPath, normalizePath(from));
+          const destinationPath = path.join(documentsPath, normalizePath(to));
           return new Promise((resolve, reject) => {
             fs.rename(sourcePath, destinationPath, (err) => {
               if (err) {
