@@ -7,7 +7,7 @@ import { isMobile } from "react-device-detect";
 import useUser from "../../../hooks/useUser";
 import DocumentSettings from "./Documents";
 
-const noop = () => { };
+const noop = () => {};
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const { slug } = useParams();
   const [workspace, setWorkspace] = useState(null);
@@ -64,7 +64,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   return (
     <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center z-99">
       <div className="backdrop h-full w-full absolute top-0 z-10" />
-      <div className="absolute max-h-full w-fit transition duration-300 z-20">
+      <div className="absolute max-h-full w-fit transition duration-300 z-20 md:overflow-y-auto py-10">
         <div className="relative bg-main-gradient rounded-[12px] shadow border-2 border-slate-300/10">
           <div className="flex items-start justify-between p-2 rounded-t border-gray-500/50 relative">
             <div />

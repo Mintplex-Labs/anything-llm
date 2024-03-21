@@ -219,17 +219,14 @@ function Directory({
           )}
         </div>
 
-        <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl">
-          <div className="rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900 sticky top-0 z-10">
+        <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900">
             <p className="col-span-6">Name</p>
             <p className="col-span-3">Date</p>
             <p className="col-span-2">Kind</p>
           </div>
 
-          <div
-            className="overflow-y-auto pb-9"
-            style={{ height: "calc(100% - 40px)" }}
-          >
+          <div className="overflow-y-auto h-full pt-8">
             {loading ? (
               <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
                 <PreLoader />
@@ -263,53 +260,55 @@ function Directory({
               </div>
             )}
           </div>
-
           {amountSelected !== 0 && (
-            <div className="w-full justify-center absolute bottom-[12px] flex">
-              <div className="justify-center flex flex-row items-center bg-white/40 rounded-lg py-1 px-2 gap-x-2">
-                <button
-                  onClick={moveToWorkspace}
-                  onMouseEnter={() => setHighlightWorkspace(true)}
-                  onMouseLeave={() => setHighlightWorkspace(false)}
-                  className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80"
-                >
-                  Move to Workspace
-                </button>
-                <div className="relative">
+            <div className="absolute bottom-[12px] left-0 right-0 flex justify-center">
+              <div className="mx-auto bg-white/40 rounded-lg py-1 px-2">
+                <div className="flex flex-row items-center gap-x-2">
                   <button
-                    onClick={() => setShowFolderSelection(!showFolderSelection)}
-                    className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:bg-neutral-800/80 flex justify-center items-center group"
+                    onClick={moveToWorkspace}
+                    onMouseEnter={() => setHighlightWorkspace(true)}
+                    onMouseLeave={() => setHighlightWorkspace(false)}
+                    className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80"
                   >
-                    <MoveToFolderIcon className="text-[#222628] group-hover:text-white" />
+                    Move to Workspace
                   </button>
-                  {showFolderSelection && (
-                    <FolderSelectionPopup
-                      folders={files.items.filter(
-                        (item) => item.type === "folder"
-                      )}
-                      onSelect={moveToFolder}
-                      onClose={() => setShowFolderSelection(false)}
-                    />
-                  )}
+                  <div className="relative">
+                    <button
+                      onClick={() =>
+                        setShowFolderSelection(!showFolderSelection)
+                      }
+                      className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:bg-neutral-800/80 flex justify-center items-center group"
+                    >
+                      <MoveToFolderIcon className="text-[#222628] group-hover:text-white" />
+                    </button>
+                    {showFolderSelection && (
+                      <FolderSelectionPopup
+                        folders={files.items.filter(
+                          (item) => item.type === "folder"
+                        )}
+                        onSelect={moveToFolder}
+                        onClose={() => setShowFolderSelection(false)}
+                      />
+                    )}
+                  </div>
+                  <button
+                    onClick={deleteFiles}
+                    className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:text-white hover:bg-neutral-800/80 flex justify-center items-center"
+                  >
+                    <Trash size={18} weight="bold" />
+                  </button>
                 </div>
-                <button
-                  onClick={deleteFiles}
-                  className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:text-white hover:bg-neutral-800/80 flex justify-center items-center"
-                >
-                  <Trash size={18} weight="bold" />
-                </button>
-              </div >
-            </div >
-          )
-          }
-        </div >
+              </div>
+            </div>
+          )}
+        </div>
         <UploadFile
           workspace={workspace}
           fetchKeys={fetchKeys}
           setLoading={setLoading}
         />
-      </div >
-    </div >
+      </div>
+    </div>
   );
 }
 
