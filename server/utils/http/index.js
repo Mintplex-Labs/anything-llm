@@ -17,7 +17,7 @@ function queryParams(request) {
 function makeJWT(info = {}, expiry = "30d") {
   if (!process.env.JWT_SECRET)
     throw new Error("Cannot create JWT as JWT_SECRET is unset.");
-  return JWT.sign(info, process.env.JWT_SECRET, { expiresIn: expiry });
+  return JWT.sign(info, process.env.JWT_SECRET, { expiry });
 }
 
 // Note: Only valid for finding users in multi-user mode

@@ -11,7 +11,7 @@ async function validatedRequest(request, response, next) {
   // When in development passthrough auth token for ease of development.
   // Or if the user simply did not set an Auth token or JWT Secret
   if (
-    process.env.NODE_ENV === "development" ||
+    // process.env.NODE_ENV === "development" ||
     !process.env.AUTH_TOKEN ||
     !process.env.JWT_SECRET
   ) {
@@ -38,9 +38,17 @@ async function validatedRequest(request, response, next) {
 
   const bcrypt = require("bcrypt");
   const { p } = decodeJWT(token);
+
+  if (p === null) {
+    response.status(401).json({
+      error: "Token expired or failed validation.",
+    });
+    return;
+  }
+
   if (!bcrypt.compareSync(p, bcrypt.hashSync(process.env.AUTH_TOKEN, 10))) {
     response.status(401).json({
-      error: "Invalid auth token found.",
+      error: "Invalid auth credentials.",
     });
     return;
   }

@@ -4,8 +4,8 @@ export default {
   home: () => {
     return "/";
   },
-  login: () => {
-    return "/login";
+  login: (noTry = false) => {
+    return `/login${noTry ? "?nt=1" : ""}`;
   },
   onboarding: {
     home: () => {
