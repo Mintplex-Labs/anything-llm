@@ -12,9 +12,14 @@ class LMStudioLLM {
       basePath: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
     });
     this.lmstudio = new OpenAIApi(config);
-    // When using LMStudios inference server - the model param is not required so
-    // we can stub it here. LMStudio can only run one model at a time.
-    this.model = "model-placeholder";
+
+    // Prior to LMStudio 0.2.17 the `model` param was not required and you could pass anything
+    // into that field and it would work. On 0.2.17 LMStudio introduced multi-model chat
+    // which now has a bug that reports the server model id as "Loaded from Chat UI"
+    // and any other value will crash inferencing. So until this is patched we will
+    // try to fetch the `/models` and have the user set it, or just fallback to "Loaded from Chat UI"
+    // which will not impact users with <v0.2.17 and should work as well once the bug is fixed.
+    this.model = process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
