@@ -31,16 +31,10 @@ export default function CheckBoxBlock({
   badgeBg,
   border,
   Icon,
-  contentLocation,
   disabled,
   inline = false,
 }) {
   const borderStyle = border ? "border border-gray-600 rounded-2xl p-4" : "";
-  const contentPosition = {
-    middle: "middle",
-    top: "top",
-    bottom: "bottom",
-  }[contentLocation];
 
   return (
     <div className={`relative w-full max-h-full ${borderStyle}`}>

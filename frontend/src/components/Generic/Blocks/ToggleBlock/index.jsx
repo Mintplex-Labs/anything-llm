@@ -30,7 +30,7 @@ export default function ToggleBlock({
       <div className="relative rounded-lg">
         <div className="space-y-6 flex h-full w-full">
           <div className="w-full flex flex-col gap-y-4">
-            <div className="flex gap-4">
+            <div className="flex gap-2">
               {Icon && <Icon className="w-16 h-16  text-white/30" />}
               <div>
                 <div className="flex flex-row gap-4">
@@ -44,7 +44,7 @@ export default function ToggleBlock({
                       />
                     </div>
                   )}
-                  <label className="block input-label mb-4 first-letter:capitalize">
+                  <label className="block input-label mb-1 first-letter:capitalize">
                     {label}
                   </label>
                   {badge && (
@@ -57,21 +57,21 @@ export default function ToggleBlock({
                   )}
                 </div>
                 {!inline && (
-                  <ToggleButton
-                    initialChecked={initialChecked}
-                    onToggle={onToggle}
-                    name={name}
-                    disabled={disabled}
-                  />
+                  <div className="mt-2">
+                    <ToggleButton
+                      initialChecked={initialChecked}
+                      onToggle={onToggle}
+                      name={name}
+                      disabled={disabled}
+                    />
+                  </div>
                 )}
               </div>
             </div>
           </div>
         </div>
         <div className="flex items-center justify-between space-x-14">
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-            {description}
-          </p>
+          <p className="text-white/60 text-xs py-1.5">{description}</p>
         </div>
         {content}
       </div>

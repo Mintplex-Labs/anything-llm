@@ -3,10 +3,20 @@ import React from "react";
 // Updated utility function for dark theme
 const colorMapping = (bg) => {
   const mappings = {
-    "emerald-600": { text: "text-emerald-100", icon: "text-emerald-200 group-hover:text-emerald-50" },
+    "bg-green-500": {
+      text: "text-green-400",
+      icon: "text-green-600 group-hover:text-green-50",
+      ring: "ring-1 ring-inset ring-green-500/20",
+    },
   };
 
-  return mappings[bg] || { text: "text-gray-100", icon: "text-gray-200" };
+  return (
+    mappings[bg] || {
+      text: "text-white/60",
+      icon: "text-white/80 group-hover:text-white/50",
+      ring: "ring-1 ring-inset ring-gray-500/20",
+    }
+  );
 };
 
 // Badge Component
@@ -18,18 +28,21 @@ export default function Badge({
   shadow = "none", // "none", "sm", "md", "lg", "xl"
   showDot = false,
   showClose = false,
-  bg = "emerald-600",
+  bg = "bg-green-500",
   animated = false,
   onClose = () => {}, // Callback for close icon
 }) {
-  // Adjustments based on props
-  const { text: textColor, icon: iconColor } = colorMapping(bg);
+  const {
+    text: textColor,
+    icon: iconColor,
+    ring: ringClasses,
+  } = colorMapping(bg);
   const animatedClasses = animated ? "animate-pulse" : "";
   const sizeClasses = {
-    sm: "py-0.5 pl-2 pr-0.5 text-xs",
-    md: "py-1 pl-2 pr-1 text-sm",
-    lg: "py-1 px-3 text-sm",
-    xl: "py-1.5 px-4 text-base",
+    sm: "py-0.5 px-2 pr-0.5 text-xs",
+    md: "py-1.5 px-2 pr-1 text-xs",
+    lg: "py-2 px-3 text-sm",
+    xl: "py-2.5 px-4 text-base",
   }[size];
   const iconSizeClasses = {
     sm: "h-2 w-2",
@@ -51,7 +64,7 @@ export default function Badge({
     lg: "shadow-lg",
     xl: "shadow-xl",
   }[shadow];
-  const backgroundClasses = `bg-${bg}`;
+  const backgroundClasses = `${bg} bg-opacity-10 hover:bg-opacity-20`;
 
   // SVG Icons
   const DotIcon = () => (
@@ -78,14 +91,14 @@ export default function Badge({
 
   return (
     <div
-      className={`flex flex-row gap-0.5 w-fit h-fit  justify-center items-center  group ${sizeClasses} ${backgroundClasses} ${roundedClasses} ${shadowClasses}`}
+      className={`flex flex-row gap-0.5 w-fit h-fit  justify-center items-center  group ${sizeClasses} ${backgroundClasses} ${roundedClasses} ${shadowClasses} ${ringClasses}`}
     >
       {showDot && (
         <div>
           <DotIcon />
         </div>
       )}
-      <p className={`block text-center font-medium px-1 ${textColor}`}>
+      <p className={`block text-center font-medium pr-2 pl-1  ${textColor}`}>
         {label}
       </p>
       {showClose && (
@@ -98,4 +111,4 @@ export default function Badge({
       )}
     </div>
   );
-};
+}

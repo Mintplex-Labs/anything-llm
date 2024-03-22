@@ -13,6 +13,8 @@ export default function TextAreaBlock({
   className,
   autoComplete,
   wrap,
+  code,
+  onSave,
 }) {
   return (
     <div>
@@ -39,6 +41,8 @@ export default function TextAreaBlock({
         className={className}
         autoComplete={autoComplete}
         wrap={wrap}
+        code={code}
+        onSave={onSave}
       />
     </div>
   );

@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-export default function CheckBox({ initialChecked, onToggle, name, disabled }) {
+export default function CheckBox({
+  initialChecked = false,
+  onToggle,
+  name,
+  disabled,
+}) {
   const [isChecked, setIsChecked] = useState(initialChecked);
-
   useEffect(() => {
     setIsChecked(initialChecked);
   }, [initialChecked]);

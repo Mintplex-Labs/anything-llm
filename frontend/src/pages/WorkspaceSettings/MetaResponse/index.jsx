@@ -75,8 +75,8 @@ export default function MetaResponseSettings({ workspace }) {
       <div className="px-4">
         <TitleBlock
           label="Meta Response"
-          description="This feature lets you dictate app behaviour through AI-generated responses, using a specific schema to structure data. It aligns with specially designed components that interpret this schema, enabling custom configurations for managing these components efficiently."
-          labelStyles="text-2xl font-bold text-white"
+          description="This feature lets you dictate app behavior through AI-generated responses, using a specific schema to structure data. It aligns with specially designed components that interpret this schema, enabling custom configurations for managing these components efficiently."
+          labelStyles="text-2xl font-semi-bold text-white"
           Icon={Cube}
         />
       </div>
