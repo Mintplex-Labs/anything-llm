@@ -477,25 +477,14 @@ async function validDockerizedUrl(input = "") {
     const isPortAvailableFromDocker = await isPortInUse(port);
     if (!isPortAvailableFromDocker) {
       if (["localhost", "127.0.0.1", "0.0.0.0"].includes(hostname)) {
-        return "Localhost, 127.0.0.1, or 0.0.0.0 origins cannot be reached from inside the AnythingLLM container. Please use host.docker.internal, a real machine ip, or domain to connect to your service.";
+        return "localhost, 127.0.0.1, or 0.0.0.0 origins cannot be reached from inside the AnythingLLM container. Please use host.docker.internal (for linux use 172.17.0.1), a real machine ip, or domain to connect to your service.";
       }
     }
   } catch (error) {
-    console.error(error.message)
-    return "An error occurred while validating the URL"
+    console.error(error.message);
+    return "An error occurred while validating the URL";
   }
 
-  return null;
-}
-
-function validDockerizedUrl(input = "") {
-  if (process.env.ANYTHING_LLM_RUNTIME !== "docker") return null;
-  try {
-    const { hostname } = new URL(input);
-    if (["localhost", "127.0.0.1", "0.0.0.0"].includes(hostname.toLowerCase()))
-      return "Localhost, 127.0.0.1, or 0.0.0.0 origins cannot be reached from inside the AnythingLLM container. Please use host.docker.internal, a real machine ip, or domain to connect to your service.";
-    return null;
-  } catch {}
   return null;
 }
 
@@ -513,7 +502,6 @@ async function wipeWorkspaceModelPreference(key, prev, next) {
   const { Workspace } = require("../../models/workspace");
   await Workspace.resetWorkspaceChatModels();
 }
-
 
 // This will force update .env variables which for any which reason were not able to be parsed or
 // read from an ENV file as this seems to be a complicating step for many so allowing people to write
