@@ -1,11 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://useanything.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
-</p>
-
-<p align="center">
-    <b>AnythingLLM: A private ChatGPT to chat with <i>anything!</i></b>. <br />
+    <h1>AnythingLLM - Reporterning Addition: <br> A private ChatGPT to chat with <i>anything!</i></b></h1>
     An efficient, customizable, and open-source enterprise-ready document chatbot solution.
 </p>
 
