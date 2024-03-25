@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  anythingllm:
+    image: mintplexlabs/anythingllm:master
+    ports:
+      - "3001:3001"
+    cap_add:
+      - SYS_ADMIN
+    volumes:
+      - ${STORAGE_LOCATION}:/app/server/storage
+    environment:
+      - STORAGE_DIR=/app/server/storage
+      # Add other environment variables here if needed
