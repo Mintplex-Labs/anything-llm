@@ -46,7 +46,7 @@ export default function ChatHistory({ settings = {}, history = [] }) {
 
   if (history.length === 0) {
     return (
-      <div className="max-h-[82vh] pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
+      <div className="pb-[100px] pt-[5px] rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
         <div className="flex h-full flex-col items-center justify-center">
           <p className="text-slate-400 text-sm font-base py-4 text-center">
             {settings?.greeting ?? "Send a chat to get started!"}
@@ -58,7 +58,7 @@ export default function ChatHistory({ settings = {}, history = [] }) {
 
   return (
     <div
-      className="pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll"
+      className="pb-[100px] pt-[5px] rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll"
       id="chat-history"
       ref={chatHistoryRef}
     >
@@ -96,9 +96,9 @@ export default function ChatHistory({ settings = {}, history = [] }) {
         );
       })}
       {!isAtBottom && (
-        <div className="fixed bottom-[10rem] right-[3rem] z-50 cursor-pointer animate-pulse">
+        <div className="fixed bottom-[5rem] right-[1.5rem] z-50 cursor-pointer animate-pulse">
           <div className="flex flex-col items-center">
-            <div className="p-1 rounded-full border border-white/10 bg-white/10 hover:bg-white/20 hover:text-white">
+            <div className="p-1 rounded-full border border-white/10 bg-black/30 hover:bg-black hover:text-white">
               <ArrowDown
                 weight="bold"
                 className="text-white/60 w-5 h-5"

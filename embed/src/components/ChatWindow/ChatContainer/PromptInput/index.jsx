@@ -32,13 +32,13 @@ export default function PromptInput({
   };
 
   return (
-    <div className="w-full absolute left-0 bottom-[5px] z-10 flex justify-center items-center">
+    <div className="w-full absolute left-0 bottom-[25px] z-10 flex justify-center items-center px-5">
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-y-1 rounded-t-lg w-full items-center justify-center"
       >
-        <div className="flex items-center rounded-lg">
-          <div className="bg-white border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+        <div className="flex items-center rounded-lg border border-[#2226281A]/10 w-full">
+          <div className="bg-white border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden w-full">
             <div className="flex items-center w-full">
               <textarea
                 onKeyUp={adjustTextArea}

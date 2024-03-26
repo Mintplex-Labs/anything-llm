@@ -5,6 +5,7 @@ import renderMarkdown from "@/utils/chat/markdown";
 import { embedderSettings } from "@/main";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
+import AnythingLLMIcon from "@/assets/anything-llm-icon.svg";
 
 const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = forwardRef(
@@ -13,17 +14,26 @@ const HistoricalMessage = forwardRef(
       <div
         key={uuid}
         ref={ref}
-        className={`flex rounded-lg justify-center items-end w-full h-fit ${
-          error
-            ? "bg-red-200"
-            : role === "user"
-              ? embedderSettings.USER_BACKGROUND_COLOR
-              : embedderSettings.AI_BACKGROUND_COLOR
+        className={`flex items-end w-full h-fit ${
+          role === "user" ? "justify-end" : "justify-start"
         }`}
       >
+        {role === "assistant" && (
+          <img
+            src={AnythingLLMIcon}
+            alt="Anything LLM Icon"
+            className="w-9 h-9 flex-shrink-0 ml-2"
+          />
+        )}
         <div
           style={{ wordBreak: "break-word" }}
-          className={`py-2 px-2 w-full flex flex-col`}
+          className={`py-[11px] px-4 flex flex-col ${
+            error
+              ? "bg-red-200"
+              : role === "user"
+                ? embedderSettings.USER_STYLES
+                : embedderSettings.ASSISTANT_STYLES
+          } shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
         >
           <div className="flex">
             {error ? (
@@ -38,7 +48,7 @@ const HistoricalMessage = forwardRef(
               </div>
             ) : (
               <span
-                className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+                className={`whitespace-pre-line font-medium flex flex-col gap-y-1 text-sm leading-[20px]`}
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(renderMarkdown(message)),
                 }}

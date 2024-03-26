@@ -1,4 +1,4 @@
-import AnythingLLMLogo from "@/assets/anything-llm-dark.png";
+import AnythingLLMIcon from "@/assets/anything-llm-icon.svg";
 import ChatService from "@/models/chatService";
 import {
   DotsThreeOutlineVertical,
@@ -24,23 +24,22 @@ export default function ChatWindowHeader({
   };
 
   return (
-    <div className="flex justify-between items-center relative bg-black h-20">
-      <img
-        style={{ maxWidth: 100, maxHeight: 20 }}
-        src={iconUrl ?? AnythingLLMLogo}
-        alt={iconUrl ? "Brand" : "AnythingLLM Logo"}
-      />
-      <div className="flex gap-x-1 items-center">
+    <div className="flex items-center relative rounded-t-lg ">
+      <div className="flex justify-center items-center w-full h-[76px]">
+        <img
+          style={{ maxWidth: 48, maxHeight: 48 }}
+          src={iconUrl ?? AnythingLLMIcon}
+          alt={iconUrl ? "Brand" : "AnythingLLM Logo"}
+        />
+      </div>
+      <div className="absolute right-0 flex gap-x-1 items-center px-[22px]">
         {settings.loaded && (
           <button
             type="button"
             onClick={() => setShowOptions(!showingOptions)}
             className="hover:bg-gray-100 rounded-sm text-slate-800"
           >
-            <DotsThreeOutlineVertical
-              size={18}
-              weight={!showingOptions ? "regular" : "fill"}
-            />
+            <DotsThreeOutlineVertical size={20} weight="fill" />
           </button>
         )}
         <button
@@ -48,7 +47,7 @@ export default function ChatWindowHeader({
           onClick={closeChat}
           className="hover:bg-gray-100 rounded-sm text-slate-800"
         >
-          <X size={18} />
+          <X size={20} weight="bold" />
         </button>
       </div>
       <OptionsMenu
