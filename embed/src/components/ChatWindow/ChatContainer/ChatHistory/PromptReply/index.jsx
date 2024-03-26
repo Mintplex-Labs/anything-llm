@@ -10,7 +10,7 @@ const PromptReply = forwardRef(
 
     if (pending) {
       return (
-        <div className={`flex items-end w-full h-fit justify-start`}>
+        <div className={`flex items-start w-full h-fit justify-start`}>
           <img
             src={AnythingLLMIcon}
             alt="Anything LLM Icon"
@@ -58,7 +58,7 @@ const PromptReply = forwardRef(
       <div
         key={uuid}
         ref={ref}
-        className={`flex items-end w-full h-fit justify-start`}
+        className={`flex items-start w-full h-fit justify-start`}
       >
         <img
           src={AnythingLLMIcon}

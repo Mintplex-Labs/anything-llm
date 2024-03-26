@@ -44,7 +44,7 @@ export default function ChatWindowHeader({
   }, [menuRef]);
 
   return (
-    <div className="flex items-center relative rounded-t-lg bg-black/10">
+    <div className="flex items-center relative rounded-t-2xl bg-black/10">
       <div className="flex justify-center items-center w-full h-[76px]">
         <img
           style={{ maxWidth: 48, maxHeight: 48 }}

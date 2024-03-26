@@ -29,7 +29,7 @@ export default function App() {
           }}
           className={`${
             isChatOpen
-              ? "max-w-[400px] max-h-[700px] bg-white rounded-lg border shadow-lg"
+              ? "max-w-[400px] max-h-[700px] bg-white rounded-2xl border border-gray-300 shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
               : "w-16 h-16 rounded-full"
           }`}
         >

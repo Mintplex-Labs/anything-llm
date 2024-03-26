@@ -51,8 +51,8 @@ export default function PromptInput({
         onSubmit={handleSubmit}
         className="flex flex-col gap-y-1 rounded-t-lg w-full items-center justify-center"
       >
-        <div className="flex items-center rounded-lg border border-[#2226281A]/10 w-full">
-          <div className="bg-white border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden w-full">
+        <div className="flex items-center w-full">
+          <div className="bg-white border-[1.5px] border-[#22262833]/20 rounded-2xl flex flex-col px-4 overflow-hidden w-full">
             <div className="flex items-center w-full">
               <textarea
                 ref={textareaRef}
