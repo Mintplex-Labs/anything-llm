@@ -84,7 +84,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage ,workspace})
           <button
             className="flex items-center justify-center p-2 mt-4 text-sm  text-white/60 hover:text-white  rounded"
             onClick={() => {
-              handleSelection(selectedOptions.join(", "));
+              handleSelection();
               handleSubmit();
             }}
           >

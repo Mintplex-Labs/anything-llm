@@ -29,6 +29,7 @@ const {
   fetchPfp,
 } = require("../utils/files/pfp");
 const { WorkspaceMetaResponse } = require("../models/workspaceMetaResponse");
+const { meta } = require("eslint-plugin-prettier");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -94,11 +95,17 @@ function workspaceEndpoints(app) {
           data.metaResponse
         ) {
           const metaResponseDefaultSettings = WorkspaceMetaResponse.defaultSettings;
-          console.log("currWorkspace.openAiPrompt", currWorkspace.openAiPrompt)
+          const currentSystemPrompt =
+            data.openAiPrompt ||
+            currWorkspace.openAiPrompt ||
+            WorkspaceMetaResponse.defaultSystemPrompt;
           Object.keys(metaResponseDefaultSettings).map((feature) => {
-            metaResponseDefaultSettings[feature].config.systemPrompt.content =
-              data.openAiPrompt || currWorkspace.openAiPrompt ||
-              WorkspaceMetaResponse.defaultSystemPrompt;
+            metaResponseDefaultSettings[feature].config.systemPrompt.content = currentSystemPrompt;
+            metaResponseDefaultSettings[feature].config.promptSchema.list[0] = {
+              title: "Default",
+              content: currentSystemPrompt,
+            }
+
           });
           data.metaResponseSettings = JSON.stringify(
             metaResponseDefaultSettings
