@@ -3,6 +3,7 @@ const fs = require("fs");
 const { getType } = require("mime");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../../models/systemSettings");
+const { normalizePath } = require(".");
 const LOGO_FILENAME = "anything-llm.png";
 
 function validFilename(newFilename = "") {
@@ -21,7 +22,7 @@ async function determineLogoFilepath(defaultFilename = LOGO_FILENAME) {
   const defaultFilepath = path.join(basePath, defaultFilename);
 
   if (currentLogoFilename && validFilename(currentLogoFilename)) {
-    customLogoPath = path.join(basePath, currentLogoFilename);
+    customLogoPath = path.join(basePath, normalizePath(currentLogoFilename));
     return fs.existsSync(customLogoPath) ? customLogoPath : defaultFilepath;
   }
 
@@ -52,11 +53,11 @@ async function renameLogoFile(originalFilename = null) {
   const extname = path.extname(originalFilename) || ".png";
   const newFilename = `${v4()}${extname}`;
   const originalFilepath = process.env.STORAGE_DIR
-    ? path.join(process.env.STORAGE_DIR, "assets", originalFilename)
-    : path.join(__dirname, `../../storage/assets/${originalFilename}`);
+    ? path.join(process.env.STORAGE_DIR, "assets", normalizePath(originalFilename))
+    : path.join(__dirname, `../../storage/assets`, normalizePath(originalFilename));
   const outputFilepath = process.env.STORAGE_DIR
-    ? path.join(process.env.STORAGE_DIR, "assets", newFilename)
-    : path.join(__dirname, `../../storage/assets/${newFilename}`);
+    ? path.join(process.env.STORAGE_DIR, "assets", normalizePath(newFilename))
+    : path.join(__dirname, `../../storage/assets`, normalizePath(newFilename));
 
   fs.renameSync(originalFilepath, outputFilepath);
   return newFilename;
@@ -65,8 +66,8 @@ async function renameLogoFile(originalFilename = null) {
 async function removeCustomLogo(logoFilename = LOGO_FILENAME) {
   if (!logoFilename || !validFilename(logoFilename)) return false;
   const logoPath = process.env.STORAGE_DIR
-    ? path.join(process.env.STORAGE_DIR, `assets/${logoFilename}`)
-    : path.join(__dirname, `../../storage/assets/${logoFilename}`);
+    ? path.join(process.env.STORAGE_DIR, `assets`, normalizePath(logoFilename))
+    : path.join(__dirname, `../../storage/assets`, normalizePath(logoFilename));
   if (fs.existsSync(logoPath)) fs.unlinkSync(logoPath);
   return true;
 }
