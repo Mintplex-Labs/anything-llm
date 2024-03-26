@@ -20,6 +20,7 @@ const { developerEndpoints } = require("./endpoints/api");
 const { extensionEndpoints } = require("./endpoints/extensions");
 const { bootHTTP, bootSSL } = require("./utils/boot");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
+const { documentEndpoints } = require("./endpoints/document");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -44,6 +45,7 @@ adminEndpoints(apiRouter);
 inviteEndpoints(apiRouter);
 embedManagementEndpoints(apiRouter);
 utilEndpoints(apiRouter);
+documentEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
 
 // Externally facing embedder endpoints

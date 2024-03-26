@@ -6,6 +6,8 @@ const { ROLES } = require("../utils/middleware/multiUserProtected");
 const { v4: uuidv4 } = require("uuid");
 
 const Workspace = {
+  defaultPrompt:
+    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
   writable: [
     // Used for generic updates so we can validate keys in request body
     "name",
@@ -211,6 +213,34 @@ const Workspace = {
     } catch (error) {
       console.error("Error resetting workspace chat models:", error.message);
       return { success: false, error: error.message };
+    }
+  },
+
+  trackChange: async function (prevData, newData, user) {
+    try {
+      const { Telemetry } = require("./telemetry");
+      const { EventLogs } = require("./eventLogs");
+      if (
+        !newData?.openAiPrompt ||
+        newData?.openAiPrompt === this.defaultPrompt ||
+        newData?.openAiPrompt === prevData?.openAiPrompt
+      )
+        return;
+
+      await Telemetry.sendTelemetry("workspace_prompt_changed");
+      await EventLogs.logEvent(
+        "workspace_prompt_changed",
+        {
+          workspaceName: prevData?.name,
+          prevSystemPrompt: prevData?.openAiPrompt || this.defaultPrompt,
+          newSystemPrompt: newData?.openAiPrompt,
+        },
+        user?.id
+      );
+      return;
+    } catch (error) {
+      console.error("Error tracking workspace change:", error.message);
+      return;
     }
   },
 };
