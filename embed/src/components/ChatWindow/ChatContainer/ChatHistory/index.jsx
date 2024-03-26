@@ -58,7 +58,7 @@ export default function ChatHistory({ settings = {}, history = [] }) {
 
   return (
     <div
-      className="pb-[100px] pt-[5px] rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll"
+      className="pb-[30px] pt-[5px] rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll max-h-[50vh]"
       id="chat-history"
       ref={chatHistoryRef}
     >
@@ -87,6 +87,7 @@ export default function ChatHistory({ settings = {}, history = [] }) {
             key={index}
             ref={isLastMessage ? replyRef : null}
             message={props.content}
+            sentAt={props.sentAt || Date.now() / 1000}
             role={props.role}
             sources={props.sources}
             chatId={props.chatId}
@@ -96,12 +97,12 @@ export default function ChatHistory({ settings = {}, history = [] }) {
         );
       })}
       {!isAtBottom && (
-        <div className="fixed bottom-[5rem] right-[1.5rem] z-50 cursor-pointer animate-pulse">
+        <div className="fixed bottom-[10rem] right-[1.5rem] z-50 cursor-pointer animate-pulse">
           <div className="flex flex-col items-center">
-            <div className="p-1 rounded-full border border-white/10 bg-black/30 hover:bg-black hover:text-white">
+            <div className="p-1 rounded-full border border-white/10 bg-black/20 hover:bg-black/50">
               <ArrowDown
                 weight="bold"
-                className="text-white/60 w-5 h-5"
+                className="text-white/50 w-5 h-5"
                 onClick={scrollToBottom}
               />
             </div>

@@ -8,21 +8,6 @@ const PromptReply = forwardRef(
   ({ uuid, reply, pending, error, sources = [] }, ref) => {
     if (!reply && sources.length === 0 && !pending && !error) return null;
 
-    // if (pending) {
-    //   return (
-    //     <div
-    //       ref={ref}
-    //       className={`flex justify-center items-center rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] border-[#22262833]/20 ${embedderSettings.ASSISTANT_STYLES}`}
-    //     >
-    //       <div className="py-2 px-2 flex flex-col">
-    //         <div className="flex gap-x-5">
-    //           <div className="mt-3 ml-5 dot-falling"></div>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   );
-    // }
-
     if (pending) {
       return (
         <div className={`flex items-end w-full h-fit justify-start`}>
@@ -35,11 +20,9 @@ const PromptReply = forwardRef(
             style={{ wordBreak: "break-word" }}
             className={`py-[11px] px-4 flex flex-col ${embedderSettings.ASSISTANT_STYLES} shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
           >
-            {/* <div className="py-2 px-2 flex flex-col"> */}
             <div className="flex gap-x-5">
               <div className="mx-4 my-1 dot-falling"></div>
             </div>
-            {/* </div> */}
           </div>
         </div>
       );
@@ -47,8 +30,16 @@ const PromptReply = forwardRef(
 
     if (error) {
       return (
-        <div className={`flex justify-center items-end w-full bg-red-200`}>
-          <div className="py-2 px-4 w-full flex gap-x-5 flex-col">
+        <div className={`flex items-end w-full h-fit justify-start`}>
+          <img
+            src={AnythingLLMIcon}
+            alt="Anything LLM Icon"
+            className="w-9 h-9 flex-shrink-0 ml-2"
+          />
+          <div
+            style={{ wordBreak: "break-word" }}
+            className={`py-[11px] px-4 rounded-lg flex flex-col bg-red-200 shadow-[0_4px_14px_rgba(0,0,0,0.25)] mr-[37px] ml-[9px]`}
+          >
             <div className="flex gap-x-5">
               <span
                 className={`inline-block p-2 rounded-lg bg-red-50 text-red-500`}
