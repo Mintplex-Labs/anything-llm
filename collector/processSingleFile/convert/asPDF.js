@@ -40,9 +40,9 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
   const data = {
     id: v4(),
     url: "file://" + fullFilePath,
-    title: docs[0]?.metadata?.pdf?.info?.Title || filename,
+    title: filename,
     docAuthor: docs[0]?.metadata?.pdf?.info?.Creator || "no author found",
-    description: "No description found.",
+    description: docs[0]?.metadata?.pdf?.info?.Title || "No description found.",
     docSource: "pdf file uploaded by the user.",
     chunkSource: "",
     published: createdDate(fullFilePath),

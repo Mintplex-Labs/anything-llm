@@ -10,6 +10,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "mistral",
   "perplexity",
   "openrouter",
+  "lmstudio",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -33,6 +34,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getPerplexityModels();
     case "openrouter":
       return await getOpenRouterModels();
+    case "lmstudio":
+      return await getLMStudioModels(basePath);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -79,6 +82,28 @@ async function localAIModels(basePath = null, apiKey = null) {
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.LOCAL_AI_API_KEY = apiKey;
   return { models, error: null };
+}
+
+async function getLMStudioModels(basePath = null) {
+  try {
+    const { Configuration, OpenAIApi } = require("openai");
+    const config = new Configuration({
+      basePath: basePath || process.env.LMSTUDIO_BASE_PATH,
+    });
+    const openai = new OpenAIApi(config);
+    const models = await openai
+      .listModels()
+      .then((res) => res.data.data)
+      .catch((e) => {
+        console.error(`LMStudio:listModels`, e.message);
+        return [];
+      });
+
+    return { models, error: null };
+  } catch (e) {
+    console.error(`LMStudio:getLMStudioModels`, e.message);
+    return { models: [], error: "Could not fetch LMStudio Models" };
+  }
 }
 
 async function ollamaAIModels(basePath = null) {

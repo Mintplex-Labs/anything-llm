@@ -59,6 +59,10 @@ const KEY_MAPPING = {
     envKey: "LMSTUDIO_BASE_PATH",
     checks: [isNotEmpty, validLLMExternalBasePath, validDockerizedUrl],
   },
+  LMStudioModelPref: {
+    envKey: "LMSTUDIO_MODEL_PREF",
+    checks: [],
+  },
   LMStudioTokenLimit: {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
