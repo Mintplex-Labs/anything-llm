@@ -91,13 +91,6 @@ mintplexlabs/anythingllm;
 Go to `http://localhost:3001` and you are now using AnythingLLM! All your data and progress will persist between
 container rebuilds or pulls from Docker Hub.
 
-## Use the Midori AI Subsystem to Manage AnythingLLM
-
-Follow the setup found on [Midori AI Subsystem Site](https://io.midori-ai.xyz/subsystem/manager/) for your host OS
-After setting that up install the AnythingLLM docker backend to the Midori AI Subsystem.
-
-Once that is done, you are all set!
-
 ## How to use the user interface
 
 - To access the full application, visit `http://localhost:3001` in your browser.
@@ -115,6 +108,17 @@ Once that is done, you are all set!
 - `docker-compose up -d --build` to build the image - this will take a few moments.
 
 Your docker host will show the image as online once the build process is completed. This will build the app to `http://localhost:3001`.
+
+## Integrations and one-click setups
+
+The integrations below are templates or tooling built by the community to make running the docker experience of AnythingLLM easier.
+
+### Use the Midori AI Subsystem to Manage AnythingLLM
+
+Follow the setup found on [Midori AI Subsystem Site](https://io.midori-ai.xyz/subsystem/manager/) for your host OS
+After setting that up install the AnythingLLM docker backend to the Midori AI Subsystem.
+
+Once that is done, you are all set!
 
 ## Common questions and fixes
 
