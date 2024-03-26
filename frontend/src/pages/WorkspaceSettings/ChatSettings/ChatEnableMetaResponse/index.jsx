@@ -15,9 +15,9 @@ export default function ChatEnableMetaResponse({ workspace, setHasChanges }) {
         }
         onToggle={toggleMetaResponse}
         name="metaResponse"
-        description="Turn on this feature to dynamically adjust the chat interface based on conversation context, using options like dropdowns, sliders, and suggestions for a tailored user experience."
-        // badge
-        // badgeLabel="New"
+        description="Turn on this feature to dynamically adjust the chat interface based on conversation context, using options like dropdowns, sliders, and suggestions for a tailored user experience. For Better experience, use GPT-4 or any advanced LLM model."
+        badge
+        badgeLabel="New"
         // badgeAnimated
       />
     </div>

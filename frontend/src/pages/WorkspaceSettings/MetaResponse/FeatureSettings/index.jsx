@@ -20,10 +20,12 @@ export default function FeatureSettings({
           settings={settings}
           onUpdateSettings={onUpdateSettings}
         />
-        {settings.config.systemPrompt.content !== "" ||
+        {settings.config.systemPrompt.list[
+            settings.config.systemPrompt.active
+          ].content ||
         settings.config.systemPrompt.isEnabled ? (
           <div className="flex flex-col gap-2">
-            <TextAreaBlock
+            {/* <TextAreaBlock
               workspace={workspace}
               name="systemPrompt"
               value={settings.config.systemPrompt.content}
@@ -41,7 +43,175 @@ export default function FeatureSettings({
               }}
               code
               initialRows={6}
-            />
+            /> */}
+            <div>
+              <div className=" flex gap-1 -mb-1 mt-4 flex-wrap items-center">
+                {settings.config.systemPrompt.list.map((item, index) => (
+                  <Badge
+                    key={`schema_${index}`}
+                    showClose
+                    size="md"
+                    rounded="md"
+                    label={`${item?.title}`}
+                    active={settings.config.systemPrompt.active === index}
+                    onSelect={
+                      // fill systemPrompt.active with index of selected item
+                      (e) => {
+                        e.stopPropagation();
+                        console.log("selected item", item);
+                        onUpdateSettings({
+                          ...settings,
+                          config: {
+                            ...settings.config,
+                            systemPrompt: {
+                              ...settings.config.systemPrompt,
+                              active: index,
+                            },
+                          },
+                        });
+                        showToast(
+                          `Schema ${item.title} has been selected`,
+                          "success",
+                          { clear: true }
+                        );
+                      }
+                    }
+                    onDoubleClick={() => {
+                      // rename item
+                      console.log("renaming item", item);
+                      const newSchemas = settings.config.systemPrompt.list.map(
+                        (s, i) => {
+                          if (i === index) {
+                            return {
+                              ...s,
+                              title:
+                                prompt("Enter new item title", s.title) ||
+                                s.title,
+                            };
+                          }
+                          return s;
+                        }
+                      );
+                      console.log("New item", newSchemas);
+                      onUpdateSettings({
+                        ...settings,
+                        config: {
+                          ...settings.config,
+                          systemPrompt: {
+                            ...settings.config.systemPrompt,
+                            list: newSchemas,
+                          },
+                        },
+                      });
+                    }}
+                    onClose={(e) => {
+                      e.stopPropagation();
+                      if (settings.config.systemPrompt.list.length === 1) {
+                        showToast("Cannot remove last schema", "error", {
+                          clear: true,
+                        });
+                        return;
+                      }
+                      const newSchemas =
+                        settings.config.systemPrompt.list.filter(
+                          (_, i) => i !== index
+                        );
+                      const active = settings.config.systemPrompt.active;
+                      const newActive = active === index ? active - 1 : active;
+                      onUpdateSettings({
+                        ...settings,
+                        config: {
+                          ...settings.config,
+                          systemPrompt: {
+                            ...settings.config.systemPrompt,
+                            list: newSchemas,
+                            active: newActive,
+                          },
+                        },
+                      });
+                      showToast(
+                        `Schema ${item.title} has been removed`,
+                        "success",
+                        {
+                          clear: true,
+                        }
+                      );
+                    }}
+                  />
+                ))}
+                <Button
+                  text="+"
+                  onClick={() => {
+                    const newSchema = {
+                      title: prompt("Enter new item title"),
+                      content: "",
+                    };
+                    // if cancel is clicked
+                    if (!newSchema.title) return;
+                    const newSchemas = [
+                      ...settings.config.systemPrompt.list,
+                      newSchema,
+                    ];
+                    onUpdateSettings({
+                      ...settings,
+                      config: {
+                        ...settings.config,
+                        systemPrompt: {
+                          ...settings.config.systemPrompt,
+                          list: newSchemas,
+                          active: newSchemas.length - 1,
+                        },
+                      },
+                    });
+                    showToast(
+                      `Schema ${newSchema.title} has been added`,
+                      "success",
+                      {
+                        clear: true,
+                      }
+                    );
+                  }}
+                />
+              </div>
+              <TextArea
+                name="openAiPrompt"
+                value={
+                  // use value instead of defaultValue
+                  settings.config.systemPrompt.list[
+                    settings.config.systemPrompt.active
+                  ].content
+                }
+                placeholder="Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
+                onSave={
+                  // fill systemPrompt.list[active].content with new content
+                  (newContent) => {
+                    const newSchemas = settings.config.systemPrompt.list.map(
+                      (item, idx) => {
+                        if (idx === settings.config.systemPrompt.active) {
+                          return {
+                            ...item,
+                            content: newContent,
+                          };
+                        }
+                        return item;
+                      }
+                    );
+                    onUpdateSettings({
+                      ...settings,
+                      config: {
+                        ...settings.config,
+                        systemPrompt: {
+                          ...settings.config.systemPrompt,
+                          list: newSchemas,
+                        },
+                      },
+                    });
+                  }
+                }
+                code
+                initialRows={6}
+              />
+            </div>
           </div>
         ) : null}
       </div>

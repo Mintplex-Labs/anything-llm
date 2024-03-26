@@ -101,7 +101,7 @@ function workspaceEndpoints(app) {
             WorkspaceMetaResponse.defaultSystemPrompt;
           Object.keys(metaResponseDefaultSettings).map((feature) => {
             metaResponseDefaultSettings[feature].config.systemPrompt.content = currentSystemPrompt;
-            metaResponseDefaultSettings[feature].config.promptSchema.list[0] = {
+            metaResponseDefaultSettings[feature].config.systemPrompt.list[0] = {
               title: "Default",
               content: currentSystemPrompt,
             }

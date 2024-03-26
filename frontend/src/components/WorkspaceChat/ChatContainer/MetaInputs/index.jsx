@@ -27,7 +27,6 @@ const inputComponents = {
 
 const MetaInputs = ({
   inputs,
-  isMetaInputs,
   submit,
   setMessage,
   workspace,
@@ -51,9 +50,7 @@ const MetaInputs = ({
 
   // Condition to show the dynamic input or the forced text input
   const shouldShowMetaInputs =
-    workspace?.metaResponse && inputs !== undefined && !isForcedTextInput
-
-
+    workspace?.metaResponse && inputs !== undefined && !isForcedTextInput;
 
   return (
     <div className="w-full md:px-4 fixed md:absolute bottom-10 left-0 z-10 md:z-0 flex justify-center items-center">

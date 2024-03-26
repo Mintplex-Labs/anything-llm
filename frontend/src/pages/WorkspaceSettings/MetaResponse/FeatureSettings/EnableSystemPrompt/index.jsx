@@ -9,7 +9,9 @@ export default function EnableSystemPrompt({
 }) {
   const [isEnabled, setIsEnabled] = useState(
     settings.config.systemPrompt.isEnabled ||
-      settings.config.systemPrompt.content !== ""
+    settings.config.systemPrompt.list[
+      settings.config.systemPrompt.active
+    ].content
   );
 
   const toggleSystemPrompt = () => {
@@ -47,6 +49,9 @@ export default function EnableSystemPrompt({
         description="Specify the context and instructions for the AI in this workspace. A well-defined prompt ensures the AI delivers relevant and precise responses."
         inline
         content={content}
+        disabled={settings.config.systemPrompt.list[
+          settings.config.systemPrompt.active
+        ].content}
       />
     </div>
   );
