@@ -1,4 +1,4 @@
-import { ArrowsIn, ArrowsOut, Check } from "@phosphor-icons/react";
+import { ArrowsIn, ArrowsOut, Check, X } from "@phosphor-icons/react";
 import React, { useState, useRef, useEffect } from "react";
 
 export default function TextArea({
@@ -14,19 +14,21 @@ export default function TextArea({
   wrap = "soft",
   code = false,
   onSave,
+  value,
 }) {
   const [rows, setRows] = useState(initialRows);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showExpandIcon, setShowExpandIcon] = useState(false);
-  const [content, setContent] = useState(defaultValue);
+  const [content, setContent] = useState(value || "");
   const [showSaveButton, setShowSaveButton] = useState(false);
   const textAreaRef = useRef(null);
 
   useEffect(() => {
+    setContent(value);
     adjustRowsToFitContent();
     // Initial check to determine if the expand icon should be shown
     checkForOverflow();
-  }, [defaultValue]);
+  }, [value]);
 
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);
@@ -78,6 +80,12 @@ export default function TextArea({
     }
   };
 
+  // Handle cancel action
+  const handleCancel = () => {
+    setContent(value);
+    setShowSaveButton(false);
+  };
+
   const textColorClass = disabled ? "text-white/40" : "text-white/60";
   const codeClass = code ? "font-mono text-xs" : "text-sm";
 
@@ -87,7 +95,8 @@ export default function TextArea({
         ref={textAreaRef}
         name={name}
         rows={rows}
-        defaultValue={defaultValue}
+        // defaultValue={defaultValue}
+        value={content}
         className={`resize-none bg-zinc-900 placeholder:text-white/20 ${codeClass} rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-2 ${textColorClass} ${className}`}
         placeholder={placeholder}
         required={required}
@@ -97,7 +106,7 @@ export default function TextArea({
         disabled={disabled}
       />
       {showSaveButton && (
-        <div className="flex flex-row justify-end px-8 sticky bottom-4 right-6">
+        <div className="flex flex-row justify-end px-8 sticky bottom-4 right-6 gap-4">
           <button
             onClick={handleSave}
             className="flex items-center mt-4 gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg  hover:bg-[#222628]/60 transition-all duration-150 ease-in-out "
@@ -105,25 +114,34 @@ export default function TextArea({
           >
             <Check size={18} weight="bold" color="#D3D4D4" />
             <div className="text-[#D3D4D4] text-xs font-bold leading-[18px]">
-              Save Update
+              Save
+            </div>
+          </button>
+          <button
+            onClick={handleCancel}
+            className="flex items-center mt-4 gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg  hover:bg-[#222628]/60 transition-all duration-150 ease-in-out "
+          >
+            <X size={18} weight="bold" color="#D3D4D4" />
+            <div className="text-[#D3D4D4] text-xs font-bold leading-[18px]">
+              Cancel
             </div>
           </button>
         </div>
       )}
-
-      {showExpandIcon && !showSaveButton && (
+      {showExpandIcon && (
         <button
+          type="button"
           onClick={toggleExpansion}
-          className={`absolute bottom-2 right-2 text-lg ${
+          className={`absolute bottom-1 right-2 text-lg ${
             isExpanded ? "text-2xl" : "text-xl"
           } text-white/60 hover:text-white transition-all duration-150 ease-in-out`}
           aria-label={isExpanded ? "Contract" : "Expand"}
           disabled={disabled}
         >
           {isExpanded ? (
-            <ArrowsIn className="hover:scale-90" />
+            <span className="hover:scale-90">-</span>
           ) : (
-            <ArrowsOut className="hover:scale-110 active:scale-125 transition-all duration-150 ease-in-out" />
+            <span className="hover:scale-110 active:scale-125 transition-all duration-150 ease-in-out">+</span>
           )}
         </button>
       )}

@@ -13,6 +13,10 @@ import PromptInput from "../PromptInput";
 const inputComponents = {
   text: PromptInput,
   options: OptionSelect,
+  checkbox: OptionSelect,
+  list: OptionSelect,
+  buttons: OptionSelect,
+  dropdown: OptionSelect,
   //   range: RangeSlider,
   //   date: DatePicker,
   //   time: TimePicker,
@@ -47,11 +51,14 @@ const MetaInputs = ({
 
   // Condition to show the dynamic input or the forced text input
   const shouldShowMetaInputs =
-    isMetaInputs && inputs !== undefined && !isForcedTextInput;
+    workspace?.metaResponse && inputs !== undefined && !isForcedTextInput
+
+
 
   return (
     <div className="w-full md:px-4 fixed md:absolute bottom-10 left-0 z-10 md:z-0 flex justify-center items-center">
       <div className="w-[700px]">
+
         {shouldShowMetaInputs ? (
           <InputComponent
             submit={submit}
@@ -78,7 +85,7 @@ const MetaInputs = ({
             sendCommand={sendCommand}
           />
         )}
-        {isMetaInputs && inputs != undefined && (
+        {workspace?.metaResponse && inputs != undefined && (
           <div className="w-full  absolute -bottom-8 left-0 z-10 md:z-0 flex justify-center items-center">
             <button
               type="button"

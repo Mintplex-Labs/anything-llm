@@ -10,13 +10,15 @@ export default function ChatEnableMetaResponse({ workspace, setHasChanges }) {
         initialChecked={workspace?.metaResponse}
         label={
           workspace.metaResponse
-            ? "Meta Response is Enabled"
+            ? "Meta Response is (Enabled)"
             : "Enable Meta Response"
         }
         onToggle={toggleMetaResponse}
         name="metaResponse"
         description="Turn on this feature to dynamically adjust the chat interface based on conversation context, using options like dropdowns, sliders, and suggestions for a tailored user experience."
-        badge
+        // badge
+        // badgeLabel="New"
+        // badgeAnimated
       />
     </div>
   );

@@ -13,6 +13,7 @@ export default function ToggleBlock({
   badgeLabel,
   badgeAnimated,
   badgeBg,
+  badgeShowDot,
   border,
   bg,
   Icon,
@@ -22,6 +23,7 @@ export default function ToggleBlock({
 }) {
   const borderStyle = border ? "border border-gray-600 rounded-2xl p-4" : "";
   const backgroundStyle = bg ? "bg-black/10" : "";
+
 
   return (
     <div
@@ -49,7 +51,7 @@ export default function ToggleBlock({
                   </label>
                   {badge && (
                     <Badge
-                      showDot
+                      showDot={badgeShowDot}
                       animated={badgeAnimated}
                       label={badgeLabel}
                       bg={badgeBg}

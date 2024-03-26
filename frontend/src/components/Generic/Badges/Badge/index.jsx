@@ -30,7 +30,10 @@ export default function Badge({
   showClose = false,
   bg = "bg-green-500",
   animated = false,
+  active = false,
   onClose = () => {}, // Callback for close icon
+  onSelect = () => {}, // Callback for badge click
+  onDoubleClick = () => {}, // Callback for badge double click
 }) {
   const {
     text: textColor,
@@ -64,7 +67,9 @@ export default function Badge({
     lg: "shadow-lg",
     xl: "shadow-xl",
   }[shadow];
-  const backgroundClasses = `${bg} bg-opacity-10 hover:bg-opacity-20`;
+  const backgroundClasses = `${bg} ${
+    active ? "bg-opacity-20" : "bg-opacity-10"
+  } hover:bg-opacity-30`;
 
   // SVG Icons
   const DotIcon = () => (
@@ -91,7 +96,9 @@ export default function Badge({
 
   return (
     <div
-      className={`flex flex-row gap-0.5 w-fit h-fit  justify-center items-center  group ${sizeClasses} ${backgroundClasses} ${roundedClasses} ${shadowClasses} ${ringClasses}`}
+      className={`flex flex-row gap-0.5 w-fit h-fit  justify-center items-center cursor-pointer select-none group ${sizeClasses} ${backgroundClasses} ${roundedClasses} ${shadowClasses} ${ringClasses}`}
+      onDoubleClick={onDoubleClick}
+      onClick={onSelect}
     >
       {showDot && (
         <div>
@@ -103,10 +110,10 @@ export default function Badge({
       </p>
       {showClose && (
         <div
-          className="flex flex-row justify-start items-start p-1 rounded-lg cursor-pointer"
+          className="flex flex-row justify-start items-start p-1 rounded-lg cursor-pointer z-10"
           onClick={onClose}
         >
-          <CloseIcon />
+          <CloseIcon className="p1" />
         </div>
       )}
     </div>

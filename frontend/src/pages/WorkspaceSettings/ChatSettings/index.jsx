@@ -76,7 +76,6 @@ export default function ChatSettings({ workspace, setWorkspace }) {
       />
       <ChatEnableMetaResponse
         workspace={workspace}
-
         setHasChanges={setHasChanges}
       />
       {hasChanges && (

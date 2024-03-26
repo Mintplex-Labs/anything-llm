@@ -44,18 +44,28 @@ function ShowWorkspaceChat() {
   useEffect(() => {
     async function getWorkspace() {
       if (!slug) return;
-      const _workspace = await Workspace.bySlug(slug);
-      if (!_workspace) {
-        setLoading(false);
-        return;
-      }
+      try {
+        const _workspace = await Workspace.bySlug(slug);
+        if (!_workspace) {
+          setLoading(false);
+          return;
+        }
 
-      const suggestedMessages = await Workspace.getSuggestedMessages(slug);
-      setWorkspace({
-        ..._workspace,
-        suggestedMessages,
-      });
-      setLoading(false);
+        // const metaResponseSettings =
+        //   _workspace.metaResponseSettings &&
+        //   JSON.parse(_workspace.metaResponseSettings);
+
+        const suggestedMessages = await Workspace.getSuggestedMessages(slug);
+        setWorkspace({
+          ..._workspace,
+          suggestedMessages,
+          // metaResponseSettings,
+        });
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error getting suggested messages for workspace:", error);
+      }
     }
     getWorkspace();
   }, [slug]);

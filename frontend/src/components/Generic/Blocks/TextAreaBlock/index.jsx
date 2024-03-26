@@ -15,6 +15,7 @@ export default function TextAreaBlock({
   wrap,
   code,
   onSave,
+  value,
 }) {
   return (
     <div>
@@ -32,6 +33,7 @@ export default function TextAreaBlock({
       </div>
       <TextArea
         defaultValue={defaultValue}
+        value={value}
         required={required}
         placeholder={placeholder}
         onChange={onChange}

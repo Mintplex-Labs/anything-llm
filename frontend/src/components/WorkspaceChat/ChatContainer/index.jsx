@@ -109,7 +109,7 @@ export default function ChatContainer({
         );
       }
 
-      if (isMetaInputs) {
+      if (workspace?.metaResponse) {
         const { remainingText, metaData } = extractMetaData(
           _chatHistory[_chatHistory.length - 1].content
         );
@@ -131,11 +131,11 @@ export default function ChatContainer({
       {isMobile && <SidebarMobileHeader />}
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
         <ChatHistory
-          history={isMetaInputs ? finalizedChatHistory : chatHistory}
+          history={workspace?.metaResponse ? finalizedChatHistory : chatHistory}
           workspace={workspace}
           sendCommand={sendCommand}
         />
-        {isMetaInputs && currentInputMeta?.inputs?.type !== undefined ? (
+        {workspace?.metaResponse && currentInputMeta?.inputs?.type !== undefined ? (
           <MetaInputs
             inputs={currentInputMeta?.inputs}
             isMetaInputs={isMetaInputs}

@@ -2,10 +2,16 @@ import ToggleBlock from "@/components/Generic/Blocks/ToggleBlock";
 import showToast from "@/utils/toast";
 import { useState } from "react";
 
-export default function EnableSystemPrompt({ settings, onUpdateSettings }) {
+export default function EnableSystemPrompt({ 
+  settings,
+  onUpdateSettings,
+  content,
+}) {
   const [isEnabled, setIsEnabled] = useState(
-    settings.config.systemPrompt.isEnabled
+    settings.config.systemPrompt.isEnabled ||
+      settings.config.systemPrompt.content !== ""
   );
+
   const toggleSystemPrompt = () => {
     onUpdateSettings({
       ...settings,
@@ -30,16 +36,17 @@ export default function EnableSystemPrompt({ settings, onUpdateSettings }) {
   return (
     <div className="relative w-full max-h-full ">
       <ToggleBlock
-        initialChecked={settings.config.systemPrompt.isEnabled}
+        initialChecked={isEnabled}
         label={
-          settings.config.systemPrompt.isEnabled
-            ? "System Prompt (is now handled by Meta Response Inputs)"
+          isEnabled
+            ? "System Prompt (Handled by Meta Response Inputs)"
             : "Handle System Prompt - (optional)"
         }
         onToggle={toggleSystemPrompt}
         name="systemPrompt"
         description="Specify the context and instructions for the AI in this workspace. A well-defined prompt ensures the AI delivers relevant and precise responses."
         inline
+        content={content}
       />
     </div>
   );

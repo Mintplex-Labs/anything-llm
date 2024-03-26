@@ -28,6 +28,7 @@ const {
   determineWorkspacePfpFilepath,
   fetchPfp,
 } = require("../utils/files/pfp");
+const { WorkspaceMetaResponse } = require("../models/workspaceMetaResponse");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -89,10 +90,16 @@ function workspaceEndpoints(app) {
         }
         if (
           !currWorkspace.metaResponse &&
-          !currWorkspace.metaResponseSettings
+          !currWorkspace.metaResponseSettings &&
+          data.metaResponse
         ) {
-          metaResponseDefaultSettings.inputs.config.systemPrompt.openAiPrompt =
-            currWorkspace.openAiPrompt || "";
+          const metaResponseDefaultSettings = WorkspaceMetaResponse.defaultSettings;
+          console.log("currWorkspace.openAiPrompt", currWorkspace.openAiPrompt)
+          Object.keys(metaResponseDefaultSettings).map((feature) => {
+            metaResponseDefaultSettings[feature].config.systemPrompt.content =
+              data.openAiPrompt || currWorkspace.openAiPrompt ||
+              WorkspaceMetaResponse.defaultSystemPrompt;
+          });
           data.metaResponseSettings = JSON.stringify(
             metaResponseDefaultSettings
           );
@@ -583,173 +590,4 @@ function workspaceEndpoints(app) {
     }
   );
 }
-
-const metaResponseDefaultSettings = {
-  inputs: {
-    isEnabled: false,
-    config: {
-      systemPrompt: {
-        isEnabled: false,
-        content: "",
-        openAiPrompt: "",
-        overrideSystemPrompt: false,
-        suggestionsList: [
-          {
-            title: "",
-            content: "",
-          },
-        ],
-        canEdit: ["admin", "manager"],
-      },
-      promptSchema: {
-        content: "##  Prompt Guidelines\n- you are a helpful assistant, you will be provided a question to create a list of four elements\n- when  requested to return structured data return them in a JSON object code block , don't introduce them or label them, just return them at the end of your response.\n- When presenting choices or detailed information, encapsulate the data in JSON format, aiming for a user-friendly interaction through:\n\t- type options: you will use this if options are a better way to seak users interaction, include displayTypess: buttons, list,checkbox, or dropdown based on the context.\n\t- type range: you will use this if the user is required to input a numeric between a certain range.\n\t- type rating: you will use this if the user should insert a rating, uswaly between one and five.\n\t- type date: you will use this if the user should insert a date.\n- if asked to return options return them as structured data,  only when asked.\n- always return response as normal in markdown first then  associate  the data structure  object below.\n- make your response rich in markdown.\n- if you find that your response at any time contain options follow the instructions above.\n---\n### Response Example\n#### Discover More\n**Fascinating Topic**\nExplore intriguing facts and details about your chosen subject, enhancing your understanding and curiosity.\n\n```json\n{\n        \"inputs\": {\n            \"type\": \"options\",\n            \"data\": {\n                \"options\": [\n                    {\n                        \"label\": \"Restart Router\",\n                        \"value\": \"restart router\"\n                    },\n                    {\n                        \"label\": \"Check Service Status\",\n                        \"value\": \"check service status\"\n                    },\n                    ... \n                 ],\n                \"label\":\"Select Server \",\n                \"description\":\"list of servers as described\"\n               \n            },\n            \"settings\": {\n                \"allowMultiple\": false,\n                \"displayType\": \"chose one, buttons/list/dropdown\"\n            }\n        },\n        \"sentiment\": \"happy\",\n        \"style\": \"text\"\n}\n```\n\ninput types:\n```json\n{\n   \"type\":\"options\",\n   \"data\":{\n      \"options\":[\n         {\n            \"label\":\"Restart Router\",\n            \"value\":\"restart_router\"\n         },\n         {\n            \"label\":\"Check Service Status\",\n            \"value\":\"check_service_status\"\n         },\n         {\n            \"label\":\"Contact Support\",\n            \"value\":\"contact_support\"\n         }\n      ]\n   },\n   \"settings\":{\n      \"allowMultiple\":false,\n      \"displayType\":\"buttons\"\n   }\n}\n```\n\n```json\n{\n   \"type\":\"range\",\n   \"data\":{\n      \"min\":1,\n      \"max\":10,\n      \"step\":1\n   },\n   \"settings\":{\n      \"showValue\":true\n   }\n}\n```\n\n```json\n{\n   \"type\":\"rating\",\n   \"data\":{\n      \"max\":5,\n      \"defaultValue\":3,\n      \"icon\":\"star\"\n   }\n}\n```\n\n```json\n{\n   \"type\":\"date\",\n   \"settings\":{\n      \"format\":\"YYYY-MM-DD\",\n      \"minDate\":\"2021-01-01\",\n      \"maxDate\":\"2023-12-31\"\n   }\n}\n```",
-        schemas: [
-          {
-            title: "All Input Types",
-            content: "##  Prompt Guidelines\n- you are a helpful assistant, you will be provided a question to create a list of four elements\n- when  requested to return structured data return them in a JSON object code block , don't introduce them or label them, just return them at the end of your response.\n- When presenting choices or detailed information, encapsulate the data in JSON format, aiming for a user-friendly interaction through:\n\t- type options: you will use this if options are a better way to seak users interaction, include displayTypess: buttons, list,checkbox, or dropdown based on the context.\n\t- type range: you will use this if the user is required to input a numeric between a certain range.\n\t- type rating: you will use this if the user should insert a rating, uswaly between one and five.\n\t- type date: you will use this if the user should insert a date.\n- if asked to return options return them as structured data,  only when asked.\n- always return response as normal in markdown first then  associate  the data structure  object below.\n- make your response rich in markdown.\n- if you find that your response at any time contain options follow the instructions above.\n---\n### Response Example\n#### Discover More\n**Fascinating Topic**\nExplore intriguing facts and details about your chosen subject, enhancing your understanding and curiosity.\n\n```json\n{\n        \"inputs\": {\n            \"type\": \"options\",\n            \"data\": {\n                \"options\": [\n                    {\n                        \"label\": \"Restart Router\",\n                        \"value\": \"restart router\"\n                    },\n                    {\n                        \"label\": \"Check Service Status\",\n                        \"value\": \"check service status\"\n                    },\n                    ... \n                 ],\n                \"label\":\"Select Server \",\n                \"description\":\"list of servers as described\"\n               \n            },\n            \"settings\": {\n                \"allowMultiple\": false,\n                \"displayType\": \"chose one, buttons/list/dropdown\"\n            }\n        },\n        \"sentiment\": \"happy\",\n        \"style\": \"text\"\n}\n```\n\ninput types:\n```json\n{\n   \"type\":\"options\",\n   \"data\":{\n      \"options\":[\n         {\n            \"label\":\"Restart Router\",\n            \"value\":\"restart_router\"\n         },\n         {\n            \"label\":\"Check Service Status\",\n            \"value\":\"check_service_status\"\n         },\n         {\n            \"label\":\"Contact Support\",\n            \"value\":\"contact_support\"\n         }\n      ]\n   },\n   \"settings\":{\n      \"allowMultiple\":false,\n      \"displayType\":\"buttons\"\n   }\n}\n```\n\n```json\n{\n   \"type\":\"range\",\n   \"data\":{\n      \"min\":1,\n      \"max\":10,\n      \"step\":1\n   },\n   \"settings\":{\n      \"showValue\":true\n   }\n}\n```\n\n```json\n{\n   \"type\":\"rating\",\n   \"data\":{\n      \"max\":5,\n      \"defaultValue\":3,\n      \"icon\":\"star\"\n   }\n}\n```\n\n```json\n{\n   \"type\":\"date\",\n   \"settings\":{\n      \"format\":\"YYYY-MM-DD\",\n      \"minDate\":\"2021-01-01\",\n      \"maxDate\":\"2023-12-31\"\n   }\n}\n```",
-          },
-          {
-            title: "Suggestions Buttons Type",
-            content: "##  Prompt Guidelines\n- you are a helpful assistant, you will be provided a question to create a list of four elements\n- when  requested to return structured data return them in a JSON object code block , don't introduce them or label them, just return them at the end of your response.\n- When presenting choices or detailed information, encapsulate the data in JSON format, aiming for a user-friendly interaction through:\n\t- type options: you will use this if options are a better way to seak users interaction, include displayTypess: buttons, list,checkbox, or dropdown based on the context.\n\t- type range: you will use this if the user is required to input a numeric between a certain range.\n\t- type rating: you will use this if the user should insert a rating, uswaly between one and five.\n\t- type date: you will use this if the user should insert a date.\n- if asked to return options return them as structured data,  only when asked.\n- always return response as normal in markdown first then  associate  the data structure  object below.\n- make your response rich in markdown.\n- if you find that your response at any time contain options follow the instructions above.\n---\n### Response Example\n#### Discover More\n**Fascinating Topic**\nExplore intriguing facts and details about your chosen subject, enhancing your understanding and curiosity.\n\n```json\n{\n        \"inputs\": {\n            \"type\": \"options\",\n            \"data\": {\n                \"options\": [\n                    {\n                        \"label\": \"Restart Router\",\n                        \"value\": \"restart router\"\n                    },\n                    {\n                        \"label\": \"Check Service Status\",\n                        \"value\": \"check service status\"\n                    },\n                    ... \n                 ],\n                \"label\":\"Select Server \",\n                \"description\":\"list of servers as described\"\n               \n            },\n            \"settings\": {\n                \"allowMultiple\": false,\n                \"displayType\": \"chose one, buttons/list/dropdown\"\n            }\n        },\n        \"sentiment\": \"happy\",\n        \"style\": \"text\"\n}\n```",
-          },
-        ],
-        overrideWorkspacePrompt: false,
-        canEdit: ["admin", "manager"],
-      },
-      components: {
-        dropDownMenu: {
-          isEnabled: false,
-          options: [],
-          description: "Drop Down menu best to select  between functional derisions, ie: continue, Repeat or Move to a new sequence.. etc",
-          infoLink: "https://docs.anythingllm.com/docs/meta-response/inputs/dropdown-menu",
-
-        },
-        optionsList: {
-          isEnabled: false,
-          options: [],
-          description: "Best suited  for expansion on a topic",
-          infoLink: "https://docs.anythingllm.com/docs/meta-response/inputs/options-list",
-        },
-        optionsButtons: {
-          isEnabled: false,
-          options: [],
-          description: "Chat will provide answers with the LLM's general knowledge and document context that is found.",
-          infoLink: "https://docs.anythingllm.com/docs/meta-response/inputs/options-buttons",
-        },
-        multiSelectCheckboxes: {
-          isEnabled: false,
-          options: [],
-          description: "Chat will provide answers with the LLM's general knowledge and document context that is found.",
-          infoLink: "https://docs.anythingllm.com/docs/meta-response/inputs/multi-select-checkboxes",
-        },
-      },
-    },
-    permissions: ["user"],
-    description: "Traditionally, interaction with AnythingLLM occurs through a text area. Meta Inputs enhance this by offering alternative interaction methods, including option buttons, multi-select checkboxes, sliders, drop-down menus, and date/time selectors. To utilize these components, you'll need to guide the LLM on incorporating them into its responses with a specific schema",
-    infoLink: "https://docs.anythingllm.com/docs/meta-response/inputs",
-  },
-  sentiments: {
-    isEnabled: false,
-    config: {
-      systemPrompt: {
-        isEnabled: false,
-        content: "",
-        openAiPrompt: "",
-        overrideSystemPrompt: false,
-        suggestionsList: [
-          {
-            title: "",
-            content: "",
-          },
-        ],
-        canEdit: ["admin", "manager"],
-      },
-      promptSchema: {
-        content: "",
-        schemas: [
-          {
-            title: "",
-            content: "",
-          },
-        ],
-        overrideWorkspacePrompt: false,
-        canEdit: ["admin", "manager"],
-      },
-      components: {
-        dropDownMenu: {
-          isEnabled: false,
-          options: [],
-
-        },
-        optionsList: {
-          isEnabled: false,
-          options: [],
-        },
-        optionsButtons: {
-          isEnabled: false,
-          options: [],
-        },
-        multiSelectCheckboxes: {
-          isEnabled: false,
-          options: [],
-        },
-      },
-    },
-    permissions: ["user"],
-    description: "Activate to enable the AI to analyze and adapt its responses based on the emotional tone of the conversation, enhancing interaction personalization",
-    infoLink: "https://docs.anythingllm.com/docs/meta-response/sentiments",
-  },
-  avatars: {
-    isEnabled: false,
-    config: {
-      systemPrompt: {
-        isEnabled: false,
-        content: "",
-        openAiPrompt: "",
-        overrideSystemPrompt: false,
-        suggestionsList: [
-          {
-            title: "",
-            content: "",
-          },
-        ],
-        canEdit: ["admin", "manager"],
-      },
-      promptSchema: {
-        content: "",
-        schemas: [
-          {
-            title: "",
-            content: "",
-          },
-        ],
-        overrideWorkspacePrompt: false,
-        canEdit: ["admin", "manager"],
-      },
-      components: {
-        dropDownMenu: {
-          isEnabled: false,
-          options: [],
-
-        },
-        optionsList: {
-          isEnabled: false,
-          options: [],
-        },
-        optionsButtons: {
-          isEnabled: false,
-          options: [],
-        },
-        multiSelectCheckboxes: {
-          isEnabled: false,
-          options: [],
-        },
-      },
-    },
-    permissions: ["user"],
-    description: "Enable avatars to reflect user sentiments, allowing the AI to visually empathize and convey understanding through changes in its profile image based on the meta object's sentiment data.",
-    infoLink: "https://docs.anythingllm.com/docs/meta-response/avatars",
-  },
-};
-
 module.exports = { workspaceEndpoints };

@@ -1,7 +1,7 @@
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 
-const OptionSelect = ({ data, settings, submit, message, setMessage }) => {
+const OptionSelect = ({ data, settings, submit, message, setMessage ,workspace}) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [submitMessage, setSubmitMessage] = useState(false);
 
@@ -11,6 +11,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage }) => {
       setSubmitMessage(false);
     }
   }, [message]);
+
 
   const handleSelection = (value) => {
     const currentIndex = selectedOptions.indexOf(value);
@@ -28,42 +29,11 @@ const OptionSelect = ({ data, settings, submit, message, setMessage }) => {
 
   const handleSubmit = () => {
     setSubmitMessage(true);
+    setSelectedOptions([])
   };
 
-  // Grid of Buttons
-  if (settings.displayType === "buttons") {
-    return (
-      <div className=" mb-2 w-full p-4 backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
-        <Label label={data?.label} />
-        <div className=" pb-0 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-white/70 text-sm  ">
-          {data.options.map((option, index) => (
-            <button
-              key={index}
-              className="group relative shadow-lg hover:shadow-sm transition-all duration-200 ease-in-out text-left p-2.5 border rounded-xl border-white/20 bg-sidebar hover:bg-sidebar/50 overflow-hidden "
-              onClick={() => {
-                {
-                  handleSelection(option.value);
-                  handleSubmit();
-                }
-              }}
-            >
-              <p className="truncate max-w-xl group-hover:max-w-xl group-hover:truncate-0">
-                <span className="text-white/50 mr-1">{index + 1}.</span>{" "}
-                {option.label}
-              </p>
-              <span className="absolute invisible group-hover:visible bg-black text-white text-sm rounded-lg p-2 left-0 bottom-full mb-2">
-                <span className="text-white/50 mr-1">{index + 1}.</span>{" "}
-                {option.label}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   // Normal List with Hyperlinks
-  if (settings.displayType === "list") {
+  if (settings.displayType.includes("list") && workspace?.metaResponseSettings?.inputs?.config?.components?.optionsList?.isEnabled) {
     return (
       <div className=" text-white/70 text-sm w-full backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
         <Label {...data} />
@@ -90,7 +60,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage }) => {
   }
 
   // Checkbox
-  if (settings.displayType === "checkbox") {
+  if (settings.displayType.includes("checkbox") && workspace?.metaResponseSettings?.inputs?.config?.components?.multiSelectCheckboxes?.isEnabled) {
     return (
       <div className="w-full p-4 backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
         <Label label={data?.label} />
@@ -126,10 +96,12 @@ const OptionSelect = ({ data, settings, submit, message, setMessage }) => {
   }
 
   // Dropdown Menu
-  return (
-    <div className="mt-5 mb-5  w-full backdrop-blur-sm rounded-t-xl  py-4 px-6 border-l border-t border-r border-[#2f3238]">
-      <Label {...data} />
-      <select
+  if (settings.displayType.includes("dropdown") && workspace?.metaResponseSettings?.inputs?.config?.components?.dropDownMenu?.isEnabled) {
+
+    return (
+      <div className="mt-5 mb-5  w-full backdrop-blur-sm rounded-t-xl  py-4 px-6 border-l border-t border-r border-[#2f3238]">
+        <Label {...data} />
+        <select
         name="optionSelect"
         id="optionSelect"
         multiple={settings.allowMultiple}
@@ -158,7 +130,39 @@ const OptionSelect = ({ data, settings, submit, message, setMessage }) => {
         )}
       </select>
     </div>
-  );
+    )}
+
+  // Grid of Buttons fallback
+  
+    return (
+      <div className=" mb-2 w-full p-4 backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
+        <Label label={data?.label} />
+        <div className=" pb-0 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-white/70 text-sm  ">
+          {data.options.map((option, index) => (
+            <button
+              key={index}
+              className="group relative shadow-lg hover:shadow-sm transition-all duration-200 ease-in-out text-left p-2.5 border rounded-xl border-white/20 bg-sidebar hover:bg-sidebar/50 overflow-hidden "
+              onClick={() => {
+                {
+                  handleSelection(option.value);
+                  handleSubmit();
+                }
+              }}
+            >
+              <p className="truncate max-w-xl group-hover:max-w-xl group-hover:truncate-0">
+                <span className="text-white/50 mr-1">{index + 1}.</span>{" "}
+                {option.label}
+              </p>
+              <span className="absolute invisible group-hover:visible bg-black text-white text-sm rounded-lg p-2 left-0 bottom-full mb-2">
+                <span className="text-white/50 mr-1">{index + 1}.</span>{" "}
+                {option.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  
 };
 
 const Label = ({ label, description }) => {
