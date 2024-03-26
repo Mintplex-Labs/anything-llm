@@ -53,8 +53,16 @@ async function renameLogoFile(originalFilename = null) {
   const extname = path.extname(originalFilename) || ".png";
   const newFilename = `${v4()}${extname}`;
   const originalFilepath = process.env.STORAGE_DIR
-    ? path.join(process.env.STORAGE_DIR, "assets", normalizePath(originalFilename))
-    : path.join(__dirname, `../../storage/assets`, normalizePath(originalFilename));
+    ? path.join(
+        process.env.STORAGE_DIR,
+        "assets",
+        normalizePath(originalFilename)
+      )
+    : path.join(
+        __dirname,
+        `../../storage/assets`,
+        normalizePath(originalFilename)
+      );
   const outputFilepath = process.env.STORAGE_DIR
     ? path.join(process.env.STORAGE_DIR, "assets", normalizePath(newFilename))
     : path.join(__dirname, `../../storage/assets`, normalizePath(newFilename));
