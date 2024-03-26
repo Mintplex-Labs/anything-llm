@@ -64,10 +64,14 @@ const Admin = {
         return [];
       });
   },
-  newInvite: async () => {
+  newInvite: async ({ role = null, workspaceIds = null }) => {
     return await fetch(`${API_BASE}/admin/invite/new`, {
-      method: "GET",
+      method: "POST",
       headers: baseHeaders(),
+      body: JSON.stringify({
+        role,
+        workspaceIds,
+      }),
     })
       .then((res) => res.json())
       .catch((e) => {
