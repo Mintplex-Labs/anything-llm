@@ -14,7 +14,7 @@ const HistoricalMessage = forwardRef(
     ref
   ) => {
     return (
-      <div>
+      <div className="py-[5px]">
         {role === "assistant" && (
           <div
             className={`text-[10px] font-medium text-gray-400 ml-[54px] mr-6 mb-2 text-left`}
