@@ -35,11 +35,15 @@ export default function App() {
           )}
         </div>
       </div>
-      <OpenButton
-        settings={embedSettings}
-        isOpen={isChatOpen}
-        toggleOpen={() => toggleOpenChat(true)}
-      />
+      {!isChatOpen && (
+        <div className="fixed bottom-0 right-0 mb-4 mr-4 z-50">
+          <OpenButton
+            settings={embedSettings}
+            isOpen={isChatOpen}
+            toggleOpen={() => toggleOpenChat(true)}
+          />
+        </div>
+      )}
     </>
   );
 }
