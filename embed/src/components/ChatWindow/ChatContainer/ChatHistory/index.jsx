@@ -58,7 +58,7 @@ export default function ChatHistory({ settings = {}, history = [] }) {
 
   return (
     <div
-      className="pb-[30px] pt-[5px] rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll md:max-h-[500px] max-h-[calc(100vh-200px)]"
+      className="pb-[30px] pt-[5px] rounded-lg px-2 h-full gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll md:max-h-[500px] max-h-[calc(100vh-200px)]"
       id="chat-history"
       ref={chatHistoryRef}
     >
@@ -97,7 +97,7 @@ export default function ChatHistory({ settings = {}, history = [] }) {
         );
       })}
       {!isAtBottom && (
-        <div className="fixed bottom-[10rem] right-[1.5rem] z-50 cursor-pointer animate-pulse">
+        <div className="fixed bottom-[10rem] right-[50px] z-50 cursor-pointer animate-pulse">
           <div className="flex flex-col items-center">
             <div className="p-1 rounded-full border border-white/10 bg-black/20 hover:bg-black/50">
               <ArrowDown
