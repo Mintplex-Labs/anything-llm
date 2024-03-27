@@ -1,3 +1,5 @@
+const isPortInUse = require("./portAvailabilityChecker");
+
 const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
@@ -462,14 +464,27 @@ function isDownloadedModel(input = "") {
   return files.includes(input);
 }
 
-function validDockerizedUrl(input = "") {
+async function validDockerizedUrl(input = "") {
   if (process.env.ANYTHING_LLM_RUNTIME !== "docker") return null;
+
   try {
-    const { hostname } = new URL(input);
-    if (["localhost", "127.0.0.1", "0.0.0.0"].includes(hostname.toLowerCase()))
-      return "Localhost, 127.0.0.1, or 0.0.0.0 origins cannot be reached from inside the AnythingLLM container. Please use host.docker.internal, a real machine ip, or domain to connect to your service.";
-    return null;
-  } catch {}
+    const url = new URL(input);
+    const hostname = url.hostname.toLowerCase();
+    const port = parseInt(url.port, 10);
+
+    if (isNaN(port)) return "Invalid URL: Port is not specified or invalid";
+
+    const isPortAvailableFromDocker = await isPortInUse(port);
+    if (!isPortAvailableFromDocker) {
+      if (["localhost", "127.0.0.1", "0.0.0.0"].includes(hostname)) {
+        return "localhost, 127.0.0.1, or 0.0.0.0 origins cannot be reached from inside the AnythingLLM container. Please use host.docker.internal (for linux use 172.17.0.1), a real machine ip, or domain to connect to your service.";
+      }
+    }
+  } catch (error) {
+    console.error(error.message);
+    return "An error occurred while validating the URL";
+  }
+
   return null;
 }
 
@@ -504,10 +519,8 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
     const { envKey, checks, postUpdate = [] } = KEY_MAPPING[key];
     const prevValue = process.env[envKey];
     const nextValue = newENVs[key];
-    const errors = checks
-      .map((validityCheck) => validityCheck(nextValue, force))
-      .filter((err) => typeof err === "string");
 
+    const errors = await executeValidationChecks(checks, nextValue, force);
     if (errors.length > 0) {
       error += errors.join("\n");
       break;
@@ -522,6 +535,13 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
 
   await logChangesToEventLog(newValues, userId);
   return { newValues, error: error?.length > 0 ? error : false };
+}
+
+async function executeValidationChecks(checks, value, force) {
+  const results = await Promise.all(
+    checks.map((validator) => validator(value, force))
+  );
+  return results.filter((err) => typeof err === "string");
 }
 
 async function logChangesToEventLog(newValues = {}, userId = null) {
