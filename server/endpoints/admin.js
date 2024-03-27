@@ -165,13 +165,18 @@ function adminEndpoints(app) {
     }
   );
 
-  app.get(
+  app.post(
     "/admin/invite/new",
     [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { invite, error } = await Invite.create(user.id);
+        const body = reqBody(request);
+        const { invite, error } = await Invite.create({
+          createdByUserId: user.id,
+          workspaceIds: body?.workspaceIds || [],
+        });
+
         await EventLogs.logEvent(
           "invite_created",
           {
