@@ -1,6 +1,7 @@
 {
   "name": "anythingllm-embedded-chat",
   "private": false,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "nodemon -e js,jsx,css --watch src --exec \"yarn run dev:preview\"",
@@ -8,7 +9,7 @@
     "dev:build": "vite build && cat src/static/tailwind@3.4.1.js >> dist/anythingllm-chat-widget.js",
     "build": "vite build && cat src/static/tailwind@3.4.1.js >> dist/anythingllm-chat-widget.js && npx terser --compress -o dist/anythingllm-chat-widget.min.js -- dist/anythingllm-chat-widget.js",
     "build:publish": "yarn build && mkdir -p ../frontend/public/embed && cp -r dist/anythingllm-chat-widget.min.js ../frontend/public/embed/anythingllm-chat-widget.min.js",
-    "lint": "yarn prettier --write ./src"
+    "lint": "yarn prettier --ignore-path ../.prettierignore --write ./src"
   },
   "dependencies": {
     "@microsoft/fetch-event-source": "^2.0.1",

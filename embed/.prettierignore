@@ -1,9 +1,0 @@
-# defaults
-**/.git
-**/.svn
-**/.hg
-**/node_modules
-
-**/dist
-**/static/**
-src/utils/chat/hljs.js

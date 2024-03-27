@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "NODE_ENV=development nodemon --ignore hotdir --ignore storage --trace-warnings index.js",
     "start": "NODE_ENV=production node index.js",
-    "lint": "yarn prettier --write ./processSingleFile ./processLink ./utils index.js"
+    "lint": "yarn prettier --ignore-path ../.prettierignore --write ./processSingleFile ./processLink ./utils index.js"
   },
   "dependencies": {
     "@googleapis/youtube": "^9.0.0",
