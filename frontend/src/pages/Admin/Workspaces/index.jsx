@@ -4,7 +4,6 @@ import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { BookOpen } from "@phosphor-icons/react";
-import usePrefersDarkMode from "@/hooks/usePrefersDarkMode";
 import Admin from "@/models/admin";
 import WorkspaceRow from "./WorkspaceRow";
 import NewWorkspaceModal from "./NewWorkspaceModal";
@@ -50,7 +49,6 @@ export default function AdminWorkspaces() {
 }
 
 function WorkspacesContainer() {
-  const darkMode = usePrefersDarkMode();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [workspaces, setWorkspaces] = useState([]);

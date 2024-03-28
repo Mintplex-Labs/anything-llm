@@ -227,6 +227,21 @@ function adminEndpoints(app) {
     }
   );
 
+  app.get(
+    "/admin/workspaces/:workspaceId/users",
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { workspaceId } = request.params;
+        const users = await Workspace.workspaceUsers(workspaceId);
+        response.status(200).json({ users });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
   app.post(
     "/admin/workspaces/new",
     [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],

@@ -77,7 +77,7 @@ function UsersContainer() {
   }
 
   return (
-    <table className="w-full text-sm text-left rounded-lg mt-6">
+    <table className="w-full text-sm text-left rounded-lg">
       <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
         <tr>
           <th scope="col" className="px-6 py-3 rounded-tl-lg">
