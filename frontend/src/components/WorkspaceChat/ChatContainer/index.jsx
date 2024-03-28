@@ -21,7 +21,8 @@ export default function ChatContainer({
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
-  const [finalizedChatHistory, setFinalizedChatHistory] = useState(knownHistory);
+  const [finalizedChatHistory, setFinalizedChatHistory] =
+    useState(knownHistory);
 
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
@@ -135,7 +136,8 @@ export default function ChatContainer({
           workspace={workspace}
           sendCommand={sendCommand}
         />
-        {workspace?.metaResponse && currentInputMeta?.inputs?.type !== undefined ? (
+        {workspace?.metaResponse &&
+        currentInputMeta?.inputs?.type !== undefined ? (
           <MetaInputs
             inputs={currentInputMeta?.inputs}
             isMetaInputs={isMetaInputs}

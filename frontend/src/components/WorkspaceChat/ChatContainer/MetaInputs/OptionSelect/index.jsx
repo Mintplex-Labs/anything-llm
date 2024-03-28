@@ -1,7 +1,8 @@
+import Label from "@/components/Generic/Typography/Label";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 
-const OptionSelect = ({ data, settings, submit, message, setMessage ,workspace}) => {
+const OptionSelect = ({ data, settings,type, submit, message, setMessage ,workspace}) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [submitMessage, setSubmitMessage] = useState(false);
 
@@ -12,6 +13,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage ,workspace})
     }
   }, [message]);
 
+console.log("settings?.type.includes(dropdown)", settings)
 
   const handleSelection = (value) => {
     const currentIndex = selectedOptions.indexOf(value);
@@ -33,7 +35,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage ,workspace})
   };
 
   // Normal List with Hyperlinks
-  if (settings.displayType.includes("list") && workspace?.metaResponseSettings?.inputs?.config?.components?.optionsList?.isEnabled) {
+  if (settings?.displayType?.includes("list") || type?.includes("list")  && workspace?.metaResponseSettings?.inputs?.config?.components?.optionsList?.isEnabled) {
     return (
       <div className=" text-white/70 text-sm w-full backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
         <Label {...data} />
@@ -60,10 +62,10 @@ const OptionSelect = ({ data, settings, submit, message, setMessage ,workspace})
   }
 
   // Checkbox
-  if (settings.displayType.includes("checkbox") && workspace?.metaResponseSettings?.inputs?.config?.components?.multiSelectCheckboxes?.isEnabled) {
+  if (settings?.displayType?.includes("checkbox") || type?.includes("checkbox") && workspace?.metaResponseSettings?.inputs?.config?.components?.multiSelectCheckboxes?.isEnabled) {
     return (
       <div className="w-full p-4 backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
-        <Label label={data?.label} />
+        <Label {...data} />
         <div className="pb-0 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-white/80 text-sm">
           {data.options.map((option, index) => (
             <label key={index} className="flex items-center space-x-2">
@@ -96,7 +98,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage ,workspace})
   }
 
   // Dropdown Menu
-  if (settings.displayType.includes("dropdown") && workspace?.metaResponseSettings?.inputs?.config?.components?.dropDownMenu?.isEnabled) {
+  if (settings?.displayType?.includes("dropdown") || type?.includes("dropdown")  && workspace?.metaResponseSettings?.inputs?.config?.components?.dropDownMenu?.isEnabled) {
 
     return (
       <div className="mt-5 mb-5  w-full backdrop-blur-sm rounded-t-xl  py-4 px-6 border-l border-t border-r border-[#2f3238]">
@@ -104,9 +106,9 @@ const OptionSelect = ({ data, settings, submit, message, setMessage ,workspace})
         <select
         name="optionSelect"
         id="optionSelect"
-        multiple={settings.allowMultiple}
+        multiple={settings?.allowMultiple}
         required={true}
-        disabled={settings.disabled}
+        disabled={settings?.disabled}
         className="shadow-xl mt-3 bg-sidebar text-white text-sm rounded-xl p-2.5 w-full border border-white/20 focus:ring-blue-500 focus:border-blue-500"
         onChange={(e) => {
           handleSelection(e.target.value);
@@ -116,7 +118,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage ,workspace})
         <option value="placeholder" disabled selected>
           Select an option
         </option>
-        {settings.waitingForModels ? (
+        {settings?.waitingForModels ? (
           <option disabled={true} selected={true}>
             -- waiting for models --
           </option>
@@ -136,7 +138,7 @@ const OptionSelect = ({ data, settings, submit, message, setMessage ,workspace})
   
     return (
       <div className=" mb-2 w-full p-4 backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
-        <Label label={data?.label} />
+        <Label {...data} />
         <div className=" pb-0 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-white/70 text-sm  ">
           {data.options.map((option, index) => (
             <button
@@ -163,26 +165,6 @@ const OptionSelect = ({ data, settings, submit, message, setMessage ,workspace})
       </div>
     );
   
-};
-
-const Label = ({ label, description }) => {
-  return (
-    <div className="hidden md:flex flex-col">
-      {label && (
-        <label
-          htmlFor="chatModel"
-          className="block input-label text-white text-opacity-60 text-md font-medium py-1.5"
-        >
-          {label}
-        </label>
-      )}
-      {description && (
-        <p className="text-white text-opacity-60 text-sm font-medium py-1.5">
-          {description}
-        </p>
-      )}
-    </div>
-  );
 };
 
 export default OptionSelect;

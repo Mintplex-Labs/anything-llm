@@ -6,6 +6,7 @@
 
 export const extractMetaData = (textResponse) => {
   console.log("textResponse", textResponse);  
+  if (!textResponse) return { remainingText: "", metaData: {} };
   let remainingText = textResponse;
   let inString = false;
   let char, prevChar;
@@ -14,7 +15,7 @@ export const extractMetaData = (textResponse) => {
   let startIndex = null;
   let extractedObjects = {}; // Keep as an object as requested
 
-  for (let i = 0; i < textResponse.length; i++) {
+  for (let i = 0; i < textResponse?.length; i++) {
     char = textResponse[i];
     if (char === '"' && prevChar !== "\\") inString = !inString;
     if (inString) continue;

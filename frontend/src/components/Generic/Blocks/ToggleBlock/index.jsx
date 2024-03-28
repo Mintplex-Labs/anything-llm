@@ -1,9 +1,10 @@
 import React from "react";
 import Badge from "@/components/Generic/Badges/Badge";
 import ToggleButton from "@/components/Generic/Inputs/ToggleSwitch";
+import TitleBlock from "../TitleBlock";
 
 export default function ToggleBlock({
-  content, // toggle content goes here
+  content, // toggled content goes here
   initialChecked,
   label,
   onToggle,
@@ -17,7 +18,6 @@ export default function ToggleBlock({
   border,
   bg,
   Icon,
-  contentLocation,
   disabled,
   inline = false,
 }) {
