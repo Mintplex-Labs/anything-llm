@@ -386,9 +386,7 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const { username, password } = reqBody(request);
-        const multiUserModeEnabled = await SystemSettings.isMultiUserMode();
-        if (multiUserModeEnabled) {
+        if (response.locals.multiUserMode) {
           response.status(200).json({
             success: false,
             error: "Multi-user mode is already enabled.",
@@ -396,6 +394,7 @@ function systemEndpoints(app) {
           return;
         }
 
+        const { username, password } = reqBody(request);
         const { user, error } = await User.create({
           username,
           password,

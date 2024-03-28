@@ -7,7 +7,7 @@ export default function FolderSelectionPopup({ folders, onSelect, onClose }) {
   };
 
   return (
-    <div className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-lg">
+    <div className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-lg max-h-40 overflow-y-auto no-scroll">
       <ul>
         {folders.map((folder) => (
           <li
