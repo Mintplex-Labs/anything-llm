@@ -18,20 +18,13 @@ export default function App() {
   }, [embedSettings.loaded]);
 
   if (!embedSettings.loaded) return null;
+
   return (
     <>
       <Head />
-      <div className="fixed bottom-0 right-0 mb-4 mr-4 z-50">
+      <div className={`fixed inset-0 z-50 ${isChatOpen ? "block" : "hidden"}`}>
         <div
-          style={{
-            width: isChatOpen ? 320 : "auto",
-            height: isChatOpen ? "93vh" : "auto",
-          }}
-          className={`${
-            isChatOpen
-              ? "max-w-md px-4 py-2 bg-white rounded-lg border shadow-lg w-72"
-              : "w-16 h-16 rounded-full"
-          }`}
+          className={`w-full h-full bg-white md:max-w-[400px] md:max-h-[700px] md:fixed md:bottom-0 md:right-0 md:mb-4 md:mr-4 md:rounded-2xl md:border md:border-gray-300 md:shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
         >
           {isChatOpen && (
             <ChatWindow
@@ -40,13 +33,17 @@ export default function App() {
               sessionId={sessionId}
             />
           )}
+        </div>
+      </div>
+      {!isChatOpen && (
+        <div className="fixed bottom-0 right-0 mb-4 mr-4 z-50">
           <OpenButton
             settings={embedSettings}
             isOpen={isChatOpen}
             toggleOpen={() => toggleOpenChat(true)}
           />
         </div>
-      </div>
+      )}
     </>
   );
 }

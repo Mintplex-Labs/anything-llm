@@ -2,6 +2,8 @@ import { forwardRef, memo } from "react";
 import { Warning } from "@phosphor-icons/react";
 import renderMarkdown from "@/utils/chat/markdown";
 import { embedderSettings } from "@/main";
+import AnythingLLMIcon from "@/assets/anything-llm-icon.svg";
+import { formatDate } from "@/utils/date";
 
 const PromptReply = forwardRef(
   ({ uuid, reply, pending, error, sources = [] }, ref) => {
@@ -9,13 +11,18 @@ const PromptReply = forwardRef(
 
     if (pending) {
       return (
-        <div
-          ref={ref}
-          className={`flex justify-center items-end rounded-lg w-full ${embedderSettings.AI_BACKGROUND_COLOR}`}
-        >
-          <div className="py-2 px-2 w-full flex flex-col">
+        <div className={`flex items-start w-full h-fit justify-start`}>
+          <img
+            src={AnythingLLMIcon}
+            alt="Anything LLM Icon"
+            className="w-9 h-9 flex-shrink-0 ml-2"
+          />
+          <div
+            style={{ wordBreak: "break-word" }}
+            className={`py-[11px] px-4 flex flex-col ${embedderSettings.ASSISTANT_STYLES} shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+          >
             <div className="flex gap-x-5">
-              <div className="mt-3 ml-5 dot-falling"></div>
+              <div className="mx-4 my-1 dot-falling"></div>
             </div>
           </div>
         </div>
@@ -24,8 +31,16 @@ const PromptReply = forwardRef(
 
     if (error) {
       return (
-        <div className={`flex justify-center items-end w-full bg-red-200`}>
-          <div className="py-2 px-4 w-full flex gap-x-5 flex-col">
+        <div className={`flex items-end w-full h-fit justify-start`}>
+          <img
+            src={AnythingLLMIcon}
+            alt="Anything LLM Icon"
+            className="w-9 h-9 flex-shrink-0 ml-2"
+          />
+          <div
+            style={{ wordBreak: "break-word" }}
+            className={`py-[11px] px-4 rounded-lg flex flex-col bg-red-200 shadow-[0_4px_14px_rgba(0,0,0,0.25)] mr-[37px] ml-[9px]`}
+          >
             <div className="flex gap-x-5">
               <span
                 className={`inline-block p-2 rounded-lg bg-red-50 text-red-500`}
@@ -41,21 +56,40 @@ const PromptReply = forwardRef(
     }
 
     return (
-      <div
-        key={uuid}
-        ref={ref}
-        className={`flex justify-center items-end w-full ${embedderSettings.AI_BACKGROUND_COLOR}`}
-      >
+      <div className="py-[5px]">
         <div
-          style={{ wordBreak: "break-word" }}
-          className="py-2 px-2 w-full flex flex-col"
+          className={`text-[10px] font-medium text-gray-400 ml-[54px] mr-6 mb-2 text-left`}
         >
-          <div className="flex gap-x-5">
-            <span
-              className={`reply whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
-            />
+          AnythingLLM Chat Assistant
+        </div>
+        <div
+          key={uuid}
+          ref={ref}
+          className={`flex items-start w-full h-fit justify-start`}
+        >
+          <img
+            src={AnythingLLMIcon}
+            alt="Anything LLM Icon"
+            className="w-9 h-9 flex-shrink-0 ml-2"
+          />
+          <div
+            style={{ wordBreak: "break-word" }}
+            className={`py-[11px] px-4 flex flex-col ${
+              error ? "bg-red-200" : embedderSettings.ASSISTANT_STYLES
+            } shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+          >
+            <div className="flex gap-x-5">
+              <span
+                className={`reply whitespace-pre-line font-normal text-sm md:text-sm flex flex-col gap-y-1`}
+                dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
+              />
+            </div>
           </div>
+        </div>
+        <div
+          className={`text-[10px] font-medium text-gray-400 ml-[54px] mr-6 mt-2 text-left`}
+        >
+          {formatDate(Date.now() / 1000)}
         </div>
       </div>
     );

@@ -11,154 +11,141 @@ pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5p
 `;
 
 const customCss = `
-/**
- * ==============================================
- * Dot Falling
- * ==============================================
- */
-.dot-falling {
-  position: relative;
-  left: -9999px;
-  width: 10px;
-  height: 10px;
-  border-radius: 5px;
-  background-color: #eeeeee;
-  color: #5fa4fa;
-  box-shadow: 9999px 0 0 0 #eeeeee;
-  animation: dot-falling 1.5s infinite linear;
-  animation-delay: 0.1s;
-}
-
-.dot-falling::before,
-.dot-falling::after {
-  content: "";
-  display: inline-block;
-  position: absolute;
-  top: 0;
-}
-
-.dot-falling::before {
-  width: 10px;
-  height: 10px;
-  border-radius: 5px;
-  background-color: #eeeeee;
-  color: #eeeeee;
-  animation: dot-falling-before 1.5s infinite linear;
-  animation-delay: 0s;
-}
-
-.dot-falling::after {
-  width: 10px;
-  height: 10px;
-  border-radius: 5px;
-  background-color: #eeeeee;
-  color: #eeeeee;
-  animation: dot-falling-after 1.5s infinite linear;
-  animation-delay: 0.2s;
-}
-
-@keyframes dot-falling {
-  0% {
-    box-shadow: 9999px -15px 0 0 rgba(152, 128, 255, 0);
+  /**
+   * ==============================================
+   * Dot Falling
+   * ==============================================
+   */
+  .dot-falling {
+    position: relative;
+    left: -9999px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #000000;
+    color: #5fa4fa;
+    box-shadow: 9999px 0 0 0 #000000;
+    animation: dot-falling 1.5s infinite linear;
+    animation-delay: 0.1s;
   }
 
-  25%,
-  50%,
-  75% {
-    box-shadow: 9999px 0 0 0 #eeeeee;
+  .dot-falling::before,
+  .dot-falling::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 0;
   }
 
-  100% {
-    box-shadow: 9999px 15px 0 0 rgba(152, 128, 255, 0);
-  }
-}
-
-@keyframes dot-falling-before {
-  0% {
-    box-shadow: 9984px -15px 0 0 rgba(152, 128, 255, 0);
-  }
-
-  25%,
-  50%,
-  75% {
-    box-shadow: 9984px 0 0 0 #eeeeee;
+  .dot-falling::before {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #000000;
+    color: #000000;
+    animation: dot-falling-before 1.5s infinite linear;
+    animation-delay: 0s;
   }
 
-  100% {
-    box-shadow: 9984px 15px 0 0 rgba(152, 128, 255, 0);
-  }
-}
-
-@keyframes dot-falling-after {
-  0% {
-    box-shadow: 10014px -15px 0 0 rgba(152, 128, 255, 0);
-  }
-
-  25%,
-  50%,
-  75% {
-    box-shadow: 10014px 0 0 0 #eeeeee;
+  .dot-falling::after {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #000000;
+    color: #000000;
+    animation: dot-falling-after 1.5s infinite linear;
+    animation-delay: 0.2s;
   }
 
-  100% {
-    box-shadow: 10014px 15px 0 0 rgba(152, 128, 255, 0);
+  @keyframes dot-falling {
+    0% {
+      box-shadow: 9999px -15px 0 0 rgba(152, 128, 255, 0);
+    }
+    25%,
+    50%,
+    75% {
+      box-shadow: 9999px 0 0 0 #000000;
+    }
+    100% {
+      box-shadow: 9999px 15px 0 0 rgba(152, 128, 255, 0);
+    }
   }
-}
 
-#chat-history::-webkit-scrollbar,
-#chat-container::-webkit-scrollbar,
-.no-scroll::-webkit-scrollbar {
-  display: none !important;
-}
+  @keyframes dot-falling-before {
+    0% {
+      box-shadow: 9984px -15px 0 0 rgba(152, 128, 255, 0);
+    }
+    25%,
+    50%,
+    75% {
+      box-shadow: 9984px 0 0 0 #000000;
+    }
+    100% {
+      box-shadow: 9984px 15px 0 0 rgba(152, 128, 255, 0);
+    }
+  }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-#chat-history,
-#chat-container,
-.no-scroll {
-  -ms-overflow-style: none !important;
-  /* IE and Edge */
-  scrollbar-width: none !important;
-  /* Firefox */
-}
+  @keyframes dot-falling-after {
+    0% {
+      box-shadow: 10014px -15px 0 0 rgba(152, 128, 255, 0);
+    }
+    25%,
+    50%,
+    75% {
+      box-shadow: 10014px 0 0 0 #000000;
+    }
+    100% {
+      box-shadow: 10014px 15px 0 0 rgba(152, 128, 255, 0);
+    }
+  }
 
+  #chat-history::-webkit-scrollbar,
+  #chat-container::-webkit-scrollbar,
+  .no-scroll::-webkit-scrollbar {
+    display: none !important;
+  }
 
-.animate-slow-pulse {
-  transform: scale(1);
-  animation: subtlePulse 20s infinite;
-  will-change: transform;
-}
+  /* Hide scrollbar for IE, Edge and Firefox */
+  #chat-history,
+  #chat-container,
+  .no-scroll {
+    -ms-overflow-style: none !important; /* IE and Edge */
+    scrollbar-width: none !important; /* Firefox */
+  }
 
-@keyframes subtlePulse {
-  0% {
+  .animate-slow-pulse {
     transform: scale(1);
+    animation: subtlePulse 20s infinite;
+    will-change: transform;
   }
 
-  50% {
-    transform: scale(1.1);
+  @keyframes subtlePulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
 
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes subtleShift {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
+  @keyframes subtleShift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
   }
 
-  100% {
-    background-position: 0% 50%;
+  .bg-black-900 {
+    background: #141414;
   }
-}
-
-.bg-black-900 {
-  background: #141414;
-}
 `;
 
 export default function Head() {
