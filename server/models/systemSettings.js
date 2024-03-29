@@ -2,6 +2,7 @@ process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
 
+const { isValidUrl } = require("../utils/http");
 const prisma = require("../utils/prisma");
 
 const SystemSettings = {
@@ -18,8 +19,10 @@ const SystemSettings = {
   validations: {
     footer_data: (updates) => {
       try {
-        const array = JSON.parse(updates);
-        return JSON.stringify(array.slice(0, 3)); // max of 3 items in footer.
+        const array = JSON.parse(updates)
+          .filter((setting) => isValidUrl(setting.url))
+          .slice(0, 3); // max of 3 items in footer.
+        return JSON.stringify(array);
       } catch (e) {
         console.error(`Failed to run validation function on footer_data`);
         return JSON.stringify([]);
