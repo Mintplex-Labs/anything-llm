@@ -43,10 +43,13 @@ const RangeSlider = ({
   return (
     <div
       ref={mounted}
-      className=" text-white/70 text-sm w-full backdrop-blur-sm rounded-t-xl overflow-hidden px-4 py-8 border-l border-t border-r border-[#2f3238]"
+      className=" text-white/70 text-sm w-full backdrop-blur-sm rounded-t-xl overflow-hidden px-6 py-8 border-l border-t border-r border-[#2f3238]"
     >
       <div className="flex flex-row justify-between">
-        <Label label={data.label || "Select a Number"}  description={data.description||"Chose a Number to continue"}/>
+        <Label
+          label={data.label || "Select a Number"}
+          description={data.description || "Chose a Number to continue"}
+        />
         <p className="range-slider-value flex items-center text-5xl text-white rounded-full px-5 py-2 drop-shadow-[0_35px_35px_rgba(0,0,0,0.25)]  ">
           {value}
         </p>

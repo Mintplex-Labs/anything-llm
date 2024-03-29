@@ -20,30 +20,9 @@ export default function FeatureSettings({
           settings={settings}
           onUpdateSettings={onUpdateSettings}
         />
-        {settings.config.systemPrompt.list[
-            settings.config.systemPrompt.active
-          ].content ||
-        settings.config.systemPrompt.isEnabled ? (
+        {settings.config.systemPrompt.list[settings.config.systemPrompt.active]
+          .content || settings.config.systemPrompt.isEnabled ? (
           <div className="flex flex-col gap-2">
-            {/* <TextAreaBlock
-              workspace={workspace}
-              name="systemPrompt"
-              value={settings.config.systemPrompt.content}
-              onSave={(newContent) => {
-                onUpdateSettings({
-                  ...settings,
-                  config: {
-                    ...settings.config,
-                    systemPrompt: {
-                      ...settings.config.systemPrompt,
-                      content: newContent,
-                    },
-                  },
-                });
-              }}
-              code
-              initialRows={6}
-            /> */}
             <div>
               <div className=" flex gap-1 -mb-1 mt-4 flex-wrap items-center">
                 {settings.config.systemPrompt.list.map((item, index) => (

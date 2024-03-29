@@ -39,7 +39,7 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
         <p className="text-sm text-white/60">
           {chatMode === "chat" ? (
             <>
-              <b>Chat</b> will provide answers with the LLM's general knowledge{" "}
+              <b>Chat</b> will provide answers with the LLMs general knowledge{" "}
               <i className="font-semibold">and</i> document context that is
               found.
             </>

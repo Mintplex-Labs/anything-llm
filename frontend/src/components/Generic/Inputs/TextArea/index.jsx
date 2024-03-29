@@ -1,8 +1,12 @@
-import { ArrowsIn, ArrowsOut, Check, X } from "@phosphor-icons/react";
-import React, { useState, useRef, useEffect } from "react";
+import {
+  ArrowsInSimple,
+  ArrowsOutSimple,
+  Check,
+  X,
+} from "@phosphor-icons/react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function TextArea({
-  defaultValue,
   required = true,
   placeholder = "Place your text here...",
   onChange,
@@ -44,7 +48,7 @@ export default function TextArea({
   const adjustRowsToFitContent = (forceExpand = false) => {
     const textarea = textAreaRef.current;
     if (textarea) {
-      const lineHeight = 18; // Match this with your CSS
+      const lineHeight = 17.5; // Match this with your CSS
       if (forceExpand || isExpanded) {
         const currentRows = Math.ceil(textarea.scrollHeight / lineHeight);
         setRows(currentRows);
@@ -132,16 +136,20 @@ export default function TextArea({
         <button
           type="button"
           onClick={toggleExpansion}
-          className={`absolute bottom-1 right-2 text-lg ${
+          className={`absolute bottom-1 right-1 text-lg ${
             isExpanded ? "text-2xl" : "text-xl"
           } text-white/60 hover:text-white transition-all duration-150 ease-in-out`}
           aria-label={isExpanded ? "Contract" : "Expand"}
           disabled={disabled}
         >
           {isExpanded ? (
-            <span className="hover:scale-90">-</span>
+            <span className="hover:scale-110 active:scale-125 transition-all duration-150 ease-in-out">
+              <ArrowsInSimple />
+            </span>
           ) : (
-            <span className="hover:scale-110 active:scale-125 transition-all duration-150 ease-in-out">+</span>
+            <span className="hover:scale-110 active:scale-125 transition-all duration-150 ease-in-out">
+              <ArrowsOutSimple />
+            </span>
           )}
         </button>
       )}
