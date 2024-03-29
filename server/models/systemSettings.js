@@ -305,7 +305,7 @@ const SystemSettings = {
 
   // Explicit update of settings + key validations.
   // Only use this method when directly setting a key value
-  // that takes no user input.
+  // that takes no user input for the keys being modified.
   _updateSettings: async function (updates = {}) {
     try {
       const updatePromises = Object.keys(updates).map((key) => {
