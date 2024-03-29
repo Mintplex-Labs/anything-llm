@@ -105,7 +105,7 @@ function systemEndpoints(app) {
 
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-        const existingUser = await User.get({ username });
+        const existingUser = await User.get({ username: String(username) });
 
         if (!existingUser) {
           await EventLogs.logEvent(
@@ -125,7 +125,7 @@ function systemEndpoints(app) {
           return;
         }
 
-        if (!bcrypt.compareSync(password, existingUser.password)) {
+        if (!bcrypt.compareSync(String(password), existingUser.password)) {
           await EventLogs.logEvent(
             "failed_login_invalid_password",
             {
