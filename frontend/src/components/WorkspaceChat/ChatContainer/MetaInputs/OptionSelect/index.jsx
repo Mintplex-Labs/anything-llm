@@ -2,7 +2,15 @@ import Label from "@/components/Generic/Typography/Label";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 
-const OptionSelect = ({ data, settings,type, submit, message, setMessage ,workspace}) => {
+const OptionSelect = ({
+  data,
+  settings,
+  type,
+  submit,
+  message,
+  setMessage,
+  workspace,
+}) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [submitMessage, setSubmitMessage] = useState(false);
 
@@ -13,7 +21,7 @@ const OptionSelect = ({ data, settings,type, submit, message, setMessage ,worksp
     }
   }, [message]);
 
-console.log("settings?.type.includes(dropdown)", settings)
+  console.log("settings?.type.includes(dropdown)", settings);
 
   const handleSelection = (value) => {
     const currentIndex = selectedOptions.indexOf(value);
@@ -31,14 +39,24 @@ console.log("settings?.type.includes(dropdown)", settings)
 
   const handleSubmit = () => {
     setSubmitMessage(true);
-    setSelectedOptions([])
+    setSelectedOptions([]);
   };
 
   // Normal List with Hyperlinks
-  if (settings?.displayType?.includes("list") || type?.includes("list")  && workspace?.metaResponseSettings?.inputs?.config?.components?.optionsList?.isEnabled) {
+  if (
+    (settings?.displayType?.includes("list") || type?.includes("list")) &&
+    workspace?.metaResponseSettings?.inputs?.config?.components?.optionsList
+      ?.isEnabled
+  ) {
     return (
-      <div className=" text-white/70 text-sm w-full backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
-        <Label {...data} />
+      <div className=" text-white/70 text-sm w-full backdrop-blur-sm rounded-t-xl overflow-hidden px-6 py-8 border-l border-t border-r border-[#2f3238]">
+        <Label
+          label={data.label || "Select an Item"}
+          description={
+            data.description ||
+            "Choose one of the suggested Items or type your own."
+          }
+        />
         {data.options.map((option, index) => (
           <a
             key={index}
@@ -62,10 +80,21 @@ console.log("settings?.type.includes(dropdown)", settings)
   }
 
   // Checkbox
-  if (settings?.displayType?.includes("checkbox") || type?.includes("checkbox") && workspace?.metaResponseSettings?.inputs?.config?.components?.multiSelectCheckboxes?.isEnabled) {
+  if (
+    (settings?.displayType?.includes("checkbox") ||
+      type?.includes("checkbox")) &&
+    workspace?.metaResponseSettings?.inputs?.config?.components
+      ?.multiSelectCheckboxes?.isEnabled
+  ) {
     return (
-      <div className="w-full p-4 backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
-        <Label {...data} />
+      <div className="w-full p-4 backdrop-blur-sm rounded-t-xl overflow-hidden px-6 py-8 border-l border-t border-r border-[#2f3238]">
+        <Label
+          label={data.label || "Select an Item"}
+          description={
+            data.description ||
+            "Choose one of the suggested Items or type your own."
+          }
+        />
         <div className="pb-0 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-white/80 text-sm">
           {data.options.map((option, index) => (
             <label key={index} className="flex items-center space-x-2">
@@ -98,73 +127,89 @@ console.log("settings?.type.includes(dropdown)", settings)
   }
 
   // Dropdown Menu
-  if (settings?.displayType?.includes("dropdown") || type?.includes("dropdown")  && workspace?.metaResponseSettings?.inputs?.config?.components?.dropDownMenu?.isEnabled) {
-
+  if (
+    (settings?.displayType?.includes("dropdown") ||
+      type?.includes("dropdown")) &&
+    workspace?.metaResponseSettings?.inputs?.config?.components?.dropDownMenu
+      ?.isEnabled
+  ) {
     return (
-      <div className="mt-5 mb-5  w-full backdrop-blur-sm rounded-t-xl  py-4 px-6 border-l border-t border-r border-[#2f3238]">
-        <Label {...data} />
+      <div className="mt-5 mb-5  w-full backdrop-blur-sm rounded-t-xl px-6 py-8 border-l border-t border-r border-[#2f3238]">
+        <Label
+          label={data.label || "Select an Item"}
+          description={
+            data.description ||
+            "Choose one of the suggested Items or type your own."
+          }
+        />
         <select
-        name="optionSelect"
-        id="optionSelect"
-        multiple={settings?.allowMultiple}
-        required={true}
-        disabled={settings?.disabled}
-        className="shadow-xl mt-3 bg-sidebar text-white text-sm rounded-xl p-2.5 w-full border border-white/20 focus:ring-blue-500 focus:border-blue-500"
-        onChange={(e) => {
-          handleSelection(e.target.value);
-          handleSubmit();
-        }}
-      >
-        <option value="placeholder" disabled selected>
-          Select an option
-        </option>
-        {settings?.waitingForModels ? (
-          <option disabled={true} selected={true}>
-            -- waiting for models --
+          name="optionSelect"
+          id="optionSelect"
+          multiple={settings?.allowMultiple}
+          required={true}
+          disabled={settings?.disabled}
+          className="shadow-xl mt-6 bg-sidebar text-white text-sm rounded-xl p-2.5 w-full border border-white/20 focus:ring-blue-500 focus:border-blue-500"
+          onChange={(e) => {
+            handleSelection(e.target.value);
+            handleSubmit();
+          }}
+        >
+          <option value="placeholder" disabled selected>
+            Select an option
           </option>
-        ) : (
-          data.options.map((option, index) => (
-            <option key={index} value={option.value}>
-              <span className="text-white/50 mr-1">{index + 1}.</span>{" "}
-              {option.label}
+          {settings?.waitingForModels ? (
+            <option disabled={true} selected={true}>
+              -- waiting for models --
             </option>
-          ))
-        )}
-      </select>
-    </div>
-    )}
-
-  // Grid of Buttons fallback
-  
-    return (
-      <div className=" mb-2 w-full p-4 backdrop-blur-sm rounded-t-xl overflow-hidden py-4 px-6 border-l border-t border-r border-[#2f3238]">
-        <Label {...data} />
-        <div className=" pb-0 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-white/70 text-sm  ">
-          {data.options.map((option, index) => (
-            <button
-              key={index}
-              className="group relative shadow-lg hover:shadow-sm transition-all duration-200 ease-in-out text-left p-2.5 border rounded-xl border-white/20 bg-sidebar hover:bg-sidebar/50 overflow-hidden "
-              onClick={() => {
-                {
-                  handleSelection(option.value);
-                  handleSubmit();
-                }
-              }}
-            >
-              <p className="truncate max-w-xl group-hover:max-w-xl group-hover:truncate-0">
+          ) : (
+            data.options.map((option, index) => (
+              <option key={index} value={option.value}>
                 <span className="text-white/50 mr-1">{index + 1}.</span>{" "}
                 {option.label}
-              </p>
-              <span className="absolute invisible group-hover:visible bg-black text-white text-sm rounded-lg p-2 left-0 bottom-full mb-2">
-                <span className="text-white/50 mr-1">{index + 1}.</span>{" "}
-                {option.label}
-              </span>
-            </button>
-          ))}
-        </div>
+              </option>
+            ))
+          )}
+        </select>
       </div>
     );
-  
+  }
+
+  // Grid of Buttons fallback
+
+  return (
+    <div className=" mb-2 w-full p-4 backdrop-blur-sm rounded-t-xl overflow-hidden px-6 py-8 border-l border-t border-r border-[#2f3238]">
+      <Label
+        label={data.label || "Select an Item"}
+        description={
+          data.description ||
+          "Choose one of the suggested Items or type your own."
+        }
+      />
+      <div className=" pb-0 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4 text-white/70 text-sm  ">
+        {data.options.map((option, index) => (
+          <button
+            key={index}
+            className="group relative shadow-lg hover:shadow-sm transition-all duration-200 ease-in-out text-left p-2.5 border rounded-xl border-white/20 bg-sidebar hover:bg-sidebar/50 overflow-hidden "
+            onClick={() => {
+              {
+                handleSelection(option.value);
+                handleSubmit();
+              }
+            }}
+          >
+            <p className="truncate max-w-xl group-hover:max-w-xl group-hover:truncate-0">
+              <span className="text-white/50 mr-1">{index + 1}.</span>{" "}
+              {option.label}
+            </p>
+            <span className="absolute invisible group-hover:visible bg-black text-white text-sm rounded-lg p-2 left-0 bottom-full mb-2">
+              <span className="text-white/50 mr-1">{index + 1}.</span>{" "}
+              {option.label}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default OptionSelect;

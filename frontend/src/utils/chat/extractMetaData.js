@@ -5,7 +5,7 @@
  */
 
 export const extractMetaData = (textResponse) => {
-  console.log("textResponse", textResponse);  
+  console.log("textResponse", textResponse);
   if (!textResponse) return { remainingText: "", metaData: {} };
   let remainingText = textResponse;
   let inString = false;
@@ -51,7 +51,7 @@ export const extractMetaData = (textResponse) => {
   // Remove any json objects from the text tat starts with ```json nad ends with ```
   const jsonRegex = /```json[\s\S]*?```/g;
   remainingText = remainingText.replace(jsonRegex, "");
-console.log("remainingText", remainingText);
-console.log("extractedObjects", extractedObjects);
+  console.log("remainingText", remainingText);
+  console.log("extractedObjects", extractedObjects);
   return { remainingText, metaData: extractedObjects };
 }
