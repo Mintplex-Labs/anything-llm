@@ -5,8 +5,8 @@ process.env.NODE_ENV === "development"
 const prisma = require("../utils/prisma");
 
 const SystemSettings = {
+  protectedFields: ["multi_user_mode"],
   supportedFields: [
-    "multi_user_mode",
     "users_can_delete_workspaces",
     "limit_user_messages",
     "message_limit",
@@ -287,26 +287,43 @@ const SystemSettings = {
     }
   },
 
+  // Can take generic keys and will pre-filter invalid keys
+  // from the set before sending to the explicit update function
+  // that will then enforce validations as well.
   updateSettings: async function (updates = {}) {
-    try {
-      const updatePromises = Object.keys(updates)
-        .filter((key) => this.supportedFields.includes(key))
-        .map((key) => {
-          const validatedValue = this.validations.hasOwnProperty(key)
-            ? this.validations[key](updates[key])
-            : updates[key];
+    const validFields = Object.keys(updates).filter((key) =>
+      this.supportedFields.includes(key)
+    );
 
-          return prisma.system_settings.upsert({
-            where: { label: key },
-            update: {
-              value: validatedValue === null ? null : String(validatedValue),
-            },
-            create: {
-              label: key,
-              value: validatedValue === null ? null : String(validatedValue),
-            },
-          });
+    Object.entries(updates).forEach(([key]) => {
+      if (validFields.includes(key)) return;
+      delete updates[key];
+    });
+
+    return this._updateSettings(updates);
+  },
+
+  // Explicit update of settings + key validations.
+  // Only use this method when directly setting a key value
+  // that takes no user input for the keys being modified.
+  _updateSettings: async function (updates = {}) {
+    try {
+      const updatePromises = Object.keys(updates).map((key) => {
+        const validatedValue = this.validations.hasOwnProperty(key)
+          ? this.validations[key](updates[key])
+          : updates[key];
+
+        return prisma.system_settings.upsert({
+          where: { label: key },
+          update: {
+            value: validatedValue === null ? null : String(validatedValue),
+          },
+          create: {
+            label: key,
+            value: validatedValue === null ? null : String(validatedValue),
+          },
         });
+      });
 
       await Promise.all(updatePromises);
       return { success: true, error: null };
