@@ -295,7 +295,7 @@ const SystemSettings = {
       this.supportedFields.includes(key)
     );
 
-    Object.entries(updates).forEach(([key, value]) => {
+    Object.entries(updates).forEach(([key]) => {
       if (validFields.includes(key)) return;
       delete updates[key];
     });
