@@ -564,6 +564,16 @@ async function dumpENV() {
     "DISABLE_TELEMETRY",
   ];
 
+  // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
+  function sanitizeValue(value) {
+    const offendingChars =
+      /[\n\r\t\v\f\u0085\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000"'`#]/;
+    const firstOffendingCharIndex = value.search(offendingChars);
+    if (firstOffendingCharIndex === -1) return value;
+
+    return value.substring(0, firstOffendingCharIndex);
+  }
+
   for (const key of protectedKeys) {
     const envValue = process.env?.[key] || null;
     if (!envValue) continue;
@@ -572,9 +582,7 @@ async function dumpENV() {
 
   var envResult = `# Auto-dump ENV from system call on ${new Date().toTimeString()}\n`;
   envResult += Object.entries(frozenEnvs)
-    .map(([key, value]) => {
-      return `${key}='${value}'`;
-    })
+    .map(([key, value]) => `${key}='${sanitizeValue(value)}'`)
     .join("\n");
 
   const envPath = path.join(__dirname, "../../.env");
