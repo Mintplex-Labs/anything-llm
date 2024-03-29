@@ -623,7 +623,7 @@ function systemEndpoints(app) {
         const existingLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(existingLogoFilename);
 
-        const { success, error } = await SystemSettings._updateSettings({
+        const { success, error } = await SystemSettings.updateSettings({
           logo_filename: newFilename,
         });
 
@@ -657,7 +657,7 @@ function systemEndpoints(app) {
       try {
         const currentLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(currentLogoFilename);
-        const { success, error } = await SystemSettings.updateSettings({
+        const { success, error } = await SystemSettings._updateSettings({
           logo_filename: LOGO_FILENAME,
         });
 
