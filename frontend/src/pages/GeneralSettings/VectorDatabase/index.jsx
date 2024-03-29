@@ -234,7 +234,7 @@ export default function GeneralVectorDatabase() {
                         <input
                           type="text"
                           name="vdb-search"
-                          placeholder="Search all vector databases"
+                          placeholder="Search all vector database providers"
                           className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:border-white text-white placeholder:text-white placeholder:font-medium"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           ref={searchInputRef}
