@@ -29,7 +29,6 @@ const {
   fetchPfp,
 } = require("../utils/files/pfp");
 const { WorkspaceMetaResponse } = require("../models/workspaceMetaResponse");
-const { meta } = require("eslint-plugin-prettier");
 
 function workspaceEndpoints(app) {
   if (!app) return;
