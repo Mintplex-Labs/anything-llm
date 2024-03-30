@@ -7,9 +7,11 @@
 2. Navigate to Chat Settings
 3. Enable Meta Response (to the bottom)
 4. Navigate to the newly added Meta Response Tap (top right).
-5. Type an active sequence prompt following the examples below.
-6. Go to the chat area and ask a question, or just start you sequence.
-   
+5. Type an active sequence prompt following the examples below, or try `proactive prompting Demo` from System Prompts Tab.
+6. Go to the chat area and ask a question such `I want to know about tallest 5 buildings in the world`, or just start you sequence.
+
+> [!IMPORTANT] Using more advanced LLM such as GPT-4 will return consistent results
+
 To see Meta Response in action, watch our quick demo:
 <a href="https://vimeo.com/928815869"><img width="960" alt="Screenshot 2024-03-30 at 06 14 25" src="https://github.com/Mintplex-Labs/anything-llm/assets/90522472/736f1073-a39a-4785-b51b-464c60212ae1"></a>
 
