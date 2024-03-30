@@ -49,6 +49,7 @@ Some cool features of AnythingLLM
 
 - **Multi-user instance support and permissioning**
 - **_New_** [Custom Embeddable Chat widget for your website](./embed/README.md)
+- **_New_** [Contextually aware Meta Input fields for intuitive chat experience - best for Active Prompting](./frontend/src/components/WorkspaceChat/ChatContainer/MetaInputs/README.md)
 - Multiple document type support (PDF, TXT, DOCX, etc)
 - Manage documents in your vector database from a simple UI
 - Two chat modes `conversation` and `query`. Conversation retains previous questions and amendments. Query is simple QA against your documents
