@@ -47,7 +47,10 @@ function workspaceMetaResponse(app) {
             user?.id
           );
         }
-        await WorkspaceMetaResponse.toggleMetaResponse(workspace.id, !metaResponse);
+        await WorkspaceMetaResponse.toggleMetaResponse(
+          workspace.id,
+          !metaResponse
+        );
         response.sendStatus(200).end();
       } catch (e) {
         console.log(e.message, e);
@@ -134,7 +137,9 @@ function workspaceMetaResponse(app) {
           workspace.id,
           JSON.stringify(settings)
         );
-        response.status(200).json(JSON.parse(result.metaResponseSettings).inputs);
+        response
+          .status(200)
+          .json(JSON.parse(result.metaResponseSettings).inputs);
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
@@ -190,7 +195,9 @@ function workspaceMetaResponse(app) {
           workspace.id,
           JSON.stringify(settings)
         );
-        response.status(200).json(JSON.parse(result.metaResponseSettings).sentiments);
+        response
+          .status(200)
+          .json(JSON.parse(result.metaResponseSettings).sentiments);
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
@@ -251,8 +258,8 @@ const metaResponseDefaultSettings = {
         dropDownMenu: {
           isEnabled: false,
           options: [],
-          description: "Drop Down menu best to select  between functional derisions, ie: continue, Repeat or Move to a new sequence.. etc",
-
+          description:
+            "Drop Down menu best to select  between functional derisions, ie: continue, Repeat or Move to a new sequence.. etc",
         },
         optionsList: {
           isEnabled: false,
@@ -262,17 +269,20 @@ const metaResponseDefaultSettings = {
         optionsButtons: {
           isEnabled: false,
           options: [],
-          description: "Chat will provide answers with the LLM's general knowledge and document context that is found.",
+          description:
+            "Chat will provide answers with the LLM's general knowledge and document context that is found.",
         },
         multiSelectCheckboxes: {
           isEnabled: false,
           options: [],
-          description: "Chat will provide answers with the LLM's general knowledge and document context that is found.",
+          description:
+            "Chat will provide answers with the LLM's general knowledge and document context that is found.",
         },
       },
     },
     permissions: ["user"],
-    description: "Traditionally, interaction with AnythingLLM occurs through a text area. Meta Inputs enhance this by offering alternative interaction methods, including option buttons, multi-select checkboxes, sliders, drop-down menus, and date/time selectors. To utilize these components, you'll need to guide the LLM on incorporating them into its responses with a specific schema",
+    description:
+      "Traditionally, interaction with AnythingLLM occurs through a text area. Meta Inputs enhance this by offering alternative interaction methods, including option buttons, multi-select checkboxes, sliders, drop-down menus, and date/time selectors. To utilize these components, you'll need to guide the LLM on incorporating them into its responses with a specific schema",
   },
   sentiments: {
     isEnabled: false,
@@ -284,7 +294,8 @@ const metaResponseDefaultSettings = {
       },
     },
     permissions: ["user"],
-    description:"Activate to enable the AI to analyze and adapt its responses based on the emotional tone of the conversation, enhancing interaction personalization"
+    description:
+      "Activate to enable the AI to analyze and adapt its responses based on the emotional tone of the conversation, enhancing interaction personalization",
   },
   avatars: {
     isEnabled: false,
@@ -294,7 +305,8 @@ const metaResponseDefaultSettings = {
       avatarName: "user",
     },
     permissions: ["user"],
-    description:"Enable avatars to reflect user sentiments, allowing the AI to visually empathize and convey understanding through changes in its profile image based on the meta object's sentiment data."
+    description:
+      "Enable avatars to reflect user sentiments, allowing the AI to visually empathize and convey understanding through changes in its profile image based on the meta object's sentiment data.",
   },
 };
 

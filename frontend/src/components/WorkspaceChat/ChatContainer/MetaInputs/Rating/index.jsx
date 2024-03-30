@@ -12,7 +12,7 @@ const StarRating = ({ data, submit, setMessage, message }) => {
 
   useEffect(() => {
     if (submitRating) {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
       submit();
       setSubmitRating(false);
     }
@@ -24,11 +24,13 @@ const StarRating = ({ data, submit, setMessage, message }) => {
     setSubmitRating(true);
   };
 
-
   return (
     <div className=" text-white/70 text-sm w-full backdrop-blur-sm rounded-t-xl overflow-hidden px-6 py-8 border-l border-t border-r border-[#2f3238]">
       <div className="flex flex-col md:flex-row justify-between mb-6">
-        <Label label={data.label || "Please Rate the above experiance"}  description={data.description||"Your feedback helps us improve."} />
+        <Label
+          label={data.label || "Please Rate the above experiance"}
+          description={data.description || "Your feedback helps us improve."}
+        />
         <div className="mx-auto mt-6 md:mx-0 flex items-center gap-2">
           {[...Array(data.max)].map((_, index) => (
             <button

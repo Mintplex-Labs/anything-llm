@@ -108,19 +108,21 @@ export default function MetaResponseSettings({ workspace, setWorkspace }) {
       Object.keys(settings).map((feature) => {
         const featureSettings = settings[feature];
         if (featureSettings.isEnabled) {
-          openAiPrompt += featureSettings.config.systemPrompt.list[
-            featureSettings.config.systemPrompt.active
-          ].content;
+          openAiPrompt +=
+            featureSettings.config.systemPrompt.list[
+              featureSettings.config.systemPrompt.active
+            ].content;
           openAiPrompt +=
             featureSettings.config.promptSchema.list[
               featureSettings.config.promptSchema.active
             ].content;
-            Object.keys(featureSettings.config.components).map((component) => {
-              const componentSettings = featureSettings.config.components[component];
-              if (componentSettings.isEnabled) {
-                openAiPrompt += componentSettings.schema;
-              }
-            });
+          Object.keys(featureSettings.config.components).map((component) => {
+            const componentSettings =
+              featureSettings.config.components[component];
+            if (componentSettings.isEnabled) {
+              openAiPrompt += componentSettings.schema;
+            }
+          });
         }
       });
       return openAiPrompt;

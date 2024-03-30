@@ -94,18 +94,19 @@ function workspaceEndpoints(app) {
           !currWorkspace.metaResponseSettings &&
           data.metaResponse
         ) {
-          const metaResponseDefaultSettings = WorkspaceMetaResponse.defaultSettings;
+          const metaResponseDefaultSettings =
+            WorkspaceMetaResponse.defaultSettings;
           const currentSystemPrompt =
             data.openAiPrompt ||
             currWorkspace.openAiPrompt ||
             WorkspaceMetaResponse.defaultSystemPrompt;
           Object.keys(metaResponseDefaultSettings).map((feature) => {
-            metaResponseDefaultSettings[feature].config.systemPrompt.content = currentSystemPrompt;
+            metaResponseDefaultSettings[feature].config.systemPrompt.content =
+              currentSystemPrompt;
             metaResponseDefaultSettings[feature].config.systemPrompt.list[0] = {
               title: "Default",
               content: currentSystemPrompt,
-            }
-
+            };
           });
           data.metaResponseSettings = JSON.stringify(
             metaResponseDefaultSettings
@@ -244,8 +245,8 @@ function workspaceEndpoints(app) {
           message:
             failedToEmbed.length > 0
               ? `${failedToEmbed.length} documents failed to add.\n\n${errors
-                .map((msg) => `${msg}`)
-                .join("\n\n")}`
+                  .map((msg) => `${msg}`)
+                  .join("\n\n")}`
               : null,
         });
       } catch (e) {

@@ -61,7 +61,9 @@ function FeedbackButton({
       >
         <IconComponent
           size={18}
-          className={`mb-1  hover:text-white/80 ${isSelected ? "text-white" : "text-white/40"}`}
+          className={`mb-1  hover:text-white/80 ${
+            isSelected ? "text-white" : "text-white/40"
+          }`}
           weight={isSelected ? "fill" : "regular"}
         />
       </button>

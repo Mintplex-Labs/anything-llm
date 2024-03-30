@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 
-export default function ToggleButton({ initialChecked, onToggle, name, disabled }) {
+export default function ToggleButton({
+  initialChecked,
+  onToggle,
+  name,
+  disabled,
+}) {
   const [isChecked, setIsChecked] = useState(initialChecked);
 
   useEffect(() => {

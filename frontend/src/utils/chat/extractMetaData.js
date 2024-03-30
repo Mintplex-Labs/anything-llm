@@ -1,6 +1,6 @@
 /**
  * Extracts JSON objects and arrays from a text response from OpenAI API call and returns the remaining text with the extracted JSON strings removed.
- * @param {String} textResponse  The text response from OpenAI API call 
+ * @param {String} textResponse  The text response from OpenAI API call
  * @returns  {Object} { remainingText, meta: extractedObjects }  remainingText is the textResponse with the extracted JSON strings removed, and meta is an array of the extracted JSON objects/arrays
  */
 
@@ -54,4 +54,4 @@ export const extractMetaData = (textResponse) => {
   console.log("remainingText", remainingText);
   console.log("extractedObjects", extractedObjects);
   return { remainingText, metaData: extractedObjects };
-}
+};

@@ -24,7 +24,6 @@ export default function ToggleBlock({
   const borderStyle = border ? "border border-gray-600 rounded-2xl p-4" : "";
   const backgroundStyle = bg ? "bg-black/10" : "";
 
-
   return (
     <div
       className={`relative w-full max-h-full ${borderStyle} ${backgroundStyle}`}
