@@ -59,6 +59,10 @@ const KEY_MAPPING = {
     envKey: "LMSTUDIO_BASE_PATH",
     checks: [isNotEmpty, validLLMExternalBasePath, validDockerizedUrl],
   },
+  LMStudioModelPref: {
+    envKey: "LMSTUDIO_MODEL_PREF",
+    checks: [],
+  },
   LMStudioTokenLimit: {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
@@ -269,6 +273,13 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Whisper (transcription) providers
+  WhisperProvider: {
+    envKey: "WHISPER_PROVIDER",
+    checks: [isNotEmpty, supportedTranscriptionProvider],
+    postUpdate: [],
+  },
+
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
@@ -277,6 +288,10 @@ const KEY_MAPPING = {
   JWTSecret: {
     envKey: "JWT_SECRET",
     checks: [requiresForceMode],
+  },
+  DisableTelemetry: {
+    envKey: "DISABLE_TELEMETRY",
+    checks: [],
   },
 };
 
@@ -351,6 +366,13 @@ function supportedLLM(input = "") {
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
 
+function supportedTranscriptionProvider(input = "") {
+  const validSelection = ["openai", "local"].includes(input);
+  return validSelection
+    ? null
+    : `${input} is not a valid transcription model provider.`;
+}
+
 function validGeminiModel(input = "") {
   const validModels = ["gemini-pro"];
   return validModels.includes(input)
@@ -365,6 +387,7 @@ function validAnthropicModel(input = "") {
     "claude-2.1",
     "claude-3-opus-20240229",
     "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307",
   ];
   return validModels.includes(input)
     ? null
@@ -541,6 +564,16 @@ async function dumpENV() {
     "DISABLE_TELEMETRY",
   ];
 
+  // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
+  function sanitizeValue(value) {
+    const offendingChars =
+      /[\n\r\t\v\f\u0085\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000"'`#]/;
+    const firstOffendingCharIndex = value.search(offendingChars);
+    if (firstOffendingCharIndex === -1) return value;
+
+    return value.substring(0, firstOffendingCharIndex);
+  }
+
   for (const key of protectedKeys) {
     const envValue = process.env?.[key] || null;
     if (!envValue) continue;
@@ -549,9 +582,7 @@ async function dumpENV() {
 
   var envResult = `# Auto-dump ENV from system call on ${new Date().toTimeString()}\n`;
   envResult += Object.entries(frozenEnvs)
-    .map(([key, value]) => {
-      return `${key}='${value}'`;
-    })
+    .map(([key, value]) => `${key}='${sanitizeValue(value)}'`)
     .join("\n");
 
   const envPath = path.join(__dirname, "../../.env");

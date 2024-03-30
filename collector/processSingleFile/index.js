@@ -7,7 +7,7 @@ const {
 const { trashFile, isTextType } = require("../utils/files");
 const RESERVED_FILES = ["__HOTDIR__.md"];
 
-async function processSingleFile(targetFilename) {
+async function processSingleFile(targetFilename, options = {}) {
   const fullFilePath = path.resolve(WATCH_DIRECTORY, targetFilename);
   if (RESERVED_FILES.includes(targetFilename))
     return {
@@ -54,6 +54,7 @@ async function processSingleFile(targetFilename) {
   return await FileTypeProcessor({
     fullFilePath,
     filename: targetFilename,
+    options,
   });
 }
 

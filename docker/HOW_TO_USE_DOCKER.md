@@ -109,28 +109,33 @@ container rebuilds or pulls from Docker Hub.
 
 Your docker host will show the image as online once the build process is completed. This will build the app to `http://localhost:3001`.
 
-## ⚠️ Vector DB support ⚠️
+## Integrations and one-click setups
 
-Out of the box, all vector databases are supported. Any vector databases requiring special configuration are listed below.
+The integrations below are templates or tooling built by the community to make running the docker experience of AnythingLLM easier.
 
-### Using local ChromaDB with Dockerized AnythingLLM
+### Use the Midori AI Subsystem to Manage AnythingLLM
 
-- Ensure in your `./docker/.env` file that you have
+Follow the setup found on [Midori AI Subsystem Site](https://io.midori-ai.xyz/subsystem/manager/) for your host OS
+After setting that up install the AnythingLLM docker backend to the Midori AI Subsystem.
 
-```
-#./docker/.env
-...other configs
-
-VECTOR_DB="chroma"
-CHROMA_ENDPOINT='http://host.docker.internal:8000' # Allow docker to look on host port, not container.
-# CHROMA_API_HEADER="X-Api-Key" // If you have an Auth middleware on your instance.
-# CHROMA_API_KEY="sk-123abc"
-
-...other configs
-
-```
+Once that is done, you are all set!
 
 ## Common questions and fixes
+
+### Cannot connect to service running on localhost!
+
+If you are in docker and cannot connect to a service running on your host machine running on a local interface or loopback:
+
+- `localhost`
+- `127.0.0.1`
+- `0.0.0.0`
+
+> [!IMPORTANT]
+> On linux `http://host.docker.internal:xxxx` does not work.
+> Use `http://172.17.0.1:xxxx` instead to emulate this functionality.
+
+Then in docker you need to replace that localhost part with `host.docker.internal`. For example, if running Ollama on the host machine, bound to http://127.0.0.1:11434 you should put `http://host.docker.internal:11434` into the connection URL in AnythingLLM.
+
 
 ### API is not working, cannot login, LLM is "offline"?
 

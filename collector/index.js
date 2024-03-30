@@ -25,7 +25,7 @@ app.use(
 );
 
 app.post("/process", async function (request, response) {
-  const { filename } = reqBody(request);
+  const { filename, options = {} } = reqBody(request);
   try {
     const targetFilename = path
       .normalize(filename)
@@ -34,7 +34,7 @@ app.post("/process", async function (request, response) {
       success,
       reason,
       documents = [],
-    } = await processSingleFile(targetFilename);
+    } = await processSingleFile(targetFilename, options);
     response
       .status(200)
       .json({ filename: targetFilename, success, reason, documents });

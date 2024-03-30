@@ -67,7 +67,7 @@ const Telemetry = {
 
   setUid: async function () {
     const newId = v4();
-    await SystemSettings.updateSettings({ [this.label]: newId });
+    await SystemSettings._updateSettings({ [this.label]: newId });
     return newId;
   },
 

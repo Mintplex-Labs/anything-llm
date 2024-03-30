@@ -87,7 +87,7 @@ class GeminiLLM {
   formatMessages(messages = []) {
     // Gemini roles are either user || model.
     // and all "content" is relabeled to "parts"
-    return messages
+    const allMessages = messages
       .map((message) => {
         if (message.role === "system")
           return { role: "user", parts: message.content };
@@ -98,6 +98,16 @@ class GeminiLLM {
         return null;
       })
       .filter((msg) => !!msg);
+
+    // Specifically, Google cannot have the last sent message be from a user with no assistant reply
+    // otherwise it will crash. So if the last item is from the user, it was not completed so pop it off
+    // the history.
+    if (
+      allMessages.length > 0 &&
+      allMessages[allMessages.length - 1].role === "user"
+    )
+      allMessages.pop();
+    return allMessages;
   }
 
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
@@ -210,7 +220,27 @@ class GeminiLLM {
       response.on("close", handleAbort);
 
       for await (const chunk of stream) {
-        fullText += chunk.text();
+        let chunkText;
+        try {
+          // Due to content sensitivity we cannot always get the function .text();
+          // https://cloud.google.com/vertex-ai/generative-ai/docs/multimodal/configure-safety-attributes#gemini-TASK-samples-nodejs
+          // and it is not possible to unblock or disable this safety protocol without being allowlisted by Google.
+          chunkText = chunk.text();
+        } catch (e) {
+          chunkText = e.message;
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "abort",
+            textResponse: null,
+            close: true,
+            error: e.message,
+          });
+          resolve(e.message);
+          return;
+        }
+
+        fullText += chunkText;
         writeResponseChunk(response, {
           uuid,
           sources: [],

@@ -21,6 +21,7 @@ const { extensionEndpoints } = require("./endpoints/extensions");
 const { bootHTTP, bootSSL } = require("./utils/boot");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const { workspaceMetaResponse } = require("./endpoints/workspaceMetaResponse");
+const { documentEndpoints } = require("./endpoints/document");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -46,38 +47,11 @@ adminEndpoints(apiRouter);
 inviteEndpoints(apiRouter);
 embedManagementEndpoints(apiRouter);
 utilEndpoints(apiRouter);
+documentEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
 
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
-
-apiRouter.post("/v/:command", async (request, response) => {
-  try {
-    const VectorDb = getVectorDbClass();
-    const { command } = request.params;
-    if (!Object.getOwnPropertyNames(VectorDb).includes(command)) {
-      response.status(500).json({
-        message: "invalid interface command",
-        commands: Object.getOwnPropertyNames(VectorDb),
-      });
-      return;
-    }
-
-    try {
-      const body = reqBody(request);
-      const resBody = await VectorDb[command](body);
-      response.status(200).json({ ...resBody });
-    } catch (e) {
-      // console.error(e)
-      console.error(JSON.stringify(e));
-      response.status(500).json({ error: e.message });
-    }
-    return;
-  } catch (e) {
-    console.log(e.message, e);
-    response.sendStatus(500).end();
-  }
-});
 
 if (process.env.NODE_ENV !== "development") {
   app.use(
@@ -91,6 +65,35 @@ if (process.env.NODE_ENV !== "development") {
   app.get("/robots.txt", function (_, response) {
     response.type("text/plain");
     response.send("User-agent: *\nDisallow: /").end();
+  });
+} else {
+  // Debug route for development connections to vectorDBs
+  apiRouter.post("/v/:command", async (request, response) => {
+    try {
+      const VectorDb = getVectorDbClass();
+      const { command } = request.params;
+      if (!Object.getOwnPropertyNames(VectorDb).includes(command)) {
+        response.status(500).json({
+          message: "invalid interface command",
+          commands: Object.getOwnPropertyNames(VectorDb),
+        });
+        return;
+      }
+
+      try {
+        const body = reqBody(request);
+        const resBody = await VectorDb[command](body);
+        response.status(200).json({ ...resBody });
+      } catch (e) {
+        // console.error(e)
+        console.error(JSON.stringify(e));
+        response.status(500).json({ error: e.message });
+      }
+      return;
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
   });
 }
 

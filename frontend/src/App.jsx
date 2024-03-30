@@ -29,6 +29,9 @@ const GeneralApiKeys = lazy(() => import("@/pages/GeneralSettings/ApiKeys"));
 const GeneralLLMPreference = lazy(
   () => import("@/pages/GeneralSettings/LLMPreference")
 );
+const GeneralTranscriptionPreference = lazy(
+  () => import("@/pages/GeneralSettings/TranscriptionPreference")
+);
 const GeneralEmbeddingPreference = lazy(
   () => import("@/pages/GeneralSettings/EmbeddingPreference")
 );
@@ -47,6 +50,9 @@ const EmbedConfigSetup = lazy(
   () => import("@/pages/GeneralSettings/EmbedConfigs")
 );
 const EmbedChats = lazy(() => import("@/pages/GeneralSettings/EmbedChats"));
+const PrivacyAndData = lazy(
+  () => import("@/pages/GeneralSettings/PrivacyAndData")
+);
 
 export default function App() {
   return (
@@ -77,6 +83,12 @@ export default function App() {
                 element={<AdminRoute Component={GeneralLLMPreference} />}
               />
               <Route
+                path="/settings/transcription-preference"
+                element={
+                  <AdminRoute Component={GeneralTranscriptionPreference} />
+                }
+              />
+              <Route
                 path="/settings/embedding-preference"
                 element={<AdminRoute Component={GeneralEmbeddingPreference} />}
               />
@@ -100,6 +112,10 @@ export default function App() {
               <Route
                 path="/settings/security"
                 element={<ManagerRoute Component={GeneralSecurity} />}
+              />
+              <Route
+                path="/settings/privacy"
+                element={<AdminRoute Component={PrivacyAndData} />}
               />
               <Route
                 path="/settings/appearance"

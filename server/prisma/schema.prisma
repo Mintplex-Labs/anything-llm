@@ -41,6 +41,7 @@ model invites {
   code          String   @unique
   status        String   @default("pending")
   claimedBy     Int?
+  workspaceIds  String?
   createdAt     DateTime @default(now())
   createdBy     Int
   lastUpdatedAt DateTime @default(now())

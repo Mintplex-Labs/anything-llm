@@ -4,8 +4,8 @@ export default {
   home: () => {
     return "/";
   },
-  login: () => {
-    return "/login";
+  login: (noTry = false) => {
+    return `/login${noTry ? "?nt=1" : ""}`;
   },
   onboarding: {
     home: () => {
@@ -95,6 +95,9 @@ export default {
     llmPreference: () => {
       return "/settings/llm-preference";
     },
+    transcriptionPreference: () => {
+      return "/settings/transcription-preference";
+    },
     embeddingPreference: () => {
       return "/settings/embedding-preference";
     },
@@ -112,6 +115,9 @@ export default {
     },
     logs: () => {
       return "/settings/event-logs";
+    },
+    privacy: () => {
+      return "/settings/privacy";
     },
     embedSetup: () => {
       return `/settings/embed-config`;

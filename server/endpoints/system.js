@@ -55,10 +55,6 @@ function systemEndpoints(app) {
   });
 
   app.get("/migrate", async (_, response) => {
-    const execSync = require("child_process").execSync;
-    execSync("npx prisma migrate deploy --schema=./prisma/schema.prisma", {
-      stdio: "inherit",
-    });
     response.sendStatus(200);
   });
 
@@ -109,7 +105,7 @@ function systemEndpoints(app) {
 
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-        const existingUser = await User.get({ username });
+        const existingUser = await User.get({ username: String(username) });
 
         if (!existingUser) {
           await EventLogs.logEvent(
@@ -129,7 +125,7 @@ function systemEndpoints(app) {
           return;
         }
 
-        if (!bcrypt.compareSync(password, existingUser.password)) {
+        if (!bcrypt.compareSync(String(password), existingUser.password)) {
           await EventLogs.logEvent(
             "failed_login_invalid_password",
             {
@@ -390,9 +386,7 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const { username, password } = reqBody(request);
-        const multiUserModeEnabled = await SystemSettings.isMultiUserMode();
-        if (multiUserModeEnabled) {
+        if (response.locals.multiUserMode) {
           response.status(200).json({
             success: false,
             error: "Multi-user mode is already enabled.",
@@ -400,12 +394,13 @@ function systemEndpoints(app) {
           return;
         }
 
+        const { username, password } = reqBody(request);
         const { user, error } = await User.create({
           username,
           password,
           role: ROLES.admin,
         });
-        await SystemSettings.updateSettings({
+        await SystemSettings._updateSettings({
           multi_user_mode: true,
           users_can_delete_workspaces: false,
           limit_user_messages: false,
@@ -427,7 +422,7 @@ function systemEndpoints(app) {
         response.status(200).json({ success: !!user, error });
       } catch (e) {
         await User.delete({});
-        await SystemSettings.updateSettings({
+        await SystemSettings._updateSettings({
           multi_user_mode: false,
         });
 
@@ -628,7 +623,7 @@ function systemEndpoints(app) {
         const existingLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(existingLogoFilename);
 
-        const { success, error } = await SystemSettings.updateSettings({
+        const { success, error } = await SystemSettings._updateSettings({
           logo_filename: newFilename,
         });
 
@@ -662,7 +657,7 @@ function systemEndpoints(app) {
       try {
         const currentLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(currentLogoFilename);
-        const { success, error } = await SystemSettings.updateSettings({
+        const { success, error } = await SystemSettings._updateSettings({
           logo_filename: LOGO_FILENAME,
         });
 

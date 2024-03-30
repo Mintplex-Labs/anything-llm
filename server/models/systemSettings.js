@@ -2,11 +2,12 @@ process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
 
+const { isValidUrl } = require("../utils/http");
 const prisma = require("../utils/prisma");
 
 const SystemSettings = {
+  protectedFields: ["multi_user_mode"],
   supportedFields: [
-    "multi_user_mode",
     "users_can_delete_workspaces",
     "limit_user_messages",
     "message_limit",
@@ -18,8 +19,10 @@ const SystemSettings = {
   validations: {
     footer_data: (updates) => {
       try {
-        const array = JSON.parse(updates);
-        return JSON.stringify(array.slice(0, 3)); // max of 3 items in footer.
+        const array = JSON.parse(updates)
+          .filter((setting) => isValidUrl(setting.url))
+          .slice(0, 3); // max of 3 items in footer.
+        return JSON.stringify(array);
       } catch (e) {
         console.error(`Failed to run validation function on footer_data`);
         return JSON.stringify([]);
@@ -43,6 +46,7 @@ const SystemSettings = {
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
+      DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
       ...(vectorDB === "pinecone"
         ? {
             PineConeKey: !!process.env.PINECONE_API_KEY,
@@ -136,6 +140,7 @@ const SystemSettings = {
         ? {
             LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
             LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
+            LMStudioModelPref: process.env.LMSTUDIO_MODEL_PREF,
 
             // For embedding credentials when lmstudio is selected.
             OpenAiKey: !!process.env.OPEN_AI_KEY,
@@ -258,6 +263,7 @@ const SystemSettings = {
             AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
           }
         : {}),
+      WhisperProvider: process.env.WHISPER_PROVIDER || "local",
     };
   },
 
@@ -284,26 +290,43 @@ const SystemSettings = {
     }
   },
 
+  // Can take generic keys and will pre-filter invalid keys
+  // from the set before sending to the explicit update function
+  // that will then enforce validations as well.
   updateSettings: async function (updates = {}) {
-    try {
-      const updatePromises = Object.keys(updates)
-        .filter((key) => this.supportedFields.includes(key))
-        .map((key) => {
-          const validatedValue = this.validations.hasOwnProperty(key)
-            ? this.validations[key](updates[key])
-            : updates[key];
+    const validFields = Object.keys(updates).filter((key) =>
+      this.supportedFields.includes(key)
+    );
 
-          return prisma.system_settings.upsert({
-            where: { label: key },
-            update: {
-              value: validatedValue === null ? null : String(validatedValue),
-            },
-            create: {
-              label: key,
-              value: validatedValue === null ? null : String(validatedValue),
-            },
-          });
+    Object.entries(updates).forEach(([key]) => {
+      if (validFields.includes(key)) return;
+      delete updates[key];
+    });
+
+    return this._updateSettings(updates);
+  },
+
+  // Explicit update of settings + key validations.
+  // Only use this method when directly setting a key value
+  // that takes no user input for the keys being modified.
+  _updateSettings: async function (updates = {}) {
+    try {
+      const updatePromises = Object.keys(updates).map((key) => {
+        const validatedValue = this.validations.hasOwnProperty(key)
+          ? this.validations[key](updates[key])
+          : updates[key];
+
+        return prisma.system_settings.upsert({
+          where: { label: key },
+          update: {
+            value: validatedValue === null ? null : String(validatedValue),
+          },
+          create: {
+            label: key,
+            value: validatedValue === null ? null : String(validatedValue),
+          },
         });
+      });
 
       await Promise.all(updatePromises);
       return { success: true, error: null };
