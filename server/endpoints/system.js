@@ -951,10 +951,10 @@ function systemEndpoints(app) {
 
       const updates = {};
       if (username) {
-        updates.username = username;
+        updates.username = String(username);
       }
       if (password) {
-        updates.password = password;
+        updates.password = String(password);
       }
 
       if (Object.keys(updates).length === 0) {
