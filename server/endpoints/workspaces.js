@@ -1,10 +1,13 @@
+const path = require("path");
+const fs = require("fs");
 const { reqBody, multiUserMode, userFromSession } = require("../utils/http");
+const { normalizePath } = require("../utils/files");
 const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { getVectorDbClass } = require("../utils/helpers");
-const { setupMulter } = require("../utils/files/multer");
+const { handleFileUpload, handlePfpUpload } = require("../utils/files/multer");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
 const {
@@ -18,12 +21,6 @@ const {
 const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { CollectorApi } = require("../utils/collectorApi");
-const { handleUploads } = setupMulter();
-const { setupPfpUploads } = require("../utils/files/multer");
-const { normalizePath } = require("../utils/files");
-const { handlePfpUploads } = setupPfpUploads();
-const path = require("path");
-const fs = require("fs");
 const {
   determineWorkspacePfpFilepath,
   fetchPfp,
@@ -102,8 +99,11 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/upload",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    handleUploads.single("file"),
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      handleFileUpload,
+    ],
     async function (request, response) {
       const Collector = new CollectorApi();
       const { originalname } = request.file;
@@ -479,8 +479,11 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/upload-pfp",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    handlePfpUploads.single("file"),
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      handlePfpUpload,
+    ],
     async function (request, response) {
       try {
         const { slug } = request.params;
