@@ -69,6 +69,15 @@ function safeJsonParse(jsonString, fallback = null) {
   return fallback;
 }
 
+function isValidUrl(urlString = "") {
+  try {
+    const url = new URL(urlString);
+    if (!["http:", "https:"].includes(url.protocol)) return false;
+    return true;
+  } catch (e) {}
+  return false;
+}
+
 module.exports = {
   reqBody,
   multiUserMode,
@@ -78,4 +87,5 @@ module.exports = {
   userFromSession,
   parseAuthHeader,
   safeJsonParse,
+  isValidUrl,
 };

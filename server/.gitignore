@@ -3,6 +3,7 @@
 storage/assets/*
 !storage/assets/anything-llm.png
 storage/documents/*
+storage/comkey/*
 storage/tmp/*
 storage/vector-cache/*.json
 storage/exports

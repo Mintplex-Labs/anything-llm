@@ -109,6 +109,17 @@ container rebuilds or pulls from Docker Hub.
 
 Your docker host will show the image as online once the build process is completed. This will build the app to `http://localhost:3001`.
 
+## Integrations and one-click setups
+
+The integrations below are templates or tooling built by the community to make running the docker experience of AnythingLLM easier.
+
+### Use the Midori AI Subsystem to Manage AnythingLLM
+
+Follow the setup found on [Midori AI Subsystem Site](https://io.midori-ai.xyz/subsystem/manager/) for your host OS
+After setting that up install the AnythingLLM docker backend to the Midori AI Subsystem.
+
+Once that is done, you are all set!
+
 ## Common questions and fixes
 
 ### Cannot connect to service running on localhost!

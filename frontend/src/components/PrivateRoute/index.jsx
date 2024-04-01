@@ -139,6 +139,6 @@ export default function PrivateRoute({ Component }) {
       <Component />
     </AppLayout>
   ) : (
-    <Navigate to={paths.login()} />
+    <Navigate to={paths.login(true)} />
   );
 }

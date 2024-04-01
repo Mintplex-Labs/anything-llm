@@ -1,3 +1,4 @@
+const { safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
 
 const Invite = {
@@ -6,12 +7,13 @@ const Invite = {
     return uuidAPIKey.create().apiKey;
   },
 
-  create: async function (createdByUserId = 0) {
+  create: async function ({ createdByUserId = 0, workspaceIds = [] }) {
     try {
       const invite = await prisma.invites.create({
         data: {
           code: this.makeCode(),
           createdBy: createdByUserId,
+          workspaceIds: JSON.stringify(workspaceIds),
         },
       });
       return { invite, error: null };
@@ -23,7 +25,7 @@ const Invite = {
 
   deactivate: async function (inviteId = null) {
     try {
-      const invite = await prisma.invites.update({
+      await prisma.invites.update({
         where: { id: Number(inviteId) },
         data: { status: "disabled" },
       });
@@ -40,6 +42,26 @@ const Invite = {
         where: { id: Number(inviteId) },
         data: { status: "claimed", claimedBy: user.id },
       });
+
+      try {
+        if (!!invite?.workspaceIds) {
+          const { Workspace } = require("./workspace");
+          const { WorkspaceUser } = require("./workspaceUsers");
+          const workspaceIds = (await Workspace.where({})).map(
+            (workspace) => workspace.id
+          );
+          const ids = safeJsonParse(invite.workspaceIds)
+            .map((id) => Number(id))
+            .filter((id) => workspaceIds.includes(id));
+          if (ids.length !== 0) await WorkspaceUser.createMany(user.id, ids);
+        }
+      } catch (e) {
+        console.error(
+          "Could not add user to workspaces automatically",
+          e.message
+        );
+      }
+
       return { success: true, error: null };
     } catch (error) {
       console.error(error.message);

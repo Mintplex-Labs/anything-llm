@@ -1,8 +1,15 @@
-import { Info } from "@phosphor-icons/react";
-import paths from "../../../utils/paths";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Info } from "@phosphor-icons/react";
+import paths from "@/utils/paths";
+import System from "@/models/system";
 
 export default function LMStudioOptions({ settings, showAlert = false }) {
+  const [basePathValue, setBasePathValue] = useState(
+    settings?.LMStudioBasePath
+  );
+  const [basePath, setBasePath] = useState(settings?.LMStudioBasePath);
+
   return (
     <div className="w-full flex flex-col">
       {showAlert && (
@@ -36,8 +43,11 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
             required={true}
             autoComplete="off"
             spellCheck={false}
+            onChange={(e) => setBasePathValue(e.target.value)}
+            onBlur={() => setBasePath(basePathValue)}
           />
         </div>
+        <LMStudioModelSelection settings={settings} basePath={basePath} />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
             Token context window
@@ -55,6 +65,76 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+function LMStudioModelSelection({ settings, basePath = null }) {
+  const [customModels, setCustomModels] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function findCustomModels() {
+      if (!basePath || !basePath.includes("/v1")) {
+        setCustomModels([]);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      const { models } = await System.customModels("lmstudio", null, basePath);
+      setCustomModels(models || []);
+      setLoading(false);
+    }
+    findCustomModels();
+  }, [basePath]);
+
+  if (loading || customModels.length == 0) {
+    return (
+      <div className="flex flex-col w-60">
+        <label className="text-white text-sm font-semibold block mb-4">
+          Chat Model Selection
+        </label>
+        <select
+          name="LMStudioModelPref"
+          disabled={true}
+          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        >
+          <option disabled={true} selected={true}>
+            {basePath?.includes("/v1")
+              ? "-- loading available models --"
+              : "-- waiting for URL --"}
+          </option>
+        </select>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col w-60">
+      <label className="text-white text-sm font-semibold block mb-4">
+        Chat Model Selection
+      </label>
+      <select
+        name="LMStudioModelPref"
+        required={true}
+        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+      >
+        {customModels.length > 0 && (
+          <optgroup label="Your loaded models">
+            {customModels.map((model) => {
+              return (
+                <option
+                  key={model.id}
+                  value={model.id}
+                  selected={settings.LMStudioModelPref === model.id}
+                >
+                  {model.id}
+                </option>
+              );
+            })}
+          </optgroup>
+        )}
+      </select>
     </div>
   );
 }

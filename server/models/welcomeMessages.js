@@ -34,7 +34,7 @@ const WelcomeMessages = {
       // We create each message individually because prisma
       // with sqlite does not support createMany()
       for (const [index, message] of messages.entries()) {
-        if (!message.response) continue;
+        if (!message.response && !message.user) continue;
         await prisma.welcome_messages.create({
           data: {
             user: message.user,

@@ -25,6 +25,7 @@ const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const {
   preloadOllamaService,
 } = require("./utils/AiProviders/anythingLLM/utils/preload");
+const { CommunicationKey } = require("./utils/comKey");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -62,6 +63,7 @@ app
   .listen(process.env.SERVER_PORT || 3001, async () => {
     await setupTelemetry();
     await preloadOllamaService();
+    new CommunicationKey(true);
     console.log(
       `[${
         process.env.NODE_ENV || "development"

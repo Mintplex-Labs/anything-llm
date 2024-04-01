@@ -1,6 +1,6 @@
 const { Telemetry } = require("../../../models/telemetry");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
-const { setupMulter } = require("../../../utils/files/multer");
+const { handleFileUpload } = require("../../../utils/files/multer");
 const {
   viewLocalFiles,
   findDocumentInDocuments,
@@ -9,7 +9,6 @@ const {
 const { reqBody } = require("../../../utils/http");
 const { EventLogs } = require("../../../models/eventLogs");
 const { CollectorApi } = require("../../../utils/collectorApi");
-const { handleUploads } = setupMulter();
 const fs = require("fs");
 const path = require("path");
 const { Document } = require("../../../models/documents");
@@ -23,8 +22,7 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/upload",
-    [validApiKey],
-    handleUploads.single("file"),
+    [validApiKey, handleFileUpload],
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
