@@ -13,6 +13,7 @@ const { processLink } = require("./processLink");
 const { wipeCollectorStorage } = require("./utils/files");
 const extensions = require("./extensions");
 const { processRawText } = require("./processRawText");
+const { verifyPayloadIntegrity } = require("./middleware/verifyIntegrity");
 const app = express();
 
 app.use(cors({ origin: true }));
@@ -24,7 +25,7 @@ app.use(
   })
 );
 
-app.post("/process", async function (request, response) {
+app.post("/process", [verifyPayloadIntegrity], async function (request, response) {
   const { filename, options = {} } = reqBody(request);
   try {
     const targetFilename = path
@@ -50,7 +51,7 @@ app.post("/process", async function (request, response) {
   return;
 });
 
-app.post("/process-link", async function (request, response) {
+app.post("/process-link", [verifyPayloadIntegrity], async function (request, response) {
   const { link } = reqBody(request);
   try {
     const { success, reason, documents = [] } = await processLink(link);
@@ -67,7 +68,7 @@ app.post("/process-link", async function (request, response) {
   return;
 });
 
-app.post("/process-raw-text", async function (request, response) {
+app.post("/process-raw-text", [verifyPayloadIntegrity], async function (request, response) {
   const { textContent, metadata } = reqBody(request);
   try {
     const {
