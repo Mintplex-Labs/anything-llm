@@ -52,7 +52,7 @@ class CollectorApi {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Integrity": this.comkey.sign(data)
+        "X-Integrity": this.comkey.sign(data),
       },
       body: data,
     })
@@ -75,7 +75,7 @@ class CollectorApi {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Integrity": this.comkey.sign(data)
+        "X-Integrity": this.comkey.sign(data),
       },
       body: data,
     })
@@ -96,7 +96,7 @@ class CollectorApi {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Integrity": this.comkey.sign(data)
+        "X-Integrity": this.comkey.sign(data),
       },
       body: data,
     })
@@ -120,7 +120,7 @@ class CollectorApi {
       body, // Stringified JSON!
       headers: {
         "Content-Type": "application/json",
-        "X-Integrity": this.comkey.sign(body)
+        "X-Integrity": this.comkey.sign(body),
       },
     })
       .then((res) => {

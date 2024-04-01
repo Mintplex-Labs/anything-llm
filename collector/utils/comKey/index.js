@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 
@@ -8,10 +8,10 @@ const keyPath =
     : path.resolve(process.env.STORAGE_DIR, `comkey`);
 
 class CommunicationKey {
-  #pubKeyName = 'ipc-pub.pem';
+  #pubKeyName = "ipc-pub.pem";
   #storageLoc = keyPath;
 
-  constructor() { }
+  constructor() {}
 
   log(text, ...args) {
     console.log(`\x1b[36m[CommunicationKeyVerify]\x1b[0m ${text}`, ...args);
@@ -21,14 +21,22 @@ class CommunicationKey {
     return fs.readFileSync(path.resolve(this.#storageLoc, this.#pubKeyName));
   }
 
-  verify(signature = '', textData = '') {
+  // Given a signed payload from private key from /app/server/ this signature should
+  // decode to match the textData provided. This class does verification only in collector.
+  // Note: The textData is typically the JSON stringified body sent to the document processor API.
+  verify(signature = "", textData = "") {
     try {
       let data = textData;
-      if (typeof textData !== 'string') data = JSON.stringify(data);
-      return crypto.verify('RSA-SHA256', Buffer.from(data), this.#readPublicKey(), Buffer.from(signature, "hex"));
-    } catch { }
+      if (typeof textData !== "string") data = JSON.stringify(data);
+      return crypto.verify(
+        "RSA-SHA256",
+        Buffer.from(data),
+        this.#readPublicKey(),
+        Buffer.from(signature, "hex")
+      );
+    } catch {}
     return false;
   }
 }
 
-module.exports = { CommunicationKey }
+module.exports = { CommunicationKey };
