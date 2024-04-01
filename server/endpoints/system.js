@@ -12,13 +12,11 @@ const {
   multiUserMode,
   queryParams,
 } = require("../utils/http");
-const { setupLogoUploads, setupPfpUploads } = require("../utils/files/multer");
+const { handleAssetUpload, handlePfpUpload } = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { handleLogoUploads } = setupLogoUploads();
-const { handlePfpUploads } = setupPfpUploads();
 const fs = require("fs");
 const path = require("path");
 const {
@@ -531,8 +529,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/upload-pfp",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
-    handlePfpUploads.single("file"),
+    [validatedRequest, flexUserRoleValid([ROLES.all]), handlePfpUpload],
     async function (request, response) {
       try {
         const user = await userFromSession(request, response);
@@ -605,10 +602,13 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/upload-logo",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    handleLogoUploads.single("logo"),
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      handleAssetUpload,
+    ],
     async (request, response) => {
-      if (!request.file || !request.file.originalname) {
+      if (!request?.file || !request?.file.originalname) {
         return response.status(400).json({ message: "No logo file provided." });
       }
 
