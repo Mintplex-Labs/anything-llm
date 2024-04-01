@@ -25,16 +25,19 @@ const WorkspaceThread = {
   update: async function (prevThread = null, data = {}) {
     if (!prevThread) throw new Error("No thread id provided for update");
 
-    const validKeys = Object.keys(data).filter((key) =>
-      this.writable.includes(key)
-    );
-    if (validKeys.length === 0)
+    const validData = {};
+    Object.entries(data).forEach(([key, value]) => {
+      if (!this.writable.includes(key)) return;
+      validData[key] = value;
+    });
+
+    if (Object.keys(validData).length === 0)
       return { thread: prevThread, message: "No valid fields to update!" };
 
     try {
       const thread = await prisma.workspace_threads.update({
         where: { id: prevThread.id },
-        data,
+        data: validData,
       });
       return { thread, message: null };
     } catch (error) {
