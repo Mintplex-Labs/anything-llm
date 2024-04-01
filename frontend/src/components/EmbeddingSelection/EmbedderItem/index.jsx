@@ -9,7 +9,9 @@ export default function EmbedderItem({
   return (
     <div
       onClick={() => onClick(value)}
-      className={`w-full p-2 rounded-md hover:cursor-pointer hover:bg-white/10`}
+      className={`w-full p-2 rounded-md hover:cursor-pointer hover:bg-white/10 ${
+        checked ? "bg-white/10" : ""
+      }`}
     >
       <input
         type="checkbox"
