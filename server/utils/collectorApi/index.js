@@ -5,6 +5,8 @@
 
 class CollectorApi {
   constructor() {
+    const { CommunicationKey } = require("../comKey");
+    this.comkey = new CommunicationKey();
     this.endpoint = `http://0.0.0.0:${process.env.COLLECTOR_PORT || 8888}`;
   }
 
@@ -40,15 +42,19 @@ class CollectorApi {
 
   async processDocument(filename = "") {
     if (!filename) return false;
+
+    const data = JSON.stringify({
+      filename,
+      options: this.#attachOptions(),
+    });
+
     return await fetch(`${this.endpoint}/process`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-Integrity": this.comkey.sign(data),
       },
-      body: JSON.stringify({
-        filename,
-        options: this.#attachOptions(),
-      }),
+      body: data,
     })
       .then((res) => {
         if (!res.ok) throw new Error("Response could not be completed");
@@ -64,12 +70,14 @@ class CollectorApi {
   async processLink(link = "") {
     if (!link) return false;
 
+    const data = JSON.stringify({ link });
     return await fetch(`${this.endpoint}/process-link`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-Integrity": this.comkey.sign(data),
       },
-      body: JSON.stringify({ link }),
+      body: data,
     })
       .then((res) => {
         if (!res.ok) throw new Error("Response could not be completed");
@@ -83,12 +91,14 @@ class CollectorApi {
   }
 
   async processRawText(textContent = "", metadata = {}) {
+    const data = JSON.stringify({ textContent, metadata });
     return await fetch(`${this.endpoint}/process-raw-text`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-Integrity": this.comkey.sign(data),
       },
-      body: JSON.stringify({ textContent, metadata }),
+      body: data,
     })
       .then((res) => {
         if (!res.ok) throw new Error("Response could not be completed");
@@ -110,6 +120,7 @@ class CollectorApi {
       body, // Stringified JSON!
       headers: {
         "Content-Type": "application/json",
+        "X-Integrity": this.comkey.sign(body),
       },
     })
       .then((res) => {
