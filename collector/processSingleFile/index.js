@@ -4,11 +4,26 @@ const {
   WATCH_DIRECTORY,
   SUPPORTED_FILETYPE_CONVERTERS,
 } = require("../utils/constants");
-const { trashFile, isTextType } = require("../utils/files");
+const {
+  trashFile,
+  isTextType,
+  normalizePath,
+  isWithin,
+} = require("../utils/files");
 const RESERVED_FILES = ["__HOTDIR__.md"];
 
 async function processSingleFile(targetFilename, options = {}) {
-  const fullFilePath = path.resolve(WATCH_DIRECTORY, targetFilename);
+  const fullFilePath = path.resolve(
+    WATCH_DIRECTORY,
+    normalizePath(targetFilename)
+  );
+  if (!isWithin(path.resolve(WATCH_DIRECTORY), fullFilePath))
+    return {
+      success: false,
+      reason: "Filename is a not a valid path to process.",
+      documents: [],
+    };
+
   if (RESERVED_FILES.includes(targetFilename))
     return {
       success: false,

@@ -12,13 +12,11 @@ const {
   multiUserMode,
   queryParams,
 } = require("../utils/http");
-const { setupLogoUploads, setupPfpUploads } = require("../utils/files/multer");
+const { handleAssetUpload, handlePfpUpload } = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { handleLogoUploads } = setupLogoUploads();
-const { handlePfpUploads } = setupPfpUploads();
 const fs = require("fs");
 const path = require("path");
 const {
@@ -105,7 +103,7 @@ function systemEndpoints(app) {
 
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-        const existingUser = await User.get({ username });
+        const existingUser = await User.get({ username: String(username) });
 
         if (!existingUser) {
           await EventLogs.logEvent(
@@ -125,7 +123,7 @@ function systemEndpoints(app) {
           return;
         }
 
-        if (!bcrypt.compareSync(password, existingUser.password)) {
+        if (!bcrypt.compareSync(String(password), existingUser.password)) {
           await EventLogs.logEvent(
             "failed_login_invalid_password",
             {
@@ -400,7 +398,7 @@ function systemEndpoints(app) {
           password,
           role: ROLES.admin,
         });
-        await SystemSettings.updateSettings({
+        await SystemSettings._updateSettings({
           multi_user_mode: true,
           users_can_delete_workspaces: false,
           limit_user_messages: false,
@@ -422,7 +420,7 @@ function systemEndpoints(app) {
         response.status(200).json({ success: !!user, error });
       } catch (e) {
         await User.delete({});
-        await SystemSettings.updateSettings({
+        await SystemSettings._updateSettings({
           multi_user_mode: false,
         });
 
@@ -531,8 +529,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/upload-pfp",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
-    handlePfpUploads.single("file"),
+    [validatedRequest, flexUserRoleValid([ROLES.all]), handlePfpUpload],
     async function (request, response) {
       try {
         const user = await userFromSession(request, response);
@@ -605,10 +602,13 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/upload-logo",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    handleLogoUploads.single("logo"),
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      handleAssetUpload,
+    ],
     async (request, response) => {
-      if (!request.file || !request.file.originalname) {
+      if (!request?.file || !request?.file.originalname) {
         return response.status(400).json({ message: "No logo file provided." });
       }
 
@@ -623,7 +623,7 @@ function systemEndpoints(app) {
         const existingLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(existingLogoFilename);
 
-        const { success, error } = await SystemSettings.updateSettings({
+        const { success, error } = await SystemSettings._updateSettings({
           logo_filename: newFilename,
         });
 
@@ -657,7 +657,7 @@ function systemEndpoints(app) {
       try {
         const currentLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(currentLogoFilename);
-        const { success, error } = await SystemSettings.updateSettings({
+        const { success, error } = await SystemSettings._updateSettings({
           logo_filename: LOGO_FILENAME,
         });
 
@@ -951,10 +951,10 @@ function systemEndpoints(app) {
 
       const updates = {};
       if (username) {
-        updates.username = username;
+        updates.username = String(username);
       }
       if (password) {
-        updates.password = password;
+        updates.password = String(password);
       }
 
       if (Object.keys(updates).length === 0) {
