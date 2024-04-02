@@ -33,7 +33,6 @@ import AnythingLLMOptions from "@/components/LLMSelection/AnythingLLMOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
-import { MagnifyingGlass } from "@phosphor-icons/react";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { _APP_PLATFORM } from "@/utils/constants";
 
@@ -289,7 +288,7 @@ export default function GeneralLLMPreference() {
                           name="llm-search"
                           autoComplete="off"
                           placeholder="Search all LLM providers"
-                          className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:border-white text-white placeholder:text-white placeholder:font-medium"
+                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:border-white text-white placeholder:text-white placeholder:font-medium"
                           onChange={(e) => setSearchQuery(e.target.value)}
                           ref={searchInputRef}
                           onKeyDown={(e) => {
