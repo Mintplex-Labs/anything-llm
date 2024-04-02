@@ -1,5 +1,3 @@
-const isPortInUse = require("./portAvailabilityChecker");
-
 const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
@@ -468,18 +466,19 @@ async function validDockerizedUrl(input = "") {
   if (process.env.ANYTHING_LLM_RUNTIME !== "docker") return null;
 
   try {
+    const { isPortInUse, getLocalHosts } = require("./portAvailabilityChecker");
+    const localInterfaces = getLocalHosts();
     const url = new URL(input);
     const hostname = url.hostname.toLowerCase();
     const port = parseInt(url.port, 10);
 
+    // If not a loopback, skip this check.
+    if (!localInterfaces.includes(hostname)) return null;
     if (isNaN(port)) return "Invalid URL: Port is not specified or invalid";
 
-    const isPortAvailableFromDocker = await isPortInUse(port);
-    if (!isPortAvailableFromDocker) {
-      if (["localhost", "127.0.0.1", "0.0.0.0"].includes(hostname)) {
-        return "localhost, 127.0.0.1, or 0.0.0.0 origins cannot be reached from inside the AnythingLLM container. Please use host.docker.internal (for linux use 172.17.0.1), a real machine ip, or domain to connect to your service.";
-      }
-    }
+    const isPortAvailableFromDocker = await isPortInUse(port, hostname);
+    if (isPortAvailableFromDocker)
+      return "Port does not seem to running a service reachable on loopback address from inside the AnythingLLM container. Please use host.docker.internal (for linux use 172.17.0.1), a real machine ip, or domain to connect to your service.";
   } catch (error) {
     console.error(error.message);
     return "An error occurred while validating the URL";
