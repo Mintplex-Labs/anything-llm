@@ -164,7 +164,6 @@ export default function GeneralEmbeddingPreference() {
             id="embedding-form"
             onSubmit={handleSubmit}
             className="flex w-full"
-            autoComplete="off"
           >
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
@@ -214,6 +213,7 @@ export default function GeneralEmbeddingPreference() {
                         <input
                           type="text"
                           name="embedder-search"
+                          autoComplete="off"
                           placeholder="Search all embedding providers"
                           className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:border-white text-white placeholder:text-white placeholder:font-medium"
                           onChange={(e) => setSearchQuery(e.target.value)}

@@ -113,11 +113,7 @@ export default function TranscriptionModelPreference() {
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
           className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
         >
-          <form
-            onSubmit={handleSubmit}
-            className="flex w-full"
-            autoComplete="off"
-          >
+          <form onSubmit={handleSubmit} className="flex w-full">
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">
@@ -163,6 +159,7 @@ export default function TranscriptionModelPreference() {
                         <input
                           type="text"
                           name="provider-search"
+                          autoComplete="off"
                           placeholder="Search audio transcription providers"
                           className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:border-white text-white placeholder:text-white placeholder:font-medium"
                           onChange={(e) => setSearchQuery(e.target.value)}
