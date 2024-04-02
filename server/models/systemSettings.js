@@ -1,16 +1,17 @@
 const path = require("path");
 const prisma = require("../utils/prisma");
+const { isValidUrl } = require("../utils/http");
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config({
-      path: process.env.STORAGE_DIR
-        ? path.resolve(process.env.STORAGE_DIR, ".env")
-        : path.resolve(__dirname, ".env"),
-    });
+    path: process.env.STORAGE_DIR
+      ? path.resolve(process.env.STORAGE_DIR, ".env")
+      : path.resolve(__dirname, ".env"),
+  });
 
 const SystemSettings = {
+  protectedFields: ["multi_user_mode"],
   supportedFields: [
-    "multi_user_mode",
     "users_can_delete_workspaces",
     "limit_user_messages",
     "message_limit",
@@ -22,8 +23,10 @@ const SystemSettings = {
   validations: {
     footer_data: (updates) => {
       try {
-        const array = JSON.parse(updates);
-        return JSON.stringify(array.slice(0, 3)); // max of 3 items in footer.
+        const array = JSON.parse(updates)
+          .filter((setting) => isValidUrl(setting.url))
+          .slice(0, 3); // max of 3 items in footer.
+        return JSON.stringify(array);
       } catch (e) {
         console.error(`Failed to run validation function on footer_data`);
         return JSON.stringify([]);
@@ -50,219 +53,219 @@ const SystemSettings = {
       DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
       ...(vectorDB === "pinecone"
         ? {
-            PineConeKey: !!process.env.PINECONE_API_KEY,
-            PineConeIndex: process.env.PINECONE_INDEX,
-          }
+          PineConeKey: !!process.env.PINECONE_API_KEY,
+          PineConeIndex: process.env.PINECONE_INDEX,
+        }
         : {}),
       ...(vectorDB === "chroma"
         ? {
-            ChromaEndpoint: process.env.CHROMA_ENDPOINT,
-            ChromaApiHeader: process.env.CHROMA_API_HEADER,
-            ChromaApiKey: !!process.env.CHROMA_API_KEY,
-          }
+          ChromaEndpoint: process.env.CHROMA_ENDPOINT,
+          ChromaApiHeader: process.env.CHROMA_API_HEADER,
+          ChromaApiKey: !!process.env.CHROMA_API_KEY,
+        }
         : {}),
       ...(vectorDB === "weaviate"
         ? {
-            WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
-            WeaviateApiKey: process.env.WEAVIATE_API_KEY,
-          }
+          WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
+          WeaviateApiKey: process.env.WEAVIATE_API_KEY,
+        }
         : {}),
       ...(vectorDB === "qdrant"
         ? {
-            QdrantEndpoint: process.env.QDRANT_ENDPOINT,
-            QdrantApiKey: process.env.QDRANT_API_KEY,
-          }
+          QdrantEndpoint: process.env.QDRANT_ENDPOINT,
+          QdrantApiKey: process.env.QDRANT_API_KEY,
+        }
         : {}),
       ...(vectorDB === "milvus"
         ? {
-            MilvusAddress: process.env.MILVUS_ADDRESS,
-            MilvusUsername: process.env.MILVUS_USERNAME,
-            MilvusPassword: !!process.env.MILVUS_PASSWORD,
-          }
+          MilvusAddress: process.env.MILVUS_ADDRESS,
+          MilvusUsername: process.env.MILVUS_USERNAME,
+          MilvusPassword: !!process.env.MILVUS_PASSWORD,
+        }
         : {}),
       ...(vectorDB === "zilliz"
         ? {
-            ZillizEndpoint: process.env.ZILLIZ_ENDPOINT,
-            ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
-          }
+          ZillizEndpoint: process.env.ZILLIZ_ENDPOINT,
+          ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
+        }
         : {}),
       ...(vectorDB === "astra"
         ? {
-            AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
-            AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
-          }
+          AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
+          AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
+        }
         : {}),
       LLMProvider: llmProvider,
       ...(llmProvider === "openai"
         ? {
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
-          }
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
+        }
         : {}),
 
       ...(llmProvider === "azure"
         ? {
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-            AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
-          }
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+          AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
+        }
         : {}),
 
       ...(llmProvider === "anthropic"
         ? {
-            AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
-            AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
+          AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
+          AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
 
-            // For embedding credentials when Anthropic is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when Anthropic is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
 
       ...(llmProvider === "gemini"
         ? {
-            GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
-            GeminiLLMModelPref:
-              process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro",
+          GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
+          GeminiLLMModelPref:
+            process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro",
 
-            // For embedding credentials when Gemini is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when Gemini is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
 
       ...(llmProvider === "lmstudio"
         ? {
-            LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
-            LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
-            LMStudioModelPref: process.env.LMSTUDIO_MODEL_PREF,
+          LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
+          LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
+          LMStudioModelPref: process.env.LMSTUDIO_MODEL_PREF,
 
-            // For embedding credentials when lmstudio is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when lmstudio is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
       ...(llmProvider === "localai"
         ? {
-            LocalAiBasePath: process.env.LOCAL_AI_BASE_PATH,
-            LocalAiModelPref: process.env.LOCAL_AI_MODEL_PREF,
-            LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
+          LocalAiBasePath: process.env.LOCAL_AI_BASE_PATH,
+          LocalAiModelPref: process.env.LOCAL_AI_MODEL_PREF,
+          LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
 
-            // For embedding credentials when localai is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when localai is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
 
       ...(llmProvider === "ollama"
         ? {
-            OllamaLLMBasePath: process.env.OLLAMA_BASE_PATH,
-            OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
-            OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
+          OllamaLLMBasePath: process.env.OLLAMA_BASE_PATH,
+          OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
+          OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
 
-            // For embedding credentials when ollama is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when ollama is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
       ...(llmProvider === "togetherai"
         ? {
-            TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
-            TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
+          TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
+          TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
 
-            // For embedding credentials when ollama is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when ollama is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
       ...(llmProvider === "perplexity"
         ? {
-            PerplexityApiKey: !!process.env.PERPLEXITY_API_KEY,
-            PerplexityModelPref: process.env.PERPLEXITY_MODEL_PREF,
+          PerplexityApiKey: !!process.env.PERPLEXITY_API_KEY,
+          PerplexityModelPref: process.env.PERPLEXITY_MODEL_PREF,
 
-            // For embedding credentials when ollama is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when ollama is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
       ...(llmProvider === "openrouter"
         ? {
-            OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
-            OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
+          OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
+          OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
 
-            // For embedding credentials when ollama is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when ollama is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
       ...(llmProvider === "mistral"
         ? {
-            MistralApiKey: !!process.env.MISTRAL_API_KEY,
-            MistralModelPref: process.env.MISTRAL_MODEL_PREF,
+          MistralApiKey: !!process.env.MISTRAL_API_KEY,
+          MistralModelPref: process.env.MISTRAL_MODEL_PREF,
 
-            // For embedding credentials when mistral is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when mistral is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
 
       ...(llmProvider === "groq"
         ? {
-            GroqApiKey: !!process.env.GROQ_API_KEY,
-            GroqModelPref: process.env.GROQ_MODEL_PREF,
+          GroqApiKey: !!process.env.GROQ_API_KEY,
+          GroqModelPref: process.env.GROQ_MODEL_PREF,
 
-            // For embedding credentials when groq is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when groq is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
       ...(llmProvider === "native"
         ? {
-            NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
-            NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
+          NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
+          NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
 
-            // For embedding credentials when native is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when native is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
 
       ...(llmProvider === "huggingface"
         ? {
-            HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
-            HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
-            HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
+          HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
+          HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
+          HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
 
-            // For embedding credentials when Anthropic is selected.
-            OpenAiKey: !!process.env.OPEN_AI_KEY,
-            AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-            AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-            AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          }
+          // For embedding credentials when Anthropic is selected.
+          OpenAiKey: !!process.env.OPEN_AI_KEY,
+          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+        }
         : {}),
       WhisperProvider: process.env.WHISPER_PROVIDER || "local",
     };
@@ -291,26 +294,43 @@ const SystemSettings = {
     }
   },
 
+  // Can take generic keys and will pre-filter invalid keys
+  // from the set before sending to the explicit update function
+  // that will then enforce validations as well.
   updateSettings: async function (updates = {}) {
-    try {
-      const updatePromises = Object.keys(updates)
-        .filter((key) => this.supportedFields.includes(key))
-        .map((key) => {
-          const validatedValue = this.validations.hasOwnProperty(key)
-            ? this.validations[key](updates[key])
-            : updates[key];
+    const validFields = Object.keys(updates).filter((key) =>
+      this.supportedFields.includes(key)
+    );
 
-          return prisma.system_settings.upsert({
-            where: { label: key },
-            update: {
-              value: validatedValue === null ? null : String(validatedValue),
-            },
-            create: {
-              label: key,
-              value: validatedValue === null ? null : String(validatedValue),
-            },
-          });
+    Object.entries(updates).forEach(([key]) => {
+      if (validFields.includes(key)) return;
+      delete updates[key];
+    });
+
+    return this._updateSettings(updates);
+  },
+
+  // Explicit update of settings + key validations.
+  // Only use this method when directly setting a key value
+  // that takes no user input for the keys being modified.
+  _updateSettings: async function (updates = {}) {
+    try {
+      const updatePromises = Object.keys(updates).map((key) => {
+        const validatedValue = this.validations.hasOwnProperty(key)
+          ? this.validations[key](updates[key])
+          : updates[key];
+
+        return prisma.system_settings.upsert({
+          where: { label: key },
+          update: {
+            value: validatedValue === null ? null : String(validatedValue),
+          },
+          create: {
+            label: key,
+            value: validatedValue === null ? null : String(validatedValue),
+          },
         });
+      });
 
       await Promise.all(updatePromises);
       return { success: true, error: null };

@@ -489,6 +489,22 @@
           "500": {
             "description": "Internal Server Error"
           }
+        },
+        "requestBody": {
+          "description": "Request body for creation parameters of the invitation",
+          "required": false,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "workspaceIds": [
+                  1,
+                  2,
+                  45
+                ]
+              }
+            }
+          }
         }
       }
     },

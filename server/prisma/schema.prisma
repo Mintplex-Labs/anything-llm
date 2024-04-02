@@ -41,6 +41,7 @@ model invites {
   code          String   @unique
   status        String   @default("pending")
   claimedBy     Int?
+  workspaceIds  String?
   createdAt     DateTime @default(now())
   createdBy     Int
   lastUpdatedAt DateTime @default(now())
@@ -100,7 +101,7 @@ model workspaces {
   chatModel                    String?
   topN                         Int?                           @default(4)
   chatMode                     String?                        @default("chat")
-  pfpFilename     String?
+  pfpFilename                  String?
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]

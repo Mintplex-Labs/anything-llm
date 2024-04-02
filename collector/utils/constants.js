@@ -22,6 +22,7 @@ const ACCEPTED_MIMES = {
 
   "video/mp4": [".mp4"],
   "video/mpeg": [".mpeg"],
+  "application/epub+zip": [".epub"],
 };
 
 const SUPPORTED_FILETYPE_CONVERTERS = {
@@ -41,6 +42,8 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".odp": "./convert/asOfficeMime.js",
 
   ".mbox": "./convert/asMbox.js",
+
+  ".epub": "./convert/asEPub.js",
 
   ".mp3": "./convert/asAudio.js",
   ".wav": "./convert/asAudio.js",

@@ -34,7 +34,7 @@ export default function PasswordModal({ mode = "single" }) {
   );
 }
 
-export function usePasswordModal() {
+export function usePasswordModal(notry = false) {
   const [auth, setAuth] = useState({
     loading: true,
     requiresAuth: false,
@@ -47,7 +47,7 @@ export function usePasswordModal() {
 
       // If the last validity check is still valid
       // we can skip the loading.
-      if (!System.needsAuthCheck()) {
+      if (!System.needsAuthCheck() && notry === false) {
         setAuth({
           loading: false,
           requiresAuth: false,
@@ -60,7 +60,7 @@ export function usePasswordModal() {
       if (settings?.MultiUserMode) {
         const currentToken = window.localStorage.getItem(AUTH_TOKEN);
         if (!!currentToken) {
-          const valid = await System.checkAuth(currentToken);
+          const valid = notry ? false : await System.checkAuth(currentToken);
           if (!valid) {
             setAuth({
               loading: false,
@@ -102,7 +102,7 @@ export function usePasswordModal() {
 
         const currentToken = window.localStorage.getItem(AUTH_TOKEN);
         if (!!currentToken) {
-          const valid = await System.checkAuth(currentToken);
+          const valid = notry ? false : await System.checkAuth(currentToken);
           if (!valid) {
             setAuth({
               loading: false,
@@ -110,6 +110,8 @@ export function usePasswordModal() {
               mode: "single",
             });
             window.localStorage.removeItem(AUTH_TOKEN);
+            window.localStorage.removeItem(AUTH_USER);
+            window.localStorage.removeItem(AUTH_TIMESTAMP);
             return;
           } else {
             setAuth({
