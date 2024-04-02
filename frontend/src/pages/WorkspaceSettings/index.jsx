@@ -16,6 +16,7 @@ import GeneralAppearance from "./GeneralAppearance";
 import ChatSettings from "./ChatSettings";
 import VectorDatabase from "./VectorDatabase";
 import Members from "./Members";
+import useUser from "@/hooks/useUser";
 
 const TABS = {
   "general-appearance": GeneralAppearance,
@@ -37,6 +38,7 @@ export default function WorkspaceSettings() {
 
 function ShowWorkspaceChat() {
   const { slug, tab } = useParams();
+  const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -95,6 +97,7 @@ function ShowWorkspaceChat() {
             title="Members"
             icon={<User className="h-6 w-6" />}
             to={paths.workspace.settings.members(slug)}
+            visible={["admin", "manager"].includes(user?.role)}
           />
         </div>
         <div className="px-16 py-6">
@@ -105,7 +108,8 @@ function ShowWorkspaceChat() {
   );
 }
 
-function TabItem({ title, icon, to }) {
+function TabItem({ title, icon, to, visible = true }) {
+  if (!visible) return null;
   return (
     <NavLink
       to={to}
