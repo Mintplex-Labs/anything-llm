@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { titleCase } from "text-case";
 import Admin from "@/models/admin";
 import EditUserModal from "./EditUserModal";
-import { DotsThreeOutline } from "@phosphor-icons/react";
 import showToast from "@/utils/toast";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -69,22 +68,22 @@ export default function UserRow({ currUser, user }) {
           {canModify && (
             <button
               onClick={openModal}
-              className="font-medium text-white text-opacity-80 rounded-lg hover:text-white px-2 py-1 hover:text-opacity-60 hover:bg-white hover:bg-opacity-10"
+              className="text-sm font-medium text-white/80 rounded-lg hover:text-white px-2 py-1 hover:bg-white hover:bg-opacity-10"
             >
-              <DotsThreeOutline weight="fill" className="h-5 w-5" />
+              Edit
             </button>
           )}
           {currUser?.id !== user.id && canModify && (
             <>
               <button
                 onClick={handleSuspend}
-                className="font-medium text-orange-600 dark:text-orange-300 px-2 py-1 rounded-lg hover:bg-orange-50 hover:dark:bg-orange-800 hover:dark:bg-opacity-20"
+                className="text-sm font-medium text-white/80 hover:text-orange-300 rounded-lg px-2 py-1 hover:bg-white hover:bg-opacity-10"
               >
                 {suspended ? "Unsuspend" : "Suspend"}
               </button>
               <button
                 onClick={handleDelete}
-                className="font-medium text-red-600 dark:text-red-300 px-2 py-1 rounded-lg hover:bg-red-50 hover:dark:bg-red-800 hover:dark:bg-opacity-20"
+                className="text-sm font-medium text-white/80 hover:text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
               >
                 Delete
               </button>

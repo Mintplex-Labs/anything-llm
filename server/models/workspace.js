@@ -4,6 +4,7 @@ const { Document } = require("./documents");
 const { WorkspaceUser } = require("./workspaceUsers");
 const { ROLES } = require("../utils/middleware/multiUserProtected");
 const { v4: uuidv4 } = require("uuid");
+const { User } = require("./user");
 
 const Workspace = {
   defaultPrompt:
@@ -185,6 +186,32 @@ const Workspace = {
         workspace.userIds = userIds;
       }
       return workspaces;
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
+
+  workspaceUsers: async function (workspaceId) {
+    try {
+      const users = (
+        await WorkspaceUser.where({ workspace_id: Number(workspaceId) })
+      ).map((rel) => rel);
+
+      const usersById = await User.where({
+        id: { in: users.map((user) => user.user_id) },
+      });
+
+      const userInfo = usersById.map((user) => {
+        const workspaceUser = users.find((u) => u.user_id === user.id);
+        return {
+          username: user.username,
+          role: user.role,
+          lastUpdatedAt: workspaceUser.lastUpdatedAt,
+        };
+      });
+
+      return userInfo;
     } catch (error) {
       console.error(error.message);
       return [];
