@@ -1,5 +1,5 @@
 import { CircleNotch, PaperPlaneRight } from "@phosphor-icons/react";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 export default function PromptInput({
   message,
@@ -9,11 +9,25 @@ export default function PromptInput({
   buttonDisabled,
 }) {
   const formRef = useRef(null);
+  const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
+
+  useEffect(() => {
+    if (!inputDisabled && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+    resetTextAreaHeight();
+  }, [inputDisabled]);
 
   const handleSubmit = (e) => {
     setFocused(false);
     submit(e);
+  };
+
+  const resetTextAreaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
   };
 
   const captureEnter = (event) => {
@@ -32,15 +46,16 @@ export default function PromptInput({
   };
 
   return (
-    <div className="w-full absolute left-0 bottom-[5px] z-10 flex justify-center items-center">
+    <div className="w-full absolute left-0 bottom-[25px] z-10 flex justify-center items-center px-5">
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-y-1 rounded-t-lg w-full items-center justify-center"
       >
-        <div className="flex items-center rounded-lg">
-          <div className="bg-white border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+        <div className="flex items-center w-full">
+          <div className="bg-white border-[1.5px] border-[#22262833]/20 rounded-2xl flex flex-col px-4 overflow-hidden w-full">
             <div className="flex items-center w-full">
               <textarea
+                ref={textareaRef}
                 onKeyUp={adjustTextArea}
                 onKeyDown={captureEnter}
                 onChange={onChange}
@@ -64,7 +79,11 @@ export default function PromptInput({
                 {buttonDisabled ? (
                   <CircleNotch className="w-4 h-4 animate-spin" />
                 ) : (
-                  <PaperPlaneRight className="w-4 h-4 my-3" weight="fill" />
+                  <PaperPlaneRight
+                    size={24}
+                    className="my-3 text-[#22262899]/60 group-hover:text-[#22262899]/90"
+                    weight="fill"
+                  />
                 )}
                 <span className="sr-only">Send message</span>
               </button>

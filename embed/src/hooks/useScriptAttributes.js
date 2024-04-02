@@ -20,6 +20,7 @@ const DEFAULT_SETTINGS = {
   noSponsor: null, // Shows sponsor in footer of chat
   sponsorText: "Powered by AnythingLLM", // default sponsor text
   sponsorLink: "https://useanything.com", // default sponsor link
+  position: "bottom-right", // position of chat button/window
 
   // behaviors
   openOnLoad: "off", // or "on"

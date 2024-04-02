@@ -16,7 +16,7 @@ The AnythingLLM Embedded chat widget allows you to expose a workspace and its em
 ### Security
 - Users will _not_ be able to view or read context snippets like they can in the core AnythingLLM application
 - Users are assigned a random session ID that they use to persist a chat session.
-- **Recommended** You can limit both the number of chats an embedding can process **and** per-session. 
+- **Recommended** You can limit both the number of chats an embedding can process **and** per-session.
 
 _by using the AnythingLLM embedded chat widget you are responsible for securing and configuration of the embed as to not allow excessive chat model abuse of your instance_
 
@@ -35,13 +35,13 @@ While in development mode (`yarn dev`) the script will rebuild on any changes to
 
 The primary way of embedding a workspace as a chat widget is via a simple `<script>`
 ```html
-<!-- 
+<!--
 An example of a script tag embed
 REQUIRED data attributes:
   data-embed-id // The unique id of your embed with its default settings
   data-base-api-url // The URL of your anythingLLM instance backend
 -->
-<script 
+<script
   data-embed-id="5fc05aaf-2f2c-4c84-87a3-367a4692c1ee"
   data-base-api-url="http://localhost:3001/api/embed"
   src="http://localhost:3000/embed/anythingllm-chat-widget.min.js">
@@ -75,6 +75,8 @@ REQUIRED data attributes:
 - `data-sponsor-link` — A clickable link in the sponsor section in the footer of an open chat window.
 
 - `data-sponsor-text` — The text displays in sponsor text in the footer of an open chat window.
+
+- `data-position` - Adjust the positioning of the embed chat widget and open chat button. Default `bottom-right`. Options are `bottom-right`, `bottom-left`, `top-right`, `top-left`.
 
 
 **Behavior Overrides**
