@@ -32,6 +32,7 @@ class OllamaAILLM {
     return new ChatOllama({
       baseUrl: this.basePath,
       model: this.model,
+      useMLock: true,
       temperature,
     });
   }
