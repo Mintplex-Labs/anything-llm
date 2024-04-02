@@ -46,7 +46,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
         settings={settings}
         knownHistory={chatHistory}
       />
-      <div className="-mt-2 pb-6 h-fit gap-y-2">
+      <div className="-mt-2 pb-6 h-fit gap-y-2 z-10">
         <Sponsor settings={settings} />
         <ResetChat
           setChatHistory={setChatHistory}

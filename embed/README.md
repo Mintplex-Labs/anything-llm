@@ -76,7 +76,7 @@ REQUIRED data attributes:
 
 - `data-sponsor-text` — The text displays in sponsor text in the footer of an open chat window.
 
-- `data-position` - Adjust the positioning of the embed chat widget and open chat button. ("bottom-right", "bottom-left", "top-right", "top-left")
+- `data-position` - Adjust the positioning of the embed chat widget and open chat button. Default `bottom-right`. Options are `bottom-right`, `bottom-left`, `top-right`, `top-left`.
 
 
 **Behavior Overrides**
