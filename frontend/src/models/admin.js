@@ -104,6 +104,18 @@ const Admin = {
         return [];
       });
   },
+  workspaceUsers: async (workspaceId) => {
+    return await fetch(`${API_BASE}/admin/workspaces/${workspaceId}/users`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.users || [])
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
   newWorkspace: async (name) => {
     return await fetch(`${API_BASE}/admin/workspaces/new`, {
       method: "POST",
