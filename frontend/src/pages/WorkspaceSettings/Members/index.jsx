@@ -82,7 +82,7 @@ export default function Members({ workspace }) {
         onClick={openModal}
         className="text-xs px-2 py-1 font-semibold rounded-lg bg-[#46C8FF] hover:bg-[#2C2F36] hover:text-white h-[34px] w-[100px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
       >
-        Add Member
+        Manage Users
       </button>
 
       <ModalWrapper isOpen={isOpen}>
