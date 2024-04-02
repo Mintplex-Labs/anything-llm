@@ -8,17 +8,20 @@ import {
   ArrowUUpLeft,
   ChatText,
   Database,
+  User,
   Wrench,
 } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import GeneralAppearance from "./GeneralAppearance";
 import ChatSettings from "./ChatSettings";
 import VectorDatabase from "./VectorDatabase";
+import Members from "./Members";
 
 const TABS = {
   "general-appearance": GeneralAppearance,
   "chat-settings": ChatSettings,
   "vector-database": VectorDatabase,
+  members: Members,
 };
 
 export default function WorkspaceSettings() {
@@ -87,6 +90,11 @@ function ShowWorkspaceChat() {
             title="Vector Database"
             icon={<Database className="h-6 w-6" />}
             to={paths.workspace.settings.vectorDatabase(slug)}
+          />
+          <TabItem
+            title="Members"
+            icon={<User className="h-6 w-6" />}
+            to={paths.workspace.settings.members(slug)}
           />
         </div>
         <div className="px-16 py-6">

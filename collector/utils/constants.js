@@ -26,6 +26,7 @@ const ACCEPTED_MIMES = {
 
   "video/mp4": [".mp4"],
   "video/mpeg": [".mpeg"],
+  "application/epub+zip": [".epub"],
 };
 
 const asText = require("../processSingleFile/convert/asTxt.js");
@@ -34,6 +35,7 @@ const asDocx = require("../processSingleFile/convert/asDocx.js");
 const asOfficeMime = require("../processSingleFile/convert/asOfficeMime.js");
 const asMbox = require("../processSingleFile/convert/asMbox.js");
 const asAudio = require("../processSingleFile/convert/asAudio.js");
+const asEPub = require("../processSingleFile/convert/asEPub.js");
 
 const SUPPORTED_FILETYPE_CONVERTERS = {
   ".txt": asText,
@@ -52,6 +54,8 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".odp": asOfficeMime,
 
   ".mbox": asMbox,
+
+  ".epub": asEPub,
 
   ".mp3": asAudio,
   ".wav": asAudio,

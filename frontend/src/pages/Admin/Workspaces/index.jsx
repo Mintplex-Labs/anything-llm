@@ -3,7 +3,7 @@ import Sidebar from "@/components/SettingsSidebar";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { BookOpen } from "@phosphor-icons/react";
-import Admin from "../../../models/admin";
+import Admin from "@/models/admin";
 import WorkspaceRow from "./WorkspaceRow";
 import NewWorkspaceModal from "./NewWorkspaceModal";
 import { useModal } from "@/hooks/useModal";
