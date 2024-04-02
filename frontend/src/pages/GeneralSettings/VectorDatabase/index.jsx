@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import System from "@/models/system";
@@ -13,7 +13,7 @@ import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
-import { MagnifyingGlass } from "@phosphor-icons/react";
+import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import LanceDBOptions from "@/components/VectorDBSelection/LanceDBOptions";
 import ChromaDBOptions from "@/components/VectorDBSelection/ChromaDBOptions";
 import PineconeDBOptions from "@/components/VectorDBSelection/PineconeDBOptions";
@@ -35,7 +35,54 @@ export default function GeneralVectorDatabase() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredVDBs, setFilteredVDBs] = useState([]);
   const [selectedVDB, setSelectedVDB] = useState(null);
+  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
+  const searchInputRef = useRef(null);
   const { isOpen, openModal, closeModal } = useModal();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (selectedVDB !== settings?.VectorDB && hasChanges && hasEmbeddings) {
+      openModal();
+    } else {
+      await handleSaveSettings();
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    setSaving(true);
+    const form = document.getElementById("vectordb-form");
+    const settingsData = {};
+    const formData = new FormData(form);
+    settingsData.VectorDB = selectedVDB;
+    for (var [key, value] of formData.entries()) settingsData[key] = value;
+
+    const { error } = await System.updateSystem(settingsData);
+    if (error) {
+      showToast(`Failed to save vector database settings: ${error}`, "error");
+      setHasChanges(true);
+    } else {
+      showToast("Vector database preferences saved successfully.", "success");
+      setHasChanges(false);
+    }
+    setSaving(false);
+    closeModal();
+  };
+
+  const updateVectorChoice = (selection) => {
+    setSearchQuery("");
+    setSelectedVDB(selection);
+    setSearchMenuOpen(false);
+    setHasChanges(true);
+  };
+
+  const handleXButton = () => {
+    if (searchQuery.length > 0) {
+      setSearchQuery("");
+      if (searchInputRef.current) searchInputRef.current.value = "";
+    } else {
+      setSearchMenuOpen(!searchMenuOpen);
+    }
+  };
 
   useEffect(() => {
     async function fetchKeys() {
@@ -47,6 +94,13 @@ export default function GeneralVectorDatabase() {
     }
     fetchKeys();
   }, []);
+
+  useEffect(() => {
+    const filtered = VECTOR_DBS.filter((vdb) =>
+      vdb.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredVDBs(filtered);
+  }, [searchQuery, selectedVDB]);
 
   const VECTOR_DBS = [
     {
@@ -111,46 +165,7 @@ export default function GeneralVectorDatabase() {
     },
   ];
 
-  const updateVectorChoice = (selection) => {
-    setHasChanges(true);
-    setSelectedVDB(selection);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (selectedVDB !== settings?.VectorDB && hasChanges && hasEmbeddings) {
-      openModal();
-    } else {
-      await handleSaveSettings();
-    }
-  };
-
-  const handleSaveSettings = async () => {
-    setSaving(true);
-    const form = document.getElementById("vectordb-form");
-    const settingsData = {};
-    const formData = new FormData(form);
-    settingsData.VectorDB = selectedVDB;
-    for (var [key, value] of formData.entries()) settingsData[key] = value;
-
-    const { error } = await System.updateSystem(settingsData);
-    if (error) {
-      showToast(`Failed to save vector database settings: ${error}`, "error");
-      setHasChanges(true);
-    } else {
-      showToast("Vector database preferences saved successfully.", "success");
-      setHasChanges(false);
-    }
-    setSaving(false);
-    closeModal();
-  };
-
-  useEffect(() => {
-    const filtered = VECTOR_DBS.filter((vdb) =>
-      vdb.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredVDBs(filtered);
-  }, [searchQuery, selectedVDB]);
+  const selectedVDBObject = VECTOR_DBS.find((vdb) => vdb.value === selectedVDB);
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
@@ -176,7 +191,7 @@ export default function GeneralVectorDatabase() {
           >
             <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
-                <div className="flex items-center gap-x-4">
+                <div className="flex gap-x-4 items-center">
                   <p className="text-lg leading-6 font-bold text-white">
                     Vector Database
                   </p>
@@ -196,55 +211,94 @@ export default function GeneralVectorDatabase() {
                   are current and correct.
                 </p>
               </div>
-              <div className="text-sm font-medium text-white mt-6 mb-4">
-                Vector Database Providers
+              <div className="text-base font-bold text-white mt-6 mb-4">
+                Vector Database Provider
               </div>
-              <div className="w-full">
-                <div className="w-full relative border-slate-300/20 shadow border-4 rounded-xl text-white">
-                  <div className="w-full p-4 absolute top-0 rounded-t-lg backdrop-blur-sm">
-                    <div className="w-full flex items-center sticky top-0">
-                      <MagnifyingGlass
-                        size={16}
-                        weight="bold"
-                        className="absolute left-4 z-30 text-white"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Search vector databases"
-                        className="bg-zinc-600 z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
-                        onChange={(e) => {
-                          e.preventDefault();
-                          setSearchQuery(e.target.value);
-                        }}
-                        autoComplete="off"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") e.preventDefault();
-                        }}
-                      />
+              <div className="relative">
+                {searchMenuOpen && (
+                  <div
+                    className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-sm z-10"
+                    onClick={() => setSearchMenuOpen(false)}
+                  />
+                )}
+                {searchMenuOpen ? (
+                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-[#18181B] rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#46C8FF] z-20">
+                    <div className="w-full flex flex-col gap-y-1">
+                      <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-[#18181B]">
+                        <MagnifyingGlass
+                          size={20}
+                          weight="bold"
+                          className="absolute left-4 z-30 text-white -ml-4 my-2"
+                        />
+                        <input
+                          type="text"
+                          name="vdb-search"
+                          autoComplete="off"
+                          placeholder="Search all vector database providers"
+                          className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:border-white text-white placeholder:text-white placeholder:font-medium"
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          ref={searchInputRef}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") e.preventDefault();
+                          }}
+                        />
+                        <X
+                          size={20}
+                          weight="bold"
+                          className="cursor-pointer text-white hover:text-[#9CA3AF]"
+                          onClick={handleXButton}
+                        />
+                      </div>
+                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
+                        {filteredVDBs.map((vdb) => (
+                          <VectorDBItem
+                            key={vdb.name}
+                            name={vdb.name}
+                            value={vdb.value}
+                            image={vdb.logo}
+                            description={vdb.description}
+                            checked={selectedVDB === vdb.value}
+                            onClick={() => updateVectorChoice(vdb.value)}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  <div className="px-4 pt-[70px] flex flex-col gap-y-1 max-h-[390px] overflow-y-auto no-scroll pb-4">
-                    {filteredVDBs.map((vdb) => (
-                      <VectorDBItem
-                        key={vdb.name}
-                        name={vdb.name}
-                        value={vdb.value}
-                        image={vdb.logo}
-                        description={vdb.description}
-                        checked={selectedVDB === vdb.value}
-                        onClick={() => updateVectorChoice(vdb.value)}
+                ) : (
+                  <button
+                    className="w-full max-w-[640px] h-[64px] bg-[#18181B] rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-[#46C8FF] transition-all duration-300"
+                    type="button"
+                    onClick={() => setSearchMenuOpen(true)}
+                  >
+                    <div className="flex gap-x-4 items-center">
+                      <img
+                        src={selectedVDBObject.logo}
+                        alt={`${selectedVDBObject.name} logo`}
+                        className="w-10 h-10 rounded-md"
                       />
-                    ))}
-                  </div>
-                </div>
-                <div
-                  onChange={() => setHasChanges(true)}
-                  className="mt-4 flex flex-col gap-y-1"
-                >
-                  {selectedVDB &&
-                    VECTOR_DBS.find((vdb) => vdb.value === selectedVDB)
-                      ?.options}
-                </div>
+                      <div className="flex flex-col text-left">
+                        <div className="text-sm font-semibold text-white">
+                          {selectedVDBObject.name}
+                        </div>
+                        <div className="mt-1 text-xs text-[#D2D5DB]">
+                          {selectedVDBObject.description}
+                        </div>
+                      </div>
+                    </div>
+                    <CaretUpDown
+                      size={24}
+                      weight="bold"
+                      className="text-white"
+                    />
+                  </button>
+                )}
+              </div>
+              <div
+                onChange={() => setHasChanges(true)}
+                className="mt-4 flex flex-col gap-y-1"
+              >
+                {selectedVDB &&
+                  VECTOR_DBS.find((vdb) => vdb.value === selectedVDB)?.options}
               </div>
             </div>
           </form>
