@@ -4,6 +4,7 @@ import useChatHistory from "@/hooks/chat/useChatHistory";
 import ChatContainer from "./ChatContainer";
 import Sponsor from "../Sponsor";
 import { ChatHistoryLoading } from "./ChatContainer/ChatHistory";
+import ResetChat from "../ResetChat";
 
 export default function ChatWindow({ closeChat, settings, sessionId }) {
   const { chatHistory, setChatHistory, loading } = useChatHistory(
@@ -45,9 +46,13 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
         settings={settings}
         knownHistory={chatHistory}
       />
-      <div className="pt-4 pb-2 h-fit gap-y-1">
-        <SessionId />
+      <div className="-mt-2 pb-6 h-fit gap-y-2 z-10">
         <Sponsor settings={settings} />
+        <ResetChat
+          setChatHistory={setChatHistory}
+          settings={settings}
+          sessionId={sessionId}
+        />
       </div>
     </div>
   );

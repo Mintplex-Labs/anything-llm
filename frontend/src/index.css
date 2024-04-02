@@ -633,3 +633,32 @@ does not extend the close button beyond the viewport. */
 .upload-modal-arrow {
   margin-top: 25%;
 }
+
+/* Scrollbar container */
+.white-scrollbar {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff #18181b;
+  margin-right: 8px;
+}
+
+/* Webkit browsers (Chrome, Safari) */
+.white-scrollbar::-webkit-scrollbar {
+  width: 3px;
+  background-color: #18181b;
+}
+
+.white-scrollbar::-webkit-scrollbar-track {
+  background-color: #18181b;
+  margin-right: 8px;
+}
+
+.white-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: 2px solid #18181b;
+}
+
+.white-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #cccccc;
+}
