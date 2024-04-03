@@ -10,7 +10,7 @@ import InviteRow from "./InviteRow";
 import NewInviteModal from "./NewInviteModal";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
-import CTAButton from "@/components/CTAButton";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminInvites() {
   const { isOpen, openModal, closeModal } = useModal();

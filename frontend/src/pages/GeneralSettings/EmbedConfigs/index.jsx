@@ -9,7 +9,7 @@ import NewEmbedModal from "./NewEmbedModal";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import Embed from "@/models/embed";
-import CTAButton from "@/components/CTAButton";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function EmbedConfigs() {
   const { isOpen, openModal, closeModal } = useModal();

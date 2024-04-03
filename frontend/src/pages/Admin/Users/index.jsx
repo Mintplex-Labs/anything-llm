@@ -10,7 +10,7 @@ import useUser from "@/hooks/useUser";
 import NewUserModal from "./NewUserModal";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
-import CTAButton from "@/components/CTAButton";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminUsers() {
   const { isOpen, openModal, closeModal } = useModal();

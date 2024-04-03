@@ -9,7 +9,7 @@ import WorkspaceRow from "./WorkspaceRow";
 import NewWorkspaceModal from "./NewWorkspaceModal";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
-import CTAButton from "@/components/CTAButton";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminWorkspaces() {
   const { isOpen, openModal, closeModal } = useModal();

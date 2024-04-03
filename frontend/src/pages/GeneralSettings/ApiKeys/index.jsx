@@ -12,7 +12,7 @@ import { userFromStorage } from "@/utils/request";
 import System from "@/models/system";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
-import CTAButton from "@/components/CTAButton";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminApiKeys() {
   const { isOpen, openModal, closeModal } = useModal();

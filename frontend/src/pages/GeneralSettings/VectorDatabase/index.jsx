@@ -25,7 +25,7 @@ import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOption
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
-import CTAButton from "@/components/CTAButton";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);

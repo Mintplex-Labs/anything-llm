@@ -10,7 +10,7 @@ import OpenAiWhisperOptions from "@/components/TranscriptionSelection/OpenAiOpti
 import NativeTranscriptionOptions from "@/components/TranscriptionSelection/NativeTranscriptionOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
-import CTAButton from "@/components/CTAButton";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function TranscriptionModelPreference() {
   const [saving, setSaving] = useState(false);

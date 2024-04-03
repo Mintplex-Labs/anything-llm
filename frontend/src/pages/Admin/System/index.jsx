@@ -3,7 +3,7 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
-import CTAButton from "@/components/CTAButton";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminSystem() {
   const [saving, setSaving] = useState(false);
