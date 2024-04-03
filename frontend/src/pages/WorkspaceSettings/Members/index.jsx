@@ -6,6 +6,7 @@ import * as Skeleton from "react-loading-skeleton";
 import AddMemberModal from "./AddMemberModal";
 import WorkspaceMemberRow from "./WorkspaceMemberRow";
 import CTAButton from "@/components/lib/CTAButton";
+
 export default function Members({ workspace }) {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
