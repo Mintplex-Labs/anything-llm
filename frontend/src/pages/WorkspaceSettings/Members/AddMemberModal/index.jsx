@@ -40,6 +40,10 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
     }
   };
 
+  const handleUnselect = () => {
+    setSelectedUsers([]);
+  };
+
   const isUserSelected = (userId) => {
     return selectedUsers.includes(userId);
   };
@@ -48,9 +52,12 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
     setSearchTerm(event.target.value);
   };
 
-  const filteredUsers = users.filter((user) =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = users
+    .filter((user) =>
+      user.username.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((user) => user.role !== "admin")
+    .filter((user) => user.role !== "manager");
 
   return (
     <div className="relative w-full max-w-[550px] max-h-full">
@@ -84,29 +91,27 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
           <div className="py-[17px] px-[20px]">
             <table className="gap-y-[8px] flex flex-col max-h-[385px] overflow-y-auto no-scroll">
               {filteredUsers.length > 0 ? (
-                filteredUsers
-                  .filter((user) => user.role !== "admin")
-                  .map((user) => (
-                    <tr
-                      key={user.id}
-                      className="flex items-center gap-x-2 cursor-pointer"
-                      onClick={() => handleUserSelect(user.id)}
+                filteredUsers.map((user) => (
+                  <tr
+                    key={user.id}
+                    className="flex items-center gap-x-2 cursor-pointer"
+                    onClick={() => handleUserSelect(user.id)}
+                  >
+                    <div
+                      className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center"
+                      role="checkbox"
+                      aria-checked={isUserSelected(user.id)}
+                      tabIndex={0}
                     >
-                      <div
-                        className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center"
-                        role="checkbox"
-                        aria-checked={isUserSelected(user.id)}
-                        tabIndex={0}
-                      >
-                        {isUserSelected(user.id) && (
-                          <div className="w-2 h-2 bg-white rounded-[2px]" />
-                        )}
-                      </div>
-                      <p className="text-white text-sm font-medium">
-                        {user.username}
-                      </p>
-                    </tr>
-                  ))
+                      {isUserSelected(user.id) && (
+                        <div className="w-2 h-2 bg-white rounded-[2px]" />
+                      )}
+                    </div>
+                    <p className="text-white text-sm font-medium">
+                      {user.username}
+                    </p>
+                  </tr>
+                ))
               ) : (
                 <p className="text-white text-opacity-60 text-sm font-medium ">
                   No users found
@@ -115,28 +120,39 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
             </table>
           </div>
           <div className="flex w-full justify-between items-center p-3 space-x-2 border-t rounded-b border-gray-500/50">
-            <button
-              type="button"
-              onClick={handleSelectAll}
-              className="flex items-center gap-x-2 ml-2"
-            >
-              <div
-                className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
-                role="checkbox"
-                aria-checked={selectedUsers.length === filteredUsers.length}
-                tabIndex={0}
+            <div className="flex items-center gap-x-2">
+              <button
+                type="button"
+                onClick={handleSelectAll}
+                className="flex items-center gap-x-2 ml-2"
               >
-                {selectedUsers.length === filteredUsers.length && (
-                  <div className="w-2 h-2 bg-white rounded-[2px]" />
-                )}
-              </div>
-              <p className="text-white text-sm font-medium">Select All</p>
-            </button>
+                <div
+                  className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
+                  role="checkbox"
+                  aria-checked={selectedUsers.length === filteredUsers.length}
+                  tabIndex={0}
+                >
+                  {selectedUsers.length === filteredUsers.length && (
+                    <div className="w-2 h-2 bg-white rounded-[2px]" />
+                  )}
+                </div>
+                <p className="text-white text-sm font-medium">Select All</p>
+              </button>
+              <button
+                type="button"
+                onClick={handleUnselect}
+                className="flex items-center gap-x-2 ml-2"
+              >
+                <p className="text-white/60 text-sm font-medium hover:text-white">
+                  Unselect
+                </p>
+              </button>
+            </div>
             <button
               type="submit"
               className="transition-all duration-300 text-xs px-2 py-1 font-semibold rounded-lg bg-[#46C8FF] hover:bg-[#2C2F36] border-2 border-transparent hover:border-[#46C8FF] hover:text-white h-[32px] w-[68px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
             >
-              Add
+              Save
             </button>
           </div>
         </form>
