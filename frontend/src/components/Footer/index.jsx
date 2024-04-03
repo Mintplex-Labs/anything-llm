@@ -52,6 +52,7 @@ export default function Footer() {
             target="_blank"
             rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+            aria-label="Find us on Github"
           >
             <GithubLogo weight="fill" className="h-5 w-5 " />
           </a>
@@ -60,6 +61,7 @@ export default function Footer() {
             target="_blank"
             rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+            aria-label="Docs"
           >
             <BookOpen weight="fill" className="h-5 w-5 " />
           </a>
@@ -68,6 +70,7 @@ export default function Footer() {
             target="_blank"
             rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+            aria-label="Join our Discord server"
           >
             <DiscordLogo
               weight="fill"
