@@ -43,8 +43,8 @@ const HistoricalMessage = forwardRef(
               error
                 ? "bg-red-200 rounded-lg mr-[37px] ml-[9px]"
                 : role === "user"
-                  ? embedderSettings.USER_STYLES
-                  : embedderSettings.ASSISTANT_STYLES
+                  ? `${embedderSettings.USER_STYLES} anything-llm-user-message`
+                  : `${embedderSettings.ASSISTANT_STYLES} anything-llm-assistant-message`
             } shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
           >
             <div className="flex">
@@ -60,7 +60,6 @@ const HistoricalMessage = forwardRef(
                 </div>
               ) : (
                 <span
-                  id={role === "user" ? "user-message" : "assistant-message"}
                   className={`whitespace-pre-line font-medium flex flex-col gap-y-1 text-sm leading-[20px]`}
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(renderMarkdown(message)),
