@@ -104,6 +104,8 @@ export default function ChatHistory({ settings = {}, history = [] }) {
                 weight="bold"
                 className="text-white/50 w-5 h-5"
                 onClick={scrollToBottom}
+                id="scroll-to-bottom-button"
+                aria-label="Scroll to bottom"
               />
             </div>
           </div>
