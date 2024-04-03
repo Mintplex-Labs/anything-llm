@@ -34,6 +34,7 @@ const HistoricalMessage = forwardRef(
               src={AnythingLLMIcon}
               alt="Anything LLM Icon"
               className="w-9 h-9 flex-shrink-0 ml-2 mt-2"
+              id="anything-llm-icon"
             />
           )}
           <div
@@ -59,6 +60,7 @@ const HistoricalMessage = forwardRef(
                 </div>
               ) : (
                 <span
+                  id={role === "user" ? "user-message" : "assistant-message"}
                   className={`whitespace-pre-line font-medium flex flex-col gap-y-1 text-sm leading-[20px]`}
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(renderMarkdown(message)),
