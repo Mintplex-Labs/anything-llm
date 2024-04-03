@@ -25,7 +25,10 @@ export default function ThreadItem({
     : paths.workspace.thread(slug, thread.slug);
 
   return (
-    <div className="w-full relative flex h-[38px] items-center border-none hover:bg-slate-600/20 rounded-lg">
+    <div
+      className="w-full relative flex h-[38px] items-center border-none hover:bg-slate-600/20 rounded-lg"
+      role="listitem"
+    >
       {/* Curved line Element and leader if required */}
       <div
         style={{ width: THREAD_CALLOUT_DETAIL_WIDTH / 2 }}
@@ -63,6 +66,7 @@ export default function ThreadItem({
           <a
             href={window.location.pathname === linkTo ? "#" : linkTo}
             className="w-full"
+            aria-current={isActive ? "page" : ""}
           >
             <p
               className={`text-left text-sm ${
@@ -79,6 +83,7 @@ export default function ThreadItem({
               <button
                 type="button"
                 onClick={() => setShowOptions(!showOptions)}
+                aria-label="Thread options"
               >
                 <DotsThree className="text-slate-300" size={25} />
               </button>

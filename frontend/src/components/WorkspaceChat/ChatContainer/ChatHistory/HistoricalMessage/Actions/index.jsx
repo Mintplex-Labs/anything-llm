@@ -58,6 +58,7 @@ function FeedbackButton({
         data-tooltip-id={tooltipId}
         data-tooltip-content={tooltipContent}
         className="text-zinc-300"
+        aria-label={tooltipContent}
       >
         <IconComponent
           size={18}
@@ -86,6 +87,7 @@ function CopyMessage({ message }) {
           data-tooltip-id="copy-assistant-text"
           data-tooltip-content="Copy"
           className="text-zinc-300"
+          aria-label="Copy"
         >
           {copied ? (
             <Check size={18} className="mb-1" />

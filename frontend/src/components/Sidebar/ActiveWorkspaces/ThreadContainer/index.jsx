@@ -46,7 +46,7 @@ export default function ThreadContainer({ workspace }) {
     ? threads.findIndex((thread) => thread?.slug === threadSlug) + 1
     : 0;
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" role="list" aria-label="Threads">
       <ThreadItem
         idx={0}
         activeIdx={activeThreadIdx}
