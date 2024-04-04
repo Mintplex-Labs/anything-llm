@@ -4,7 +4,10 @@ const path = require("path");
 const keyPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/comkey`)
-    : path.resolve(process.env.STORAGE_DIR, `comkey`);
+    : path.resolve(
+        process.env.STORAGE_DIR ?? path.resolve(__dirname, `../../storage`),
+        `comkey`
+      );
 
 // What does this class do?
 // This class generates a hashed version of some text (typically a JSON payload) using a rolling RSA key
