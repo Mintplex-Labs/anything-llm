@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { DATA_CONNECTORS } from "@/components/DataConnectorOption";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 
 export default function YoutubeOptions() {
-  const { image } = DATA_CONNECTORS["youtube-transcript"];
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {

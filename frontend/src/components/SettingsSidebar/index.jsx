@@ -305,14 +305,6 @@ const SidebarOptions = ({ user = null }) => (
       allowedRole={["admin"]}
     />
     <Option
-      href={paths.settings.dataConnectors.list()}
-      btnText="Data Connectors"
-      icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
-      user={user}
-      flex={true}
-      allowedRole={["admin", "manager"]}
-    />
-    <Option
       href={paths.settings.embedSetup()}
       childLinks={[paths.settings.embedChats()]}
       btnText="Embedded Chat"

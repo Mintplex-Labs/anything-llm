@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { DATA_CONNECTORS } from "@/components/DataConnectorOption";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import pluralize from "pluralize";
@@ -9,7 +8,6 @@ import { Tooltip } from "react-tooltip";
 
 const DEFAULT_BRANCHES = ["main", "master"];
 export default function GithubOptions() {
-  const { image } = DATA_CONNECTORS.github;
   const [loading, setLoading] = useState(false);
   const [repo, setRepo] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
