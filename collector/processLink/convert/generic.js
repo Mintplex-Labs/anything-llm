@@ -6,7 +6,7 @@ const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
-async function scrapeGenericUrl(link) {
+async function scrapeGenericUrl(link, textOnly = false) {
   console.log(`-- Working URL ${link} --`);
   const content = await getPageContent(link);
 
@@ -16,6 +16,13 @@ async function scrapeGenericUrl(link) {
       success: false,
       reason: `No URL content found at ${link}.`,
       documents: [],
+    };
+  }
+
+  if (textOnly) {
+    return {
+      success: true,
+      content,
     };
   }
 
