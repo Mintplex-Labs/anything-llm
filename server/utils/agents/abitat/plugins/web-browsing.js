@@ -2,7 +2,7 @@ const { loadSummarizationChain } = require('langchain/chains')
 const { ChatOpenAI } = require('langchain/chat_models/openai')
 const { PromptTemplate } = require('langchain/prompts')
 const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter')
-const { CollectorApi } = require('../../../utils/collectorApi/index')
+const { CollectorApi } = require('../../../collectorApi')
 /**
  * Use Google Custom Search Engines
  * Free to set up, easy to use, 100 calls/day

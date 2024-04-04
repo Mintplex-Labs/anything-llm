@@ -5,7 +5,7 @@
 const express = require("express");
 const chalk = require('chalk');
 const AIbitat = require('../../index.js')
-const { websocket, experimental_webBrowsing } = require('../../plugins')
+const { websocket, experimental_webBrowsing } = require('../../plugins/index.js')
 const path = require('path');
 const port = 3000
 const app = express();

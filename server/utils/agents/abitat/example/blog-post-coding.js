@@ -1,6 +1,6 @@
 const AIbitat = require('../index.js')
-const { cli, experimental_webBrowsing, fileHistory } = require('../plugins')
-require("dotenv").config({ path: `../../../.env.development` })
+const { cli, experimental_webBrowsing, fileHistory } = require('../plugins/index.js')
+require("dotenv").config({ path: `../../../../.env.development` })
 
 const aibitat = new AIbitat({
   model: 'gpt-3.5-turbo',

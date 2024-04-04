@@ -1,6 +1,6 @@
 const { EventEmitter } = require('events')
 const { APIError } = require('./error.js')
-const Providers = require('./providers')
+const Providers = require('./providers/index.js')
 
 /**
  * AIbitat is a class that manages the conversation between agents.

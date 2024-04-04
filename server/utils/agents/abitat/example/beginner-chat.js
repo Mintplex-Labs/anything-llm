@@ -2,7 +2,7 @@
 const AIbitat = require('../index.js');
 const { cli } = require('../plugins/cli.js')
 const { NodeHtmlMarkdown } = require('node-html-markdown')
-require("dotenv").config({ path: `../../../.env.development` })
+require("dotenv").config({ path: `../../../../.env.development` })
 
 const Agent = {
   HUMAN: '🧑',
