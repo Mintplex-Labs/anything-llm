@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
 import { DATA_CONNECTORS } from "@/components/DataConnectorOption";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import pluralize from "pluralize";
 import { TagsInput } from "react-tag-input-component";
 import { Info } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
 
 const DEFAULT_BRANCHES = ["main", "master"];
 export default function GithubOptions() {
@@ -66,44 +65,14 @@ export default function GithubOptions() {
     <div className="flex w-full">
       <div className="flex flex-col w-full px-1 md:pb-6 pb-16">
         <form className="w-full" onSubmit={handleSubmit}>
-          {!accessToken && (
-            <div className="flex flex-col gap-y-1 py-4">
-              <div className="flex flex-col w-fit gap-y-2 bg-blue-600/20 rounded-lg px-4 py-2">
-                <div className="flex items-center gap-x-2">
-                  <Info size={20} className="shrink-0 text-blue-400" />
-                  <p className="text-blue-400 text-sm">
-                    Trying to collect a GitHub repo without a{" "}
-                    <a
-                      href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
-                      rel="noreferrer"
-                      target="_blank"
-                      className="underline"
-                    >
-                      Personal Access Token
-                    </a>{" "}
-                    will fail to collect all files due to GitHub API limits.
-                  </p>
-                </div>
-                <a
-                  href="https://github.com/settings/personal-access-tokens/new"
-                  rel="noreferrer"
-                  target="_blank"
-                  className="text-blue-400 hover:underline"
-                >
-                  Create a temporary Access Token for this data connector &rarr;
-                </a>
-              </div>
-            </div>
-          )}
-
           <div className="w-full flex flex-col py-2">
-            <div className="w-full flex items-center gap-4">
-              <div className="flex flex-col w-60">
+            <div className="w-full flex flex-col gap-4">
+              <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-semibold block">
+                  <label className="text-white text-sm font-bold">
                     GitHub Repo URL
                   </label>
-                  <p className="text-xs text-zinc-300">
+                  <p className="text-xs font-normal text-white/50">
                     Url of the GitHub repo you wish to collect.
                   </p>
                 </div>
@@ -119,15 +88,55 @@ export default function GithubOptions() {
                   spellCheck={false}
                 />
               </div>
-              <div className="flex flex-col w-60">
+              <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm block flex gap-x-2 items-center">
-                    <p className="font-semibold ">Github Access Token</p>{" "}
-                    <p className="text-xs text-zinc-300 font-base!">
-                      <i>optional</i>
+                  <label className="text-white font-bold text-sm flex gap-x-2 items-center">
+                    <p className="font-bold text-white">Github Access Token</p>{" "}
+                    <p className="text-xs text-white/50 font-light flex items-center">
+                      optional
+                      {!accessToken && (
+                        <Info
+                          size={18}
+                          className="ml-1 text-red-500 cursor-pointer"
+                          data-tooltip-id="access-token-tooltip"
+                          data-tooltip-place="right"
+                        />
+                      )}
+                      <Tooltip
+                        delayHide={1000}
+                        id="access-token-tooltip"
+                        className="max-w-xs"
+                        clickable={true}
+                        events={["click"]}
+                      >
+                        <p className="text-sm">
+                          Without a{" "}
+                          <a
+                            href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
+                            rel="noreferrer"
+                            target="_blank"
+                            className="underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Personal Access Token
+                          </a>
+                          , the GitHub API may limit the number of files that
+                          can be collected due to rate limits. You can{" "}
+                          <a
+                            href="https://github.com/settings/personal-access-tokens/new"
+                            rel="noreferrer"
+                            target="_blank"
+                            className="underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            create a temporary Access Token
+                          </a>{" "}
+                          to avoid this issue.
+                        </p>
+                      </Tooltip>
                     </p>
                   </label>
-                  <p className="text-xs text-zinc-300 flex gap-x-2">
+                  <p className="text-xs font-normal text-white/50">
                     Access Token to prevent rate limiting.
                   </p>
                 </div>
@@ -149,12 +158,12 @@ export default function GithubOptions() {
               />
             </div>
 
-            <div className="flex flex-col w-1/2 py-4">
+            <div className="flex flex-col w-full py-4 pr-10">
               <div className="flex flex-col gap-y-1 mb-4">
-                <label className="text-white text-sm block flex gap-x-2 items-center">
-                  <p className="font-semibold ">File Ignores</p>
+                <label className="text-white text-sm flex gap-x-2 items-center">
+                  <p className="text-white text-sm font-bold">File Ignores</p>
                 </label>
-                <p className="text-xs text-zinc-300 flex gap-x-2">
+                <p className="text-xs font-normal text-white/50">
                   List in .gitignore format to ignore specific files during
                   collection. Press enter after each entry you want to save.
                 </p>
@@ -165,26 +174,24 @@ export default function GithubOptions() {
                 name="ignores"
                 placeholder="!*.js, images/*, .DS_Store, bin/*"
                 classNames={{
-                  tag: "bg-blue-300/10 text-zinc-800 m-1",
+                  tag: "bg-blue-300/10 text-zinc-800",
                   input:
-                    "flex bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white p-2.5",
+                    "flex bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white",
                 }}
               />
             </div>
           </div>
 
-          <div className="flex flex-col gap-y-2 w-fit">
+          <div className="flex flex-col gap-y-2 w-full pr-10">
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 text-lg w-fit border border-slate-200 px-4 py-1 rounded-lg text-slate-200 items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:bg-slate-200 disabled:text-slate-800"
+              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-[#222628] text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed"
             >
-              {loading
-                ? "Collecting files..."
-                : "Collect all files from GitHub repo"}
+              {loading ? "Collecting files..." : "Submit"}
             </button>
             {loading && (
-              <p className="text-xs text-zinc-300">
+              <p className="text-xs text-white/50">
                 Once complete, all files will be available for embedding into
                 workspaces in the document picker.
               </p>
@@ -223,11 +230,9 @@ function GitHubBranchSelection({ repo, accessToken }) {
     return (
       <div className="flex flex-col w-60">
         <div className="flex flex-col gap-y-1 mb-4">
-          <label className="text-white text-sm font-semibold block">
-            Branch
-          </label>
-          <p className="text-xs text-zinc-300">
-            Branch you wish to collect files of
+          <label className="text-white text-sm font-bold">Branch</label>
+          <p className="text-xs font-normal text-white/50">
+            Branch you wish to collect files from.
           </p>
         </div>
         <select
@@ -236,7 +241,7 @@ function GitHubBranchSelection({ repo, accessToken }) {
           className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            -- loading available models --
+            -- loading available branches --
           </option>
         </select>
       </div>
@@ -246,9 +251,9 @@ function GitHubBranchSelection({ repo, accessToken }) {
   return (
     <div className="flex flex-col w-60">
       <div className="flex flex-col gap-y-1 mb-4">
-        <label className="text-white text-sm font-semibold block">Branch</label>
-        <p className="text-xs text-zinc-300">
-          Branch you wish to collect files of
+        <label className="text-white text-sm font-bold">Branch</label>
+        <p className="text-xs font-normal text-white/50">
+          Branch you wish to collect files from.
         </p>
       </div>
       <select

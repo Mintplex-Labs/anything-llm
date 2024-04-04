@@ -3,6 +3,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react";
 import GithubOptions from "./Connectors/Github";
 import YoutubeOptions from "./Connectors/Youtube";
 import { useState } from "react";
+import ConnectorOption from "./ConnectorOption";
 
 export default function DataConnectors() {
   const [selectedConnector, setSelectedConnector] = useState("github");
@@ -14,7 +15,6 @@ export default function DataConnectors() {
       image: ConnectorImages.github,
       description:
         "Import an entire public or private Github repository in a single click.",
-      link: "https://github.com",
       options: <GithubOptions />,
     },
     "youtube-transcript": {
@@ -22,7 +22,6 @@ export default function DataConnectors() {
       image: ConnectorImages.youtube,
       description:
         "Import the transcription of an entire YouTube video from a link.",
-      link: "https://youtube.com",
       options: <YoutubeOptions />,
     },
   };
@@ -32,7 +31,7 @@ export default function DataConnectors() {
   );
 
   return (
-    <div className="flex upload-modal -mt-10 min-h-[400px]">
+    <div className="flex upload-modal -mt-10 min-h-[250px] relative">
       <div className="w-full p-4 top-0 backdrop-blur-sm z-20">
         <div className="w-full flex items-center sticky top-0 z-50 min-w-[500px]">
           <MagnifyingGlass
@@ -49,31 +48,18 @@ export default function DataConnectors() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        {/* Render options */}
-        <div className="mt-2">
+        <div className="mt-2 flex flex-col gap-y-2">
           {filteredConnectors.length > 0 ? (
             filteredConnectors.map((slug, index) => (
-              <button
-                onClick={() => setSelectedConnector(slug)}
+              <ConnectorOption
                 key={index}
-                className="flex text-left gap-x-3.5 items-center py-2 px-4 hover:bg-white/10 rounded-lg cursor-pointer"
-              >
-                <img
-                  src={DATA_CONNECTORS[slug].image}
-                  alt={DATA_CONNECTORS[slug].name}
-                  className="w-[40px] h-[40px] rounded-md"
-                />
-                <div className="flex flex-col">
-                  <div className="text-white font-bold text-[14px]">
-                    {DATA_CONNECTORS[slug].name}
-                  </div>
-                  <div>
-                    <p className="text-[12px] text-white/60">
-                      {DATA_CONNECTORS[slug].description}
-                    </p>
-                  </div>
-                </div>
-              </button>
+                slug={slug}
+                selectedConnector={selectedConnector}
+                setSelectedConnector={setSelectedConnector}
+                image={DATA_CONNECTORS[slug].image}
+                name={DATA_CONNECTORS[slug].name}
+                description={DATA_CONNECTORS[slug].description}
+              />
             ))
           ) : (
             <div className="text-white text-center mt-4">
@@ -82,8 +68,7 @@ export default function DataConnectors() {
           )}
         </div>
       </div>
-      <div className="w-[1px] bg-white mx-4 z-40"></div>
-      {/* Options */}
+      <div className="xl:block hidden absolute left-1/2 top-0 bottom-0 w-[1px] bg-white -translate-x-1/2"></div>
       <div className="w-full p-4 top-0 backdrop-blur-sm text-white min-w-[500px]">
         {DATA_CONNECTORS[selectedConnector].options}
       </div>

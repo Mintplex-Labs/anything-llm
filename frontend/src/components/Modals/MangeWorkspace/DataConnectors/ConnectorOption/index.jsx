@@ -1,37 +1,25 @@
-export default function DataConnectorOption({
-  name,
+export default function ConnectorOption({
+  slug,
+  selectedConnector,
+  setSelectedConnector,
   image,
+  name,
   description,
-  value,
-  checked = false,
-  onClick,
 }) {
   return (
-    <div
-      onClick={() => onClick(value)}
-      className={`w-full p-2 rounded-md hover:cursor-pointer hover:bg-white/10 ${
-        checked ? "bg-white/10" : ""
-      }`}
+    <button
+      onClick={() => setSelectedConnector(slug)}
+      className={`flex text-left gap-x-3.5 items-center py-2 px-4 hover:bg-white/10 ${
+        selectedConnector === slug ? "bg-white/10" : ""
+      } rounded-lg cursor-pointer w-full`}
     >
-      <input
-        type="checkbox"
-        value={value}
-        className="peer hidden"
-        checked={checked}
-        readOnly={true}
-        formNoValidate={true}
-      />
-      <div className="flex gap-x-4 items-center">
-        <img
-          src={image}
-          alt={`${name} logo`}
-          className="w-10 h-10 rounded-md"
-        />
-        <div className="flex flex-col">
-          <div className="text-sm font-semibold text-white">{name}</div>
-          <div className="mt-1 text-xs text-[#D2D5DB]">{description}</div>
+      <img src={image} alt={name} className="w-[40px] h-[40px] rounded-md" />
+      <div className="flex flex-col">
+        <div className="text-white font-bold text-[14px]">{name}</div>
+        <div>
+          <p className="text-[12px] text-white/60">{description}</p>
         </div>
       </div>
-    </div>
+    </button>
   );
 }

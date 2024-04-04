@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
 import { DATA_CONNECTORS } from "@/components/DataConnectorOption";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -8,6 +6,7 @@ import showToast from "@/utils/toast";
 export default function YoutubeOptions() {
   const { image } = DATA_CONNECTORS["youtube-transcript"];
   const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -18,6 +17,7 @@ export default function YoutubeOptions() {
         clear: true,
         autoClose: false,
       });
+
       const { data, error } = await System.dataConnectors.youtube.transcribe({
         url: form.get("url"),
       });
@@ -48,12 +48,15 @@ export default function YoutubeOptions() {
       <div className="flex flex-col w-full px-1 md:pb-6 pb-16">
         <form className="w-full" onSubmit={handleSubmit}>
           <div className="w-full flex flex-col py-2">
-            <div className="w-full flex items-center gap-4">
-              <div className="flex flex-col w-60">
+            <div className="w-full flex flex-col gap-4">
+              <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-semibold block">
-                    YouTube video URL
+                  <label className="text-white text-sm font-bold">
+                    YouTube Video URL
                   </label>
+                  <p className="text-xs font-normal text-white/50">
+                    URL of the YouTube video you wish to transcribe.
+                  </p>
                 </div>
                 <input
                   type="url"
@@ -68,16 +71,16 @@ export default function YoutubeOptions() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-y-2 w-fit">
+          <div className="flex flex-col gap-y-2 w-full pr-10">
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 text-lg w-fit border border-slate-200 px-4 py-1 rounded-lg text-slate-200 items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:bg-slate-200 disabled:text-slate-800"
+              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-[#222628] text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed"
             >
               {loading ? "Collecting transcript..." : "Collect transcript"}
             </button>
             {loading && (
-              <p className="text-xs text-zinc-300">
+              <p className="text-xs text-white/50 max-w-sm">
                 Once complete, the transcription will be available for embedding
                 into workspaces in the document picker.
               </p>
