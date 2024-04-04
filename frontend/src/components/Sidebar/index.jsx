@@ -27,6 +27,7 @@ export default function Sidebar() {
       <Link
         to={paths.home()}
         className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
+        aria-label="Home"
       >
         <img
           src={logo}
@@ -104,6 +105,7 @@ export function SidebarMobileHeader() {
           className="rounded-md p-2 flex items-center justify-center text-slate-200"
         >
           <List className="h-6 w-6" />
+          aria-label="Show sidebar"
         </button>
         <div className="flex items-center justify-center flex-grow">
           <img
