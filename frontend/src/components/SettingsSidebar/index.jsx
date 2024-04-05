@@ -8,7 +8,6 @@ import {
   ChatText,
   Database,
   FileCode,
-  Plugs,
   Notepad,
   Key,
   ClosedCaptioning,
@@ -93,11 +92,10 @@ const Option = ({
           transition-all duration-[200ms]
           flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] justify-start items-center
           hover:bg-workspace-item-selected-gradient hover:text-white hover:font-medium
-          ${
-            isActive
+          ${isActive
               ? "bg-menu-item-selected-gradient font-medium border-outline text-white"
               : "hover:bg-menu-item-selected-gradient text-zinc-200"
-          }
+            }
         `}
         >
           {React.cloneElement(icon, { weight: isActive ? "fill" : "regular" })}
@@ -108,9 +106,8 @@ const Option = ({
       </div>
       {!!subOptions && (isActive || hasActiveChild) && (
         <div
-          className={`ml-4 ${
-            hasActiveChild ? "" : "border-l-2 border-slate-400"
-          } rounded-r-lg`}
+          className={`ml-4 ${hasActiveChild ? "" : "border-l-2 border-slate-400"
+            } rounded-r-lg`}
         >
           {subOptions}
         </div>
@@ -177,14 +174,6 @@ const SidebarOptions = ({ user = null }) => (
       user={user}
       flex={true}
       allowedRole={["admin"]}
-    />
-    <Option
-      href={paths.settings.dataConnectors.list()}
-      btnText="Data Connectors"
-      icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
-      user={user}
-      flex={true}
-      allowedRole={["admin", "manager"]}
     />
     <Option
       href={paths.settings.logs()}

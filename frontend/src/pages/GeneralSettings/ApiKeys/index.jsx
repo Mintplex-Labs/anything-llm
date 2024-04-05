@@ -13,6 +13,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import { Link } from "react-router-dom";
 import { openElectronWindow } from "@/ipc/node-api";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminApiKeys() {
   const { isOpen, openModal, closeModal } = useModal();
@@ -28,12 +29,6 @@ export default function AdminApiKeys() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-white">API Keys</p>
-              <button
-                onClick={openModal}
-                className="flex items-center gap-x-2 px-4 py-2 rounded-lg bg-[#2C2F36] text-white text-sm hover:bg-[#3D4147] shadow-md border border-[#3D4147]"
-              >
-                <PlusCircle className="h-4 w-4" /> Generate New API Key
-              </button>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
               API keys allow the holder to programmatically access and manage
@@ -47,6 +42,12 @@ export default function AdminApiKeys() {
             >
               Read the API documentation &rarr;
             </Link>
+          </div>
+          <div className="w-full justify-end flex">
+            <CTAButton onClick={openModal} className="mt-3 mr-0 -mb-14 z-10">
+              <PlusCircle className="h-4 w-4" weight="bold" /> Generate New API
+              Key
+            </CTAButton>
           </div>
           <ApiKeysContainer />
         </div>

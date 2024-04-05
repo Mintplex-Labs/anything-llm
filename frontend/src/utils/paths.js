@@ -116,16 +116,5 @@ export default {
     embedChats: () => {
       return `/settings/embed-chats`;
     },
-    dataConnectors: {
-      list: () => {
-        return "/settings/data-connectors";
-      },
-      github: () => {
-        return "/settings/data-connectors/github";
-      },
-      youtubeTranscript: () => {
-        return "/settings/data-connectors/youtube-transcript";
-      },
-    },
   },
 };

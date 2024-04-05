@@ -37,7 +37,7 @@ export default function PrivacyAndDataHandling() {
                 Privacy & Data-Handling
               </p>
             </div>
-            <p className="text-sm font-base text-white text-opacity-60">
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
               This is your configuration for how connected third party providers
               and AnythingLLM handle your data.
             </p>

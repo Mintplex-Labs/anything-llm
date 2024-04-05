@@ -21,8 +21,6 @@ import GeneralTranscriptionPreference from "./pages/GeneralSettings/Transcriptio
 import GeneralEmbeddingPreference from "./pages/GeneralSettings/EmbeddingPreference";
 import GeneralVectorDatabase from "./pages/GeneralSettings/VectorDatabase";
 import OnboardingFlow from "./pages/OnboardingFlow";
-import DataConnectors from "./pages/GeneralSettings/DataConnectors";
-import DataConnectorSetup from "./pages/GeneralSettings/DataConnectors/Connectors";
 import AdminLogs from "./pages/Admin/Logging";
 import WorkspaceSettings from "./pages/WorkspaceSettings";
 import PrivacyAndData from "./pages/GeneralSettings/PrivacyAndData";
@@ -108,14 +106,6 @@ export default function App() {
                   path="/settings/workspaces"
                   element={<ManagerRoute Component={AdminWorkspaces} />}
                 /> */}
-                <Route
-                  path="/settings/data-connectors"
-                  element={<ManagerRoute Component={DataConnectors} />}
-                />
-                <Route
-                  path="/settings/data-connectors/:connector"
-                  element={<ManagerRoute Component={DataConnectorSetup} />}
-                />
                 <Route
                   path="/settings/event-logs"
                   element={<AdminRoute Component={AdminLogs} />}

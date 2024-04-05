@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
+import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
+import { _APP_PLATFORM } from "@/utils/constants";
+import CTAButton from "@/components/lib/CTAButton";
+
 import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/assets/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/assets/llmprovider/azure.png";
@@ -33,24 +37,22 @@ import AnythingLLMOptions from "@/components/LLMSelection/AnythingLLMOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
-import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
-import { _APP_PLATFORM } from "@/utils/constants";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   _APP_PLATFORM.value !== "linux"
     ? {
-        name: "AnythingLLM",
-        value: "anythingllm_ollama",
-        logo: AnythingLLMIcon,
-        options: (settings, setHasChanges) => (
-          <AnythingLLMOptions
-            settings={settings}
-            setHasChanges={setHasChanges}
-          />
-        ),
-        description:
-          "Download & run models from Meta, Mistral and more on this device with zero setup. Powered by Ollama.",
-      }
+      name: "AnythingLLM",
+      value: "anythingllm_ollama",
+      logo: AnythingLLMIcon,
+      options: (settings, setHasChanges) => (
+        <AnythingLLMOptions
+          settings={settings}
+          setHasChanges={setHasChanges}
+        />
+      ),
+      description:
+        "Download & run models from Meta, Mistral and more on this device with zero setup. Powered by Ollama.",
+    }
     : null,
   {
     name: "OpenAI",
@@ -266,15 +268,6 @@ export default function GeneralLLMPreference() {
                   <p className="text-lg leading-6 font-bold text-white">
                     LLM Preference
                   </p>
-                  {hasChanges && (
-                    <button
-                      type="submit"
-                      disabled={saving}
-                      className="flex items-center gap-x-2 px-4 py-2 rounded-lg bg-[#2C2F36] text-white text-sm hover:bg-[#3D4147] shadow-md border border-[#3D4147]"
-                    >
-                      {saving ? "Saving..." : "Save changes"}
-                    </button>
-                  )}
                 </div>
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
                   These are the credentials and settings for your preferred LLM
@@ -282,6 +275,16 @@ export default function GeneralLLMPreference() {
                   current and correct or else AnythingLLM will not function
                   properly.
                 </p>
+              </div>
+              <div className="w-full justify-end flex">
+                {hasChanges && (
+                  <CTAButton
+                    onClick={() => handleSubmit()}
+                    className="mt-3 mr-0 -mb-14 z-10"
+                  >
+                    {saving ? "Saving..." : "Save changes"}
+                  </CTAButton>
+                )}
               </div>
               <div className="text-base font-bold text-white mt-6 mb-4">
                 LLM Provider

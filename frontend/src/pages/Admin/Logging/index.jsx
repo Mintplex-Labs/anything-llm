@@ -6,6 +6,7 @@ import * as Skeleton from "react-loading-skeleton";
 import LogRow from "./LogRow";
 import showToast from "@/utils/toast";
 import { refocusApplication } from "@/ipc/node-api";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminLogs() {
   const handleResetLogs = async () => {
@@ -42,17 +43,19 @@ export default function AdminLogs() {
               <p className="text-lg leading-6 font-bold text-white">
                 Event Logs
               </p>
-              <button
-                onClick={handleResetLogs}
-                className="flex items-center gap-x-2 px-4 py-2 rounded-lg bg-[#2C2F36] text-white text-sm hover:bg-[#3D4147] shadow-md border border-[#3D4147]"
-              >
-                Clear event logs
-              </button>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
               View all actions and events happening on this instance for
               monitoring.
             </p>
+          </div>
+          <div className="w-full justify-end flex">
+            <CTAButton
+              onClick={handleResetLogs}
+              className="mt-3 mr-0 -mb-14 z-10"
+            >
+              Clear Event Logs
+            </CTAButton>
           </div>
           <LogsContainer />
         </div>

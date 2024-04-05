@@ -1,5 +1,5 @@
-import Github from "./github.png";
-import YouTube from "./youtube.png";
+import Github from "./github.svg";
+import YouTube from "./youtube.svg";
 
 const ConnectorImages = {
   github: Github,

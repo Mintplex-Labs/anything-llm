@@ -5,6 +5,7 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import PreLoader from "@/components/Preloader";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function GeneralSecurity() {
   return (
@@ -31,7 +32,7 @@ function MultiUserMode() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-
+    setHasChanges(false);
     if (useMultiUserMode) {
       const form = new FormData(e.target);
       const data = {
@@ -82,27 +83,30 @@ function MultiUserMode() {
     <form
       onSubmit={handleSubmit}
       onChange={() => setHasChanges(true)}
-      className="flex w-full"
+      className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16"
     >
-      <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
-        <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+      <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+        <div className="w-full flex flex-col gap-y-1">
           <div className="items-center flex gap-x-4">
-            <p className="text-2xl font-semibold text-white">Multi-User Mode</p>
-            {hasChanges && (
-              <button
-                type="submit"
-                disabled={saving}
-                className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
-              >
-                {saving ? "Saving..." : "Save changes"}
-              </button>
-            )}
+            <p className="text-lg leading-6 font-bold text-white">
+              Multi-User Mode
+            </p>
           </div>
-          <p className="text-sm font-base text-white text-opacity-60">
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
             Set up your instance to support your team by activating Multi-User
             Mode.
           </p>
         </div>
+        {hasChanges && (
+          <div className="flex justify-end">
+            <CTAButton
+              onClick={() => handleSubmit()}
+              className="mt-3 mr-0 -mb-20 z-10"
+            >
+              {saving ? "Saving..." : "Save changes"}
+            </CTAButton>
+          </div>
+        )}
         <div className="relative w-full max-h-full">
           <div className="relative rounded-lg">
             <div className="flex items-start justify-between px-6 py-4"></div>
@@ -197,6 +201,7 @@ function PasswordProtection() {
     if (multiUserModeEnabled) return false;
 
     setSaving(true);
+    setHasChanges(false);
     const form = new FormData(e.target);
     const data = {
       usePassword,
@@ -247,29 +252,30 @@ function PasswordProtection() {
     <form
       onSubmit={handleSubmit}
       onChange={() => setHasChanges(true)}
-      className="flex w-full"
+      className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16"
     >
-      <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
-        <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+      <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+        <div className="w-full flex flex-col gap-y-1">
           <div className="items-center flex gap-x-4">
-            <p className="text-2xl font-semibold text-white">
+            <p className="text-lg leading-6 font-bold text-white">
               Password Protection
             </p>
-            {hasChanges && (
-              <button
-                type="submit"
-                disabled={saving}
-                className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
-              >
-                {saving ? "Saving..." : "Save changes"}
-              </button>
-            )}
           </div>
-          <p className="text-sm font-base text-white text-opacity-60">
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
             Protect your AnythingLLM instance with a password. If you forget
             this there is no recovery method so ensure you save this password.
           </p>
         </div>
+        {hasChanges && (
+          <div className="flex justify-end">
+            <CTAButton
+              onClick={() => handleSubmit()}
+              className="mt-3 mr-0 -mb-20 z-10"
+            >
+              {saving ? "Saving..." : "Save changes"}
+            </CTAButton>
+          </div>
+        )}
         <div className="relative w-full max-h-full">
           <div className="relative rounded-lg">
             <div className="flex items-start justify-between px-6 py-4"></div>

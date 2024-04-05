@@ -12,6 +12,7 @@ dist
 lib
 dist-ssr
 *.local
+!frontend/components/lib
 
 # Editor directories and files
 .vscode/*
