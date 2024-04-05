@@ -32,7 +32,6 @@ export default function WorkspaceLLMSelection({
   );
 
   function updateLLMChoice(selection) {
-    console.log({ selection });
     setSearchQuery("");
     setSelectedLLM(selection);
     setSearchMenuOpen(false);
