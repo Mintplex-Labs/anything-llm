@@ -252,6 +252,7 @@ const Workspace = {
       return { success: false, error: error.message };
     }
   },
+
   trackChange: async function (prevData, newData, user) {
     try {
       await this._trackWorkspacePromptChange(prevData, newData, user);
