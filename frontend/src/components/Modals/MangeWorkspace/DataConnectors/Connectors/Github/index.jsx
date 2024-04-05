@@ -3,7 +3,7 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import pluralize from "pluralize";
 import { TagsInput } from "react-tag-input-component";
-import { Info } from "@phosphor-icons/react";
+import { Warning } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 
 const DEFAULT_BRANCHES = ["main", "master"];
@@ -93,19 +93,18 @@ export default function GithubOptions() {
                     <p className="text-xs text-white/50 font-light flex items-center">
                       optional
                       {!accessToken && (
-                        <Info
-                          size={18}
-                          className="ml-1 text-red-500 cursor-pointer"
+                        <Warning
+                          size={14}
+                          className="ml-1 text-orange-500 cursor-pointer"
                           data-tooltip-id="access-token-tooltip"
                           data-tooltip-place="right"
                         />
                       )}
                       <Tooltip
-                        delayHide={1000}
+                        delayHide={300}
                         id="access-token-tooltip"
                         className="max-w-xs"
                         clickable={true}
-                        events={["click"]}
                       >
                         <p className="text-sm">
                           Without a{" "}

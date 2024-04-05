@@ -31,9 +31,9 @@ export default function DataConnectors() {
   );
 
   return (
-    <div className="flex upload-modal -mt-10 min-h-[250px] relative">
+    <div className="flex upload-modal -mt-10 relative min-h-[80vh] w-[70vw]">
       <div className="w-full p-4 top-0 z-20">
-        <div className="w-full flex items-center sticky top-0 z-50 min-w-[500px]">
+        <div className="w-full flex items-center sticky top-0 z-50">
           <MagnifyingGlass
             size={16}
             weight="bold"
@@ -42,7 +42,7 @@ export default function DataConnectors() {
           <input
             type="text"
             placeholder="Search data connectors"
-            className="bg-zinc-600 z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
+            className="border-none bg-zinc-600 z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
             autoComplete="off"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -68,7 +68,7 @@ export default function DataConnectors() {
           )}
         </div>
       </div>
-      <div className="xl:block hidden absolute left-1/2 top-0 bottom-0 w-[1px] bg-white -translate-x-1/2"></div>
+      <div className="xl:block hidden absolute left-1/2 top-0 bottom-0 w-[0.5px] bg-white/20 -translate-x-1/2"></div>
       <div className="w-full p-4 top-0 text-white min-w-[500px]">
         {DATA_CONNECTORS[selectedConnector].options}
       </div>

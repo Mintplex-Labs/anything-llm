@@ -1,6 +1,3 @@
-import paths from "@/utils/paths";
-import ConnectorImages from "./media";
-
 export default function DataConnectorOption({ slug }) {
   if (!DATA_CONNECTORS.hasOwnProperty(slug)) return null;
   const { path, image, name, description, link } = DATA_CONNECTORS[slug];
