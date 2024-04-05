@@ -19,7 +19,9 @@ export default function OpenRouterOptions({ settings }) {
           spellCheck={false}
         />
       </div>
-      <OpenRouterModelSelection settings={settings} />
+      {!settings?.credentialsOnly && (
+        <OpenRouterModelSelection settings={settings} />
+      )}
     </div>
   );
 }
@@ -84,7 +86,7 @@ function OpenRouterModelSelection({ settings }) {
                 <option
                   key={model.id}
                   value={model.id}
-                  selected={settings.OpenRouterModelPref === model.id}
+                  selected={settings?.OpenRouterModelPref === model.id}
                 >
                   {model.name}
                 </option>

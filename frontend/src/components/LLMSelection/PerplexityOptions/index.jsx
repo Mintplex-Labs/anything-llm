@@ -19,7 +19,9 @@ export default function PerplexityOptions({ settings }) {
           spellCheck={false}
         />
       </div>
-      <PerplexityModelSelection settings={settings} />
+      {!settings?.credentialsOnly && (
+        <PerplexityModelSelection settings={settings} />
+      )}
     </div>
   );
 }

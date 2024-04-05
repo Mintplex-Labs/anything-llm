@@ -98,6 +98,7 @@ model workspaces {
   lastUpdatedAt                DateTime                       @default(now())
   openAiPrompt                 String?
   similarityThreshold          Float?                         @default(0.25)
+  chatProvider                 String?
   chatModel                    String?
   topN                         Int?                           @default(4)
   chatMode                     String?                        @default("chat")

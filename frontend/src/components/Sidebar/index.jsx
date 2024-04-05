@@ -8,7 +8,6 @@ import useLogo from "@/hooks/useLogo";
 import useUser from "@/hooks/useUser";
 import { Link } from "react-router-dom";
 import Footer from "../Footer";
-import SettingsButton from "../SettingsButton";
 import paths from "@/utils/paths";
 
 export default function Sidebar() {
@@ -26,6 +25,7 @@ export default function Sidebar() {
       <Link
         to={paths.home()}
         className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
+        aria-label="Home"
       >
         <img
           src={logo}

@@ -74,7 +74,7 @@ export default function ActiveWorkspaces() {
   }
 
   return (
-    <>
+    <div role="list" aria-label="Workspaces" className="flex flex-col gap-y-2">
       {workspaces.map((workspace) => {
         const isActive = workspace.slug === slug;
         const isHovered = hoverStates[workspace.id];
@@ -85,9 +85,11 @@ export default function ActiveWorkspaces() {
             onMouseEnter={() => handleMouseEnter(workspace.id)}
             onMouseLeave={() => handleMouseLeave(workspace.id)}
             key={workspace.id}
+            role="listitem"
           >
             <div className="flex gap-x-2 items-center justify-between">
               <Link
+                aria-current={isActive ? "page" : ""}
                 to={isActive ? null : paths.workspace.chat(workspace.slug)}
                 className={`
               transition-all duration-[200ms]
@@ -147,6 +149,7 @@ export default function ActiveWorkspaces() {
                         onMouseEnter={() => handleGearMouseEnter(workspace.id)}
                         onMouseLeave={() => handleGearMouseLeave(workspace.id)}
                         className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto"
+                        aria-label="General appearance settings"
                       >
                         <div className="flex hover:bg-[#646768] p-[2px] rounded-[4px]">
                           <GearSix
@@ -179,6 +182,6 @@ export default function ActiveWorkspaces() {
           providedSlug={selectedWs ? selectedWs.slug : null}
         />
       )}
-    </>
+    </div>
   );
 }

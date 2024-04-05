@@ -27,7 +27,9 @@ export default function OpenAiOptions({ settings }) {
           onBlur={updateOpenAiKey}
         />
       </div>
-      <OpenAIModelSelection settings={settings} apiKey={openAIKey} />
+      {!settings?.credentialsOnly && (
+        <OpenAIModelSelection settings={settings} apiKey={openAIKey} />
+      )}
     </div>
   );
 }

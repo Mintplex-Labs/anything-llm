@@ -19,6 +19,7 @@ const Workspace = {
     "lastUpdatedAt",
     "openAiPrompt",
     "similarityThreshold",
+    "chatProvider",
     "chatModel",
     "topN",
     "chatMode",
@@ -52,19 +53,42 @@ const Workspace = {
     }
   },
 
-  update: async function (id = null, data = {}) {
+  update: async function (id = null, updates = {}) {
     if (!id) throw new Error("No workspace id provided for update");
 
-    const validKeys = Object.keys(data).filter((key) =>
+    const validFields = Object.keys(updates).filter((key) =>
       this.writable.includes(key)
     );
-    if (validKeys.length === 0)
+
+    Object.entries(updates).forEach(([key]) => {
+      if (validFields.includes(key)) return;
+      delete updates[key];
+    });
+
+    if (Object.keys(updates).length === 0)
       return { workspace: { id }, message: "No valid fields to update!" };
+
+    // If the user unset the chatProvider we will need
+    // to then clear the chatModel as well to prevent confusion during
+    // LLM loading.
+    if (updates?.chatProvider === "default") {
+      updates.chatProvider = null;
+      updates.chatModel = null;
+    }
+
+    return this._update(id, updates);
+  },
+
+  // Explicit update of settings + key validations.
+  // Only use this method when directly setting a key value
+  // that takes no user input for the keys being modified.
+  _update: async function (id = null, data = {}) {
+    if (!id) throw new Error("No workspace id provided for update");
 
     try {
       const workspace = await prisma.workspaces.update({
         where: { id },
-        data, // TODO: strict validation on writables here.
+        data,
       });
       return { workspace, message: null };
     } catch (error) {
@@ -229,46 +253,39 @@ const Workspace = {
     }
   },
 
-  resetWorkspaceChatModels: async () => {
-    try {
-      await prisma.workspaces.updateMany({
-        data: {
-          chatModel: null,
-        },
-      });
-      return { success: true, error: null };
-    } catch (error) {
-      console.error("Error resetting workspace chat models:", error.message);
-      return { success: false, error: error.message };
-    }
-  },
-
   trackChange: async function (prevData, newData, user) {
     try {
-      const { Telemetry } = require("./telemetry");
-      const { EventLogs } = require("./eventLogs");
-      if (
-        !newData?.openAiPrompt ||
-        newData?.openAiPrompt === this.defaultPrompt ||
-        newData?.openAiPrompt === prevData?.openAiPrompt
-      )
-        return;
-
-      await Telemetry.sendTelemetry("workspace_prompt_changed");
-      await EventLogs.logEvent(
-        "workspace_prompt_changed",
-        {
-          workspaceName: prevData?.name,
-          prevSystemPrompt: prevData?.openAiPrompt || this.defaultPrompt,
-          newSystemPrompt: newData?.openAiPrompt,
-        },
-        user?.id
-      );
+      await this._trackWorkspacePromptChange(prevData, newData, user);
       return;
     } catch (error) {
       console.error("Error tracking workspace change:", error.message);
       return;
     }
+  },
+
+  // We are only tracking this change to determine the need to a prompt library or
+  // prompt assistant feature. If this is something you would like to see - tell us on GitHub!
+  _trackWorkspacePromptChange: async function (prevData, newData, user) {
+    const { Telemetry } = require("./telemetry");
+    const { EventLogs } = require("./eventLogs");
+    if (
+      !newData?.openAiPrompt ||
+      newData?.openAiPrompt === this.defaultPrompt ||
+      newData?.openAiPrompt === prevData?.openAiPrompt
+    )
+      return;
+
+    await Telemetry.sendTelemetry("workspace_prompt_changed");
+    await EventLogs.logEvent(
+      "workspace_prompt_changed",
+      {
+        workspaceName: prevData?.name,
+        prevSystemPrompt: prevData?.openAiPrompt || this.defaultPrompt,
+        newSystemPrompt: newData?.openAiPrompt,
+      },
+      user?.id
+    );
+    return;
   },
 };
 

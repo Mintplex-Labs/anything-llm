@@ -24,7 +24,9 @@ export default function MistralOptions({ settings }) {
           onBlur={() => setMistralKey(inputValue)}
         />
       </div>
-      <MistralModelSelection settings={settings} apiKey={mistralKey} />
+      {!settings?.credentialsOnly && (
+        <MistralModelSelection settings={settings} apiKey={mistralKey} />
+      )}
     </div>
   );
 }

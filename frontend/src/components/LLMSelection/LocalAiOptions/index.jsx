@@ -48,23 +48,31 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             onBlur={updateBasePath}
           />
         </div>
-        <LocalAIModelSelection settings={settings} basePath={basePath} />
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Token context window
-          </label>
-          <input
-            type="number"
-            name="LocalAiTokenLimit"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="4096"
-            min={1}
-            onScroll={(e) => e.target.blur()}
-            defaultValue={settings?.LocalAiTokenLimit}
-            required={true}
-            autoComplete="off"
-          />
-        </div>
+        {!settings?.credentialsOnly && (
+          <>
+            <LocalAIModelSelection
+              settings={settings}
+              basePath={basePath}
+              apiKey={apiKey}
+            />
+            <div className="flex flex-col w-60">
+              <label className="text-white text-sm font-semibold block mb-4">
+                Token context window
+              </label>
+              <input
+                type="number"
+                name="LocalAiTokenLimit"
+                className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                placeholder="4096"
+                min={1}
+                onScroll={(e) => e.target.blur()}
+                defaultValue={settings?.LocalAiTokenLimit}
+                required={true}
+                autoComplete="off"
+              />
+            </div>
+          </>
+        )}
       </div>
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
@@ -92,7 +100,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
   );
 }
 
-function LocalAIModelSelection({ settings, basePath = null }) {
+function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -104,12 +112,16 @@ function LocalAIModelSelection({ settings, basePath = null }) {
         return;
       }
       setLoading(true);
-      const { models } = await System.customModels("localai", null, basePath);
+      const { models } = await System.customModels(
+        "localai",
+        typeof apiKey === "boolean" ? null : apiKey,
+        basePath
+      );
       setCustomModels(models || []);
       setLoading(false);
     }
     findCustomModels();
-  }, [basePath]);
+  }, [basePath, apiKey]);
 
   if (loading || customModels.length == 0) {
     return (
