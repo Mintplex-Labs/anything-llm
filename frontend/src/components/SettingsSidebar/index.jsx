@@ -74,10 +74,11 @@ export default function SettingsSidebar() {
           className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
         >
           <div
-            className={`${showBgOverlay
+            className={`${
+              showBgOverlay
                 ? "transition-all opacity-1"
                 : "transition-none opacity-0"
-              }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
+            }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
             onClick={() => setShowSidebar(false)}
           />
           <div
@@ -190,10 +191,11 @@ const Option = ({
           transition-all duration-[200ms]
           flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] justify-start items-center
           hover:bg-workspace-item-selected-gradient hover:text-white hover:font-medium
-          ${isActive
+          ${
+            isActive
               ? "bg-menu-item-selected-gradient font-medium border-outline text-white"
               : "hover:bg-menu-item-selected-gradient text-zinc-200"
-            }
+          }
         `}
         >
           {React.cloneElement(icon, { weight: isActive ? "fill" : "regular" })}
@@ -204,8 +206,9 @@ const Option = ({
       </div>
       {!!subOptions && (isActive || hasActiveChild) && (
         <div
-          className={`ml-4 ${hasActiveChild ? "" : "border-l-2 border-slate-400"
-            } rounded-r-lg`}
+          className={`ml-4 ${
+            hasActiveChild ? "" : "border-l-2 border-slate-400"
+          } rounded-r-lg`}
         >
           {subOptions}
         </div>
