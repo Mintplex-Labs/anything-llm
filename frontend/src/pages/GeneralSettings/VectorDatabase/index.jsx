@@ -25,6 +25,7 @@ import ZillizCloudOptions from "@/components/VectorDBSelection/ZillizCloudOption
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import AstraDBOptions from "@/components/VectorDBSelection/AstraDBOptions";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function GeneralVectorDatabase() {
   const [saving, setSaving] = useState(false);
@@ -189,27 +190,28 @@ export default function GeneralVectorDatabase() {
             onSubmit={handleSubmit}
             className="flex w-full"
           >
-            <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
+            <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">
                   <p className="text-lg leading-6 font-bold text-white">
                     Vector Database
                   </p>
-                  {hasChanges && (
-                    <button
-                      type="submit"
-                      disabled={saving}
-                      className="flex items-center gap-x-2 px-4 py-2 rounded-lg bg-[#2C2F36] text-white text-sm hover:bg-[#3D4147] shadow-md border border-[#3D4147]"
-                    >
-                      {saving ? "Saving..." : "Save changes"}
-                    </button>
-                  )}
                 </div>
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
                   These are the credentials and settings for how your
                   AnythingLLM instance will function. It's important these keys
                   are current and correct.
                 </p>
+              </div>
+              <div className="w-full justify-end flex">
+                {hasChanges && (
+                  <CTAButton
+                    onClick={() => handleSubmit()}
+                    className="mt-3 mr-0 -mb-14 z-10"
+                  >
+                    {saving ? "Saving..." : "Save changes"}
+                  </CTAButton>
+                )}
               </div>
               <div className="text-base font-bold text-white mt-6 mb-4">
                 Vector Database Provider

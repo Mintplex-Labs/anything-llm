@@ -46,27 +46,31 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             onBlur={() => setBasePath(basePathValue)}
           />
         </div>
-        <LocalAIModelSelection
-          settings={settings}
-          basePath={basePath}
-          apiKey={apiKey}
-        />
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Token context window
-          </label>
-          <input
-            type="number"
-            name="LocalAiTokenLimit"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="4096"
-            min={1}
-            onScroll={(e) => e.target.blur()}
-            defaultValue={settings?.LocalAiTokenLimit}
-            required={true}
-            autoComplete="off"
-          />
-        </div>
+        {!settings?.credentialsOnly && (
+          <>
+            <LocalAIModelSelection
+              settings={settings}
+              basePath={basePath}
+              apiKey={apiKey}
+            />
+            <div className="flex flex-col w-60">
+              <label className="text-white text-sm font-semibold block mb-4">
+                Token context window
+              </label>
+              <input
+                type="number"
+                name="LocalAiTokenLimit"
+                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                placeholder="4096"
+                min={1}
+                onScroll={(e) => e.target.blur()}
+                defaultValue={settings?.LocalAiTokenLimit}
+                required={true}
+                autoComplete="off"
+              />
+            </div>
+          </>
+        )}
       </div>
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">

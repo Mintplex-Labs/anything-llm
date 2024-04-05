@@ -99,13 +99,15 @@ export function SidebarMobileHeader() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-sidebar text-slate-200 shadow-lg h-16">
+      <div
+        aria-label="Show sidebar"
+        className="fixed top-0 left-0 right-0 z-10 flex justify-between items-center px-4 py-2 bg-sidebar text-slate-200 shadow-lg h-16"
+      >
         <button
           onClick={() => setShowSidebar(true)}
           className="rounded-md p-2 flex items-center justify-center text-slate-200"
         >
           <List className="h-6 w-6" />
-          aria-label="Show sidebar"
         </button>
         <div className="flex items-center justify-center flex-grow">
           <img

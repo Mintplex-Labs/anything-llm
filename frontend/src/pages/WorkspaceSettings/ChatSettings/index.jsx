@@ -3,11 +3,11 @@ import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import { castToType } from "@/utils/types";
 import { useEffect, useRef, useState } from "react";
-import ChatModelSelection from "./ChatModelSelection";
 import ChatHistorySettings from "./ChatHistorySettings";
 import ChatPromptSettings from "./ChatPromptSettings";
 import ChatTemperatureSettings from "./ChatTemperatureSettings";
 import ChatModeSelection from "./ChatModeSelection";
+import WorkspaceLLMSelection from "./WorkspaceLLMSelection";
 
 export default function ChatSettings({ workspace }) {
   const [settings, setSettings] = useState({});
@@ -44,35 +44,45 @@ export default function ChatSettings({ workspace }) {
 
   if (!workspace) return null;
   return (
-    <form
-      ref={formEl}
-      onSubmit={handleUpdate}
-      className="w-1/2 flex flex-col gap-y-6"
-    >
-      <ChatModeSelection workspace={workspace} setHasChanges={setHasChanges} />
-      <ChatModelSelection
-        settings={settings}
-        workspace={workspace}
-        setHasChanges={setHasChanges}
-      />
-      <ChatHistorySettings
-        workspace={workspace}
-        setHasChanges={setHasChanges}
-      />
-      <ChatPromptSettings workspace={workspace} setHasChanges={setHasChanges} />
-      <ChatTemperatureSettings
-        settings={settings}
-        workspace={workspace}
-        setHasChanges={setHasChanges}
-      />
-      {hasChanges && (
-        <button
-          type="submit"
-          className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-        >
-          {saving ? "Updating..." : "Update workspace"}
-        </button>
-      )}
-    </form>
+    <div id="workspace-chat-settings-container">
+      <form
+        ref={formEl}
+        onSubmit={handleUpdate}
+        id="chat-settings-form"
+        className="w-1/2 flex flex-col gap-y-6"
+      >
+        <WorkspaceLLMSelection
+          settings={settings}
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+        <ChatModeSelection
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+        <ChatHistorySettings
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+        <ChatPromptSettings
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+        <ChatTemperatureSettings
+          settings={settings}
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+        {hasChanges && (
+          <button
+            type="submit"
+            form="chat-settings-form"
+            className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+          >
+            {saving ? "Updating..." : "Update workspace"}
+          </button>
+        )}
+      </form>
+    </div>
   );
 }

@@ -138,15 +138,17 @@ export default function AddMemberModal({ closeModal, workspace, users }) {
                 </div>
                 <p className="text-white text-sm font-medium">Select All</p>
               </button>
-              <button
-                type="button"
-                onClick={handleUnselect}
-                className="flex items-center gap-x-2 ml-2"
-              >
-                <p className="text-white/60 text-sm font-medium hover:text-white">
-                  Unselect
-                </p>
-              </button>
+              {selectedUsers.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleUnselect}
+                  className="flex items-center gap-x-2 ml-2"
+                >
+                  <p className="text-white/60 text-sm font-medium hover:text-white">
+                    Unselect
+                  </p>
+                </button>
+              )}
             </div>
             <button
               type="submit"
