@@ -5,7 +5,12 @@ import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import ChatModelSelection from "../ChatModelSelection";
 
-const DISABLED_PROVIDERS = ["azure", "lmstudio", "native"];
+const DISABLED_PROVIDERS = [
+  "anythingllm_ollama",
+  "azure",
+  "lmstudio",
+  "native",
+];
 const LLM_DEFAULT = {
   name: "System default",
   value: "default",
