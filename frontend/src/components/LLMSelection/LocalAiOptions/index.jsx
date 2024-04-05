@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 export default function LocalAiOptions({ settings, showAlert = false }) {
   const [basePathValue, setBasePathValue] = useState(settings?.LocalAiBasePath);
   const [basePath, setBasePath] = useState(settings?.LocalAiBasePath);
+  const [apiKeyValue, setApiKeyValue] = useState(settings?.LocalAiApiKey);
+  const [apiKey, setApiKey] = useState(settings?.LocalAiApiKey);
   function updateBasePath() {
     setBasePath(basePathValue);
   }
@@ -45,7 +47,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             autoComplete="off"
             spellCheck={false}
             onChange={(e) => setBasePathValue(e.target.value)}
-            onBlur={updateBasePath}
+            onBlur={() => setBasePath(basePathValue)}
           />
         </div>
         {!settings?.credentialsOnly && (
