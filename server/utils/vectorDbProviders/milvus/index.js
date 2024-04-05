@@ -18,8 +18,12 @@ const Milvus = {
   // Milvus/Zilliz only allows letters, numbers, and underscores in collection names
   // so we need to enforce that by re-normalizing the names when communicating with
   // the DB.
+  // If the first char of the collection is not an underscore or letter the collection name will be invalid.
   normalize: function (inputString) {
-    return inputString.replace(/[^a-zA-Z0-9_]/g, "_");
+    let normalized = inputString.replace(/[^a-zA-Z0-9_]/g, "_");
+    if (new RegExp(/^[a-zA-Z_]/).test(normalized.slice(0, 1)))
+      normalized = `anythingllm_${normalized}`;
+    return normalized;
   },
   connect: async function () {
     if (process.env.VECTOR_DB !== "milvus")

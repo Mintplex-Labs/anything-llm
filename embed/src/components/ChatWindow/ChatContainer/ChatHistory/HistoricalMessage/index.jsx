@@ -34,6 +34,7 @@ const HistoricalMessage = forwardRef(
               src={AnythingLLMIcon}
               alt="Anything LLM Icon"
               className="w-9 h-9 flex-shrink-0 ml-2 mt-2"
+              id="anything-llm-icon"
             />
           )}
           <div
@@ -42,8 +43,8 @@ const HistoricalMessage = forwardRef(
               error
                 ? "bg-red-200 rounded-lg mr-[37px] ml-[9px]"
                 : role === "user"
-                  ? embedderSettings.USER_STYLES
-                  : embedderSettings.ASSISTANT_STYLES
+                  ? `${embedderSettings.USER_STYLES} anything-llm-user-message`
+                  : `${embedderSettings.ASSISTANT_STYLES} anything-llm-assistant-message`
             } shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
           >
             <div className="flex">

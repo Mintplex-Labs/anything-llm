@@ -44,7 +44,10 @@ export default function ChatWindowHeader({
   }, [menuRef]);
 
   return (
-    <div className="flex items-center relative rounded-t-2xl bg-black/10">
+    <div
+      className="flex items-center relative rounded-t-2xl bg-black/10"
+      id="anything-llm-header"
+    >
       <div className="flex justify-center items-center w-full h-[76px]">
         <img
           style={{ maxWidth: 48, maxHeight: 48 }}
@@ -59,6 +62,7 @@ export default function ChatWindowHeader({
             type="button"
             onClick={() => setShowOptions(!showingOptions)}
             className="hover:bg-gray-100 rounded-sm text-slate-800"
+            aria-label="Options"
           >
             <DotsThreeOutlineVertical size={20} weight="fill" />
           </button>
@@ -67,6 +71,7 @@ export default function ChatWindowHeader({
           type="button"
           onClick={closeChat}
           className="hover:bg-gray-100 rounded-sm text-slate-800"
+          aria-label="Close"
         >
           <X size={20} weight="bold" />
         </button>
