@@ -30,7 +30,7 @@ function getVectorDbClass() {
   }
 }
 
-function getLLMProvider({ provider = null, model = null }) {
+function getLLMProvider({ provider = null, model = null } = {}) {
   const LLMSelection = provider ?? process.env.LLM_PROVIDER ?? "openai";
   const embedder = getEmbeddingEngineSelection();
 
