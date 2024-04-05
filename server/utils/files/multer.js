@@ -3,13 +3,21 @@ const path = require("path");
 const fs = require("fs");
 const { v4 } = require("uuid");
 
+// When on Render/Railway we ask the user to attach a volume that is
+// mounted to the root. So under this specific circumstance reaching the collectors
+// hot directory via path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`) will
+// be out of bounds and the `hotdir` is always inside of the collector folder. It is not mounted
+// with the rest of the storage.
+// This line is only relevant for Render/Railway.
+const RENDER_STORAGE = path.resolve(__dirname, `../../../collector/hotdir`)
+
 // Handle File uploads for auto-uploading.
 const fileUploadStorage = multer.diskStorage({
   destination: function (_, __, cb) {
-    const uploadOutput =
-      process.env.NODE_ENV === "development"
-        ? path.resolve(__dirname, `../../../collector/hotdir`)
-        : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
+    const uploadOutput = RENDER_STORAGE;
+    // process.env.NODE_ENV === "development"
+    //   ? path.resolve(__dirname, `../../../collector/hotdir`)
+    //   : path.resolve(process.env.STORAGE_DIR, `../../collector/hotdir`);
     cb(null, uploadOutput);
   },
   filename: function (_, file, cb) {
