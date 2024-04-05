@@ -252,21 +252,6 @@ const Workspace = {
       return { success: false, error: error.message };
     }
   },
-
-  resetWorkspaceChatModels: async () => {
-    try {
-      await prisma.workspaces.updateMany({
-        data: {
-          chatModel: null,
-        },
-      });
-      return { success: true, error: null };
-    } catch (error) {
-      console.error("Error resetting workspace chat models:", error.message);
-      return { success: false, error: error.message };
-    }
-  },
-
   trackChange: async function (prevData, newData, user) {
     try {
       await this._trackWorkspacePromptChange(prevData, newData, user);
