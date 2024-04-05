@@ -57,103 +57,13 @@ const SystemSettings = {
       // VectorDB Provider Selection Settings & Configs
       // --------------------------------------------------------
       VectorDB: vectorDB,
-      // Pinecone DB Keys
-      PineConeKey: !!process.env.PINECONE_API_KEY,
-      PineConeIndex: process.env.PINECONE_INDEX,
-
-      // Chroma DB Keys
-      ChromaEndpoint: process.env.CHROMA_ENDPOINT,
-      ChromaApiHeader: process.env.CHROMA_API_HEADER,
-      ChromaApiKey: !!process.env.CHROMA_API_KEY,
-
-      // Weaviate DB Keys
-      WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
-      WeaviateApiKey: process.env.WEAVIATE_API_KEY,
-
-      // QDrant DB Keys
-      QdrantEndpoint: process.env.QDRANT_ENDPOINT,
-      QdrantApiKey: process.env.QDRANT_API_KEY,
-
-      // Milvus DB Keys
-      MilvusAddress: process.env.MILVUS_ADDRESS,
-      MilvusUsername: process.env.MILVUS_USERNAME,
-      MilvusPassword: !!process.env.MILVUS_PASSWORD,
-
-      // Zilliz DB Keys
-      ZillizEndpoint: process.env.ZILLIZ_ENDPOINT,
-      ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
-
-      // AstraDB Keys
-      AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
-      AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
+      ...this.vectorDBPreferenceKeys(),
 
       // --------------------------------------------------------
       // LLM Provider Selection Settings & Configs
       // --------------------------------------------------------
       LLMProvider: llmProvider,
-      // OpenAI Keys
-      OpenAiKey: !!process.env.OPEN_AI_KEY,
-      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
-
-      // Azure + OpenAI Keys
-      AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-      AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-      AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
-      AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-      AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
-
-      // Anthropic Keys
-      AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
-      AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
-
-      // Gemini Keys
-      GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
-      GeminiLLMModelPref: process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro",
-
-      // LMStudio Keys
-      LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
-      LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
-      LMStudioModelPref: process.env.LMSTUDIO_MODEL_PREF,
-
-      // LocalAI Keys
-      LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
-      LocalAiBasePath: process.env.LOCAL_AI_BASE_PATH,
-      LocalAiModelPref: process.env.LOCAL_AI_MODEL_PREF,
-      LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
-
-      // Ollama LLM Keys
-      OllamaLLMBasePath: process.env.OLLAMA_BASE_PATH,
-      OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
-      OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
-
-      // TogetherAI Keys
-      TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
-      TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
-
-      // Perplexity AI Keys
-      PerplexityApiKey: !!process.env.PERPLEXITY_API_KEY,
-      PerplexityModelPref: process.env.PERPLEXITY_MODEL_PREF,
-
-      // OpenRouter Keys
-      OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
-      OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
-
-      // Mistral AI (API) Keys
-      MistralApiKey: !!process.env.MISTRAL_API_KEY,
-      MistralModelPref: process.env.MISTRAL_MODEL_PREF,
-
-      // Groq AI API Keys
-      GroqApiKey: !!process.env.GROQ_API_KEY,
-      GroqModelPref: process.env.GROQ_MODEL_PREF,
-
-      // Native LLM Keys
-      NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
-      NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
-
-      // HuggingFace Dedicated Inference
-      HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
-      HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
-      HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
+      ...this.llmPreferenceKeys(),
 
       // --------------------------------------------------------
       // Whisper (Audio transcription) Selection Settings & Configs
@@ -272,6 +182,108 @@ const SystemSettings = {
       console.error(error.message);
       return false;
     }
+  },
+
+  vectorDBPreferenceKeys: function () {
+    return {
+      // Pinecone DB Keys
+      PineConeKey: !!process.env.PINECONE_API_KEY,
+      PineConeIndex: process.env.PINECONE_INDEX,
+
+      // Chroma DB Keys
+      ChromaEndpoint: process.env.CHROMA_ENDPOINT,
+      ChromaApiHeader: process.env.CHROMA_API_HEADER,
+      ChromaApiKey: !!process.env.CHROMA_API_KEY,
+
+      // Weaviate DB Keys
+      WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
+      WeaviateApiKey: process.env.WEAVIATE_API_KEY,
+
+      // QDrant DB Keys
+      QdrantEndpoint: process.env.QDRANT_ENDPOINT,
+      QdrantApiKey: process.env.QDRANT_API_KEY,
+
+      // Milvus DB Keys
+      MilvusAddress: process.env.MILVUS_ADDRESS,
+      MilvusUsername: process.env.MILVUS_USERNAME,
+      MilvusPassword: !!process.env.MILVUS_PASSWORD,
+
+      // Zilliz DB Keys
+      ZillizEndpoint: process.env.ZILLIZ_ENDPOINT,
+      ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
+
+      // AstraDB Keys
+      AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
+      AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
+    };
+  },
+
+  llmPreferenceKeys: function () {
+    return {
+      // OpenAI Keys
+      OpenAiKey: !!process.env.OPEN_AI_KEY,
+      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
+
+      // Azure + OpenAI Keys
+      AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+      AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+      AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
+      AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+      AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
+
+      // Anthropic Keys
+      AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
+      AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
+
+      // Gemini Keys
+      GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
+      GeminiLLMModelPref: process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro",
+
+      // LMStudio Keys
+      LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
+      LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
+      LMStudioModelPref: process.env.LMSTUDIO_MODEL_PREF,
+
+      // LocalAI Keys
+      LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
+      LocalAiBasePath: process.env.LOCAL_AI_BASE_PATH,
+      LocalAiModelPref: process.env.LOCAL_AI_MODEL_PREF,
+      LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
+
+      // Ollama LLM Keys
+      OllamaLLMBasePath: process.env.OLLAMA_BASE_PATH,
+      OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
+      OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
+
+      // TogetherAI Keys
+      TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
+      TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
+
+      // Perplexity AI Keys
+      PerplexityApiKey: !!process.env.PERPLEXITY_API_KEY,
+      PerplexityModelPref: process.env.PERPLEXITY_MODEL_PREF,
+
+      // OpenRouter Keys
+      OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
+      OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
+
+      // Mistral AI (API) Keys
+      MistralApiKey: !!process.env.MISTRAL_API_KEY,
+      MistralModelPref: process.env.MISTRAL_MODEL_PREF,
+
+      // Groq AI API Keys
+      GroqApiKey: !!process.env.GROQ_API_KEY,
+      GroqModelPref: process.env.GROQ_MODEL_PREF,
+
+      // Native LLM Keys
+      NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
+      NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
+
+      // HuggingFace Dedicated Inference
+      HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
+      HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
+      HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
+    };
   },
 };
 

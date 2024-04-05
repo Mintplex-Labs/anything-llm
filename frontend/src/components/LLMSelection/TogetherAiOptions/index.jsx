@@ -19,7 +19,9 @@ export default function TogetherAiOptions({ settings }) {
           spellCheck={false}
         />
       </div>
-      <TogetherAiModelSelection settings={settings} />
+      {!settings?.credentialsOnly && (
+        <TogetherAiModelSelection settings={settings} />
+      )}
     </div>
   );
 }
@@ -84,7 +86,7 @@ function TogetherAiModelSelection({ settings }) {
                 <option
                   key={model.id}
                   value={model.id}
-                  selected={settings.OpenRouterModelPref === model.id}
+                  selected={settings?.OpenRouterModelPref === model.id}
                 >
                   {model.name}
                 </option>

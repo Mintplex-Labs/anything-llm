@@ -28,7 +28,9 @@ async function streamChatWithForEmbed(
     embed.workspace.openAiTemp = parseFloat(temperatureOverride);
 
   const uuid = uuidv4();
-  const LLMConnector = getLLMProvider(chatModel ?? embed.workspace?.chatModel);
+  const LLMConnector = getLLMProvider({
+    model: chatModel ?? embed.workspace?.chatModel,
+  });
   const VectorDb = getVectorDbClass();
   const { safe, reasons = [] } = await LLMConnector.isSafe(message);
   if (!safe) {
