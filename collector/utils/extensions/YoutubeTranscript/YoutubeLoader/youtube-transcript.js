@@ -17,10 +17,12 @@ class YoutubeTranscript {
   /**
    * Fetch transcript from YTB Video
    * @param videoId Video url or video identifier
+   * @param config Object with lang param (eg: en, es, hk, uk) format.
    * Will just the grab first caption if it can find one, so no special lang caption support.
    */
-  static async fetchTranscript(videoId) {
+  static async fetchTranscript(videoId, config = {}) {
     const identifier = this.retrieveVideoId(videoId);
+    const lang = config?.lang ?? "en";
     try {
       const transcriptUrl = await fetch(
         `https://www.youtube.com/watch?v=${identifier}`,
@@ -32,7 +34,7 @@ class YoutubeTranscript {
       )
         .then((res) => res.text())
         .then((html) => parse(html))
-        .then((html) => this.#parseTranscriptEndpoint(html));
+        .then((html) => this.#parseTranscriptEndpoint(html, lang));
 
       if (!transcriptUrl)
         throw new Error("Failed to locate a transcript for this video!");
@@ -42,7 +44,7 @@ class YoutubeTranscript {
         .then((res) => res.text())
         .then((xml) => parse(xml));
 
-      let transcript;
+      let transcript = "";
       const chunks = transcriptXML.getElementsByTagName("text");
       for (const chunk of chunks) {
         transcript += chunk.textContent;
@@ -54,7 +56,7 @@ class YoutubeTranscript {
     }
   }
 
-  static #parseTranscriptEndpoint(document) {
+  static #parseTranscriptEndpoint(document, langCode = null) {
     try {
       // Get all script tags on document page
       const scripts = document.getElementsByTagName("script");
@@ -71,8 +73,18 @@ class YoutubeTranscript {
         "}"; // add back that curly brace we just cut.
 
       const data = JSON.parse(dataString.trim()); // Attempt a JSON parse
-      return data?.captions?.playerCaptionsTracklistRenderer?.captionTracks?.[0]
-        ?.baseUrl;
+      const availableCaptions =
+        data?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
+
+      // If languageCode was specified then search for it's code, otherwise get the first.
+      let captionTrack = availableCaptions?.[0];
+      if (langCode)
+        captionTrack =
+          availableCaptions.find((track) =>
+            track.languageCode.includes(langCode)
+          ) ?? availableCaptions?.[0];
+
+      return captionTrack?.baseUrl;
     } catch (e) {
       console.error(`YoutubeTranscript.#parseTranscriptEndpoint ${e.message}`);
       return null;
