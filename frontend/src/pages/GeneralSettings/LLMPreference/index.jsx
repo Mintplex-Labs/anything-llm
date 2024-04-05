@@ -36,6 +36,130 @@ import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 
+export const AVAILABLE_LLM_PROVIDERS = [
+  {
+    name: "OpenAI",
+    value: "openai",
+    logo: OpenAiLogo,
+    options: (settings) => <OpenAiOptions settings={settings} />,
+    description: "The standard option for most non-commercial use.",
+    requiredConfig: ["OpenAiKey"],
+  },
+  {
+    name: "Azure OpenAI",
+    value: "azure",
+    logo: AzureOpenAiLogo,
+    options: (settings) => <AzureAiOptions settings={settings} />,
+    description: "The enterprise option of OpenAI hosted on Azure services.",
+    requiredConfig: ["AzureOpenAiEndpoint"],
+  },
+  {
+    name: "Anthropic",
+    value: "anthropic",
+    logo: AnthropicLogo,
+    options: (settings) => <AnthropicAiOptions settings={settings} />,
+    description: "A friendly AI Assistant hosted by Anthropic.",
+    requiredConfig: ["AnthropicApiKey"],
+  },
+  {
+    name: "Gemini",
+    value: "gemini",
+    logo: GeminiLogo,
+    options: (settings) => <GeminiLLMOptions settings={settings} />,
+    description: "Google's largest and most capable AI model",
+    requiredConfig: ["GeminiLLMApiKey"],
+  },
+  {
+    name: "HuggingFace",
+    value: "huggingface",
+    logo: HuggingFaceLogo,
+    options: (settings) => <HuggingFaceOptions settings={settings} />,
+    description:
+      "Access 150,000+ open-source LLMs and the world's AI community",
+    requiredConfig: [
+      "HuggingFaceLLMEndpoint",
+      "HuggingFaceLLMAccessToken",
+      "HuggingFaceLLMTokenLimit",
+    ],
+  },
+  {
+    name: "Ollama",
+    value: "ollama",
+    logo: OllamaLogo,
+    options: (settings) => <OllamaLLMOptions settings={settings} />,
+    description: "Run LLMs locally on your own machine.",
+    requiredConfig: ["OllamaLLMBasePath"],
+  },
+  {
+    name: "LM Studio",
+    value: "lmstudio",
+    logo: LMStudioLogo,
+    options: (settings) => <LMStudioOptions settings={settings} />,
+    description:
+      "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+    requiredConfig: ["LMStudioBasePath"],
+  },
+  {
+    name: "Local AI",
+    value: "localai",
+    logo: LocalAiLogo,
+    options: (settings) => <LocalAiOptions settings={settings} />,
+    description: "Run LLMs locally on your own machine.",
+    requiredConfig: ["LocalAiApiKey", "LocalAiBasePath", "LocalAiTokenLimit"],
+  },
+  {
+    name: "Together AI",
+    value: "togetherai",
+    logo: TogetherAILogo,
+    options: (settings) => <TogetherAiOptions settings={settings} />,
+    description: "Run open source models from Together AI.",
+    requiredConfig: ["TogetherAiApiKey"],
+  },
+  {
+    name: "Mistral",
+    value: "mistral",
+    logo: MistralLogo,
+    options: (settings) => <MistralOptions settings={settings} />,
+    description: "Run open source models from Mistral AI.",
+    requiredConfig: ["MistralApiKey"],
+  },
+  {
+    name: "Perplexity AI",
+    value: "perplexity",
+    logo: PerplexityLogo,
+    options: (settings) => <PerplexityOptions settings={settings} />,
+    description:
+      "Run powerful and internet-connected models hosted by Perplexity AI.",
+    requiredConfig: ["PerplexityApiKey"],
+  },
+  {
+    name: "OpenRouter",
+    value: "openrouter",
+    logo: OpenRouterLogo,
+    options: (settings) => <OpenRouterOptions settings={settings} />,
+    description: "A unified interface for LLMs.",
+    requiredConfig: ["OpenRouterApiKey"],
+  },
+  {
+    name: "Groq",
+    value: "groq",
+    logo: GroqLogo,
+    options: (settings) => <GroqAiOptions settings={settings} />,
+    description:
+      "The fastest LLM inferencing available for real-time AI applications.",
+    requiredConfig: ["GroqApiKey"],
+  },
+  {
+    name: "Native",
+    value: "native",
+    logo: AnythingLLMIcon,
+    options: (settings) => <NativeLLMOptions settings={settings} />,
+    description:
+      "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
+    requiredConfig: [],
+  },
+];
+
 export default function GeneralLLMPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -94,120 +218,15 @@ export default function GeneralLLMPreference() {
   }, []);
 
   useEffect(() => {
-    const filtered = LLMS.filter((llm) =>
+    const filtered = AVAILABLE_LLM_PROVIDERS.filter((llm) =>
       llm.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredLLMs(filtered);
   }, [searchQuery, selectedLLM]);
 
-  const LLMS = [
-    {
-      name: "OpenAI",
-      value: "openai",
-      logo: OpenAiLogo,
-      options: <OpenAiOptions settings={settings} />,
-      description: "The standard option for most non-commercial use.",
-    },
-    {
-      name: "Azure OpenAI",
-      value: "azure",
-      logo: AzureOpenAiLogo,
-      options: <AzureAiOptions settings={settings} />,
-      description: "The enterprise option of OpenAI hosted on Azure services.",
-    },
-    {
-      name: "Anthropic",
-      value: "anthropic",
-      logo: AnthropicLogo,
-      options: <AnthropicAiOptions settings={settings} />,
-      description: "A friendly AI Assistant hosted by Anthropic.",
-    },
-    {
-      name: "Gemini",
-      value: "gemini",
-      logo: GeminiLogo,
-      options: <GeminiLLMOptions settings={settings} />,
-      description: "Google's largest and most capable AI model",
-    },
-    {
-      name: "HuggingFace",
-      value: "huggingface",
-      logo: HuggingFaceLogo,
-      options: <HuggingFaceOptions settings={settings} />,
-      description:
-        "Access 150,000+ open-source LLMs and the world's AI community",
-    },
-    {
-      name: "Ollama",
-      value: "ollama",
-      logo: OllamaLogo,
-      options: <OllamaLLMOptions settings={settings} />,
-      description: "Run LLMs locally on your own machine.",
-    },
-    {
-      name: "LM Studio",
-      value: "lmstudio",
-      logo: LMStudioLogo,
-      options: <LMStudioOptions settings={settings} />,
-      description:
-        "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
-    },
-    {
-      name: "Local AI",
-      value: "localai",
-      logo: LocalAiLogo,
-      options: <LocalAiOptions settings={settings} />,
-      description: "Run LLMs locally on your own machine.",
-    },
-    {
-      name: "Together AI",
-      value: "togetherai",
-      logo: TogetherAILogo,
-      options: <TogetherAiOptions settings={settings} />,
-      description: "Run open source models from Together AI.",
-    },
-    {
-      name: "Mistral",
-      value: "mistral",
-      logo: MistralLogo,
-      options: <MistralOptions settings={settings} />,
-      description: "Run open source models from Mistral AI.",
-    },
-    {
-      name: "Perplexity AI",
-      value: "perplexity",
-      logo: PerplexityLogo,
-      options: <PerplexityOptions settings={settings} />,
-      description:
-        "Run powerful and internet-connected models hosted by Perplexity AI.",
-    },
-    {
-      name: "OpenRouter",
-      value: "openrouter",
-      logo: OpenRouterLogo,
-      options: <OpenRouterOptions settings={settings} />,
-      description: "A unified interface for LLMs.",
-    },
-    {
-      name: "Groq",
-      value: "groq",
-      logo: GroqLogo,
-      options: <GroqAiOptions settings={settings} />,
-      description:
-        "The fastest LLM inferencing available for real-time AI applications.",
-    },
-    {
-      name: "Native",
-      value: "native",
-      logo: AnythingLLMIcon,
-      options: <NativeLLMOptions settings={settings} />,
-      description:
-        "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
-    },
-  ];
-
-  const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
-
+  const selectedLLMObject = AVAILABLE_LLM_PROVIDERS.find(
+    (llm) => llm.value === selectedLLM
+  );
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
@@ -339,7 +358,9 @@ export default function GeneralLLMPreference() {
                 className="mt-4 flex flex-col gap-y-1"
               >
                 {selectedLLM &&
-                  LLMS.find((llm) => llm.value === selectedLLM)?.options}
+                  AVAILABLE_LLM_PROVIDERS.find(
+                    (llm) => llm.value === selectedLLM
+                  )?.options?.(settings)}
               </div>
             </div>
           </form>

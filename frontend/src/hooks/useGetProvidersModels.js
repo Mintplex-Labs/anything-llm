@@ -2,7 +2,7 @@ import System from "@/models/system";
 import { useEffect, useState } from "react";
 
 // Providers which cannot use this feature for workspace<>model selection
-export const DISABLED_PROVIDERS = ["azure", "lmstudio"];
+export const DISABLED_PROVIDERS = ["azure", "lmstudio", "native"];
 const PROVIDER_DEFAULT_MODELS = {
   openai: [
     "gpt-3.5-turbo",

@@ -46,23 +46,27 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
             onBlur={() => setBasePath(basePathValue)}
           />
         </div>
-        <LMStudioModelSelection settings={settings} basePath={basePath} />
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Token context window
-          </label>
-          <input
-            type="number"
-            name="LMStudioTokenLimit"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="4096"
-            min={1}
-            onScroll={(e) => e.target.blur()}
-            defaultValue={settings?.LMStudioTokenLimit}
-            required={true}
-            autoComplete="off"
-          />
-        </div>
+        {!settings?.credentialsOnly && (
+          <>
+            <LMStudioModelSelection settings={settings} basePath={basePath} />
+            <div className="flex flex-col w-60">
+              <label className="text-white text-sm font-semibold block mb-4">
+                Token context window
+              </label>
+              <input
+                type="number"
+                name="LMStudioTokenLimit"
+                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                placeholder="4096"
+                min={1}
+                onScroll={(e) => e.target.blur()}
+                defaultValue={settings?.LMStudioTokenLimit}
+                required={true}
+                autoComplete="off"
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

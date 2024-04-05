@@ -508,7 +508,7 @@ function workspaceEndpoints(app) {
           if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
         }
 
-        const { workspace, message } = await Workspace.update(
+        const { workspace, message } = await Workspace._update(
           workspaceRecord.id,
           {
             pfpFilename: uploadedFileName,
@@ -547,7 +547,7 @@ function workspaceEndpoints(app) {
           if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
         }
 
-        const { workspace, message } = await Workspace.update(
+        const { workspace, message } = await Workspace._update(
           workspaceRecord.id,
           {
             pfpFilename: null,
