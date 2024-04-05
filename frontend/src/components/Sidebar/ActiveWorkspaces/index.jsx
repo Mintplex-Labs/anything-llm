@@ -72,7 +72,7 @@ export default function ActiveWorkspaces() {
   }
 
   return (
-    <div role="list" aria-label="Workspaces">
+    <div role="list" aria-label="Workspaces" className="flex flex-col gap-y-2">
       {workspaces.map((workspace) => {
         const isActive = workspace.slug === slug;
         const isHovered = hoverStates[workspace.id];
