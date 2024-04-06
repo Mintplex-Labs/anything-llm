@@ -27,6 +27,7 @@ class NativeEmbedder {
 
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir)) fs.mkdirSync(this.cacheDir);
+    this.log("Initialized");
   }
 
   log(text, ...args) {
@@ -68,7 +69,7 @@ class NativeEmbedder {
       return {
         pipeline: await pipeline("feature-extraction", this.model, {
           cache_dir: this.cacheDir,
-          ...(!fs.existsSync(this.modelPath)
+          ...(!this.modelDownloaded
             ? {
                 // Show download progress if we need to download any files
                 progress_callback: (data) => {

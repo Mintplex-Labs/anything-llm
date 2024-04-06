@@ -101,7 +101,6 @@ function getEmbeddingEngineSelection() {
       return new OllamaEmbedder();
     case "native":
       const { NativeEmbedder } = require("../EmbeddingEngines/native");
-      console.log("\x1b[34m[INFO]\x1b[0m Using Native Embedder");
       return new NativeEmbedder();
     default:
       return null;
