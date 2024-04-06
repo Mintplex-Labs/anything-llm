@@ -1,5 +1,5 @@
 const { default: weaviate } = require("weaviate-ts-client");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
+const { TextSplitter } = require("../../TextSplitter");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const {
@@ -241,10 +241,17 @@ const Weaviate = {
       // We have to do this manually as opposed to using LangChains `Chroma.fromDocuments`
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
-      const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize:
-          getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1_000,
-        chunkOverlap: 20,
+      const textSplitter = new TextSplitter({
+        chunkSize: TextSplitter.determineMaxChunkSize(
+          await SystemSettings.getValueOrFallback({
+            label: "text_splitter_chunk_size",
+          }),
+          getEmbeddingEngineSelection()?.embeddingMaxChunkLength
+        ),
+        chunkOverlap: await SystemSettings.getValueOrFallback(
+          { label: "text_splitter_chunk_overlap" },
+          20
+        ),
       });
       const textChunks = await textSplitter.splitText(pageContent);
 

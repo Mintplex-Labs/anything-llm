@@ -190,7 +190,7 @@ export default function LLMPreference({
       showToast(`Failed to save LLM settings: ${error}`, "error");
       return;
     }
-    navigate(paths.onboarding.embeddingPreference());
+    navigate(paths.onboarding.embedder.modelPreference());
   };
 
   useEffect(() => {

@@ -35,6 +35,9 @@ const GeneralTranscriptionPreference = lazy(
 const GeneralEmbeddingPreference = lazy(
   () => import("@/pages/GeneralSettings/EmbeddingPreference")
 );
+const EmbeddingTextSplitterPreference = lazy(
+  () => import("@/pages/GeneralSettings/EmbeddingTextSplitterPreference")
+);
 const GeneralVectorDatabase = lazy(
   () => import("@/pages/GeneralSettings/VectorDatabase")
 );
@@ -85,6 +88,12 @@ export default function App() {
               <Route
                 path="/settings/embedding-preference"
                 element={<AdminRoute Component={GeneralEmbeddingPreference} />}
+              />
+              <Route
+                path="/settings/text-splitter-preference"
+                element={
+                  <AdminRoute Component={EmbeddingTextSplitterPreference} />
+                }
               />
               <Route
                 path="/settings/vector-database"
