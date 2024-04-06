@@ -14,11 +14,7 @@ export default function DataConnectorOption({ slug }) {
         <div className="mt-2 text-xs font-base text-white tracking-wide">
           {description}
         </div>
-        <p
-          className="mt-2 text-xs text-white font-medium underline"
-        >
-          {link}
-        </p>
+        <p className="mt-2 text-xs text-white font-medium underline">{link}</p>
       </label>
     </Link>
   );

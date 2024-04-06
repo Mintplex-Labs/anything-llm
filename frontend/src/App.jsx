@@ -19,6 +19,7 @@ import GeneralAppearance from "./pages/GeneralSettings/Appearance";
 import GeneralLLMPreference from "./pages/GeneralSettings/LLMPreference";
 import GeneralTranscriptionPreference from "./pages/GeneralSettings/TranscriptionPreference";
 import GeneralEmbeddingPreference from "./pages/GeneralSettings/EmbeddingPreference";
+import EmbeddingTextSplitterPreference from "./pages/GeneralSettings/EmbeddingTextSplitterPreference";
 import GeneralVectorDatabase from "./pages/GeneralSettings/VectorDatabase";
 import OnboardingFlow from "./pages/OnboardingFlow";
 import AdminLogs from "./pages/Admin/Logging";
@@ -65,6 +66,12 @@ export default function App() {
                   path="/settings/embedding-preference"
                   element={
                     <AdminRoute Component={GeneralEmbeddingPreference} />
+                  }
+                />
+                <Route
+                  path="/settings/text-splitter-preference"
+                  element={
+                    <AdminRoute Component={EmbeddingTextSplitterPreference} />
                   }
                 />
                 <Route

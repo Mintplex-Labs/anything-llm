@@ -22,7 +22,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
             </p>
           </div>
           <Link
-            to={paths.settings.embeddingPreference()}
+            to={paths.settings.embedder.modelPreference()}
             className="text-sm md:text-base my-2 underline"
           >
             Manage embedding &rarr;

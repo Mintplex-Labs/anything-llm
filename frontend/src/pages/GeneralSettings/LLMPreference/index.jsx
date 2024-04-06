@@ -41,18 +41,18 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 export const AVAILABLE_LLM_PROVIDERS = [
   _APP_PLATFORM.value !== "linux"
     ? {
-      name: "AnythingLLM",
-      value: "anythingllm_ollama",
-      logo: AnythingLLMIcon,
-      options: (settings, setHasChanges) => (
-        <AnythingLLMOptions
-          settings={settings}
-          setHasChanges={setHasChanges}
-        />
-      ),
-      description:
-        "Download & run models from Meta, Mistral and more on this device with zero setup. Powered by Ollama.",
-    }
+        name: "AnythingLLM",
+        value: "anythingllm_ollama",
+        logo: AnythingLLMIcon,
+        options: (settings, setHasChanges) => (
+          <AnythingLLMOptions
+            settings={settings}
+            setHasChanges={setHasChanges}
+          />
+        ),
+        description:
+          "Download & run models from Meta, Mistral and more on this device with zero setup. Powered by Ollama.",
+      }
     : null,
   {
     name: "OpenAI",
