@@ -18,12 +18,28 @@ class OllamaEmbedder {
     console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
 
+  async #isAlive() {
+    return await fetch(process.env.EMBEDDING_BASE_PATH, {
+      method: "HEAD",
+    })
+      .then((res) => res.ok)
+      .catch((e) => {
+        this.log(e.message);
+        return false;
+      });
+  }
+
   async embedTextInput(textInput) {
     const result = await this.embedChunks([textInput]);
     return result?.[0] || [];
   }
 
   async embedChunks(textChunks = []) {
+    if (!(await this.#isAlive()))
+      throw new Error(
+        `Ollama service could not be reached. Is Ollama running?`
+      );
+
     const embeddingRequests = [];
     this.log(
       `Embedding ${textChunks.length} chunks of text with ${this.model}.`
