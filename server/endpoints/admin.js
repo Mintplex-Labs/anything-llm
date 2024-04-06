@@ -345,6 +345,8 @@ function adminEndpoints(app) {
           text_splitter_chunk_overlap:
             (await SystemSettings.get({ label: "text_splitter_chunk_overlap" }))
               ?.value || null,
+          max_embed_chunk_size:
+            getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1000,
         };
         response.status(200).json({ settings });
       } catch (e) {

@@ -5,6 +5,7 @@ import PreLoader from "@/components/Preloader";
 import CTAButton from "@/components/lib/CTAButton";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
+import { nFormatter, numberWithCommas } from "@/utils/numbers";
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -20,6 +21,18 @@ export default function EmbeddingTextSplitterPreference() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
+
+    if (
+      Number(form.get("text_splitter_chunk_overlap")) >=
+      Number(form.get("text_splitter_chunk_size"))
+    ) {
+      showToast(
+        "Chunk overlap cannot be larger or equal to chunk size.",
+        "error"
+      );
+      return;
+    }
+
     setSaving(true);
     await Admin.updateSystemPreferences({
       text_splitter_chunk_size: isNullOrNaN(
@@ -111,6 +124,7 @@ export default function EmbeddingTextSplitterPreference() {
                     type="number"
                     name="text_splitter_chunk_size"
                     min={1}
+                    max={settings?.max_embed_chunk_size || 1000}
                     onWheel={(e) => e?.currentTarget?.blur()}
                     className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                     placeholder="maximum length of vectorized text"
@@ -122,6 +136,10 @@ export default function EmbeddingTextSplitterPreference() {
                     required={true}
                     autoComplete="off"
                   />
+                  <p className="text-xs text-white/40">
+                    Embed model maximum length is{" "}
+                    {numberWithCommas(settings?.max_embed_chunk_size || 1000)}.
+                  </p>
                 </div>
               </div>
 

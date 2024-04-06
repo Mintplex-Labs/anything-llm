@@ -118,7 +118,7 @@ export default function VectorDatabaseConnection({
   }
 
   function handleBack() {
-    navigate(paths.onboarding.embedder.modelPreference());
+    navigate(paths.onboarding.embeddingPreference());
   }
 
   const handleSubmit = async (e) => {
