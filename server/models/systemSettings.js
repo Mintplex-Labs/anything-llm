@@ -5,6 +5,11 @@ process.env.NODE_ENV === "development"
 const { isValidUrl } = require("../utils/http");
 const prisma = require("../utils/prisma");
 
+function isNullOrNaN(value) {
+  if (value === null) return true;
+  return isNaN(value);
+}
+
 const SystemSettings = {
   protectedFields: ["multi_user_mode"],
   supportedFields: [
@@ -15,6 +20,8 @@ const SystemSettings = {
     "telemetry_id",
     "footer_data",
     "support_email",
+    "text_splitter_chunk_size",
+    "text_splitter_chunk_overlap",
   ],
   validations: {
     footer_data: (updates) => {
@@ -26,6 +33,32 @@ const SystemSettings = {
       } catch (e) {
         console.error(`Failed to run validation function on footer_data`);
         return JSON.stringify([]);
+      }
+    },
+    text_splitter_chunk_size: (update) => {
+      try {
+        if (isNullOrNaN(update)) throw new Error("Value is not a number.");
+        if (Number(update) <= 0) throw new Error("Value must be non-zero.");
+        return Number(update);
+      } catch (e) {
+        console.error(
+          `Failed to run validation function on text_splitter_chunk_size`,
+          e.message
+        );
+        return 1000;
+      }
+    },
+    text_splitter_chunk_overlap: (update) => {
+      try {
+        if (isNullOrNaN(update)) throw new Error("Value is not a number");
+        if (Number(update) < 0) throw new Error("Value cannot be less than 0.");
+        return Number(update);
+      } catch (e) {
+        console.error(
+          `Failed to run validation function on text_splitter_chunk_overlap`,
+          e.message
+        );
+        return 20;
       }
     },
   },
@@ -81,6 +114,15 @@ const SystemSettings = {
     } catch (error) {
       console.error(error.message);
       return null;
+    }
+  },
+
+  getValueOrFallback: async function (clause = {}, fallback = null) {
+    try {
+      return (await this.get(clause))?.value ?? fallback;
+    } catch (error) {
+      console.error(error.message);
+      return fallback;
     }
   },
 

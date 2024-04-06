@@ -20,6 +20,7 @@ import {
   Barcode,
   ClosedCaptioning,
   EyeSlash,
+  SplitVertical,
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
@@ -288,12 +289,25 @@ const SidebarOptions = ({ user = null }) => (
       allowedRole={["admin"]}
     />
     <Option
-      href={paths.settings.embeddingPreference()}
-      btnText="Embedding Model"
+      href={paths.settings.embedder.modelPreference()}
+      childLinks={[paths.settings.embedder.chunkingPreference()]}
+      btnText="Embedder Preferences"
       icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
       allowedRole={["admin"]}
+      subOptions={
+        <>
+          <Option
+            href={paths.settings.embedder.chunkingPreference()}
+            btnText="Text Splitter & Chunking"
+            icon={<SplitVertical className="h-5 w-5 flex-shrink-0" />}
+            user={user}
+            flex={true}
+            allowedRole={["admin"]}
+          />
+        </>
+      }
     />
     <Option
       href={paths.settings.vectorDatabase()}
