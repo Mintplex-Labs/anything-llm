@@ -1,5 +1,6 @@
 const { default: weaviate } = require("weaviate-ts-client");
 const { TextSplitter } = require("../../TextSplitter");
+const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const {

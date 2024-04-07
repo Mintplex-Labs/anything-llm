@@ -1,5 +1,6 @@
 const { Pinecone } = require("@pinecone-database/pinecone");
 const { TextSplitter } = require("../../TextSplitter");
+const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const {
