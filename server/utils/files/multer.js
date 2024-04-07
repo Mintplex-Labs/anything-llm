@@ -9,7 +9,7 @@ const { v4 } = require("uuid");
 // be out of bounds and the `hotdir` is always inside of the collector folder. It is not mounted
 // with the rest of the storage.
 // This line is only relevant for Render/Railway.
-const RENDER_STORAGE = path.resolve(__dirname, `../../../collector/hotdir`)
+const RENDER_STORAGE = path.resolve(__dirname, `../../../collector/hotdir`);
 
 // Handle File uploads for auto-uploading.
 const fileUploadStorage = multer.diskStorage({

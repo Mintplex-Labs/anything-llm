@@ -3,6 +3,7 @@ import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminSystem() {
   const [saving, setSaving] = useState(false);
@@ -49,7 +50,7 @@ export default function AdminSystem() {
         <form
           onSubmit={handleSubmit}
           onChange={() => setHasChanges(true)}
-          className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16"
+          className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16"
         >
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center">
@@ -62,8 +63,14 @@ export default function AdminSystem() {
               instance.
             </p>
           </div>
-
-          <div className="mt-6 mb-8">
+          {hasChanges && (
+            <div className="flex justify-end">
+              <CTAButton onClick={handleSubmit} className="mt-3 mr-0">
+                {saving ? "Saving..." : "Save changes"}
+              </CTAButton>
+            </div>
+          )}
+          <div className="mt-4 mb-8">
             <div className="flex flex-col gap-y-1">
               <h2 className="text-base leading-6 font-bold text-white">
                 Users can delete workspaces
@@ -141,18 +148,6 @@ export default function AdminSystem() {
               </div>
             )}
           </div>
-
-          {hasChanges && (
-            <div className="flex justify-start">
-              <button
-                type="submit"
-                disabled={saving}
-                className="flex items-center gap-x-2 px-4 py-2 rounded-lg bg-[#2C2F36] text-white text-sm hover:bg-[#3D4147] shadow-md border border-[#3D4147]"
-              >
-                {saving ? "Saving..." : "Save changes"}
-              </button>
-            </div>
-          )}
         </form>
       </div>
     </div>

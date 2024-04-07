@@ -2,7 +2,6 @@ const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
     checks: [isNotEmpty, supportedLLM],
-    postUpdate: [wipeWorkspaceModelPreference],
   },
   // OpenAI Settings
   OpenAiKey: {
@@ -491,15 +490,6 @@ function validHuggingFaceEndpoint(input = "") {
   return input.slice(-6) !== ".cloud"
     ? `Your HF Endpoint should end in ".cloud"`
     : null;
-}
-
-// If the LLMProvider has changed we need to reset all workspace model preferences to
-// null since the provider<>model name combination will be invalid for whatever the new
-// provider is.
-async function wipeWorkspaceModelPreference(key, prev, next) {
-  if (prev === next) return;
-  const { Workspace } = require("../../models/workspace");
-  await Workspace.resetWorkspaceChatModels();
 }
 
 // This will force update .env variables which for any which reason were not able to be parsed or

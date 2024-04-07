@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import * as Skeleton from "react-loading-skeleton";
 import AddMemberModal from "./AddMemberModal";
 import WorkspaceMemberRow from "./WorkspaceMemberRow";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function Members({ workspace }) {
   const [loading, setLoading] = useState(true);
@@ -77,14 +78,7 @@ export default function Members({ workspace }) {
           )}
         </tbody>
       </table>
-
-      <button
-        onClick={openModal}
-        className="text-xs px-2 py-1 font-semibold rounded-lg bg-[#46C8FF] hover:bg-[#2C2F36] hover:text-white h-[34px] w-[100px] -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
-      >
-        Manage Users
-      </button>
-
+      <CTAButton onClick={openModal}>Manage Users</CTAButton>
       <ModalWrapper isOpen={isOpen}>
         <AddMemberModal
           closeModal={closeModal}
