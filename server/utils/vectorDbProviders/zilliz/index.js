@@ -5,6 +5,7 @@ const {
   MilvusClient,
 } = require("@zilliz/milvus2-sdk-node");
 const { TextSplitter } = require("../../TextSplitter");
+const { SystemSettings } = require("../../../models/systemSettings");
 const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const {

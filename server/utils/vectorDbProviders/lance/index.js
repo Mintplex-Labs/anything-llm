@@ -6,9 +6,9 @@ const {
 } = require("../../helpers");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { TextSplitter } = require("../../TextSplitter");
+const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
-const { SystemSettings } = require("../../../models/systemSettings");
 
 const LanceDb = {
   uri: `${
