@@ -12,6 +12,7 @@ const {
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
+const { SystemSettings } = require("../../../models/systemSettings");
 
 // Zilliz is basically a copy of Milvus DB class with a different constructor
 // to connect to the cloud

@@ -8,6 +8,7 @@ const {
   getEmbeddingEngineSelection,
 } = require("../../helpers");
 const { camelCase } = require("../../helpers/camelcase");
+const { SystemSettings } = require("../../../models/systemSettings");
 
 const Weaviate = {
   name: "Weaviate",

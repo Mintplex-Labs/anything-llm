@@ -7,6 +7,7 @@ const {
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
+const { SystemSettings } = require("../../../models/systemSettings");
 
 const QDrant = {
   name: "QDrant",
