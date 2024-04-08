@@ -13,6 +13,7 @@ import {
 } from "@phosphor-icons/react";
 import React, { useEffect, useState } from "react";
 import SettingsButton from "../SettingsButton";
+import SupporterLink from "./Supporter";
 
 export const MAX_ICONS = 3;
 export const ICON_COMPONENTS = {
@@ -46,15 +47,7 @@ export default function Footer() {
     return (
       <div className="flex justify-center mb-2">
         <div className="flex space-x-4">
-          <a
-            href={paths.github()}
-            target="_blank"
-            rel="noreferrer"
-            className="transition-all duration-300 flex w-fit h-fit p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-            aria-label="Find us on Github"
-          >
-            <GithubLogo weight="fill" className="h-5 w-5 " />
-          </a>
+          <SupporterLink />
           <a
             href={paths.docs()}
             target="_blank"
