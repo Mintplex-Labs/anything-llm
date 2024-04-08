@@ -1,17 +1,17 @@
-const { YoutubeLoader } = require("langchain/document_loaders/web/youtube");
 const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
+const { YoutubeLoader } = require("./YoutubeLoader");
 
 function validYoutubeVideoUrl(link) {
   const UrlPattern = require("url-pattern");
   const opts = new URL(link);
-  const url = `${opts.protocol}//${opts.host}${
-    opts.pathname
-  }?v=${opts.searchParams.get("v")}`;
+  const url = `${opts.protocol}//${opts.host}${opts.pathname}${
+    opts.searchParams.has("v") ? `?v=${opts.searchParams.get("v")}` : ""
+  }`;
 
   const shortPatternMatch = new UrlPattern(
     "https\\://(www.)youtu.be/(:videoId)"
@@ -56,9 +56,7 @@ async function loadYouTubeTranscript({ url }) {
   }
 
   const metadata = docs[0].metadata;
-  let content = "";
-  docs.forEach((doc) => (content = content.concat(doc.pageContent)));
-
+  const content = docs[0].pageContent;
   if (!content.length) {
     return {
       success: false,

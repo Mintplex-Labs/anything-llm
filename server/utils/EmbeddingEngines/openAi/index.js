@@ -13,7 +13,9 @@ class OpenAiEmbedder {
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 500;
-    this.embeddingMaxChunkLength = 1_000;
+
+    // https://platform.openai.com/docs/guides/embeddings/embedding-models
+    this.embeddingMaxChunkLength = 8_191;
   }
 
   async embedTextInput(textInput) {

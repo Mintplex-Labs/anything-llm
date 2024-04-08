@@ -34,6 +34,7 @@
     "mime": "^3.0.0",
     "moment": "^2.29.4",
     "multer": "^1.4.5-lts.1",
+    "node-html-parser": "^6.1.13",
     "officeparser": "^4.0.5",
     "openai": "^3.2.1",
     "pdf-parse": "^1.1.1",
@@ -42,7 +43,6 @@
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
     "wavefile": "^11.0.0",
-    "youtube-transcript": "^1.0.6",
     "youtubei.js": "^9.1.0"
   },
   "devDependencies": {

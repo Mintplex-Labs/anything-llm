@@ -35,16 +35,13 @@ const GeneralTranscriptionPreference = lazy(
 const GeneralEmbeddingPreference = lazy(
   () => import("@/pages/GeneralSettings/EmbeddingPreference")
 );
+const EmbeddingTextSplitterPreference = lazy(
+  () => import("@/pages/GeneralSettings/EmbeddingTextSplitterPreference")
+);
 const GeneralVectorDatabase = lazy(
   () => import("@/pages/GeneralSettings/VectorDatabase")
 );
 const GeneralSecurity = lazy(() => import("@/pages/GeneralSettings/Security"));
-const DataConnectors = lazy(
-  () => import("@/pages/GeneralSettings/DataConnectors")
-);
-const DataConnectorSetup = lazy(
-  () => import("@/pages/GeneralSettings/DataConnectors/Connectors")
-);
 const WorkspaceSettings = lazy(() => import("@/pages/WorkspaceSettings"));
 const EmbedConfigSetup = lazy(
   () => import("@/pages/GeneralSettings/EmbedConfigs")
@@ -91,6 +88,12 @@ export default function App() {
               <Route
                 path="/settings/embedding-preference"
                 element={<AdminRoute Component={GeneralEmbeddingPreference} />}
+              />
+              <Route
+                path="/settings/text-splitter-preference"
+                element={
+                  <AdminRoute Component={EmbeddingTextSplitterPreference} />
+                }
               />
               <Route
                 path="/settings/vector-database"
@@ -145,15 +148,6 @@ export default function App() {
                 path="/settings/workspaces"
                 element={<ManagerRoute Component={AdminWorkspaces} />}
               />
-              <Route
-                path="/settings/data-connectors"
-                element={<ManagerRoute Component={DataConnectors} />}
-              />
-              <Route
-                path="/settings/data-connectors/:connector"
-                element={<ManagerRoute Component={DataConnectorSetup} />}
-              />
-
               {/* Onboarding Flow */}
               <Route path="/onboarding" element={<OnboardingFlow />} />
               <Route path="/onboarding/:step" element={<OnboardingFlow />} />

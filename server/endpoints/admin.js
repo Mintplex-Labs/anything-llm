@@ -8,7 +8,10 @@ const { User } = require("../models/user");
 const { DocumentVectors } = require("../models/vectors");
 const { Workspace } = require("../models/workspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { getVectorDbClass } = require("../utils/helpers");
+const {
+  getVectorDbClass,
+  getEmbeddingEngineSelection,
+} = require("../utils/helpers");
 const {
   validRoleSelection,
   canModifyAdmin,
@@ -311,6 +314,7 @@ function adminEndpoints(app) {
     }
   );
 
+  // TODO: Allow specification of which props to get instead of returning all of them all the time.
   app.get(
     "/admin/system-preferences",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
@@ -333,6 +337,16 @@ function adminEndpoints(app) {
           support_email:
             (await SystemSettings.get({ label: "support_email" }))?.value ||
             null,
+          text_splitter_chunk_size:
+            (await SystemSettings.get({ label: "text_splitter_chunk_size" }))
+              ?.value ||
+            getEmbeddingEngineSelection()?.embeddingMaxChunkLength ||
+            null,
+          text_splitter_chunk_overlap:
+            (await SystemSettings.get({ label: "text_splitter_chunk_overlap" }))
+              ?.value || null,
+          max_embed_chunk_size:
+            getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1000,
         };
         response.status(200).json({ settings });
       } catch (e) {
