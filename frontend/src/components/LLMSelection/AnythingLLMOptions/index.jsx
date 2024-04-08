@@ -25,14 +25,21 @@ export default function AnythingLLMOptions({
   const [selectedModel, setSelectedModel] = useState(
     settings?.AnythingLLMOllamaModelPref
   );
-
   function startDownload(modelId, modelName) {
-    window.localStorage.setItem(
-      ANYTHINGLLM_OLLAMA.localStorageKey,
-      JSON.stringify({ isDownloading: true, modelName, modelId })
-    );
-    window.dispatchEvent(new CustomEvent(ANYTHINGLLM_OLLAMA.startEvent));
-    setModelDownloading(modelId);
+    if (modelDownloading !== modelId) {
+      window.localStorage.setItem(
+        ANYTHINGLLM_OLLAMA.localStorageKey,
+        JSON.stringify({ isDownloading: true, modelName, modelId })
+      );
+      window.dispatchEvent(new CustomEvent(ANYTHINGLLM_OLLAMA.startEvent));
+      setModelDownloading(modelId);
+
+      showToast(
+        `${modelName} will download in the background. You can check its progress or cancel the download via the progress bar at the top. Chatting will be disabled until the model is ready.`,
+        "info",
+        { clear: true }
+      );
+    }
   }
 
   const autoDownloadModel = () => {
@@ -56,10 +63,6 @@ export default function AnythingLLMOptions({
 
     startDownload(formInputValue, modelInfo.name);
     setHasComponentChanges(false);
-    showToast(
-      `${modelInfo.name} will download in the background. You can check it's progress or cancel the download via the progress bar at the top. Chatting will be disabled until the model is ready.`,
-      "info"
-    );
   };
 
   async function uninstallModel(modelName) {
