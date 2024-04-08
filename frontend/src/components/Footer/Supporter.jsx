@@ -1,6 +1,7 @@
 import { useModal } from "@/hooks/useModal";
 import { HandCoins, X } from "@phosphor-icons/react";
 import ModalWrapper from "../ModalWrapper";
+import System from "@/models/system";
 
 const SUPPORTER_LINK = import.meta.env.DEV
   ? "https://buy.stripe.com/test_3csfZUbXIaYD6Mo148"
@@ -8,12 +9,32 @@ const SUPPORTER_LINK = import.meta.env.DEV
 
 export default function SupporterLink() {
   const { isOpen, openModal, closeModal } = useModal();
+  function handleWillSupport() {
+    closeModal();
+    System.supporterInterest("interested")
+      .then((res) => res.ok)
+      .catch(() => false);
+  }
+
+  function handleRefuseSupport() {
+    closeModal();
+    System.supporterInterest("refused")
+      .then((res) => res.ok)
+      .catch(() => false);
+  }
+
+  function handleInterest() {
+    openModal();
+    System.supporterInterest("opened")
+      .then((res) => res.ok)
+      .catch(() => false);
+  }
 
   return (
     <>
       <button
         type="button"
-        onClick={openModal}
+        onClick={handleInterest}
         className="transition-all duration-300 flex w-fit h-fit p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
         aria-label="Support AnythingLLM's development"
       >
@@ -22,7 +43,7 @@ export default function SupporterLink() {
       <ModalWrapper isOpen={isOpen}>
         <div className="relative w-full md:max-w-2xl max-h-full bg-main-gradient rounded-lg shadow p-4">
           <button
-            onClick={closeModal}
+            onClick={handleRefuseSupport}
             type="button"
             className="absolute top-5 right-5 text-white border-none text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
@@ -57,7 +78,7 @@ export default function SupporterLink() {
 
             <div className="flex flex-col w-full justify-center items-center mt-4 gap-y-1">
               <a
-                onClick={closeModal}
+                onClick={handleWillSupport}
                 href={SUPPORTER_LINK}
                 target="_blank"
                 rel="noreferrer"

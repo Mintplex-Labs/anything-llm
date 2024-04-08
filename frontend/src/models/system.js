@@ -608,6 +608,12 @@ const System = {
       .then((res) => res.json())
       .catch(() => false);
   },
+  supporterInterest: async function (action = "open") {
+    return fetch(`${API_BASE()}/system/support-interest/${action}`, {
+      method: "HEAD",
+      headers: baseHeaders(),
+    });
+  },
   dataConnectors: DataConnector,
 };
 

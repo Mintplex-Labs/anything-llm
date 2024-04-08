@@ -45,6 +45,7 @@ const {
 } = require("../utils/helpers/chat/convertTo");
 const { EventLogs } = require("../models/eventLogs");
 const { CollectorApi } = require("../utils/collectorApi");
+const { request } = require("http");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -901,6 +902,21 @@ function systemEndpoints(app) {
         response.status(200).json({ success: true });
       } catch (error) {
         console.error("Error aborting Ollama model removal:", error);
+        response.status(500).json({ success: false });
+      }
+    }
+  );
+
+  app.head(
+    "/system/support-interest/:action",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { action = "open" } = request.params;
+        console.log({ supporter_interest: action });
+        await Telemetry.sendTelemetry("supporter_interest", { action });
+        response.status(200).json({ success: true });
+      } catch (error) {
         response.status(500).json({ success: false });
       }
     }
