@@ -21,6 +21,8 @@ const DEFAULT_SETTINGS = {
   sponsorText: "Powered by AnythingLLM", // default sponsor text
   sponsorLink: "https://useanything.com", // default sponsor link
   position: "bottom-right", // position of chat button/window
+  assistantName: "AnythingLLM Chat Assistant", // default assistant name
+  assistantIcon: null, // default assistant icon
 
   // behaviors
   openOnLoad: "off", // or "on"
