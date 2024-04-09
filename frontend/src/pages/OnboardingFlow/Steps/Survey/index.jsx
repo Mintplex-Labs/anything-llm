@@ -38,8 +38,12 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
       navigate(paths.onboarding.createWorkspace());
       return;
     }
-    if (submitRef.current) {
-      submitRef.current.click();
+    if (formRef.current.checkValidity()) {
+      if (submitRef.current) {
+        submitRef.current.click();
+      }
+    } else {
+      skipSurvey();
     }
   }
 
@@ -116,26 +120,24 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           <div className="mt-2 gap-y-3 flex flex-col">
             <label
               className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
-                selectedOption === "business"
-                  ? "border-white border-opacity-40"
-                  : ""
+                selectedOption === "job" ? "border-white border-opacity-40" : ""
               } hover:border-white/60`}
             >
               <input
                 type="radio"
                 name="use_case"
-                value={"business"}
-                checked={selectedOption === "business"}
+                value={"job"}
+                checked={selectedOption === "job"}
                 onChange={(e) => setSelectedOption(e.target.value)}
                 className="hidden"
               />
               <div
                 className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-                  selectedOption === "business" ? "bg-white" : ""
+                  selectedOption === "job" ? "bg-white" : ""
                 }`}
               ></div>
               <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-                For my business
+                For work
               </div>
             </label>
             <label
@@ -159,77 +161,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
                 }`}
               ></div>
               <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-                For personal use
-              </div>
-            </label>
-            <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
-                selectedOption === "education"
-                  ? "border-white border-opacity-40"
-                  : ""
-              } hover:border-white/60`}
-            >
-              <input
-                type="radio"
-                name="use_case"
-                value={"education"}
-                checked={selectedOption === "education"}
-                onChange={(e) => setSelectedOption(e.target.value)}
-                className="hidden"
-              />
-              <div
-                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-                  selectedOption === "education" ? "bg-white" : ""
-                }`}
-              ></div>
-              <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-                For my education
-              </div>
-            </label>
-            <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
-                selectedOption === "side_hustle"
-                  ? "border-white border-opacity-40"
-                  : ""
-              } hover:border-white/60`}
-            >
-              <input
-                type="radio"
-                name="use_case"
-                value={"side_hustle"}
-                checked={selectedOption === "side_hustle"}
-                onChange={(e) => setSelectedOption(e.target.value)}
-                className="hidden"
-              />
-              <div
-                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-                  selectedOption === "side_hustle" ? "bg-white" : ""
-                }`}
-              ></div>
-              <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-                For my side-hustle
-              </div>
-            </label>
-            <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
-                selectedOption === "job" ? "border-white border-opacity-40" : ""
-              } hover:border-white/60`}
-            >
-              <input
-                type="radio"
-                name="use_case"
-                value={"job"}
-                checked={selectedOption === "job"}
-                onChange={(e) => setSelectedOption(e.target.value)}
-                className="hidden"
-              />
-              <div
-                className={`w-4 h-4 rounded-full border-2 border-white mr-2 ${
-                  selectedOption === "job" ? "bg-white" : ""
-                }`}
-              ></div>
-              <div className="text-white text-sm font-medium font-['Plus Jakarta Sans'] leading-tight">
-                For my job
+                For my personal use
               </div>
             </label>
             <label
