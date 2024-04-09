@@ -6,7 +6,8 @@ export default function handleChat(
   setLoadingResponse,
   setChatHistory,
   remHistory,
-  _chatHistory
+  _chatHistory,
+  setWebsocket,
 ) {
   const {
     uuid,
@@ -99,6 +100,8 @@ export default function handleChat(
       });
     }
     setChatHistory([..._chatHistory]);
+  } else if (type === "agentInitWebsocketConnection") {
+    setWebsocket(chatResult.websocketUUID);
   } else if (type === "finalizeResponseStream") {
     const chatIdx = _chatHistory.findIndex((chat) => chat.uuid === uuid);
     if (chatIdx !== -1) {

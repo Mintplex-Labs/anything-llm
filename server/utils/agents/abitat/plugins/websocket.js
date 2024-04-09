@@ -41,13 +41,15 @@ function websocket({
 
       aibitat.onTerminate(async () => {
         console.log('🚀 chat finished')
+        socket.close();
       })
 
       aibitat.onInterrupt(async node => {
         const feedback = await socket.askForFeedback(socket, node)
         if (feedback === 'exit') {
           console.log('🚀 chat finished')
-          return process.exit(0)
+          socket.close();
+          return;
         }
 
         await aibitat.continue(feedback)

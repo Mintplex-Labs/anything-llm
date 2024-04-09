@@ -15,6 +15,8 @@ const {
   validWorkspaceSlug,
 } = require("../utils/middleware/validWorkspace");
 const { writeResponseChunk } = require("../utils/helpers/chat/responses");
+const AIbitat = require("../utils/agents/abitat");
+const { websocket, experimental_webBrowsing } = require("../utils/agents/abitat/plugins");
 
 function chatEndpoints(app) {
   if (!app) return;
@@ -227,6 +229,50 @@ function chatEndpoints(app) {
       }
     }
   );
+
+  app.ws("/agent-invocation/:uuid", async function (ws, request) {
+    const Agent = {
+      HUMAN: '🧑',
+      AI: '🤖',
+    }
+
+    try {
+      ws.on('message', function (msg) {
+        console.log('GOT MESSAGE', { msg })
+        if (ws?.handleFeedback) ws.handleFeedback(msg);
+      });
+
+      ws.on('close', function () {
+        console.log('Socket killed');
+        return;
+      });
+
+      console.log('Socket online and waiting...', request.params.uuid);
+
+      const aibitat = new AIbitat({
+        provider: 'openai',
+        model: 'gpt-3.5-turbo',
+      })
+        .use(websocket({ socket: ws }))
+        .use(experimental_webBrowsing())
+        .agent(Agent.HUMAN, {
+          interrupt: 'ALWAYS',
+          role: 'You are a human assistant.',
+        })
+        .agent(Agent.AI, {
+          role: 'You are a helpful ai assistant who likes to chat with the user who an also browse the web for questions it does not know or have real-time access to.',
+          functions: ['web-browsing'],
+        })
+
+      await aibitat.start({
+        from: Agent.HUMAN,
+        to: Agent.AI,
+        content: `How are you doing today?`,
+      })
+    } catch (error) {
+      console.error("Failed to communicate over upgrades protocol.")
+    }
+  });
 }
 
 module.exports = { chatEndpoints };

@@ -35,6 +35,7 @@ app.use(
   })
 );
 
+require('express-ws')(app);
 app.use("/api", apiRouter);
 systemEndpoints(apiRouter);
 extensionEndpoints(apiRouter);

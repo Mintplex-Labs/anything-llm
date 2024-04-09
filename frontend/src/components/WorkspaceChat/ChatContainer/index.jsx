@@ -2,16 +2,19 @@ import { useState, useEffect } from "react";
 import ChatHistory from "./ChatHistory";
 import PromptInput from "./PromptInput";
 import Workspace from "@/models/workspace";
-import handleChat from "@/utils/chat";
+import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
 import { useParams } from "react-router-dom";
+import { v4 } from "uuid";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
+  const [socketId, setSocketId] = useState(null)
+  const [websocket, setWebsocket] = useState(null);
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
@@ -68,6 +71,13 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       const remHistory = chatHistory.length > 0 ? chatHistory.slice(0, -1) : [];
       var _chatHistory = [...remHistory];
 
+      // Override hook for new messages to now go to agents until the connection closes
+      if (!!websocket) {
+        if (!promptMessage || !promptMessage?.userMessage) return false;
+        websocket.send(JSON.stringify({ type: 'FEEDBACK', feedback: promptMessage?.userMessage }));
+        return;
+      }
+
       if (!promptMessage || !promptMessage?.userMessage) return false;
       if (!!threadSlug) {
         await Workspace.threads.streamChat(
@@ -79,7 +89,8 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
               setLoadingResponse,
               setChatHistory,
               remHistory,
-              _chatHistory
+              _chatHistory,
+              setSocketId,
             )
         );
       } else {
@@ -92,7 +103,8 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
               setLoadingResponse,
               setChatHistory,
               remHistory,
-              _chatHistory
+              _chatHistory,
+              setSocketId,
             )
         );
       }
@@ -100,6 +112,83 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     }
     loadingResponse === true && fetchReply();
   }, [loadingResponse, chatHistory, workspace]);
+
+  useEffect(() => {
+    function handleWSS() {
+      if (!socketId || !!websocket) return;
+      const socket = new WebSocket(`ws://localhost:3001/api/agent-invocation/${socketId}`);
+
+      window.addEventListener(ABORT_STREAM_EVENT, () => {
+        websocket.close();
+      });
+
+      socket.addEventListener('message', (event) => {
+        setLoadingResponse(true)
+        try {
+          const data = JSON.parse(event.data);
+
+          if (!data.hasOwnProperty('type')) {
+            setChatHistory((prev) => {
+              // prev.pop();
+              return [
+                ...prev.filter((msg) => !!msg.content), {
+                  uuid: v4(),
+                  content: data.content,
+                  role: "assistant",
+                  sources: [],
+                  closed: true,
+                  error: null,
+                  animate: false,
+                  pending: false,
+                  chatId: 123,
+                }
+              ]
+            })
+            // window.outputEl.innerHTML += `<p>${data.from} says to ${data.to}:  ${data.content}<p></br></br>`
+            return;
+          }
+
+          // Handle SYNC AWAIT FEEDBACK LOOPS
+          // if (data?.type === 'AWAITING_FEEDBACK') {
+          //   // Put in time as hack to now have the prompt block DOM update.
+          //   setTimeout(() => {
+          //     console.log('We are waiting for feedback from the socket. Will timeout in 30s...');
+          //     const feedback = window.prompt('We are waiting for feedback from the socket. Will timeout in 30s...')
+          //     !!feedback ?
+          //       socket.send(JSON.stringify({ type: 'FEEDBACK', feedback }))
+          //       :
+          //       socket.send(JSON.stringify({ type: 'FEEDBACK', feedback: 'exit' }))
+          //     return;
+          //   }, 800)
+          // }
+        } catch (e) {
+          console.error('Failed to parse data')
+        }
+        setLoadingResponse(false)
+      })
+
+      socket.addEventListener('close', (_event) => {
+        setChatHistory((prev) => [
+          ...prev.filter((msg) => !!msg.content), {
+            uuid: v4(),
+            content: 'Closed socket.',
+            role: "assistant",
+            sources: [],
+            closed: true,
+            error: null,
+            animate: false,
+            pending: false,
+            chatId: 123,
+          }
+        ])
+        setLoadingResponse(false)
+        setWebsocket(null)
+        setSocketId(null)
+      })
+      setWebsocket(socket);
+    }
+    handleWSS()
+  }, [socketId])
 
   return (
     <div
