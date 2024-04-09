@@ -8,12 +8,13 @@ import {
   AUTH_TIMESTAMP,
 } from "../../../utils/constants";
 import useLogo from "../../../hooks/useLogo";
+import illustration from "@/media/illustrations/login-illustration.svg";
 
 export default function PasswordModal({ mode = "single" }) {
   const { logo: _initLogo } = useLogo();
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-zinc-800 flex items-center justify-center">
-      <div
+    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-[#25272C] flex items-center justify-center">
+      {/* <div
         className="fixed top-0 left-0 right-0 bottom-0 z-40 animate-slow-pulse"
         style={{
           background: `
@@ -24,8 +25,8 @@ export default function PasswordModal({ mode = "single" }) {
           filter: "blur(200px)",
           margin: "auto",
         }}
-      />
-
+      /> */}
+      <img src={illustration} alt="login illustration" />
       <div className="flex flex-col items-center justify-center h-full w-full z-50">
         <img src={_initLogo} className="mb-20 w-80 opacity-80" alt="logo" />
         {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth />}

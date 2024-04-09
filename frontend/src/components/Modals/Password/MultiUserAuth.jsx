@@ -30,12 +30,15 @@ export default function MultiUserAuth() {
 
   return (
     <form onSubmit={handleLogin}>
-      <div className="flex flex-col justify-center items-center relative rounded-2xl shadow border-2 border-slate-300 border-opacity-20 w-[400px] login-input-gradient">
+      <div className="flex flex-col justify-center items-center relative rounded-2xl w-[400px] bg-login-gradient shadow-[0_4px_14px_rgba(0,0,0,0.25)]">
         <div className="flex items-start justify-between pt-11 pb-9 rounded-t">
-          <div className="flex items-center flex-col">
-            <h3 className="text-md md:text-2xl font-bold text-gray-900 dark:text-white text-center">
-              Sign In
+          <div className="flex items-center flex-col gap-y-4">
+            <h3 className="text-md md:text-2xl font-bold text-white text-center">
+              Welcome
             </h3>
+            <p className="text-sm text-white/90 text-center">
+              Sign in to your AnythingLLM account.
+            </p>
           </div>
         </div>
         <div className="px-12 space-y-6 flex h-full w-full">
@@ -45,7 +48,7 @@ export default function MultiUserAuth() {
                 name="username"
                 type="text"
                 placeholder="Username"
-                className="bg-opacity-40 border-gray-300 text-sm rounded-lg block w-full p-2.5 bg-[#222628] placeholder-[#FFFFFF99] text-white focus:ring-blue-500 focus:border-blue-500"
+                className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-[300px] h-[34px]"
                 required={true}
                 autoComplete="off"
               />
@@ -56,24 +59,20 @@ export default function MultiUserAuth() {
                 name="password"
                 type="password"
                 placeholder="Password"
-                className="bg-opacity-40 border-gray-300 text-sm rounded-lg block w-full p-2.5 bg-[#222628] placeholder-[#FFFFFF99] text-white focus:ring-blue-500 focus:border-blue-500"
+                className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-[300px] h-[34px]"
                 required={true}
                 autoComplete="off"
               />
             </div>
 
-            {error && (
-              <p className="text-red-600 dark:text-red-400 text-sm">
-                Error: {error}
-              </p>
-            )}
+            {error && <p className="text-red-400 text-sm">Error: {error}</p>}
           </div>
         </div>
-        <div className="flex items-center p-12 space-x-2 border-gray-200 rounded-b dark:border-gray-600 w-full">
+        <div className="flex items-center p-12 space-x-2 border-gray-600 w-full">
           <button
             disabled={loading}
             type="submit"
-            className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-white text-sm font-bold px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-white dark:text-neutral-700 dark:border-white dark:hover:text-white dark:hover:bg-slate-600 dark:focus:ring-gray-600 w-full"
+            className="text-[#46C8FF] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] h-[34px] hover:text-white hover:bg-[#46C8FF] focus:z-10 w-full"
           >
             {loading ? "Validating..." : "Login"}
           </button>
