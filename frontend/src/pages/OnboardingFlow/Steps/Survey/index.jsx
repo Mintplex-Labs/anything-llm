@@ -8,7 +8,11 @@ const TITLE = "Welcome to AnythingLLM";
 const DESCRIPTION = "Help us make AnythingLLM built for your needs. Optional.";
 
 async function sendQuestionnaire({ email, useCase, comment }) {
-  if (import.meta.env.DEV) return;
+  if (import.meta.env.DEV) {
+    console.log("sendQuestionnaire", { email, useCase, comment });
+    return;
+  }
+
   return fetch(`https://onboarding-wxich7363q-uc.a.run.app`, {
     method: "POST",
     body: JSON.stringify({
@@ -38,13 +42,25 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
       navigate(paths.onboarding.createWorkspace());
       return;
     }
-    if (formRef.current.checkValidity()) {
-      if (submitRef.current) {
-        submitRef.current.click();
-      }
-    } else {
+
+    if (!formRef.current) {
       skipSurvey();
+      return;
     }
+
+    // Check if any inputs are not empty. If that is the case, trigger form validation.
+    // via the requestSubmit() handler
+    const formData = new FormData(formRef.current);
+    if (
+      !!formData.get("email") ||
+      !!formData.get("use_case") ||
+      !!formData.get("comment")
+    ) {
+      formRef.current.requestSubmit();
+      return;
+    }
+
+    skipSurvey();
   }
 
   function skipSurvey() {
