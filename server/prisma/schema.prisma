@@ -56,19 +56,43 @@ model system_settings {
 }
 
 model users {
-  id              Int                 @id @default(autoincrement())
-  username        String?             @unique
-  password        String
-  pfpFilename     String?
-  role            String              @default("default")
-  suspended       Int                 @default(0)
-  createdAt       DateTime            @default(now())
-  lastUpdatedAt   DateTime            @default(now())
-  workspace_chats workspace_chats[]
-  workspace_users workspace_users[]
-  embed_configs   embed_configs[]
-  embed_chats     embed_chats[]
-  threads         workspace_threads[]
+  id                    Int                     @id @default(autoincrement())
+  username              String?                 @unique
+  password              String
+  pfpFilename           String?
+  role                  String                  @default("default")
+  suspended             Int                     @default(0)
+  seen_recovery_codes   Boolean                 @default(false)
+  createdAt             DateTime                @default(now())
+  lastUpdatedAt         DateTime                @default(now())
+  workspace_chats       workspace_chats[]
+  workspace_users       workspace_users[]
+  embed_configs         embed_configs[]
+  embed_chats           embed_chats[]
+  threads               workspace_threads[]
+  recovery_codes        recovery_codes[]
+  password_reset_tokens password_reset_tokens[]
+}
+
+model recovery_codes {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  code_hash String
+  createdAt DateTime @default(now())
+  user      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model password_reset_tokens {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
 }
 
 model document_vectors {
