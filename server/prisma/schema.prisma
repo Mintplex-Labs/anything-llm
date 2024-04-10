@@ -109,6 +109,7 @@ model workspaces {
   workspace_suggested_messages workspace_suggested_messages[]
   embed_configs                embed_configs[]
   threads                      workspace_threads[]
+  workspace_agent_invocations  workspace_agent_invocations[]
 }
 
 model workspace_threads {
@@ -153,14 +154,16 @@ model workspace_chats {
 }
 
 model workspace_agent_invocations {
-  id            Int      @id @default(autoincrement())
-  uuid          String   @unique
+  id            Int        @id @default(autoincrement())
+  uuid          String     @unique
   prompt        String // Contains agent invocation to parse + option additional text for seed.
   user_id       Int?
   thread_id     Int? // No relation to prevent whole table migration
-  createdAt     DateTime @default(now())
-  lastUpdatedAt DateTime @default(now())
-  users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace_id  Int
+  createdAt     DateTime   @default(now())
+  lastUpdatedAt DateTime   @default(now())
+  user          users?     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace     workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([uuid])
 }
