@@ -44,6 +44,10 @@ const {
 } = require("../utils/helpers/chat/convertTo");
 const { EventLogs } = require("../models/eventLogs");
 const { CollectorApi } = require("../utils/collectorApi");
+const {
+  RecoveryCode,
+  PasswordResetToken,
+} = require("../models/passwordRecovery");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -174,6 +178,44 @@ function systemEndpoints(app) {
           existingUser?.id
         );
 
+        // Check if the user has seen the recovery codes
+        if (!existingUser.seen_recovery_codes) {
+          const newRecoveryCodes = [];
+          for (let i = 0; i < 4; i++) {
+            const code = uuidv2();
+            newRecoveryCodes.push({ user_id: existingUser.id, code });
+          }
+
+          // Save recovery codes to the db
+          const { recoveryCodes, error } =
+            await RecoveryCode.createMany(newRecoveryCodes);
+          if (error) {
+            throw new Error(error);
+          }
+
+          // Update seen_recovery_codes
+          const { success } = await User.update(existingUser.id, {
+            seen_recovery_codes: true,
+          });
+          if (!success) {
+            throw new Error("Failed to update user seen_recovery_codes flag");
+          }
+
+          // Return recovery codes to frontend
+          const plainTextCodes = recoveryCodes.map((code) => code.code);
+          response.status(200).json({
+            valid: true,
+            user: existingUser,
+            token: makeJWT(
+              { id: existingUser.id, username: existingUser.username },
+              "30d"
+            ),
+            message: null,
+            recoveryCodes: plainTextCodes,
+          });
+          return;
+        }
+
         response.status(200).json({
           valid: true,
           user: existingUser,
@@ -218,6 +260,135 @@ function systemEndpoints(app) {
     } catch (e) {
       console.log(e.message, e);
       response.sendStatus(500).end();
+    }
+  });
+
+  app.post(
+    "/system/generate-recovery-codes",
+    [validatedRequest],
+    async (request, response) => {
+      const { v2: uuidv2 } = require("uuid");
+      try {
+        const user = await userFromSession(request, response);
+        const userId = user.id;
+        await RecoveryCode.deleteMany({ user_id: userId });
+        const newRecoveryCodes = [];
+        for (let i = 0; i < 4; i++) {
+          const code = uuidv2();
+          newRecoveryCodes.push({ user_id: userId, code });
+        }
+
+        const { recoveryCodes, error } =
+          await RecoveryCode.createMany(newRecoveryCodes);
+        if (error) {
+          throw new Error(error);
+        }
+        const plainTextCodes = recoveryCodes.map((code) => code.code);
+        response
+          .status(200)
+          .json({ success: true, recoveryCodes: plainTextCodes });
+      } catch (error) {
+        console.error("Error generating recovery codes:", error);
+        response
+          .status(500)
+          .json({ success: false, error: "Internal server error" });
+      }
+    }
+  );
+
+  app.post("/system/recover-account", async (request, response) => {
+    const { v2: uuidv2 } = require("uuid");
+    const bcrypt = require("bcrypt");
+    try {
+      const { username, recoveryCodes } = reqBody(request);
+      const user = await User.get({ username });
+      if (!user) {
+        return response
+          .status(404)
+          .json({ success: false, error: "User not found" });
+      }
+
+      // Check valid recovery codes
+      const validCodes = await Promise.all(
+        recoveryCodes.map(async (code) => {
+          const codeHash = await RecoveryCode.findFirst({
+            user_id: user.id,
+            code_hash: { equals: await bcrypt.hash(code, 10) },
+          });
+          return !!codeHash;
+        })
+      );
+
+      // 2 codes must be valid
+      if (validCodes.filter(Boolean).length < 2) {
+        return response
+          .status(400)
+          .json({ success: false, error: "Invalid recovery codes" });
+      }
+
+      // Generate password reset token (expires 10 mins)
+      const token = uuidv2();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+      const { passwordResetToken, error } = await PasswordResetToken.create(
+        user.id,
+        token,
+        expiresAt
+      );
+      if (error) {
+        throw new Error(error);
+      }
+      await RecoveryCode.deleteMany({ user_id: user.id });
+
+      response
+        .status(200)
+        .json({ success: true, resetToken: passwordResetToken.token });
+    } catch (error) {
+      console.error("Error recovering account:", error);
+      response
+        .status(500)
+        .json({ success: false, error: "Internal server error" });
+    }
+  });
+
+  app.post("/system/reset-password", async (request, response) => {
+    const bcrypt = require("bcrypt");
+    try {
+      const { token, newPassword, confirmPassword } = reqBody(request);
+
+      if (newPassword !== confirmPassword) {
+        return response
+          .status(400)
+          .json({ success: false, error: "Passwords do not match" });
+      }
+
+      // Find reset token
+      const resetToken = await PasswordResetToken.findUnique({ token });
+      if (!resetToken || resetToken.expiresAt < new Date()) {
+        return response
+          .status(400)
+          .json({ success: false, error: "Invalid or expired reset token" });
+      }
+
+      // Update user password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const { success, error } = await User.update(resetToken.user_id, {
+        password: hashedPassword,
+        seen_recovery_codes: false,
+      });
+      if (error) {
+        throw new Error(error);
+      }
+      await PasswordResetToken.delete({ id: resetToken.id });
+
+      response
+        .status(200)
+        .json({ success: true, message: "Password reset successful" });
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      response
+        .status(500)
+        .json({ success: false, error: "Internal server error" });
     }
   });
 
