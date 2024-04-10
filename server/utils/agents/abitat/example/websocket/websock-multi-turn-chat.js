@@ -3,14 +3,17 @@
 // Scraping is enabled, but search requires AGENT_GSE_* keys.
 
 const express = require("express");
-const chalk = require('chalk');
-const AIbitat = require('../../index.js')
-const { websocket, experimental_webBrowsing } = require('../../plugins/index.js')
-const path = require('path');
-const port = 3000
+const chalk = require("chalk");
+const AIbitat = require("../../index.js");
+const {
+  websocket,
+  experimental_webBrowsing,
+} = require("../../plugins/index.js");
+const path = require("path");
+const port = 3000;
 const app = express();
-require('express-ws')(app);
-require("dotenv").config({ path: `../../../../.env.development` })
+require("express-ws")(app);
+require("dotenv").config({ path: `../../../../.env.development` });
 
 // Debugging echo function if this is working for you.
 // app.ws('/echo', function (ws, req) {
@@ -22,22 +25,26 @@ require("dotenv").config({ path: `../../../../.env.development` })
 // Set up WSS sockets for listening.
 app.ws("/ws", function (ws, _response) {
   try {
-    ws.on('message', function (msg) {
+    ws.on("message", function (msg) {
       if (ws?.handleFeedback) ws.handleFeedback(msg);
     });
 
-    ws.on('close', function () {
-      console.log('Socket killed');
+    ws.on("close", function () {
+      console.log("Socket killed");
       return;
     });
 
-    console.log('Socket online and waiting...');
-    runAbitat(ws)
-      .catch((error) => {
-        ws.send(JSON.stringify({ from: Agent.AI, to: Agent.HUMAN, content: error.message }));
-      })
-  } catch (error) {
-  }
+    console.log("Socket online and waiting...");
+    runAbitat(ws).catch((error) => {
+      ws.send(
+        JSON.stringify({
+          from: Agent.AI,
+          to: Agent.HUMAN,
+          content: error.message,
+        })
+      );
+    });
+  } catch (error) {}
 });
 
 app.all("*", function (_, response) {
@@ -45,35 +52,38 @@ app.all("*", function (_, response) {
 });
 
 app.listen(port, () => {
-  console.log(`Testing HTTP/WSS server listening at http://localhost:${port}`)
-})
+  console.log(`Testing HTTP/WSS server listening at http://localhost:${port}`);
+});
 
 const Agent = {
-  HUMAN: '🧑',
-  AI: '🤖',
-}
+  HUMAN: "🧑",
+  AI: "🤖",
+};
 
 async function runAbitat(socket) {
-  if (!process.env.OPEN_AI_KEY) throw new Error("This example requires a valid OPEN_AI_KEY in the env.development file")
-  console.log(chalk.blue('Booting Abitat class & starting agent(s)'))
+  if (!process.env.OPEN_AI_KEY)
+    throw new Error(
+      "This example requires a valid OPEN_AI_KEY in the env.development file"
+    );
+  console.log(chalk.blue("Booting Abitat class & starting agent(s)"));
   const aibitat = new AIbitat({
-    provider: 'openai',
-    model: 'gpt-3.5-turbo',
+    provider: "openai",
+    model: "gpt-3.5-turbo",
   })
     .use(websocket({ socket }))
     .use(experimental_webBrowsing())
     .agent(Agent.HUMAN, {
-      interrupt: 'ALWAYS',
-      role: 'You are a human assistant.',
+      interrupt: "ALWAYS",
+      role: "You are a human assistant.",
     })
     .agent(Agent.AI, {
-      role: 'You are a helpful ai assistant who likes to chat with the user who an also browse the web for questions it does not know or have real-time access to.',
-      functions: ['web-browsing'],
-    })
+      role: "You are a helpful ai assistant who likes to chat with the user who an also browse the web for questions it does not know or have real-time access to.",
+      functions: ["web-browsing"],
+    });
 
   await aibitat.start({
     from: Agent.HUMAN,
     to: Agent.AI,
     content: `How are you doing today?`,
-  })
+  });
 }

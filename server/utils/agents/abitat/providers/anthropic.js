@@ -1,6 +1,6 @@
-const Anthropic = require('@anthropic-ai/sdk')
-const { RetryError } = require('../error.js')
-const Provider = require('./ai-provider.js')
+const Anthropic = require("@anthropic-ai/sdk");
+const { RetryError } = require("../error.js");
+const Provider = require("./ai-provider.js");
 
 /**
  * The provider for the Anthropic API.
@@ -15,14 +15,14 @@ class AnthropicProvider extends Provider {
         apiKey: process.env.ANTHROPIC_API_KEY,
         maxRetries: 3,
       },
-      model = 'claude-2',
-    } = config
+      model = "claude-2",
+    } = config;
 
-    const client = new Anthropic(options)
+    const client = new Anthropic(options);
 
-    super(client)
+    super(client);
 
-    this.model = model
+    this.model = model;
   }
 
   /**
@@ -32,47 +32,44 @@ class AnthropicProvider extends Provider {
    * @param functions
    * @returns The completion.
    */
-  async complete(
-    messages,
-    functions,
-  ) {
+  async complete(messages, functions) {
     // clone messages to avoid mutating the original array
-    const promptMessages = [...messages]
+    const promptMessages = [...messages];
 
     if (functions) {
-      const functionPrompt = this.getFunctionPrompt(functions)
+      const functionPrompt = this.getFunctionPrompt(functions);
 
       // add function prompt after the first message
       promptMessages.splice(1, 0, {
         content: functionPrompt,
-        role: 'system',
-      })
+        role: "system",
+      });
     }
 
     const prompt = promptMessages
-      .map(message => {
-        const { content, role } = message
+      .map((message) => {
+        const { content, role } = message;
 
         switch (role) {
-          case 'system':
+          case "system":
             return content
               ? `${Anthropic.HUMAN_PROMPT} <admin>${content}</admin>`
-              : ''
+              : "";
 
-          case 'function':
-          case 'user':
-            return `${Anthropic.HUMAN_PROMPT} ${content}`
+          case "function":
+          case "user":
+            return `${Anthropic.HUMAN_PROMPT} ${content}`;
 
-          case 'assistant':
-            return `${Anthropic.AI_PROMPT} ${content}`
+          case "assistant":
+            return `${Anthropic.AI_PROMPT} ${content}`;
 
           default:
-            return content
+            return content;
         }
       })
       .filter(Boolean)
-      .join('\n')
-      .concat(` ${Anthropic.AI_PROMPT}`)
+      .join("\n")
+      .concat(` ${Anthropic.AI_PROMPT}`);
 
     try {
       const response = await this.client.completions.create({
@@ -80,55 +77,55 @@ class AnthropicProvider extends Provider {
         max_tokens_to_sample: 3000,
         stream: false,
         prompt,
-      })
+      });
 
-      const result = response.completion.trim()
+      const result = response.completion.trim();
       // TODO: get cost from response
-      const cost = 0
+      const cost = 0;
 
       // Handle function calls if the model returns a function call
-      if (result.includes('function_name') && functions) {
+      if (result.includes("function_name") && functions) {
         let functionCall;
         try {
-          functionCall = JSON.parse(result)
+          functionCall = JSON.parse(result);
         } catch (error) {
           // call the complete function again in case it gets a json error
           return await this.complete(
             [
               ...messages,
               {
-                role: 'function',
+                role: "function",
                 content: `You gave me this function call: ${result} but I couldn't parse it.
                 ${error?.message}
                 
                 Please try again.`,
               },
             ],
-            functions,
-          )
+            functions
+          );
         }
 
         return {
           result: null,
           functionCall,
           cost,
-        }
+        };
       }
 
       return {
         result,
         cost,
-      }
+      };
     } catch (error) {
       if (
         error instanceof Anthropic.RateLimitError ||
         error instanceof Anthropic.InternalServerError ||
         error instanceof Anthropic.APIError
       ) {
-        throw new RetryError(error.message)
+        throw new RetryError(error.message);
       }
 
-      throw error
+      throw error;
     }
   }
 
@@ -145,10 +142,10 @@ class AnthropicProvider extends Provider {
      function_name: "givenfunctionname",
      parameters: {}
   }
-  </functions>`
+  </functions>`;
 
-    return functionPrompt
+    return functionPrompt;
   }
 }
 
-module.exports = AnthropicProvider
+module.exports = AnthropicProvider;

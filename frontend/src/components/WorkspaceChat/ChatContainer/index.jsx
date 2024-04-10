@@ -13,7 +13,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
   const [chatHistory, setChatHistory] = useState(knownHistory);
-  const [socketId, setSocketId] = useState(null)
+  const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
@@ -74,7 +74,12 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       // Override hook for new messages to now go to agents until the connection closes
       if (!!websocket) {
         if (!promptMessage || !promptMessage?.userMessage) return false;
-        websocket.send(JSON.stringify({ type: 'FEEDBACK', feedback: promptMessage?.userMessage }));
+        websocket.send(
+          JSON.stringify({
+            type: "FEEDBACK",
+            feedback: promptMessage?.userMessage,
+          })
+        );
         return;
       }
 
@@ -90,7 +95,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
               setChatHistory,
               remHistory,
               _chatHistory,
-              setSocketId,
+              setSocketId
             )
         );
       } else {
@@ -104,7 +109,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
               setChatHistory,
               remHistory,
               _chatHistory,
-              setSocketId,
+              setSocketId
             )
         );
       }
@@ -116,62 +121,74 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   useEffect(() => {
     function handleWSS() {
       if (!socketId || !!websocket) return;
-      const socket = new WebSocket(`ws://localhost:3001/api/agent-invocation/${socketId}`);
+      const socket = new WebSocket(
+        `ws://localhost:3001/api/agent-invocation/${socketId}`
+      );
 
       window.addEventListener(ABORT_STREAM_EVENT, () => {
         websocket.close();
       });
 
-      socket.addEventListener('message', (event) => {
-        setLoadingResponse(true)
-        try {
-          const data = JSON.parse(event.data);
-
-          if (!data.hasOwnProperty('type')) {
-            setChatHistory((prev) => {
-              // prev.pop();
-              return [
-                ...prev.filter((msg) => !!msg.content), {
-                  uuid: v4(),
-                  content: data.content,
-                  role: "assistant",
-                  sources: [],
-                  closed: true,
-                  error: null,
-                  animate: false,
-                  pending: false,
-                  chatId: 123,
-                }
-              ]
-            })
-            // window.outputEl.innerHTML += `<p>${data.from} says to ${data.to}:  ${data.content}<p></br></br>`
-            return;
-          }
-
-          // Handle SYNC AWAIT FEEDBACK LOOPS
-          // if (data?.type === 'AWAITING_FEEDBACK') {
-          //   // Put in time as hack to now have the prompt block DOM update.
-          //   setTimeout(() => {
-          //     console.log('We are waiting for feedback from the socket. Will timeout in 30s...');
-          //     const feedback = window.prompt('We are waiting for feedback from the socket. Will timeout in 30s...')
-          //     !!feedback ?
-          //       socket.send(JSON.stringify({ type: 'FEEDBACK', feedback }))
-          //       :
-          //       socket.send(JSON.stringify({ type: 'FEEDBACK', feedback: 'exit' }))
-          //     return;
-          //   }, 800)
-          // }
-        } catch (e) {
-          console.error('Failed to parse data')
+      function handleWSSResponse(event) {
+        const data = JSON.parse(event.data);
+        if (!data.hasOwnProperty("type")) {
+          setChatHistory((prev) => {
+            return [
+              ...prev.filter((msg) => !!msg.content),
+              {
+                uuid: v4(),
+                content: data.content,
+                role: "assistant",
+                sources: [],
+                closed: true,
+                error: null,
+                animate: false,
+                pending: false,
+                chatId: 123,
+              },
+            ];
+          });
+          return;
+        } else {
+          if (!data.content) return;
+          setChatHistory((prev) => {
+            return [
+              ...prev.filter((msg) => !!msg.content),
+              {
+                uuid: v4(),
+                type: data.type,
+                content: data.content,
+                role: "assistant",
+                sources: [],
+                closed: true,
+                error: null,
+                animate: false,
+                pending: false,
+                chatId: 123,
+              },
+            ];
+          });
         }
-        setLoadingResponse(false)
-      })
+      }
 
-      socket.addEventListener('close', (_event) => {
+      socket.addEventListener("message", (event) => {
+        setLoadingResponse(true);
+        try {
+          handleWSSResponse(event);
+        } catch (e) {
+          console.error("Failed to parse data");
+          socket.close();
+        }
+        setLoadingResponse(false);
+      });
+
+      socket.addEventListener("close", (_event) => {
         setChatHistory((prev) => [
-          ...prev.filter((msg) => !!msg.content), {
+          ...prev.filter((msg) => !!msg.content),
+          {
             uuid: v4(),
-            content: 'Closed socket.',
+            type: "statusResponse",
+            content: "Agent session complete.",
             role: "assistant",
             sources: [],
             closed: true,
@@ -179,16 +196,16 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
             animate: false,
             pending: false,
             chatId: 123,
-          }
-        ])
-        setLoadingResponse(false)
-        setWebsocket(null)
-        setSocketId(null)
-      })
+          },
+        ]);
+        setLoadingResponse(false);
+        setWebsocket(null);
+        setSocketId(null);
+      });
       setWebsocket(socket);
     }
-    handleWSS()
-  }, [socketId])
+    handleWSS();
+  }, [socketId]);
 
   return (
     <div

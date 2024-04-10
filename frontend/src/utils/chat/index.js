@@ -7,7 +7,7 @@ export default function handleChat(
   setChatHistory,
   remHistory,
   _chatHistory,
-  setWebsocket,
+  setWebsocket
 ) {
   const {
     uuid,
@@ -19,11 +19,12 @@ export default function handleChat(
     chatId = null,
   } = chatResult;
 
-  if (type === "abort") {
+  if (type === "abort" || type === "statusResponse") {
     setLoadingResponse(false);
     setChatHistory([
       ...remHistory,
       {
+        type,
         uuid,
         content: textResponse,
         role: "assistant",
@@ -35,6 +36,7 @@ export default function handleChat(
       },
     ]);
     _chatHistory.push({
+      type,
       uuid,
       content: textResponse,
       role: "assistant",

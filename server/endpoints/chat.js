@@ -16,7 +16,10 @@ const {
 } = require("../utils/middleware/validWorkspace");
 const { writeResponseChunk } = require("../utils/helpers/chat/responses");
 const AIbitat = require("../utils/agents/abitat");
-const { websocket, experimental_webBrowsing } = require("../utils/agents/abitat/plugins");
+const {
+  websocket,
+  experimental_webBrowsing,
+} = require("../utils/agents/abitat/plugins");
 
 function chatEndpoints(app) {
   if (!app) return;
@@ -230,47 +233,54 @@ function chatEndpoints(app) {
     }
   );
 
-  app.ws("/agent-invocation/:uuid", async function (ws, request) {
-    const Agent = {
-      HUMAN: '🧑',
-      AI: '🤖',
+  app.ws("/agent-invocation/:uuid", async function (socket, request) {
+    const prisma = require("../utils/prisma");
+    console.log("Request for websocket", request.params.uuid);
+    const invocation = await prisma.workspace_agent_invocations.findFirst({
+      where: { uuid: String(request.params.uuid) },
+    });
+    if (!invocation) {
+      console.log("Invalid invocation id");
+      socket.close();
+      return;
     }
 
+    const Agent = {
+      AI: "browseragent",
+    };
+
     try {
-      ws.on('message', function (msg) {
-        console.log('GOT MESSAGE', { msg })
-        if (ws?.handleFeedback) ws.handleFeedback(msg);
+      socket.on("message", function (msg) {
+        if (socket?.handleFeedback) socket.handleFeedback(msg);
       });
 
-      ws.on('close', function () {
-        console.log('Socket killed');
+      socket.on("close", function () {
+        console.log("Socket killed");
         return;
       });
 
-      console.log('Socket online and waiting...', request.params.uuid);
-
       const aibitat = new AIbitat({
-        provider: 'openai',
-        model: 'gpt-3.5-turbo',
+        provider: "openai",
+        model: "gpt-3.5-turbo",
       })
-        .use(websocket({ socket: ws }))
+        .use(websocket({ socket, introspection: true }))
         .use(experimental_webBrowsing())
-        .agent(Agent.HUMAN, {
-          interrupt: 'ALWAYS',
-          role: 'You are a human assistant.',
+        .agent("USER", {
+          interrupt: "ALWAYS",
+          role: "You are a human assistant.",
         })
         .agent(Agent.AI, {
-          role: 'You are a helpful ai assistant who likes to chat with the user who an also browse the web for questions it does not know or have real-time access to.',
-          functions: ['web-browsing'],
-        })
+          role: "You are a helpful ai assistant who likes to chat with the user who an also browse the web for questions it does not know or have real-time access to.",
+          functions: ["web-browsing"],
+        });
 
       await aibitat.start({
-        from: Agent.HUMAN,
+        from: "USER",
         to: Agent.AI,
-        content: `How are you doing today?`,
-      })
+        content: invocation.prompt,
+      });
     } catch (error) {
-      console.error("Failed to communicate over upgrades protocol.")
+      console.error("Failed to communicate over upgrades protocol.");
     }
   });
 }

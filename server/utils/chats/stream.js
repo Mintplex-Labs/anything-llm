@@ -12,6 +12,52 @@ const {
 
 const VALID_CHAT_MODE = ["chat", "query"];
 
+async function grepAgents({
+  uuid,
+  response,
+  message,
+  user = null,
+  thread = null,
+}) {
+  const agentHandles = message.split(/\s+/).filter((v) => v.startsWith("@"));
+  if (agentHandles.length > 0) {
+    const prisma = require("../prisma");
+
+    const newInvocation = await prisma.workspace_agent_invocations.create({
+      data: {
+        uuid: v4(),
+        prompt: message,
+        user_id: user?.id,
+        thread_id: thread?.id,
+        // workspace_id: workspace.id,
+      },
+    });
+
+    writeResponseChunk(response, {
+      id: uuid,
+      type: "agentInitWebsocketConnection",
+      textResponse: null,
+      sources: [],
+      close: false,
+      error: null,
+      websocketUUID: newInvocation.uuid,
+    });
+    writeResponseChunk(response, {
+      id: uuid,
+      type: "statusResponse",
+      textResponse: `Agent(s) ${agentHandles.join(
+        ", "
+      )} invoked.\nSwapping over to agent chat. Type /exit to exit agent execution loop early.`,
+      sources: [],
+      close: true,
+      error: null,
+    });
+    return true;
+  }
+
+  return false;
+}
+
 async function streamChatWithWorkspace(
   response,
   workspace,
@@ -34,6 +80,15 @@ async function streamChatWithWorkspace(
     writeResponseChunk(response, data);
     return;
   }
+
+  const isAgentChat = await grepAgents({
+    uuid,
+    response,
+    message,
+    user,
+    thread,
+  });
+  if (isAgentChat) return;
 
   const LLMConnector = getLLMProvider({
     provider: workspace?.chatProvider,
@@ -88,25 +143,6 @@ async function streamChatWithWorkspace(
     chatMode,
   });
 
-  writeResponseChunk(response, {
-    id: uuid,
-    type: "agentInitWebsocketConnection",
-    textResponse: null,
-    sources: [],
-    close: false,
-    error: null,
-    websocketUUID: v4(),
-  });
-  writeResponseChunk(response, {
-    id: uuid,
-    type: "textResponse",
-    textResponse: "Invoking agents @agent @agent @agent....",
-    sources: [],
-    close: true,
-    error: null,
-  });
-  return;
-
   // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
   // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
   await new DocumentManager({
@@ -130,17 +166,17 @@ async function streamChatWithWorkspace(
   const vectorSearchResults =
     embeddingsCount !== 0
       ? await VectorDb.performSimilaritySearch({
-        namespace: workspace.slug,
-        input: message,
-        LLMConnector,
-        similarityThreshold: workspace?.similarityThreshold,
-        topN: workspace?.topN,
-      })
+          namespace: workspace.slug,
+          input: message,
+          LLMConnector,
+          similarityThreshold: workspace?.similarityThreshold,
+          topN: workspace?.topN,
+        })
       : {
-        contextTexts: [],
-        sources: [],
-        message: null,
-      };
+          contextTexts: [],
+          sources: [],
+          message: null,
+        };
 
   // Failed similarity search if it was run at all and failed.
   if (!!vectorSearchResults.message) {

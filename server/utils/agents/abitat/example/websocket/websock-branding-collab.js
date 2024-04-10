@@ -1,18 +1,19 @@
-
 // You can only run this example from within the websocket/ directory.
 // NODE_ENV=development node websock-branding-collab.js
 // Scraping is enabled, but search requires AGENT_GSE_* keys.
 
 const express = require("express");
-const chalk = require('chalk');
-const AIbitat = require('../../index.js')
-const { websocket, experimental_webBrowsing } = require('../../plugins/index.js')
-const path = require('path');
-const port = 3000
+const chalk = require("chalk");
+const AIbitat = require("../../index.js");
+const {
+  websocket,
+  experimental_webBrowsing,
+} = require("../../plugins/index.js");
+const path = require("path");
+const port = 3000;
 const app = express();
-require('express-ws')(app);
-require("dotenv").config({ path: `../../../../.env.development` })
-
+require("express-ws")(app);
+require("dotenv").config({ path: `../../../../.env.development` });
 
 // Debugging echo function if this is working for you.
 // app.ws('/echo', function (ws, req) {
@@ -24,22 +25,26 @@ require("dotenv").config({ path: `../../../../.env.development` })
 // Set up WSS sockets for listening.
 app.ws("/ws", function (ws, _response) {
   try {
-    ws.on('message', function (msg) {
+    ws.on("message", function (msg) {
       if (ws?.handleFeedback) ws.handleFeedback(msg);
     });
 
-    ws.on('close', function () {
-      console.log('Socket killed');
+    ws.on("close", function () {
+      console.log("Socket killed");
       return;
     });
 
-    console.log('Socket online and waiting...');
-    runAbitat(ws)
-      .catch((error) => {
-        ws.send(JSON.stringify({ from: Agent.AI, to: Agent.HUMAN, content: error.message }));
-      })
-  } catch (error) {
-  }
+    console.log("Socket online and waiting...");
+    runAbitat(ws).catch((error) => {
+      ws.send(
+        JSON.stringify({
+          from: Agent.AI,
+          to: Agent.HUMAN,
+          content: error.message,
+        })
+      );
+    });
+  } catch (error) {}
 });
 
 app.all("*", function (_, response) {
@@ -47,49 +52,47 @@ app.all("*", function (_, response) {
 });
 
 app.listen(port, () => {
-  console.log(`Testing HTTP/WSS server listening at http://localhost:${port}`)
-})
+  console.log(`Testing HTTP/WSS server listening at http://localhost:${port}`);
+});
 
 async function runAbitat(socket) {
-  console.log(chalk.blue('Booting Abitat class & starting agent(s)'))
+  console.log(chalk.blue("Booting Abitat class & starting agent(s)"));
 
   const aibitat = new AIbitat({
-    provider: 'openai',
-    model: 'gpt-4',
+    provider: "openai",
+    model: "gpt-4",
   })
     .use(websocket({ socket }))
     .use(experimental_webBrowsing())
-    .agent('creativeDirector', {
+    .agent("creativeDirector", {
       role: `You are a Creative Director. Your role is overseeing the entire branding project, ensuring
        the client's brief is met, and maintaining consistency across all brand elements, developing the 
        brand strategy, guiding the visual and conceptual direction, and providing overall creative leadership.`,
     })
-    .agent('marketResearcher', {
+    .agent("marketResearcher", {
       role: `You do competitive market analysis via searching on the internet and learning about 
       comparative products and services. You can search by using keywords and phrases that you think will lead 
       to competitor research that can help find the unique angle and market of the idea.`,
-      functions: ['web-browsing'],
+      functions: ["web-browsing"],
     })
-    .agent('PM', {
+    .agent("PM", {
       role: `You are the Project Coordinator. Your role is overseeing the project's progress, timeline, 
       and budget. Ensure effective communication and coordination among team members, client, and stakeholders. 
       Your tasks include planning and scheduling project milestones, tracking tasks, and managing any 
       risks or issues that arise.`,
-      interrupt: 'ALWAYS',
+      interrupt: "ALWAYS",
     })
-    .channel('<b>#branding</b>', [
-      'creativeDirector',
-      'marketResearcher',
-      'PM',
-    ])
+    .channel("<b>#branding</b>", [
+      "creativeDirector",
+      "marketResearcher",
+      "PM",
+    ]);
 
   await aibitat.start({
-    from: 'PM',
-    to: '<b>#branding</b>',
+    from: "PM",
+    to: "<b>#branding</b>",
     content: `I have an idea for a muslim focused meetup called Chai & Vibes. 
     I want to focus on professionals that are muslim and are in their 18-30 year old range who live in big cities. 
     Does anything like this exist? How can we differentiate?`,
-  })
-
+  });
 }
-

@@ -1,4 +1,3 @@
-
 /**
  * A service that provides an AI client to create a completion.
  */
@@ -8,14 +7,13 @@ class Provider {
   constructor(client) {
     if (this.constructor == Provider) {
       throw new Error("Class is of abstract type and can't be instantiated");
-    };
-    this._client = client
+    }
+    this._client = client;
   }
 
   get client() {
-    return this._client
+    return this._client;
   }
-
 }
 
-module.exports = Provider
+module.exports = Provider;

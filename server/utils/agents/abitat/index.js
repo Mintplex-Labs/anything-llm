@@ -1,6 +1,6 @@
-const { EventEmitter } = require('events')
-const { APIError } = require('./error.js')
-const Providers = require('./providers/index.js')
+const { EventEmitter } = require("events");
+const { APIError } = require("./error.js");
+const Providers = require("./providers/index.js");
 
 /**
  * AIbitat is a class that manages the conversation between agents.
@@ -11,46 +11,46 @@ const Providers = require('./providers/index.js')
 class AIbitat {
   emitter = new EventEmitter();
 
-  defaultProvider = null
+  defaultProvider = null;
   defaultInterrupt;
   maxRounds;
   _chats;
 
-  agents = new Map()
-  channels = new Map()
-  functions = new Map()
+  agents = new Map();
+  channels = new Map();
+  functions = new Map();
 
   constructor(props = {}) {
     const {
       chats = [],
-      interrupt = 'NEVER',
+      interrupt = "NEVER",
       maxRounds = 100,
-      provider = 'openai',
+      provider = "openai",
       ...rest
-    } = props
-    this._chats = chats
-    this.defaultInterrupt = interrupt
-    this.maxRounds = maxRounds
+    } = props;
+    this._chats = chats;
+    this.defaultInterrupt = interrupt;
+    this.maxRounds = maxRounds;
 
     this.defaultProvider = {
       provider,
       ...rest,
-    }
+    };
   }
 
   /**
    * Get the chat history between agents and channels.
    */
   get chats() {
-    return this._chats
+    return this._chats;
   }
 
   /**
    * Install a plugin.
    */
   use(plugin) {
-    plugin.setup(this)
-    return this
+    plugin.setup(this);
+    return this;
   }
 
   /**
@@ -60,12 +60,9 @@ class AIbitat {
    * @param config
    * @returns
    */
-  agent(
-    name = '',
-    config = {},
-  ) {
-    this.agents.set(name, config)
-    return this
+  agent(name = "", config = {}) {
+    this.agents.set(name, config);
+    return this;
   }
 
   /**
@@ -76,16 +73,12 @@ class AIbitat {
    * @param config
    * @returns
    */
-  channel(
-    name = '',
-    members = [''],
-    config = {},
-  ) {
+  channel(name = "", members = [""], config = {}) {
     this.channels.set(name, {
       members,
       ...config,
-    })
-    return this
+    });
+    return this;
   }
 
   /**
@@ -95,13 +88,13 @@ class AIbitat {
    * @throws When the agent configuration is not found.
    * @returns The agent configuration.
    */
-  getAgentConfig(agent = '') {
-    const config = this.agents.get(agent)
+  getAgentConfig(agent = "") {
+    const config = this.agents.get(agent);
     if (!config) {
-      throw new Error(`Agent configuration "${agent}" not found`)
+      throw new Error(`Agent configuration "${agent}" not found`);
     }
     return {
-      role: 'You are a helpful AI assistant.',
+      role: "You are a helpful AI assistant.",
       //       role: `You are a helpful AI assistant.
       // Solve tasks using your coding and language skills.
       // In the following cases, suggest typescript code (in a typescript coding block) or shell script (in a sh coding block) for the user to execute.
@@ -114,7 +107,7 @@ class AIbitat {
       // When you find an answer, verify the answer carefully. Include verifiable evidence in your response if possible.
       // Reply "TERMINATE" when everything is done.`,
       ...config,
-    }
+    };
   }
 
   /**
@@ -124,16 +117,16 @@ class AIbitat {
    * @throws When the channel configuration is not found.
    * @returns The channel configuration.
    */
-  getChannelConfig(channel = '') {
-    const config = this.channels.get(channel)
+  getChannelConfig(channel = "") {
+    const config = this.channels.get(channel);
     if (!config) {
-      throw new Error(`Channel configuration "${channel}" not found`)
+      throw new Error(`Channel configuration "${channel}" not found`);
     }
     return {
       maxRounds: 10,
-      role: '',
+      role: "",
       ...config,
-    }
+    };
   }
 
   /**
@@ -142,9 +135,9 @@ class AIbitat {
    * @param node The name of the group.
    * @returns The members of the group.
    */
-  getGroupMembers(node = '') {
-    const group = this.getChannelConfig(node)
-    return group.members
+  getGroupMembers(node = "") {
+    const group = this.getChannelConfig(node);
+    return group.members;
   }
 
   /**
@@ -154,8 +147,8 @@ class AIbitat {
    * @returns
    */
   onTerminate(listener = () => null) {
-    this.emitter.on('terminate', listener)
-    return this
+    this.emitter.on("terminate", listener);
+    return this;
   }
 
   /**
@@ -163,8 +156,8 @@ class AIbitat {
    *
    * @param node Last node to chat with
    */
-  terminate(node = '') {
-    this.emitter.emit('terminate', node, this)
+  terminate(node = "") {
+    this.emitter.emit("terminate", node, this);
   }
 
   /**
@@ -174,8 +167,8 @@ class AIbitat {
    * @returns
    */
   onInterrupt(listener = () => null) {
-    this.emitter.on('interrupt', listener)
-    return this
+    this.emitter.on("interrupt", listener);
+    return this;
   }
 
   /**
@@ -187,9 +180,9 @@ class AIbitat {
   interrupt(route) {
     this._chats.push({
       ...route,
-      state: 'interrupt',
-    })
-    this.emitter.emit('interrupt', route, this)
+      state: "interrupt",
+    });
+    this.emitter.emit("interrupt", route, this);
   }
 
   /**
@@ -200,8 +193,8 @@ class AIbitat {
    * @returns
    */
   onMessage(listener = (chat) => null) {
-    this.emitter.on('message', listener)
-    return this
+    this.emitter.on("message", listener);
+    return this;
   }
 
   /**
@@ -213,11 +206,11 @@ class AIbitat {
   newMessage(message) {
     const chat = {
       ...message,
-      state: 'success',
-    }
+      state: "success",
+    };
 
-    this._chats.push(chat)
-    this.emitter.emit('message', chat, this)
+    this._chats.push(chat);
+    this.emitter.emit("message", chat, this);
   }
 
   /**
@@ -242,11 +235,11 @@ class AIbitat {
       /**
        * The message when the error occurred.
        */
-      { },
-    ) => null,
+      {}
+    ) => null
   ) {
-    this.emitter.on('replyError', listener)
-    return this
+    this.emitter.on("replyError", listener);
+    return this;
   }
 
   /**
@@ -260,10 +253,10 @@ class AIbitat {
     const chat = {
       ...route,
       content: error instanceof Error ? error.message : String(error),
-      state: 'error',
-    }
-    this._chats.push(chat)
-    this.emitter.emit('replyError', error, chat)
+      state: "error",
+    };
+    this._chats.push(chat);
+    this.emitter.emit("replyError", error, chat);
   }
 
   /**
@@ -272,11 +265,9 @@ class AIbitat {
    * @param listener
    * @returns
    */
-  onStart(
-    listener = (chat, aibitat) => null,
-  ) {
-    this.emitter.on('start', listener)
-    return this
+  onStart(listener = (chat, aibitat) => null) {
+    this.emitter.on("start", listener);
+    return this;
   }
 
   /**
@@ -286,16 +277,16 @@ class AIbitat {
    */
   async start(message) {
     // register the message in the chat history
-    this.newMessage(message)
-    this.emitter.emit('start', message, this)
+    this.newMessage(message);
+    this.emitter.emit("start", message, this);
 
     // ask the node to reply
     await this.chat({
       to: message.from,
       from: message.to,
-    })
+    });
 
-    return this
+    return this;
   }
 
   /**
@@ -312,79 +303,79 @@ class AIbitat {
       // select a node from the group
       let nextNode;
       try {
-        nextNode = await this.selectNext(route.from)
+        nextNode = await this.selectNext(route.from);
       } catch (error) {
         if (error instanceof APIError) {
-          return this.newError({ from: route.from, to: route.to }, error)
+          return this.newError({ from: route.from, to: route.to }, error);
         }
-        throw error
+        throw error;
       }
 
       if (!nextNode) {
         // TODO: should it throw an error or keep the chat alive when there is no node to chat with in the group?
         // maybe it should wrap up the chat and reply to the original node
         // For now, it will terminate the chat
-        this.terminate(route.from)
-        return
+        this.terminate(route.from);
+        return;
       }
 
       const nextChat = {
         from: nextNode,
         to: route.from,
-      }
+      };
 
       if (this.shouldAgentInterrupt(nextNode)) {
-        this.interrupt(nextChat)
-        return
+        this.interrupt(nextChat);
+        return;
       }
 
       // get chats only from the group's nodes
-      const history = this.getHistory({ to: route.from })
-      const group = this.getGroupMembers(route.from)
-      const rounds = history.filter(chat => group.includes(chat.from)).length
+      const history = this.getHistory({ to: route.from });
+      const group = this.getGroupMembers(route.from);
+      const rounds = history.filter((chat) => group.includes(chat.from)).length;
 
-      const { maxRounds } = this.getChannelConfig(route.from)
+      const { maxRounds } = this.getChannelConfig(route.from);
       if (rounds >= maxRounds) {
-        this.terminate(route.to)
-        return
+        this.terminate(route.to);
+        return;
       }
 
-      await this.chat(nextChat)
-      return
+      await this.chat(nextChat);
+      return;
     }
 
     // If it's a direct message, reply to the message
-    let reply = ''
+    let reply = "";
     try {
-      reply = await this.reply(route)
+      reply = await this.reply(route);
     } catch (error) {
       if (error instanceof APIError) {
-        return this.newError({ from: route.from, to: route.to }, error)
+        return this.newError({ from: route.from, to: route.to }, error);
       }
-      throw error
+      throw error;
     }
 
     if (
-      reply === 'TERMINATE' ||
+      reply === "TERMINATE" ||
       this.hasReachedMaximumRounds(route.from, route.to)
     ) {
-      this.terminate(route.to)
-      return
+      this.terminate(route.to);
+      return;
     }
 
-    const newChat = { to: route.from, from: route.to }
+    const newChat = { to: route.from, from: route.to };
 
     if (
-      reply === 'INTERRUPT' ||
+      reply === "INTERRUPT" ||
       (this.agents.get(route.to) && this.shouldAgentInterrupt(route.to))
     ) {
-      this.interrupt(newChat)
-      return
+      this.interrupt(newChat);
+      return;
     }
 
     if (keepAlive) {
       // keep the chat alive by replying to the other node
-      await this.chat(newChat, true)
+      await this.chat(newChat, true);
     }
   }
 
@@ -394,9 +385,9 @@ class AIbitat {
    * @param agent
    * @returns {boolean} Whether the agent should interrupt the chat.
    */
-  shouldAgentInterrupt(agent = '') {
-    const config = this.getAgentConfig(agent)
-    return this.defaultInterrupt === 'ALWAYS' || config.interrupt === 'ALWAYS'
+  shouldAgentInterrupt(agent = "") {
+    const config = this.getAgentConfig(agent);
+    return this.defaultInterrupt === "ALWAYS" || config.interrupt === "ALWAYS";
   }
 
   /**
@@ -407,90 +398,88 @@ class AIbitat {
    * @param channel The name of the group.
    * @returns The name of the node to chat with.
    */
-  async selectNext(channel = '') {
+  async selectNext(channel = "") {
     // get all members of the group
-    const nodes = this.getGroupMembers(channel)
-    const channelConfig = this.getChannelConfig(channel)
+    const nodes = this.getGroupMembers(channel);
+    const channelConfig = this.getChannelConfig(channel);
 
     // TODO: move this to when the group is created
     // warn if the group is underpopulated
     if (nodes.length < 3) {
       console.warn(
-        `- Group (${channel}) is underpopulated with ${nodes.length} agents. Direct communication would be more efficient.`,
-      )
+        `- Group (${channel}) is underpopulated with ${nodes.length} agents. Direct communication would be more efficient.`
+      );
     }
 
     // get the nodes that have not reached the maximum number of rounds
     const availableNodes = nodes.filter(
-      node => !this.hasReachedMaximumRounds(channel, node),
-    )
+      (node) => !this.hasReachedMaximumRounds(channel, node)
+    );
 
     // remove the last node that chatted with the channel, so it doesn't chat again
-    const lastChat = this._chats.filter(c => c.to === channel).at(-1)
+    const lastChat = this._chats.filter((c) => c.to === channel).at(-1);
     if (lastChat) {
-      const index = availableNodes.indexOf(lastChat.from)
+      const index = availableNodes.indexOf(lastChat.from);
       if (index > -1) {
-        availableNodes.splice(index, 1)
+        availableNodes.splice(index, 1);
       }
     }
 
-    if (!availableNodes.length) {
-      // TODO: what should it do when there is no node to chat with?
-      return
-    }
+    // TODO: what should it do when there is no node to chat with?
+    if (!availableNodes.length) return;
 
     // get the provider that will be used for the channel
     // if the channel has a provider, use that otherwise
     // use the GPT-4 because it has a better reasoning
     const provider = this.getProviderForConfig({
       // @ts-expect-error
-      model: 'gpt-4',
+      model: "gpt-4",
       ...this.defaultProvider,
       ...channelConfig,
-    })
-    const history = this.getHistory({ to: channel })
+    });
+    const history = this.getHistory({ to: channel });
 
     // build the messages to send to the provider
     const messages = [
       {
-        role: 'system',
+        role: "system",
         content: channelConfig.role,
       },
       {
-        role: 'user',
+        role: "user",
         content: `You are in a role play game. The following roles are available:
 ${availableNodes
-            .map(node => `@${node}: ${this.getAgentConfig(node).role}`)
-            .join('\n')}.
+  .map((node) => `@${node}: ${this.getAgentConfig(node).role}`)
+  .join("\n")}.
 
 Read the following conversation.
 
 CHAT HISTORY
-${history.map(c => `@${c.from}: ${c.content}`).join('\n')}
+${history.map((c) => `@${c.from}: ${c.content}`).join("\n")}
 
 Then select the next role from that is going to speak next. 
 Only return the role.
 `,
       },
-    ]
+    ];
 
     // ask the provider to select the next node to chat with
     // and remove the @ from the response
-    const { result } = await provider.complete(messages)
-    const name = result?.replace(/^@/g, '')
+    const { result } = await provider.complete(messages);
+    const name = result?.replace(/^@/g, "");
     if (this.agents.get(name)) {
-      return name
+      return name;
     }
 
     // if the name is not in the nodes, return a random node
-    return availableNodes[Math.floor(Math.random() * availableNodes.length)]
+    return availableNodes[Math.floor(Math.random() * availableNodes.length)];
   }
 
   /**
    * Check if the chat has reached the maximum number of rounds.
    */
-  hasReachedMaximumRounds(from = '', to = '') {
-    return this.getHistory({ from, to }).length >= this.maxRounds
+  hasReachedMaximumRounds(from = "", to = "") {
+    return this.getHistory({ from, to }).length >= this.maxRounds;
   }
 
   /**
@@ -501,70 +490,75 @@ Only return the role.
    */
   async reply(route) {
     // get the provider for the node that will reply
-    const fromConfig = this.getAgentConfig(route.from)
+    const fromConfig = this.getAgentConfig(route.from);
 
     const chatHistory =
       // if it is sending message to a group, send the group chat history to the provider
       // otherwise, send the chat history between the two nodes
       this.channels.get(route.to)
         ? [
-          {
-            role: 'user',
-            content: `You are in a whatsapp group. Read the following conversation and then reply. 
+            {
+              role: "user",
+              content: `You are in a whatsapp group. Read the following conversation and then reply. 
 Do not add introduction or conclusion to your reply because this will be a continuous conversation. Don't introduce yourself.
 
 CHAT HISTORY
 ${this.getHistory({ to: route.to })
-                .map(c => `@${c.from}: ${c.content}`)
-                .join('\n')}
+  .map((c) => `@${c.from}: ${c.content}`)
+  .join("\n")}
 
 @${route.from}:`,
-          },
-        ]
-        : this.getHistory(route).map(c => ({
-          content: c.content,
-          role:
-            c.from === route.to ? ('user') : ('assistant'),
-        }))
+            },
+          ]
+        : this.getHistory(route).map((c) => ({
+            content: c.content,
+            role: c.from === route.to ? "user" : "assistant",
+          }));
 
     // build the messages to send to the provider
     const messages = [
       {
         content: fromConfig.role,
-        role: 'system',
+        role: "system",
       },
       // get the history of chats between the two nodes
       ...chatHistory,
-    ]
+    ];
 
     // get the functions that the node can call
     const functions = fromConfig.functions
-      ?.map(name => this.functions.get(name))
-      .filter(a => !!a)
+      ?.map((name) => this.functions.get(name))
+      .filter((a) => !!a);
 
     const provider = this.getProviderForConfig({
       ...this.defaultProvider,
       ...fromConfig,
-    })
+    });
 
     // get the chat completion
-    const content = await this.handleExecution(provider, messages, functions)
-    this.newMessage({ ...route, content })
+    const content = await this.handleExecution(
+      provider,
+      messages,
+      functions,
+      route.from
+    );
+    this.newMessage({ ...route, content });
 
-    return content
+    return content;
   }
 
   async handleExecution(
     provider,
     messages = [],
     functions = [],
+    byAgent = null
   ) {
     // get the chat completion
-    const completion = await provider.complete(messages, functions)
+    const completion = await provider.complete(messages, functions);
 
     if (completion.functionCall) {
-      const { name, arguments: args } = completion.functionCall
-      const fn = this.functions.get(name)
+      const { name, arguments: args } = completion.functionCall;
+      const fn = this.functions.get(name);
 
       // if provider hallucinated on the function name
       // ask the provider to complete again
@@ -575,31 +569,34 @@ ${this.getHistory({ to: route.to })
             ...messages,
             {
               name,
-              role: 'function',
+              role: "function",
               content: `Function "${name}" not found. Try again.`,
             },
           ],
           functions,
-        )
+          byAgent
+        );
       }
 
       // Execute the function and return the result to the provider
-      const result = await fn.handler(args)
+      fn.caller = byAgent || "agent";
+      const result = await fn.handler(args);
       return await this.handleExecution(
         provider,
         [
           ...messages,
           {
             name,
-            role: 'function',
+            role: "function",
             content: result,
           },
         ],
         functions,
-      )
+        byAgent
+      );
     }
 
-    return completion?.result
+    return completion?.result;
   }
 
   /**
@@ -611,18 +608,18 @@ ${this.getHistory({ to: route.to })
    * @returns
    */
   async continue(feedback) {
-    const lastChat = this._chats.at(-1)
-    if (!lastChat || lastChat.state !== 'interrupt') {
-      throw new Error('No chat to continue')
+    const lastChat = this._chats.at(-1);
+    if (!lastChat || lastChat.state !== "interrupt") {
+      throw new Error("No chat to continue");
     }
 
     // remove the last chat's that was interrupted
-    this._chats.pop()
+    this._chats.pop();
 
-    const { from, to } = lastChat
+    const { from, to } = lastChat;
 
     if (this.hasReachedMaximumRounds(from, to)) {
-      throw new Error('Maximum rounds reached')
+      throw new Error("Maximum rounds reached");
     }
 
     if (feedback) {
@@ -630,21 +627,21 @@ ${this.getHistory({ to: route.to })
         from,
         to,
         content: feedback,
-      }
+      };
 
       // register the message in the chat history
-      this.newMessage(message)
+      this.newMessage(message);
 
       // ask the node to reply
       await this.chat({
         to: message.from,
         from: message.to,
-      })
+      });
     } else {
-      await this.chat({ from, to })
+      await this.chat({ from, to });
     }
 
-    return this
+    return this;
   }
 
   /**
@@ -652,42 +649,42 @@ ${this.getHistory({ to: route.to })
    * If the last chat was not an error, it will throw an error.
    */
   async retry() {
-    const lastChat = this._chats.at(-1)
-    if (!lastChat || lastChat.state !== 'error') {
-      throw new Error('No chat to retry')
+    const lastChat = this._chats.at(-1);
+    if (!lastChat || lastChat.state !== "error") {
+      throw new Error("No chat to retry");
     }
 
     // remove the last chat's that threw an error
-    const { from, to } = this?._chats?.pop()
+    const { from, to } = this?._chats?.pop();
 
-    await this.chat({ from, to })
-    return this
+    await this.chat({ from, to });
+    return this;
   }
 
   /**
    * Get the chat history between two nodes or all chats to/from a node.
    */
   getHistory({ from, to }) {
-    return this._chats.filter(chat => {
-      const isSuccess = chat.state === 'success'
+    return this._chats.filter((chat) => {
+      const isSuccess = chat.state === "success";
 
       // return all chats to the node
       if (!from) {
-        return isSuccess && chat.to === to
+        return isSuccess && chat.to === to;
       }
 
       // get all chats from the node
       if (!to) {
-        return isSuccess && chat.from === from
+        return isSuccess && chat.from === from;
       }
 
       // check if the chat is between the two nodes
-      const hasSent = chat.from === from && chat.to === to
-      const hasReceived = chat.from === to && chat.to === from
-      const mutual = hasSent || hasReceived
+      const hasSent = chat.from === from && chat.to === to;
+      const hasReceived = chat.from === to && chat.to === from;
+      const mutual = hasSent || hasReceived;
 
-      return isSuccess && mutual
-    })
+      return isSuccess && mutual;
+    });
   }
 
   /**
@@ -697,20 +694,20 @@ ${this.getHistory({ to: route.to })
    * @param config The provider configuration.
    */
   getProviderForConfig(config) {
-    if (typeof config.provider === 'object') {
-      return config.provider
+    if (typeof config.provider === "object") {
+      return config.provider;
     }
 
     switch (config.provider) {
-      case 'openai':
-        return new Providers.OpenAIProvider({ model: config.model })
-      case 'anthropic':
-        return new Providers.AnthropicProvider({ model: config.model })
+      case "openai":
+        return new Providers.OpenAIProvider({ model: config.model });
+      case "anthropic":
+        return new Providers.AnthropicProvider({ model: config.model });
 
       default:
         throw new Error(
-          `Unknown provider: ${config.provider}. Please use "openai"`,
-        )
+          `Unknown provider: ${config.provider}. Please use "openai"`
+        );
     }
   }
 
@@ -720,9 +717,9 @@ ${this.getHistory({ to: route.to })
    * @param functionConfig The function configuration.
    */
   function(functionConfig) {
-    this.functions.set(functionConfig.name, functionConfig)
-    return this
+    this.functions.set(functionConfig.name, functionConfig);
+    return this;
   }
 }
 
-module.exports = AIbitat
+module.exports = AIbitat;

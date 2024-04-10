@@ -1,6 +1,6 @@
-const OpenAI = require('openai:latest');
-const Provider = require('./ai-provider.js')
-const { RetryError } = require('../error.js')
+const OpenAI = require("openai:latest");
+const Provider = require("./ai-provider.js");
+const { RetryError } = require("../error.js");
 
 /**
  * The provider for the OpenAI API.
@@ -9,23 +9,23 @@ const { RetryError } = require('../error.js')
 class OpenAIProvider extends Provider {
   model;
   static COST_PER_TOKEN = {
-    'gpt-4': {
+    "gpt-4": {
       input: 0.03,
       output: 0.06,
     },
-    'gpt-4-32k': {
+    "gpt-4-32k": {
       input: 0.06,
       output: 0.12,
     },
-    'gpt-3.5-turbo': {
+    "gpt-3.5-turbo": {
       input: 0.0015,
       output: 0.002,
     },
-    'gpt-3.5-turbo-16k': {
+    "gpt-3.5-turbo-16k": {
       input: 0.003,
       output: 0.004,
     },
-  }
+  };
 
   constructor(config = {}) {
     const {
@@ -33,14 +33,14 @@ class OpenAIProvider extends Provider {
         apiKey: process.env.OPEN_AI_KEY,
         maxRetries: 3,
       },
-      model = 'gpt-3.5-turbo',
-    } = config
+      model = "gpt-3.5-turbo",
+    } = config;
 
-    const client = new OpenAI(options)
+    const client = new OpenAI(options);
 
-    super(client)
+    super(client);
 
-    this.model = model
+    this.model = model;
   }
 
   /**
@@ -50,42 +50,40 @@ class OpenAIProvider extends Provider {
    * @param functions
    * @returns The completion.
    */
-  async complete(
-    messages,
-    functions = null,
-  ) {
+  async complete(messages, functions = null) {
     try {
       const response = await this.client.chat.completions.create({
         model: this.model,
         // stream: true,
         messages,
-        ...((Array.isArray(functions) && functions?.length > 0) ? { functions } : {}),
-      })
-
+        ...(Array.isArray(functions) && functions?.length > 0
+          ? { functions }
+          : {}),
+      });
 
       // Right now, we only support one completion,
       // so we just take the first one in the list
-      const completion = response.choices[0].message
-      const cost = this.getCost(response.usage)
+      const completion = response.choices[0].message;
+      const cost = this.getCost(response.usage);
       // treat function calls
       if (completion.function_call) {
         let functionArgs = {};
         try {
-          functionArgs = JSON.parse(completion.function_call.arguments)
+          functionArgs = JSON.parse(completion.function_call.arguments);
         } catch (error) {
           // call the complete function again in case it gets a json error
           return this.complete(
             [
               ...messages,
               {
-                role: 'function',
+                role: "function",
                 name: completion.function_call.name,
                 function_call: completion.function_call,
                 content: error?.message,
               },
             ],
-            functions,
-          )
+            functions
+          );
         }
 
         // console.log(completion, { functionArgs })
@@ -96,24 +94,24 @@ class OpenAIProvider extends Provider {
             arguments: functionArgs,
           },
           cost,
-        }
+        };
       }
 
       return {
         result: completion.content,
         cost,
-      }
+      };
     } catch (error) {
-      console.log(error)
+      console.log(error);
       if (
         error instanceof OpenAI.RateLimitError ||
         error instanceof OpenAI.InternalServerError ||
         error instanceof OpenAI.APIError
       ) {
-        throw new RetryError(error.message)
+        throw new RetryError(error.message);
       }
 
-      throw error
+      throw error;
     }
   }
 
@@ -125,21 +123,21 @@ class OpenAIProvider extends Provider {
    */
   getCost(usage) {
     if (!usage) {
-      return Number.NaN
+      return Number.NaN;
     }
 
     // regex to remove the version number from the model
-    const modelBase = this.model.replace(/-(\d{4})$/, '')
+    const modelBase = this.model.replace(/-(\d{4})$/, "");
 
     if (!(modelBase in OpenAIProvider.COST_PER_TOKEN)) {
-      return Number.NaN
+      return Number.NaN;
     }
 
-    const costPerToken = OpenAIProvider.COST_PER_TOKEN?.[modelBase]
-    const inputCost = (usage.prompt_tokens / 1000) * costPerToken.input
-    const outputCost = (usage.completion_tokens / 1000) * costPerToken.output
+    const costPerToken = OpenAIProvider.COST_PER_TOKEN?.[modelBase];
+    const inputCost = (usage.prompt_tokens / 1000) * costPerToken.input;
+    const outputCost = (usage.completion_tokens / 1000) * costPerToken.output;
 
-    return inputCost + outputCost
+    return inputCost + outputCost;
   }
 }
 
