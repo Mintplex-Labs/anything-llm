@@ -77,6 +77,37 @@ const System = {
         return { valid: false, message: e.message };
       });
   },
+  recoverAccount: async function (username, recoveryCodes) {
+    return await fetch(`${API_BASE}/system/recover-account`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ username, recoveryCodes }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error recovering account.");
+        return res.json();
+      })
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+  resetPassword: async function (token, newPassword, confirmPassword) {
+    return await fetch(`${API_BASE}/system/reset-password`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ token, newPassword, confirmPassword }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error resetting password.");
+        return res.json();
+      })
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+
   checkDocumentProcessorOnline: async () => {
     return await fetch(`${API_BASE}/system/document-processing-status`, {
       headers: baseHeaders(),

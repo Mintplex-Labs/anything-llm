@@ -3,6 +3,7 @@ import System from "../../../models/system";
 import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
 import useLogo from "../../../hooks/useLogo";
 import paths from "../../../utils/paths";
+import showToast from "@/utils/toast";
 
 export default function MultiUserAuth() {
   const [loading, setLoading] = useState(false);
@@ -44,12 +45,23 @@ export default function MultiUserAuth() {
     setRecoveryCodeInputs(updatedCodes);
   };
 
-  const handleResetSubmit = (e) => {
+  const handleResetSubmit = async (e) => {
     e.preventDefault();
     const recoveryCodes = recoveryCodeInputs.filter((code) => code.trim() !== "");
-    console.log("Recovery Codes:", recoveryCodes);
-    // Add your password reset logic here
-    setShowResetModal(false);
+    console.log(recoveryCodes);
+
+    const { success, resetToken, error } = await System.recoverAccount(
+      "admin",
+      recoveryCodes
+    );
+
+    if (success && resetToken) {
+      window.localStorage.setItem("resetToken", resetToken);
+      alert("Reset Token: " + resetToken);
+      setShowResetModal(false);
+    } else {
+      showToast(error, "error", { clear: true });
+    }
   };
 
   return (

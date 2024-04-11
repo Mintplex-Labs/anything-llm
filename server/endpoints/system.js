@@ -303,6 +303,7 @@ function systemEndpoints(app) {
     const bcrypt = require("bcrypt");
     try {
       const { username, recoveryCodes } = reqBody(request);
+      console.log("Username:", username, "Recovery codes:", recoveryCodes);
       const user = await User.get({ username });
       if (!user) {
         return response
@@ -313,13 +314,16 @@ function systemEndpoints(app) {
       // Check valid recovery codes
       const validCodes = await Promise.all(
         recoveryCodes.map(async (code) => {
+          console.log("Checking code:", await bcrypt.hash(code, 10));
           const codeHash = await RecoveryCode.findFirst({
             user_id: user.id,
-            code_hash: { equals: await bcrypt.hash(code.code_hash, 10) },
+            code_hash: { equals: await bcrypt.hash(code, 10) },
           });
           return !!codeHash;
         })
       );
+
+      console.log("Valid codes:", validCodes);
 
       // 2 codes must be valid
       if (validCodes.filter(Boolean).length < 2) {
