@@ -46,7 +46,7 @@ function experimental_webBrowsing() {
          */
         scrape: async function (url) {
           console.log("🔥 Scraping website...", url);
-          this.super?.introspect(
+          this.super.introspect(
             `${this.caller}: I am going to scrape the website ${url}`
           );
           const { success, content } = await new CollectorApi().getLinkContent(
@@ -54,7 +54,7 @@ function experimental_webBrowsing() {
           );
 
           if (!success) {
-            this.super?.introspect(
+            this.super.introspect(
               `${this.caller}: could not scrape ${url}. I can't use this page's content.`
             );
             throw new Error(
@@ -69,10 +69,10 @@ function experimental_webBrowsing() {
           console.log(
             `Text is too long. Summarizing content.\n${content.slice(0, 50)}...`
           );
-          this.super?.introspect(
+          this.super.introspect(
             `${this.caller}: This page's content is way too long. I will summarize it right now.`
           );
-          return summarize(content);
+          return this.summarize(content);
         },
 
         /**
@@ -82,7 +82,7 @@ function experimental_webBrowsing() {
          */
         search: async function (query) {
           if (!process.env.AGENT_GSE_CTX || !process.env.AGENT_GSE_KEY) {
-            this.super?.introspect(
+            this.super.introspect(
               `${this.caller}: I can't use GSE searching because the user has not defined the keys required. Ref: https://developers.google.com/custom-search/v1/overview`
             );
             return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
@@ -95,7 +95,7 @@ function experimental_webBrowsing() {
           searchURL.searchParams.append("cx", process.env.AGENT_GSE_CTX);
           searchURL.searchParams.append("q", query);
 
-          this.super?.introspect(
+          this.super.introspect(
             `${this.caller}: Searching google for "${
               query.length > 100 ? `${query.slice(0, 100)}...` : query
             }"`
@@ -133,6 +133,7 @@ function experimental_webBrowsing() {
          */
         summarize: async function (content) {
           const llm = new ChatOpenAI({
+            openAIApiKey: process.env.OPEN_AI_KEY,
             temperature: 0,
             modelName: "gpt-3.5-turbo-16k-0613",
           });

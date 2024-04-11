@@ -18,8 +18,8 @@
               return;
             }
 
-            // Handle SYNC AWAIT FEEDBACK LOOPS
-            if (data?.type === "AWAITING_FEEDBACK") {
+            // Handle async input loops
+            if (data?.type === "WAITING_ON_INPUT") {
               // Put in time as hack to now have the prompt block DOM update.
               setTimeout(() => {
                 console.log(
@@ -29,9 +29,14 @@
                   "We are waiting for feedback from the socket. Will timeout in 30s..."
                 );
                 !!feedback
-                  ? socket.send(JSON.stringify({ type: "FEEDBACK", feedback }))
+                  ? socket.send(
+                      JSON.stringify({ type: "awaitingFeedback", feedback })
+                    )
                   : socket.send(
-                      JSON.stringify({ type: "FEEDBACK", feedback: "exit" })
+                      JSON.stringify({
+                        type: "awaitingFeedback",
+                        feedback: "exit",
+                      })
                     );
                 return;
               }, 800);

@@ -15,11 +15,6 @@ const {
   validWorkspaceSlug,
 } = require("../utils/middleware/validWorkspace");
 const { writeResponseChunk } = require("../utils/helpers/chat/responses");
-const AIbitat = require("../utils/agents/abitat");
-const {
-  websocket,
-  experimental_webBrowsing,
-} = require("../utils/agents/abitat/plugins");
 
 function chatEndpoints(app) {
   if (!app) return;
@@ -232,57 +227,6 @@ function chatEndpoints(app) {
       }
     }
   );
-
-  app.ws("/agent-invocation/:uuid", async function (socket, request) {
-    const prisma = require("../utils/prisma");
-    console.log("Request for websocket", request.params.uuid);
-    const invocation = await prisma.workspace_agent_invocations.findFirst({
-      where: { uuid: String(request.params.uuid) },
-    });
-    if (!invocation) {
-      console.log("Invalid invocation id");
-      socket.close();
-      return;
-    }
-
-    const Agent = {
-      AI: "browseragent",
-    };
-
-    try {
-      socket.on("message", function (msg) {
-        if (socket?.handleFeedback) socket.handleFeedback(msg);
-      });
-
-      socket.on("close", function () {
-        console.log("Socket killed");
-        return;
-      });
-
-      const aibitat = new AIbitat({
-        provider: "openai",
-        model: "gpt-3.5-turbo",
-      })
-        .use(websocket({ socket, introspection: true }))
-        .use(experimental_webBrowsing())
-        .agent("USER", {
-          interrupt: "ALWAYS",
-          role: "You are a human assistant.",
-        })
-        .agent(Agent.AI, {
-          role: "You are a helpful ai assistant who likes to chat with the user who an also browse the web for questions it does not know or have real-time access to.",
-          functions: ["web-browsing"],
-        });
-
-      await aibitat.start({
-        from: "USER",
-        to: Agent.AI,
-        content: invocation.prompt,
-      });
-    } catch (error) {
-      console.error("Failed to communicate over upgrades protocol.");
-    }
-  });
 }
 
 module.exports = { chatEndpoints };

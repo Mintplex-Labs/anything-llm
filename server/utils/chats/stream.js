@@ -1,8 +1,9 @@
-const { v4: uuidv4, v4 } = require("uuid");
+const { v4: uuidv4 } = require("uuid");
 const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
+const { grepAgents } = require("./agents");
 const {
   grepCommand,
   VALID_COMMANDS,
@@ -11,52 +12,6 @@ const {
 } = require("./index");
 
 const VALID_CHAT_MODE = ["chat", "query"];
-
-async function grepAgents({
-  uuid,
-  response,
-  message,
-  user = null,
-  thread = null,
-}) {
-  const agentHandles = message.split(/\s+/).filter((v) => v.startsWith("@"));
-  if (agentHandles.length > 0) {
-    const prisma = require("../prisma");
-
-    const newInvocation = await prisma.workspace_agent_invocations.create({
-      data: {
-        uuid: v4(),
-        prompt: message,
-        user_id: user?.id,
-        thread_id: thread?.id,
-        // workspace_id: workspace.id,
-      },
-    });
-
-    writeResponseChunk(response, {
-      id: uuid,
-      type: "agentInitWebsocketConnection",
-      textResponse: null,
-      sources: [],
-      close: false,
-      error: null,
-      websocketUUID: newInvocation.uuid,
-    });
-    writeResponseChunk(response, {
-      id: uuid,
-      type: "statusResponse",
-      textResponse: `Agent(s) ${agentHandles.join(
-        ", "
-      )} invoked.\nSwapping over to agent chat. Type /exit to exit agent execution loop early.`,
-      sources: [],
-      close: true,
-      error: null,
-    });
-    return true;
-  }
-
-  return false;
-}
 
 async function streamChatWithWorkspace(
   response,
@@ -81,11 +36,13 @@ async function streamChatWithWorkspace(
     return;
   }
 
+  // If is agent enabled chat we will exit this flow early.
   const isAgentChat = await grepAgents({
     uuid,
     response,
     message,
     user,
+    workspace,
     thread,
   });
   if (isAgentChat) return;

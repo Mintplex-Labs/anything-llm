@@ -7,6 +7,7 @@ import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
 import { useParams } from "react-router-dom";
 import { v4 } from "uuid";
+import handleSocketResponse from "@/utils/chat/agent";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -76,13 +77,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         if (!promptMessage || !promptMessage?.userMessage) return false;
         websocket.send(
           JSON.stringify({
-            type: "FEEDBACK",
+            type: "awaitingFeedback",
             feedback: promptMessage?.userMessage,
           })
         );
         return;
       }
 
+      // TODO: Simplify this
       if (!promptMessage || !promptMessage?.userMessage) return false;
       if (!!threadSlug) {
         await Workspace.threads.streamChat(
@@ -118,6 +120,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     loadingResponse === true && fetchReply();
   }, [loadingResponse, chatHistory, workspace]);
 
+  // TODO: Simplify this WSS stuff
   useEffect(() => {
     function handleWSS() {
       if (!socketId || !!websocket) return;
@@ -129,52 +132,10 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         websocket.close();
       });
 
-      function handleWSSResponse(event) {
-        const data = JSON.parse(event.data);
-        if (!data.hasOwnProperty("type")) {
-          setChatHistory((prev) => {
-            return [
-              ...prev.filter((msg) => !!msg.content),
-              {
-                uuid: v4(),
-                content: data.content,
-                role: "assistant",
-                sources: [],
-                closed: true,
-                error: null,
-                animate: false,
-                pending: false,
-                chatId: 123,
-              },
-            ];
-          });
-          return;
-        } else {
-          if (!data.content) return;
-          setChatHistory((prev) => {
-            return [
-              ...prev.filter((msg) => !!msg.content),
-              {
-                uuid: v4(),
-                type: data.type,
-                content: data.content,
-                role: "assistant",
-                sources: [],
-                closed: true,
-                error: null,
-                animate: false,
-                pending: false,
-                chatId: 123,
-              },
-            ];
-          });
-        }
-      }
-
       socket.addEventListener("message", (event) => {
         setLoadingResponse(true);
         try {
-          handleWSSResponse(event);
+          handleSocketResponse(event, setChatHistory);
         } catch (e) {
           console.error("Failed to parse data");
           socket.close();

@@ -26,11 +26,13 @@ class AIbitat {
       interrupt = "NEVER",
       maxRounds = 100,
       provider = "openai",
+      handlerProps = {}, // Inherited props we can spread so abitat can access.
       ...rest
     } = props;
     this._chats = chats;
     this.defaultInterrupt = interrupt;
     this.maxRounds = maxRounds;
+    this.handlerProps = handlerProps;
 
     this.defaultProvider = {
       provider,

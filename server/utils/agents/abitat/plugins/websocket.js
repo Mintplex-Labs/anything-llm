@@ -42,7 +42,17 @@ function websocket({
             JSON.stringify({ type: "statusResponse", content: messageText })
           );
         };
-      }
+      } else {
+        aibitat.introspect = (_) => null;
+      } // dump introspection when not needed.
+
+      // expose function for sockets across abitat
+      // type must be defined or else it will not be shown.
+      aibitat.socket = {
+        send: (type = "__unhandled", content = "") => {
+          socket.send(JSON.stringify({ type, content }));
+        },
+      };
 
       aibitat.onStart(() => {
         console.log("🚀 starting chat ...");
@@ -80,12 +90,12 @@ function websocket({
        */
       socket.askForFeedback = (socket, node) => {
         socket.awaitResponse = (question = "waiting...") => {
-          socket.send(JSON.stringify({ type: "AWAITING_FEEDBACK", question }));
+          socket.send(JSON.stringify({ type: "WAITING_ON_INPUT", question }));
 
           return new Promise(function (resolve) {
             socket.handleFeedback = (message) => {
               const data = JSON.parse(message);
-              if (data.type !== "FEEDBACK") return;
+              if (data.type !== "awaitingFeedback") return;
               delete socket.handleFeedback;
               resolve(data.feedback);
               return;
