@@ -13,7 +13,7 @@ const path = require("path");
 const port = 3000;
 const app = express();
 require("express-ws")(app);
-require("dotenv").config({ path: `../../../../.env.development` });
+require("dotenv").config({ path: `../../../../../.env.development` });
 
 // Debugging echo function if this is working for you.
 // app.ws('/echo', function (ws, req) {
@@ -70,8 +70,8 @@ async function runAbitat(socket) {
     provider: "openai",
     model: "gpt-3.5-turbo",
   })
-    .use(websocket({ socket }))
-    .use(experimental_webBrowsing())
+    .use(websocket.plugin({ socket }))
+    .use(experimental_webBrowsing.plugin())
     .agent(Agent.HUMAN, {
       interrupt: "ALWAYS",
       role: "You are a human assistant.",

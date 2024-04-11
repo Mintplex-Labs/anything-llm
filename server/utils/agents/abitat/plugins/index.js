@@ -12,4 +12,12 @@ module.exports = {
   websocket,
   docSummarizer,
   saveFileInBrowser,
+
+  // Plugin name aliases so they can be pulled by slug as well.
+  [cli.name]: cli,
+  [experimental_webBrowsing.name]: experimental_webBrowsing,
+  [fileHistory.name]: fileHistory,
+  [websocket.name]: websocket,
+  [docSummarizer.name]: docSummarizer,
+  [saveFileInBrowser.name]: saveFileInBrowser,
 };

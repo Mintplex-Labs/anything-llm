@@ -9,9 +9,9 @@ require("dotenv").config({ path: `../../../../.env.development` });
 const aibitat = new AIbitat({
   model: "gpt-3.5-turbo",
 })
-  .use(cli())
-  .use(fileHistory())
-  .use(experimental_webBrowsing())
+  .use(cli.plugin())
+  .use(fileHistory.plugin())
+  .use(experimental_webBrowsing.plugin()) // Does not have introspect so will fail.
   .agent("researcher", {
     role: `You are a Researcher. Conduct thorough research to gather all necessary information about the topic 
     you are writing about. Collect data, facts, and statistics. Analyze competitor blogs for insights. 

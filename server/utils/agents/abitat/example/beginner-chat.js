@@ -13,7 +13,7 @@ const aibitat = new AIbitat({
   provider: "openai",
   model: "gpt-3.5-turbo",
 })
-  .use(cli())
+  .use(cli.plugin())
   .function({
     name: "aibitat-documentations",
     description: "The documentation about aibitat AI project.",

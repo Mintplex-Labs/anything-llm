@@ -4,40 +4,40 @@ const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
 
+const DEFAULT_USER_AGENT = {
+  name: "USER",
+  definition: {
+    interrupt: "ALWAYS",
+    role: "I am the human monitor and oversee this chat. Any questions on action or decision making should be directed to me.",
+  },
+};
+
+const DEFAULT_WORKSPACE_AGENT = {
+  name: "@workspace",
+  definition: {
+    role: "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.",
+    functions: [
+      AgentPlugins.saveFileInBrowser.name,
+      AgentPlugins.experimental_webBrowsing.name,
+      AgentPlugins.docSummarizer.name,
+    ],
+  },
+};
+
 class AgentHandler {
   #invocationUUID;
+  #funcsToLoad = [];
   invocation = null;
   abitat = null;
   channel = null;
+  provider = null;
+  model = null;
 
-  constructor({ uuid }) {
+  constructor({ uuid, provider = "openai", model = "gpt-3.5-turbo" }) {
     this.#invocationUUID = uuid;
-    this.log(`Starting agent handler for invocation`, this.#invocationUUID);
-    this.defaultUserAgent = {
-      interrupt: "ALWAYS",
-      role: "I am the human monitor and oversee this chat. Any questions on action or decision making should be directed to me.",
-    };
-
-    this.config = {
-      provider: "openai",
-      model: "gpt-3.5-turbo",
-      plugins: {
-        websocket: {
-          params: {
-            socket: {
-              required: true,
-            },
-            introspection: {
-              required: false,
-              default: true,
-            },
-          },
-        },
-        experimental_webBrowsing: { params: {} },
-        docSummarizer: { params: {} },
-        saveFileInBrowser: { params: {} },
-      },
-    };
+    this.provider = provider;
+    this.model = model;
+    this.log(`${this.#invocationUUID}::${this.provider}:${this.model}`);
   }
 
   log(text, ...args) {
@@ -51,31 +51,25 @@ class AgentHandler {
     this.invocation = invocation ?? null;
   }
 
-  #defaultWorkspaceAgent() {
-    return {
-      role: "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.",
-      // functions: ["web-browsing"],
-      functions: ["save-file"],
-    };
-  }
-
   #attachPlugins(args) {
-    for (const [pluginKey, pluginConfig] of Object.entries(
-      this.config.plugins
-    )) {
-      if (!AgentPlugins.hasOwnProperty(pluginKey)) {
-        this.log(`${pluginKey} is not a valid plugin. Skipping plugin.`);
+    for (const name of this.#funcsToLoad) {
+      if (!AgentPlugins.hasOwnProperty(name)) {
+        this.log(
+          `${name} is not a valid plugin. Skipping inclusion to agent cluster.`
+        );
         continue;
       }
 
       const callOpts = {};
-      for (const [param, definition] of Object.entries(pluginConfig.params)) {
+      for (const [param, definition] of Object.entries(
+        AgentPlugins[name].startupConfig.params
+      )) {
         if (
           definition.required &&
           (!args.hasOwnProperty(param) || args[param] === null)
         ) {
           this.log(
-            `'${param}' required parameter for '${pluginKey}' plugin is missing. Plugin may not function or crash agent.`
+            `'${param}' required parameter for '${name}' plugin is missing. Plugin may not function or crash agent.`
           );
           continue;
         }
@@ -84,39 +78,28 @@ class AgentHandler {
           : definition.default || null;
       }
 
-      const plugin = AgentPlugins[pluginKey];
-      this.abitat.use(plugin(callOpts));
-      this.log(`Attached ${pluginKey} plugin to Agent cluster`);
+      const AbitatPlugin = AgentPlugins[name];
+      this.abitat.use(AbitatPlugin.plugin(callOpts));
+      this.log(`Attached ${name} plugin to Agent cluster`);
     }
   }
 
   async #loadAgents() {
+    this.#funcsToLoad = [
+      ...(DEFAULT_USER_AGENT.definition?.functions || []),
+      ...(DEFAULT_WORKSPACE_AGENT.definition?.functions || []),
+    ];
     // Default User agent and workspace agent
     this.log(`Attaching user and default agent to Agent cluster.`);
-    this.abitat.agent("USER", this.defaultUserAgent);
-    this.abitat.agent("@workspace", this.#defaultWorkspaceAgent());
+    this.abitat.agent(DEFAULT_USER_AGENT.name, DEFAULT_USER_AGENT.definition);
+    this.abitat.agent(
+      DEFAULT_WORKSPACE_AGENT.name,
+      DEFAULT_WORKSPACE_AGENT.definition
+    );
 
-    // const agentHandles = [
-    //   'USER',
-    //   '@workspace',
-    //   ...WorkspaceAgentInvocation.parseAgents(
-    //     this.invocation.prompt
-    //   )
-    // ];
-
-    // if (agentHandles.length > 1) {
-    //   this.log(`Creating channel for agents ${this.invocation.uuid}`);
-    //   this.channel = this.invocation.uuid;
-    //   console.log(`${agentHandles.length} loaded`);
-    //   this.abitat.channel(this.channel, agentHandles)
-    // }
-
-    // TODO: Add defined agent support.
-    // console.log(
-    //   `Would also load in ${agentHandles.join(
-    //     ","
-    //   )} when that feature is available.`
-    // );
+    // Load other specially invoked agents (custom agents)
+    // Push function requirements to the #funcsToLoad;
+    // TODO: implement
   }
 
   async init() {
@@ -138,14 +121,27 @@ class AgentHandler {
       },
     });
 
-    this.#attachPlugins(args);
+    // Attach standard websocket plugin for frontend communication.
+    this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);
+    this.abitat.use(
+      AgentPlugins.websocket.plugin({
+        socket: args.socket,
+        muteUserReply: true,
+        introspection: true,
+      })
+    );
+
+    // Load required agents (Default + custom)
     await this.#loadAgents();
+
+    // Attach all required plugins for functions to operate.
+    this.#attachPlugins(args);
   }
 
   startAgentCluster() {
     return this.abitat.start({
-      from: "USER",
-      to: this.channel ?? "@workspace",
+      from: DEFAULT_USER_AGENT.name,
+      to: this.channel ?? DEFAULT_WORKSPACE_AGENT.name,
       content: this.invocation.prompt,
     });
   }

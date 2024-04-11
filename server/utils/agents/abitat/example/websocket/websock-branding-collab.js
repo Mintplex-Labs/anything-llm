@@ -13,7 +13,7 @@ const path = require("path");
 const port = 3000;
 const app = express();
 require("express-ws")(app);
-require("dotenv").config({ path: `../../../../.env.development` });
+require("dotenv").config({ path: `../../../../../.env.development` });
 
 // Debugging echo function if this is working for you.
 // app.ws('/echo', function (ws, req) {
@@ -38,8 +38,8 @@ app.ws("/ws", function (ws, _response) {
     runAbitat(ws).catch((error) => {
       ws.send(
         JSON.stringify({
-          from: Agent.AI,
-          to: Agent.HUMAN,
+          from: "AI",
+          to: "HUMAN",
           content: error.message,
         })
       );
@@ -62,8 +62,8 @@ async function runAbitat(socket) {
     provider: "openai",
     model: "gpt-4",
   })
-    .use(websocket({ socket }))
-    .use(experimental_webBrowsing())
+    .use(websocket.plugin({ socket }))
+    .use(experimental_webBrowsing.plugin())
     .agent("creativeDirector", {
       role: `You are a Creative Director. Your role is overseeing the entire branding project, ensuring
        the client's brief is met, and maintaining consistency across all brand elements, developing the 
