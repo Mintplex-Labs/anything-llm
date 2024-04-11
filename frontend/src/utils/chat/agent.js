@@ -2,7 +2,12 @@ import { v4 } from "uuid";
 import { safeJsonParse } from "../request";
 import { saveAs } from "file-saver";
 
-const handledEvents = ["statusResponse", "fileDownload", "awaitingFeedback"];
+const handledEvents = [
+  "statusResponse",
+  "fileDownload",
+  "awaitingFeedback",
+  "wssFailure",
+];
 
 export default function handleSocketResponse(event, setChatHistory) {
   const data = safeJsonParse(event.data, null);
@@ -33,6 +38,24 @@ export default function handleSocketResponse(event, setChatHistory) {
   if (data.type === "fileDownload") {
     saveAs(data.content.b64Content, data.content.filename ?? "unknown.txt");
     return;
+  }
+
+  if (data.type === "wssFailure") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          uuid: v4(),
+          content: data.content,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: data.content,
+          animate: false,
+          pending: false,
+        },
+      ];
+    });
   }
 
   return setChatHistory((prev) => {

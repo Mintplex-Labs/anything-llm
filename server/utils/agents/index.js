@@ -38,10 +38,26 @@ class AgentHandler {
     this.provider = provider;
     this.model = model;
     this.log(`${this.#invocationUUID}::${this.provider}:${this.model}`);
+    this.#checkSetup();
   }
 
   log(text, ...args) {
     console.log(`\x1b[36m[AgentHandler]\x1b[0m ${text}`, ...args);
+  }
+
+  #checkSetup() {
+    switch (this.provider) {
+      case "openai":
+        if (!process.env.OPEN_AI_KEY)
+          throw new Error("OpenAI API key must be provided to use agents.");
+        break;
+      case "anthropic":
+        if (!process.env.ANTHROPIC_API_KEY)
+          throw new Error("Anthropic API key must be provided to use agents.");
+        break;
+      default:
+        throw new Error("No provider found to power agent cluster.");
+    }
   }
 
   async #validInvocation() {
