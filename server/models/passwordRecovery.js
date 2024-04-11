@@ -18,7 +18,11 @@ const RecoveryCode = {
   },
   createMany: async function (data) {
     try {
-      const recoveryCodes = await prisma.recovery_codes.createMany({ data });
+      const recoveryCodes = await prisma.$transaction(
+        data.map((recoveryCode) =>
+          prisma.recovery_codes.create({ data: recoveryCode })
+        )
+      );
       return { recoveryCodes, error: null };
     } catch (error) {
       console.error("FAILED TO CREATE RECOVERY CODES.", error.message);

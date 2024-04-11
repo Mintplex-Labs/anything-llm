@@ -181,14 +181,19 @@ function systemEndpoints(app) {
         // Check if the user has seen the recovery codes
         if (!existingUser.seen_recovery_codes) {
           const newRecoveryCodes = [];
+          const plainTextCodes = [];
           for (let i = 0; i < 4; i++) {
-            const code = uuidv2();
-            newRecoveryCodes.push({ user_id: existingUser.id, code });
+            const code = v4();
+            const hashedCode = await bcrypt.hash(code, 10);
+            newRecoveryCodes.push({
+              user_id: existingUser.id,
+              code_hash: hashedCode,
+            });
+            plainTextCodes.push(code);
           }
 
           // Save recovery codes to the db
-          const { recoveryCodes, error } =
-            await RecoveryCode.createMany(newRecoveryCodes);
+          const { error } = await RecoveryCode.createMany(newRecoveryCodes);
           if (error) {
             throw new Error(error);
           }
@@ -202,7 +207,6 @@ function systemEndpoints(app) {
           }
 
           // Return recovery codes to frontend
-          const plainTextCodes = recoveryCodes.map((code) => code.code);
           response.status(200).json({
             valid: true,
             user: existingUser,
@@ -267,14 +271,13 @@ function systemEndpoints(app) {
     "/system/generate-recovery-codes",
     [validatedRequest],
     async (request, response) => {
-      const { v2: uuidv2 } = require("uuid");
       try {
         const user = await userFromSession(request, response);
         const userId = user.id;
         await RecoveryCode.deleteMany({ user_id: userId });
         const newRecoveryCodes = [];
         for (let i = 0; i < 4; i++) {
-          const code = uuidv2();
+          const code = v4();
           newRecoveryCodes.push({ user_id: userId, code });
         }
 
@@ -283,7 +286,7 @@ function systemEndpoints(app) {
         if (error) {
           throw new Error(error);
         }
-        const plainTextCodes = recoveryCodes.map((code) => code.code);
+        const plainTextCodes = recoveryCodes.map((code) => code.code_hash);
         response
           .status(200)
           .json({ success: true, recoveryCodes: plainTextCodes });
@@ -297,7 +300,6 @@ function systemEndpoints(app) {
   );
 
   app.post("/system/recover-account", async (request, response) => {
-    const { v2: uuidv2 } = require("uuid");
     const bcrypt = require("bcrypt");
     try {
       const { username, recoveryCodes } = reqBody(request);
@@ -313,7 +315,7 @@ function systemEndpoints(app) {
         recoveryCodes.map(async (code) => {
           const codeHash = await RecoveryCode.findFirst({
             user_id: user.id,
-            code_hash: { equals: await bcrypt.hash(code, 10) },
+            code_hash: { equals: await bcrypt.hash(code.code_hash, 10) },
           });
           return !!codeHash;
         })
@@ -327,7 +329,7 @@ function systemEndpoints(app) {
       }
 
       // Generate password reset token (expires 10 mins)
-      const token = uuidv2();
+      const token = v4();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
       const { passwordResetToken, error } = await PasswordResetToken.create(
