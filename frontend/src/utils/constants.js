@@ -13,3 +13,8 @@ export function fullApiUrl() {
   if (API_BASE !== "/api") return API_BASE;
   return `${window.location.origin}/api`;
 }
+
+export function wssHost() {
+  if (API_BASE === "/api") return window.location.host;
+  return new URL(import.meta.env.VITE_API_BASE).host;
+}

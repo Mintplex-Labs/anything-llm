@@ -7,6 +7,10 @@ import { isMobile } from "react-device-detect";
 import debounce from "lodash.debounce";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import StopGenerationButton from "./StopGenerationButton";
+import AvailableAgentsButton, {
+  AvailableAgents,
+  useAvailableAgents,
+} from "./AgentMenu";
 export default function PromptInput({
   message,
   submit,
@@ -15,6 +19,7 @@ export default function PromptInput({
   buttonDisabled,
   sendCommand,
 }) {
+  const { showAgents, setShowAgents } = useAvailableAgents();
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const formRef = useRef(null);
   const textareaRef = useRef(null);
@@ -69,6 +74,11 @@ export default function PromptInput({
         setShowing={setShowSlashCommand}
         sendCommand={sendCommand}
       />
+      <AvailableAgents
+        showing={showAgents}
+        setShowing={setShowAgents}
+        sendCommand={sendCommand}
+      />
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl"
@@ -113,6 +123,10 @@ export default function PromptInput({
                 <SlashCommandsButton
                   showing={showSlashCommand}
                   setShowSlashCommand={setShowSlashCommand}
+                />
+                <AvailableAgentsButton
+                  showing={showAgents}
+                  setShowAgents={setShowAgents}
                 />
               </div>
             </div>

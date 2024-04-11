@@ -8,6 +8,11 @@ import { SidebarMobileHeader } from "../../Sidebar";
 import { useParams } from "react-router-dom";
 import { v4 } from "uuid";
 import handleSocketResponse from "@/utils/chat/agent";
+import {
+  AGENT_SESSION_END,
+  AGENT_SESSION_START,
+} from "./PromptInput/SlashCommands/endAgentSession";
+import { wssHost } from "@/utils/constants";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -125,10 +130,11 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     function handleWSS() {
       if (!socketId || !!websocket) return;
       const socket = new WebSocket(
-        `ws://localhost:3001/api/agent-invocation/${socketId}`
+        `ws://${wssHost()}/api/agent-invocation/${socketId}`
       );
 
       window.addEventListener(ABORT_STREAM_EVENT, () => {
+        window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
         websocket.close();
       });
 
@@ -138,12 +144,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           handleSocketResponse(event, setChatHistory);
         } catch (e) {
           console.error("Failed to parse data");
+          window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
           socket.close();
         }
         setLoadingResponse(false);
       });
 
       socket.addEventListener("close", (_event) => {
+        window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
         setChatHistory((prev) => [
           ...prev.filter((msg) => !!msg.content),
           {
@@ -164,6 +172,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         setSocketId(null);
       });
       setWebsocket(socket);
+      window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
     }
     handleWSS();
   }, [socketId]);
