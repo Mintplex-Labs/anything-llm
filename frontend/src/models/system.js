@@ -83,10 +83,13 @@ const System = {
       headers: baseHeaders(),
       body: JSON.stringify({ username, recoveryCodes }),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Error recovering account.");
-        return res.json();
-      })
+    .then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Error recovering account.");
+      }
+      return data;
+    })
       .catch((e) => {
         console.error(e);
         return { success: false, error: e.message };
@@ -98,9 +101,12 @@ const System = {
       headers: baseHeaders(),
       body: JSON.stringify({ token, newPassword, confirmPassword }),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Error resetting password.");
-        return res.json();
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || "Error resetting password.");
+        }
+        return data;
       })
       .catch((e) => {
         console.error(e);

@@ -184,13 +184,16 @@ function systemEndpoints(app) {
           const plainTextCodes = [];
           for (let i = 0; i < 4; i++) {
             const code = v4();
-            const hashedCode = await bcrypt.hash(code, 10);
+            const hashedCode = bcrypt.hashSync(code, 10);
             newRecoveryCodes.push({
               user_id: existingUser.id,
               code_hash: hashedCode,
             });
             plainTextCodes.push(code);
           }
+
+          console.log("newRecoveryCodes", newRecoveryCodes);
+          console.log("plainTextCodes", plainTextCodes);
 
           // Save recovery codes to the db
           const { error } = await RecoveryCode.createMany(newRecoveryCodes);
@@ -267,38 +270,7 @@ function systemEndpoints(app) {
     }
   });
 
-  app.post(
-    "/system/generate-recovery-codes",
-    [validatedRequest],
-    async (request, response) => {
-      try {
-        const user = await userFromSession(request, response);
-        const userId = user.id;
-        await RecoveryCode.deleteMany({ user_id: userId });
-        const newRecoveryCodes = [];
-        for (let i = 0; i < 4; i++) {
-          const code = v4();
-          newRecoveryCodes.push({ user_id: userId, code });
-        }
-
-        const { recoveryCodes, error } =
-          await RecoveryCode.createMany(newRecoveryCodes);
-        if (error) {
-          throw new Error(error);
-        }
-        const plainTextCodes = recoveryCodes.map((code) => code.code_hash);
-        response
-          .status(200)
-          .json({ success: true, recoveryCodes: plainTextCodes });
-      } catch (error) {
-        console.error("Error generating recovery codes:", error);
-        response
-          .status(500)
-          .json({ success: false, error: "Internal server error" });
-      }
-    }
-  );
-
+  // Recover account by generating temp pw reset token
   app.post("/system/recover-account", async (request, response) => {
     const bcrypt = require("bcrypt");
     try {
@@ -308,28 +280,29 @@ function systemEndpoints(app) {
       if (!user) {
         return response
           .status(404)
-          .json({ success: false, error: "User not found" });
+          .json({ success: false, message: "User not found" });
       }
 
-      // Check valid recovery codes
-      const validCodes = await Promise.all(
-        recoveryCodes.map(async (code) => {
-          console.log("Checking code:", await bcrypt.hash(code, 10));
-          const codeHash = await RecoveryCode.findFirst({
-            user_id: user.id,
-            code_hash: { equals: await bcrypt.hash(code, 10) },
-          });
-          return !!codeHash;
+      const allUserHashes = (
+        await RecoveryCode.findMany({
+          user_id: user.id,
         })
-      );
+      ).map((hash) => hash.code_hash);
 
-      console.log("Valid codes:", validCodes);
+      const uniqueRecoveryCodes = [...new Set(recoveryCodes)]; // Remove duplicates
+      const validCodes = uniqueRecoveryCodes.every((code) => {
+        let valid = false;
+        allUserHashes.forEach((hash) => {
+          if (bcrypt.compareSync(code, hash)) valid = true;
+        });
+        return valid;
+      });
 
       // 2 codes must be valid
-      if (validCodes.filter(Boolean).length < 2) {
+      if (!validCodes || uniqueRecoveryCodes.length < 2) {
         return response
           .status(400)
-          .json({ success: false, error: "Invalid recovery codes" });
+          .json({ success: false, message: "Invalid recovery codes" });
       }
 
       // Generate password reset token (expires 10 mins)
@@ -344,8 +317,6 @@ function systemEndpoints(app) {
       if (error) {
         throw new Error(error);
       }
-      await RecoveryCode.deleteMany({ user_id: user.id });
-
       response
         .status(200)
         .json({ success: true, resetToken: passwordResetToken.token });
@@ -353,19 +324,19 @@ function systemEndpoints(app) {
       console.error("Error recovering account:", error);
       response
         .status(500)
-        .json({ success: false, error: "Internal server error" });
+        .json({ success: false, message: "Internal server error" });
     }
   });
 
+  // Reset password using pw reset token
   app.post("/system/reset-password", async (request, response) => {
-    const bcrypt = require("bcrypt");
     try {
       const { token, newPassword, confirmPassword } = reqBody(request);
 
       if (newPassword !== confirmPassword) {
         return response
           .status(400)
-          .json({ success: false, error: "Passwords do not match" });
+          .json({ success: false, message: "Passwords do not match" });
       }
 
       // Find reset token
@@ -373,20 +344,19 @@ function systemEndpoints(app) {
       if (!resetToken || resetToken.expiresAt < new Date()) {
         return response
           .status(400)
-          .json({ success: false, error: "Invalid or expired reset token" });
+          .json({ success: false, message: "Invalid or expired reset token" });
       }
 
       // Update user password
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      const { success, error } = await User.update(resetToken.user_id, {
-        password: hashedPassword,
+      const { error } = await User.update(resetToken.user_id, {
+        password: newPassword,
         seen_recovery_codes: false,
       });
       if (error) {
         throw new Error(error);
       }
-      await PasswordResetToken.delete({ id: resetToken.id });
-
+      await PasswordResetToken.deleteMany({ user_id: resetToken.user_id });
+      await RecoveryCode.deleteMany({ user_id: resetToken.user_id });
       response
         .status(200)
         .json({ success: true, message: "Password reset successful" });
@@ -394,7 +364,7 @@ function systemEndpoints(app) {
       console.error("Error resetting password:", error);
       response
         .status(500)
-        .json({ success: false, error: "Internal server error" });
+        .json({ success: false, message: "Internal server error" });
     }
   });
 

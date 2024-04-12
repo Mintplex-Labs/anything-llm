@@ -40,6 +40,17 @@ const RecoveryCode = {
       return null;
     }
   },
+  findMany: async function (clause = {}) {
+    try {
+      const recoveryCodes = await prisma.recovery_codes.findMany({
+        where: clause,
+      });
+      return recoveryCodes;
+    } catch (error) {
+      console.error("FAILED TO FIND RECOVERY CODES.", error.message);
+      return null;
+    }
+  },
   deleteMany: async function (clause = {}) {
     try {
       await prisma.recovery_codes.deleteMany({ where: clause });
@@ -76,9 +87,9 @@ const PasswordResetToken = {
       return null;
     }
   },
-  delete: async function (clause = {}) {
+  deleteMany: async function (clause = {}) {
     try {
-      await prisma.password_reset_tokens.delete({ where: clause });
+      await prisma.password_reset_tokens.deleteMany({ where: clause });
       return true;
     } catch (error) {
       console.error("FAILED TO DELETE PASSWORD RESET TOKEN.", error.message);
