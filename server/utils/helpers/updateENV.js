@@ -425,8 +425,8 @@ function validChromaURL(input = "") {
 function validAzureURL(input = "") {
   try {
     new URL(input);
-    if (!input.includes("openai.azure.com"))
-      return "URL must include openai.azure.com";
+    if (!input.includes("openai.azure.com") && !input.includes("microsoft.com"))
+      return "Valid Azure endpoints must contain openai.azure.com OR microsoft.com";
     return null;
   } catch {
     return "Not a valid URL";

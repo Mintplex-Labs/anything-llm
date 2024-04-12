@@ -13,7 +13,7 @@ const PromptReply = forwardRef(
       return (
         <div className={`flex items-start w-full h-fit justify-start`}>
           <img
-            src={AnythingLLMIcon}
+            src={embedderSettings.settings.assistantIcon || AnythingLLMIcon}
             alt="Anything LLM Icon"
             className="w-9 h-9 flex-shrink-0 ml-2"
           />
@@ -33,7 +33,7 @@ const PromptReply = forwardRef(
       return (
         <div className={`flex items-end w-full h-fit justify-start`}>
           <img
-            src={AnythingLLMIcon}
+            src={embedderSettings.settings.assistantIcon || AnythingLLMIcon}
             alt="Anything LLM Icon"
             className="w-9 h-9 flex-shrink-0 ml-2"
           />
@@ -60,7 +60,8 @@ const PromptReply = forwardRef(
         <div
           className={`text-[10px] font-medium text-gray-400 ml-[54px] mr-6 mb-2 text-left`}
         >
-          AnythingLLM Chat Assistant
+          {embedderSettings.settings.assistantName ||
+            "Anything LLM Chat Assistant"}
         </div>
         <div
           key={uuid}
@@ -68,7 +69,7 @@ const PromptReply = forwardRef(
           className={`flex items-start w-full h-fit justify-start`}
         >
           <img
-            src={AnythingLLMIcon}
+            src={embedderSettings.settings.assistantIcon || AnythingLLMIcon}
             alt="Anything LLM Icon"
             className="w-9 h-9 flex-shrink-0 ml-2"
           />
