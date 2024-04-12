@@ -22,6 +22,7 @@
     "opendocument",
     "openrouter",
     "Qdrant",
+    "Serper",
     "vectordbs",
     "Weaviate",
     "Zilliz"

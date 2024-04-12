@@ -89,8 +89,9 @@ const experimental_webBrowsing = {
            * https://programmablesearchengine.google.com/controlpanel/create
            */
           search: async function (query) {
-            // const provider = (await SystemSettings.get({ label: 'agent_search_provider' }))?.value ?? 'google-search-engine';
-            const provider = "serper-dot-dev";
+            const provider =
+              (await SystemSettings.get({ label: "agent_search_provider" }))
+                ?.value ?? "unknown";
             let engine;
             switch (provider) {
               case "google-search-engine":

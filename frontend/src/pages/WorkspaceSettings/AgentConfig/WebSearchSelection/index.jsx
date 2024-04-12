@@ -1,46 +1,52 @@
 import React, { useEffect, useRef, useState } from "react";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
-import AgentLLMItem from "./AgentLLMItem";
-import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
+import GoogleSearchIcon from "./icons/google.png";
+import SerperDotDevIcon from "./icons/serper.png";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
-import AgentModelSelection from "../AgentModelSelection";
+import SearchProviderItem from "./SearchProviderItem";
+import {
+  SerperDotDevOptions,
+  GoogleSearchOptions,
+} from "./SearchProviderOptions";
 
-const ENABLED_PROVIDERS = ["openai", "anthropic"];
-
-const LLM_DEFAULT = {
-  name: "Please make a selection",
-  value: "none",
-  logo: AnythingLLMIcon,
-  options: () => <React.Fragment />,
-  description: "Agents will not work until a valid selection is made.",
-  requiredConfig: [],
-};
-
-const LLMS = [
-  LLM_DEFAULT,
-  ...AVAILABLE_LLM_PROVIDERS.filter((llm) =>
-    ENABLED_PROVIDERS.includes(llm.value)
-  ),
+const SEARCH_PROVIDERS = [
+  {
+    name: "Please make a selection",
+    value: "none",
+    logo: AnythingLLMIcon,
+    options: () => <React.Fragment />,
+    description:
+      "Web search will be disabled until a provider and keys are provided.",
+  },
+  {
+    name: "Google Search Engine",
+    value: "google-search-engine",
+    logo: GoogleSearchIcon,
+    options: (settings) => <GoogleSearchOptions settings={settings} />,
+    description:
+      "Web search powered by a custom Google Search Engine. Free for 100 queries per day.",
+  },
+  {
+    name: "Serper.dev",
+    value: "serper-dot-dev",
+    logo: SerperDotDevIcon,
+    options: (settings) => <SerperDotDevOptions settings={settings} />,
+    description:
+      "Serper.dev web-search. Free account with a 2,500 calls, but then paid.",
+  },
 ];
 
-export default function AgentLLMSelection({
-  settings,
-  workspace,
-  setHasChanges,
-}) {
-  const [filteredLLMs, setFilteredLLMs] = useState([]);
-  const [selectedLLM, setSelectedLLM] = useState(
-    workspace?.agentProvider ?? "none"
-  );
+export default function AgentWebSearchSelection({ settings }) {
+  const searchInputRef = useRef(null);
+  const [filteredResults, setFilteredResults] = useState([]);
+  const [selectedProvider, setSelectedProvider] = useState("none");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-  const searchInputRef = useRef(null);
 
-  function updateLLMChoice(selection) {
+  function updateChoice(selection) {
     setSearchQuery("");
-    setSelectedLLM(selection);
+    setSelectedProvider(selection);
     setSearchMenuOpen(false);
-    setHasChanges(true);
   }
 
   function handleXButton() {
@@ -53,27 +59,40 @@ export default function AgentLLMSelection({
   }
 
   useEffect(() => {
-    const filtered = LLMS.filter((llm) =>
-      llm.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const filtered = SEARCH_PROVIDERS.filter((provider) =>
+      provider.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setFilteredLLMs(filtered);
-  }, [searchQuery, selectedLLM]);
+    setFilteredResults(filtered);
+  }, [searchQuery, selectedProvider]);
 
-  const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
+  useEffect(() => {
+    setSelectedProvider(settings?.preferences?.agent_search_provider ?? "none");
+  }, [settings?.preferences?.agent_search_provider]);
+
+  console.log(selectedProvider);
+  const selectedSearchProviderObject = SEARCH_PROVIDERS.find(
+    (provider) => provider.value === selectedProvider
+  );
   return (
     <div className="border-b border-white/40 pb-8">
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Workspace Agent LLM Provider
+          Workspace Agent Web Search Provider
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          The specific LLM provider & model that will be used for this
-          workspace's @workspace agent.
+          Enable your agent to search the web to answer your questions by
+          connecting to a web-search (SERP) provider.
+          <br />
+          Web search during agent sessions will not work until this is set up.
         </p>
       </div>
 
       <div className="relative">
-        <input type="hidden" name="agentProvider" value={selectedLLM} />
+        <input
+          type="hidden"
+          name="system::agent_search_provider"
+          value={selectedProvider}
+        />
         {searchMenuOpen && (
           <div
             className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-sm z-10"
@@ -91,9 +110,9 @@ export default function AgentLLMSelection({
                 />
                 <input
                   type="text"
-                  name="llm-search"
+                  name="web-provider-search"
                   autoComplete="off"
-                  placeholder="Search available LLM providers"
+                  placeholder="Search available web-search providers"
                   className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:border-white text-white placeholder:text-white placeholder:font-medium"
                   onChange={(e) => setSearchQuery(e.target.value)}
                   ref={searchInputRef}
@@ -109,15 +128,13 @@ export default function AgentLLMSelection({
                 />
               </div>
               <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
-                {filteredLLMs.map((llm) => {
+                {filteredResults.map((provider) => {
                   return (
-                    <AgentLLMItem
-                      llm={llm}
-                      key={llm.name}
-                      availableLLMs={LLMS}
-                      settings={settings}
-                      checked={selectedLLM === llm.value}
-                      onClick={() => updateLLMChoice(llm.value)}
+                    <SearchProviderItem
+                      provider={provider}
+                      key={provider.name}
+                      checked={selectedProvider === provider.value}
+                      onClick={() => updateChoice(provider.value)}
                     />
                   );
                 })}
@@ -132,16 +149,16 @@ export default function AgentLLMSelection({
           >
             <div className="flex gap-x-4 items-center">
               <img
-                src={selectedLLMObject.logo}
-                alt={`${selectedLLMObject.name} logo`}
+                src={selectedSearchProviderObject.logo}
+                alt={`${selectedSearchProviderObject.name} logo`}
                 className="w-10 h-10 rounded-md"
               />
               <div className="flex flex-col text-left">
                 <div className="text-sm font-semibold text-white">
-                  {selectedLLMObject.name}
+                  {selectedSearchProviderObject.name}
                 </div>
                 <div className="mt-1 text-xs text-[#D2D5DB]">
-                  {selectedLLMObject.description}
+                  {selectedSearchProviderObject.description}
                 </div>
               </div>
             </div>
@@ -149,13 +166,9 @@ export default function AgentLLMSelection({
           </button>
         )}
       </div>
-      {selectedLLM !== "none" && (
+      {selectedProvider !== "none" && (
         <div className="mt-4 flex flex-col gap-y-1">
-          <AgentModelSelection
-            provider={selectedLLM}
-            workspace={workspace}
-            setHasChanges={setHasChanges}
-          />
+          {selectedSearchProviderObject.options(settings)}
         </div>
       )}
     </div>

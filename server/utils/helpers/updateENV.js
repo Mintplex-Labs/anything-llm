@@ -292,6 +292,20 @@ const KEY_MAPPING = {
     envKey: "DISABLE_TELEMETRY",
     checks: [],
   },
+
+  // Agent Integration ENVs
+  AgentGoogleSearchEngineId: {
+    envKey: "AGENT_GSE_CTX",
+    checks: [],
+  },
+  AgentGoogleSearchEngineKey: {
+    envKey: "AGENT_GSE_KEY",
+    checks: [],
+  },
+  AgentSerperApiKey: {
+    envKey: "AGENT_SERPER_DEV_KEY",
+    checks: [],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -574,8 +588,8 @@ async function dumpENV() {
 
     // Agent Integrations
     // Search engine integrations
-    "AGENT_GSE_KEY",
     "AGENT_GSE_CTX",
+    "AGENT_GSE_KEY",
     "AGENT_SERPER_DEV_KEY",
   ];
 

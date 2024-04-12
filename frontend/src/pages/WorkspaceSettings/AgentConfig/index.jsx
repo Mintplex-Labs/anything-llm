@@ -4,17 +4,25 @@ import showToast from "@/utils/toast";
 import { castToType } from "@/utils/types";
 import { useEffect, useRef, useState } from "react";
 import AgentLLMSelection from "./AgentLLMSelection";
+import AgentWebSearchSelection from "./WebSearchSelection";
+import Admin from "@/models/admin";
+import PreLoader from "@/components/Preloader";
+import * as Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 export default function WorkspaceAgentConfiguration({ workspace }) {
   const [settings, setSettings] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const formEl = useRef(null);
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await System.keys();
-      setSettings(_settings ?? {});
+      const _preferences = await Admin.systemPreferences();
+      setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
+      setLoading(false);
     }
     fetchSettings();
   }, []);
@@ -22,25 +30,42 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
   const handleUpdate = async (e) => {
     setSaving(true);
     e.preventDefault();
-    const data = {};
-    const systemUpdates = {};
+    const data = {
+      workspace: {},
+      system: {},
+      env: {},
+    };
+
     const form = new FormData(formEl.current);
     for (var [key, value] of form.entries()) {
-      if (key.includes("system::")) {
+      if (key.startsWith("system::")) {
         const [_, label] = key.split("system::");
+        data.system[label] = String(value);
+        continue;
       }
 
-      data[key] = castToType(key, value);
+      if (key.startsWith("env::")) {
+        const [_, label] = key.split("env::");
+        data.env[label] = String(value);
+        continue;
+      }
+
+      data.workspace[key] = castToType(key, value);
     }
+
     const { workspace: updatedWorkspace, message } = await Workspace.update(
       workspace.slug,
-      data
+      data.workspace
     );
+    await Admin.updateSystemPreferences(data.system);
+    await System.updateSystem(data.env);
+
     if (!!updatedWorkspace) {
       showToast("Workspace updated!", "success", { clear: true });
     } else {
       showToast(`Error: ${message}`, "error", { clear: true });
     }
+
     setSaving(false);
     setHasChanges(false);
   };
@@ -51,14 +76,45 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
       <form
         ref={formEl}
         onSubmit={handleUpdate}
+        onChange={() => setHasChanges(true)}
         id="agent-settings-form"
         className="w-1/2 flex flex-col gap-y-6"
       >
-        <AgentLLMSelection
-          settings={settings}
-          workspace={workspace}
-          setHasChanges={setHasChanges}
-        />
+        {loading ? (
+          <div className="">
+            <Skeleton.default
+              height={100}
+              width="100%"
+              count={2}
+              baseColor="#292524"
+              highlightColor="#4c4948"
+              enableAnimation={true}
+              containerClassName="flex flex-col gap-y-1"
+            />
+            <div className="bg-white/10 h-[1px] w-full" />
+            <Skeleton.default
+              height={100}
+              width="100%"
+              count={2}
+              baseColor="#292524"
+              highlightColor="#4c4948"
+              enableAnimation={true}
+              containerClassName="flex flex-col gap-y-1 mt-4"
+            />
+          </div>
+        ) : (
+          <>
+            <AgentLLMSelection
+              settings={settings}
+              workspace={workspace}
+              setHasChanges={setHasChanges}
+            />
+            <AgentWebSearchSelection
+              settings={settings}
+              workspace={workspace}
+            />
+          </>
+        )}
         {hasChanges && (
           <button
             type="submit"

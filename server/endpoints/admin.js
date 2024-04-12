@@ -347,6 +347,9 @@ function adminEndpoints(app) {
               ?.value || null,
           max_embed_chunk_size:
             getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1000,
+          agent_search_provider:
+            (await SystemSettings.get({ label: "agent_search_provider" }))
+              ?.value || null,
         };
         response.status(200).json({ settings });
       } catch (e) {
