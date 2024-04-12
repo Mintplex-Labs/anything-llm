@@ -71,6 +71,8 @@ class AgentHandler {
     const invocation = await WorkspaceAgentInvocation.getWithWorkspace({
       uuid: String(this.#invocationUUID),
     });
+    if (invocation?.closed)
+      throw new Error("This agent invocation is already closed");
     this.invocation = invocation ?? null;
   }
 

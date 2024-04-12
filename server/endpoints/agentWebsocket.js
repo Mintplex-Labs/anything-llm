@@ -1,3 +1,6 @@
+const {
+  WorkspaceAgentInvocation,
+} = require("../models/workspaceAgentInvocation");
 const { AgentHandler } = require("../utils/agents");
 const {
   WEBSOCKET_BAIL_COMMANDS,
@@ -27,6 +30,7 @@ function agentWebsocket(app) {
       socket.on("message", relayToSocket);
       socket.on("close", () => {
         agentHandler.closeAlert();
+        WorkspaceAgentInvocation.close(String(request.params.uuid));
         return;
       });
 
@@ -44,7 +48,7 @@ function agentWebsocket(app) {
       await agentHandler.createAbitat({ socket });
       await agentHandler.startAgentCluster();
     } catch (e) {
-      console.error(e);
+      console.error(e.message);
       socket?.send(JSON.stringify({ type: "wssFailure", content: e.message }));
       socket?.close();
     }

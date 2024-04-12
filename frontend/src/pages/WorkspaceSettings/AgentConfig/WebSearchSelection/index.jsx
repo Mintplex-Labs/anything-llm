@@ -69,7 +69,6 @@ export default function AgentWebSearchSelection({ settings }) {
     setSelectedProvider(settings?.preferences?.agent_search_provider ?? "none");
   }, [settings?.preferences?.agent_search_provider]);
 
-  console.log(selectedProvider);
   const selectedSearchProviderObject = SEARCH_PROVIDERS.find(
     (provider) => provider.value === selectedProvider
   );

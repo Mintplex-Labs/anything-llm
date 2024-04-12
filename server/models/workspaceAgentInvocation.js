@@ -7,6 +7,16 @@ const WorkspaceAgentInvocation = {
     return promptString.split(/\s+/).filter((v) => v.startsWith("@"));
   },
 
+  close: async function (uuid) {
+    if (!uuid) return;
+    try {
+      await prisma.workspace_agent_invocations.update({
+        where: { uuid },
+        data: { closed: true },
+      });
+    } catch {}
+  },
+
   new: async function ({ prompt, workspace, user = null, thread = null }) {
     try {
       const invocation = await prisma.workspace_agent_invocations.create({

@@ -159,6 +159,7 @@ model workspace_agent_invocations {
   id            Int        @id @default(autoincrement())
   uuid          String     @unique
   prompt        String // Contains agent invocation to parse + option additional text for seed.
+  closed        Boolean    @default(false)
   user_id       Int?
   thread_id     Int? // No relation to prevent whole table migration
   workspace_id  Int

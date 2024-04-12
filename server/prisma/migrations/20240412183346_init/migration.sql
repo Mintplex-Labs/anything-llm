@@ -1,8 +1,13 @@
+-- AlterTable
+ALTER TABLE "workspaces" ADD COLUMN "agentModel" TEXT;
+ALTER TABLE "workspaces" ADD COLUMN "agentProvider" TEXT;
+
 -- CreateTable
 CREATE TABLE "workspace_agent_invocations" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "uuid" TEXT NOT NULL,
     "prompt" TEXT NOT NULL,
+    "closed" BOOLEAN NOT NULL DEFAULT false,
     "user_id" INTEGER,
     "thread_id" INTEGER,
     "workspace_id" INTEGER NOT NULL,
