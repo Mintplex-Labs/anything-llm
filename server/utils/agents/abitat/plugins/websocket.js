@@ -1,5 +1,6 @@
 const chalk = require("chalk");
 const { RetryError } = require("../error");
+const { Telemetry } = require("../../../../models/telemetry");
 const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
 
 /**
@@ -77,6 +78,8 @@ const websocket = {
         // });
 
         aibitat.onMessage((message) => {
+          if (message.from !== "USER")
+            Telemetry.sendTelemetry("agent_chat_sent");
           if (message.from === "USER" && muteUserReply) return;
           socket.send(JSON.stringify(message));
         });

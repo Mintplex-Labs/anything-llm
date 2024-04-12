@@ -1,3 +1,4 @@
+const { Telemetry } = require("../models/telemetry");
 const {
   WorkspaceAgentInvocation,
 } = require("../models/workspaceAgentInvocation");
@@ -45,6 +46,7 @@ function agentWebsocket(app) {
         }
       };
 
+      await Telemetry.sendTelemetry("agent_chat_started");
       await agentHandler.createAbitat({ socket });
       await agentHandler.startAgentCluster();
     } catch (e) {

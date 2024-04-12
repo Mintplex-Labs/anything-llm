@@ -27,8 +27,9 @@ export default function AvailableAgentsButton({ showing, setShowAgents }) {
       data-tooltip-content="View all available agents you can use for chatting."
       aria-label="View all available agents you can use for chatting."
       onClick={() => setShowAgents(!showing)}
-      className={`flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${showing ? "!opacity-100" : ""
-        }`}
+      className={`flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
+        showing ? "!opacity-100" : ""
+      }`}
     >
       <At className="w-6 h-6 pointer-events-none text-white" />
       <Tooltip
