@@ -17,6 +17,7 @@ const DEFAULT_WORKSPACE_AGENT = {
   definition: {
     role: "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.",
     functions: [
+      AgentPlugins.memory.name,
       AgentPlugins.saveFileInBrowser.name,
       AgentPlugins.experimental_webBrowsing.name,
       AgentPlugins.docSummarizer.name,
