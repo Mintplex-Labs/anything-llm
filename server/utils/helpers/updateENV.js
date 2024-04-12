@@ -571,6 +571,12 @@ async function dumpENV() {
     "HTTPS_KEY_PATH",
     // DISABLED TELEMETRY
     "DISABLE_TELEMETRY",
+
+    // Agent Integrations
+    // Search engine integrations
+    "AGENT_GSE_KEY",
+    "AGENT_GSE_CTX",
+    "AGENT_SERPER_DEV_KEY",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

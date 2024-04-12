@@ -33,16 +33,16 @@ class AgentHandler {
   provider = null;
   model = null;
 
-  constructor({ uuid, provider = "openai", model = "gpt-3.5-turbo" }) {
+  constructor({ uuid }) {
     this.#invocationUUID = uuid;
-    this.provider = provider;
-    this.model = model;
-    this.log(`${this.#invocationUUID}::${this.provider}:${this.model}`);
-    this.#checkSetup();
   }
 
   log(text, ...args) {
     console.log(`\x1b[36m[AgentHandler]\x1b[0m ${text}`, ...args);
+  }
+
+  closeAlert() {
+    this.log(`End ${this.#invocationUUID}::${this.provider}:${this.model}`);
   }
 
   #checkSetup() {
@@ -60,8 +60,15 @@ class AgentHandler {
     }
   }
 
+  #providerSetupAndCheck() {
+    this.provider = this.invocation.workspace.agentProvider || "openai";
+    this.model = this.invocation.workspace.agentModel || "gpt-3.5-turbo";
+    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
+    this.#checkSetup();
+  }
+
   async #validInvocation() {
-    const invocation = await WorkspaceAgentInvocation.get({
+    const invocation = await WorkspaceAgentInvocation.getWithWorkspace({
       uuid: String(this.#invocationUUID),
     });
     this.invocation = invocation ?? null;
@@ -120,6 +127,7 @@ class AgentHandler {
 
   async init() {
     await this.#validInvocation();
+    this.#providerSetupAndCheck();
     return this;
   }
 

@@ -105,7 +105,7 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
               <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
                 <div className="flex gap-x-5">
                   <span
-                    className={`text-xs inline-block p-2 rounded-lg text-white/60 font-mono whitespace-pre`}
+                    className={`text-xs inline-block p-2 rounded-lg text-white/60 font-mono whitespace-pre-line`}
                   >
                     {props.content}
                   </span>

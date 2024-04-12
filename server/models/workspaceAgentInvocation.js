@@ -39,6 +39,22 @@ const WorkspaceAgentInvocation = {
     }
   },
 
+  getWithWorkspace: async function (clause = {}) {
+    try {
+      const invocation = await prisma.workspace_agent_invocations.findFirst({
+        where: clause,
+        include: {
+          workspace: true,
+        },
+      });
+
+      return invocation || null;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  },
+
   delete: async function (clause = {}) {
     try {
       await prisma.workspace_agent_invocations.delete({

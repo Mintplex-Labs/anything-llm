@@ -13,6 +13,14 @@ const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
 //   handleFeedback?: (message: string) => void;
 // }
 
+const WEBSOCKET_BAIL_COMMANDS = [
+  "exit",
+  "/exit",
+  "stop",
+  "/stop",
+  "halt",
+  "/halt",
+];
 const websocket = {
   name: "websocket",
   startupConfig: {
@@ -80,11 +88,7 @@ const websocket = {
 
         aibitat.onInterrupt(async (node) => {
           const feedback = await socket.askForFeedback(socket, node);
-          if (
-            ["exit", "/exit", "stop", "/stop", "halt", "/halt"].includes(
-              feedback
-            )
-          ) {
+          if (WEBSOCKET_BAIL_COMMANDS.includes(feedback)) {
             socket.close();
             return;
           }
@@ -104,15 +108,17 @@ const websocket = {
             socket.send(JSON.stringify({ type: "WAITING_ON_INPUT", question }));
 
             return new Promise(function (resolve) {
+              let socketTimeout = null;
               socket.handleFeedback = (message) => {
                 const data = JSON.parse(message);
                 if (data.type !== "awaitingFeedback") return;
                 delete socket.handleFeedback;
+                clearTimeout(socketTimeout);
                 resolve(data.feedback);
                 return;
               };
 
-              setTimeout(() => {
+              socketTimeout = setTimeout(() => {
                 console.log(
                   chalk.red(
                     `Client took too long to respond, chat thread is dead after ${SOCKET_TIMEOUT_MS}ms`
@@ -137,4 +143,5 @@ const websocket = {
 
 module.exports = {
   websocket,
+  WEBSOCKET_BAIL_COMMANDS,
 };
