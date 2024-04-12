@@ -37,9 +37,13 @@ const experimental_webBrowsing = {
             additionalProperties: false,
           },
           handler: async function ({ query, url }) {
-            if (url) return await this.scrape(url);
-            if (query) return await this.search(query);
-            return "There is nothing we can do. This function call returns no information.";
+            try {
+              if (url) return await this.scrape(url);
+              if (query) return await this.search(query);
+              return "There is nothing we can do. This function call returns no information.";
+            } catch (error) {
+              return `There was an error while calling the function. ${error.message}`;
+            }
           },
 
           /**
