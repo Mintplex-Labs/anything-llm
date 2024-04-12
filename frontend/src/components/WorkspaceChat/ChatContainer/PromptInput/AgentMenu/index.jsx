@@ -171,11 +171,7 @@ function FirstTimeAgentUser() {
               <p className="text-green-300/60 text-xs md:text-sm">
                 This feature is currently early access and fully custom agents
                 with custom integrations & code execution will be in a future
-                update. Agent chats are currently <b>not saved.</b>
-              </p>
-              <p className="text-white/80 text-xs md:text-sm">
-                Agent chats are{" "}
-                <b>not saved and will disappear on page reload.</b>
+                update.
               </p>
             </div>
           </div>
