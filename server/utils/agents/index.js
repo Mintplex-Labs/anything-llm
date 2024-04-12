@@ -155,6 +155,12 @@ class AgentHandler {
       })
     );
 
+    // Attach standard chat-history plugin for message storage.
+    this.log(
+      `Attached ${AgentPlugins.chatHistory.name} plugin to Agent cluster`
+    );
+    this.abitat.use(AgentPlugins.chatHistory.plugin());
+
     // Load required agents (Default + custom)
     await this.#loadAgents();
 

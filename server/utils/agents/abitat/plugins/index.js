@@ -4,6 +4,7 @@ const { fileHistory } = require("./file-history.js");
 const { websocket } = require("./websocket.js");
 const { docSummarizer } = require("./summarize.js");
 const { saveFileInBrowser } = require("./save-file-browser.js");
+const { chatHistory } = require("./chat-history.js");
 
 module.exports = {
   cli,
@@ -12,6 +13,7 @@ module.exports = {
   websocket,
   docSummarizer,
   saveFileInBrowser,
+  chatHistory,
 
   // Plugin name aliases so they can be pulled by slug as well.
   [cli.name]: cli,
@@ -20,4 +22,5 @@ module.exports = {
   [websocket.name]: websocket,
   [docSummarizer.name]: docSummarizer,
   [saveFileInBrowser.name]: saveFileInBrowser,
+  [chatHistory.name]: chatHistory,
 };
