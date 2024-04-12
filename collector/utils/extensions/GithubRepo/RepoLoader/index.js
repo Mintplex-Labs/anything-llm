@@ -13,7 +13,9 @@ class RepoLoader {
 
   #validGithubUrl() {
     const UrlPattern = require("url-pattern");
-    const pattern = new UrlPattern("https\\://github.com/(:author)/(:project)");
+    const pattern = new UrlPattern(
+      "https\\://github.com/(:author)/(:project(*))"
+    );
     const match = pattern.match(this.repo);
     if (!match) return false;
 
