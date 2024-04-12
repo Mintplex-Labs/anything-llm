@@ -11,7 +11,7 @@ const WorkspaceAgentInvocation = {
     if (!uuid) return;
     try {
       await prisma.workspace_agent_invocations.update({
-        where: { uuid },
+        where: { uuid: String(uuid) },
         data: { closed: true },
       });
     } catch {}
