@@ -266,6 +266,47 @@ function workspaceEndpoints(app) {
     }
   );
 
+  app.delete(
+    "/workspace/:slug/reset-vector-db",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { slug = "" } = request.params;
+        const user = await userFromSession(request, response);
+        const VectorDb = getVectorDbClass();
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        await DocumentVectors.deleteForWorkspace(workspace.id);
+        await Document.delete({ workspaceId: Number(workspace.id) });
+
+        await EventLogs.logEvent(
+          "workspace_vectors_reset",
+          {
+            workspaceName: workspace?.name || "Unknown Workspace",
+          },
+          response.locals?.user?.id
+        );
+
+        try {
+          await VectorDb["delete-namespace"]({ namespace: slug });
+        } catch (e) {
+          console.error(e.message);
+        }
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
   app.get(
     "/workspaces",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
