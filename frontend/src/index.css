@@ -593,7 +593,8 @@ dialog::backdrop {
   margin: 0.35rem;
 }
 
-.markdown > p > a {
+.markdown > p > a,
+.markdown p a {
   text-decoration: underline;
 }
 

@@ -66,8 +66,12 @@ const memory = {
                 LLMConnector,
               });
 
-            if (contextTexts.length === 0)
+            if (contextTexts.length === 0) {
+              this.super.introspect(
+                `${this.caller}: I didn't find anything locally that would help answer this question.`
+              );
               return "There was no additional context found for that query. We should search the web for this information.";
+            }
 
             this.super.introspect(
               `${this.caller}: Found ${contextTexts.length} additional piece of context to help answer this question.`

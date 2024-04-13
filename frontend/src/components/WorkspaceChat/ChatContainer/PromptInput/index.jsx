@@ -50,6 +50,13 @@ export default function PromptInput({
     return;
   };
 
+  const checkForAt = (e) => {
+    const input = e.target.value;
+    if (input === "@") setShowAgents(true);
+    if (showAgents) setShowAgents(false);
+    return;
+  };
+
   const captureEnter = (event) => {
     if (event.keyCode == 13) {
       if (!event.shiftKey) {
@@ -66,6 +73,7 @@ export default function PromptInput({
   };
 
   const watchForSlash = debounce(checkForSlash, 300);
+  const watchForAt = debounce(checkForAt, 300);
 
   return (
     <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
@@ -91,6 +99,7 @@ export default function PromptInput({
                 onChange={(e) => {
                   onChange(e);
                   watchForSlash(e);
+                  watchForAt(e);
                   adjustTextArea(e);
                 }}
                 onKeyDown={captureEnter}
