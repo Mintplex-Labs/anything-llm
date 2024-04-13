@@ -83,14 +83,18 @@ const docSummarizer = {
               return "This was not a valid documentID because it was not a uuid. No content was found.";
             }
 
-            const { title, content } = await Document.content(documentId);
+            const document = await Document.content(documentId);
             this.super.introspect(
-              `${this.caller}: Grabbing all content for ${title}`
+              `${this.caller}: Grabbing all content for ${
+                document?.title ?? "a discovered file."
+              }`
             );
-            if (content.length < 8000) return content;
+            if (document?.content?.length < 8000) return content;
 
-            this.super.introspect(`${this.caller}: Summarizing ${title}...`);
-            return await this.summarize(content);
+            this.super.introspect(
+              `${this.caller}: Summarizing ${document?.title ?? ""}...`
+            );
+            return await this.summarize(document.content);
           },
 
           /**

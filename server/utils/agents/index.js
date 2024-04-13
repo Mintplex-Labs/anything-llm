@@ -3,6 +3,8 @@ const AgentPlugins = require("./abitat/plugins");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
+const { WorkspaceChats } = require("../../models/workspaceChats");
+const { safeJSON } = require("openai:latest/core");
 
 const DEFAULT_USER_AGENT = {
   name: "USER",
@@ -44,6 +46,44 @@ class AgentHandler {
 
   closeAlert() {
     this.log(`End ${this.#invocationUUID}::${this.provider}:${this.model}`);
+  }
+
+  async #chatHistory(limit = 10) {
+    try {
+      const rawHistory = (
+        await WorkspaceChats.where(
+          {
+            workspaceId: this.invocation.workspace_id,
+            user_id: this.invocation.user_id || null,
+            thread_id: this.invocation.user_id || null,
+            include: true,
+          },
+          limit,
+          { id: "desc" }
+        )
+      ).reverse();
+
+      const agentHistory = [];
+      rawHistory.forEach((chatLog) => {
+        agentHistory.push(
+          {
+            from: DEFAULT_USER_AGENT.name,
+            to: DEFAULT_WORKSPACE_AGENT.name,
+            content: chatLog.prompt,
+          },
+          {
+            from: DEFAULT_WORKSPACE_AGENT.name,
+            to: DEFAULT_USER_AGENT.name,
+            content: safeJSON(chatLog.response)?.text || "",
+            state: "success",
+          }
+        );
+      });
+      return agentHistory;
+    } catch (e) {
+      this.log("Error loading chat history", e.message);
+      return [];
+    }
   }
 
   #checkSetup() {
@@ -142,6 +182,7 @@ class AgentHandler {
     this.abitat = new AIbitat({
       provider: "openai",
       model: "gpt-3.5-turbo",
+      chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,
         log: this.log,
