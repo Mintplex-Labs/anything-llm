@@ -4,6 +4,7 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
@@ -28,7 +29,6 @@ class AnthropicLLM {
         "INVALID ANTHROPIC SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Anthropic as your LLM."
       );
     this.embedder = embedder;
-    this.answerKey = v4().split("-")[0];
     this.defaultTemp = 0.7;
   }
 
