@@ -1,13 +1,22 @@
 import { v4 } from "uuid";
 import { safeJsonParse } from "../request";
 import { saveAs } from "file-saver";
+import { API_BASE } from "../constants";
 
+export const AGENT_SESSION_START = "agentSessionStart";
+export const AGENT_SESSION_END = "agentSessionEnd";
 const handledEvents = [
   "statusResponse",
   "fileDownload",
   "awaitingFeedback",
   "wssFailure",
 ];
+
+export function websocketURI() {
+  const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  if (API_BASE === "/api") return `${wsProtocol}//${window.location.host}`;
+  return `${wsProtocol}//${new URL(import.meta.env.VITE_API_BASE).host}`;
+}
 
 export default function handleSocketResponse(event, setChatHistory) {
   const data = safeJsonParse(event.data, null);

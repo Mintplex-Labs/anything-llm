@@ -7,12 +7,11 @@ import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../../Sidebar";
 import { useParams } from "react-router-dom";
 import { v4 } from "uuid";
-import handleSocketResponse from "@/utils/chat/agent";
-import {
+import handleSocketResponse, {
+  websocketURI,
   AGENT_SESSION_END,
   AGENT_SESSION_START,
-} from "./PromptInput/SlashCommands/endAgentSession";
-import { websocketURI } from "@/utils/constants";
+} from "@/utils/chat/agent";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -128,51 +127,70 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   // TODO: Simplify this WSS stuff
   useEffect(() => {
     function handleWSS() {
-      if (!socketId || !!websocket) return;
-      const socket = new WebSocket(
-        `${websocketURI()}/api/agent-invocation/${socketId}`
-      );
+      try {
+        if (!socketId || !!websocket) return;
+        const socket = new WebSocket(
+          `${websocketURI()}/api/agent-invocation/${socketId}`
+        );
 
-      window.addEventListener(ABORT_STREAM_EVENT, () => {
-        window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-        websocket.close();
-      });
-
-      socket.addEventListener("message", (event) => {
-        setLoadingResponse(true);
-        try {
-          handleSocketResponse(event, setChatHistory);
-        } catch (e) {
-          console.error("Failed to parse data");
+        window.addEventListener(ABORT_STREAM_EVENT, () => {
           window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
-          socket.close();
-        }
-        setLoadingResponse(false);
-      });
+          websocket.close();
+        });
 
-      socket.addEventListener("close", (_event) => {
-        window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+        socket.addEventListener("message", (event) => {
+          setLoadingResponse(true);
+          try {
+            handleSocketResponse(event, setChatHistory);
+          } catch (e) {
+            console.error("Failed to parse data");
+            window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+            socket.close();
+          }
+          setLoadingResponse(false);
+        });
+
+        socket.addEventListener("close", (_event) => {
+          window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+          setChatHistory((prev) => [
+            ...prev.filter((msg) => !!msg.content),
+            {
+              uuid: v4(),
+              type: "statusResponse",
+              content: "Agent session complete.",
+              role: "assistant",
+              sources: [],
+              closed: true,
+              error: null,
+              animate: false,
+              pending: false,
+            },
+          ]);
+          setLoadingResponse(false);
+          setWebsocket(null);
+          setSocketId(null);
+        });
+        setWebsocket(socket);
+        window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
+      } catch (e) {
         setChatHistory((prev) => [
           ...prev.filter((msg) => !!msg.content),
           {
             uuid: v4(),
-            type: "statusResponse",
-            content: "Agent session complete.",
+            type: "abort",
+            content: e.message,
             role: "assistant",
             sources: [],
             closed: true,
-            error: null,
+            error: e.message,
             animate: false,
             pending: false,
-            chatId: 123,
           },
         ]);
         setLoadingResponse(false);
         setWebsocket(null);
         setSocketId(null);
-      });
-      setWebsocket(socket);
-      window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
+      }
     }
     handleWSS();
   }, [socketId]);
