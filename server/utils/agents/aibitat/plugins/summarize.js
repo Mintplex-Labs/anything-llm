@@ -51,50 +51,64 @@ const docSummarizer = {
            * @returns List of files and their descriptions if available.
            */
           listDocuments: async function () {
-            this.super.introspect(
-              `${this.caller}: Looking at the available documents.`
-            );
-            const documents = await Document.where({
-              workspaceId: this.super.handlerProps.invocation.workspace_id,
-            });
-            if (documents.length === 0)
-              return "No documents found - nothing can be done. Stop.";
+            try {
+              this.super.introspect(
+                `${this.caller}: Looking at the available documents.`
+              );
+              const documents = await Document.where({
+                workspaceId: this.super.handlerProps.invocation.workspace_id,
+              });
+              if (documents.length === 0)
+                return "No documents found - nothing can be done. Stop.";
 
-            this.super.introspect(
-              `${this.caller}: Found ${documents.length} documents`
-            );
-            const foundDocuments = documents.map((doc) => {
-              const metadata = safeJsonParse(doc.metadata, {});
-              return {
-                document_id: doc.docId,
-                filename: metadata?.title ?? "unknown.txt",
-                description: metadata?.description ?? "no description",
-              };
-            });
+              this.super.introspect(
+                `${this.caller}: Found ${documents.length} documents`
+              );
+              const foundDocuments = documents.map((doc) => {
+                const metadata = safeJsonParse(doc.metadata, {});
+                return {
+                  document_id: doc.docId,
+                  filename: metadata?.title ?? "unknown.txt",
+                  description: metadata?.description ?? "no description",
+                };
+              });
 
-            return JSON.stringify(foundDocuments);
+              return JSON.stringify(foundDocuments);
+            } catch (error) {
+              this.super.handlerProps.log(
+                `document-summarizer.list raised an error. ${error.message}`
+              );
+              return `Let the user know this action was not successful. An error was raised while listing available files. ${error.message}`;
+            }
           },
 
           summarizeDoc: async function (documentId) {
-            if (!validate(documentId)) {
-              this.super.handlerProps.log(
-                `${this.caller}: documentId ${documentId} is not a valid UUID`
+            try {
+              if (!validate(documentId)) {
+                this.super.handlerProps.log(
+                  `${this.caller}: documentId ${documentId} is not a valid UUID`
+                );
+                return "This was not a valid documentID because it was not a uuid. No content was found.";
+              }
+
+              const document = await Document.content(documentId);
+              this.super.introspect(
+                `${this.caller}: Grabbing all content for ${
+                  document?.title ?? "a discovered file."
+                }`
               );
-              return "This was not a valid documentID because it was not a uuid. No content was found.";
+              if (document?.content?.length < 8000) return content;
+
+              this.super.introspect(
+                `${this.caller}: Summarizing ${document?.title ?? ""}...`
+              );
+              return await this.summarize(document.content);
+            } catch (error) {
+              this.super.handlerProps.log(
+                `document-summarizer.summarizeDoc raised an error. ${error.message}`
+              );
+              return `Let the user know this action was not successful. An error was raised while summarizing the file. ${error.message}`;
             }
-
-            const document = await Document.content(documentId);
-            this.super.introspect(
-              `${this.caller}: Grabbing all content for ${
-                document?.title ?? "a discovered file."
-              }`
-            );
-            if (document?.content?.length < 8000) return content;
-
-            this.super.introspect(
-              `${this.caller}: Summarizing ${document?.title ?? ""}...`
-            );
-            return await this.summarize(document.content);
           },
 
           /**

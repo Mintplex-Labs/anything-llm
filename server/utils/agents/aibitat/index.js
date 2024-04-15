@@ -237,7 +237,7 @@ class AIbitat {
       /**
        * The message when the error occurred.
        */
-      { }
+      {}
     ) => null
   ) {
     this.emitter.on("replyError", listener);
@@ -451,8 +451,8 @@ class AIbitat {
         role: "user",
         content: `You are in a role play game. The following roles are available:
 ${availableNodes
-            .map((node) => `@${node}: ${this.getAgentConfig(node).role}`)
-            .join("\n")}.
+  .map((node) => `@${node}: ${this.getAgentConfig(node).role}`)
+  .join("\n")}.
 
 Read the following conversation.
 
@@ -499,23 +499,23 @@ Only return the role.
       // otherwise, send the chat history between the two nodes
       this.channels.get(route.to)
         ? [
-          {
-            role: "user",
-            content: `You are in a whatsapp group. Read the following conversation and then reply. 
+            {
+              role: "user",
+              content: `You are in a whatsapp group. Read the following conversation and then reply. 
 Do not add introduction or conclusion to your reply because this will be a continuous conversation. Don't introduce yourself.
 
 CHAT HISTORY
 ${this.getHistory({ to: route.to })
-                .map((c) => `@${c.from}: ${c.content}`)
-                .join("\n")}
+  .map((c) => `@${c.from}: ${c.content}`)
+  .join("\n")}
 
 @${route.from}:`,
-          },
-        ]
+            },
+          ]
         : this.getHistory(route).map((c) => ({
-          content: c.content,
-          role: c.from === route.to ? "user" : "assistant",
-        }));
+            content: c.content,
+            role: c.from === route.to ? "user" : "assistant",
+          }));
 
     // build the messages to send to the provider
     const messages = [

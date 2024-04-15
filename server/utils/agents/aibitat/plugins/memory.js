@@ -11,7 +11,6 @@ const memory = {
     return {
       name: this.name,
       setup(aibitat) {
-        // List and summarize the contents of files that are embedded in the workspace
         aibitat.function({
           super: aibitat,
           tracker: new Deduplicator(),
@@ -53,62 +52,76 @@ const memory = {
             }
           },
           search: async function (query = "") {
-            const workspace = this.super.handlerProps.invocation.workspace;
-            const LLMConnector = getLLMProvider({
-              provider: workspace?.chatProvider,
-              model: workspace?.chatModel,
-            });
-            const vectorDB = getVectorDbClass();
-            const { contextTexts = [] } =
-              await vectorDB.performSimilaritySearch({
-                namespace: workspace.slug,
-                input: query,
-                LLMConnector,
+            try {
+              const workspace = this.super.handlerProps.invocation.workspace;
+              const LLMConnector = getLLMProvider({
+                provider: workspace?.chatProvider,
+                model: workspace?.chatModel,
               });
+              const vectorDB = getVectorDbClass();
+              const { contextTexts = [] } =
+                await vectorDB.performSimilaritySearch({
+                  namespace: workspace.slug,
+                  input: query,
+                  LLMConnector,
+                });
 
-            if (contextTexts.length === 0) {
+              if (contextTexts.length === 0) {
+                this.super.introspect(
+                  `${this.caller}: I didn't find anything locally that would help answer this question.`
+                );
+                return "There was no additional context found for that query. We should search the web for this information.";
+              }
+
               this.super.introspect(
-                `${this.caller}: I didn't find anything locally that would help answer this question.`
+                `${this.caller}: Found ${contextTexts.length} additional piece of context to help answer this question.`
               );
-              return "There was no additional context found for that query. We should search the web for this information.";
+
+              let combinedText = "Additional context for query:\n";
+              for (const text of contextTexts) combinedText += text + "\n\n";
+              return combinedText;
+            } catch (error) {
+              this.super.handlerProps.log(
+                `memory.search raised an error. ${error.message}`
+              );
+              return `An error was raised while searching the vector database. ${error.message}`;
             }
-
-            this.super.introspect(
-              `${this.caller}: Found ${contextTexts.length} additional piece of context to help answer this question.`
-            );
-
-            let combinedText = "Additional context for query:\n";
-            for (const text of contextTexts) combinedText += text + "\n\n";
-            return combinedText;
           },
           store: async function (content = "") {
-            const workspace = this.super.handlerProps.invocation.workspace;
-            const vectorDB = getVectorDbClass();
-            const { error } = await vectorDB.addDocumentToNamespace(
-              workspace.slug,
-              {
-                docId: v4(),
-                id: v4(),
-                url: "file://embed-via-agent.txt",
-                title: "agent-chat-document.txt",
-                docAuthor: "@workspace",
-                description: "Unknown",
-                docSource: "a text file stored by the workspace agent.",
-                chunkSource: "",
-                published: new Date().toLocaleString(),
-                wordCount: content.split(" ").length,
-                pageContent: content,
-                token_count_estimate: 0,
-              },
-              null
-            );
+            try {
+              const workspace = this.super.handlerProps.invocation.workspace;
+              const vectorDB = getVectorDbClass();
+              const { error } = await vectorDB.addDocumentToNamespace(
+                workspace.slug,
+                {
+                  docId: v4(),
+                  id: v4(),
+                  url: "file://embed-via-agent.txt",
+                  title: "agent-chat-document.txt",
+                  docAuthor: "@workspace",
+                  description: "Unknown",
+                  docSource: "a text file stored by the workspace agent.",
+                  chunkSource: "",
+                  published: new Date().toLocaleString(),
+                  wordCount: content.split(" ").length,
+                  pageContent: content,
+                  token_count_estimate: 0,
+                },
+                null
+              );
 
-            if (!!error)
-              return "The content was failed to be embedded properly.";
-            this.super.introspect(
-              `${this.caller}: I saved the content to long-term memory in this workspaces vector database.`
-            );
-            return "The content given was successfully embedded. There is nothing else to do.";
+              if (!!error)
+                return "The content was failed to be embedded properly.";
+              this.super.introspect(
+                `${this.caller}: I saved the content to long-term memory in this workspaces vector database.`
+              );
+              return "The content given was successfully embedded. There is nothing else to do.";
+            } catch (error) {
+              this.super.handlerProps.log(
+                `memory.store raised an error. ${error.message}`
+              );
+              return `Let the user know this action was not successful. An error was raised while storing data in the vector database. ${error.message}`;
+            }
           },
         });
       },

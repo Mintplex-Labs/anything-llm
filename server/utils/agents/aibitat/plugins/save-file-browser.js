@@ -33,24 +33,31 @@ const saveFileInBrowser = {
             additionalProperties: false,
           },
           handler: async function ({ file_content = "", filename }) {
-            if (
-              this.tracker.isDuplicate(this.name, { file_content, filename })
-            ) {
-              this.super.introspect(
-                `${this.caller}: ${this.name} was called, but exited early since it was not a unique call.`
-              );
-              return `${filename} file has been saved successfully!`;
-            }
+            try {
+              if (
+                this.tracker.isDuplicate(this.name, { file_content, filename })
+              ) {
+                this.super.introspect(
+                  `${this.caller}: ${this.name} was called, but exited early since it was not a unique call.`
+                );
+                return `${filename} file has been saved successfully!`;
+              }
 
-            this.super.socket.send("fileDownload", {
-              filename,
-              b64Content:
-                "data:text/plain;base64," +
-                Buffer.from(file_content, "utf8").toString("base64"),
-            });
-            this.super.introspect(`${this.caller}: Saving file ${filename}.`);
-            this.tracker.trackRun(this.name, { file_content, filename });
-            return `${filename} file has been saved successfully!`;
+              this.super.socket.send("fileDownload", {
+                filename,
+                b64Content:
+                  "data:text/plain;base64," +
+                  Buffer.from(file_content, "utf8").toString("base64"),
+              });
+              this.super.introspect(`${this.caller}: Saving file ${filename}.`);
+              this.tracker.trackRun(this.name, { file_content, filename });
+              return `${filename} file has been saved successfully and will be downloaded automatically to the users browser.`;
+            } catch (error) {
+              this.super.handlerProps.log(
+                `save-file-to-browser raised an error. ${error.message}`
+              );
+              return `Let the user know this action was not successful. An error was raised while saving a file to the browser. ${error.message}`;
+            }
           },
         });
       },

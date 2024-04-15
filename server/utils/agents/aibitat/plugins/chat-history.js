@@ -25,7 +25,7 @@ const chatHistory = {
               prompt: prev.content,
               response: last.content,
             });
-          } catch { }
+          } catch {}
         });
       },
       _store: async function (aibitat, { prompt, response } = {}) {

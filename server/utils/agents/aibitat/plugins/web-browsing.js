@@ -14,7 +14,6 @@ const experimental_webBrowsing = {
     return {
       name: this.name,
       setup(aibitat) {
-        // Scrape a website and summarize the content based on objective if the content is too large.',
         aibitat.function({
           super: aibitat,
           name: this.name,
@@ -42,7 +41,7 @@ const experimental_webBrowsing = {
               if (query) return await this.search(query);
               return "There is nothing we can do. This function call returns no information.";
             } catch (error) {
-              return `There was an error while calling the function. ${error.message}`;
+              return `There was an error while calling the function. No data or response was found. Let the user know this was the error: ${error.message}`;
             }
           },
 
