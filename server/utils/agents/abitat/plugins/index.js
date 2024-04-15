@@ -4,6 +4,7 @@ const { docSummarizer } = require("./summarize.js");
 const { saveFileInBrowser } = require("./save-file-browser.js");
 const { chatHistory } = require("./chat-history.js");
 const { memory } = require("./memory.js");
+const { rechart } = require("./rechart.js");
 
 module.exports = {
   experimental_webBrowsing,
@@ -12,6 +13,7 @@ module.exports = {
   saveFileInBrowser,
   chatHistory,
   memory,
+  rechart,
 
   // Plugin name aliases so they can be pulled by slug as well.
   [experimental_webBrowsing.name]: experimental_webBrowsing,
@@ -20,4 +22,5 @@ module.exports = {
   [saveFileInBrowser.name]: saveFileInBrowser,
   [chatHistory.name]: chatHistory,
   [memory.name]: memory,
+  [rechart.name]: rechart,
 };

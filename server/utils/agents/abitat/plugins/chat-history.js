@@ -21,6 +21,17 @@ const chatHistory = {
             // We need a full conversation reply with prev being from
             // the USER and the last being from anyone other than the user.
             if (prev.from !== "USER" || last.from === "USER") return;
+
+            if (aibitat.hasOwnProperty("_replySpecialAttributes")) {
+              await this._storeSpecial(aibitat, {
+                prompt: prev.content,
+                response: last.content,
+                options: aibitat._replySpecialAttributes,
+              });
+              delete aibitat._replySpecialAttributes;
+              return;
+            }
+
             await this._store(aibitat, {
               prompt: prev.content,
               response: last.content,
@@ -28,8 +39,8 @@ const chatHistory = {
           } catch {}
         });
       },
-      _store: async function (abitat, { prompt, response } = {}) {
-        const invocation = abitat.handlerProps.invocation;
+      _store: async function (aibitat, { prompt, response } = {}) {
+        const invocation = aibitat.handlerProps.invocation;
         await WorkspaceChats.new({
           workspaceId: Number(invocation.workspace_id),
           prompt,
@@ -41,6 +52,28 @@ const chatHistory = {
           user: { id: invocation?.user_id || null },
           threadId: invocation?.thread_id || null,
         });
+      },
+      _storeSpecial: async function (
+        aibitat,
+        { prompt, response, options = {} } = {}
+      ) {
+        const invocation = aibitat.handlerProps.invocation;
+        await WorkspaceChats.new({
+          workspaceId: Number(invocation.workspace_id),
+          prompt,
+          response: {
+            sources: options?.sources ?? [],
+            // when we have a _storeSpecial called the options param can include a storedResponse() function
+            // that will override the text property to store extra information in, depending on the special type of chat.
+            text: options.hasOwnProperty("storedResponse")
+              ? options.storedResponse(response)
+              : response,
+            type: options?.saveAsType ?? "chat",
+          },
+          user: { id: invocation?.user_id || null },
+          threadId: invocation?.thread_id || null,
+        });
+        options?.postSave();
       },
     };
   },
