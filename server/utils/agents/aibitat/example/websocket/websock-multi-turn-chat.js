@@ -35,7 +35,7 @@ app.ws("/ws", function (ws, _response) {
     });
 
     console.log("Socket online and waiting...");
-    runAbitat(ws).catch((error) => {
+    runAIbitat(ws).catch((error) => {
       ws.send(
         JSON.stringify({
           from: Agent.AI,
@@ -44,7 +44,7 @@ app.ws("/ws", function (ws, _response) {
         })
       );
     });
-  } catch (error) {}
+  } catch (error) { }
 });
 
 app.all("*", function (_, response) {
@@ -60,12 +60,12 @@ const Agent = {
   AI: "🤖",
 };
 
-async function runAbitat(socket) {
+async function runAIbitat(socket) {
   if (!process.env.OPEN_AI_KEY)
     throw new Error(
       "This example requires a valid OPEN_AI_KEY in the env.development file"
     );
-  console.log(chalk.blue("Booting Abitat class & starting agent(s)"));
+  console.log(chalk.blue("Booting AIbitat class & starting agent(s)"));
   const aibitat = new AIbitat({
     provider: "openai",
     model: "gpt-3.5-turbo",

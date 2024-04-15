@@ -35,7 +35,7 @@ app.ws("/ws", function (ws, _response) {
     });
 
     console.log("Socket online and waiting...");
-    runAbitat(ws).catch((error) => {
+    runAIbitat(ws).catch((error) => {
       ws.send(
         JSON.stringify({
           from: "AI",
@@ -44,7 +44,7 @@ app.ws("/ws", function (ws, _response) {
         })
       );
     });
-  } catch (error) {}
+  } catch (error) { }
 });
 
 app.all("*", function (_, response) {
@@ -55,8 +55,8 @@ app.listen(port, () => {
   console.log(`Testing HTTP/WSS server listening at http://localhost:${port}`);
 });
 
-async function runAbitat(socket) {
-  console.log(chalk.blue("Booting Abitat class & starting agent(s)"));
+async function runAIbitat(socket) {
+  console.log(chalk.blue("Booting AIbitat class & starting agent(s)"));
 
   const aibitat = new AIbitat({
     provider: "openai",

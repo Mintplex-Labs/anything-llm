@@ -1,5 +1,5 @@
-const AIbitat = require("./abitat");
-const AgentPlugins = require("./abitat/plugins");
+const AIbitat = require("./aibitat");
+const AgentPlugins = require("./aibitat/plugins");
 const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
@@ -11,7 +11,7 @@ class AgentHandler {
   #invocationUUID;
   #funcsToLoad = [];
   invocation = null;
-  abitat = null;
+  aibitat = null;
   channel = null;
   provider = null;
   model = null;
@@ -124,8 +124,8 @@ class AgentHandler {
           : definition.default || null;
       }
 
-      const AbitatPlugin = AgentPlugins[name];
-      this.abitat.use(AbitatPlugin.plugin(callOpts));
+      const AIbitatPlugin = AgentPlugins[name];
+      this.aibitat.use(AIbitatPlugin.plugin(callOpts));
       this.log(`Attached ${name} plugin to Agent cluster`);
     }
   }
@@ -133,8 +133,8 @@ class AgentHandler {
   async #loadAgents() {
     // Default User agent and workspace agent
     this.log(`Attaching user and default agent to Agent cluster.`);
-    this.abitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
-    this.abitat.agent(
+    this.aibitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
+    this.aibitat.agent(
       WORKSPACE_AGENT.name,
       await WORKSPACE_AGENT.getDefinition()
     );
@@ -151,12 +151,12 @@ class AgentHandler {
     return this;
   }
 
-  async createAbitat(
+  async createAIbitat(
     args = {
       socket,
     }
   ) {
-    this.abitat = new AIbitat({
+    this.aibitat = new AIbitat({
       provider: "openai",
       model: "gpt-3.5-turbo",
       chats: await this.#chatHistory(20),
@@ -168,7 +168,7 @@ class AgentHandler {
 
     // Attach standard websocket plugin for frontend communication.
     this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);
-    this.abitat.use(
+    this.aibitat.use(
       AgentPlugins.websocket.plugin({
         socket: args.socket,
         muteUserReply: true,
@@ -180,7 +180,7 @@ class AgentHandler {
     this.log(
       `Attached ${AgentPlugins.chatHistory.name} plugin to Agent cluster`
     );
-    this.abitat.use(AgentPlugins.chatHistory.plugin());
+    this.aibitat.use(AgentPlugins.chatHistory.plugin());
 
     // Load required agents (Default + custom)
     await this.#loadAgents();
@@ -190,7 +190,7 @@ class AgentHandler {
   }
 
   startAgentCluster() {
-    return this.abitat.start({
+    return this.aibitat.start({
       from: USER_AGENT.name,
       to: this.channel ?? WORKSPACE_AGENT.name,
       content: this.invocation.prompt,

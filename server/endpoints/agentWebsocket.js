@@ -5,7 +5,7 @@ const {
 const { AgentHandler } = require("../utils/agents");
 const {
   WEBSOCKET_BAIL_COMMANDS,
-} = require("../utils/agents/abitat/plugins/websocket");
+} = require("../utils/agents/aibitat/plugins/websocket");
 const { safeJsonParse } = require("../utils/http");
 
 // Setup listener for incoming messages to relay to socket so it can be handled by agent plugin.
@@ -47,7 +47,7 @@ function agentWebsocket(app) {
       };
 
       await Telemetry.sendTelemetry("agent_chat_started");
-      await agentHandler.createAbitat({ socket });
+      await agentHandler.createAIbitat({ socket });
       await agentHandler.startAgentCluster();
     } catch (e) {
       console.error(e.message);

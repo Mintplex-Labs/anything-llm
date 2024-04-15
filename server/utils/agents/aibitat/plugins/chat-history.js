@@ -25,11 +25,11 @@ const chatHistory = {
               prompt: prev.content,
               response: last.content,
             });
-          } catch {}
+          } catch { }
         });
       },
-      _store: async function (abitat, { prompt, response } = {}) {
-        const invocation = abitat.handlerProps.invocation;
+      _store: async function (aibitat, { prompt, response } = {}) {
+        const invocation = aibitat.handlerProps.invocation;
         await WorkspaceChats.new({
           workspaceId: Number(invocation.workspace_id),
           prompt,

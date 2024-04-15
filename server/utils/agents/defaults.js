@@ -1,4 +1,4 @@
-const AgentPlugins = require("./abitat/plugins");
+const AgentPlugins = require("./aibitat/plugins");
 const { SystemSettings } = require("../../models/systemSettings");
 const { safeJsonParse } = require("../http");
 
