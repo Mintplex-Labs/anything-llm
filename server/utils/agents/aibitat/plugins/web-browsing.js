@@ -54,9 +54,8 @@ const experimental_webBrowsing = {
            * @returns
            */
           scrape: async function (url) {
-            console.log("🔥 Scraping website...", url);
             this.super.introspect(
-              `${this.caller}: I am going to scrape the website ${url}`
+              `${this.caller}: Scraping the content of ${url}`
             );
             const { success, content } =
               await new CollectorApi().getLinkContent(url);
@@ -130,12 +129,7 @@ const experimental_webBrowsing = {
             searchURL.searchParams.append("q", query);
 
             this.super.introspect(
-              `${this.caller}: Searching google for "${
-                query.length > 100 ? `${query.slice(0, 100)}...` : query
-              }"`
-            );
-            console.log(
-              `🔥 ~ Searching on Google for "${
+              `${this.caller}: Searching on Google for "${
                 query.length > 100 ? `${query.slice(0, 100)}...` : query
               }"`
             );
@@ -174,11 +168,6 @@ const experimental_webBrowsing = {
 
             this.super.introspect(
               `${this.caller}: Using Serper.dev to search for "${
-                query.length > 100 ? `${query.slice(0, 100)}...` : query
-              }"`
-            );
-            console.log(
-              `🔥 ~ Searching with Serper.dev for "${
                 query.length > 100 ? `${query.slice(0, 100)}...` : query
               }"`
             );
