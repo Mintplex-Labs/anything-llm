@@ -17,7 +17,7 @@ const memory = {
           tracker: new Deduplicator(),
           name: this.name,
           description:
-            "Search against local documents for context that is relevant to the query or store a snippet of text into memory for retrieval later. You should use this tool before search the internet for information.",
+            "Search against local documents for context that is relevant to the query or store a snippet of text into memory for retrieval later. Storing information should only be done when the user specifically requests for information to be remembered or saved to long-term memory. You should use this tool before search the internet for information.",
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
             type: "object",

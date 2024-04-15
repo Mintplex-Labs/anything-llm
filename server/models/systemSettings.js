@@ -23,6 +23,7 @@ const SystemSettings = {
     "text_splitter_chunk_size",
     "text_splitter_chunk_overlap",
     "agent_search_provider",
+    "default_agent_skills",
   ],
   validations: {
     footer_data: (updates) => {
@@ -73,6 +74,15 @@ const SystemSettings = {
           e.message
         );
         return null;
+      }
+    },
+    default_agent_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch (e) {
+        console.error(`Could not validate agent skills.`);
+        return JSON.stringify([]);
       }
     },
   },

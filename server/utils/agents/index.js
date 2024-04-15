@@ -4,28 +4,8 @@ const {
   WorkspaceAgentInvocation,
 } = require("../../models/workspaceAgentInvocation");
 const { WorkspaceChats } = require("../../models/workspaceChats");
-const { safeJSON } = require("openai:latest/core");
-
-const DEFAULT_USER_AGENT = {
-  name: "USER",
-  definition: {
-    interrupt: "ALWAYS",
-    role: "I am the human monitor and oversee this chat. Any questions on action or decision making should be directed to me.",
-  },
-};
-
-const DEFAULT_WORKSPACE_AGENT = {
-  name: "@workspace",
-  definition: {
-    role: "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.",
-    functions: [
-      AgentPlugins.memory.name,
-      AgentPlugins.saveFileInBrowser.name,
-      AgentPlugins.experimental_webBrowsing.name,
-      AgentPlugins.docSummarizer.name,
-    ],
-  },
-};
+const { safeJsonParse } = require("../http");
+const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 
 class AgentHandler {
   #invocationUUID;
@@ -67,14 +47,14 @@ class AgentHandler {
       rawHistory.forEach((chatLog) => {
         agentHistory.push(
           {
-            from: DEFAULT_USER_AGENT.name,
-            to: DEFAULT_WORKSPACE_AGENT.name,
+            from: USER_AGENT.name,
+            to: WORKSPACE_AGENT.name,
             content: chatLog.prompt,
           },
           {
-            from: DEFAULT_WORKSPACE_AGENT.name,
-            to: DEFAULT_USER_AGENT.name,
-            content: safeJSON(chatLog.response)?.text || "",
+            from: WORKSPACE_AGENT.name,
+            to: USER_AGENT.name,
+            content: safeJsonParse(chatLog.response)?.text || "",
             state: "success",
           }
         );
@@ -151,21 +131,18 @@ class AgentHandler {
   }
 
   async #loadAgents() {
-    this.#funcsToLoad = [
-      ...(DEFAULT_USER_AGENT.definition?.functions || []),
-      ...(DEFAULT_WORKSPACE_AGENT.definition?.functions || []),
-    ];
     // Default User agent and workspace agent
     this.log(`Attaching user and default agent to Agent cluster.`);
-    this.abitat.agent(DEFAULT_USER_AGENT.name, DEFAULT_USER_AGENT.definition);
+    this.abitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
     this.abitat.agent(
-      DEFAULT_WORKSPACE_AGENT.name,
-      DEFAULT_WORKSPACE_AGENT.definition
+      WORKSPACE_AGENT.name,
+      await WORKSPACE_AGENT.getDefinition()
     );
 
-    // Load other specially invoked agents (custom agents)
-    // Push function requirements to the #funcsToLoad;
-    // TODO: implement
+    this.#funcsToLoad = [
+      ...((await USER_AGENT.getDefinition())?.functions || []),
+      ...((await WORKSPACE_AGENT.getDefinition())?.functions || []),
+    ];
   }
 
   async init() {
@@ -214,8 +191,8 @@ class AgentHandler {
 
   startAgentCluster() {
     return this.abitat.start({
-      from: DEFAULT_USER_AGENT.name,
-      to: this.channel ?? DEFAULT_WORKSPACE_AGENT.name,
+      from: USER_AGENT.name,
+      to: this.channel ?? WORKSPACE_AGENT.name,
       content: this.invocation.prompt,
     });
   }
