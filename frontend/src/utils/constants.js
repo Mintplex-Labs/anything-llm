@@ -14,7 +14,8 @@ export function fullApiUrl() {
   return `${window.location.origin}/api`;
 }
 
-export function wssHost() {
-  if (API_BASE === "/api") return window.location.host;
-  return new URL(import.meta.env.VITE_API_BASE).host;
+export function websocketURI() {
+  const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  if (API_BASE === "/api") return `${wsProtocol}//${window.location.host}`;
+  return `${wsProtocol}//${new URL(import.meta.env.VITE_API_BASE).host}`;
 }

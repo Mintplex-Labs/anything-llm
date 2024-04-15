@@ -12,7 +12,7 @@ import {
   AGENT_SESSION_END,
   AGENT_SESSION_START,
 } from "./PromptInput/SlashCommands/endAgentSession";
-import { wssHost } from "@/utils/constants";
+import { websocketURI } from "@/utils/constants";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -130,7 +130,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     function handleWSS() {
       if (!socketId || !!websocket) return;
       const socket = new WebSocket(
-        `ws://${wssHost()}/api/agent-invocation/${socketId}`
+        `${websocketURI()}/api/agent-invocation/${socketId}`
       );
 
       window.addEventListener(ABORT_STREAM_EVENT, () => {
