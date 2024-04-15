@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import { At, Flask, X } from "@phosphor-icons/react";
-import {
-  AGENT_SESSION_END,
-  AGENT_SESSION_START,
-} from "../SlashCommands/endAgentSession";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
+import { AGENT_SESSION_END, AGENT_SESSION_START } from "@/utils/chat/agent";
 
 export default function AvailableAgentsButton({ showing, setShowAgents }) {
   const [visible, setVisibility] = useState(true);
@@ -93,6 +90,7 @@ export function AvailableAgents({ showing, setShowing, sendCommand }) {
                   <AbilityTag text="save-file-to-browser" />
                   <AbilityTag text="list-documents" />
                   <AbilityTag text="summarize-document" />
+                  <AbilityTag text="chart-generation" />
                 </div>
               </div>
             </button>

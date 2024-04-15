@@ -8,7 +8,7 @@ const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
  * while the conversation is running in the background.
  */
 
-// export interface AbitatWebSocket extends ServerWebSocket<unknown> {
+// export interface AIbitatWebSocket extends ServerWebSocket<unknown> {
 //   askForFeedback?: any
 //   awaitResponse?: any
 //   handleFeedback?: (message: string) => void;
@@ -40,7 +40,7 @@ const websocket = {
     },
   },
   plugin: function ({
-    socket, // @type AbitatWebSocket
+    socket, // @type AIbitatWebSocket
     muteUserReply = true, // Do not post messages to "USER" back to frontend.
     introspection = false, // when enabled will attach socket to Aibitat object with .introspect method which reports status updates to frontend.
   }) {
@@ -65,7 +65,7 @@ const websocket = {
           );
         };
 
-        // expose function for sockets across abitat
+        // expose function for sockets across aibitat
         // type param must be set or else msg will not be shown or handled in UI.
         aibitat.socket = {
           send: (type = "__unhandled", content = "") => {
@@ -102,7 +102,7 @@ const websocket = {
         /**
          * Socket wait for feedback on socket
          *
-         * @param socket The content to summarize. // AbitatWebSocket & { receive: any, echo: any }
+         * @param socket The content to summarize. // AIbitatWebSocket & { receive: any, echo: any }
          * @param node The chat node // { from: string; to: string }
          * @returns The summarized content.
          */

@@ -205,7 +205,7 @@ const Document = {
   content: async function (docId) {
     if (!docId) throw new Error("No workspace docId provided!");
     const document = await this.get({ docId: String(docId) });
-    if (!document) return null;
+    if (!document) throw new Error(`Could not find a document by id ${docId}`);
 
     const { fileData } = require("../utils/files");
     const data = await fileData(document.docpath);

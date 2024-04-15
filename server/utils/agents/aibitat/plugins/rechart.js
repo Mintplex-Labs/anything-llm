@@ -48,36 +48,43 @@ Make sure the format use double quotes and property names are string literals. P
             additionalProperties: false,
           },
           handler: async function ({ type, dataset }) {
-            if (!this.tracker.isUnique(this.name)) {
+            try {
+              if (!this.tracker.isUnique(this.name)) {
+                this.super.handlerProps.log(
+                  `${this.name} has been run for this chat response already. It can only be called once per chat.`
+                );
+                return "The chart was generated and returned to the user. This function completed successfully. Do not call this function again.";
+              }
+
+              const data = safeJsonParse(dataset, null);
+              if (data === null) {
+                this.super.introspect(
+                  `${this.caller}: ${this.name} provided invalid JSON data - so we cant make a ${type} chart.`
+                );
+                return "Invalid JSON provided. Please only provide valid RechartJS JSON to generate a chart.";
+              }
+
+              this.super.introspect(`${this.caller}: Rendering ${type} chart.`);
+              this.super.socket.send("rechartVisualize", {
+                type,
+                dataset,
+              });
+
+              this.super._replySpecialAttributes = {
+                saveAsType: "rechartVisualize",
+                storedResponse: (additionalText = "") =>
+                  JSON.stringify({ type, dataset, caption: additionalText }),
+                postSave: () => this.tracker.removeUniqueConstraint(this.name),
+              };
+
+              this.tracker.markUnique(this.name);
+              return "The chart was generated and returned to the user. This function completed successfully. Do not make another chart.";
+            } catch (error) {
               this.super.handlerProps.log(
-                `${this.name} has been run for this chat response already. It can only be called once per chat.`
+                `create-chart raised an error. ${error.message}`
               );
-              return "The chart was generated and returned to the user. This function completed successfully. Do not call this function again.";
+              return `Let the user know this action was not successful. An error was raised while generating the chart. ${error.message}`;
             }
-
-            const data = safeJsonParse(dataset, null);
-            if (data === null) {
-              this.super.introspect(
-                `${this.caller}: ${this.name} provided invalid JSON data - so we cant make a ${type} chart.`
-              );
-              return "Invalid JSON provided. Please only provide valid RechartJS JSON to generate a chart.";
-            }
-
-            this.super.introspect(`${this.caller}: Rendering ${type} chart.`);
-            this.super.socket.send("rechartVisualize", {
-              type,
-              dataset,
-            });
-
-            this.super._replySpecialAttributes = {
-              saveAsType: "rechartVisualize",
-              storedResponse: (additionalText = "") =>
-                JSON.stringify({ type, dataset, caption: additionalText }),
-              postSave: () => this.tracker.removeUniqueConstraint(this.name),
-            };
-
-            this.tracker.markUnique(this.name);
-            return "The chart was generated and returned to the user. This function completed successfully. Do not make another chart.";
           },
         });
       },

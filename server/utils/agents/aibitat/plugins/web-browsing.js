@@ -14,7 +14,6 @@ const experimental_webBrowsing = {
     return {
       name: this.name,
       setup(aibitat) {
-        // Scrape a website and summarize the content based on objective if the content is too large.',
         aibitat.function({
           super: aibitat,
           name: this.name,
@@ -42,7 +41,7 @@ const experimental_webBrowsing = {
               if (query) return await this.search(query);
               return "There is nothing we can do. This function call returns no information.";
             } catch (error) {
-              return `There was an error while calling the function. ${error.message}`;
+              return `There was an error while calling the function. No data or response was found. Let the user know this was the error: ${error.message}`;
             }
           },
 
@@ -55,9 +54,8 @@ const experimental_webBrowsing = {
            * @returns
            */
           scrape: async function (url) {
-            console.log("🔥 Scraping website...", url);
             this.super.introspect(
-              `${this.caller}: I am going to scrape the website ${url}`
+              `${this.caller}: Scraping the content of ${url}`
             );
             const { success, content } =
               await new CollectorApi().getLinkContent(url);
@@ -131,12 +129,7 @@ const experimental_webBrowsing = {
             searchURL.searchParams.append("q", query);
 
             this.super.introspect(
-              `${this.caller}: Searching google for "${
-                query.length > 100 ? `${query.slice(0, 100)}...` : query
-              }"`
-            );
-            console.log(
-              `🔥 ~ Searching on Google for "${
+              `${this.caller}: Searching on Google for "${
                 query.length > 100 ? `${query.slice(0, 100)}...` : query
               }"`
             );
@@ -175,11 +168,6 @@ const experimental_webBrowsing = {
 
             this.super.introspect(
               `${this.caller}: Using Serper.dev to search for "${
-                query.length > 100 ? `${query.slice(0, 100)}...` : query
-              }"`
-            );
-            console.log(
-              `🔥 ~ Searching with Serper.dev for "${
                 query.length > 100 ? `${query.slice(0, 100)}...` : query
               }"`
             );

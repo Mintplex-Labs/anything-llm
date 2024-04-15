@@ -1,7 +1,5 @@
+import { AGENT_SESSION_END, AGENT_SESSION_START } from "@/utils/chat/agent";
 import { useEffect, useState } from "react";
-
-export const AGENT_SESSION_START = "agentSessionStart";
-export const AGENT_SESSION_END = "agentSessionEnd";
 
 export default function EndAgentSession({ setShowing, sendCommand }) {
   const [visible, setVisibility] = useState(false);

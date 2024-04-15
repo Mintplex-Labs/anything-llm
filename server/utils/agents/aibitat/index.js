@@ -1,6 +1,7 @@
 const { EventEmitter } = require("events");
 const { APIError } = require("./error.js");
 const Providers = require("./providers/index.js");
+const { Telemetry } = require("../../../models/telemetry.js");
 
 /**
  * AIbitat is a class that manages the conversation between agents.
@@ -26,7 +27,7 @@ class AIbitat {
       interrupt = "NEVER",
       maxRounds = 100,
       provider = "openai",
-      handlerProps = {}, // Inherited props we can spread so abitat can access.
+      handlerProps = {}, // Inherited props we can spread so aibitat can access.
       ...rest
     } = props;
     this._chats = chats;
@@ -583,6 +584,7 @@ ${this.getHistory({ to: route.to })
       // Execute the function and return the result to the provider
       fn.caller = byAgent || "agent";
       const result = await fn.handler(args);
+      Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
       return await this.handleExecution(
         provider,
         [
