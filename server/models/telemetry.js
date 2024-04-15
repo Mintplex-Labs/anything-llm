@@ -19,7 +19,6 @@ const Telemetry = {
   },
 
   isDev: function () {
-    return false;
     return process.env.NODE_ENV === "development" && this.stubDevelopmentEvents;
   },
 
