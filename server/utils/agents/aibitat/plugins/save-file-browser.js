@@ -37,8 +37,8 @@ const saveFileInBrowser = {
               if (
                 this.tracker.isDuplicate(this.name, { file_content, filename })
               ) {
-                this.super.introspect(
-                  `${this.caller}: ${this.name} was called, but exited early since it was not a unique call.`
+                this.super.handlerProps.log(
+                  `${this.name} was called, but exited early since it was not a unique call.`
                 );
                 return `${filename} file has been saved successfully!`;
               }

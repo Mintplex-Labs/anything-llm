@@ -2,6 +2,7 @@ import { v4 } from "uuid";
 import { safeJsonParse } from "../request";
 import { saveAs } from "file-saver";
 import { API_BASE } from "../constants";
+import { useEffect, useState } from "react";
 
 export const AGENT_SESSION_START = "agentSessionStart";
 export const AGENT_SESSION_END = "agentSessionEnd";
@@ -83,4 +84,20 @@ export default function handleSocketResponse(event, setChatHistory) {
       },
     ];
   });
+}
+
+export function useIsAgentSessionActive() {
+  const [activeSession, setActiveSession] = useState(false);
+  useEffect(() => {
+    function listenForAgentSession() {
+      if (!window) return;
+      window.addEventListener(AGENT_SESSION_START, () =>
+        setActiveSession(true)
+      );
+      window.addEventListener(AGENT_SESSION_END, () => setActiveSession(false));
+    }
+    listenForAgentSession();
+  }, []);
+
+  return activeSession;
 }
