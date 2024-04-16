@@ -680,3 +680,7 @@ does not extend the close button beyond the viewport. */
 .recharts-text > * {
   fill: #fff;
 }
+
+.recharts-legend-wrapper {
+  margin-bottom: 10px;
+}

@@ -37,6 +37,11 @@ const rechart = {
                 ],
                 description: "The type of chart to be generated.",
               },
+              title: {
+                type: "string",
+                description:
+                  "Title of the chart. There MUST always be a title. Do not leave it blank.",
+              },
               dataset: {
                 type: "string",
                 description: `Valid JSON in which each element is an object for Recharts API for the 'type' of chart defined WITHOUT new line characters. Strictly using this FORMAT and naming:
@@ -47,7 +52,8 @@ Make sure the format use double quotes and property names are string literals. P
             },
             additionalProperties: false,
           },
-          handler: async function ({ type, dataset }) {
+          required: ["type", "title", "dataset"],
+          handler: async function ({ type, dataset, title }) {
             try {
               if (!this.tracker.isUnique(this.name)) {
                 this.super.handlerProps.log(
@@ -68,12 +74,18 @@ Make sure the format use double quotes and property names are string literals. P
               this.super.socket.send("rechartVisualize", {
                 type,
                 dataset,
+                title,
               });
 
               this.super._replySpecialAttributes = {
                 saveAsType: "rechartVisualize",
                 storedResponse: (additionalText = "") =>
-                  JSON.stringify({ type, dataset, caption: additionalText }),
+                  JSON.stringify({
+                    type,
+                    dataset,
+                    title,
+                    caption: additionalText,
+                  }),
                 postSave: () => this.tracker.removeUniqueConstraint(this.name),
               };
 

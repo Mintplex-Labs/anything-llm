@@ -47,6 +47,7 @@ export function Chartable({ props, workspace }) {
     type: "image/jpeg",
     options: {
       backgroundColor: "#393d43",
+      padding: 20,
     },
   });
   const handleDownload = useCallback(async () => {
@@ -68,50 +69,61 @@ export function Chartable({ props, workspace }) {
       ? safeJsonParse(content.dataset, null)
       : content.dataset;
   const value = data.length > 0 ? Object.keys(data[0])[1] : "value";
+  const title = content?.title;
 
   const renderChart = () => {
     switch (chartType) {
       case "area":
         return (
-          <AreaChart
-            className="h-[350px]"
-            data={data}
-            index="name"
-            categories={[value]}
-            colors={[color || "blue", "cyan"]}
-            showLegend={showLegend}
-            valueFormatter={dataFormatter}
-          />
+          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+            <h3 className="text-lg font-medium">{title}</h3>
+            <AreaChart
+              className="h-[350px]"
+              data={data}
+              index="name"
+              categories={[value]}
+              colors={[color || "blue", "cyan"]}
+              showLegend={showLegend}
+              valueFormatter={dataFormatter}
+            />
+          </div>
         );
       case "bar":
         return (
-          <BarChart
-            className="h-[350px]"
-            data={data}
-            index="name"
-            categories={[value]}
-            colors={[color || "blue"]}
-            showLegend={showLegend}
-            valueFormatter={dataFormatter}
-            layout={"vertical"}
-            yAxisWidth={100}
-          />
+          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+            <h3 className="text-lg font-medium">{title}</h3>
+            <BarChart
+              className="h-[350px]"
+              data={data}
+              index="name"
+              categories={[value]}
+              colors={[color || "blue"]}
+              showLegend={showLegend}
+              valueFormatter={dataFormatter}
+              layout={"vertical"}
+              yAxisWidth={100}
+            />
+          </div>
         );
       case "line":
         return (
-          <LineChart
-            className="h-[300px]"
-            data={data}
-            index="name"
-            categories={[value]}
-            colors={[color || "blue"]}
-            showLegend={showLegend}
-            valueFormatter={dataFormatter}
-          />
+          <div className="bg-zinc-900 p-8 pb-12 rounded-xl text-white h-[500px]">
+            <h3 className="text-lg font-medium">{title}</h3>
+            <LineChart
+              className="h-[400px]"
+              data={data}
+              index="name"
+              categories={[value]}
+              colors={[color || "blue"]}
+              showLegend={showLegend}
+              valueFormatter={dataFormatter}
+            />
+          </div>
         );
       case "composed":
         return (
-          <>
+          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+            <h3 className="text-lg font-medium">{title}</h3>
             {showLegend && (
               <Legend
                 categories={[value]}
@@ -130,7 +142,7 @@ export function Chartable({ props, workspace }) {
                 tickLine={false}
                 axisLine={false}
                 interval="preserveStartEnd"
-                tick={{ transform: "translate(0, 6)" }}
+                tick={{ transform: "translate(0, 6)", fill: "white" }}
                 style={{
                   fontSize: "12px",
                   fontFamily: "Inter; Helvetica",
@@ -141,7 +153,7 @@ export function Chartable({ props, workspace }) {
                 tickLine={false}
                 axisLine={false}
                 type="number"
-                tick={{ transform: "translate(-3, 0)" }}
+                tick={{ transform: "translate(-3, 0)", fill: "white" }}
                 style={{
                   fontSize: "12px",
                   fontFamily: "Inter; Helvetica",
@@ -162,11 +174,12 @@ export function Chartable({ props, workspace }) {
                 fill={getTremorColor(color || "blue")}
               />
             </ComposedChart>
-          </>
+          </div>
         );
       case "scatter":
         return (
-          <>
+          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+            <h3 className="text-lg font-medium">{title}</h3>
             {showLegend && (
               <div className="flex justify-end">
                 <Legend
@@ -187,7 +200,7 @@ export function Chartable({ props, workspace }) {
                 tickLine={false}
                 axisLine={false}
                 interval="preserveStartEnd"
-                tick={{ transform: "translate(0, 6)" }}
+                tick={{ transform: "translate(0, 6)", fill: "white" }}
                 style={{
                   fontSize: "12px",
                   fontFamily: "Inter; Helvetica",
@@ -198,7 +211,7 @@ export function Chartable({ props, workspace }) {
                 tickLine={false}
                 axisLine={false}
                 type="number"
-                tick={{ transform: "translate(-3, 0)" }}
+                tick={{ transform: "translate(-3, 0)", fill: "white" }}
                 style={{
                   fontSize: "12px",
                   fontFamily: "Inter; Helvetica",
@@ -207,31 +220,36 @@ export function Chartable({ props, workspace }) {
               <Tooltip legendColor={getTremorColor(color || "blue")} />
               <Scatter dataKey={value} fill={getTremorColor(color || "blue")} />
             </ScatterChart>
-          </>
+          </div>
         );
       case "pie":
         return (
-          <DonutChart
-            data={data}
-            category={value}
-            index="name"
-            colors={[
-              color || "cyan",
-              "violet",
-              "rose",
-              "amber",
-              "emerald",
-              "teal",
-              "fuchsia",
-            ]}
-            // No actual legend for pie chart, but this will toggle the central text
-            showLabel={showLegend}
-            valueFormatter={dataFormatter}
-          />
+          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+            <h3 className="text-lg font-medium">{title}</h3>
+            <DonutChart
+              data={data}
+              category={value}
+              index="name"
+              colors={[
+                color || "cyan",
+                "violet",
+                "rose",
+                "amber",
+                "emerald",
+                "teal",
+                "fuchsia",
+              ]}
+              // No actual legend for pie chart, but this will toggle the central text
+              showLabel={showLegend}
+              valueFormatter={dataFormatter}
+              customTooltip={customTooltip}
+            />
+          </div>
         );
       case "radar":
         return (
-          <>
+          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+            <h3 className="text-lg font-medium">{title}</h3>
             {showLegend && (
               <div className="flex justify-end">
                 <Legend
@@ -250,8 +268,8 @@ export function Chartable({ props, workspace }) {
               data={data}
             >
               <PolarGrid />
-              <PolarAngleAxis dataKey="name" />
-              <PolarRadiusAxis />
+              <PolarAngleAxis dataKey="name" tick={{ fill: "white" }} />
+              <PolarRadiusAxis tick={{ fill: "white" }} />
               <Tooltip legendColor={getTremorColor(color || "blue")} />
               <Radar
                 dataKey="value"
@@ -260,11 +278,12 @@ export function Chartable({ props, workspace }) {
                 fillOpacity={0.6}
               />
             </RadarChart>
-          </>
+          </div>
         );
       case "radialbar":
         return (
-          <>
+          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+            <h3 className="text-lg font-medium">{title}</h3>
             {showLegend && (
               <div className="flex justify-end">
                 <Legend
@@ -294,11 +313,12 @@ export function Chartable({ props, workspace }) {
               />
               <Tooltip legendColor={getTremorColor(color || "blue")} />
             </RadialBarChart>
-          </>
+          </div>
         );
       case "treemap":
         return (
-          <>
+          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+            <h3 className="text-lg font-medium">{title}</h3>
             {showLegend && (
               <div className="flex justify-end">
                 <Legend
@@ -319,11 +339,12 @@ export function Chartable({ props, workspace }) {
             >
               <Tooltip legendColor={getTremorColor(color || "blue")} />
             </Treemap>
-          </>
+          </div>
         );
       case "funnel":
         return (
-          <>
+          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+            <h3 className="text-lg font-medium">{title}</h3>
             {showLegend && (
               <div className="flex justify-end">
                 <Legend
@@ -337,7 +358,7 @@ export function Chartable({ props, workspace }) {
               <Tooltip legendColor={getTremorColor(color || "blue")} />
               <Funnel dataKey="value" color={getTremorColor(color || "blue")} />
             </FunnelChart>
-          </>
+          </div>
         );
       default:
         return <p>Unsupported chart type.</p>;
@@ -386,6 +407,32 @@ export function Chartable({ props, workspace }) {
   );
 }
 
+const customTooltip = (props) => {
+  const { payload, active } = props;
+  if (!active || !payload) return null;
+  const categoryPayload = payload?.[0];
+  if (!categoryPayload) return null;
+  return (
+    <div className="w-56 bg-zinc-400 rounded-lg border p-2 text-white">
+      <div className="flex flex-1 space-x-2.5">
+        <div
+          className={`flex w-1.5 flex-col bg-${categoryPayload?.color}-500 rounded`}
+        />
+        <div className="w-full">
+          <div className="flex items-center justify-between space-x-8">
+            <p className="whitespace-nowrap text-right text-tremor-content">
+              {categoryPayload.name}
+            </p>
+            <p className="whitespace-nowrap text-right font-medium text-tremor-content-emphasis">
+              {categoryPayload.value}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function DownloadGraph({ onClick }) {
   const [loading, setLoading] = useState(false);
   const handleClick = async () => {
@@ -395,7 +442,7 @@ function DownloadGraph({ onClick }) {
   };
 
   return (
-    <div className="absolute top-0 right-0 z-50 cursor-pointer">
+    <div className="absolute top-3 right-3 z-50 cursor-pointer">
       <div className="flex flex-col items-center">
         <div className="p-1 rounded-full border-none">
           {loading ? (
@@ -406,7 +453,7 @@ function DownloadGraph({ onClick }) {
           ) : (
             <DownloadSimple
               weight="bold"
-              className="text-white/50 w-5 h-5"
+              className="text-white/50 w-5 h-5 hover:text-white"
               onClick={handleClick}
               aria-label="Download graph image"
             />
