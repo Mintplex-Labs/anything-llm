@@ -553,6 +553,10 @@ dialog::backdrop {
   padding-top: 10px;
 }
 
+.markdown ol li a {
+  text-decoration: underline;
+}
+
 .markdown ol li p a {
   text-decoration: underline;
 }

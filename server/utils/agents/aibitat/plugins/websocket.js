@@ -48,7 +48,13 @@ const websocket = {
       name: this.name,
       setup(aibitat) {
         aibitat.onError(async (error) => {
-          console.error(chalk.red(`   error: ${error?.message}`));
+          if (!!error?.message) {
+            console.error(chalk.red(`   error: ${error.message}`));
+            aibitat.introspect(
+              `Error encountered while running: ${error.message}`
+            );
+          }
+
           if (error instanceof RetryError) {
             console.error(chalk.red(`   retrying in 60 seconds...`));
             setTimeout(() => {
