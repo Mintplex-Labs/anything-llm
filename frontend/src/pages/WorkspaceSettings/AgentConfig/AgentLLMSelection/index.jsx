@@ -68,7 +68,7 @@ export default function AgentLLMSelection({
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           The specific LLM provider & model that will be used for this
-          workspace's @workspace agent.
+          workspace's @agent agent.
         </p>
       </div>
 

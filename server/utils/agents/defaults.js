@@ -13,7 +13,7 @@ const USER_AGENT = {
 };
 
 const WORKSPACE_AGENT = {
-  name: "@workspace",
+  name: "@agent",
   getDefinition: async () => {
     const defaultFunctions = [
       AgentPlugins.memory.name, // RAG

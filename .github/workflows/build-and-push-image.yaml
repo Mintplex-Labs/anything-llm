@@ -12,8 +12,7 @@ concurrency:
 
 on:
   push:
-    # branches: ['master'] # master branch only. Do not modify.
-    branches: ['agent-support'] # master branch only. Do not modify.
+    branches: ['master'] # master branch only. Do not modify.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
@@ -75,16 +74,12 @@ jobs:
         with:
           images: |
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
+            ghcr.io/${{ github.repository }}
           tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
-          # images: |
-          #   ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
-          #   ghcr.io/${{ github.repository }}
-          # tags: |
-          #   type=raw,value=latest,enable={{is_default_branch}}
-          #   type=ref,event=branch
-          #   type=ref,event=tag
-          #   type=ref,event=pr
+            type=ref,event=tag
+            type=ref,event=pr
 
 
       - name: Build and push multi-platform Docker image
@@ -93,8 +88,7 @@ jobs:
           context: .
           file: ./docker/Dockerfile
           push: true
-          # platforms: linux/amd64,linux/arm64
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha

@@ -73,14 +73,14 @@ export function AvailableAgents({
             <button
               onClick={() => {
                 setShowing(false);
-                sendCommand("@workspace ", false);
+                sendCommand("@agent ", false);
                 promptRef?.current?.focus();
               }}
               className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-col justify-start group"
             >
               <div className="w-full flex-col text-left flex pointer-events-none">
                 <div className="text-white text-sm">
-                  <b>@workspace</b> - the default agent for this workspace.
+                  <b>@agent</b> - the default agent for this workspace.
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <AbilityTag text="rag-search" />
