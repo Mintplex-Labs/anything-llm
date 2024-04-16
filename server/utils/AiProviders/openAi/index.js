@@ -46,32 +46,28 @@ class OpenAiLLM {
   promptWindowLimit() {
     switch (this.model) {
       case "gpt-3.5-turbo":
-        return 4096;
       case "gpt-3.5-turbo-1106":
-        return 16385;
-      case "gpt-4":
-        return 8192;
+        return 16_385;
+      case "gpt-4-turbo":
       case "gpt-4-1106-preview":
-        return 128000;
       case "gpt-4-turbo-preview":
-        return 128000;
+        return 128_000;
+      case "gpt-4":
+        return 8_192;
       case "gpt-4-32k":
-        return 32000;
+        return 32_000;
       default:
-        return 4096; // assume a fine-tune 3.5
+        return 4_096; // assume a fine-tune 3.5?
     }
   }
 
+  // Short circuit if name has 'gpt' since we now fetch models from OpenAI API
+  // via the user API key, so the model must be relevant and real.
+  // and if somehow it is not, chat will fail but that is caught.
+  // we don't want to hit the OpenAI api every chat because it will get spammed
+  // and introduce latency for no reason.
   async isValidChatCompletionModel(modelName = "") {
-    const validModels = [
-      "gpt-4",
-      "gpt-3.5-turbo",
-      "gpt-3.5-turbo-1106",
-      "gpt-4-1106-preview",
-      "gpt-4-turbo-preview",
-      "gpt-4-32k",
-    ];
-    const isPreset = validModels.some((model) => modelName === model);
+    const isPreset = modelName.toLowerCase().includes("gpt");
     if (isPreset) return true;
 
     const model = await this.openai

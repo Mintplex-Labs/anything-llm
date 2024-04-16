@@ -154,6 +154,14 @@ const Workspace = {
 
     return result;
   },
+  wipeVectorDb: async function (slug) {
+    return await fetch(`${API_BASE()}/workspace/${slug}/reset-vector-db`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.ok)
+      .catch(() => false);
+  },
   uploadFile: async function (slug, formData) {
     const response = await fetch(`${API_BASE()}/workspace/${slug}/upload`, {
       method: "POST",
@@ -235,7 +243,7 @@ const Workspace = {
   threads: WorkspaceThread,
 
   uploadPfp: async function (formData, slug) {
-    return await fetch(`${API_BASE}/workspace/${slug}/upload-pfp`, {
+    return await fetch(`${API_BASE()}/workspace/${slug}/upload-pfp`, {
       method: "POST",
       body: formData,
       headers: baseHeaders(),
@@ -251,7 +259,7 @@ const Workspace = {
   },
 
   fetchPfp: async function (slug) {
-    return await fetch(`${API_BASE}/workspace/${slug}/pfp`, {
+    return await fetch(`${API_BASE()}/workspace/${slug}/pfp`, {
       method: "GET",
       cache: "no-cache",
       headers: baseHeaders(),
@@ -268,7 +276,7 @@ const Workspace = {
   },
 
   removePfp: async function (slug) {
-    return await fetch(`${API_BASE}/workspace/${slug}/remove-pfp`, {
+    return await fetch(`${API_BASE()}/workspace/${slug}/remove-pfp`, {
       method: "DELETE",
       headers: baseHeaders(),
     })
