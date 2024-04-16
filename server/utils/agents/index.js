@@ -157,8 +157,8 @@ class AgentHandler {
     }
   ) {
     this.aibitat = new AIbitat({
-      provider: "openai",
-      model: "gpt-3.5-turbo",
+      provider: this.provider ?? "openai",
+      model: this.model ?? "gpt-3.5-turbo",
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,
