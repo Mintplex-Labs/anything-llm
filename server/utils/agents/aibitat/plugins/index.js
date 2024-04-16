@@ -1,4 +1,5 @@
-const { experimental_webBrowsing } = require("./web-browsing.js");
+const { webBrowsing } = require("./web-browsing.js");
+const { webScraping } = require("./web-scraping.js");
 const { websocket } = require("./websocket.js");
 const { docSummarizer } = require("./summarize.js");
 const { saveFileInBrowser } = require("./save-file-browser.js");
@@ -7,7 +8,8 @@ const { memory } = require("./memory.js");
 const { rechart } = require("./rechart.js");
 
 module.exports = {
-  experimental_webBrowsing,
+  webScraping,
+  webBrowsing,
   websocket,
   docSummarizer,
   saveFileInBrowser,
@@ -16,7 +18,8 @@ module.exports = {
   rechart,
 
   // Plugin name aliases so they can be pulled by slug as well.
-  [experimental_webBrowsing.name]: experimental_webBrowsing,
+  [webScraping.name]: webScraping,
+  [webBrowsing.name]: webBrowsing,
   [websocket.name]: websocket,
   [docSummarizer.name]: docSummarizer,
   [saveFileInBrowser.name]: saveFileInBrowser,

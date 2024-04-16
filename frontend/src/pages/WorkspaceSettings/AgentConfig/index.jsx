@@ -176,6 +176,13 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
             disabled={true}
           />
           <GenericSkill
+            title="Scrape websites"
+            description="Allow the agent to visit and scrape the content of websites."
+            settings={settings}
+            enabled={true}
+            disabled={true}
+          />
+          <GenericSkill
             title="Generate charts"
             description="Enable the default agent to generate various types of charts from data provided or given in chat."
             skill="create-chart"

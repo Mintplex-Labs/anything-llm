@@ -144,6 +144,24 @@ class AIbitat {
   }
 
   /**
+   * Triggered when a plugin, socket, or command is aborted.
+   *
+   * @param listener
+   * @returns
+   */
+  onAbort(listener = () => null) {
+    this.emitter.on("abort", listener);
+    return this;
+  }
+
+  /**
+   * Abort the running of any plugins that may still be pending (Langchain summarize)
+   */
+  abort() {
+    this.emitter.emit("abort", null, this);
+  }
+
+  /**
    * Triggered when a chat is terminated. After this, the chat can't be continued.
    *
    * @param listener

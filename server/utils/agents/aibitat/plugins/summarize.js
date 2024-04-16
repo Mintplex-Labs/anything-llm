@@ -1,10 +1,7 @@
-const { loadSummarizationChain } = require("langchain/chains");
-const { ChatOpenAI } = require("langchain/chat_models/openai");
-const { PromptTemplate } = require("langchain/prompts");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { Document } = require("../../../../models/documents");
 const { safeJsonParse } = require("../../../http");
 const { validate } = require("uuid");
+const { summarizeContent } = require("../utils/summarize");
 
 const docSummarizer = {
   name: "document-summarizer",
@@ -18,6 +15,7 @@ const docSummarizer = {
         aibitat.function({
           super: aibitat,
           name: this.name,
+          controller: new AbortController(),
           description:
             "Can get the list of files available to search with descriptions and can select a single file to open and summarize.",
           parameters: {
@@ -102,58 +100,24 @@ const docSummarizer = {
               this.super.introspect(
                 `${this.caller}: Summarizing ${document?.title ?? ""}...`
               );
-              return await this.summarize(document.content);
+
+              this.super.onAbort(() => {
+                this.super.handlerProps.log(
+                  "Abort was triggered, exiting summarization early."
+                );
+                this.controller.abort();
+              });
+
+              return await summarizeContent(
+                this.controller.signal,
+                document.content
+              );
             } catch (error) {
               this.super.handlerProps.log(
                 `document-summarizer.summarizeDoc raised an error. ${error.message}`
               );
               return `Let the user know this action was not successful. An error was raised while summarizing the file. ${error.message}`;
             }
-          },
-
-          /**
-           * Summarize content using OpenAI's GPT-3.5 model.
-           *
-           * @param content The content to summarize.
-           * @returns The summarized content.
-           */
-          summarize: async function (content) {
-            const llm = new ChatOpenAI({
-              openAIApiKey: process.env.OPEN_AI_KEY,
-              temperature: 0,
-              modelName: "gpt-3.5-turbo-16k-0613",
-            });
-
-            const textSplitter = new RecursiveCharacterTextSplitter({
-              separators: ["\n\n", "\n"],
-              chunkSize: 10000,
-              chunkOverlap: 500,
-            });
-            const docs = await textSplitter.createDocuments([content]);
-
-            const mapPrompt = `
-      Write a detailed summary of the following text for a research purpose:
-      "{text}"
-      SUMMARY:
-      `;
-
-            const mapPromptTemplate = new PromptTemplate({
-              template: mapPrompt,
-              inputVariables: ["text"],
-            });
-
-            // This convenience function creates a document chain prompted to summarize a set of documents.
-            const chain = loadSummarizationChain(llm, {
-              type: "map_reduce",
-              combinePrompt: mapPromptTemplate,
-              combineMapPrompt: mapPromptTemplate,
-              verbose: true,
-            });
-            const res = await chain.call({
-              input_documents: docs,
-            });
-
-            return res.text;
           },
         });
       },
