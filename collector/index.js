@@ -9,7 +9,7 @@ const path = require("path");
 const { ACCEPTED_MIMES } = require("./utils/constants");
 const { reqBody } = require("./utils/http");
 const { processSingleFile } = require("./processSingleFile");
-const { processLink } = require("./processLink");
+const { processLink, getLinkText } = require("./processLink");
 const { wipeCollectorStorage } = require("./utils/files");
 const extensions = require("./extensions");
 const { processRawText } = require("./processRawText");
@@ -70,6 +70,26 @@ app.post(
         success: false,
         reason: "A processing error occurred.",
         documents: [],
+      });
+    }
+    return;
+  }
+);
+
+app.post(
+  "/util/get-link",
+  [verifyPayloadIntegrity],
+  async function (request, response) {
+    const { link } = reqBody(request);
+    try {
+      const { success, content = null } = await getLinkText(link);
+      response.status(200).json({ url: link, success, content });
+    } catch (e) {
+      console.error(e);
+      response.status(200).json({
+        url: link,
+        success: false,
+        content: null,
       });
     }
     return;

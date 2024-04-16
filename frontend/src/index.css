@@ -553,6 +553,10 @@ dialog::backdrop {
   padding-top: 10px;
 }
 
+.markdown ol li p a {
+  text-decoration: underline;
+}
+
 .markdown ul {
   list-style: revert-layer;
   /* color: #cfcfcfcf; */
@@ -575,6 +579,10 @@ dialog::backdrop {
   line-height: 1.4rem;
 }
 
+.markdownul li a {
+  text-decoration: underline;
+}
+
 .markdown ul li > ul {
   padding-left: 20px;
   margin: 0px;
@@ -583,6 +591,11 @@ dialog::backdrop {
 .markdown p {
   font-weight: 400;
   margin: 0.35rem;
+}
+
+.markdown > p > a,
+.markdown p a {
+  text-decoration: underline;
 }
 
 .markdown {

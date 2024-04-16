@@ -28,7 +28,7 @@ export default function StopGenerationButton() {
             cx="10"
             cy="10.562"
             r="9"
-            stroke-width="2"
+            strokeWidth="2"
           />
           <rect
             className="group-hover:fill-[#46C8FF] fill-white"

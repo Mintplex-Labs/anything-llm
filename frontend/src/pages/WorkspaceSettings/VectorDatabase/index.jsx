@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import VectorDBIdentifier from "./VectorDBIdentifier";
 import MaxContextSnippets from "./MaxContextSnippets";
 import DocumentSimilarityThreshold from "./DocumentSimilarityThreshold";
+import ResetDatabase from "./ResetDatabase";
 
 export default function VectorDatabase({ workspace }) {
   const [hasChanges, setHasChanges] = useState(false);
@@ -43,6 +44,7 @@ export default function VectorDatabase({ workspace }) {
         workspace={workspace}
         setHasChanges={setHasChanges}
       />
+      <ResetDatabase workspace={workspace} />
       {hasChanges && (
         <button
           type="submit"

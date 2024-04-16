@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import SlashCommandIcon from "./icons/slash-commands-icon.svg";
 import { Tooltip } from "react-tooltip";
+import ResetCommand from "./reset";
+import EndAgentSession from "./endAgentSession";
 
 export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
   return (
@@ -38,7 +40,6 @@ export function SlashCommands({ showing, setShowing, sendCommand }) {
     listenForOutsideClick();
   }, [showing, cmdRef.current]);
 
-  if (!showing) return null;
   const closeIfOutside = ({ target }) => {
     if (target.id === "slash-cmd-btn") return;
     const isOutside = !cmdRef?.current?.contains(target);
@@ -47,25 +48,15 @@ export function SlashCommands({ showing, setShowing, sendCommand }) {
   };
 
   return (
-    <div className="w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4">
-      <div
-        ref={cmdRef}
-        className="w-[600px] p-2 bg-zinc-800 rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex"
-      >
-        <button
-          onClick={() => {
-            setShowing(false);
-            sendCommand("/reset", true);
-          }}
-          className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-col justify-start"
+    <div hidden={!showing}>
+      <div className="w-full flex justify-center absolute bottom-[130px] md:bottom-[150px] left-0 z-10 px-4">
+        <div
+          ref={cmdRef}
+          className="w-[600px] p-2 bg-zinc-800 rounded-2xl shadow flex-col justify-center items-start gap-2.5 inline-flex"
         >
-          <div className="w-full flex-col text-left flex pointer-events-none">
-            <div className="text-white text-sm font-bold">/reset</div>
-            <div className="text-white text-opacity-60 text-sm">
-              Clear your chat history and begin a new chat
-            </div>
-          </div>
-        </button>
+          <ResetCommand sendCommand={sendCommand} setShowing={setShowing} />
+          <EndAgentSession sendCommand={sendCommand} setShowing={setShowing} />
+        </div>
       </div>
     </div>
   );

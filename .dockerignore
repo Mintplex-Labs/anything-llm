@@ -1,3 +1,4 @@
+**/server/utils/agents/aibitat/example/**
 **/server/storage/documents/**
 **/server/storage/vector-cache/**
 **/server/storage/*.db
