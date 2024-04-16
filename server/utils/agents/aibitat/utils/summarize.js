@@ -39,7 +39,7 @@ async function summarizeContent(controllerSignal, content) {
     type: "map_reduce",
     combinePrompt: mapPromptTemplate,
     combineMapPrompt: mapPromptTemplate,
-    verbose: true,
+    verbose: process.env.NODE_ENV === 'development',
   });
   const res = await chain.call({
     ...(controllerSignal ? { signal: controllerSignal } : {}),
