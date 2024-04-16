@@ -102,11 +102,14 @@ class OpenAIProvider extends Provider {
         cost,
       };
     } catch (error) {
-      console.log(error);
+      // If invalid Auth error we need to abort because no amount of waiting
+      // will make auth better.
+      if (error instanceof OpenAI.AuthenticationError) throw error;
+
       if (
         error instanceof OpenAI.RateLimitError ||
         error instanceof OpenAI.InternalServerError ||
-        error instanceof OpenAI.APIError
+        error instanceof OpenAI.APIError // Also will catch AuthenticationError!!!
       ) {
         throw new RetryError(error.message);
       }

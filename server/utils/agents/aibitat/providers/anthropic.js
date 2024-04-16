@@ -117,10 +117,14 @@ class AnthropicProvider extends Provider {
         cost,
       };
     } catch (error) {
+      // If invalid Auth error we need to abort because no amount of waiting
+      // will make auth better.
+      if (error instanceof Anthropic.AuthenticationError) throw error;
+
       if (
         error instanceof Anthropic.RateLimitError ||
         error instanceof Anthropic.InternalServerError ||
-        error instanceof Anthropic.APIError
+        error instanceof Anthropic.APIError // Also will catch AuthenticationError!!!
       ) {
         throw new RetryError(error.message);
       }
