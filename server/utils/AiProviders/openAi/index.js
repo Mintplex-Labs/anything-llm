@@ -25,7 +25,6 @@ class OpenAiLLM {
       );
     this.embedder = !embedder ? new OpenAiEmbedder() : embedder;
     this.defaultTemp = 0.7;
-    this.validModel = null;
   }
 
   #appendContext(contextTexts = []) {
@@ -69,8 +68,6 @@ class OpenAiLLM {
   // and introduce latency for no reason.
   async isValidChatCompletionModel(modelName = "") {
     const isPreset = modelName.toLowerCase().includes("gpt");
-
-    console.log("max", this.promptWindowLimit());
     if (isPreset) return true;
 
     const model = await this.openai
