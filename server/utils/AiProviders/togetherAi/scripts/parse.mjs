@@ -8,7 +8,9 @@
 // copy outputs into the export in ../models.js
 
 // Update the date below if you run this again because TogetherAI added new models.
-// Last Collected: Jan 10, 2023
+// Last Collected: Apr 14, 2024
+// Since last collection Together's docs are broken. I just copied the HTML table
+// and had claude3 convert to markdown and it works well enough.
 
 import fs from "fs";
 

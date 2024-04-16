@@ -20,6 +20,10 @@ const LLM_DEFAULT = {
   requiredConfig: [],
 };
 
+const LLMS = [LLM_DEFAULT, ...AVAILABLE_LLM_PROVIDERS].filter(
+  (llm) => !DISABLED_PROVIDERS.includes(llm.value)
+);
+
 export default function WorkspaceLLMSelection({
   settings,
   workspace,
@@ -32,9 +36,6 @@ export default function WorkspaceLLMSelection({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
-  const LLMS = [LLM_DEFAULT, ...AVAILABLE_LLM_PROVIDERS].filter(
-    (llm) => !DISABLED_PROVIDERS.includes(llm.value)
-  );
 
   function updateLLMChoice(selection) {
     setSearchQuery("");
