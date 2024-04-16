@@ -12,7 +12,8 @@ concurrency:
 
 on:
   push:
-    branches: ['master'] # master branch only. Do not modify.
+    # branches: ['master'] # master branch only. Do not modify.
+    branches: ['agent-support'] # master branch only. Do not modify.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
