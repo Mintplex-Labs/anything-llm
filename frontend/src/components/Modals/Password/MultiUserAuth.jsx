@@ -30,7 +30,7 @@ export default function MultiUserAuth() {
 
   return (
     <form onSubmit={handleLogin}>
-      <div className="flex flex-col justify-center items-center relative rounded-2xl w-[400px] bg-login-gradient shadow-[0_4px_14px_rgba(0,0,0,0.25)]">
+      <div className="flex flex-col justify-center items-center relative rounded-2xl bg-login-gradient shadow-[0_4px_14px_rgba(0,0,0,0.25)] px-12 py-12">
         <div className="flex items-start justify-between pt-11 pb-9 rounded-t">
           <div className="flex items-center flex-col gap-y-4">
             <h3 className="text-md md:text-2xl font-bold text-white text-center">
@@ -68,13 +68,19 @@ export default function MultiUserAuth() {
             {error && <p className="text-red-400 text-sm">Error: {error}</p>}
           </div>
         </div>
-        <div className="flex items-center p-12 space-x-2 border-gray-600 w-full">
+        <div className="flex items-center p-12 space-x-2 border-gray-600 w-full flex-col gap-y-8">
           <button
             disabled={loading}
             type="submit"
             className="text-[#46C8FF] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] h-[34px] hover:text-white hover:bg-[#46C8FF] focus:z-10 w-full"
           >
             {loading ? "Validating..." : "Login"}
+          </button>
+          <button
+            type="button"
+            className="text-white text-sm flex gap-x-1 hover:text-[#46C8FF] hover:underline"
+          >
+            Forgot password?<b>Reset</b>
           </button>
         </div>
       </div>

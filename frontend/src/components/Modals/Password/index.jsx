@@ -13,22 +13,20 @@ import illustration from "@/media/illustrations/login-illustration.svg";
 export default function PasswordModal({ mode = "single" }) {
   const { logo: _initLogo } = useLogo();
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-[#25272C] flex items-center justify-center">
-      {/* <div
-        className="fixed top-0 left-0 right-0 bottom-0 z-40 animate-slow-pulse"
-        style={{
-          background: `
-            radial-gradient(circle at center, transparent 40%, black 100%),
-            linear-gradient(180deg, #FF8585 0%, #D4A447 100%)
-          `,
-          width: "575px",
-          filter: "blur(200px)",
-          margin: "auto",
-        }}
-      /> */}
-      <img src={illustration} alt="login illustration" />
-      <div className="flex flex-col items-center justify-center h-full w-full z-50">
-        <img src={_initLogo} className="mb-20 w-80 opacity-80" alt="logo" />
+    <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-[#25272C] flex flex-col md:flex-row items-center justify-center">
+      <div className="hidden md:flex md:w-1/2 md:h-full md:items-center md:justify-center">
+        <img
+          className="w-full h-full object-contain"
+          src={illustration}
+          alt="login illustration"
+        />
+      </div>
+      <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50">
+        <img
+          src={_initLogo}
+          className="mb-8 md:mb-12 w-64 md:w-80 opacity-80"
+          alt="logo"
+        />
         {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth />}
       </div>
     </div>
