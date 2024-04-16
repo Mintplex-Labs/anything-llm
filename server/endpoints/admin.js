@@ -17,7 +17,7 @@ const {
   canModifyAdmin,
   validCanModify,
 } = require("../utils/helpers/admin");
-const { reqBody, userFromSession } = require("../utils/http");
+const { reqBody, userFromSession, safeJsonParse } = require("../utils/http");
 const {
   strictMultiUserRoleValid,
   flexUserRoleValid,
@@ -347,6 +347,15 @@ function adminEndpoints(app) {
               ?.value || null,
           max_embed_chunk_size:
             getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1000,
+          agent_search_provider:
+            (await SystemSettings.get({ label: "agent_search_provider" }))
+              ?.value || null,
+          default_agent_skills:
+            safeJsonParse(
+              (await SystemSettings.get({ label: "default_agent_skills" }))
+                ?.value,
+              []
+            ) || [],
         };
         response.status(200).json({ settings });
       } catch (e) {

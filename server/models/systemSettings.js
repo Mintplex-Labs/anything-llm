@@ -22,6 +22,8 @@ const SystemSettings = {
     "support_email",
     "text_splitter_chunk_size",
     "text_splitter_chunk_overlap",
+    "agent_search_provider",
+    "default_agent_skills",
   ],
   validations: {
     footer_data: (updates) => {
@@ -59,6 +61,28 @@ const SystemSettings = {
           e.message
         );
         return 20;
+      }
+    },
+    agent_search_provider: (update) => {
+      try {
+        if (!["google-search-engine", "serper-dot-dev"].includes(update))
+          throw new Error("Invalid SERP provider.");
+        return String(update);
+      } catch (e) {
+        console.error(
+          `Failed to run validation function on agent_search_provider`,
+          e.message
+        );
+        return null;
+      }
+    },
+    default_agent_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch (e) {
+        console.error(`Could not validate agent skills.`);
+        return JSON.stringify([]);
       }
     },
   },
@@ -104,6 +128,13 @@ const SystemSettings = {
       // - then it can be shared.
       // --------------------------------------------------------
       WhisperProvider: process.env.WHISPER_PROVIDER || "local",
+
+      // --------------------------------------------------------
+      // Agent Settings & Configs
+      // --------------------------------------------------------
+      AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
+      AgentGoogleSearchEngineKey: process.env.AGENT_GSE_KEY || null,
+      AgentSerperApiKey: process.env.AGENT_SERPER_DEV_KEY || null,
     };
   },
 
