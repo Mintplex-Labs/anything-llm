@@ -205,20 +205,30 @@ async function streamChatWithWorkspace(
     });
   }
 
-  const { chat } = await WorkspaceChats.new({
-    workspaceId: workspace.id,
-    prompt: message,
-    response: { text: completeText, sources, type: chatMode },
-    threadId: thread?.id || null,
-    user,
-  });
+  if (completeText?.length > 0) {
+    const { chat } = await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: { text: completeText, sources, type: chatMode },
+      threadId: thread?.id || null,
+      user,
+    });
+
+    writeResponseChunk(response, {
+      uuid,
+      type: "finalizeResponseStream",
+      close: true,
+      error: false,
+      chatId: chat.id,
+    });
+    return;
+  }
 
   writeResponseChunk(response, {
     uuid,
     type: "finalizeResponseStream",
     close: true,
     error: false,
-    chatId: chat.id,
   });
   return;
 }
