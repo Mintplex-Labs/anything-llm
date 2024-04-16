@@ -1,7 +1,7 @@
 import { v4 } from "uuid";
 import { safeJsonParse } from "../request";
 import { saveAs } from "file-saver";
-import { API_BASE } from "../constants";
+import { _API_BASE_URL } from "../constants";
 import { useEffect, useState } from "react";
 
 export const AGENT_SESSION_START = "agentSessionStart";
@@ -15,7 +15,8 @@ const handledEvents = [
 
 export function websocketURI() {
   const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  if (API_BASE === "/api") return `${wsProtocol}//${window.location.host}`;
+  if (_API_BASE_URL.value === "/api")
+    return `${wsProtocol}//${window.location.host}`;
   return `${wsProtocol}//${new URL(import.meta.env.VITE_API_BASE).host}`;
 }
 

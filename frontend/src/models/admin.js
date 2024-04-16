@@ -105,7 +105,7 @@ const Admin = {
       });
   },
   workspaceUsers: async (workspaceId) => {
-    return await fetch(`${API_BASE}/admin/workspaces/${workspaceId}/users`, {
+    return await fetch(`${API_BASE()}/admin/workspaces/${workspaceId}/users`, {
       method: "GET",
       headers: baseHeaders(),
     })

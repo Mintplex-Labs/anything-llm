@@ -76,7 +76,7 @@ export function AvailableAgents({
                 sendCommand("@agent ", false);
                 promptRef?.current?.focus();
               }}
-              className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-col justify-start group"
+              className="border-none w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-col justify-start group"
             >
               <div className="w-full flex-col text-left flex pointer-events-none">
                 <div className="text-white text-sm">
@@ -95,7 +95,7 @@ export function AvailableAgents({
             <button
               type="button"
               disabled={true}
-              className="w-full rounded-xl flex flex-col justify-start group"
+              className="border-none w-full rounded-xl flex flex-col justify-start group"
             >
               <div className="w-full flex-col text-center flex pointer-events-none">
                 <div className="text-white text-xs text-white/50 italic">

@@ -84,7 +84,7 @@ async function getPageContent(link) {
     return pageContents;
   } catch (error) {
     console.error(
-      "getPageContent failed to be fetched by puppeteer - falling back to fetch!",
+      "getPageContent failed to be fetched by electron - falling back to fetch!",
       error
     );
   }
