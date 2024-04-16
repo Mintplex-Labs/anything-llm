@@ -41,6 +41,7 @@ function agentWebsocket(app) {
           agentHandler.log(
             `User invoked bail command while processing. Closing session now.`
           );
+          agentHandler.aibitat.abort();
           socket.close();
           return;
         }

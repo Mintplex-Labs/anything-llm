@@ -1,8 +1,5 @@
-const { loadSummarizationChain } = require("langchain/chains");
-const { ChatOpenAI } = require("langchain/chat_models/openai");
-const { PromptTemplate } = require("langchain/prompts");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 const { CollectorApi } = require("../../../collectorApi");
+const { summarizeContent } = require("../utils/summarize");
 
 const webScraping = {
   name: "web-scraping",
@@ -16,6 +13,7 @@ const webScraping = {
         aibitat.function({
           super: aibitat,
           name: this.name,
+          controller: new AbortController(),
           description:
             "Scrapes the content of a webpage or online resource from a URL.",
           parameters: {
@@ -67,61 +65,16 @@ const webScraping = {
               return content;
             }
 
-            console.log(
-              `Text is too long. Summarizing content.\n${content.slice(
-                0,
-                50
-              )}...`
-            );
             this.super.introspect(
               `${this.caller}: This page's content is way too long. I will summarize it right now.`
             );
-            return this.summarize(content);
-          },
-
-          /**
-           * Summarize content using OpenAI's GPT-3.5 model.
-           *
-           * @param content The content to summarize.
-           * @returns The summarized content.
-           */
-          summarize: async function (content) {
-            const llm = new ChatOpenAI({
-              openAIApiKey: process.env.OPEN_AI_KEY,
-              temperature: 0,
-              modelName: "gpt-3.5-turbo-16k-0613",
+            this.super.onAbort(() => {
+              this.super.handlerProps.log(
+                "Abort was triggered, exiting summarization early."
+              );
+              this.controller.abort();
             });
-
-            const textSplitter = new RecursiveCharacterTextSplitter({
-              separators: ["\n\n", "\n"],
-              chunkSize: 10000,
-              chunkOverlap: 500,
-            });
-            const docs = await textSplitter.createDocuments([content]);
-
-            const mapPrompt = `
-      Write a detailed summary of the following text for a research purpose:
-      "{text}"
-      SUMMARY:
-      `;
-
-            const mapPromptTemplate = new PromptTemplate({
-              template: mapPrompt,
-              inputVariables: ["text"],
-            });
-
-            // This convenience function creates a document chain prompted to summarize a set of documents.
-            const chain = loadSummarizationChain(llm, {
-              type: "map_reduce",
-              combinePrompt: mapPromptTemplate,
-              combineMapPrompt: mapPromptTemplate,
-              verbose: true,
-            });
-            const res = await chain.call({
-              input_documents: docs,
-            });
-
-            return res.text;
+            return summarizeContent(this.controller.signal, content);
           },
         });
       },
