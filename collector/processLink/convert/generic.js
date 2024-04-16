@@ -3,7 +3,7 @@ const { writeToServerDocuments } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
-async function scrapeGenericUrl(link) {
+async function scrapeGenericUrl(link, textOnly = false) {
   console.log(`-- Working URL ${link} --`);
   const content = await getPageContent(link);
 
@@ -13,6 +13,13 @@ async function scrapeGenericUrl(link) {
       success: false,
       reason: `No URL content found at ${link}.`,
       documents: [],
+    };
+  }
+
+  if (textOnly) {
+    return {
+      success: true,
+      content,
     };
   }
 
@@ -76,8 +83,26 @@ async function getPageContent(link) {
 
     return pageContents;
   } catch (error) {
-    console.error("getPageContent failed!", error);
+    console.error(
+      "getPageContent failed to be fetched by electron - falling back to fetch!",
+      error
+    );
   }
+
+  try {
+    const pageText = await fetch(link, {
+      method: "GET",
+      headers: {
+        "Content-Type": "text/plain",
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36,gzip(gfe)",
+      },
+    }).then((res) => res.text());
+    return pageText;
+  } catch (error) {
+    console.error("getPageContent failed to be fetched by any method.", error);
+  }
+
   return null;
 }
 

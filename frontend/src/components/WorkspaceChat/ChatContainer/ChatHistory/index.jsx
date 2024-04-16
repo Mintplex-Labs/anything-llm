@@ -99,6 +99,10 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
         const isLastBotReply =
           index === history.length - 1 && props.role === "assistant";
 
+        if (props?.type === "statusResponse" && !!props.content) {
+          return <StatusResponse key={props.uuid} props={props} />;
+        }
+
         if (isLastBotReply && props.animate) {
           return (
             <PromptReply
@@ -143,6 +147,22 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function StatusResponse({ props }) {
+  return (
+    <div className="flex justify-center items-end w-full">
+      <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
+        <div className="flex gap-x-5">
+          <span
+            className={`text-xs inline-block p-2 rounded-lg text-white/60 font-mono whitespace-pre-line`}
+          >
+            {props.content}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

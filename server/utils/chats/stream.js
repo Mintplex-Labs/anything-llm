@@ -3,6 +3,7 @@ const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
+const { grepAgents } = require("./agents");
 const {
   grepCommand,
   VALID_COMMANDS,
@@ -34,6 +35,17 @@ async function streamChatWithWorkspace(
     writeResponseChunk(response, data);
     return;
   }
+
+  // If is agent enabled chat we will exit this flow early.
+  const isAgentChat = await grepAgents({
+    uuid,
+    response,
+    message,
+    user,
+    workspace,
+    thread,
+  });
+  if (isAgentChat) return;
 
   const LLMConnector = getLLMProvider({
     provider: workspace?.chatProvider,
