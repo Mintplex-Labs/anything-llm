@@ -1,23 +1,21 @@
+import InputField from "@/components/lib/InputField";
+
 export default function AnthropicAiOptions({ settings }) {
   return (
     <div className="w-full flex flex-col">
       <div className="w-full flex items-center gap-4">
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Anthropic API Key
-          </label>
-          <input
-            type="password"
-            name="AnthropicApiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="Anthropic Claude-2 API Key"
-            defaultValue={settings?.AnthropicApiKey ? "*".repeat(20) : ""}
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-
+        <InputField
+          type="password"
+          name="AnthropicApiKey"
+          placeholder="Anthropic Claude-2 API Key"
+          defaultValue={settings?.AnthropicApiKey ? "*".repeat(20) : ""}
+          required={true}
+          autoComplete="off"
+          spellCheck={false}
+          label="Anthropic API Key"
+          inputClassName="w-full"
+          className="w-60"
+        />
         {!settings?.credentialsOnly && (
           <div className="flex flex-col w-60">
             <label className="text-white text-sm font-semibold block mb-4">

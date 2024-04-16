@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Info } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import System from "@/models/system";
+import InputField from "@/components/lib/InputField";
 
 export default function LMStudioOptions({ settings, showAlert = false }) {
   const [basePathValue, setBasePathValue] = useState(
@@ -29,42 +30,36 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
         </div>
       )}
       <div className="w-full flex items-center gap-4">
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            LMStudio Base URL
-          </label>
-          <input
-            type="url"
-            name="LMStudioBasePath"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="http://localhost:1234/v1"
-            defaultValue={settings?.LMStudioBasePath}
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-            onChange={(e) => setBasePathValue(e.target.value)}
-            onBlur={() => setBasePath(basePathValue)}
-          />
-        </div>
+        <InputField
+          type="url"
+          name="LMStudioBasePath"
+          placeholder="http://localhost:1234/v1"
+          defaultValue={settings?.LMStudioBasePath}
+          required={true}
+          autoComplete="off"
+          spellCheck={false}
+          label="LMStudio Base URL"
+          inputClassName="w-full"
+          className="w-60"
+          onChange={(e) => setBasePathValue(e.target.value)}
+          onBlur={() => setBasePath(basePathValue)}
+        />
         {!settings?.credentialsOnly && (
           <>
             <LMStudioModelSelection settings={settings} basePath={basePath} />
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-4">
-                Token context window
-              </label>
-              <input
-                type="number"
-                name="LMStudioTokenLimit"
-                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                placeholder="4096"
-                min={1}
-                onScroll={(e) => e.target.blur()}
-                defaultValue={settings?.LMStudioTokenLimit}
-                required={true}
-                autoComplete="off"
-              />
-            </div>
+            <InputField
+              type="number"
+              name="LMStudioTokenLimit"
+              placeholder="4096"
+              min={1}
+              onScroll={(e) => e.target.blur()}
+              defaultValue={settings?.LMStudioTokenLimit}
+              required={true}
+              autoComplete="off"
+              label="Token context window"
+              inputClassName="w-full"
+              className="w-60"
+            />
           </>
         )}
       </div>

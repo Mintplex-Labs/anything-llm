@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Flask } from "@phosphor-icons/react";
 import System from "@/models/system";
+import InputField from "@/components/lib/InputField";
 
 export default function NativeLLMOptions({ settings }) {
   return (
@@ -81,22 +82,19 @@ function NativeModelSelection({ settings }) {
           )}
         </select>
       </div>
-      <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
-          Token context window
-        </label>
-        <input
-          type="number"
-          name="NativeLLMTokenLimit"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-          placeholder="4096"
-          min={1}
-          onScroll={(e) => e.target.blur()}
-          defaultValue={settings?.NativeLLMTokenLimit}
-          required={true}
-          autoComplete="off"
-        />
-      </div>
+      <InputField
+        type="number"
+        name="NativeLLMTokenLimit"
+        placeholder="4096"
+        min={1}
+        onScroll={(e) => e.target.blur()}
+        defaultValue={settings?.NativeLLMTokenLimit}
+        required={true}
+        autoComplete="off"
+        label="Token context window"
+        inputClassName="w-full"
+        className="w-60"
+      />
     </>
   );
 }

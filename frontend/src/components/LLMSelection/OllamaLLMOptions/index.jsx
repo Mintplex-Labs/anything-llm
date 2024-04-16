@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import System from "@/models/system";
+import InputField from "@/components/lib/InputField";
 
 export default function OllamaLLMOptions({ settings }) {
   const [basePathValue, setBasePathValue] = useState(
@@ -10,42 +11,36 @@ export default function OllamaLLMOptions({ settings }) {
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4">
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Ollama Base URL
-          </label>
-          <input
-            type="url"
-            name="OllamaLLMBasePath"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="http://127.0.0.1:11434"
-            defaultValue={settings?.OllamaLLMBasePath}
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-            onChange={(e) => setBasePathValue(e.target.value)}
-            onBlur={() => setBasePath(basePathValue)}
-          />
-        </div>
+        <InputField
+          type="url"
+          name="OllamaLLMBasePath"
+          placeholder="http://127.0.0.1:11434"
+          defaultValue={settings?.OllamaLLMBasePath}
+          required={true}
+          autoComplete="off"
+          spellCheck={false}
+          label="Ollama Base URL"
+          inputClassName="w-full"
+          className="w-60"
+          onChange={(e) => setBasePathValue(e.target.value)}
+          onBlur={() => setBasePath(basePathValue)}
+        />
         {!settings?.credentialsOnly && (
           <>
             <OllamaLLMModelSelection settings={settings} basePath={basePath} />
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-4">
-                Token context window
-              </label>
-              <input
-                type="number"
-                name="OllamaLLMTokenLimit"
-                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                placeholder="4096"
-                min={1}
-                onScroll={(e) => e.target.blur()}
-                defaultValue={settings?.OllamaLLMTokenLimit}
-                required={true}
-                autoComplete="off"
-              />
-            </div>
+            <InputField
+              type="number"
+              name="OllamaLLMTokenLimit"
+              placeholder="4096"
+              min={1}
+              onScroll={(e) => e.target.blur()}
+              defaultValue={settings?.OllamaLLMTokenLimit}
+              required={true}
+              autoComplete="off"
+              label="Token context window"
+              inputClassName="w-full"
+              className="w-60"
+            />
           </>
         )}
       </div>

@@ -1,30 +1,29 @@
 import System from "@/models/system";
 import { useState, useEffect } from "react";
+import InputField from "@/components/lib/InputField";
 
 export default function TogetherAiOptions({ settings }) {
   return (
     <div className="flex gap-x-4">
-      <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
-          Together AI API Key
-        </label>
-        <input
-          type="password"
-          name="TogetherAiApiKey"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-          placeholder="Together AI API Key"
-          defaultValue={settings?.TogetherAiApiKey ? "*".repeat(20) : ""}
-          required={true}
-          autoComplete="off"
-          spellCheck={false}
-        />
-      </div>
+      <InputField
+        type="password"
+        name="TogetherAiApiKey"
+        placeholder="Together AI API Key"
+        defaultValue={settings?.TogetherAiApiKey ? "*".repeat(20) : ""}
+        required={true}
+        autoComplete="off"
+        spellCheck={false}
+        label="Together AI API Key"
+        inputClassName="w-full"
+        className="w-60"
+      />
       {!settings?.credentialsOnly && (
         <TogetherAiModelSelection settings={settings} />
       )}
     </div>
   );
 }
+
 function TogetherAiModelSelection({ settings }) {
   const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
@@ -33,17 +32,14 @@ function TogetherAiModelSelection({ settings }) {
     async function findCustomModels() {
       setLoading(true);
       const { models } = await System.customModels("togetherai");
-
       if (models?.length > 0) {
         const modelsByOrganization = models.reduce((acc, model) => {
           acc[model.organization] = acc[model.organization] || [];
           acc[model.organization].push(model);
           return acc;
         }, {});
-
         setGroupedModels(modelsByOrganization);
       }
-
       setLoading(false);
     }
     findCustomModels();

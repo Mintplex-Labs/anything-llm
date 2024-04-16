@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import System from "@/models/system";
+import InputField from "@/components/lib/InputField";
 
 export default function LocalAiOptions({ settings }) {
   const [basePathValue, setBasePathValue] = useState(
@@ -12,44 +13,36 @@ export default function LocalAiOptions({ settings }) {
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4">
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            LocalAI Base URL
-          </label>
-          <input
-            type="url"
-            name="EmbeddingBasePath"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="http://localhost:8080/v1"
-            defaultValue={settings?.EmbeddingBasePath}
-            onChange={(e) => setBasePathValue(e.target.value)}
-            onBlur={() => setBasePath(basePathValue)}
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
+        <InputField
+          type="url"
+          label="LocalAI Base URL"
+          name="EmbeddingBasePath"
+          placeholder="http://localhost:8080/v1"
+          defaultValue={settings?.EmbeddingBasePath}
+          onChange={(e) => setBasePathValue(e.target.value)}
+          onBlur={() => setBasePath(basePathValue)}
+          required={true}
+          autoComplete="off"
+          spellCheck={false}
+          className="w-60"
+        />
         <LocalAIModelSelection
           settings={settings}
           apiKey={apiKey}
           basePath={basePath}
         />
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Max embedding chunk length
-          </label>
-          <input
-            type="number"
-            name="EmbeddingModelMaxChunkLength"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="1000"
-            min={1}
-            onScroll={(e) => e.target.blur()}
-            defaultValue={settings?.EmbeddingModelMaxChunkLength}
-            required={false}
-            autoComplete="off"
-          />
-        </div>
+        <InputField
+          type="number"
+          label="Max embedding chunk length"
+          name="EmbeddingModelMaxChunkLength"
+          placeholder="1000"
+          min={1}
+          onScroll={(e) => e.target.blur()}
+          defaultValue={settings?.EmbeddingModelMaxChunkLength}
+          required={false}
+          autoComplete="off"
+          className="w-60"
+        />
       </div>
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
@@ -59,16 +52,16 @@ export default function LocalAiOptions({ settings }) {
               <p className="!text-xs !italic !font-thin">optional</p>
             </label>
           </div>
-          <input
+          <InputField
             type="password"
             name="LocalAiApiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="sk-mysecretkey"
             defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
             autoComplete="off"
             spellCheck={false}
             onChange={(e) => setApiKeyValue(e.target.value)}
             onBlur={() => setApiKey(apiKeyValue)}
+            className="w-60"
           />
         </div>
       </div>

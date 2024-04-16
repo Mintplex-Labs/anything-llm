@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Info } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import System from "@/models/system";
+import InputField from "@/components/lib/InputField";
 
 export default function LocalAiOptions({ settings, showAlert = false }) {
   const [basePathValue, setBasePathValue] = useState(settings?.LocalAiBasePath);
@@ -29,23 +30,20 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
         </div>
       )}
       <div className="w-full flex items-center gap-4">
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Local AI Base URL
-          </label>
-          <input
-            type="url"
-            name="LocalAiBasePath"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="http://localhost:1234/v1"
-            defaultValue={settings?.LocalAiBasePath}
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-            onChange={(e) => setBasePathValue(e.target.value)}
-            onBlur={() => setBasePath(basePathValue)}
-          />
-        </div>
+        <InputField
+          type="url"
+          name="LocalAiBasePath"
+          placeholder="http://localhost:1234/v1"
+          defaultValue={settings?.LocalAiBasePath}
+          required={true}
+          autoComplete="off"
+          spellCheck={false}
+          label="Local AI Base URL"
+          inputClassName="w-full"
+          className="w-60"
+          onChange={(e) => setBasePathValue(e.target.value)}
+          onBlur={() => setBasePath(basePathValue)}
+        />
         {!settings?.credentialsOnly && (
           <>
             <LocalAIModelSelection
@@ -53,46 +51,41 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
               basePath={basePath}
               apiKey={apiKey}
             />
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-4">
-                Token context window
-              </label>
-              <input
-                type="number"
-                name="LocalAiTokenLimit"
-                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                placeholder="4096"
-                min={1}
-                onScroll={(e) => e.target.blur()}
-                defaultValue={settings?.LocalAiTokenLimit}
-                required={true}
-                autoComplete="off"
-              />
-            </div>
+            <InputField
+              type="number"
+              name="LocalAiTokenLimit"
+              placeholder="4096"
+              min={1}
+              onScroll={(e) => e.target.blur()}
+              defaultValue={settings?.LocalAiTokenLimit}
+              required={true}
+              autoComplete="off"
+              label="Token context window"
+              inputClassName="w-full"
+              className="w-60"
+            />
           </>
         )}
       </div>
       <div className="w-full flex items-center gap-4">
-        <div className="flex flex-col w-60">
-          <div className="flex flex-col gap-y-1 mb-4">
-            <label className="text-white text-sm font-semibold flex items-center gap-x-2">
+        <InputField
+          type="password"
+          name="LocalAiApiKey"
+          placeholder="sk-mysecretkey"
+          defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
+          autoComplete="off"
+          spellCheck={false}
+          label={
+            <div className="flex flex-row gap-x-2 items-center">
               Local AI API Key{" "}
               <p className="!text-xs !italic !font-thin">optional</p>
-            </label>
-          </div>
-
-          <input
-            type="password"
-            name="LocalAiApiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="sk-mysecretkey"
-            defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
-            autoComplete="off"
-            spellCheck={false}
-            onChange={(e) => setApiKeyValue(e.target.value)}
-            onBlur={() => setApiKey(apiKeyValue)}
-          />
-        </div>
+            </div>
+          }
+          inputClassName="w-full"
+          className="w-60"
+          onChange={(e) => setApiKeyValue(e.target.value)}
+          onBlur={() => setApiKey(apiKeyValue)}
+        />
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import CTAButton from "@/components/lib/CTAButton";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
 import { nFormatter, numberWithCommas } from "@/utils/numbers";
+import InputField from "@/components/lib/InputField";
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -111,22 +112,12 @@ export default function EmbeddingTextSplitterPreference() {
 
               <div className="flex flex-col gap-y-4 mt-8">
                 <div className="flex flex-col max-w-[300px]">
-                  <div className="flex flex-col gap-y-2 mb-4">
-                    <label className="text-white text-sm font-semibold block">
-                      Text Chunk Size
-                    </label>
-                    <p className="text-xs text-white/60">
-                      This is the maximum length of characters that can be
-                      present in a single vector.
-                    </p>
-                  </div>
-                  <input
+                  <InputField
                     type="number"
                     name="text_splitter_chunk_size"
                     min={1}
                     max={settings?.max_embed_chunk_size || 1000}
                     onWheel={(e) => e?.currentTarget?.blur()}
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                     placeholder="maximum length of vectorized text"
                     defaultValue={
                       isNullOrNaN(settings?.text_splitter_chunk_size)
@@ -135,8 +126,12 @@ export default function EmbeddingTextSplitterPreference() {
                     }
                     required={true}
                     autoComplete="off"
+                    label="Text Chunk Size"
+                    description="This is the maximum length of characters that can be present in a single vector."
+                    inputClassName="w-full"
+                    className="w-full"
                   />
-                  <p className="text-xs text-white/40">
+                  <p className="text-xs text-white/40 mt-2">
                     Embed model maximum length is{" "}
                     {numberWithCommas(settings?.max_embed_chunk_size || 1000)}.
                   </p>
@@ -145,21 +140,11 @@ export default function EmbeddingTextSplitterPreference() {
 
               <div className="flex flex-col gap-y-4 mt-8">
                 <div className="flex flex-col max-w-[300px]">
-                  <div className="flex flex-col gap-y-2 mb-4">
-                    <label className="text-white text-sm font-semibold block">
-                      Text Chunk Overlap
-                    </label>
-                    <p className="text-xs text-white/60">
-                      This is the maximum overlap of characters that occurs
-                      during chunking between two adjacent text chunks.
-                    </p>
-                  </div>
-                  <input
+                  <InputField
                     type="number"
                     name="text_splitter_chunk_overlap"
                     min={0}
                     onWheel={(e) => e?.currentTarget?.blur()}
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                     placeholder="maximum length of vectorized text"
                     defaultValue={
                       isNullOrNaN(settings?.text_splitter_chunk_overlap)
@@ -168,6 +153,10 @@ export default function EmbeddingTextSplitterPreference() {
                     }
                     required={true}
                     autoComplete="off"
+                    label="Text Chunk Overlap"
+                    description="This is the maximum overlap of characters that occurs during chunking between two adjacent text chunks."
+                    inputClassName="w-full"
+                    className="w-full"
                   />
                 </div>
               </div>

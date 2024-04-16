@@ -1,24 +1,22 @@
 import System from "@/models/system";
 import { useState, useEffect } from "react";
+import InputField from "@/components/lib/InputField";
 
 export default function OpenRouterOptions({ settings }) {
   return (
     <div className="flex gap-x-4">
-      <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
-          OpenRouter API Key
-        </label>
-        <input
-          type="password"
-          name="OpenRouterApiKey"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-          placeholder="OpenRouter API Key"
-          defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
-          required={true}
-          autoComplete="off"
-          spellCheck={false}
-        />
-      </div>
+      <InputField
+        type="password"
+        name="OpenRouterApiKey"
+        placeholder="OpenRouter API Key"
+        defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
+        required={true}
+        autoComplete="off"
+        spellCheck={false}
+        label="OpenRouter API Key"
+        inputClassName="w-full"
+        className="w-60"
+      />
       {!settings?.credentialsOnly && (
         <OpenRouterModelSelection settings={settings} />
       )}
@@ -40,10 +38,8 @@ function OpenRouterModelSelection({ settings }) {
           acc[model.organization].push(model);
           return acc;
         }, {});
-
         setGroupedModels(modelsByOrganization);
       }
-
       setLoading(false);
     }
     findCustomModels();

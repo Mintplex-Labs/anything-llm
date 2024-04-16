@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
+import InputField from "@/components/lib/InputField";
 
 export default function MistralOptions({ settings }) {
   const [inputValue, setInputValue] = useState(settings?.MistralApiKey);
@@ -7,23 +8,20 @@ export default function MistralOptions({ settings }) {
 
   return (
     <div className="flex gap-x-4">
-      <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
-          Mistral API Key
-        </label>
-        <input
-          type="password"
-          name="MistralApiKey"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-          placeholder="Mistral API Key"
-          defaultValue={settings?.MistralApiKey ? "*".repeat(20) : ""}
-          required={true}
-          autoComplete="off"
-          spellCheck={false}
-          onChange={(e) => setInputValue(e.target.value)}
-          onBlur={() => setMistralKey(inputValue)}
-        />
-      </div>
+      <InputField
+        type="password"
+        name="MistralApiKey"
+        placeholder="Mistral API Key"
+        defaultValue={settings?.MistralApiKey ? "*".repeat(20) : ""}
+        required={true}
+        autoComplete="off"
+        spellCheck={false}
+        label="Mistral API Key"
+        inputClassName="w-full"
+        className="w-60"
+        onChange={(e) => setInputValue(e.target.value)}
+        onBlur={() => setMistralKey(inputValue)}
+      />
       {!settings?.credentialsOnly && (
         <MistralModelSelection settings={settings} apiKey={mistralKey} />
       )}

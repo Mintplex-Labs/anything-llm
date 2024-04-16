@@ -1,50 +1,41 @@
+import InputField from "@/components/lib/InputField";
+
 export default function ChromaDBOptions({ settings }) {
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4">
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Chroma Endpoint
-          </label>
-          <input
-            type="url"
-            name="ChromaEndpoint"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="http://localhost:8000"
-            defaultValue={settings?.ChromaEndpoint}
-            required={true}
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            API Header
-          </label>
-          <input
-            name="ChromaApiHeader"
-            autoComplete="off"
-            type="text"
-            defaultValue={settings?.ChromaApiHeader}
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="X-Api-Key"
-          />
-        </div>
-
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            API Key
-          </label>
-          <input
-            name="ChromaApiKey"
-            autoComplete="off"
-            type="password"
-            defaultValue={settings?.ChromaApiKey ? "*".repeat(20) : ""}
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="sk-myApiKeyToAccessMyChromaInstance"
-          />
-        </div>
+        <InputField
+          type="url"
+          name="ChromaEndpoint"
+          placeholder="http://localhost:8000"
+          defaultValue={settings?.ChromaEndpoint}
+          required={true}
+          autoComplete="off"
+          spellCheck={false}
+          label="Chroma Endpoint"
+          inputClassName="w-full"
+          className="w-60"
+        />
+        <InputField
+          type="text"
+          name="ChromaApiHeader"
+          placeholder="X-Api-Key"
+          defaultValue={settings?.ChromaApiHeader}
+          autoComplete="off"
+          label="API Header"
+          inputClassName="w-full"
+          className="w-60"
+        />
+        <InputField
+          type="password"
+          name="ChromaApiKey"
+          placeholder="sk-myApiKeyToAccessMyChromaInstance"
+          defaultValue={settings?.ChromaApiKey ? "*".repeat(20) : ""}
+          autoComplete="off"
+          label="API Key"
+          inputClassName="w-full"
+          className="w-60"
+        />
       </div>
     </div>
   );
