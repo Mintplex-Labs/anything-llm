@@ -1,18 +1,9 @@
-import { AGENT_SESSION_END, AGENT_SESSION_START } from "@/utils/chat/agent";
-import { useEffect, useState } from "react";
+import { useIsAgentSessionActive } from "@/utils/chat/agent";
 
 export default function EndAgentSession({ setShowing, sendCommand }) {
-  const [visible, setVisibility] = useState(false);
-  useEffect(() => {
-    function listenForAgentSession() {
-      if (!window) return;
-      window.addEventListener(AGENT_SESSION_START, () => setVisibility(true));
-      window.addEventListener(AGENT_SESSION_END, () => setVisibility(false));
-    }
-    listenForAgentSession();
-  }, []);
+  const isActiveAgentSession = useIsAgentSessionActive();
+  if (!isActiveAgentSession) return null;
 
-  if (!visible) return null;
   return (
     <button
       onClick={() => {

@@ -58,15 +58,16 @@ Some cool features of AnythingLLM
 - Extremely efficient cost-saving measures for managing very large documents. You'll never pay to embed a massive document or transcript more than once. 90% more cost effective than other document chatbot solutions.
 - Full Developer API for custom integrations!
 
-### Supported LLMs, Embedders, and Vector Databases
+### Supported LLMs, Embedders, Transcriptions models, and Vector Databases
 
 **Supported LLMs:**
 
 - [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-- [Anthropic ClaudeV2](https://www.anthropic.com/)
+- [Anthropic](https://www.anthropic.com/)
 - [Google Gemini Pro](https://ai.google.dev/)
+- [Hugging Face (chat models)](https://huggingface.co/)
 - [Ollama (chat models)](https://ollama.ai/)
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAi (all models)](https://localai.io/)
@@ -74,6 +75,7 @@ Some cool features of AnythingLLM
 - [Perplexity (chat models)](https://www.perplexity.ai/)
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [Mistral](https://mistral.ai/)
+- [Groq](https://groq.com/)
 
 **Supported Embedding models:**
 
@@ -83,6 +85,11 @@ Some cool features of AnythingLLM
 - [LM Studio (all)](https://lmstudio.ai)
 - [LocalAi (all)](https://localai.io/)
 - [Ollama (all)](https://ollama.ai/)
+
+**Supported Transcription models:**
+
+- [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
+- [OpenAI](https://openai.com/)
 
 **Supported Vector Databases:**
 

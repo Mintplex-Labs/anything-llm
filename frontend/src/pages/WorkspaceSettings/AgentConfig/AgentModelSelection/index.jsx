@@ -20,7 +20,7 @@ export default function AgentModelSelection({
           </label>
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
             The specific chat model that will be used for this workspace's
-            @workspace agent.
+            @agent agent.
           </p>
         </div>
         <select
@@ -44,8 +44,8 @@ export default function AgentModelSelection({
           Workspace Agent model
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          The specific LLM model that will be used for this workspace's
-          @workspace agent.
+          The specific LLM model that will be used for this workspace's @agent
+          agent.
         </p>
       </div>
 

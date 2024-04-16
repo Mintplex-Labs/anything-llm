@@ -52,9 +52,8 @@ export default function PromptInput({
 
   const checkForAt = (e) => {
     const input = e.target.value;
-    if (input === "@") setShowAgents(true);
-    if (showAgents) setShowAgents(false);
-    return;
+    if (input === "@") return setShowAgents(true);
+    if (showAgents) return setShowAgents(false);
   };
 
   const captureEnter = (event) => {
@@ -86,6 +85,7 @@ export default function PromptInput({
         showing={showAgents}
         setShowing={setShowAgents}
         sendCommand={sendCommand}
+        promptRef={textareaRef}
       />
       <form
         onSubmit={handleSubmit}

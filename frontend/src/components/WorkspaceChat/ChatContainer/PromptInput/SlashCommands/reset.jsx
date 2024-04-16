@@ -1,4 +1,9 @@
+import { useIsAgentSessionActive } from "@/utils/chat/agent";
+
 export default function ResetCommand({ setShowing, sendCommand }) {
+  const isActiveAgentSession = useIsAgentSessionActive();
+  if (isActiveAgentSession) return null; // cannot reset during active agent chat
+
   return (
     <button
       onClick={() => {

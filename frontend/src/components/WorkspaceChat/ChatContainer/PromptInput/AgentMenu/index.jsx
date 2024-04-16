@@ -3,20 +3,11 @@ import { Tooltip } from "react-tooltip";
 import { At, Flask, X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
-import { AGENT_SESSION_END, AGENT_SESSION_START } from "@/utils/chat/agent";
+import { useIsAgentSessionActive } from "@/utils/chat/agent";
 
 export default function AvailableAgentsButton({ showing, setShowAgents }) {
-  const [visible, setVisibility] = useState(true);
-  useEffect(() => {
-    function listenForAgentSession() {
-      if (!window) return;
-      window.addEventListener(AGENT_SESSION_START, () => setVisibility(false));
-      window.addEventListener(AGENT_SESSION_END, () => setVisibility(true));
-    }
-    listenForAgentSession();
-  }, []);
-
-  if (!visible) return null;
+  const agentSessionActive = useIsAgentSessionActive();
+  if (agentSessionActive) return null;
   return (
     <div
       id="agent-list-btn"
@@ -47,8 +38,14 @@ function AbilityTag({ text }) {
   );
 }
 
-export function AvailableAgents({ showing, setShowing, sendCommand }) {
+export function AvailableAgents({
+  showing,
+  setShowing,
+  sendCommand,
+  promptRef,
+}) {
   const formRef = useRef(null);
+  const agentSessionActive = useIsAgentSessionActive();
   useEffect(() => {
     function listenForOutsideClick() {
       if (!showing || !formRef.current) return false;
@@ -64,6 +61,7 @@ export function AvailableAgents({ showing, setShowing, sendCommand }) {
     setShowing(false);
   };
 
+  if (agentSessionActive) return null;
   return (
     <>
       <div hidden={!showing}>
@@ -75,13 +73,14 @@ export function AvailableAgents({ showing, setShowing, sendCommand }) {
             <button
               onClick={() => {
                 setShowing(false);
-                sendCommand("@workspace ", false);
+                sendCommand("@agent ", false);
+                promptRef?.current?.focus();
               }}
               className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-col justify-start group"
             >
               <div className="w-full flex-col text-left flex pointer-events-none">
                 <div className="text-white text-sm">
-                  <b>@workspace</b> - the default agent for this workspace.
+                  <b>@agent</b> - the default agent for this workspace.
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <AbilityTag text="rag-search" />
