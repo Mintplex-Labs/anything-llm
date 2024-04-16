@@ -1,8 +1,9 @@
 const AIbitat = require("../index.js");
 const {
   cli,
-  experimental_webBrowsing,
+  webBrowsing,
   fileHistory,
+  webScraping,
 } = require("../plugins/index.js");
 require("dotenv").config({ path: `../../../../.env.development` });
 
@@ -11,7 +12,8 @@ const aibitat = new AIbitat({
 })
   .use(cli.plugin())
   .use(fileHistory.plugin())
-  .use(experimental_webBrowsing.plugin()) // Does not have introspect so will fail.
+  .use(webBrowsing.plugin()) // Does not have introspect so will fail.
+  .use(webScraping.plugin())
   .agent("researcher", {
     role: `You are a Researcher. Conduct thorough research to gather all necessary information about the topic 
     you are writing about. Collect data, facts, and statistics. Analyze competitor blogs for insights. 

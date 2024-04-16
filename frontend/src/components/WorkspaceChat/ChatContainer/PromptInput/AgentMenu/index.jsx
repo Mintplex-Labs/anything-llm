@@ -85,8 +85,8 @@ export function AvailableAgents({ showing, setShowing, sendCommand }) {
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   <AbilityTag text="rag-search" />
+                  <AbilityTag text="web-scraping" />
                   <AbilityTag text="web-browsing" />
-                  <AbilityTag text="web-search" />
                   <AbilityTag text="save-file-to-browser" />
                   <AbilityTag text="list-documents" />
                   <AbilityTag text="summarize-document" />

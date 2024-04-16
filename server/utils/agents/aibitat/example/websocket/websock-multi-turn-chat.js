@@ -7,7 +7,8 @@ const chalk = require("chalk");
 const AIbitat = require("../../index.js");
 const {
   websocket,
-  experimental_webBrowsing,
+  webBrowsing,
+  webScraping,
 } = require("../../plugins/index.js");
 const path = require("path");
 const port = 3000;
@@ -71,7 +72,8 @@ async function runAIbitat(socket) {
     model: "gpt-3.5-turbo",
   })
     .use(websocket.plugin({ socket }))
-    .use(experimental_webBrowsing.plugin())
+    .use(webBrowsing.plugin())
+    .use(webScraping.plugin())
     .agent(Agent.HUMAN, {
       interrupt: "ALWAYS",
       role: "You are a human assistant.",

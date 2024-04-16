@@ -7,7 +7,8 @@ const chalk = require("chalk");
 const AIbitat = require("../../index.js");
 const {
   websocket,
-  experimental_webBrowsing,
+  webBrowsing,
+  webScraping,
 } = require("../../plugins/index.js");
 const path = require("path");
 const port = 3000;
@@ -63,7 +64,8 @@ async function runAIbitat(socket) {
     model: "gpt-4",
   })
     .use(websocket.plugin({ socket }))
-    .use(experimental_webBrowsing.plugin())
+    .use(webBrowsing.plugin())
+    .use(webScraping.plugin())
     .agent("creativeDirector", {
       role: `You are a Creative Director. Your role is overseeing the entire branding project, ensuring
        the client's brief is met, and maintaining consistency across all brand elements, developing the 

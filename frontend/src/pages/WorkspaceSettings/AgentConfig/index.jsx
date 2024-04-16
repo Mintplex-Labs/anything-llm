@@ -176,6 +176,13 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
             disabled={true}
           />
           <GenericSkill
+            title="Scrape websites"
+            description="Allow the agent to visit and scrape the content of websites."
+            settings={settings}
+            enabled={true}
+            disabled={true}
+          />
+          <GenericSkill
             title="Generate & save files to browser"
             description="Enable the default agent to generate and write to files that save and can be downloaded in your browser."
             skill="save-file-to-browser"
