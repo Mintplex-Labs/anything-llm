@@ -62,10 +62,13 @@ const webScraping = {
               );
             }
 
-            if (!content?.length)
+            if (!content || content?.length === 0) {
               throw new Error("There was no content to be collected or read.");
-            if (content.length < Provider.contextLimit(this.super.provider))
+            }
+
+            if (content.length < Provider.contextLimit(this.super.provider)) {
               return content;
+            }
 
             this.super.introspect(
               `${this.caller}: This page's content is way too long. I will summarize it right now.`

@@ -96,15 +96,19 @@ const docSummarizer = {
                   document?.title ?? "a discovered file."
                 }`
               );
-              if (!document.content)
+
+              if (!document.content || document.content.length === 0) {
                 throw new Error(
                   "This document has no readable content that could be found."
                 );
+              }
+
               if (
                 document.content?.length <
                 Provider.contextLimit(this.super.provider)
-              )
+              ) {
                 return document.content;
+              }
 
               this.super.introspect(
                 `${this.caller}: Summarizing ${document?.title ?? ""}...`
