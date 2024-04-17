@@ -50,6 +50,7 @@ class AgentHandler {
             from: USER_AGENT.name,
             to: WORKSPACE_AGENT.name,
             content: chatLog.prompt,
+            state: "success",
           },
           {
             from: WORKSPACE_AGENT.name,
