@@ -47,21 +47,85 @@ async function openAiModels(apiKey = null) {
     apiKey: apiKey || process.env.OPEN_AI_KEY,
   });
   const openai = new OpenAIApi(config);
-  const models = (
-    await openai
-      .listModels()
-      .then((res) => res.data.data)
-      .catch((e) => {
-        console.error(`OpenAI:listModels`, e.message);
-        return [];
-      })
-  ).filter(
-    (model) => !model.owned_by.includes("openai") && model.owned_by !== "system"
-  );
+  const allModels = await openai
+    .listModels()
+    .then((res) => res.data.data)
+    .catch((e) => {
+      console.error(`OpenAI:listModels`, e.message);
+      return [
+        {
+          name: "gpt-3.5-turbo",
+          id: "gpt-3.5-turbo",
+          object: "model",
+          created: 1677610602,
+          owned_by: "openai",
+          organization: "OpenAi",
+        },
+        {
+          name: "gpt-4",
+          id: "gpt-4",
+          object: "model",
+          created: 1687882411,
+          owned_by: "openai",
+          organization: "OpenAi",
+        },
+        {
+          name: "gpt-4-turbo",
+          id: "gpt-4-turbo",
+          object: "model",
+          created: 1712361441,
+          owned_by: "system",
+          organization: "OpenAi",
+        },
+        {
+          name: "gpt-4-32k",
+          id: "gpt-4-32k",
+          object: "model",
+          created: 1687979321,
+          owned_by: "openai",
+          organization: "OpenAi",
+        },
+        {
+          name: "gpt-3.5-turbo-16k",
+          id: "gpt-3.5-turbo-16k",
+          object: "model",
+          created: 1683758102,
+          owned_by: "openai-internal",
+          organization: "OpenAi",
+        },
+      ];
+    });
+
+  const gpts = allModels
+    .filter((model) => model.id.startsWith("gpt"))
+    .filter(
+      (model) => !model.id.includes("vision") && !model.id.includes("instruct")
+    )
+    .map((model) => {
+      return {
+        ...model,
+        name: model.id,
+        organization: "OpenAi",
+      };
+    });
+
+  const customModels = allModels
+    .filter(
+      (model) =>
+        !model.owned_by.includes("openai") && model.owned_by !== "system"
+    )
+    .map((model) => {
+      return {
+        ...model,
+        name: model.id,
+        organization: "Your Fine-Tunes",
+      };
+    });
 
   // Api Key was successful so lets save it for future uses
-  if (models.length > 0 && !!apiKey) process.env.OPEN_AI_KEY = apiKey;
-  return { models, error: null };
+  if ((gpts.length > 0 || customModels.length > 0) && !!apiKey)
+    process.env.OPEN_AI_KEY = apiKey;
+  return { models: [...gpts, ...customModels], error: null };
 }
 
 async function localAIModels(basePath = null, apiKey = null) {

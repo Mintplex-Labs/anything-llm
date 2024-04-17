@@ -24,6 +24,8 @@ const Workspace = {
     "topN",
     "chatMode",
     "pfpFilename",
+    "agentProvider",
+    "agentModel",
   ],
 
   new: async function (name = null, creatorId = null) {

@@ -56,19 +56,20 @@ model system_settings {
 }
 
 model users {
-  id              Int                 @id @default(autoincrement())
-  username        String?             @unique
-  password        String
-  pfpFilename     String?
-  role            String              @default("default")
-  suspended       Int                 @default(0)
-  createdAt       DateTime            @default(now())
-  lastUpdatedAt   DateTime            @default(now())
-  workspace_chats workspace_chats[]
-  workspace_users workspace_users[]
-  embed_configs   embed_configs[]
-  embed_chats     embed_chats[]
-  threads         workspace_threads[]
+  id                          Int                           @id @default(autoincrement())
+  username                    String?                       @unique
+  password                    String
+  pfpFilename                 String?
+  role                        String                        @default("default")
+  suspended                   Int                           @default(0)
+  createdAt                   DateTime                      @default(now())
+  lastUpdatedAt               DateTime                      @default(now())
+  workspace_chats             workspace_chats[]
+  workspace_users             workspace_users[]
+  embed_configs               embed_configs[]
+  embed_chats                 embed_chats[]
+  threads                     workspace_threads[]
+  workspace_agent_invocations workspace_agent_invocations[]
 }
 
 model document_vectors {
@@ -103,11 +104,14 @@ model workspaces {
   topN                         Int?                           @default(4)
   chatMode                     String?                        @default("chat")
   pfpFilename                  String?
+  agentProvider                String?
+  agentModel                   String?
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
   embed_configs                embed_configs[]
   threads                      workspace_threads[]
+  workspace_agent_invocations  workspace_agent_invocations[]
 }
 
 model workspace_threads {
@@ -149,6 +153,22 @@ model workspace_chats {
   lastUpdatedAt DateTime @default(now())
   feedbackScore Boolean?
   users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model workspace_agent_invocations {
+  id            Int        @id @default(autoincrement())
+  uuid          String     @unique
+  prompt        String // Contains agent invocation to parse + option additional text for seed.
+  closed        Boolean    @default(false)
+  user_id       Int?
+  thread_id     Int? // No relation to prevent whole table migration
+  workspace_id  Int
+  createdAt     DateTime   @default(now())
+  lastUpdatedAt DateTime   @default(now())
+  user          users?     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace     workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([uuid])
 }
 
 model workspace_users {

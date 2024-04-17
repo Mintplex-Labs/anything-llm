@@ -7,6 +7,10 @@ import { isMobile } from "react-device-detect";
 import debounce from "lodash.debounce";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import StopGenerationButton from "./StopGenerationButton";
+import AvailableAgentsButton, {
+  AvailableAgents,
+  useAvailableAgents,
+} from "./AgentMenu";
 export default function PromptInput({
   message,
   submit,
@@ -15,6 +19,7 @@ export default function PromptInput({
   buttonDisabled,
   sendCommand,
 }) {
+  const { showAgents, setShowAgents } = useAvailableAgents();
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const formRef = useRef(null);
   const textareaRef = useRef(null);
@@ -45,6 +50,12 @@ export default function PromptInput({
     return;
   };
 
+  const checkForAt = (e) => {
+    const input = e.target.value;
+    if (input === "@") return setShowAgents(true);
+    if (showAgents) return setShowAgents(false);
+  };
+
   const captureEnter = (event) => {
     if (event.keyCode == 13) {
       if (!event.shiftKey) {
@@ -61,6 +72,7 @@ export default function PromptInput({
   };
 
   const watchForSlash = debounce(checkForSlash, 300);
+  const watchForAt = debounce(checkForAt, 300);
 
   return (
     <div className="w-full fixed md:absolute bottom-0 left-0 z-10 md:z-0 flex justify-center items-center">
@@ -68,6 +80,12 @@ export default function PromptInput({
         showing={showSlashCommand}
         setShowing={setShowSlashCommand}
         sendCommand={sendCommand}
+      />
+      <AvailableAgents
+        showing={showAgents}
+        setShowing={setShowAgents}
+        sendCommand={sendCommand}
+        promptRef={textareaRef}
       />
       <form
         onSubmit={handleSubmit}
@@ -81,6 +99,7 @@ export default function PromptInput({
                 onChange={(e) => {
                   onChange(e);
                   watchForSlash(e);
+                  watchForAt(e);
                   adjustTextArea(e);
                 }}
                 onKeyDown={captureEnter}
@@ -113,6 +132,10 @@ export default function PromptInput({
                 <SlashCommandsButton
                   showing={showSlashCommand}
                   setShowSlashCommand={setShowSlashCommand}
+                />
+                <AvailableAgentsButton
+                  showing={showAgents}
+                  setShowAgents={setShowAgents}
                 />
               </div>
             </div>

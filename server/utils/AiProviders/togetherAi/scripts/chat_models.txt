@@ -1,39 +1,55 @@
-| Organization  | Model Name                   | Model String for API                         | Max Seq Length |
-| ------------- | ---------------------------- | -------------------------------------------- | -------------- |
-| Stanford      | Alpaca (7B)                  | togethercomputer/alpaca-7b                   | 2048           |
-| Austism       | Chronos Hermes (13B)         | Austism/chronos-hermes-13b                   | 2048           |
-| Meta          | Code Llama Instruct (13B)    | togethercomputer/CodeLlama-13b-Instruct      | 8192           |
-| Meta          | Code Llama Instruct (34B)    | togethercomputer/CodeLlama-34b-Instruct      | 8192           |
-| Meta          | Code Llama Instruct (7B)     | togethercomputer/CodeLlama-7b-Instruct       | 8192           |
-| DiscoResearch | DiscoLM Mixtral 8x7b         | DiscoResearch/DiscoLM-mixtral-8x7b-v2        | 32768          |
-| TII UAE       | Falcon Instruct (40B)        | togethercomputer/falcon-40b-instruct         | 2048           |
-| TII UAE       | Falcon Instruct (7B)         | togethercomputer/falcon-7b-instruct          | 2048           |
-| Together      | GPT-NeoXT-Chat-Base (20B)    | togethercomputer/GPT-NeoXT-Chat-Base-20B     | 2048           |
-| Meta          | LLaMA-2 Chat (13B)           | togethercomputer/llama-2-13b-chat            | 4096           |
-| Meta          | LLaMA-2 Chat (70B)           | togethercomputer/llama-2-70b-chat            | 4096           |
-| Meta          | LLaMA-2 Chat (7B)            | togethercomputer/llama-2-7b-chat             | 4096           |
-| Together      | LLaMA-2-7B-32K-Instruct (7B) | togethercomputer/Llama-2-7B-32K-Instruct     | 32768          |
-| MistralAI     | Mistral (7B) Instruct v0.1   | mistralai/Mistral-7B-Instruct-v0.1           | 4096           |
-| MistralAI     | Mistral (7B) Instruct v0.2   | mistralai/Mistral-7B-Instruct-v0.2           | 32768          |
-| MistralAI     | Mixtral-8x7B Instruct        | mistralai/Mixtral-8x7B-Instruct-v0.1         | 32768          |
-| Gryphe        | MythoMax-L2 (13B)            | Gryphe/MythoMax-L2-13b                       | 4096           |
-| NousResearch  | Nous Hermes LLaMA-2 (7B)     | NousResearch/Nous-Hermes-llama-2-7b          | 4096           |
-| NousResearch  | Nous Hermes Llama-2 (13B)    | NousResearch/Nous-Hermes-Llama2-13b          | 4096           |
-| NousResearch  | Nous Hermes Llama-2 (70B)    | NousResearch/Nous-Hermes-Llama2-70b          | 4096           |
-| NousResearch  | Nous Hermes-2 Yi (34B)       | NousResearch/Nous-Hermes-2-Yi-34B            | 4096           |
-| NousResearch  | Nous Capybara v1.9 (7B)      | NousResearch/Nous-Capybara-7B-V1p9           | 8192           |
-| OpenChat      | OpenChat 3.5 1210 (7B)       | openchat/openchat-3.5-1210                   | 8192           |
-| teknium       | OpenHermes-2-Mistral (7B)    | teknium/OpenHermes-2-Mistral-7B              | 4096           |
-| teknium       | OpenHermes-2.5-Mistral (7B)  | teknium/OpenHermes-2p5-Mistral-7B            | 4096           |
-| OpenOrca      | OpenOrca Mistral (7B) 8K     | Open-Orca/Mistral-7B-OpenOrca                | 8192           |
-| garage-bAInd  | Platypus2 Instruct (70B)     | garage-bAInd/Platypus2-70B-instruct          | 4096           |
-| Together      | Pythia-Chat-Base (7B)        | togethercomputer/Pythia-Chat-Base-7B-v0.16   | 2048           |
-| Qwen          | Qwen-Chat (7B)               | togethercomputer/Qwen-7B-Chat                | 8192           |
-| Together      | RedPajama-INCITE Chat (3B)   | togethercomputer/RedPajama-INCITE-Chat-3B-v1 | 2048           |
-| Together      | RedPajama-INCITE Chat (7B)   | togethercomputer/RedPajama-INCITE-7B-Chat    | 2048           |
-| Upstage       | SOLAR v0 (70B)               | upstage/SOLAR-0-70b-16bit                    | 4096           |
-| Together      | StripedHyena Nous (7B)       | togethercomputer/StripedHyena-Nous-7B        | 32768          |
-| LM Sys        | Vicuna v1.5 (7B)             | lmsys/vicuna-7b-v1.5                         | 4096           |
-| LM Sys        | Vicuna v1.5 (13B)            | lmsys/vicuna-13b-v1.5                        | 4096           |
-| LM Sys        | Vicuna v1.5 16K (13B)        | lmsys/vicuna-13b-v1.5-16k                    | 16384          |
-| 01.AI         | 01-ai Yi Chat (34B)          | zero-one-ai/Yi-34B-Chat                      | 4096           |
+| Organization | Model Name | Model String for API | Context length |
+| --- | --- | --- | --- |
+| 01.AI | 01-ai Yi Chat (34B) | zero-one-ai/Yi-34B-Chat | 4096 |
+| Allen AI | OLMo Instruct (7B) | allenai/OLMo-7B-Instruct | 2048 |
+| Allen AI | OLMo Twin-2T (7B) | allenai/OLMo-7B-Twin-2T | 2048 |
+| Allen AI | OLMo (7B) | allenai/OLMo-7B | 2048 |
+| Austism | Chronos Hermes (13B) | Austism/chronos-hermes-13b | 2048 |
+| cognitivecomputations | Dolphin 2.5 Mixtral 8x7b | cognitivecomputations/dolphin-2.5-mixtral-8x7b | 32768 |
+| databricks | DBRX Instruct | databricks/dbrx-instruct | 32000 |
+| DeepSeek | Deepseek Coder Instruct (33B) | deepseek-ai/deepseek-coder-33b-instruct | 16384 |
+| DeepSeek | DeepSeek LLM Chat (67B) | deepseek-ai/deepseek-llm-67b-chat | 4096 |
+| garage-bAInd | Platypus2 Instruct (70B) | garage-bAInd/Platypus2-70B-instruct | 4096 |
+| Google | Gemma Instruct (2B) | google/gemma-2b-it | 8192 |
+| Google | Gemma Instruct (7B) | google/gemma-7b-it | 8192 |
+| Gryphe | MythoMax-L2 (13B) | Gryphe/MythoMax-L2-13b | 4096 |
+| LM Sys | Vicuna v1.5 (13B) | lmsys/vicuna-13b-v1.5 | 4096 |
+| LM Sys | Vicuna v1.5 (7B) | lmsys/vicuna-7b-v1.5 | 4096 |
+| Meta | Code Llama Instruct (13B) | codellama/CodeLlama-13b-Instruct-hf | 16384 |
+| Meta | Code Llama Instruct (34B) | codellama/CodeLlama-34b-Instruct-hf | 16384 |
+| Meta | Code Llama Instruct (70B) | codellama/CodeLlama-70b-Instruct-hf | 4096 |
+| Meta | Code Llama Instruct (7B) | codellama/CodeLlama-7b-Instruct-hf | 16384 |
+| Meta | LLaMA-2 Chat (70B) | meta-llama/Llama-2-70b-chat-hf | 4096 |
+| Meta | LLaMA-2 Chat (13B) | meta-llama/Llama-2-13b-chat-hf | 4096 |
+| Meta | LLaMA-2 Chat (7B) | meta-llama/Llama-2-7b-chat-hf | 4096 |
+| mistralai | Mistral (7B) Instruct | mistralai/Mistral-7B-Instruct-v0.1 | 8192 |
+| mistralai | Mistral (7B) Instruct v0.2 | mistralai/Mistral-7B-Instruct-v0.2 | 32768 |
+| mistralai | Mixtral-8x7B Instruct (46.7B) | mistralai/Mixtral-8x7B-Instruct-v0.1 | 32768 |
+| NousResearch | Nous Capybara v1.9 (7B) | NousResearch/Nous-Capybara-7B-V1p9 | 8192 |
+| NousResearch | Nous Hermes 2 - Mistral DPO (7B) | NousResearch/Nous-Hermes-2-Mistral-7B-DPO | 32768 |
+| NousResearch | Nous Hermes 2 - Mixtral 8x7B-DPO (46.7B) | NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO | 32768 |
+| NousResearch | Nous Hermes 2 - Mixtral 8x7B-SFT (46.7B) | NousResearch/Nous-Hermes-2-Mixtral-8x7B-SFT | 32768 |
+| NousResearch | Nous Hermes LLaMA-2 (7B) | NousResearch/Nous-Hermes-llama-2-7b | 4096 |
+| NousResearch | Nous Hermes Llama-2 (13B) | NousResearch/Nous-Hermes-Llama2-13b | 4096 |
+| NousResearch | Nous Hermes-2 Yi (34B) | NousResearch/Nous-Hermes-2-Yi-34B | 4096 |
+| OpenChat | OpenChat 3.5 (7B) | openchat/openchat-3.5-1210 | 8192 |
+| OpenOrca | OpenOrca Mistral (7B) 8K | Open-Orca/Mistral-7B-OpenOrca | 8192 |
+| Qwen | Qwen 1.5 Chat (0.5B) | Qwen/Qwen1.5-0.5B-Chat | 32768 |
+| Qwen | Qwen 1.5 Chat (1.8B) | Qwen/Qwen1.5-1.8B-Chat | 32768 |
+| Qwen | Qwen 1.5 Chat (4B) | Qwen/Qwen1.5-4B-Chat | 32768 |
+| Qwen | Qwen 1.5 Chat (7B) | Qwen/Qwen1.5-7B-Chat | 32768 |
+| Qwen | Qwen 1.5 Chat (14B) | Qwen/Qwen1.5-14B-Chat | 32768 |
+| Qwen | Qwen 1.5 Chat (32B) | Qwen/Qwen1.5-32B-Chat | 32768 |
+| Qwen | Qwen 1.5 Chat (72B) | Qwen/Qwen1.5-72B-Chat | 32768 |
+| Snorkel AI | Snorkel Mistral PairRM DPO (7B) | snorkelai/Snorkel-Mistral-PairRM-DPO | 32768 |
+| Stanford | Alpaca (7B) | togethercomputer/alpaca-7b | 2048 |
+| Teknium | OpenHermes-2-Mistral (7B) | teknium/OpenHermes-2-Mistral-7B | 8192 |
+| Teknium | OpenHermes-2.5-Mistral (7B) | teknium/OpenHermes-2p5-Mistral-7B | 8192 |
+| Together | LLaMA-2-7B-32K-Instruct (7B) | togethercomputer/Llama-2-7B-32K-Instruct | 32768 |
+| Together | RedPajama-INCITE Chat (3B) | togethercomputer/RedPajama-INCITE-Chat-3B-v1 | 2048 |
+| Together | RedPajama-INCITE Chat (7B) | togethercomputer/RedPajama-INCITE-7B-Chat | 2048 |
+| Together | StripedHyena Nous (7B) | togethercomputer/StripedHyena-Nous-7B | 32768 |
+| Undi95 | ReMM SLERP L2 (13B) | Undi95/ReMM-SLERP-L2-13B | 4096 |
+| Undi95 | Toppy M (7B) | Undi95/Toppy-M-7B | 4096 |
+| WizardLM | WizardLM v1.2 (13B) | WizardLM/WizardLM-13B-V1.2 | 4096 |
+| upstage | Upstage SOLAR Instruct v1 (11B) | upstage/SOLAR-10.7B-Instruct-v1.0 | 4096 |
