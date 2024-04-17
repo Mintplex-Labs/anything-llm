@@ -72,7 +72,7 @@ model users {
   threads                           workspace_threads[]
   recovery_codes        recovery_codes[]
   password_reset_tokens password_reset_tokens[]
-   workspace_agent_invocations workspace_agent_invocations[]
+  workspace_agent_invocations workspace_agent_invocations[]
 }
 
 model recovery_codes {

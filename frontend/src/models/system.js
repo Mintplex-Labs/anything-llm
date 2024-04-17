@@ -83,13 +83,13 @@ const System = {
       headers: baseHeaders(),
       body: JSON.stringify({ username, recoveryCodes }),
     })
-    .then(async (res) => {
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Error recovering account.");
-      }
-      return data;
-    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || "Error recovering account.");
+        }
+        return data;
+      })
       .catch((e) => {
         console.error(e);
         return { success: false, error: e.message };
