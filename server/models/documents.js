@@ -202,6 +202,15 @@ const Document = {
       return { document: null, message: error.message };
     }
   },
+  content: async function (docId) {
+    if (!docId) throw new Error("No workspace docId provided!");
+    const document = await this.get({ docId: String(docId) });
+    if (!document) throw new Error(`Could not find a document by id ${docId}`);
+
+    const { fileData } = require("../utils/files");
+    const data = await fileData(document.docpath);
+    return { title: data.title, content: data.pageContent };
+  },
 };
 
 module.exports = { Document };

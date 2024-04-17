@@ -173,6 +173,14 @@ const Workspace = {
 
     return result;
   },
+  wipeVectorDb: async function (slug) {
+    return await fetch(`${API_BASE}/workspace/${slug}/reset-vector-db`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.ok)
+      .catch(() => false);
+  },
   uploadFile: async function (slug, formData) {
     const response = await fetch(`${API_BASE}/workspace/${slug}/upload`, {
       method: "POST",

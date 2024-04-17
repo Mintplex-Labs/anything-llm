@@ -19,7 +19,8 @@ const HistoricalMessage = forwardRef(
           <div
             className={`text-[10px] font-medium text-gray-400 ml-[54px] mr-6 mb-2 text-left`}
           >
-            AnythingLLM Chat Assistant
+            {embedderSettings.settings.assistantName ||
+              "Anything LLM Chat Assistant"}
           </div>
         )}
         <div
@@ -31,7 +32,7 @@ const HistoricalMessage = forwardRef(
         >
           {role === "assistant" && (
             <img
-              src={AnythingLLMIcon}
+              src={embedderSettings.settings.assistantIcon || AnythingLLMIcon}
               alt="Anything LLM Icon"
               className="w-9 h-9 flex-shrink-0 ml-2 mt-2"
               id="anything-llm-icon"

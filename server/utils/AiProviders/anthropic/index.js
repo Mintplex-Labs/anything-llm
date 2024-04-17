@@ -4,6 +4,7 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
@@ -28,7 +29,6 @@ class AnthropicLLM {
         "INVALID ANTHROPIC SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Anthropic as your LLM."
       );
     this.embedder = embedder;
-    this.answerKey = v4().split("-")[0];
     this.defaultTemp = 0.7;
   }
 
@@ -138,7 +138,7 @@ class AnthropicLLM {
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
+        `Anthropic chat: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.anthropic.messages.stream({
@@ -162,6 +162,28 @@ class AnthropicLLM {
       // to preserve previously generated content.
       const handleAbort = () => clientAbortedHandler(resolve, fullText);
       response.on("close", handleAbort);
+
+      stream.on("error", (event) => {
+        const parseErrorMsg = (event) => {
+          const error = event?.error?.error;
+          if (!!error)
+            return `Anthropic Error:${error?.type || "unknown"} ${
+              error?.message || "unknown error."
+            }`;
+          return event.message;
+        };
+
+        writeResponseChunk(response, {
+          uuid,
+          sources: [],
+          type: "abort",
+          textResponse: null,
+          close: true,
+          error: parseErrorMsg(event),
+        });
+        response.removeListener("close", handleAbort);
+        resolve(fullText);
+      });
 
       stream.on("streamEvent", (message) => {
         const data = message;

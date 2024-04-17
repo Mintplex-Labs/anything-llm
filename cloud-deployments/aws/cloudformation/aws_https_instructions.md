@@ -36,6 +36,7 @@ These instructions are for CLI configuration and assume you are logged in to EC2
 These instructions are for CLI configuration and assume you are logged in to EC2 instance as the ec2-user.
 1. $sudo vi /etc/nginx/nginx.conf
 2. In the nginx.conf file, comment out the default server block configuration for http/port 80. It should look something like the following:
+```
 #    server {
 #        listen       80;
 #        listen       [::]:80;
@@ -53,13 +54,23 @@ These instructions are for CLI configuration and assume you are logged in to EC2
 #        location = /50x.html {
 #        }
 #    }
+```
 3. Enter ':wq' to save the changes to the nginx default config
 
 ## Step 7: Create simple http proxy configuration for AnythingLLM 
 These instructions are for CLI configuration and assume you are logged in to EC2 instance as the ec2-user.
 1. $sudo vi /etc/nginx/conf.d/anything.conf
 2. Add the following configuration ensuring that you add your FQDN:.
+
+```
 server {
+   # Enable websocket connections for agent protocol.
+   location ~* ^/api/agent-invocation/(.*) {
+      proxy_pass http://0.0.0.0:3001;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "Upgrade";
+   }
 
    listen 80;
    server_name [insert FQDN here];
@@ -70,9 +81,16 @@ server {
       proxy_read_timeout          605;
       send_timeout                605;
       keepalive_timeout           605;
+
+      # Enable readable HTTP Streaming for LLM streamed responses
+      proxy_buffering off; 
+      proxy_cache off;
+
+      # Proxy your locally running service
       proxy_pass  http://0.0.0.0:3001;
     }
 }
+```
 3. Enter ':wq' to save the changes to the anything config file
 
 ## Step 8: Test nginx http proxy config and restart nginx service

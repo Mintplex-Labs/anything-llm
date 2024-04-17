@@ -37,18 +37,25 @@ const Telemetry = {
   sendTelemetry: async function (
     event,
     eventProperties = {},
-    subUserId = null
+    subUserId = null,
+    silent = false
   ) {
     try {
       const { client, distinctId: systemId } = await this.connect();
       if (!client) return;
       const distinctId = !!subUserId ? `${systemId}::${subUserId}` : systemId;
       const properties = { ...eventProperties, runtime: this.runtime() };
-      console.log(`\x1b[32m[TELEMETRY SENT]\x1b[0m`, {
-        event,
-        distinctId,
-        properties,
-      });
+
+      // Silence some events to keep logs from being too messy in production
+      // eg: Tool calls from agents spamming the logs.
+      if (!silent) {
+        console.log(`\x1b[32m[TELEMETRY SENT]\x1b[0m`, {
+          event,
+          distinctId,
+          properties,
+        });
+      }
+
       client.capture({
         event,
         distinctId,
