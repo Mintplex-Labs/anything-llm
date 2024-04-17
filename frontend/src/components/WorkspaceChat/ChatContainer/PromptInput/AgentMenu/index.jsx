@@ -162,8 +162,8 @@ function FirstTimeAgentUser() {
                 more.
                 <br />
                 <br />
-                Currently, agents only work with OpenAI and Anthropic as your
-                agent LLM. All providers will be supported in the future.
+                Currently, agents only work with OpenAI as your agent LLM. All
+                LLM providers will be supported in the future.
               </p>
               <p className="text-green-300/60 text-xs md:text-sm">
                 This feature is currently early access and fully custom agents
