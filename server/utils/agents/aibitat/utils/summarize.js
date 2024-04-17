@@ -22,7 +22,7 @@ async function summarizeContent(
 ) {
   const llm = Provider.LangChainChatModel(provider, {
     temperature: 0,
-    model: SUMMARY_MODEL[provider],
+    modelName: SUMMARY_MODEL[provider],
   });
 
   const textSplitter = new RecursiveCharacterTextSplitter({

@@ -22,17 +22,17 @@ class Provider {
     switch (provider) {
       case "openai":
         return new ChatOpenAI({
-          apiKey: process.env.OPEN_AI_KEY,
+          openAIApiKey: process.env.OPEN_AI_KEY,
           ...config,
         });
       case "anthropic":
         return new ChatAnthropic({
-          apiKey: process.env.ANTHROPIC_API_KEY,
+          anthropicApiKey: process.env.ANTHROPIC_API_KEY,
           ...config,
         });
       default:
         return new ChatOpenAI({
-          apiKey: process.env.OPEN_AI_KEY,
+          openAIApiKey: process.env.OPEN_AI_KEY,
           ...config,
         });
     }

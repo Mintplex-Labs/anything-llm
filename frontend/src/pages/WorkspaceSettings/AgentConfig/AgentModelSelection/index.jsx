@@ -97,7 +97,7 @@ export default function AgentModelSelection({
                     <option
                       key={model.id}
                       value={model.id}
-                      selected={workspace?.chatModel === model.id}
+                      selected={workspace?.agentModel === model.id}
                     >
                       {model.name}
                     </option>
