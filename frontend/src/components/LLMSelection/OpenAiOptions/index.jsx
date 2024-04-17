@@ -32,22 +32,26 @@ export default function OpenAiOptions({ settings }) {
 }
 
 function OpenAIModelSelection({ apiKey, settings }) {
-  const [customModels, setCustomModels] = useState([]);
+  const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function findCustomModels() {
-      if (!apiKey) {
-        setCustomModels([]);
-        setLoading(false);
-        return;
-      }
       setLoading(true);
       const { models } = await System.customModels(
         "openai",
         typeof apiKey === "boolean" ? null : apiKey
       );
-      setCustomModels(models || []);
+
+      if (models?.length > 0) {
+        const modelsByOrganization = models.reduce((acc, model) => {
+          acc[model.organization] = acc[model.organization] || [];
+          acc[model.organization].push(model);
+          return acc;
+        }, {});
+        setGroupedModels(modelsByOrganization);
+      }
+
       setLoading(false);
     }
     findCustomModels();
@@ -82,41 +86,21 @@ function OpenAIModelSelection({ apiKey, settings }) {
         required={true}
         className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
-        <optgroup label="General LLM models">
-          {[
-            "gpt-3.5-turbo",
-            "gpt-3.5-turbo-1106",
-            "gpt-4",
-            "gpt-4-turbo-preview",
-            "gpt-4-1106-preview",
-            "gpt-4-32k",
-          ].map((model) => {
-            return (
-              <option
-                key={model}
-                value={model}
-                selected={settings?.OpenAiModelPref === model}
-              >
-                {model}
-              </option>
-            );
-          })}
-        </optgroup>
-        {customModels.length > 0 && (
-          <optgroup label="Your fine-tuned models">
-            {customModels.map((model) => {
-              return (
+        {Object.keys(groupedModels)
+          .sort()
+          .map((organization) => (
+            <optgroup key={organization} label={organization}>
+              {groupedModels[organization].map((model) => (
                 <option
                   key={model.id}
                   value={model.id}
                   selected={settings?.OpenAiModelPref === model.id}
                 >
-                  {model.id}
+                  {model.name}
                 </option>
-              );
-            })}
-          </optgroup>
-        )}
+              ))}
+            </optgroup>
+          ))}
       </select>
     </div>
   );
