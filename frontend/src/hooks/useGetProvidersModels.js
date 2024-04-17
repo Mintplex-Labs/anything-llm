@@ -47,8 +47,12 @@ export default function useGetProviderModels(provider = null) {
       if (
         PROVIDER_DEFAULT_MODELS.hasOwnProperty(provider) &&
         !groupedProviders.includes(provider)
-      )
+      ) {
         setDefaultModels(PROVIDER_DEFAULT_MODELS[provider]);
+      } else {
+        setDefaultModels([]);
+      }
+
       groupedProviders.includes(provider)
         ? setCustomModels(groupModels(models))
         : setCustomModels(models);
