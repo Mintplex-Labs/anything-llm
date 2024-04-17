@@ -688,3 +688,7 @@ does not extend the close button beyond the viewport. */
 .recharts-legend-wrapper {
   margin-bottom: 10px;
 }
+
+.text-tremor-content {
+  padding-bottom: 10px;
+}
