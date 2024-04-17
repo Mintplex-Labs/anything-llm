@@ -2,6 +2,7 @@ const { Document } = require("../../../../models/documents");
 const { safeJsonParse } = require("../../../http");
 const { validate } = require("uuid");
 const { summarizeContent } = require("../utils/summarize");
+const Provider = require("../providers/ai-provider");
 
 const docSummarizer = {
   name: "document-summarizer",
@@ -95,7 +96,19 @@ const docSummarizer = {
                   document?.title ?? "a discovered file."
                 }`
               );
-              if (document?.content?.length < 8000) return content;
+
+              if (!document.content || document.content.length === 0) {
+                throw new Error(
+                  "This document has no readable content that could be found."
+                );
+              }
+
+              if (
+                document.content?.length <
+                Provider.contextLimit(this.super.provider)
+              ) {
+                return document.content;
+              }
 
               this.super.introspect(
                 `${this.caller}: Summarizing ${document?.title ?? ""}...`
@@ -109,6 +122,7 @@ const docSummarizer = {
               });
 
               return await summarizeContent(
+                this.super.provider,
                 this.controller.signal,
                 document.content
               );
