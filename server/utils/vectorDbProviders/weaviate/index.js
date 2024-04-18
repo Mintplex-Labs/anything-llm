@@ -9,6 +9,7 @@ const {
   getEmbeddingEngineSelection,
 } = require("../../helpers");
 const { camelCase } = require("../../helpers/camelcase");
+const { sourceIdentifier } = require("../../chats");
 
 const Weaviate = {
   name: "Weaviate",
@@ -82,7 +83,8 @@ const Weaviate = {
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN = 4
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const result = {
       contextTexts: [],
@@ -91,7 +93,8 @@ const Weaviate = {
     };
 
     const weaviateClass = await this.namespace(client, namespace);
-    const fields = weaviateClass.properties.map((prop) => prop.name).join(" ");
+    const fields =
+      weaviateClass.properties?.map((prop) => prop.name)?.join(" ") ?? "";
     const queryResponse = await client.graphql
       .get()
       .withClassName(camelCase(namespace))
@@ -109,6 +112,12 @@ const Weaviate = {
         ...rest
       } = response;
       if (certainty < similarityThreshold) return;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) {
+        console.log(
+          "Weaviate: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
       result.contextTexts.push(rest.text);
       result.sourceDocuments.push({ ...rest, id });
       result.scores.push(certainty);
@@ -214,7 +223,7 @@ const Weaviate = {
           chunk.forEach((chunk) => {
             const id = uuidv4();
             const flattenedMetadata = this.flattenObjectForWeaviate(
-              chunk.properties
+              chunk.properties ?? chunk.metadata
             );
             documentVectors.push({ docId, vectorId: id });
             const vectorRecord = {
@@ -357,6 +366,7 @@ const Weaviate = {
     LLMConnector = null,
     similarityThreshold = 0.25,
     topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -376,7 +386,8 @@ const Weaviate = {
       namespace,
       queryVector,
       similarityThreshold,
-      topN
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
@@ -437,7 +448,7 @@ const Weaviate = {
     const flattenedObject = {};
 
     for (const key in obj) {
-      if (!Object.hasOwn(obj, key)) {
+      if (!Object.hasOwn(obj, key) || key === "id") {
         continue;
       }
       const value = obj[key];

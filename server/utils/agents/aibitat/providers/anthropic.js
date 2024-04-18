@@ -186,7 +186,8 @@ class AnthropicProvider extends Provider {
       const completion = response.content.find((msg) => msg.type === "text");
       return {
         result:
-          completion?.text ?? "I could not generate a response from this.",
+          completion?.text ??
+          "The model failed to complete the task and return back a valid response.",
         cost: 0,
       };
     } catch (error) {

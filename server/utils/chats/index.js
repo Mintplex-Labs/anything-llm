@@ -79,6 +79,7 @@ async function chatWithWorkspace(
   // 2. Chatting in "query" mode and has at least 1 embedding
   let contextTexts = [];
   let sources = [];
+  let pinnedDocIdentifiers = [];
   const { rawHistory, chatHistory } = await recentChatHistory({
     user,
     workspace,
@@ -97,6 +98,7 @@ async function chatWithWorkspace(
     .then((pinnedDocs) => {
       pinnedDocs.forEach((doc) => {
         const { pageContent, ...metadata } = doc;
+        pinnedDocIdentifiers.push(sourceIdentifier(doc));
         contextTexts.push(doc.pageContent);
         sources.push({
           text:
@@ -115,6 +117,7 @@ async function chatWithWorkspace(
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
+          filterIdentifiers: pinnedDocIdentifiers,
         })
       : {
           contextTexts: [],
@@ -227,7 +230,18 @@ function chatPrompt(workspace) {
   );
 }
 
+// We use this util function to deduplicate sources from similarity searching
+// if the document is already pinned.
+// Eg: You pin a csv, if we RAG + full-text that you will get the same data
+// points both in the full-text and possibly from RAG - result in bad results
+// even if the LLM was not even going to hallucinate.
+function sourceIdentifier(sourceDocument) {
+  if (!sourceDocument?.title || !sourceDocument?.published) return uuidv4();
+  return `title:${sourceDocument.title}-timestamp:${sourceDocument.published}`;
+}
+
 module.exports = {
+  sourceIdentifier,
   recentChatHistory,
   chatWithWorkspace,
   chatPrompt,
