@@ -55,7 +55,7 @@
     "moment": "^2.29.4",
     "multer": "^1.4.5-lts.1",
     "openai": "^3.2.1",
-    "openai:latest": "npm:openai@latest",
+    "openai-latest": "npm:openai@latest",
     "pinecone-client": "^1.1.0",
     "pluralize": "^8.0.0",
     "posthog-node": "^3.1.1",
