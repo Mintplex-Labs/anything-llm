@@ -8,6 +8,7 @@ const {
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
+const { sourceIdentifier } = require("../../chats");
 
 const QDrant = {
   name: "QDrant",
@@ -55,7 +56,8 @@ const QDrant = {
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN = 4
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const { client } = await this.connect();
     const result = {
@@ -72,6 +74,13 @@ const QDrant = {
 
     responses.forEach((response) => {
       if (response.score < similarityThreshold) return;
+      if (filterIdentifiers.includes(sourceIdentifier(response?.payload))) {
+        console.log(
+          "QDrant: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
+
       result.contextTexts.push(response?.payload?.text || "");
       result.sourceDocuments.push({
         ...(response?.payload || {}),
@@ -146,7 +155,8 @@ const QDrant = {
         const { client } = await this.connect();
         const { chunks } = cacheResult;
         const documentVectors = [];
-        vectorDimension = chunks[0][0].vector.length || null;
+        vectorDimension =
+          chunks[0][0]?.vector?.length ?? chunks[0][0]?.values?.length ?? null;
 
         const collection = await this.getOrCreateCollection(
           client,
@@ -311,6 +321,7 @@ const QDrant = {
     LLMConnector = null,
     similarityThreshold = 0.25,
     topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -330,7 +341,8 @@ const QDrant = {
       namespace,
       queryVector,
       similarityThreshold,
-      topN
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

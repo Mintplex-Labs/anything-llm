@@ -1,4 +1,5 @@
 const { CollectorApi } = require("../../../collectorApi");
+const Provider = require("../providers/ai-provider");
 const { summarizeContent } = require("../utils/summarize");
 
 const webScraping = {
@@ -61,7 +62,11 @@ const webScraping = {
               );
             }
 
-            if (content?.length <= 8000) {
+            if (!content || content?.length === 0) {
+              throw new Error("There was no content to be collected or read.");
+            }
+
+            if (content.length < Provider.contextLimit(this.super.provider)) {
               return content;
             }
 
@@ -74,7 +79,11 @@ const webScraping = {
               );
               this.controller.abort();
             });
-            return summarizeContent(this.controller.signal, content);
+            return summarizeContent(
+              this.super.provider,
+              this.controller.signal,
+              content
+            );
           },
         });
       },

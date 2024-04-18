@@ -9,6 +9,7 @@ const { TextSplitter } = require("../../TextSplitter");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
+const { sourceIdentifier } = require("../../chats");
 
 const LanceDb = {
   uri: `${
@@ -64,7 +65,8 @@ const LanceDb = {
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN = 4
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const collection = await client.openTable(namespace);
     const result = {
@@ -82,6 +84,13 @@ const LanceDb = {
     response.forEach((item) => {
       if (this.distanceToSimilarity(item.score) < similarityThreshold) return;
       const { vector: _, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) {
+        console.log(
+          "LanceDB: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
+
       result.contextTexts.push(rest.text);
       result.sourceDocuments.push(rest);
       result.scores.push(this.distanceToSimilarity(item.score));
@@ -250,6 +259,7 @@ const LanceDb = {
     LLMConnector = null,
     similarityThreshold = 0.25,
     topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -269,7 +279,8 @@ const LanceDb = {
       namespace,
       queryVector,
       similarityThreshold,
-      topN
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

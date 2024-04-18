@@ -2,6 +2,16 @@ import useGetProviderModels, {
   DISABLED_PROVIDERS,
 } from "@/hooks/useGetProvidersModels";
 
+// These models do NOT support function calling
+function supportedModel(provider, model = "") {
+  if (provider !== "openai") return true;
+  return (
+    ["gpt-3.5-turbo-0301", "gpt-4-turbo-2024-04-09", "gpt-4-turbo"].includes(
+      model
+    ) === false
+  );
+}
+
 export default function AgentModelSelection({
   provider,
   workspace,
@@ -60,6 +70,7 @@ export default function AgentModelSelection({
         {defaultModels.length > 0 && (
           <optgroup label="General models">
             {defaultModels.map((model) => {
+              if (!supportedModel(provider, model)) return null;
               return (
                 <option
                   key={model}
@@ -75,6 +86,8 @@ export default function AgentModelSelection({
         {Array.isArray(customModels) && customModels.length > 0 && (
           <optgroup label="Custom models">
             {customModels.map((model) => {
+              if (!supportedModel(provider, model.id)) return null;
+
               return (
                 <option
                   key={model.id}
@@ -93,15 +106,18 @@ export default function AgentModelSelection({
             <>
               {Object.entries(customModels).map(([organization, models]) => (
                 <optgroup key={organization} label={organization}>
-                  {models.map((model) => (
-                    <option
-                      key={model.id}
-                      value={model.id}
-                      selected={workspace?.chatModel === model.id}
-                    >
-                      {model.name}
-                    </option>
-                  ))}
+                  {models.map((model) => {
+                    if (!supportedModel(provider, model.id)) return null;
+                    return (
+                      <option
+                        key={model.id}
+                        value={model.id}
+                        selected={workspace?.agentModel === model.id}
+                      >
+                        {model.name}
+                      </option>
+                    );
+                  })}
                 </optgroup>
               ))}
             </>

@@ -1,7 +1,7 @@
 const { loadSummarizationChain } = require("langchain/chains");
-const { ChatOpenAI } = require("langchain/chat_models/openai");
 const { PromptTemplate } = require("langchain/prompts");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
+const Provider = require("../providers/ai-provider");
 /**
  * Summarize content using OpenAI's GPT-3.5 model.
  *
@@ -9,11 +9,20 @@ const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
  * @param content The content to summarize.
  * @returns The summarized content.
  */
-async function summarizeContent(controllerSignal, content) {
-  const llm = new ChatOpenAI({
-    openAIApiKey: process.env.OPEN_AI_KEY,
+
+const SUMMARY_MODEL = {
+  anthropic: "claude-3-opus-20240229", // 200,000 tokens
+  openai: "gpt-3.5-turbo-1106", // 16,385 tokens
+};
+
+async function summarizeContent(
+  provider = "openai",
+  controllerSignal,
+  content
+) {
+  const llm = Provider.LangChainChatModel(provider, {
     temperature: 0,
-    modelName: "gpt-3.5-turbo-16k-0613",
+    modelName: SUMMARY_MODEL[provider],
   });
 
   const textSplitter = new RecursiveCharacterTextSplitter({
@@ -41,6 +50,7 @@ async function summarizeContent(controllerSignal, content) {
     combineMapPrompt: mapPromptTemplate,
     verbose: process.env.NODE_ENV === "development",
   });
+
   const res = await chain.call({
     ...(controllerSignal ? { signal: controllerSignal } : {}),
     input_documents: docs,
