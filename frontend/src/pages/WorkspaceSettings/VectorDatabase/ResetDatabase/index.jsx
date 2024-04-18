@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
+import { refocusApplication } from "@/ipc/node-api";
 
 export default function ResetDatabase({ workspace }) {
   const [deleting, setDeleting] = useState(false);
@@ -10,9 +11,12 @@ export default function ResetDatabase({ workspace }) {
       !window.confirm(
         `You are about to reset this workspace's vector database. This will remove all vector embeddings currently embedded.\n\nThe original source files will remain untouched. This action is irreversible.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
 
+    refocusApplication();
     setDeleting(true);
     const success = await Workspace.wipeVectorDb(workspace.slug);
     if (!success) {
