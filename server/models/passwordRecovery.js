@@ -61,6 +61,134 @@ const RecoveryCode = {
     }
   },
 };
+const SingleUserRecoveryCode = {
+  tablename: "single_user_recovery_codes",
+  writable: [],
+  create: async function (userId, code) {
+    try {
+      const codeHash = await bcrypt.hash(code, 10);
+      const recoveryCode = await prisma.single_user_recovery_codes.create({
+        data: { user_id: userId, code_hash: codeHash },
+      });
+      return { recoveryCode, error: null };
+    } catch (error) {
+      console.error("FAILED TO CREATE RECOVERY CODE.", error.message);
+      return { recoveryCode: null, error: error.message };
+    }
+  },
+  createMany: async function (data) {
+    try {
+      const recoveryCodes = await prisma.$transaction(
+        data.map((recoveryCode) =>
+          prisma.single_user_recovery_codes.create({ data: recoveryCode })
+        )
+      );
+      return { recoveryCodes, error: null };
+    } catch (error) {
+      console.error("FAILED TO CREATE RECOVERY CODES.", error.message);
+      return { recoveryCodes: null, error: error.message };
+    }
+  },
+  findFirst: async function (clause = {}) {
+    try {
+      const recoveryCode = await prisma.single_user_recovery_codes.findFirst({
+        where: clause,
+      });
+      return recoveryCode;
+    } catch (error) {
+      console.error("FAILED TO FIND RECOVERY CODE.", error.message);
+      return null;
+    }
+  },
+  findMany: async function (clause = {}) {
+    try {
+      const recoveryCodes = await prisma.single_user_recovery_codes.findMany({
+        where: clause,
+      });
+      return recoveryCodes;
+    } catch (error) {
+      console.error("FAILED TO FIND RECOVERY CODES.", error.message);
+      return null;
+    }
+  },
+  deleteMany: async function (clause = {}) {
+    try {
+      await prisma.single_user_recovery_codes.deleteMany({ where: clause });
+      return true;
+    } catch (error) {
+      console.error("FAILED TO DELETE RECOVERY CODES.", error.message);
+      return false;
+    }
+  },
+};
+
+const SingleUserPasswordResetToken = {
+  tablename: "single_user_password_reset_tokens",
+  writable: [],
+  create: async function (token, expiresAt) {
+    console.log(token, expiresAt);
+    try {
+      const passwordResetToken =
+        await prisma.single_user_password_reset_tokens.create({
+          data: { token, expiresAt },
+        });
+      return { passwordResetToken, error: null };
+    } catch (error) {
+      console.error("FAILED TO CREATE PASSWORD RESET TOKEN.", error.message);
+      return { passwordResetToken: null, error: error.message };
+    }
+  },
+  createMany: async function (data) {
+    try {
+      const recoveryCodes = await prisma.$transaction(
+        data.map((recoveryCode) =>
+          prisma.single_user_password_reset_tokens.create({
+            data: recoveryCode,
+          })
+        )
+      );
+      return { recoveryCodes, error: null };
+    } catch (error) {
+      console.error("FAILED TO CREATE RECOVERY CODES.", error.message);
+      return { recoveryCodes: null, error: error.message };
+    }
+  },
+  findFirst: async function (clause = {}) {
+    try {
+      const recoveryCode =
+        await prisma.single_user_password_reset_tokens.findFirst({
+          where: clause,
+        });
+      return recoveryCode;
+    } catch (error) {
+      console.error("FAILED TO FIND RECOVERY CODE.", error.message);
+      return null;
+    }
+  },
+  findMany: async function (clause = {}) {
+    try {
+      const recoveryCodes =
+        await prisma.single_user_password_reset_tokens.findMany({
+          where: clause,
+        });
+      return recoveryCodes;
+    } catch (error) {
+      console.error("FAILED TO FIND RECOVERY CODES.", error.message);
+      return null;
+    }
+  },
+  deleteMany: async function (clause = {}) {
+    try {
+      await prisma.single_user_password_reset_tokens.deleteMany({
+        where: clause,
+      });
+      return true;
+    } catch (error) {
+      console.error("FAILED TO DELETE RECOVERY CODES.", error.message);
+      return false;
+    }
+  },
+};
 
 const PasswordResetToken = {
   tablename: "password_reset_tokens",
@@ -98,4 +226,9 @@ const PasswordResetToken = {
   },
 };
 
-module.exports = { RecoveryCode, PasswordResetToken };
+module.exports = {
+  RecoveryCode,
+  SingleUserRecoveryCode,
+  PasswordResetToken,
+  SingleUserPasswordResetToken,
+};

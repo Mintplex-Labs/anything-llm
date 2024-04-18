@@ -25,7 +25,9 @@ export default function PasswordModal({ mode = "single" }) {
       <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative">
         <img
           src={loginLogo}
-          className="mb-8 w-[84px] h-[84px] absolute md:top-36 top-44 z-50"
+          className={`mb-8 w-[84px] h-[84px] absolute  ${
+            mode === "single" ? "md:top-50" : "md:top-36"
+          } top-44 z-30`}
           alt="logo"
         />
         {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth />}

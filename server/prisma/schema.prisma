@@ -85,6 +85,12 @@ model recovery_codes {
   @@index([user_id])
 }
 
+model single_user_recovery_codes {
+  id        Int      @id @default(autoincrement())
+  code_hash String
+  createdAt DateTime @default(now())
+}
+
 model password_reset_tokens {
   id        Int      @id @default(autoincrement())
   user_id   Int
@@ -95,6 +101,13 @@ model password_reset_tokens {
 
   @@index([user_id])
 
+}
+
+model single_user_password_reset_tokens {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model document_vectors {
