@@ -1,4 +1,4 @@
-const { v4: uuidv4, v4 } = require("uuid");
+const { v4: uuidv4 } = require("uuid");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { resetMemory } = require("./commands/reset");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
@@ -236,7 +236,7 @@ function chatPrompt(workspace) {
 // points both in the full-text and possibly from RAG - result in bad results
 // even if the LLM was not even going to hallucinate.
 function sourceIdentifier(sourceDocument) {
-  if (!sourceDocument?.title || !sourceDocument?.published) return v4();
+  if (!sourceDocument?.title || !sourceDocument?.published) return uuidv4();
   return `title:${sourceDocument.title}-timestamp:${sourceDocument.published}`;
 }
 

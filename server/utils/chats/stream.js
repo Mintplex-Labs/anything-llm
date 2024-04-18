@@ -10,7 +10,6 @@ const {
   chatPrompt,
   recentChatHistory,
   sourceIdentifier,
-  deduplicatePinnedSources,
 } = require("./index");
 
 const VALID_CHAT_MODE = ["chat", "query"];
