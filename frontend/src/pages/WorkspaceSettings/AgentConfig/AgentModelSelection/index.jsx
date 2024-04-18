@@ -5,15 +5,11 @@ import useGetProviderModels, {
 // These models do NOT support function calling
 function supportedModel(provider, model = "") {
   if (provider !== "openai") return true;
-  if (model.startsWith("gpt-3.5-turbo")) return true;
-  switch (model) {
-    case "gpt-4":
-    case "gpt-4-turbo-preview":
-    case "gpt-4-32k":
-      return true;
-    default:
-      return false;
-  }
+  return (
+    ["gpt-3.5-turbo-0301", "gpt-4-turbo-2024-04-09", "gpt-4-turbo"].includes(
+      model
+    ) === false
+  );
 }
 
 export default function AgentModelSelection({
