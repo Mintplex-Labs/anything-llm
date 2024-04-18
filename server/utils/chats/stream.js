@@ -9,6 +9,8 @@ const {
   VALID_COMMANDS,
   chatPrompt,
   recentChatHistory,
+  sourceIdentifier,
+  deduplicatePinnedSources,
 } = require("./index");
 
 const VALID_CHAT_MODE = ["chat", "query"];
@@ -92,6 +94,7 @@ async function streamChatWithWorkspace(
   let completeText;
   let contextTexts = [];
   let sources = [];
+  let pinnedDocIdentifiers = [];
   const { rawHistory, chatHistory } = await recentChatHistory({
     user,
     workspace,
@@ -110,6 +113,7 @@ async function streamChatWithWorkspace(
     .then((pinnedDocs) => {
       pinnedDocs.forEach((doc) => {
         const { pageContent, ...metadata } = doc;
+        pinnedDocIdentifiers.push(sourceIdentifier(doc));
         contextTexts.push(doc.pageContent);
         sources.push({
           text:
@@ -128,6 +132,7 @@ async function streamChatWithWorkspace(
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
+          filterIdentifiers: pinnedDocIdentifiers,
         })
       : {
           contextTexts: [],
