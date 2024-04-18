@@ -8,6 +8,7 @@ const {
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
+const { sourceIdentifier } = require("../../chats");
 
 const PineconeDB = {
   name: "Pinecone",
@@ -44,7 +45,8 @@ const PineconeDB = {
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN = 4
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const result = {
       contextTexts: [],
@@ -61,6 +63,13 @@ const PineconeDB = {
 
     response.matches.forEach((match) => {
       if (match.score < similarityThreshold) return;
+      if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
+        console.log(
+          "Pinecone: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
+
       result.contextTexts.push(match.metadata.text);
       result.sourceDocuments.push(match);
       result.scores.push(match.score);
@@ -233,6 +242,7 @@ const PineconeDB = {
     LLMConnector = null,
     similarityThreshold = 0.25,
     topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -249,7 +259,8 @@ const PineconeDB = {
       namespace,
       queryVector,
       similarityThreshold,
-      topN
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

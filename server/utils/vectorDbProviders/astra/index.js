@@ -8,6 +8,7 @@ const {
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
+const { sourceIdentifier } = require("../../chats");
 
 const AstraDB = {
   name: "AstraDB",
@@ -252,6 +253,7 @@ const AstraDB = {
     LLMConnector = null,
     similarityThreshold = 0.25,
     topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -272,7 +274,8 @@ const AstraDB = {
       namespace,
       queryVector,
       similarityThreshold,
-      topN
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
@@ -289,7 +292,8 @@ const AstraDB = {
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN = 4
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const result = {
       contextTexts: [],
@@ -311,6 +315,12 @@ const AstraDB = {
 
     responses.forEach((response) => {
       if (response.$similarity < similarityThreshold) return;
+      if (filterIdentifiers.includes(sourceIdentifier(response.metadata))) {
+        console.log(
+          "AstraDB: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
       result.contextTexts.push(response.metadata.text);
       result.sourceDocuments.push(response);
       result.scores.push(response.$similarity);
