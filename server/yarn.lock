@@ -4495,10 +4495,10 @@ onnxruntime-web@1.14.0:
     onnxruntime-common "~1.14.0"
     platform "^1.3.6"
 
-"openai:latest@npm:openai@latest":
-  version "4.32.1"
-  resolved "https://registry.yarnpkg.com/openai/-/openai-4.32.1.tgz#9e375fdbc727330c5ea5d287beb325db3e6f9ad7"
-  integrity sha512-3e9QyCY47tgOkxBe2CSVKlXOE2lLkMa24Y0s3LYZR40yYjiBU9dtVze+C3mu1TwWDGiRX52STpQAEJZvRNuIrA==
+"openai-latest@npm:openai@latest":
+  version "4.38.0"
+  resolved "https://registry.yarnpkg.com/openai/-/openai-4.38.0.tgz#d97accc7c368670a40c2f668650b624cb941dc8b"
+  integrity sha512-q1w04cRm+7CgUAGDXqt+OMa89zXBffHrEK0FcVDRhD+zL1S1aAatu4iYO5sIxR2QFEP//i8CM3QaxGVTNajxuw==
   dependencies:
     "@types/node" "^18.11.18"
     "@types/node-fetch" "^2.6.4"
