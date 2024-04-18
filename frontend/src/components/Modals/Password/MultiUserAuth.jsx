@@ -31,19 +31,19 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col justify-center items-center relative rounded-2xl bg-login-gradient shadow-[0_4px_14px_rgba(0,0,0,0.25)] px-8 py-4"
+      className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-8 px-0 py-4 w-full md:w-fit mt-10 md:mt-0"
     >
-      <div className="flex items-start justify-between pt-11 pb-9 rounded-t">
-        <div className="flex flex-col gap-y-4">
-          <h3 className="text-md md:text-lg font-bold text-white">
+      <div className="flex items-start justify-between pt-11 pb-9 w-screen md:w-full md:px-12 px-6 ">
+        <div className="flex flex-col gap-y-4 w-full">
+          <h3 className="text-4xl md:text-lg font-bold text-white text-center md:text-left">
             Password Reset
           </h3>
-          <p className="text-sm text-white/90 text-left max-w-[300px]">
+          <p className="text-sm text-white/90 md:text-left md:max-w-[300px] px-4 md:px-0 text-center">
             Provide the necessary information below to reset your pasword.
           </p>
         </div>
       </div>
-      <div className="px-12 space-y-6 flex h-full w-full">
+      <div className="md:px-12 px-6 space-y-6 flex h-full w-full">
         <div className="w-full flex flex-col gap-y-4">
           <div className="flex flex-col gap-y-2">
             <label className="text-white text-sm font-bold">Username</label>
@@ -53,7 +53,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-[300px] h-[34px]"
+              className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
               required
             />
           </div>
@@ -71,7 +71,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
                   onChange={(e) =>
                     handleRecoveryCodeChange(index, e.target.value)
                   }
-                  className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-[300px] h-[34px]"
+                  className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required
                 />
               </div>
@@ -79,10 +79,10 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
           </div>
         </div>
       </div>
-      <div className="flex items-center p-12 space-x-2 border-gray-600 w-full flex-col gap-y-8">
+      <div className="flex items-center md:p-12 md:px-0 px-6 mt-12 md:mt-0 space-x-2 border-gray-600 w-full flex-col gap-y-8">
         <button
           type="submit"
-          className=" text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] h-[34px] text-[#222628] bg-[#46C8FF] border-transparent hover:border-[#46C8FF] hover:bg-[#2C2F36] hover:text-[#46C8FF] focus:z-10 w-full"
+          className="md:text-[#46C8FF] md:bg-transparent md:w-[300px] text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#46C8FF] bg-[#46C8FF] focus:z-10 w-full"
         >
           Reset Password
         </button>
@@ -110,19 +110,19 @@ const ResetPasswordForm = ({ onSubmit }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col justify-center items-center relative rounded-2xl bg-login-gradient shadow-[0_4px_14px_rgba(0,0,0,0.25)] px-12 py-12"
+      className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-12 px-0 py-4 w-full md:w-fit -mt-24 md:-mt-28"
     >
-      <div className="flex items-start justify-between pt-11 pb-9 rounded-t">
-        <div className="flex items-center flex-col gap-y-4">
-          <h3 className="text-md md:text-2xl font-bold text-white text-center">
+      <div className="flex items-start justify-between pt-11 pb-9 w-screen md:w-full md:px-12 px-6">
+        <div className="flex flex-col gap-y-4 w-full">
+          <h3 className="text-4xl md:text-2xl font-bold text-white text-center md:text-left">
             Reset Password
           </h3>
-          <p className="text-sm text-white/90 text-center">
+          <p className="text-sm text-white/90 md:text-left md:max-w-[300px] px-4 md:px-0 text-center">
             Enter your new password.
           </p>
         </div>
       </div>
-      <div className="px-12 space-y-6 flex h-full w-full">
+      <div className="md:px-12 px-6 space-y-6 flex h-full w-full">
         <div className="w-full flex flex-col gap-y-4">
           <div>
             <input
@@ -131,7 +131,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
               placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-[300px] h-[34px]"
+              className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
               required
             />
           </div>
@@ -142,16 +142,16 @@ const ResetPasswordForm = ({ onSubmit }) => {
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-[300px] h-[34px]"
+              className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
               required
             />
           </div>
         </div>
       </div>
-      <div className="flex items-center p-12 space-x-2 border-gray-600 w-full flex-col gap-y-8">
+      <div className="flex items-center md:p-12 md:px-0 px-6 mt-12 md:mt-0 space-x-2 border-gray-600 w-full flex-col gap-y-8">
         <button
           type="submit"
-          className=" text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] h-[34px] text-[#222628] bg-[#46C8FF] border-transparent hover:border-[#46C8FF] hover:bg-[#2C2F36] hover:text-[#46C8FF] focus:z-10 w-full"
+          className="md:text-[#46C8FF] md:bg-transparent md:w-[300px] text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#46C8FF] bg-[#46C8FF] focus:z-10 w-full"
         >
           Reset Password
         </button>
@@ -273,52 +273,52 @@ export default function MultiUserAuth() {
   return (
     <>
       <form onSubmit={handleLogin}>
-        <div className="flex flex-col justify-center items-center relative rounded-2xl bg-login-gradient shadow-[0_4px_14px_rgba(0,0,0,0.25)] px-12 py-12">
+        <div className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-12 py-12 -mt-4 md:mt-0">
           <div className="flex items-start justify-between pt-11 pb-9 rounded-t">
             <div className="flex items-center flex-col gap-y-4">
-              <h3 className="text-md md:text-2xl font-bold text-white text-center white-space-nowrap ">
-                Welcome to AnythingLLM
-                {/* <p className="text-[linear-gradient(91.2deg, #75D6FF 48.97%, #FFFFFF 104.38%)]">
+              <div className="flex gap-x-1">
+                <h3 className="text-md md:text-2xl font-bold text-white text-center white-space-nowrap hidden md:block">
+                  Welcome to
+                </h3>
+                <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
                   AnythingLLM
-                </p> */}
-              </h3>
+                </p>
+              </div>
               <p className="text-sm text-white/90 text-center">
                 Sign in to your AnythingLLM account.
               </p>
             </div>
           </div>
-          <div className="px-12 space-y-6 flex h-full w-full">
+          <div className="w-full px-4 md:px-12">
             <div className="w-full flex flex-col gap-y-4">
-              <div>
+              <div className="w-screen md:w-full md:px-0 px-6">
                 <input
                   name="username"
                   type="text"
                   placeholder="Username"
-                  className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-[300px] h-[34px]"
+                  className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required={true}
                   autoComplete="off"
                 />
               </div>
-
-              <div>
+              <div className="w-screen md:w-full md:px-0 px-6">
                 <input
                   name="password"
                   type="password"
                   placeholder="Password"
-                  className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-[300px] h-[34px]"
+                  className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required={true}
                   autoComplete="off"
                 />
               </div>
-
               {error && <p className="text-red-400 text-sm">Error: {error}</p>}
             </div>
           </div>
-          <div className="flex items-center p-12 space-x-2 border-gray-600 w-full flex-col gap-y-8">
+          <div className="flex items-center md:p-12 px-10 mt-12 md:mt-0 space-x-2 border-gray-600 w-full flex-col gap-y-8">
             <button
               disabled={loading}
               type="submit"
-              className="text-[#46C8FF] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] h-[34px] hover:text-white hover:bg-[#46C8FF] focus:z-10 w-full"
+              className="md:text-[#46C8FF] md:bg-transparent text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#46C8FF] bg-[#46C8FF] focus:z-10 w-full"
             >
               {loading ? "Validating..." : "Login"}
             </button>
