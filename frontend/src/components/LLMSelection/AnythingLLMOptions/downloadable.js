@@ -1,5 +1,18 @@
 export const DOWNLOADABLE_MODELS = [
   {
+    id: "llama3:latest",
+    name: "Llama3 8B",
+    description: "Meta Llama 3: The most capable openly available LLM to date.",
+    size: "4.7GB",
+    link: "https://llama.meta.com/",
+    licenses: [
+      {
+        title: "LLAMA 3 COMMUNITY LICENSE AGREEMENT",
+        link: "https://llama.meta.com/llama3/license/",
+      },
+    ],
+  },
+  {
     id: "llama2:latest",
     name: "Llama2 7B",
     description:

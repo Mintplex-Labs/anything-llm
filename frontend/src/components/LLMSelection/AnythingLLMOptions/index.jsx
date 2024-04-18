@@ -10,7 +10,7 @@ import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 // Highlighted and/or recommended models for use.
-const SHORT_MODELS = ["llama2:latest", "mistral:latest", "gemma:2b"];
+const SHORT_MODELS = ["llama3:latest", "mistral:latest", "gemma:2b"];
 
 export default function AnythingLLMOptions({
   short = false,
