@@ -9,6 +9,7 @@ const {
   getEmbeddingEngineSelection,
 } = require("../../helpers");
 const { parseAuthHeader } = require("../../http");
+const { sourceIdentifier } = require("../../chats");
 
 const Chroma = {
   name: "Chroma",
@@ -70,7 +71,8 @@ const Chroma = {
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN = 4
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const collection = await client.getCollection({ name: namespace });
     const result = {
@@ -89,6 +91,15 @@ const Chroma = {
         similarityThreshold
       )
         return;
+
+      if (
+        filterIdentifiers.includes(sourceIdentifier(response.metadatas[0][i]))
+      ) {
+        console.log(
+          "Chroma: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
       result.contextTexts.push(response.documents[0][i]);
       result.sourceDocuments.push(response.metadatas[0][i]);
       result.scores.push(this.distanceToSimilarity(response.distances[0][i]));
@@ -282,6 +293,7 @@ const Chroma = {
     LLMConnector = null,
     similarityThreshold = 0.25,
     topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -301,7 +313,8 @@ const Chroma = {
       namespace,
       queryVector,
       similarityThreshold,
-      topN
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
