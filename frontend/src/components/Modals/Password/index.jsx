@@ -9,6 +9,7 @@ import {
 } from "../../../utils/constants";
 import useLogo from "../../../hooks/useLogo";
 import illustration from "@/media/illustrations/login-illustration.svg";
+import loginLogo from "@/media/illustrations/login-logo.svg";
 
 export default function PasswordModal({ mode = "single" }) {
   const { logo: _initLogo } = useLogo();
@@ -21,10 +22,10 @@ export default function PasswordModal({ mode = "single" }) {
           alt="login illustration"
         />
       </div>
-      <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50">
+      <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative">
         <img
-          src={_initLogo}
-          className="mb-8 md:mb-12 w-64 md:w-80 opacity-80"
+          src={loginLogo}
+          className="mb-8 w-[84px] h-[84px] absolute md:top-36 top-44 z-50"
           alt="logo"
         />
         {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth />}
