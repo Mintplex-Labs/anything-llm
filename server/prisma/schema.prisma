@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = env("PRISMA_BINARY_TARGET")
 }
 
 // Uncomment the following lines and comment out the SQLite datasource block above to use PostgreSQL
