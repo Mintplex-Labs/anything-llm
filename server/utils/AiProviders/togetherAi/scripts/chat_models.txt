@@ -6,7 +6,7 @@
 | Allen AI | OLMo (7B) | allenai/OLMo-7B | 2048 |
 | Austism | Chronos Hermes (13B) | Austism/chronos-hermes-13b | 2048 |
 | cognitivecomputations | Dolphin 2.5 Mixtral 8x7b | cognitivecomputations/dolphin-2.5-mixtral-8x7b | 32768 |
-| databricks | DBRX Instruct | databricks/dbrx-instruct | 32000 |
+| databricks | DBRX Instruct | databricks/dbrx-instruct | 32768 |
 | DeepSeek | Deepseek Coder Instruct (33B) | deepseek-ai/deepseek-coder-33b-instruct | 16384 |
 | DeepSeek | DeepSeek LLM Chat (67B) | deepseek-ai/deepseek-llm-67b-chat | 4096 |
 | garage-bAInd | Platypus2 Instruct (70B) | garage-bAInd/Platypus2-70B-instruct | 4096 |
@@ -22,9 +22,13 @@
 | Meta | LLaMA-2 Chat (70B) | meta-llama/Llama-2-70b-chat-hf | 4096 |
 | Meta | LLaMA-2 Chat (13B) | meta-llama/Llama-2-13b-chat-hf | 4096 |
 | Meta | LLaMA-2 Chat (7B) | meta-llama/Llama-2-7b-chat-hf | 4096 |
+| Meta | LLaMA-3 Chat (8B) | meta-llama/Llama-3-8b-chat-hf | 8000 |
+| Meta | LLaMA-3 Chat (70B) | meta-llama/Llama-3-70b-chat-hf | 8000 |
+| Microsoft | WizardLM-2 (8x22B) | microsoft/WizardLM-2-8x22B | 65536 |
 | mistralai | Mistral (7B) Instruct | mistralai/Mistral-7B-Instruct-v0.1 | 8192 |
 | mistralai | Mistral (7B) Instruct v0.2 | mistralai/Mistral-7B-Instruct-v0.2 | 32768 |
 | mistralai | Mixtral-8x7B Instruct (46.7B) | mistralai/Mixtral-8x7B-Instruct-v0.1 | 32768 |
+| mistralai | Mixtral-8x22B Instruct (141B) | mistralai/Mixtral-8x22B-Instruct-v0.1 | 65536 |
 | NousResearch | Nous Capybara v1.9 (7B) | NousResearch/Nous-Capybara-7B-V1p9 | 8192 |
 | NousResearch | Nous Hermes 2 - Mistral DPO (7B) | NousResearch/Nous-Hermes-2-Mistral-7B-DPO | 32768 |
 | NousResearch | Nous Hermes 2 - Mixtral 8x7B-DPO (46.7B) | NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO | 32768 |

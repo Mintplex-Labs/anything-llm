@@ -4,15 +4,8 @@ import { useEffect, useState } from "react";
 // Providers which cannot use this feature for workspace<>model selection
 export const DISABLED_PROVIDERS = ["azure", "lmstudio", "native"];
 const PROVIDER_DEFAULT_MODELS = {
-  openai: [
-    "gpt-3.5-turbo",
-    "gpt-3.5-turbo-1106",
-    "gpt-4",
-    "gpt-4-turbo-preview",
-    "gpt-4-1106-preview",
-    "gpt-4-32k",
-  ],
-  gemini: ["gemini-pro"],
+  openai: [],
+  gemini: ["gemini-pro", "gemini-1.5-pro-latest"],
   anthropic: [
     "claude-instant-1.2",
     "claude-2.0",
@@ -41,6 +34,7 @@ function groupModels(models) {
   }, {});
 }
 
+const groupedProviders = ["togetherai", "openai"];
 export default function useGetProviderModels(provider = null) {
   const [defaultModels, setDefaultModels] = useState([]);
   const [customModels, setCustomModels] = useState([]);
@@ -50,9 +44,16 @@ export default function useGetProviderModels(provider = null) {
     async function fetchProviderModels() {
       if (!provider) return;
       const { models = [] } = await System.customModels(provider);
-      if (PROVIDER_DEFAULT_MODELS.hasOwnProperty(provider))
+      if (
+        PROVIDER_DEFAULT_MODELS.hasOwnProperty(provider) &&
+        !groupedProviders.includes(provider)
+      ) {
         setDefaultModels(PROVIDER_DEFAULT_MODELS[provider]);
-      provider === "togetherai"
+      } else {
+        setDefaultModels([]);
+      }
+
+      groupedProviders.includes(provider)
         ? setCustomModels(groupModels(models))
         : setCustomModels(models);
       setLoading(false);

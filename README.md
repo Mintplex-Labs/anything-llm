@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-    <b>AnythingLLM: A private ChatGPT to chat with <i>anything!</i></b>. <br />
-    An efficient, customizable, and open-source enterprise-ready document chatbot solution.
+    <b>AnythingLLM: The all-in-one AI app you were looking for.<br />
+    Chat with your docs, use AI Agents, hyper-configurable, multi-user, & no fustrating set up required.
 </p>
 
 <p align="center">
@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-👉 AnythingLLM for desktop is in <b>public beta</b>! <a href="https://useanything.com/download" target="_blank"> Download Now</a>
+👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://useanything.com/download" target="_blank"> Download Now</a>
 </p>
 
 A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use as well as supporting multi-user management and permissions.
@@ -48,7 +48,8 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 Some cool features of AnythingLLM
 
 - **Multi-user instance support and permissioning**
-- **_New_** [Custom Embeddable Chat widget for your website](./embed/README.md)
+- Agents inside your workspace (browse the web, run code, etc)
+- [Custom Embeddable Chat widget for your website](./embed/README.md)
 - Multiple document type support (PDF, TXT, DOCX, etc)
 - Manage documents in your vector database from a simple UI
 - Two chat modes `conversation` and `query`. Conversation retains previous questions and amendments. Query is simple QA against your documents
@@ -82,9 +83,9 @@ Some cool features of AnythingLLM
 - [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-- [LM Studio (all)](https://lmstudio.ai)
 - [LocalAi (all)](https://localai.io/)
 - [Ollama (all)](https://ollama.ai/)
+<!-- - [LM Studio (all)](https://lmstudio.ai) -->
 
 **Supported Transcription models:**
 
