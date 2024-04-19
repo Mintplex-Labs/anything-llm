@@ -20,7 +20,7 @@ class LMStudioEmbedder {
   }
 
   async #isAlive() {
-    return await fetch(process.env.EMBEDDING_BASE_PATH, {
+    return await fetch(`${this.basePath}/models`, {
       method: "HEAD",
     })
       .then((res) => res.ok)
