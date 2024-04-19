@@ -14,7 +14,7 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
   const chatHistoryRef = useRef(null);
 
   useEffect(() => {
-    scrollToBottom();
+    if (isAtBottom) scrollToBottom();
   }, [history]);
 
   const handleScroll = () => {
