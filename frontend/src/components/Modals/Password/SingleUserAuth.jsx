@@ -45,7 +45,9 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
       <div className="md:px-12 px-6 space-y-6 flex h-full w-full">
         <div className="w-full flex flex-col gap-y-4">
           <div className="flex flex-col gap-y-2">
-            <label className="text-white text-sm font-bold">Recovery Codes</label>
+            <label className="text-white text-sm font-bold">
+              Recovery Codes
+            </label>
             {recoveryCodeInputs.map((code, index) => (
               <div key={index}>
                 <input
@@ -53,7 +55,9 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
                   name={`recoveryCode${index + 1}`}
                   placeholder={`Recovery Code ${index + 1}`}
                   value={code}
-                  onChange={(e) => handleRecoveryCodeChange(index, e.target.value)}
+                  onChange={(e) =>
+                    handleRecoveryCodeChange(index, e.target.value)
+                  }
                   className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required
                 />
@@ -256,13 +260,13 @@ export default function SingleUserAuth() {
           <div className="flex items-start justify-between pt-11 pb-9 rounded-t">
             <div className="flex items-center flex-col gap-y-4">
               <div className="flex gap-x-1">
-              <h3 className="text-md md:text-2xl font-bold text-white text-center white-space-nowrap hidden md:block">
-                Welcome to
-              </h3>
-              <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
+                <h3 className="text-md md:text-2xl font-bold text-white text-center white-space-nowrap hidden md:block">
+                  Welcome to
+                </h3>
+                <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
                   AnythingLLM
                 </p>
-                </div>
+              </div>
               <p className="text-sm text-white/90 text-center">
                 Sign in to your AnythingLLM instance.
               </p>
