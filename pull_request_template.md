@@ -19,12 +19,12 @@ resolves #xxx
 
 ### What is in this change?
 
-Describe the changes in this PR that are impactful to the repo.
+<!-- Describe the changes in this PR that are impactful to the repo. -->
 
 
 ### Additional Information
 
-Add any other context about the Pull Request here that was not captured above.
+<!-- Add any other context about the Pull Request here that was not captured above. -->
 
 ### Developer Validations
 
