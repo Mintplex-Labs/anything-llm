@@ -46,7 +46,8 @@ class LMStudioEmbedder {
     );
 
     // LMStudio will drop all queued requests now? So if there are many going on
-    // we need to do them IN ORDER >:( and
+    // we need to do them sequentially or else only the first resolves and the others
+    // get dropped or go unanswered >:(
     let results = [];
     let hasError = false;
     for (const chunk of textChunks) {
