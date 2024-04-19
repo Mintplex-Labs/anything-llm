@@ -28,7 +28,7 @@ import { useNavigate } from "react-router-dom";
 
 const TITLE = "Data Handling & Privacy";
 const DESCRIPTION =
-  "We are committed to transparency and control when it comes to your personal data.";
+  "We are committed to transparency and control when it comes to your personal data. ";
 export const LLM_SELECTION_PRIVACY = {
   openai: {
     name: "OpenAI",
@@ -337,6 +337,9 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
           </ul>
         </div>
       </div>
+      <p className="text-white/60 text-sm font-medium py-1">
+        These settings can be reconfigured at any time in the instance settings.
+      </p>
     </div>
   );
 }
