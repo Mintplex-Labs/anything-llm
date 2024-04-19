@@ -105,8 +105,8 @@ const SystemSettings = {
       // Embedder Provider Selection Settings & Configs
       // --------------------------------------------------------
       EmbeddingEngine: process.env.EMBEDDING_ENGINE,
-      HasExistingEmbeddings: await this.hasEmbeddings(), // check if they have any currently embedded documents
-      HasCachedEmbeddings: hasVectorCachedFiles(), // check if they ever embedded any documents.
+      HasExistingEmbeddings: await this.hasEmbeddings(), // check if they have any currently embedded documents active in workspaces.
+      HasCachedEmbeddings: hasVectorCachedFiles(), // check if they any currently cached embedded docs.
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
