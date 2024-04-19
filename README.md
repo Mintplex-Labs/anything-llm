@@ -85,7 +85,7 @@ Some cool features of AnythingLLM
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAi (all)](https://localai.io/)
 - [Ollama (all)](https://ollama.ai/)
-<!-- - [LM Studio (all)](https://lmstudio.ai) -->
+- [LM Studio (all)](https://lmstudio.ai)
 
 **Supported Transcription models:**
 

@@ -237,6 +237,13 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: OllamaLogo,
   },
+  lmstudio: {
+    name: "LMStudio",
+    description: [
+      "Your document text is embedded privately on the server running LMStudio",
+    ],
+    logo: LMStudioLogo,
+  },
 };
 
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
