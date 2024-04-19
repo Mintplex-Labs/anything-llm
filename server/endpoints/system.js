@@ -47,8 +47,6 @@ const { CollectorApi } = require("../utils/collectorApi");
 const {
   RecoveryCode,
   PasswordResetToken,
-  SingleUserRecoveryCode,
-  SingleUserPasswordResetToken,
 } = require("../models/passwordRecovery");
 
 function systemEndpoints(app) {
@@ -252,44 +250,6 @@ function systemEndpoints(app) {
           return;
         }
 
-        // Check if recovery codes have been seen
-        const seenRecoveryCodes = await SystemSettings.get({
-          label: "seen_recovery_codes",
-        });
-
-        if (!seenRecoveryCodes || seenRecoveryCodes.value !== "true") {
-          const newRecoveryCodes = [];
-          const plainTextCodes = [];
-          for (let i = 0; i < 4; i++) {
-            const code = v4();
-            const hashedCode = bcrypt.hashSync(code, 10);
-            newRecoveryCodes.push({
-              code_hash: hashedCode,
-            });
-            plainTextCodes.push(code);
-          }
-
-          // Save recovery codes to the db
-          const { error } =
-            await SingleUserRecoveryCode.createMany(newRecoveryCodes);
-          if (error) {
-            throw new Error(error);
-          }
-
-          // Update seen_recovery_codes flag
-          await SystemSettings._updateSettings({
-            seen_recovery_codes: "true",
-          });
-
-          response.status(200).json({
-            valid: true,
-            token: makeJWT({ p: password }, "30d"),
-            message: null,
-            recoveryCodes: plainTextCodes,
-          });
-          return;
-        }
-
         await Telemetry.sendTelemetry("login_event", { multiUserMode: false });
         await EventLogs.logEvent("login_event", {
           ip: request.ip || "Unknown IP",
@@ -314,7 +274,7 @@ function systemEndpoints(app) {
       const { username, recoveryCodes } = reqBody(request);
       if (await SystemSettings.isMultiUserMode()) {
         // Multi-user mode
-        const user = await User.get({ username });
+        const user = await User.get({ username: String(username) });
         if (!user) {
           return response
             .status(404)
@@ -324,6 +284,12 @@ function systemEndpoints(app) {
         const allUserHashes = (
           await RecoveryCode.findMany({ user_id: user.id })
         ).map((hash) => hash.code_hash);
+
+        if (allUserHashes.length < 4) {
+          return response
+            .status(400)
+            .json({ success: false, message: "Invalid recovery codes" });
+        }
 
         const uniqueRecoveryCodes = [...new Set(recoveryCodes)]; // Remove duplicates
         const validCodes = uniqueRecoveryCodes.every((code) => {
@@ -357,40 +323,9 @@ function systemEndpoints(app) {
           .status(200)
           .json({ success: true, resetToken: passwordResetToken.token });
       } else {
-        // Single-user mode
-        const allHashes = (await SingleUserRecoveryCode.findMany()).map(
-          (hash) => hash.code_hash
-        );
-        const uniqueRecoveryCodes = [...new Set(recoveryCodes)]; // Remove duplicates
-        const validCodes = uniqueRecoveryCodes.every((code) => {
-          let valid = false;
-          allHashes.forEach((hash) => {
-            if (bcrypt.compareSync(code, hash)) valid = true;
-          });
-          return valid;
-        });
-
-        // 2 codes must be valid
-        if (!validCodes || uniqueRecoveryCodes.length < 2) {
-          return response
-            .status(400)
-            .json({ success: false, message: "Invalid recovery codes" });
-        }
-
-        // Generate password reset token (expires 10 mins)
-        const token = v4();
-        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
-
-        const { passwordResetToken, error } =
-          await SingleUserPasswordResetToken.create(token, expiresAt);
-
-        if (error) {
-          throw new Error(error);
-        }
-
         response
-          .status(200)
-          .json({ success: true, resetToken: passwordResetToken.token });
+          .status(500)
+          .json({ success: false, message: "Invalid request" });
       }
     } catch (error) {
       console.error("Error recovering account:", error);
@@ -432,40 +367,15 @@ function systemEndpoints(app) {
         }
         await PasswordResetToken.deleteMany({ user_id: resetToken.user_id });
         await RecoveryCode.deleteMany({ user_id: resetToken.user_id });
+
+        response
+          .status(200)
+          .json({ success: true, message: "Password reset successful" });
       } else {
-        // Single-user mode
-        // Find reset token
-        const resetToken = await SingleUserPasswordResetToken.findFirst({
-          token,
-        });
-        if (!resetToken || resetToken.expiresAt < new Date()) {
-          return response.status(400).json({
-            success: false,
-            message: "Invalid or expired reset token",
-          });
-        }
-
-        // Update password
-        const { error } = await updateENV(
-          {
-            AuthToken: newPassword,
-            JWTSecret: v4(),
-          },
-          true
-        );
-        if (error) {
-          throw new Error(error);
-        }
-        await SingleUserPasswordResetToken.deleteMany();
-        await SingleUserRecoveryCode.deleteMany();
-        await SystemSettings._updateSettings({
-          seen_recovery_codes: "false",
-        });
+        response
+          .status(500)
+          .json({ success: false, message: "Invalid request" });
       }
-
-      response
-        .status(200)
-        .json({ success: true, message: "Password reset successful" });
     } catch (error) {
       console.error("Error resetting password:", error);
       response
