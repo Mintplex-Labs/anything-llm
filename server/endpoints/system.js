@@ -45,9 +45,10 @@ const {
 const { EventLogs } = require("../models/eventLogs");
 const { CollectorApi } = require("../utils/collectorApi");
 const {
-  RecoveryCode,
-  PasswordResetToken,
-} = require("../models/passwordRecovery");
+  recoverAccount,
+  resetPassword,
+  generateRecoveryCodes,
+} = require("../utils/PasswordRecovery");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -180,31 +181,7 @@ function systemEndpoints(app) {
 
         // Check if the user has seen the recovery codes
         if (!existingUser.seen_recovery_codes) {
-          const newRecoveryCodes = [];
-          const plainTextCodes = [];
-          for (let i = 0; i < 4; i++) {
-            const code = v4();
-            const hashedCode = bcrypt.hashSync(code, 10);
-            newRecoveryCodes.push({
-              user_id: existingUser.id,
-              code_hash: hashedCode,
-            });
-            plainTextCodes.push(code);
-          }
-
-          // Save recovery codes to the db
-          const { error } = await RecoveryCode.createMany(newRecoveryCodes);
-          if (error) {
-            throw new Error(error);
-          }
-
-          // Update seen_recovery_codes
-          const { success } = await User.update(existingUser.id, {
-            seen_recovery_codes: true,
-          });
-          if (!success) {
-            throw new Error("Failed to update user seen_recovery_codes flag");
-          }
+          const plainTextCodes = await generateRecoveryCodes(existingUser.id);
 
           // Return recovery codes to frontend
           response.status(200).json({
@@ -269,63 +246,17 @@ function systemEndpoints(app) {
 
   // Recover account by generating temp pw reset token
   app.post("/system/recover-account", async (request, response) => {
-    const bcrypt = require("bcrypt");
     try {
       const { username, recoveryCodes } = reqBody(request);
-      if (await SystemSettings.isMultiUserMode()) {
-        // Multi-user mode
-        const user = await User.get({ username: String(username) });
-        if (!user) {
-          return response
-            .status(404)
-            .json({ success: false, message: "User not found" });
-        }
+      const { success, resetToken, error } = await recoverAccount(
+        username,
+        recoveryCodes
+      );
 
-        const allUserHashes = (
-          await RecoveryCode.findMany({ user_id: user.id })
-        ).map((hash) => hash.code_hash);
-
-        if (allUserHashes.length < 4) {
-          return response
-            .status(400)
-            .json({ success: false, message: "Invalid recovery codes" });
-        }
-
-        const uniqueRecoveryCodes = [...new Set(recoveryCodes)]; // Remove duplicates
-        const validCodes = uniqueRecoveryCodes.every((code) => {
-          let valid = false;
-          allUserHashes.forEach((hash) => {
-            if (bcrypt.compareSync(code, hash)) valid = true;
-          });
-          return valid;
-        });
-
-        // 2 codes must be valid
-        if (!validCodes || uniqueRecoveryCodes.length < 2) {
-          return response
-            .status(400)
-            .json({ success: false, message: "Invalid recovery codes" });
-        }
-
-        // Generate password reset token (expires 10 mins)
-        const token = v4();
-        const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
-
-        const { passwordResetToken, error } = await PasswordResetToken.create(
-          user.id,
-          token,
-          expiresAt
-        );
-        if (error) {
-          throw new Error(error);
-        }
-        response
-          .status(200)
-          .json({ success: true, resetToken: passwordResetToken.token });
+      if (success) {
+        response.status(200).json({ success, resetToken });
       } else {
-        response
-          .status(500)
-          .json({ success: false, message: "Invalid request" });
+        response.status(400).json({ success, message: error });
       }
     } catch (error) {
       console.error("Error recovering account:", error);
@@ -339,48 +270,20 @@ function systemEndpoints(app) {
   app.post("/system/reset-password", async (request, response) => {
     try {
       const { token, newPassword, confirmPassword } = reqBody(request);
+      const { success, message, error } = await resetPassword(
+        token,
+        newPassword,
+        confirmPassword
+      );
 
-      if (newPassword !== confirmPassword) {
-        return response
-          .status(400)
-          .json({ success: false, message: "Passwords do not match" });
-      }
-
-      if (await SystemSettings.isMultiUserMode()) {
-        // Multi-user mode
-        // Find reset token
-        const resetToken = await PasswordResetToken.findUnique({ token });
-        if (!resetToken || resetToken.expiresAt < new Date()) {
-          return response.status(400).json({
-            success: false,
-            message: "Invalid or expired reset token",
-          });
-        }
-
-        // Update user password
-        const { error } = await User.update(resetToken.user_id, {
-          password: newPassword,
-          seen_recovery_codes: false,
-        });
-        if (error) {
-          throw new Error(error);
-        }
-        await PasswordResetToken.deleteMany({ user_id: resetToken.user_id });
-        await RecoveryCode.deleteMany({ user_id: resetToken.user_id });
-
-        response
-          .status(200)
-          .json({ success: true, message: "Password reset successful" });
+      if (success) {
+        response.status(200).json({ success, message });
       } else {
-        response
-          .status(500)
-          .json({ success: false, message: "Invalid request" });
+        response.status(400).json({ success, error });
       }
     } catch (error) {
       console.error("Error resetting password:", error);
-      response
-        .status(500)
-        .json({ success: false, message: "Internal server error" });
+      response.status(500).json({ success: false, message: error.message });
     }
   });
 
