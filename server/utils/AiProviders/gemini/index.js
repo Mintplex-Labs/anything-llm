@@ -98,11 +98,11 @@ class GeminiLLM {
     const allMessages = messages
       .map((message) => {
         if (message.role === "system")
-          return { role: "user", parts: message.content };
+          return { role: "user", parts: [{ text: message.content }] };
         if (message.role === "user")
-          return { role: "user", parts: message.content };
+          return { role: "user", parts: [{ text: message.content }] };
         if (message.role === "assistant")
-          return { role: "model", parts: message.content };
+          return { role: "model", parts: [{ text: message.content }] };
         return null;
       })
       .filter((msg) => !!msg);
