@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export const DISABLED_PROVIDERS = ["azure", "lmstudio", "native"];
 const PROVIDER_DEFAULT_MODELS = {
   openai: [],
-  gemini: ["gemini-pro"],
+  gemini: ["gemini-pro", "gemini-1.5-pro-latest"],
   anthropic: [
     "claude-instant-1.2",
     "claude-2.0",

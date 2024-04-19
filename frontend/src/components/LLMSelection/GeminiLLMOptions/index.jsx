@@ -29,7 +29,7 @@ export default function GeminiLLMOptions({ settings }) {
               required={true}
               className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
             >
-              {["gemini-pro"].map((model) => {
+              {["gemini-pro", "gemini-1.5-pro-latest"].map((model) => {
                 return (
                   <option key={model} value={model}>
                     {model}
