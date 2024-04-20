@@ -102,6 +102,9 @@ function getEmbeddingEngineSelection() {
     case "native":
       const { NativeEmbedder } = require("../EmbeddingEngines/native");
       return new NativeEmbedder();
+    case "lmstudio":
+      const { LMStudioEmbedder } = require("../EmbeddingEngines/lmstudio");
+      return new LMStudioEmbedder();
     default:
       return null;
   }
