@@ -5,11 +5,13 @@ import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
+import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
 import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
 import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
 import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
 import OllamaEmbeddingOptions from "@/components/EmbeddingSelection/OllamaOptions";
+import LMStudioEmbeddingOptions from "@/components/EmbeddingSelection/LMStudioOptions";
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
@@ -19,6 +21,52 @@ import { useNavigate } from "react-router-dom";
 const TITLE = "Embedding Preference";
 const DESCRIPTION =
   "AnythingLLM can work with many embedding models. This will be the model which turns documents into vectors.";
+const EMBEDDERS = [
+  {
+    name: "AnythingLLM Embedder",
+    value: "native",
+    logo: AnythingLLMIcon,
+    options: (settings) => <NativeEmbeddingOptions settings={settings} />,
+    description:
+      "Use the built-in embedding engine for AnythingLLM. Zero setup!",
+  },
+  {
+    name: "OpenAI",
+    value: "openai",
+    logo: OpenAiLogo,
+    options: (settings) => <OpenAiOptions settings={settings} />,
+    description: "The standard option for most non-commercial use.",
+  },
+  {
+    name: "Azure OpenAI",
+    value: "azure",
+    logo: AzureOpenAiLogo,
+    options: (settings) => <AzureAiOptions settings={settings} />,
+    description: "The enterprise option of OpenAI hosted on Azure services.",
+  },
+  {
+    name: "Local AI",
+    value: "localai",
+    logo: LocalAiLogo,
+    options: (settings) => <LocalAiOptions settings={settings} />,
+    description: "Run embedding models locally on your own machine.",
+  },
+  {
+    name: "Ollama",
+    value: "ollama",
+    logo: OllamaLogo,
+    options: (settings) => <OllamaEmbeddingOptions settings={settings} />,
+    description: "Run embedding models locally on your own machine.",
+  },
+  {
+    name: "LM Studio",
+    value: "lmstudio",
+    logo: LMStudioLogo,
+    options: (settings) => <LMStudioEmbeddingOptions settings={settings} />,
+    description:
+      "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+  },
+];
 
 export default function EmbeddingPreference({
   setHeader,
@@ -41,45 +89,6 @@ export default function EmbeddingPreference({
     }
     fetchKeys();
   }, []);
-
-  const EMBEDDERS = [
-    {
-      name: "AnythingLLM Embedder",
-      value: "native",
-      logo: AnythingLLMIcon,
-      options: <NativeEmbeddingOptions settings={settings} />,
-      description:
-        "Use the built-in embedding engine for AnythingLLM. Zero setup!",
-    },
-    {
-      name: "OpenAI",
-      value: "openai",
-      logo: OpenAiLogo,
-      options: <OpenAiOptions settings={settings} />,
-      description: "The standard option for most non-commercial use.",
-    },
-    {
-      name: "Azure OpenAI",
-      value: "azure",
-      logo: AzureOpenAiLogo,
-      options: <AzureAiOptions settings={settings} />,
-      description: "The enterprise option of OpenAI hosted on Azure services.",
-    },
-    {
-      name: "Local AI",
-      value: "localai",
-      logo: LocalAiLogo,
-      options: <LocalAiOptions settings={settings} />,
-      description: "Run embedding models locally on your own machine.",
-    },
-    {
-      name: "Ollama",
-      value: "ollama",
-      logo: OllamaLogo,
-      options: <OllamaEmbeddingOptions settings={settings} />,
-      description: "Run embedding models locally on your own machine.",
-    },
-  ];
 
   function handleForward() {
     if (hiddenSubmitButtonRef.current) {
@@ -161,8 +170,9 @@ export default function EmbeddingPreference({
         </div>
         <div className="mt-4 flex flex-col gap-y-1">
           {selectedEmbedder &&
-            EMBEDDERS.find((embedder) => embedder.value === selectedEmbedder)
-              ?.options}
+            EMBEDDERS.find(
+              (embedder) => embedder.value === selectedEmbedder
+            )?.options(settings)}
         </div>
         <button
           type="submit"

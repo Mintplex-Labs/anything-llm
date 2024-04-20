@@ -8,6 +8,7 @@ import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
+import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
 import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
@@ -15,6 +16,7 @@ import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
 import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
 import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
 import OllamaEmbeddingOptions from "@/components/EmbeddingSelection/OllamaOptions";
+import LMStudioEmbeddingOptions from "@/components/EmbeddingSelection/LMStudioOptions";
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { useModal } from "@/hooks/useModal";
@@ -57,6 +59,14 @@ const EMBEDDERS = [
     logo: OllamaLogo,
     options: (settings) => <OllamaEmbeddingOptions settings={settings} />,
     description: "Run embedding models locally on your own machine.",
+  },
+  {
+    name: "LM Studio",
+    value: "lmstudio",
+    logo: LMStudioLogo,
+    options: (settings) => <LMStudioEmbeddingOptions settings={settings} />,
+    description:
+      "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
   },
 ];
 
