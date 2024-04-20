@@ -1,12 +1,8 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://useanything.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
-</p>
-
-<p align="center">
-    <b>AnythingLLM: The all-in-one AI app you were looking for.<br />
-    Chat with your docs, use AI Agents, hyper-configurable, multi-user, & no fustrating set up required.
+    <b>Aitekflow: The all-in-one AI app you were looking for.<br />
+    Chat with your docs, use AI Agents, hyper-configurable, multi-user, & no frustrating set up required.</b>
 </p>
 
 <p align="center">
