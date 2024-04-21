@@ -387,7 +387,7 @@ function supportedTranscriptionProvider(input = "") {
 }
 
 function validGeminiModel(input = "") {
-  const validModels = ["gemini-pro"];
+  const validModels = ["gemini-pro", "gemini-1.5-pro-latest"];
   return validModels.includes(input)
     ? null
     : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
@@ -408,7 +408,14 @@ function validAnthropicModel(input = "") {
 }
 
 function supportedEmbeddingModel(input = "") {
-  const supported = ["openai", "azure", "localai", "native", "ollama"];
+  const supported = [
+    "openai",
+    "azure",
+    "localai",
+    "native",
+    "ollama",
+    "lmstudio",
+  ];
   return supported.includes(input)
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;

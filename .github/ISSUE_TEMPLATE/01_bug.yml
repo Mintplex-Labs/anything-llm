@@ -17,6 +17,7 @@ body:
         - Docker (remote machine)
         - Local development
         - AnythingLLM desktop app
+        - All versions
         - Not listed
       default: 0
     validations:

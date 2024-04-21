@@ -91,6 +91,7 @@ const SystemSettings = {
     },
   },
   currentSettings: async function () {
+    const { hasVectorCachedFiles } = require("../utils/files");
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
     return {
@@ -108,7 +109,8 @@ const SystemSettings = {
       // Embedder Provider Selection Settings & Configs
       // --------------------------------------------------------
       EmbeddingEngine: process.env.EMBEDDING_ENGINE,
-      HasExistingEmbeddings: await this.hasEmbeddings(),
+      HasExistingEmbeddings: await this.hasEmbeddings(), // check if they have any currently embedded documents active in workspaces.
+      HasCachedEmbeddings: hasVectorCachedFiles(), // check if they any currently cached embedded docs.
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:

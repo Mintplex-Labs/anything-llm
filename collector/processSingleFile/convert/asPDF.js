@@ -22,7 +22,7 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
         doc.metadata?.loc?.pageNumber || "unknown"
       } --`
     );
-    if (!doc.pageContent.length) continue;
+    if (!doc.pageContent || !doc.pageContent.length) continue;
     pageContent.push(doc.pageContent);
   }
 

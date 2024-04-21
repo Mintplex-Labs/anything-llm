@@ -39,7 +39,7 @@ const MODELS = {
     id: "databricks/dbrx-instruct",
     organization: "databricks",
     name: "DBRX Instruct",
-    maxLength: 32000,
+    maxLength: 32768,
   },
   "deepseek-ai/deepseek-coder-33b-instruct": {
     id: "deepseek-ai/deepseek-coder-33b-instruct",
@@ -131,6 +131,24 @@ const MODELS = {
     name: "LLaMA-2 Chat (7B)",
     maxLength: 4096,
   },
+  "meta-llama/Llama-3-8b-chat-hf": {
+    id: "meta-llama/Llama-3-8b-chat-hf",
+    organization: "Meta",
+    name: "LLaMA-3 Chat (8B)",
+    maxLength: 8000,
+  },
+  "meta-llama/Llama-3-70b-chat-hf": {
+    id: "meta-llama/Llama-3-70b-chat-hf",
+    organization: "Meta",
+    name: "LLaMA-3 Chat (70B)",
+    maxLength: 8000,
+  },
+  "microsoft/WizardLM-2-8x22B": {
+    id: "microsoft/WizardLM-2-8x22B",
+    organization: "Microsoft",
+    name: "WizardLM-2 (8x22B)",
+    maxLength: 65536,
+  },
   "mistralai/Mistral-7B-Instruct-v0.1": {
     id: "mistralai/Mistral-7B-Instruct-v0.1",
     organization: "mistralai",
@@ -148,6 +166,12 @@ const MODELS = {
     organization: "mistralai",
     name: "Mixtral-8x7B Instruct (46.7B)",
     maxLength: 32768,
+  },
+  "mistralai/Mixtral-8x22B-Instruct-v0.1": {
+    id: "mistralai/Mixtral-8x22B-Instruct-v0.1",
+    organization: "mistralai",
+    name: "Mixtral-8x22B Instruct (141B)",
+    maxLength: 65536,
   },
   "NousResearch/Nous-Capybara-7B-V1p9": {
     id: "NousResearch/Nous-Capybara-7B-V1p9",
