@@ -40,20 +40,31 @@ class GroqLLM {
   streamingEnabled() {
     return "streamChat" in this && "streamGetChatCompletion" in this;
   }
-
   promptWindowLimit() {
     switch (this.model) {
       case "llama2-70b-4096":
         return 4096;
       case "mixtral-8x7b-32768":
         return 32_768;
+      case "llama3-8b-8192":
+        return 8192;
+      case "llama3-70b-8192":
+        return 8192;
+      case "gemma-7b-it":
+        return 8192;
       default:
         return 4096;
     }
   }
 
   async isValidChatCompletionModel(modelName = "") {
-    const validModels = ["llama2-70b-4096", "mixtral-8x7b-32768"];
+    const validModels = [
+      "llama2-70b-4096",
+      "mixtral-8x7b-32768",
+      "llama3-8b-8192",
+      "llama3-70b-8192",
+      "gemma-7b-it",
+    ];
     const isPreset = validModels.some((model) => modelName === model);
     if (isPreset) return true;
 
