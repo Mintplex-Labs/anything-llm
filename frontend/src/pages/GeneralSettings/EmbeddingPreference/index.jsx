@@ -28,7 +28,7 @@ const EMBEDDERS = [
     logo: AnythingLLMIcon,
     options: (settings) => <NativeEmbeddingOptions settings={settings} />,
     description:
-      "Use the built-in embedding engine for AnythingLLM. Zero setup!",
+      "Use the built-in embedding provider for AnythingLLM. Zero setup!",
   },
   {
     name: "OpenAI",
