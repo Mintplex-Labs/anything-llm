@@ -18,7 +18,7 @@ export default function CustomLogo({ setHeader, setForwardBtn, setBackBtn }) {
   }
 
   function handleBack() {
-    navigate(paths.onboarding.vectorDatabase());
+    navigate(paths.onboarding.llmPreference());
   }
 
   useEffect(() => {

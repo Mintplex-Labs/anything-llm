@@ -183,6 +183,9 @@ export default function LLMPreference({
     const data = {};
     const formData = new FormData(form);
     data.LLMProvider = selectedLLM;
+    // Default to AnythingLLM embedder and LanceDB
+    data.EmbeddingEngine = "native";
+    data.VectorDB = "lancedb";
     for (var [key, value] of formData.entries()) data[key] = value;
 
     const { error } = await System.updateSystem(data);
@@ -190,7 +193,7 @@ export default function LLMPreference({
       showToast(`Failed to save LLM settings: ${error}`, "error");
       return;
     }
-    navigate(paths.onboarding.embeddingPreference());
+    navigate(paths.onboarding.customLogo());
   };
 
   useEffect(() => {
