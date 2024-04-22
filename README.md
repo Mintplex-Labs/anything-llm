@@ -85,7 +85,7 @@ Some cool features of AnythingLLM
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [LocalAi (all)](https://localai.io/)
 - [Ollama (all)](https://ollama.ai/)
-<!-- - [LM Studio (all)](https://lmstudio.ai) -->
+- [LM Studio (all)](https://lmstudio.ai)
 
 **Supported Transcription models:**
 
@@ -188,7 +188,7 @@ You can verify these claims by finding all locations `Telemetry.sendTelemetry` i
 
 ---
 
-Copyright © 2023 [Mintplex Labs][profile-link]. <br />
+Copyright © 2024 [Mintplex Labs][profile-link]. <br />
 This project is [MIT](./LICENSE) licensed.
 
 <!-- LINK GROUP -->

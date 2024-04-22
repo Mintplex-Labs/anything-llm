@@ -28,7 +28,13 @@ export default function GroqAiOptions({ settings }) {
             required={true}
             className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
-            {["llama2-70b-4096", "mixtral-8x7b-32768"].map((model) => {
+            {[
+              "llama2-70b-4096",
+              "mixtral-8x7b-32768",
+              "llama3-8b-8192",
+              "llama3-70b-8192",
+              "gemma-7b-it",
+            ].map((model) => {
               return (
                 <option key={model} value={model}>
                   {model}
