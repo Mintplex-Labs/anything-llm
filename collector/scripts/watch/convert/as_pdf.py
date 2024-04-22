@@ -54,6 +54,6 @@ def as_pdf(**kwargs):
 
   write_to_server_documents(data, f"{slugify(filename)}-{data.get('id')}")
   move_source(parent_dir, f"{filename}{ext}", remove=remove)
-
-  print(f"[SUCCESS]: {filename}{ext} converted & ready for embedding.\n")
+  print("Here10")
+  print(f"[SUCCESS]: {filename}{ext} converted & ready for embedding...\n")
   return(True, None)

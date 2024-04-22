@@ -19,6 +19,7 @@ function FileUploadProgressComponent({
 
   useEffect(() => {
     async function uploadFile() {
+      console.log('Here8');
       const start = Number(new Date());
       const formData = new FormData();
       formData.append("file", file, file.name);

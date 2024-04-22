@@ -159,6 +159,7 @@ function apiWorkspaceEndpoints(app) {
     try {
       const { slug } = request.params;
       const workspace = await Workspace.get({ slug });
+      console.log('Here6');
       response.status(200).json({ workspace });
     } catch (e) {
       console.log(e.message, e);

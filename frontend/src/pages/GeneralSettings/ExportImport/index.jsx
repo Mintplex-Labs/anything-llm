@@ -90,7 +90,7 @@ function ImportData() {
     e.preventDefault();
     setFile(null);
     setResult(null);
-
+    console.log('Here9');
     const file = e.target.files?.[0];
     if (!file) {
       showToast("Invalid file upload", "error");

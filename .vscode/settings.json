@@ -3,5 +3,6 @@
     "openai",
     "Qdrant",
     "Weaviate"
-  ]
+  ],
+  "debug.javascript.unmapMissingSources": true
 }

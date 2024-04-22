@@ -37,10 +37,11 @@ export default function SettingsSidebar() {
         ref={sidebarRef}
         style={{ height: "calc(100% - 32px)" }}
         className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px]"
-      >
+      > <br/>
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
           {/* Header Information */}
           <div className="flex w-full items-center justify-between">
+        
             <div className="flex shrink-0 max-w-[65%] items-center justify-start ml-2">
               <img
                 src={logo}
@@ -146,7 +147,7 @@ export default function SettingsSidebar() {
               {/* Footer */}
               <div className="flex justify-center mt-2">
                 <div className="flex space-x-4">
-                  <a
+                  {/* <a
                     href={paths.github()}
                     className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                   >
@@ -166,7 +167,7 @@ export default function SettingsSidebar() {
                       weight="fill"
                       className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
                     />
-                  </a>
+                  </a> */}
                   {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
                     <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
                   </button> */}
@@ -338,7 +339,7 @@ export function SidebarMobileHeader() {
                 {/* Footer */}
                 <div className="flex justify-center mt-2">
                   <div className="flex space-x-4">
-                    <a
+                    {/* <a
                       href={paths.github()}
                       className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
                     >
@@ -358,7 +359,7 @@ export function SidebarMobileHeader() {
                         weight="fill"
                         className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
                       />
-                    </a>
+                    </a> */}
                     {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
                     <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
                   </button> */}

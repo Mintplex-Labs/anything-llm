@@ -116,7 +116,7 @@ export default function UploadFile({
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[400px] p-1 overflow-y-auto">
+          <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[310px] p-1 overflow-y-auto">
             {files.map((file) => (
               <FileUploadProgress
                 key={file.uid}
@@ -148,12 +148,12 @@ export default function UploadFile({
           type="submit"
           className="disabled:bg-white/20 disabled:text-slate-300 disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-slate-200 hover:text-slate-800 w-auto border border-white text-sm text-white p-2.5 rounded-lg transition-all duration-300"
         >
-          {fetchingUrl ? "Fetching..." : "Fetch website"}
+          {fetchingUrl ? "Fetching..." : "Submit RFP Company website"}
         </button>
       </form>
       <div className="mt-6 text-center text-white text-opacity-80 text-xs font-medium w-[560px]">
         These files will be uploaded to the document processor running on this
-        AnythingLLM instance. These files are not sent or shared with a third
+        TeamGen AI instance. These files are not sent or shared with a third
         party.
       </div>
     </div>

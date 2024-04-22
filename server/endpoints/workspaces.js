@@ -10,6 +10,7 @@ const {
   checkPythonAppAlive,
   processDocument,
   processLink,
+  processLinkV2,
 } = require("../utils/files/documentProcessor");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { Telemetry } = require("../models/telemetry");
@@ -83,7 +84,7 @@ function workspaceEndpoints(app) {
     async function (request, response) {
       const { originalname } = request.file;
       const processingOnline = await checkPythonAppAlive();
-
+    
       if (!processingOnline) {
         response
           .status(500)
@@ -94,7 +95,7 @@ function workspaceEndpoints(app) {
           .end();
         return;
       }
-
+      console.log('Here2');
       const { success, reason } = await processDocument(originalname);
       if (!success) {
         response.status(500).json({ success: false, error: reason }).end();
@@ -105,6 +106,7 @@ function workspaceEndpoints(app) {
         `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
       );
       await Telemetry.sendTelemetry("document_uploaded");
+      console.log('Here4');
       response.status(200).json({ success: true, error: null });
     }
   );
@@ -114,20 +116,20 @@ function workspaceEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       const { link = "" } = reqBody(request);
-      const processingOnline = await checkPythonAppAlive();
+      // const processingOnline = await checkPythonAppAlive();
 
-      if (!processingOnline) {
-        response
-          .status(500)
-          .json({
-            success: false,
-            error: `Python processing API is not online. Link ${link} will not be processed automatically.`,
-          })
-          .end();
-        return;
-      }
+      // if (!processingOnline) {
+      //   response
+      //     .status(500)
+      //     .json({
+      //       success: false,
+      //       error: `Python processing API is not online. Link ${link} will not be processed automatically.`,
+      //     })
+      //     .end();
+      //   return;
+      // }
 
-      const { success, reason } = await processLink(link);
+      const { success, reason } = await processLink();
       if (!success) {
         response.status(500).json({ success: false, error: reason }).end();
         return;

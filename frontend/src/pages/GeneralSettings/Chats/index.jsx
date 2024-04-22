@@ -8,6 +8,7 @@ import ChatRow from "./ChatRow";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
 
+
 const PAGE_SIZE = 20;
 export default function WorkspaceChats() {
   const handleDumpChats = async () => {
@@ -33,14 +34,14 @@ export default function WorkspaceChats() {
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       {!isMobile && <Sidebar />}
-      <div
+      {/* <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
         className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
-      >
+      > */}
         {isMobile && <SidebarMobileHeader />}
         <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
-          <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
-            <div className="items-center flex gap-x-4">
+          {/* <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10"> */}
+            {/* <div className="items-center flex gap-x-4">
               <p className="text-2xl font-semibold text-white">
                 Workspace Chats
               </p>
@@ -54,11 +55,12 @@ export default function WorkspaceChats() {
             <p className="text-sm font-base text-white text-opacity-60">
               These are all the recorded chats and messages that have been sent
               by users ordered by their creation date.
-            </p>
+            </p> */}
+            <ChatsContainer />
           </div>
-          <ChatsContainer />
-        </div>
-      </div>
+          
+        {/* </div> */}
+      {/* </div> */}
     </div>
   );
 }
@@ -69,6 +71,7 @@ function ChatsContainer() {
   const [chats, setChats] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
+  
 
   const handlePrevious = () => {
     setOffset(Math.max(offset - 1, 0));
@@ -77,6 +80,48 @@ function ChatsContainer() {
     setOffset(offset + 1);
   };
 
+  // useEffect(() => {
+  //   // Dynamically load the Voiceglow script
+  //   const script = document.createElement('script');
+  //   script.src = "https://storage.googleapis.com/speakwiz-app.appspot.com/vg_live_build/vg_bundle.js";
+  //   document.body.appendChild(script);
+
+  //   window.VG_CONFIG = {
+  //       ID: "o61yjzsks",
+  //       region: 'na', // 'eu' or 'na'corresponding to Europe and North America
+  //       render: 'full-width', // popup or full-width
+  //       stylesheets: [
+  //           "https://storage.googleapis.com/speakwiz-app.appspot.com/vg_live_build/styles.css",
+  //           // Add your custom css stylesheets here
+  //       ],
+  //   };
+
+  //   return () => {
+  //       document.body.removeChild(script);
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    // Dynamically load the Voiceglow script
+    const script = document.createElement('script');
+    script.src = "https://storage.googleapis.com/speakwiz-app.appspot.com/vg_live_build/vg_bundle.js";
+    document.body.appendChild(script);
+
+    window.VG_CONFIG = {
+        ID: "qk70temx7",
+        region: 'na', // 'eu' or 'na'corresponding to Europe and North America
+        render: 'full-width', // popup or full-width
+        stylesheets: [
+            "https://storage.googleapis.com/speakwiz-app.appspot.com/vg_live_build/styles.css",
+            // Add your custom css stylesheets here
+        ],
+    };
+
+    return () => {
+        document.body.removeChild(script);
+    };
+  }, []);
+  
   useEffect(() => {
     async function fetchChats() {
       const { chats: _chats, hasPages = false } = await System.chats(offset);
@@ -102,55 +147,8 @@ function ChatsContainer() {
   }
 
   return (
-    <>
-      <table className="md:w-3/4 w-full text-sm text-left rounded-lg mt-5">
-        <thead className="text-white text-opacity-80 text-sm font-bold uppercase border-white border-b border-opacity-60">
-          <tr>
-            <th scope="col" className="px-6 py-3 rounded-tl-lg">
-              Id
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Sent By
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Workspace
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Prompt
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Response
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Sent At
-            </th>
-            <th scope="col" className="px-6 py-3 rounded-tr-lg">
-              {" "}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {!!chats &&
-            chats.map((chat) => <ChatRow key={chat.id} chat={chat} />)}
-        </tbody>
-      </table>
-      <div className="flex w-full justify-between items-center">
-        <button
-          onClick={handlePrevious}
-          className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
-          disabled={offset === 0}
-        >
-          {" "}
-          Previous Page
-        </button>
-        <button
-          onClick={handleNext}
-          className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
-          disabled={!canNext}
-        >
-          Next Page
-        </button>
-      </div>
-    </>
+    <div id="VG_OVERLAY_CONTAINER" style={{ width: '100%', height: '100%' }}>
+    {/* Content of your chats container */}
+    </div>
   );
 }

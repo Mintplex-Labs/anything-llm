@@ -61,7 +61,7 @@ function apiDocumentEndpoints(app) {
       try {
         const { originalname } = request.file;
         const processingOnline = await checkPythonAppAlive();
-
+        console.log('Here3');
         if (!processingOnline) {
           response
             .status(500)
@@ -81,6 +81,7 @@ function apiDocumentEndpoints(app) {
           `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
         );
         await Telemetry.sendTelemetry("document_uploaded");
+        console.log('Here5');
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.log(e.message, e);

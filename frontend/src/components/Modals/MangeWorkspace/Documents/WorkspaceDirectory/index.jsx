@@ -24,7 +24,7 @@ export default function WorkspaceDirectory({
             {workspace.name}
           </h3>
         </div>
-        <div className="relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5">
+        <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl mt-5">
           <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20">
             <p className="col-span-4">Name</p>
             <p className="col-span-2">Date</p>
@@ -50,17 +50,18 @@ export default function WorkspaceDirectory({
           {workspace.name}
         </h3>
       </div>
+    {/* overflow-y-auto */}
       <div
-        className={`relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5 overflow-y-auto border-4 transition-all duration-300 ${
+        className={`relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl mt-5 border-4 transition-all duration-300 ${
           highlightWorkspace ? "border-cyan-300/80" : "border-transparent"
         }`}
       >
         <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 bg-zinc-900 sticky top-0 z-10">
           <p className="col-span-4">Name</p>
-          <p className="col-span-2">Date</p>
-          <p className="col-span-2">Size</p>
-          <p className="col-span-2">Kind</p>
-          <p className="col-span-2">Cached</p>
+          <p className="col-span-3">Date</p>
+          {/* <p className="col-span-2">Size</p> */}
+          <p className="col-span-4">Tag</p>
+          <p className="col-span-1">Cached</p>
         </div>
         <div className="w-full h-full flex flex-col z-0">
           {Object.values(files.items).some(

@@ -39,25 +39,35 @@ async function processDocument(filename = "") {
     });
 }
 
-async function processLink(link = "") {
-  if (!link) return false;
-  return await fetch(`${PYTHON_API}/process-link`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ link }),
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error("Response could not be completed");
-      return res.json();
-    })
-    .then((res) => res)
-    .catch((e) => {
-      console.log(e.message);
-      return { success: false, reason: e.message };
-    });
+async function processLink() {
+  const url = "http://127.0.0.1:8400/research";
+
+  try {
+      const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ query: "what is the capital of Iowa?" })
+      });
+
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const jsonResponse = await response.json();
+      console.log('Response from the server:', jsonResponse);
+      //return jsonResponse;
+      return { success: true};
+  } catch (error) {
+      console.error('There was an error sending the query:', error);
+      return { success: false};
+  }
+   
+    
 }
+
+
 
 module.exports = {
   checkPythonAppAlive,

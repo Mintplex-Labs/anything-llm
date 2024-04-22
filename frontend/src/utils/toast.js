@@ -8,7 +8,7 @@ const showToast = (message, type = "default", opts = {}) => {
   const prefersDarkMode = usePrefersDarkMode();
   const options = {
     position: "bottom-center",
-    autoClose: 5000,
+    autoClose: 2500,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,

@@ -4,6 +4,8 @@ import {
   Gear,
   PaperPlaneRight,
   Quotes,
+  Microphone,
+  TextT,
 } from "@phosphor-icons/react";
 import React, { useState, useRef } from "react";
 import { isMobile } from "react-device-detect";
@@ -97,15 +99,15 @@ export default function PromptInput({
                 )}
 
                 <ChatModeSelector workspace={workspace} />
-                {/* <TextT
+                { <TextT
                   className="w-7 h-7 text-white/30 cursor-not-allowed"
                   weight="fill"
-                /> */}
+                /> }
               </div>
-              {/* <Microphone
+              { <Microphone
                 className="w-7 h-7 text-white/30 cursor-not-allowed"
                 weight="fill"
-              /> */}
+              /> }
             </div>
           </div>
         </div>
@@ -120,13 +122,13 @@ export default function PromptInput({
 function ChatModeSelector({ workspace }) {
   const STORAGE_KEY = `workspace_chat_mode_${workspace.slug}`;
   const [chatMode, setChatMode] = useState(
-    window.localStorage.getItem(STORAGE_KEY) ?? "chat"
+    window.localStorage.getItem(STORAGE_KEY) ?? "query"
   );
   const [showToolTip, setShowTooltip] = useState(false);
   const [delayHandler, setDelayHandler] = useState(null);
 
   function toggleMode() {
-    const newChatMode = chatMode === "chat" ? "query" : "chat";
+    const newChatMode = chatMode === "query" ? "chat" : "query";
     setChatMode(newChatMode);
     window.localStorage.setItem(STORAGE_KEY, newChatMode);
   }

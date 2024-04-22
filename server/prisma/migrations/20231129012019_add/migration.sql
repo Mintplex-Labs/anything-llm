@@ -1,2 +1,3 @@
 -- AlterTable
-ALTER TABLE "users" ADD COLUMN "pfpFilename" TEXT;
+ALTER TABLE "users" ADD COLUMN "tester" TEXT;
+

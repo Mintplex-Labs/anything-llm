@@ -2,14 +2,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Uncomment the following lines and comment out the SQLite datasource block above to use PostgreSQL
-// Make sure to set the correct DATABASE_URL in your .env file
-// After swapping run `yarn prisma:setup` from the root directory to migrate the database
-//
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
 datasource db {
   provider = "sqlite"
   url      = "file:../storage/anythingllm.db"
@@ -93,8 +85,8 @@ model workspaces {
   lastUpdatedAt       DateTime              @default(now())
   openAiPrompt        String?
   similarityThreshold Float?                @default(0.25)
-  workspace_users     workspace_users[]
   documents           workspace_documents[]
+  workspace_users     workspace_users[]
 }
 
 model workspace_chats {
@@ -106,7 +98,7 @@ model workspace_chats {
   user_id       Int?
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
-  users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model workspace_users {
@@ -115,8 +107,8 @@ model workspace_users {
   workspace_id  Int
   createdAt     DateTime   @default(now())
   lastUpdatedAt DateTime   @default(now())
-  workspaces    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  users         users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users         users      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  workspaces    workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
 }
 
 model cache_data {
@@ -128,4 +120,10 @@ model cache_data {
   expiresAt     DateTime?
   createdAt     DateTime  @default(now())
   lastUpdatedAt DateTime  @default(now())
+}
+
+model tester {
+  ID   Int     @id @default(autoincrement())
+  name String?
+  zip  Int?
 }
