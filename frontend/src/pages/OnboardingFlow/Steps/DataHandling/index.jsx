@@ -2,6 +2,7 @@ import PreLoader from "@/components/Preloader";
 import System from "@/models/system";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
+import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
@@ -135,6 +136,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to Groq",
     ],
     logo: GroqLogo,
+  },
+  "generic-openai": {
+    name: "Generic OpenAI compatible service",
+    description: [
+      "Data is shared according to the terms of service applicable with your generic endpoint provider.",
+    ],
+    logo: GenericOpenAiLogo,
   },
 };
 
