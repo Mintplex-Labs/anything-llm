@@ -74,25 +74,50 @@ function TextSizeMenu({ showing, setShowing, buttonRef }) {
         ref={formRef}
         className="absolute bottom-16 -ml-8 w-[140px] p-2 bg-zinc-800 rounded-lg shadow-md flex flex-col justify-center items-start gap-2 z-50"
       >
-        {["Small", "Normal", "Large"].map((size) => (
-          <button
-            key={size}
-            onClick={(e) => {
-              e.preventDefault();
-              setShowing(false);
-              handleTextSizeChange(size.toLowerCase());
-            }}
-            className={`w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
-              selectedSize === size.toLowerCase()
-                ? "bg-zinc-700"
-                : "hover:bg-zinc-700"
-            }`}
-          >
-            <div className="w-full flex-col text-left flex pointer-events-none">
-              <div className="text-white text-sm">{size}</div>
-            </div>
-          </button>
-        ))}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setShowing(false);
+            handleTextSizeChange("small");
+          }}
+          className={`w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
+            selectedSize === "small" ? "bg-zinc-700" : "hover:bg-zinc-700"
+          }`}
+        >
+          <div className="w-full flex-col text-left flex pointer-events-none">
+            <div className="text-white text-xs">Small</div>
+          </div>
+        </button>
+
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setShowing(false);
+            handleTextSizeChange("normal");
+          }}
+          className={`w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
+            selectedSize === "normal" ? "bg-zinc-700" : "hover:bg-zinc-700"
+          }`}
+        >
+          <div className="w-full flex-col text-left flex pointer-events-none">
+            <div className="text-white text-sm">Normal</div>
+          </div>
+        </button>
+
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setShowing(false);
+            handleTextSizeChange("large");
+          }}
+          className={`w-full hover:cursor-pointer px-2 py-1 rounded-md flex flex-col justify-start group ${
+            selectedSize === "large" ? "bg-zinc-700" : "hover:bg-zinc-700"
+          }`}
+        >
+          <div className="w-full flex-col text-left flex pointer-events-none">
+            <div className="text-white text-[16px]">Large</div>
+          </div>
+        </button>
       </div>
     </div>
   );

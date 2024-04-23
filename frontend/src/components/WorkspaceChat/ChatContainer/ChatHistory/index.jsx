@@ -14,22 +14,26 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
   const chatHistoryRef = useRef(null);
   const [textSize, setTextSize] = useState("normal");
 
+  const getTextSizeClass = (size) => {
+    switch (size) {
+      case "small":
+        return "text-[12px]";
+      case "large":
+        return "text-[18px]";
+      default:
+        return "text-[14px]";
+    }
+  };
+
   useEffect(() => {
+    const storedTextSize = window.localStorage.getItem("anythingllm_text_size");
+    if (storedTextSize) {
+      setTextSize(getTextSizeClass(storedTextSize));
+    }
+
     const handleTextSizeChange = (event) => {
       const size = event.detail;
-      switch (size) {
-        case "small":
-          setTextSize("text-[12px]");
-          break;
-        case "normal":
-          setTextSize("text-[14px]");
-          break;
-        case "large":
-          setTextSize("text-[18px]");
-          break;
-        default:
-          break;
-      }
+      setTextSize(getTextSizeClass(size));
     };
 
     window.addEventListener("textSizeChange", handleTextSizeChange);
