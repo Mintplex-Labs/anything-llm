@@ -44,7 +44,7 @@ const HistoricalMessage = ({
             </div>
           ) : (
             <span
-              className={`flex flex-col gap-y-1 mt-2`}
+              className={`flex flex-col gap-y-1`}
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(renderMarkdown(message)),
               }}
