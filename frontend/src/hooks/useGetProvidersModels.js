@@ -40,7 +40,7 @@ function groupModels(models) {
   }, {});
 }
 
-const groupedProviders = ["togetherai", "openai"];
+const groupedProviders = ["togetherai", "openai", "openrouter"];
 export default function useGetProviderModels(provider = null) {
   const [defaultModels, setDefaultModels] = useState([]);
   const [customModels, setCustomModels] = useState([]);
