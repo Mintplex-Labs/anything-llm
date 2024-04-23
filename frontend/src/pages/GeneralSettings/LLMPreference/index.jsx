@@ -159,6 +159,12 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <GenericOpenAiOptions settings={settings} />,
     description:
       "Connect to any OpenAi-compatible service via a custom configuration",
+    requiredConfig: [
+      "GenericOpenAiBasePath",
+      "GenericOpenAiModelPref",
+      "GenericOpenAiTokenLimit",
+      "GenericOpenAiKey",
+    ],
   },
   {
     name: "Native",
