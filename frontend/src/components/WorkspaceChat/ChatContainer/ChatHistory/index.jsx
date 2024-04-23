@@ -12,6 +12,32 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
+  const [textSize, setTextSize] = useState("normal");
+
+  useEffect(() => {
+    const handleTextSizeChange = (event) => {
+      const size = event.detail;
+      switch (size) {
+        case "small":
+          setTextSize("text-[12px]");
+          break;
+        case "normal":
+          setTextSize("text-[14px]");
+          break;
+        case "large":
+          setTextSize("text-[18px]");
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("textSizeChange", handleTextSizeChange);
+
+    return () => {
+      window.removeEventListener("textSizeChange", handleTextSizeChange);
+    };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -91,7 +117,7 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
 
   return (
     <div
-      className="markdown text-white/80 font-light text-sm h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
+      className={`markdown text-white/80 font-light ${textSize} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll`}
       id="chat-history"
       ref={chatHistoryRef}
     >
