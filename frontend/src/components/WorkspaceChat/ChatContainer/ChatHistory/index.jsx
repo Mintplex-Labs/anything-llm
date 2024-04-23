@@ -40,7 +40,7 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
+    if (isAtBottom) scrollToBottom();
   }, [history]);
 
   const handleScroll = () => {
