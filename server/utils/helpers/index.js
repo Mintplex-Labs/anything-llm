@@ -77,8 +77,13 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
       return new GroqLLM(embedder, model);
+    case "generic-openai":
+      const { GenericOpenAiLLM } = require("../AiProviders/genericOpenAi");
+      return new GenericOpenAiLLM(embedder, model);
     default:
-      throw new Error("ENV: No LLM_PROVIDER value found in environment!");
+      throw new Error(
+        `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
+      );
   }
 }
 
