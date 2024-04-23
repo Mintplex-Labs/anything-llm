@@ -64,20 +64,10 @@ class GenericOpenAiLLM {
     return Number(limit);
   }
 
-  // Short circuit if name has 'gpt' since we now fetch models from OpenAI API
-  // via the user API key, so the model must be relevant and real.
-  // and if somehow it is not, chat will fail but that is caught.
-  // we don't want to hit the OpenAI api every chat because it will get spammed
-  // and introduce latency for no reason.
-  async isValidChatCompletionModel(modelName = "") {
-    const isPreset = modelName.toLowerCase().includes("gpt");
-    if (isPreset) return true;
-
-    const model = await this.openai
-      .retrieveModel(modelName)
-      .then((res) => res.data)
-      .catch(() => null);
-    return !!model;
+  // Short circuit since we have no idea if the model is valid or not
+  // in pre-flight for generic endpoints
+  isValidChatCompletionModel(_modelName = "") {
+    return true;
   }
 
   constructPrompt({
@@ -99,11 +89,6 @@ class GenericOpenAiLLM {
   }
 
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `GenericOpenAI chat: ${this.model} is not valid for chat completion!`
-      );
-
     const textResponse = await this.openai
       .createChatCompletion({
         model: this.model,
@@ -136,11 +121,6 @@ class GenericOpenAiLLM {
   }
 
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `GenericOpenAI chat: ${this.model} is not valid for chat completion!`
-      );
-
     const streamRequest = await this.openai.createChatCompletion(
       {
         model: this.model,
@@ -162,11 +142,6 @@ class GenericOpenAiLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `GenericOpenAI chat: ${this.model} is not valid for chat completion!`
-      );
-
     const { data } = await this.openai
       .createChatCompletion({
         model: this.model,
@@ -182,11 +157,6 @@ class GenericOpenAiLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `GenericOpenAI chat: ${this.model} is not valid for chat completion!`
-      );
-
     const streamRequest = await this.openai.createChatCompletion(
       {
         model: this.model,

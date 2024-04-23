@@ -138,9 +138,9 @@ export const LLM_SELECTION_PRIVACY = {
     logo: GroqLogo,
   },
   "generic-openai": {
-    name: "Generic OpenAI Compatible service",
+    name: "Generic OpenAI compatible service",
     description: [
-      "Data is shared according to the terms of service applicable with your generic OpenAi endpoint provider.",
+      "Data is shared according to the terms of service applicable with your generic endpoint provider.",
     ],
     logo: GenericOpenAiLogo,
   },

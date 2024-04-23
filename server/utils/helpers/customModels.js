@@ -11,7 +11,6 @@ const SUPPORT_CUSTOM_MODELS = [
   "perplexity",
   "openrouter",
   "lmstudio",
-  "generic-openai",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -37,8 +36,6 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getOpenRouterModels();
     case "lmstudio":
       return await getLMStudioModels(basePath);
-    case "generic-openai":
-      return await genericOpenAiModels(basePath, apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -288,35 +285,6 @@ function nativeLLMModels() {
       return { id: file, name: file };
     });
   return { models: files, error: null };
-}
-
-async function genericOpenAiModels(basePath, _apiKey = null) {
-  const { Configuration, OpenAIApi } = require("openai");
-  const apiKey =
-    _apiKey === true
-      ? process.env.GENERIC_OPEN_AI_API_KEY
-      : _apiKey || process.env.GENERIC_OPEN_AI_API_KEY;
-  const config = new Configuration({
-    basePath:
-      basePath ??
-      process.env.GENERIC_OPEN_AI_BASE_PATH ??
-      "https://api.openai.com/v1",
-    apiKey,
-  });
-
-  const openai = new OpenAIApi(config);
-  const models = await openai
-    .listModels()
-    .then((res) => res.data.data)
-    .catch((e) => {
-      console.error(`GenericOpenAI:listModels`, e.message);
-      return [];
-    });
-
-  // Api Key was successful so lets save it for future uses
-  if (models.length > 0 && !!apiKey)
-    process.env.GENERIC_OPEN_AI_API_KEY = apiKey;
-  return { models, error: null };
 }
 
 module.exports = {
