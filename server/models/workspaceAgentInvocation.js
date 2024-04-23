@@ -3,7 +3,9 @@ const { v4: uuidv4 } = require("uuid");
 
 const WorkspaceAgentInvocation = {
   // returns array of strings with their @ handle.
+  // must start with @
   parseAgents: function (promptString) {
+    if (!promptString.startsWith("@")) return [];
     return promptString.split(/\s+/).filter((v) => v.startsWith("@"));
   },
 
