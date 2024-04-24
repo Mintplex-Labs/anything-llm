@@ -27,7 +27,7 @@ if (['win32', 'darwin'].includes(process.platform)) {
         stdio: 'inherit',
         env: {
             ...process.env,
-            PRISMA_CLI_BINARY_TARGETS: "debian-openssl-1.0.x,debian-openssl-1.1.x,debian-openssl-3.0.x"
+            PRISMA_CLI_BINARY_TARGETS: "debian-openssl-1.0.x,debian-openssl-1.1.x,debian-openssl-3.0.x,rhel-openssl-1.1.x,rhel-openssl-3.0.x"
         }
     });
 }
