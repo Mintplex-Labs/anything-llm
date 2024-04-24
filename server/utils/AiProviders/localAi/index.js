@@ -1,16 +1,22 @@
 const { chatPrompt } = require("../../chats");
+const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
 
 class LocalAiLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     if (!process.env.LOCAL_AI_BASE_PATH)
       throw new Error("No LocalAI Base Path was set.");
 
     const { Configuration, OpenAIApi } = require("openai");
     const config = new Configuration({
       basePath: process.env.LOCAL_AI_BASE_PATH,
+      ...(!!process.env.LOCAL_AI_API_KEY
+        ? {
+            apiKey: process.env.LOCAL_AI_API_KEY,
+          }
+        : {}),
     });
     this.openai = new OpenAIApi(config);
-    this.model = process.env.LOCAL_AI_MODEL_PREF;
+    this.model = modelPreference || process.env.LOCAL_AI_MODEL_PREF;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -22,6 +28,19 @@ class LocalAiLLM {
         "INVALID LOCAL AI SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use LocalAI as your LLM."
       );
     this.embedder = embedder;
+    this.defaultTemp = 0.7;
+  }
+
+  #appendContext(contextTexts = []) {
+    if (!contextTexts || !contextTexts.length) return "";
+    return (
+      "\nContext:\n" +
+      contextTexts
+        .map((text, i) => {
+          return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+        })
+        .join("")
+    );
   }
 
   streamingEnabled() {
@@ -49,13 +68,7 @@ class LocalAiLLM {
   }) {
     const prompt = {
       role: "system",
-      content: `${systemPrompt}
-Context:
-    ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
@@ -74,7 +87,7 @@ Context:
     const textResponse = await this.openai
       .createChatCompletion({
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {
@@ -112,7 +125,7 @@ Context:
       {
         model: this.model,
         stream: true,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {
@@ -160,6 +173,10 @@ Context:
       { responseType: "stream" }
     );
     return streamRequest;
+  }
+
+  handleStream(response, stream, responseProps) {
+    return handleDefaultStreamResponse(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

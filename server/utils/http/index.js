@@ -1,12 +1,9 @@
-const path = require('path');
+const path = require("path");
 require("dotenv").config({
-  path: process.env.STORAGE_DIR ?
-    `${path.join(process.env.STORAGE_DIR, '.env')}` :
-    `${path.join(__dirname, '.env')}`
-})
-
-const JWT = require("jsonwebtoken");
-const { User } = require("../../models/user");
+  path: process.env.STORAGE_DIR
+    ? `${path.join(process.env.STORAGE_DIR, ".env")}`
+    : `${path.join(__dirname, ".env")}`,
+});
 
 function reqBody(request) {
   return typeof request.body === "string"
@@ -24,6 +21,8 @@ function makeJWT(info = {}, expiry = "30d") {
   return JWT.sign(info, process.env.JWT_SECRET, { expiresIn: expiry });
 }
 
+// Note: Only valid for finding users in multi-user mode
+// as single-user mode with password is not a "user"
 async function userFromSession(request, response = null) {
   if (!!response && !!response.locals?.user) {
     return response.locals.user;
@@ -48,12 +47,35 @@ async function userFromSession(request, response = null) {
 function decodeJWT(jwtToken) {
   try {
     return JWT.verify(jwtToken, process.env.JWT_SECRET);
-  } catch { }
+  } catch {}
   return { p: null, id: null, username: null };
 }
 
 function multiUserMode(response) {
   return response?.locals?.multiUserMode;
+}
+
+function parseAuthHeader(headerValue = null, apiKey = null) {
+  if (headerValue === null || apiKey === null) return {};
+  if (headerValue === "Authorization")
+    return { Authorization: `Bearer ${apiKey}` };
+  return { [headerValue]: apiKey };
+}
+
+function safeJsonParse(jsonString, fallback = null) {
+  try {
+    return JSON.parse(jsonString);
+  } catch {}
+  return fallback;
+}
+
+function isValidUrl(urlString = "") {
+  try {
+    const url = new URL(urlString);
+    if (!["http:", "https:"].includes(url.protocol)) return false;
+    return true;
+  } catch (e) {}
+  return false;
 }
 
 module.exports = {
@@ -63,4 +85,7 @@ module.exports = {
   makeJWT,
   decodeJWT,
   userFromSession,
+  parseAuthHeader,
+  safeJsonParse,
+  isValidUrl,
 };

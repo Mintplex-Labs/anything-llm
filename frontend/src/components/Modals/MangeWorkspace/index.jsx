@@ -1,29 +1,26 @@
-import React, { useState, useEffect, lazy, Suspense, memo } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { X } from "@phosphor-icons/react";
 import { useParams } from "react-router-dom";
-import Workspace from "../../../models/workspace";
-import System from "../../../models/system";
-import useUser from "../../../hooks/useUser";
+import Workspace from "@/models/workspace";
+import System from "@/models/system";
+import useUser from "@/hooks/useUser";
+import DocumentSettings from "./Documents";
+import DataConnectors from "./DataConnectors";
 
-const DocumentSettings = lazy(() => import("./Documents"));
-const WorkspaceSettings = lazy(() => import("./Settings"));
-
-const noop = () => { };
+const noop = () => {};
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const { slug } = useParams();
-  const [selectedTab, setSelectedTab] = useState("documents");
+  const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
-  const [fileTypes, setFileTypes] = useState(null);
   const [settings, setSettings] = useState({});
+  const [selectedTab, setSelectedTab] = useState("documents");
 
   useEffect(() => {
-    async function checkSupportedFiletypes() {
-      const acceptedTypes = await System.acceptedDocumentTypes();
+    async function getSettings() {
       const _settings = await System.keys();
-      setFileTypes(acceptedTypes ?? {});
       setSettings(_settings ?? {});
     }
-    checkSupportedFiletypes();
+    getSettings();
   }, []);
 
   useEffect(() => {
@@ -39,51 +36,30 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   return (
     <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center z-99">
       <div className="backdrop h-full w-full absolute top-0 z-10" />
-      <div className={`absolute max-h-full w-fit transition duration-300 z-20`}>
+      <div className="absolute max-h-full w-fit transition duration-300 z-20 md:overflow-y-auto py-10">
         <div className="relative bg-main-gradient rounded-[12px] shadow border-2 border-slate-300/10">
-          <div className="absolute top-[-18px] left-1/2 transform -translate-x-1/2 bg-sidebar-button p-1 rounded-xl shadow border-2 border-slate-300/10">
-            <div className="flex gap-x-1">
-              <button
-                onClick={() => setSelectedTab("documents")}
-                className={`border-none px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${selectedTab === "documents"
-                  ? "bg-switch-selected shadow-md"
-                  : "bg-sidebar-button"
-                  }`}
-              >
-                Documents
-              </button>
-              <button
-                onClick={() => setSelectedTab("settings")}
-                className={`border-none px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${selectedTab === "settings"
-                  ? "bg-switch-selected shadow-md"
-                  : "bg-sidebar-button"
-                  }`}
-              >
-                Settings
-              </button>
-            </div>
-          </div>
-          <div className="flex items-start justify-between p-2 rounded-t border-gray-500/50">
+          <div className="flex items-start justify-between p-2 rounded-t border-gray-500/50 relative">
             <button
               onClick={hideModal}
               type="button"
-              className="transition-all duration-300 text-gray-400 bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:border-white/60 bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+              className="z-50 text-gray-400 bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:border-white/60 bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
             >
               <X className="text-gray-300 text-lg" />
             </button>
           </div>
-          <Suspense fallback={<div>Loading...</div>}>
-            <div className={selectedTab === "documents" ? "" : "hidden"}>
-              <DocumentSettings
-                workspace={workspace}
-                fileTypes={fileTypes}
-                systemSettings={settings}
-              />
-            </div>
-            <div className={selectedTab === "settings" ? "" : "hidden"}>
-              <WorkspaceSettings workspace={workspace} fileTypes={fileTypes} />
-            </div>
-          </Suspense>
+
+          {user?.role !== "default" && (
+            <ModalTabSwitcher
+              selectedTab={selectedTab}
+              setSelectedTab={setSelectedTab}
+            />
+          )}
+
+          {selectedTab === "documents" ? (
+            <DocumentSettings workspace={workspace} systemSettings={settings} />
+          ) : (
+            <DataConnectors workspace={workspace} systemSettings={settings} />
+          )}
         </div>
       </div>
     </div>
@@ -91,6 +67,35 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
 };
 
 export default memo(ManageWorkspace);
+
+const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
+  return (
+    <div className="w-full flex justify-center z-10 relative">
+      <div className="gap-x-2 flex justify-center -mt-[68px] mb-10 bg-sidebar-button p-1 rounded-xl shadow border-2 border-slate-300/10 w-fit">
+        <button
+          onClick={() => setSelectedTab("documents")}
+          className={`border-none px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
+            selectedTab === "documents"
+              ? "bg-switch-selected shadow-md font-bold"
+              : "bg-sidebar-button text-white/20 font-medium hover:text-white"
+          }`}
+        >
+          Documents
+        </button>
+        <button
+          onClick={() => setSelectedTab("dataConnectors")}
+          className={`border-none px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
+            selectedTab === "dataConnectors"
+              ? "bg-switch-selected shadow-md font-bold"
+              : "bg-sidebar-button text-white/20 font-medium hover:text-white"
+          }`}
+        >
+          Data Connectors
+        </button>
+      </div>
+    </div>
+  );
+};
 export function useManageWorkspaceModal() {
   const { user } = useUser();
   const [showing, setShowing] = useState(false);

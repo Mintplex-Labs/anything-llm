@@ -1,5 +1,5 @@
 import { CloudArrowUp } from "@phosphor-icons/react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import showToast from "../../../../../utils/toast";
 import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";
@@ -7,12 +7,7 @@ import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
 
-export default function UploadFile({
-  workspace,
-  fileTypes,
-  fetchKeys,
-  setLoading,
-}) {
+export default function UploadFile({ workspace, fetchKeys, setLoading }) {
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
@@ -40,7 +35,7 @@ export default function UploadFile({
 
   const handleUploadSuccess = () => {
     fetchKeys(true);
-    showToast("File uploaded successfully", "success");
+    showToast("File uploaded successfully", "success", { clear: true });
   };
 
   const handleUploadError = (message) => {
@@ -62,8 +57,7 @@ export default function UploadFile({
         reason: file.errors[0].code,
       };
     });
-
-    setFiles([...files, ...newAccepted, ...newRejected]);
+    setFiles([...newAccepted, ...newRejected]);
   };
 
   useEffect(() => {
@@ -76,17 +70,15 @@ export default function UploadFile({
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: {
-      ...fileTypes,
-    },
     disabled: !ready,
   });
 
   return (
     <div>
       <div
-        className={`transition-all duration-300 w-[560px] border-2 border-dashed rounded-2xl bg-zinc-900/50 p-3 ${ready ? "cursor-pointer" : "cursor-not-allowed"
-          } hover:bg-zinc-900/90`}
+        className={`w-[560px] border-2 border-dashed rounded-2xl bg-zinc-900/50 p-3 ${
+          ready ? "cursor-pointer" : "cursor-not-allowed"
+        } hover:bg-zinc-900/90`}
         {...getRootProps()}
       >
         <input {...getInputProps()} />
@@ -108,13 +100,11 @@ export default function UploadFile({
               Click to upload or drag and drop
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
-              {Object.values(fileTypes ?? [])
-                .flat()
-                .join(" ")}
+              supports text files, csv's, spreadsheets, audio files, and more!
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[400px] p-1 overflow-y-auto">
+          <div className="grid grid-cols-2 gap-2 overflow-auto max-h-[180px] p-1 overflow-y-scroll no-scroll">
             {files.map((file) => (
               <FileUploadProgress
                 key={file.uid}
@@ -137,14 +127,14 @@ export default function UploadFile({
           disabled={fetchingUrl}
           name="link"
           type="url"
-          className="border-none disabled:bg-zinc-600 disabled:text-slate-300 bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5"
+          className="border-none disabled:bg-zinc-600 disabled:text-slate-300 bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-3/4 p-2.5"
           placeholder={"https://example.com"}
           autoComplete="off"
         />
         <button
           disabled={fetchingUrl}
           type="submit"
-          className="disabled:bg-white/20 disabled:text-slate-300 disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-slate-200 hover:text-slate-800 w-auto border border-white text-sm text-white p-2.5 rounded-lg transition-all duration-300"
+          className="disabled:bg-white/20 disabled:text-slate-300 disabled:border-slate-400 disabled:cursor-wait bg bg-transparent hover:bg-slate-200 hover:text-slate-800 w-auto border border-white text-sm text-white p-2.5 rounded-lg"
         >
           {fetchingUrl ? "Fetching..." : "Fetch website"}
         </button>

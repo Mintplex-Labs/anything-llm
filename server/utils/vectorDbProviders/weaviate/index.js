@@ -1,9 +1,15 @@
 const { default: weaviate } = require("weaviate-ts-client");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
+const { TextSplitter } = require("../../TextSplitter");
+const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
-const { toChunks, getLLMProvider } = require("../../helpers");
+const {
+  toChunks,
+  getLLMProvider,
+  getEmbeddingEngineSelection,
+} = require("../../helpers");
 const { camelCase } = require("../../helpers/camelcase");
+const { sourceIdentifier } = require("../../chats");
 
 const Weaviate = {
   name: "Weaviate",
@@ -76,7 +82,9 @@ const Weaviate = {
     client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const result = {
       contextTexts: [],
@@ -85,13 +93,14 @@ const Weaviate = {
     };
 
     const weaviateClass = await this.namespace(client, namespace);
-    const fields = weaviateClass.properties.map((prop) => prop.name).join(" ");
+    const fields =
+      weaviateClass.properties?.map((prop) => prop.name)?.join(" ") ?? "";
     const queryResponse = await client.graphql
       .get()
       .withClassName(camelCase(namespace))
       .withFields(`${fields} _additional { id certainty }`)
       .withNearVector({ vector: queryVector })
-      .withLimit(4)
+      .withLimit(topN)
       .do();
 
     const responses = queryResponse?.data?.Get?.[camelCase(namespace)];
@@ -103,6 +112,12 @@ const Weaviate = {
         ...rest
       } = response;
       if (certainty < similarityThreshold) return;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) {
+        console.log(
+          "Weaviate: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
       result.contextTexts.push(rest.text);
       result.sourceDocuments.push({ ...rest, id });
       result.scores.push(certainty);
@@ -208,7 +223,7 @@ const Weaviate = {
           chunk.forEach((chunk) => {
             const id = uuidv4();
             const flattenedMetadata = this.flattenObjectForWeaviate(
-              chunk.properties
+              chunk.properties ?? chunk.metadata
             );
             documentVectors.push({ docId, vectorId: id });
             const vectorRecord = {
@@ -229,16 +244,24 @@ const Weaviate = {
         }
 
         await DocumentVectors.bulkInsert(documentVectors);
-        return true;
+        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.
       // We have to do this manually as opposed to using LangChains `Chroma.fromDocuments`
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
-      const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1000,
-        chunkOverlap: 20,
+      const textSplitter = new TextSplitter({
+        chunkSize: TextSplitter.determineMaxChunkSize(
+          await SystemSettings.getValueOrFallback({
+            label: "text_splitter_chunk_size",
+          }),
+          getEmbeddingEngineSelection()?.embeddingMaxChunkLength
+        ),
+        chunkOverlap: await SystemSettings.getValueOrFallback(
+          { label: "text_splitter_chunk_overlap" },
+          20
+        ),
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
@@ -311,11 +334,10 @@ const Weaviate = {
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
-      return true;
+      return { vectorized: true, error: null };
     } catch (e) {
-      console.error(e);
       console.error("addDocumentToNamespace", e.message);
-      return false;
+      return { vectorized: false, error: e.message };
     }
   },
   deleteDocumentFromNamespace: async function (namespace, docId) {
@@ -343,6 +365,8 @@ const Weaviate = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -361,7 +385,9 @@ const Weaviate = {
       client,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
@@ -422,7 +448,7 @@ const Weaviate = {
     const flattenedObject = {};
 
     for (const key in obj) {
-      if (!Object.hasOwn(obj, key)) {
+      if (!Object.hasOwn(obj, key) || key === "id") {
         continue;
       }
       const value = obj[key];

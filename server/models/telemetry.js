@@ -28,16 +28,32 @@ const Telemetry = {
     return new PostHog(this.pubkey);
   },
 
-  sendTelemetry: async function (event, properties = {}, subUserId = null) {
+  runtime: function () {
+    return "desktop";
+  },
+
+  sendTelemetry: async function (
+    event,
+    eventProperties = {},
+    subUserId = null,
+    silent = false
+  ) {
     try {
       const { client, distinctId: systemId } = await this.connect();
       if (!client) return;
       const distinctId = !!subUserId ? `${systemId}::${subUserId}` : systemId;
-      console.log(`\x1b[32m[TELEMETRY SENT]\x1b[0m`, {
-        event,
-        distinctId,
-        properties,
-      });
+      const properties = { ...eventProperties, runtime: this.runtime() };
+
+      // Silence some events to keep logs from being too messy in production
+      // eg: Tool calls from agents spamming the logs.
+      if (!silent) {
+        console.log(`\x1b[32m[TELEMETRY SENT]\x1b[0m`, {
+          event,
+          distinctId,
+          properties,
+        });
+      }
+
       client.capture({
         event,
         distinctId,
@@ -56,7 +72,7 @@ const Telemetry = {
 
   setUid: async function () {
     const newId = v4();
-    await SystemSettings.updateSettings({ [this.label]: newId });
+    await SystemSettings._updateSettings({ [this.label]: newId });
     return newId;
   },
 

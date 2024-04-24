@@ -1,11 +1,9 @@
 import { useRef } from "react";
-import Admin from "../../../../models/admin";
-import paths from "../../../../utils/paths";
-import EditWorkspaceUsersModal, {
-  EditWorkspaceUsersModalId,
-} from "./EditWorkspaceUsersModal";
-import { DotsThreeOutline, LinkSimple, Trash } from "@phosphor-icons/react";
+import Admin from "@/models/admin";
+import paths from "@/utils/paths";
 import { Link } from "react-router-dom";
+import { refocusApplication } from "@/ipc/node-api";
+import { LinkSimple, Trash } from "@phosphor-icons/react";
 
 export default function WorkspaceRow({ workspace, users }) {
   const rowRef = useRef(null);
@@ -14,8 +12,12 @@ export default function WorkspaceRow({ workspace, users }) {
       !window.confirm(
         `Are you sure you want to delete ${workspace.name}?\nAfter you do this it will be unavailable in this instance of AnythingLLM.\n\nThis action is irreversible.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
+    }
+
+    refocusApplication();
     rowRef?.current?.remove();
     await Admin.deleteWorkspace(workspace.id);
   };
@@ -33,24 +35,22 @@ export default function WorkspaceRow({ workspace, users }) {
           <Link
             to={paths.workspace.chat(workspace.slug)}
             target="_blank"
+            rel="noreferrer"
             className="text-white flex items-center hover:underline"
           >
             <LinkSimple className="mr-2 w-5 h-5" /> {workspace.slug}
           </Link>
         </td>
-        <td className="px-6 py-4">{workspace.userIds?.length}</td>
+        <td className="px-6 py-4">
+          <Link
+            to={paths.workspace.settings.members(workspace.slug)}
+            className="text-white flex items-center underline"
+          >
+            {workspace.userIds?.length}
+          </Link>
+        </td>
         <td className="px-6 py-4">{workspace.createdAt}</td>
         <td className="px-6 py-4 flex items-center gap-x-6">
-          <button
-            onClick={() =>
-              document
-                ?.getElementById(EditWorkspaceUsersModalId(workspace))
-                ?.showModal()
-            }
-            className="border border-slate-200 px-2 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:bg-opacity-10"
-          >
-            <DotsThreeOutline weight="fill" className="h-5 w-5" />
-          </button>
           <button
             onClick={handleDelete}
             className="font-medium text-red-300 px-2 py-1 rounded-lg hover:bg-red-800 hover:bg-opacity-20"
@@ -59,7 +59,6 @@ export default function WorkspaceRow({ workspace, users }) {
           </button>
         </td>
       </tr>
-      <EditWorkspaceUsersModal workspace={workspace} users={users} />
     </>
   );
 }

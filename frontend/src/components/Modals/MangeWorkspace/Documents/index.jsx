@@ -2,17 +2,20 @@ import { ArrowsDownUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import Workspace from "../../../../models/workspace";
 import System from "../../../../models/system";
-import Directory from "./Directory";
 import showToast from "../../../../utils/toast";
+import Directory from "./Directory";
 import WorkspaceDirectory from "./WorkspaceDirectory";
 
-const COST_PER_TOKEN = 0.0004;
+// OpenAI Cost per token
+// ref: https://openai.com/pricing#:~:text=%C2%A0/%201K%20tokens-,Embedding%20models,-Build%20advanced%20search
 
-export default function DocumentSettings({
-  workspace,
-  fileTypes,
-  systemSettings,
-}) {
+const MODEL_COSTS = {
+  "text-embedding-ada-002": 0.0000001, // $0.0001 / 1K tokens
+  "text-embedding-3-small": 0.00000002, // $0.00002 / 1K tokens
+  "text-embedding-3-large": 0.00000013, // $0.00013 / 1K tokens
+};
+
+export default function DocumentSettings({ workspace, systemSettings }) {
   const [highlightWorkspace, setHighlightWorkspace] = useState(false);
   const [availableDocs, setAvailableDocs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -140,10 +143,12 @@ export default function DocumentSettings({
     });
 
     // Do not do cost estimation unless the embedding engine is OpenAi.
-    if (
-      !systemSettings?.EmbeddingEngine ||
-      systemSettings.EmbeddingEngine === "openai"
-    ) {
+    if (systemSettings?.EmbeddingEngine === "openai") {
+      const COST_PER_TOKEN =
+        MODEL_COSTS[
+          systemSettings?.EmbeddingModelPref || "text-embedding-ada-002"
+        ];
+
       const dollarAmount = (totalTokenCount / 1000) * COST_PER_TOKEN;
       setEmbeddingsCost(dollarAmount);
     }
@@ -186,13 +191,13 @@ export default function DocumentSettings({
   };
 
   return (
-    <div className="flex gap-x-6 justify-center">
+    <div className="flex upload-modal -mt-6 z-10 relative">
       <Directory
         files={availableDocs}
+        setFiles={setAvailableDocs}
         loading={loading}
         loadingMessage={loadingMessage}
         setLoading={setLoading}
-        fileTypes={fileTypes}
         workspace={workspace}
         fetchKeys={fetchKeys}
         selectedItems={selectedItems}
@@ -203,7 +208,7 @@ export default function DocumentSettings({
         moveToWorkspace={moveSelectedItemsToWorkspace}
         setLoadingMessage={setLoadingMessage}
       />
-      <div className="flex items-center">
+      <div className="upload-modal-arrow">
         <ArrowsDownUp className="text-white text-base font-bold rotate-90 w-11 h-11" />
       </div>
       <WorkspaceDirectory

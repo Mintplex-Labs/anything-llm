@@ -1,3 +1,4 @@
+const { EventLogs } = require("../models/eventLogs");
 const { Invite } = require("../models/invite");
 const { User } = require("../models/user");
 const { reqBody } = require("../utils/http");
@@ -33,7 +34,7 @@ function inviteEndpoints(app) {
   app.post("/invite/:code", async (request, response) => {
     try {
       const { code } = request.params;
-      const userParams = reqBody(request);
+      const { username, password } = reqBody(request);
       const invite = await Invite.get({ code });
       if (!invite || invite.status !== "pending") {
         response
@@ -42,7 +43,11 @@ function inviteEndpoints(app) {
         return;
       }
 
-      const { user, error } = await User.create(userParams);
+      const { user, error } = await User.create({
+        username,
+        password,
+        role: "default",
+      });
       if (!user) {
         console.error("Accepting invite:", error);
         response
@@ -52,6 +57,14 @@ function inviteEndpoints(app) {
       }
 
       await Invite.markClaimed(invite.id, user);
+      await EventLogs.logEvent(
+        "invite_accepted",
+        {
+          username: user.username,
+        },
+        user.id
+      );
+
       response.status(200).json({ success: true, error: null });
     } catch (e) {
       console.error(e);

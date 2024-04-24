@@ -1,5 +1,5 @@
-import { API_BASE } from "../utils/api";
-import { baseHeaders } from "../utils/request";
+import { API_BASE } from "@/utils/api";
+import { baseHeaders } from "@/utils/request";
 
 const Admin = {
   // User Management
@@ -66,8 +66,12 @@ const Admin = {
   },
   newInvite: async () => {
     return await fetch(`${API_BASE()}/admin/invite/new`, {
-      method: "GET",
+      method: "POST",
       headers: baseHeaders(),
+      body: JSON.stringify({
+        role,
+        workspaceIds,
+      }),
     })
       .then((res) => res.json())
       .catch((e) => {
@@ -95,6 +99,18 @@ const Admin = {
     })
       .then((res) => res.json())
       .then((res) => res?.workspaces || [])
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  workspaceUsers: async (workspaceId) => {
+    return await fetch(`${API_BASE()}/admin/workspaces/${workspaceId}/users`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.users || [])
       .catch((e) => {
         console.error(e);
         return [];

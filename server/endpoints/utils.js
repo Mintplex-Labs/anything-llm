@@ -1,25 +1,5 @@
 const { SystemSettings } = require("../models/systemSettings");
 
-function byteToGigaByte(n) {
-  return n / Math.pow(10, 9);
-}
-
-async function getDiskStorage() {
-  try {
-    const checkDiskSpace = require("check-disk-space").default;
-    const { free, size } = await checkDiskSpace("/");
-    return {
-      current: Math.floor(byteToGigaByte(free)),
-      capacity: Math.floor(byteToGigaByte(size)),
-    };
-  } catch {
-    return {
-      current: null,
-      capacity: null,
-    };
-  }
-}
-
 function utilEndpoints(app) {
   if (!app) return;
 
@@ -41,4 +21,26 @@ function utilEndpoints(app) {
   });
 }
 
-module.exports = { utilEndpoints };
+function byteToGigaByte(n) {
+  return n / Math.pow(10, 9);
+}
+
+async function getDiskStorage() {
+  try {
+    const checkDiskSpace = require("check-disk-space").default;
+    const { free, size } = await checkDiskSpace("/");
+    return {
+      current: Math.floor(byteToGigaByte(free)),
+      capacity: Math.floor(byteToGigaByte(size)),
+    };
+  } catch {
+    return {
+      current: null,
+      capacity: null,
+    };
+  }
+}
+
+module.exports = {
+  utilEndpoints,
+};

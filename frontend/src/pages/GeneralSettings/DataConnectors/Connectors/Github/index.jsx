@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import { DATA_CONNECTORS } from "@/components/DataConnectorOption";
 import System from "@/models/system";
-import { Info } from "@phosphor-icons/react/dist/ssr";
 import showToast from "@/utils/toast";
 import pluralize from "pluralize";
 import { TagsInput } from "react-tag-input-component";
+import { Info } from "@phosphor-icons/react";
 
 const DEFAULT_BRANCHES = ["main", "master"];
 export default function GithubConnectorSetup() {
@@ -45,7 +45,8 @@ export default function GithubConnectorSetup() {
       }
 
       showToast(
-        `${data.files} ${pluralize("file", data.files)} collected from ${data.author
+        `${data.files} ${pluralize("file", data.files)} collected from ${
+          data.author
         }/${data.repo}:${data.branch}. Output folder is ${data.destination}.`,
         "success",
         { clear: true }
@@ -61,22 +62,23 @@ export default function GithubConnectorSetup() {
   };
 
   return (
-    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+    <div
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex"
+    >
       <Sidebar />
-      <div
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll border-4 border-accent"
-      >
+      <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
         <div className="flex w-full">
-          <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
-            <div className="flex w-full gap-x-4 items-center  pb-6 border-white border-b-2 border-opacity-10">
+          <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
+            <div className="flex w-full gap-x-4 items-center pb-6 border-white border-b-2 border-opacity-10">
               <img src={image} alt="Github" className="rounded-lg h-16 w-16" />
               <div className="w-full flex flex-col gap-y-1">
-                <div className="items-center flex gap-x-4">
-                  <p className="text-2xl font-semibold text-white">
+                <div className="items-center">
+                  <p className="text-lg leading-6 font-bold text-white">
                     Import GitHub Repository
                   </p>
                 </div>
-                <p className="text-sm font-base text-white text-opacity-60">
+                <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
                   Import all files from a public or private Github repository
                   and have its files be available in your workspace.
                 </p>
@@ -85,7 +87,7 @@ export default function GithubConnectorSetup() {
 
             <form className="w-full" onSubmit={handleSubmit}>
               {!accessToken && (
-                <div className="flex flex-col gap-y-1 py-4 ">
+                <div className="flex flex-col gap-y-1 py-4">
                   <div className="flex flex-col w-fit gap-y-2 bg-blue-600/20 rounded-lg px-4 py-2">
                     <div className="flex items-center gap-x-2">
                       <Info size={20} className="shrink-0 text-blue-400" />
@@ -129,7 +131,7 @@ export default function GithubConnectorSetup() {
                     <input
                       type="url"
                       name="repo"
-                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                       placeholder="https://github.com/Mintplex-Labs/anything-llm"
                       required={true}
                       autoComplete="off"
@@ -153,7 +155,7 @@ export default function GithubConnectorSetup() {
                     <input
                       type="text"
                       name="accessToken"
-                      className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                      className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                       placeholder="github_pat_1234_abcdefg"
                       required={false}
                       autoComplete="off"
@@ -186,7 +188,7 @@ export default function GithubConnectorSetup() {
                     classNames={{
                       tag: "bg-blue-300/10 text-zinc-800 m-1",
                       input:
-                        "flex bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white p-2.5",
+                        "border-none flex bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white p-2.5",
                     }}
                   />
                 </div>
@@ -254,7 +256,7 @@ function GitHubBranchSelection({ repo, accessToken }) {
         <select
           name="branch"
           required={true}
-          className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -275,7 +277,7 @@ function GitHubBranchSelection({ repo, accessToken }) {
       <select
         name="branch"
         required={true}
-        className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {allBranches.map((branch) => {
           return (

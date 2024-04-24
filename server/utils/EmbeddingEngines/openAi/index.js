@@ -9,9 +9,13 @@ class OpenAiEmbedder {
     });
     const openai = new OpenAIApi(config);
     this.openai = openai;
+    this.model = process.env.EMBEDDING_MODEL_PREF || "text-embedding-ada-002";
 
-    // Arbitrary limit to ensure we stay within reasonable POST request size.
-    this.embeddingChunkLimit = 1_000;
+    // Limit of how many strings we can process in a single pass to stay with resource or network limits
+    this.maxConcurrentChunks = 500;
+
+    // https://platform.openai.com/docs/guides/embeddings/embedding-models
+    this.embeddingMaxChunkLength = 8_191;
   }
 
   async embedTextInput(textInput) {
@@ -22,21 +26,26 @@ class OpenAiEmbedder {
   async embedChunks(textChunks = []) {
     // Because there is a hard POST limit on how many chunks can be sent at once to OpenAI (~8mb)
     // we concurrently execute each max batch of text chunks possible.
-    // Refer to constructor embeddingChunkLimit for more info.
+    // Refer to constructor maxConcurrentChunks for more info.
     const embeddingRequests = [];
-    for (const chunk of toChunks(textChunks, this.embeddingChunkLimit)) {
+    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
           this.openai
             .createEmbedding({
-              model: "text-embedding-ada-002",
+              model: this.model,
               input: chunk,
             })
             .then((res) => {
               resolve({ data: res.data?.data, error: null });
             })
             .catch((e) => {
-              resolve({ data: [], error: e?.error });
+              e.type =
+                e?.response?.data?.error?.code ||
+                e?.response?.status ||
+                "failed_to_embed";
+              e.message = e?.response?.data?.error?.message || e.message;
+              resolve({ data: [], error: e });
             });
         })
       );
@@ -52,11 +61,14 @@ class OpenAiEmbedder {
         .map((res) => res.error)
         .flat();
       if (errors.length > 0) {
+        let uniqueErrors = new Set();
+        errors.map((error) =>
+          uniqueErrors.add(`[${error.type}]: ${error.message}`)
+        );
+
         return {
           data: [],
-          error: `(${errors.length}) Embedding Errors! ${errors
-            .map((error) => `[${error.type}]: ${error.message}`)
-            .join(", ")}`,
+          error: Array.from(uniqueErrors).join(", "),
         };
       }
       return {

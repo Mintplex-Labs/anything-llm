@@ -36,10 +36,19 @@ async function validatedRequest(request, response, next) {
     return;
   }
 
+  const bcrypt = require("bcrypt");
   const { p } = decodeJWT(token);
-  if (p !== process.env.AUTH_TOKEN) {
+
+  if (p === null) {
     response.status(401).json({
-      error: "Invalid auth token found.",
+      error: "Token expired or failed validation.",
+    });
+    return;
+  }
+
+  if (!bcrypt.compareSync(p, bcrypt.hashSync(process.env.AUTH_TOKEN, 10))) {
+    response.status(401).json({
+      error: "Invalid auth credentials.",
     });
     return;
   }

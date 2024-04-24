@@ -11,9 +11,9 @@ export function getFileExtension(path) {
   return path?.split(".")?.slice(-1)?.[0] || "file";
 }
 
-export function truncate(str, n) {
-  const fileExtensionPattern = /(\..+)$/;
-  const extensionMatch = str.match(fileExtensionPattern);
+export function middleTruncate(str, n) {
+  const fileExtensionPattern = /([^.]*)$/;
+  const extensionMatch = str.includes(".") && str.match(fileExtensionPattern);
 
   if (str.length <= n) return str;
 

@@ -1,0 +1,32 @@
+{
+  "cSpell.words": [
+    "AIbitat",
+    "adoc",
+    "aibitat",
+    "anythingllm",
+    "Astra",
+    "comkey",
+    "Deduplicator",
+    "Dockerized",
+    "Embeddable",
+    "epub",
+    "GROQ",
+    "hljs",
+    "inferencing",
+    "Langchain",
+    "mbox",
+    "Milvus",
+    "Mintplex",
+    "Ollama",
+    "openai",
+    "opendocument",
+    "openrouter",
+    "Qdrant",
+    "Serper",
+    "vectordbs",
+    "Weaviate",
+    "Zilliz"
+  ],
+  "eslint.experimental.useFlatConfig": true,
+  "docker.languageserver.formatter.ignoreMultilineInstructions": true
+}

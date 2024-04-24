@@ -1,16 +1,31 @@
-import { AUTH_TIMESTAMP } from "../utils/constants";
-import { API_BASE } from "../utils/api";
-import { baseHeaders } from "../utils/request";
+import {
+  ANYTHINGLLM_OLLAMA,
+  AUTH_TIMESTAMP,
+  REMOTE_APP_VERSION_URL,
+} from "@/utils/constants";
+import { baseHeaders, safeJsonParse } from "@/utils/request";
+import DataConnector from "./dataConnector";
+import { API_BASE } from "@/utils/api";
+
+let currentAbortController = null;
+let killed = false;
 
 const System = {
+  cacheKeys: {
+    footerIcons: "anythingllm_footer_links",
+    supportEmail: "anythingllm_support_email",
+    remoteVersion: "anythingllm_remote_version",
+  },
   ping: async function () {
     return await fetch(`${API_BASE()}/ping`)
       .then((res) => res.json())
       .then((res) => res?.online || false)
       .catch(() => false);
   },
-  totalIndexes: async function () {
-    return await fetch(`${API_BASE()}/system/system-vectors`, {
+  totalIndexes: async function (slug = null) {
+    const url = new URL(`${API_BASE()}/system/system-vectors`);
+    if (!!slug) url.searchParams.append("slug", encodeURIComponent(slug));
+    return await fetch(url.toString(), {
       headers: baseHeaders(),
     })
       .then((res) => {
@@ -134,11 +149,35 @@ const System = {
         return false;
       });
   },
-  deleteDocument: async (name, meta) => {
+  deleteDocument: async (name) => {
     return await fetch(`${API_BASE()}/system/remove-document`, {
       method: "DELETE",
       headers: baseHeaders(),
-      body: JSON.stringify({ name, meta }),
+      body: JSON.stringify({ name }),
+    })
+      .then((res) => res.ok)
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
+  deleteDocuments: async (names = []) => {
+    return await fetch(`${API_BASE()}/system/remove-documents`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ names }),
+    })
+      .then((res) => res.ok)
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
+  deleteFolder: async (name) => {
+    return await fetch(`${API_BASE()}/system/remove-folder`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ name }),
     })
       .then((res) => res.ok)
       .catch((e) => {
@@ -161,6 +200,68 @@ const System = {
         return { success: false, error: e.message };
       });
   },
+  fetchCustomFooterIcons: async function () {
+    const cache = window.localStorage.getItem(this.cacheKeys.footerIcons);
+    const { data, lastFetched } = cache
+      ? safeJsonParse(cache, { data: [], lastFetched: 0 })
+      : { data: [], lastFetched: 0 };
+
+    if (!!data && Date.now() - lastFetched < 3_600_000)
+      return { footerData: data, error: null };
+
+    const { footerData, error } = await fetch(
+      `${API_BASE()}/system/footer-data`,
+      {
+        method: "GET",
+        cache: "no-cache",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.log(e);
+        return { footerData: [], error: e.message };
+      });
+
+    if (!footerData || !!error) return { footerData: [], error: null };
+
+    const newData = safeJsonParse(footerData, []);
+    window.localStorage.setItem(
+      this.cacheKeys.footerIcons,
+      JSON.stringify({ data: newData, lastFetched: Date.now() })
+    );
+    return { footerData: newData, error: null };
+  },
+  fetchSupportEmail: async function () {
+    const cache = window.localStorage.getItem(this.cacheKeys.supportEmail);
+    const { email, lastFetched } = cache
+      ? safeJsonParse(cache, { email: "", lastFetched: 0 })
+      : { email: "", lastFetched: 0 };
+
+    if (!!email && Date.now() - lastFetched < 3_600_000)
+      return { email: email, error: null };
+
+    const { supportEmail, error } = await fetch(
+      `${API_BASE()}/system/support-email`,
+      {
+        method: "GET",
+        cache: "no-cache",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.log(e);
+        return { email: "", error: e.message };
+      });
+
+    if (!supportEmail || !!error) return { email: "", error: null };
+    window.localStorage.setItem(
+      this.cacheKeys.supportEmail,
+      JSON.stringify({ email: supportEmail, lastFetched: Date.now() })
+    );
+    return { email: supportEmail, error: null };
+  },
   fetchLogo: async function () {
     return await fetch(`${API_BASE()}/system/logo`, {
       method: "GET",
@@ -173,7 +274,7 @@ const System = {
       })
       .then((blob) => {
         if (!blob) return null;
-        return URL.createObjectURL(blob)
+        return URL.createObjectURL(blob);
       })
       .catch((e) => {
         console.log(e);
@@ -228,6 +329,7 @@ const System = {
     return await fetch(`${API_BASE()}/system/welcome-messages`, {
       method: "GET",
       cache: "no-cache",
+      headers: baseHeaders(),
     })
       .then((res) => {
         if (!res.ok) throw new Error("Could not fetch welcome messages.");
@@ -332,6 +434,29 @@ const System = {
         return [];
       });
   },
+  eventLogs: async (offset = 0) => {
+    return await fetch(`${API_BASE()}/system/event-logs`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ offset }),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  clearEventLogs: async () => {
+    return await fetch(`${API_BASE()}/system/event-logs`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
   deleteChat: async (chatId) => {
     return await fetch(`${API_BASE()}/system/workspace-chats/${chatId}`, {
       method: "DELETE",
@@ -348,12 +473,148 @@ const System = {
       method: "GET",
       headers: baseHeaders(),
     })
-      .then((res) => res.text())
+      .then((res) => {
+        if (res.ok) return res.text();
+        throw new Error(res.statusText);
+      })
       .catch((e) => {
         console.error(e);
         return null;
       });
   },
+  remoteAppVersion: async function () {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    const cache = window.localStorage.getItem(this.cacheKeys.remoteVersion);
+    const { version, lastFetched } = cache
+      ? safeJsonParse(cache, { version: "", lastFetched: 0 })
+      : { version: "", lastFetched: 0 };
+
+    if (!!version && Date.now() - lastFetched < 3_600_000) return version;
+    const versionText = await fetch(REMOTE_APP_VERSION_URL, {
+      signal: controller.signal,
+      method: "GET",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    })
+      .then((res) => {
+        return {
+          ok: res.ok,
+          code: res.status,
+          statusText: res.statusText,
+          text: res.text(),
+        };
+      })
+      .then(({ ok, code, statusText, text }) => {
+        if (!ok) throw new Error(`${code}: ${statusText}`);
+        return text;
+      })
+      .catch((e) => {
+        console.log("remoteAppVersion", e.message);
+        return "";
+      });
+
+    clearTimeout(timeoutId);
+    if (!versionText) return versionText;
+    window.localStorage.setItem(
+      this.cacheKeys.remoteVersion,
+      JSON.stringify({ version: versionText, lastFetched: Date.now() })
+    );
+    return versionText;
+  },
+
+  downloadOllamaModel: async function (modelName, progressCallback) {
+    return new Promise(async (resolve) => {
+      try {
+        if (currentAbortController) {
+          currentAbortController.abort();
+          killed = true;
+        } else {
+          window.addEventListener(ANYTHINGLLM_OLLAMA.abortEvent, () => {
+            if (!currentAbortController) return;
+            currentAbortController.abort();
+            killed = true;
+          });
+        }
+
+        currentAbortController = new AbortController();
+        const response = await fetch(
+          `${API_BASE()}/system/download-ollama-model`,
+          {
+            method: "POST",
+            headers: baseHeaders(),
+            body: JSON.stringify({ modelName }),
+            signal: currentAbortController.signal,
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Error downloading model 1.");
+        }
+
+        const reader = response.body.getReader();
+        let done = false;
+
+        while (!done) {
+          const { value, done: readerDone } = await reader.read();
+          if (readerDone) {
+            done = true;
+            resolve({ success: true, error: null });
+          } else {
+            const chunk = new TextDecoder("utf-8").decode(value);
+            const lines = chunk.split("\n");
+            for (const line of lines) {
+              if (line.startsWith("data:")) {
+                const data = safeJsonParse(line.slice(5));
+                if (data?.done) {
+                  resolve({ success: true, error: null });
+                } else if (data?.error) {
+                  resolve({ success: false, error: data?.error });
+                } else {
+                  progressCallback(data?.percentage, data?.status);
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error downloading model:", error);
+
+        resolve({
+          success: false,
+          error: "Error downloading model 2.",
+          killed,
+        });
+      }
+    });
+  },
+  abortOllamaModelDownload: async function () {
+    return await fetch(`${API_BASE()}/system/download-ollama-model`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch(() => false);
+  },
+  deleteOllamaModel: async function (modelName) {
+    return await fetch(`${API_BASE()}/system/remove-ollama-model`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ modelName }),
+    })
+      .then((res) => res.json())
+      .catch(() => false);
+  },
+  supporterInterest: async function (action = "open") {
+    return fetch(`${API_BASE()}/system/support-interest/${action}`, {
+      method: "HEAD",
+      headers: baseHeaders(),
+    });
+  },
+  dataConnectors: DataConnector,
 };
 
 export default System;

@@ -6,10 +6,25 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: "plus-jakarta-sans", -apple-system, BlinkMacSystemFont, Segoe UI,
-    Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
+  font-family:
+    "plus-jakarta-sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    Fira Sans,
+    Droid Sans,
+    Helvetica Neue,
     sans-serif;
   background-color: white;
+  @apply no-scroll;
+}
+
+div {
+  @apply no-scroll;
 }
 
 a {
@@ -21,9 +36,20 @@ a {
   box-sizing: border-box;
 }
 
+.border-bb-only {
+  border-top: transparent !important;
+  border-left: transparent !important;
+  border-right: transparent !important;
+}
+
 .border-b,
 .border-b-2 {
   border-bottom-style: solid;
+}
+
+.border-l,
+.border-l-2 {
+  border-left-style: solid;
 }
 
 .border-t,
@@ -37,14 +63,20 @@ div.border-4 {
   border-style: solid;
 }
 
+.border-outline {
+  border-color: #4e5153 !important;
+}
+
 input,
+button,
 textarea {
-  font-family: 'plus-jakarta-sans';
+  font-family: "plus-jakarta-sans";
 }
 
 button {
   background: transparent;
   border-style: solid;
+  border-color: white;
 
   &:hover {
     cursor: pointer;
@@ -152,17 +184,21 @@ button {
 
 @media (prefers-color-scheme: light) {
   .fade-up-border {
-    background: linear-gradient(to bottom,
-        rgba(220, 221, 223, 10%),
-        rgb(220, 221, 223) 89%);
+    background: linear-gradient(
+      to bottom,
+      rgba(220, 221, 223, 10%),
+      rgb(220, 221, 223) 89%
+    );
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .fade-up-border {
-    background: linear-gradient(to bottom,
-        rgba(41, 37, 36, 50%),
-        rgb(41 37 36) 90%);
+    background: linear-gradient(
+      to bottom,
+      rgba(41, 37, 36, 50%),
+      rgb(41 37 36) 90%
+    );
   }
 }
 
@@ -289,7 +325,7 @@ button {
   height: 100px !important;
 }
 
-.grid-loader>circle {
+.grid-loader > circle {
   fill: #008eff;
 }
 
@@ -352,9 +388,11 @@ dialog::backdrop {
 }
 
 .login-input-gradient {
-  background: linear-gradient(180deg,
-      rgba(61, 65, 71, 0.3) 0%,
-      rgba(44, 47, 53, 0.3) 100%) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(61, 65, 71, 0.3) 0%,
+    rgba(44, 47, 53, 0.3) 100%
+  ) !important;
   box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.25);
 }
 
@@ -379,11 +417,11 @@ dialog::backdrop {
   top: 100%;
 }
 
-.user-reply>div:first-of-type {
+.user-reply > div:first-of-type {
   border: 2px solid white;
 }
 
-.reply>*:last-child::after {
+.reply > *:last-child::after {
   content: "|";
   animation: blink 1.5s steps(1) infinite;
   color: white;
@@ -419,4 +457,294 @@ p {
 
 .frame-header-action {
   -webkit-app-region: no-drag !important;
+}
+
+@layer components {
+  .radio-container:has(input:checked) {
+    @apply border-blue-500 bg-blue-400/10 text-blue-800;
+  }
+}
+
+.rti--container {
+  @apply !bg-zinc-900 !text-white !placeholder-white !placeholder-opacity-60 !text-sm !rounded-lg !p-2.5;
+}
+
+.tooltip {
+  @apply !bg-black !text-white !py-2 !px-3 !rounded-md;
+}
+
+.Toastify__toast-body {
+  white-space: pre-line;
+}
+
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  to {
+    max-height: 400px;
+    opacity: 1;
+  }
+}
+
+.slide-down {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from {
+    max-height: 400px;
+    opacity: 1;
+  }
+
+  to {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+.input-label {
+  @apply text-[14px] font-bold text-white;
+}
+
+/**
+ * ==============================================
+ * Markdown Styles
+ * ==============================================
+ */
+.markdown,
+.markdown > * {
+  font-weight: 400;
+}
+
+.markdown h1 {
+  font-size: xx-large;
+  line-height: 1.7;
+  padding-left: 0.3rem;
+}
+
+.markdown h2 {
+  line-height: 1.5;
+  font-size: x-large;
+  padding-left: 0.3rem;
+}
+
+.markdown h3 {
+  line-height: 1.4;
+  font-size: large;
+  padding-left: 0.3rem;
+}
+
+/* Table Styles */
+
+.markdown table {
+  border-collapse: separate;
+}
+
+.markdown th {
+  border-top: none;
+}
+
+.markdown td:first-child,
+.markdown th:first-child {
+  border-left: none;
+}
+
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #bdbdbe;
+  font-size: 13px;
+  margin: 30px 0px;
+  border-radius: 10px;
+  overflow: hidden;
+  font-weight: normal;
+}
+
+.markdown table thead {
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: bolder;
+}
+
+.markdown hr {
+  border: 0;
+  border-top: 1px solid #cdcdcd40;
+  margin: 1rem 0;
+}
+
+.markdown table th,
+.markdown table td {
+  padding: 8px 15px;
+  border-bottom: 1px solid #cdcdcd2e;
+  text-align: left;
+}
+
+.markdown table th {
+  padding: 14px 15px;
+}
+
+@media (max-width: 600px) {
+  .markdown table th,
+  .markdown table td {
+    padding: 10px;
+  }
+}
+
+/* List Styles */
+.markdown ol {
+  list-style: decimal-leading-zero;
+  padding-left: 0px;
+  padding-top: 10px;
+  margin: 10px;
+}
+
+.markdown ol li {
+  margin-left: 20px;
+  padding-left: 10px;
+  position: relative;
+  transition: all 0.3s ease;
+  line-height: 1.4rem;
+}
+
+.markdown ol li::marker {
+  padding-top: 10px;
+}
+
+.markdown ol li p {
+  margin: 0.5rem;
+  padding-top: 10px;
+}
+
+.markdown ol li a {
+  text-decoration: underline;
+}
+
+.markdown ol li p a {
+  text-decoration: underline;
+}
+
+.markdown ul {
+  list-style: revert-layer;
+  /* color: #cfcfcfcf; */
+  padding-left: 0px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin: 10px;
+}
+
+.markdown ul li::marker {
+  color: #d0d0d0cf;
+  padding-top: 10px;
+}
+
+.markdownul li {
+  margin-left: 20px;
+
+  padding-left: 10px;
+  transition: all 0.3s ease;
+  line-height: 1.4rem;
+}
+
+.markdownul li a {
+  text-decoration: underline;
+}
+
+.markdown ul li > ul {
+  padding-left: 20px;
+  margin: 0px;
+}
+
+.markdown p {
+  font-weight: 400;
+  margin: 0.35rem;
+}
+
+.markdown > p > a,
+.markdown p a {
+  text-decoration: underline;
+}
+
+.markdown {
+  text-wrap: wrap;
+}
+
+.markdown pre {
+  margin: 20px 0;
+}
+
+.markdown strong {
+  font-weight: 600;
+  color: #fff;
+}
+
+.file-row:nth-child(even) {
+  @apply bg-[#1C1E21];
+}
+
+.file-row:nth-child(odd) {
+  @apply bg-[#2C2C2C];
+}
+
+.file-row.selected:nth-child(even) {
+  @apply bg-sky-500/20;
+}
+
+.file-row.selected:nth-child(odd) {
+  @apply bg-sky-500/10;
+}
+
+/* Flex upload modal to be a column when on small screens so that the UI
+does not extend the close button beyond the viewport. */
+@media (max-width: 1330px) {
+  .upload-modal {
+    @apply !flex-col !items-center !py-4 no-scroll;
+  }
+
+  .upload-modal-arrow {
+    margin-top: 0px !important;
+  }
+}
+
+.upload-modal {
+  @apply flex-row items-start gap-x-6 justify-center;
+}
+
+.upload-modal-arrow {
+  margin-top: 25%;
+}
+
+/* Scrollbar container */
+.white-scrollbar {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff #18181b;
+  margin-right: 8px;
+}
+
+/* Webkit browsers (Chrome, Safari) */
+.white-scrollbar::-webkit-scrollbar {
+  width: 3px;
+  background-color: #18181b;
+}
+
+.white-scrollbar::-webkit-scrollbar-track {
+  background-color: #18181b;
+  margin-right: 8px;
+}
+
+.white-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: 2px solid #18181b;
+}
+
+.white-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #cccccc;
 }

@@ -1,7 +1,9 @@
-import { API_BASE } from "../utils/api";
-import { baseHeaders } from "../utils/request";
+import { API_BASE } from "@/utils/api";
+import { baseHeaders } from "@/utils/request";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import WorkspaceThread from "@/models/workspaceThread";
 import { v4 } from "uuid";
+import { ABORT_STREAM_EVENT } from "@/utils/chat";
 
 const Workspace = {
   new: async function (data = {}) {
@@ -59,13 +61,37 @@ const Workspace = {
       .catch(() => []);
     return history;
   },
-  streamChat: async function ({ slug }, message, mode = "query", handleChat) {
+  updateChatFeedback: async function (chatId, slug, feedback) {
+    const result = await fetch(
+      `${API_BASE()}/workspace/${slug}/chat-feedback/${chatId}`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ feedback }),
+      }
+    )
+      .then((res) => res.ok)
+      .catch(() => false);
+    return result;
+  },
+  streamChat: async function ({ slug }, message, handleChat) {
     const ctrl = new AbortController();
+
+    // Listen for the ABORT_STREAM_EVENT key to be emitted by the client
+    // to early abort the streaming response. On abort we send a special `stopGeneration`
+    // event to be handled which resets the UI for us to be able to send another message.
+    // The backend response abort handling is done in each LLM's handleStreamResponse.
+    window.addEventListener(ABORT_STREAM_EVENT, () => {
+      ctrl.abort();
+      handleChat({ id: v4(), type: "stopGeneration" });
+    });
+
     await fetchEventSource(`${API_BASE()}/workspace/${slug}/stream-chat`, {
       method: "POST",
-      body: JSON.stringify({ message, mode }),
+      body: JSON.stringify({ message }),
       headers: baseHeaders(),
       signal: ctrl.signal,
+      openWhenHidden: true,
       async onopen(response) {
         if (response.ok) {
           return; // everything's good
@@ -83,7 +109,7 @@ const Workspace = {
         try {
           const chatResult = JSON.parse(msg.data);
           handleChat(chatResult);
-        } catch { }
+        } catch {}
       },
       onerror(err) {
         handleChat({
@@ -128,6 +154,14 @@ const Workspace = {
 
     return result;
   },
+  wipeVectorDb: async function (slug) {
+    return await fetch(`${API_BASE()}/workspace/${slug}/reset-vector-db`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.ok)
+      .catch(() => false);
+  },
   uploadFile: async function (slug, formData) {
     const response = await fetch(`${API_BASE()}/workspace/${slug}/upload`, {
       method: "POST",
@@ -139,30 +173,121 @@ const Workspace = {
     return { response, data };
   },
   uploadLink: async function (slug, link) {
-    const response = await fetch(`${API_BASE()}/workspace/${slug}/upload-link`, {
-      method: "POST",
-      body: JSON.stringify({ link }),
-      headers: baseHeaders(),
-    });
+    const response = await fetch(
+      `${API_BASE()}/workspace/${slug}/upload-link`,
+      {
+        method: "POST",
+        body: JSON.stringify({ link }),
+        headers: baseHeaders(),
+      }
+    );
 
     const data = await response.json();
     return { response, data };
   },
 
-  // TODO: Deprecated and should be removed from frontend.
-  sendChat: async function ({ slug }, message, mode = "query") {
-    const chatResult = await fetch(`${API_BASE()}/workspace/${slug}/chat`, {
-      method: "POST",
-      body: JSON.stringify({ message, mode }),
+  getSuggestedMessages: async function (slug) {
+    return await fetch(`${API_BASE()}/workspace/${slug}/suggested-messages`, {
+      method: "GET",
+      cache: "no-cache",
       headers: baseHeaders(),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not fetch suggested messages.");
+        return res.json();
+      })
+      .then((res) => res.suggestedMessages)
       .catch((e) => {
         console.error(e);
         return null;
       });
+  },
+  setSuggestedMessages: async function (slug, messages) {
+    return fetch(`${API_BASE()}/workspace/${slug}/suggested-messages`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ messages }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(
+            res.statusText || "Error setting suggested messages."
+          );
+        }
+        return { success: true, ...res.json() };
+      })
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+  setPinForDocument: async function (slug, docPath, pinStatus) {
+    return fetch(`${API_BASE()}/workspace/${slug}/update-pin`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ docPath, pinStatus }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(
+            res.statusText || "Error setting pin status for document."
+          );
+        }
+        return true;
+      })
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
+  threads: WorkspaceThread,
 
-    return chatResult;
+  uploadPfp: async function (formData, slug) {
+    return await fetch(`${API_BASE()}/workspace/${slug}/upload-pfp`, {
+      method: "POST",
+      body: formData,
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Error uploading pfp.");
+        return { success: true, error: null };
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
+  },
+
+  fetchPfp: async function (slug) {
+    return await fetch(`${API_BASE()}/workspace/${slug}/pfp`, {
+      method: "GET",
+      cache: "no-cache",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (res.ok && res.status !== 204) return res.blob();
+        throw new Error("Failed to fetch pfp.");
+      })
+      .then((blob) => (blob ? URL.createObjectURL(blob) : null))
+      .catch((e) => {
+        console.log(e);
+        return null;
+      });
+  },
+
+  removePfp: async function (slug) {
+    return await fetch(`${API_BASE()}/workspace/${slug}/remove-pfp`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (res.ok) return { success: true, error: null };
+        throw new Error("Failed to remove pfp.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return { success: false, error: e.message };
+      });
   },
 };
 

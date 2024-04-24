@@ -1,4 +1,4 @@
-const { toChunks } = require("../../helpers");
+const { toChunks, maximumChunkLength } = require("../../helpers");
 
 class LocalAiEmbedder {
   constructor() {
@@ -9,11 +9,17 @@ class LocalAiEmbedder {
       throw new Error("No embedding model was set.");
     const config = new Configuration({
       basePath: process.env.EMBEDDING_BASE_PATH,
+      ...(!!process.env.LOCAL_AI_API_KEY
+        ? {
+            apiKey: process.env.LOCAL_AI_API_KEY,
+          }
+        : {}),
     });
     this.openai = new OpenAIApi(config);
 
-    // Arbitrary limit to ensure we stay within reasonable POST request size.
-    this.embeddingChunkLimit = 1_000;
+    // Limit of how many strings we can process in a single pass to stay with resource or network limits
+    this.maxConcurrentChunks = 50;
+    this.embeddingMaxChunkLength = maximumChunkLength();
   }
 
   async embedTextInput(textInput) {
@@ -23,7 +29,7 @@ class LocalAiEmbedder {
 
   async embedChunks(textChunks = []) {
     const embeddingRequests = [];
-    for (const chunk of toChunks(textChunks, this.embeddingChunkLimit)) {
+    for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
           this.openai
@@ -35,7 +41,12 @@ class LocalAiEmbedder {
               resolve({ data: res.data?.data, error: null });
             })
             .catch((e) => {
-              resolve({ data: [], error: e?.error });
+              e.type =
+                e?.response?.data?.error?.code ||
+                e?.response?.status ||
+                "failed_to_embed";
+              e.message = e?.response?.data?.error?.message || e.message;
+              resolve({ data: [], error: e });
             });
         })
       );
@@ -51,11 +62,14 @@ class LocalAiEmbedder {
         .map((res) => res.error)
         .flat();
       if (errors.length > 0) {
+        let uniqueErrors = new Set();
+        errors.map((error) =>
+          uniqueErrors.add(`[${error.type}]: ${error.message}`)
+        );
+
         return {
           data: [],
-          error: `(${errors.length}) Embedding Errors! ${errors
-            .map((error) => `[${error.type}]: ${error.message}`)
-            .join(", ")}`,
+          error: Array.from(uniqueErrors).join(", "),
         };
       }
       return {

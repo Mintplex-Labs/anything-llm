@@ -4,13 +4,19 @@ const { Telemetry } = require("../../../models/telemetry");
 const { DocumentVectors } = require("../../../models/vectors");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
-const {
-  convertToChatHistory,
-  chatWithWorkspace,
-} = require("../../../utils/chats");
+const { chatWithWorkspace } = require("../../../utils/chats");
 const { getVectorDbClass } = require("../../../utils/helpers");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
+const {
+  streamChatWithWorkspace,
+  VALID_CHAT_MODE,
+} = require("../../../utils/chats/stream");
+const { EventLogs } = require("../../../models/eventLogs");
+const {
+  convertToChatHistory,
+  writeResponseChunk,
+} = require("../../../utils/helpers/chat/responses");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -20,17 +26,17 @@ function apiWorkspaceEndpoints(app) {
     #swagger.tags = ['Workspaces']
     #swagger.description = 'Create a new workspace'
     #swagger.requestBody = {
-        description: 'JSON object containing new display name of workspace.',
-        required: true,
-        type: 'object',
-        content: {
-          "application/json": {
-            example: {
-              name: "My New Workspace",
-            }
+      description: 'JSON object containing new display name of workspace.',
+      required: true,
+      type: 'object',
+      content: {
+        "application/json": {
+          example: {
+            name: "My New Workspace",
           }
         }
       }
+    }
     #swagger.responses[200] = {
       content: {
         "application/json": {
@@ -66,6 +72,9 @@ function apiWorkspaceEndpoints(app) {
         multiUserMode: multiUserMode(response),
         LLMSelection: process.env.LLM_PROVIDER || "openai",
         VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+      });
+      await EventLogs.logEvent("api_workspace_created", {
+        workspaceName: workspace?.name || "Unknown Workspace",
       });
       response.status(200).json({ workspace, message });
     } catch (e) {
@@ -195,10 +204,15 @@ function apiWorkspaceEndpoints(app) {
           return;
         }
 
-        await WorkspaceChats.delete({ workspaceId: Number(workspace.id) });
-        await DocumentVectors.deleteForWorkspace(Number(workspace.id));
-        await Document.delete({ workspaceId: Number(workspace.id) });
-        await Workspace.delete({ id: Number(workspace.id) });
+        const workspaceId = Number(workspace.id);
+        await WorkspaceChats.delete({ workspaceId: workspaceId });
+        await DocumentVectors.deleteForWorkspace(workspaceId);
+        await Document.delete({ workspaceId: workspaceId });
+        await Workspace.delete({ id: workspaceId });
+
+        await EventLogs.logEvent("api_workspace_deleted", {
+          workspaceName: workspace?.name || "Unknown Workspace",
+        });
         try {
           await VectorDb["delete-namespace"]({ namespace: slug });
         } catch (e) {
@@ -374,8 +388,8 @@ function apiWorkspaceEndpoints(app) {
       content: {
         "application/json": {
           example: {
-            adds: [],
-            deletes: ["custom-documents/anythingllm-hash.json"]
+            adds: ["custom-documents/my-pdf.pdf-hash.json"],
+            deletes: ["custom-documents/anythingllm.txt-hash.json"]
           }
         }
       }
@@ -440,7 +454,7 @@ function apiWorkspaceEndpoints(app) {
    #swagger.tags = ['Workspaces']
    #swagger.description = 'Execute a chat with a workspace'
    #swagger.requestBody = {
-       description: 'prompt to send to the workspace and the type of conversation (query or chat).',
+       description: 'Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.',
        required: true,
        type: 'object',
        content: {
@@ -481,7 +495,28 @@ function apiWorkspaceEndpoints(app) {
         const workspace = await Workspace.get({ slug });
 
         if (!workspace) {
-          response.sendStatus(400).end();
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `Workspace ${slug} is not a valid workspace.`,
+          });
+          return;
+        }
+
+        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: !message?.length
+              ? "message parameter cannot be empty."
+              : `${mode} is not a valid mode.`,
+          });
           return;
         }
 
@@ -489,6 +524,10 @@ function apiWorkspaceEndpoints(app) {
         await Telemetry.sendTelemetry("sent_chat", {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        });
+        await EventLogs.logEvent("api_sent_chat", {
+          workspaceName: workspace?.name,
+          chatModel: workspace?.chatModel || "System Default",
         });
         response.status(200).json({ ...result });
       } catch (e) {
@@ -500,6 +539,130 @@ function apiWorkspaceEndpoints(app) {
           close: true,
           error: e.message,
         });
+      }
+    }
+  );
+
+  app.post(
+    "/v1/workspace/:slug/stream-chat",
+    [validApiKey],
+    async (request, response) => {
+      /*
+   #swagger.tags = ['Workspaces']
+   #swagger.description = 'Execute a streamable chat with a workspace'
+   #swagger.requestBody = {
+       description: 'Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.',
+       required: true,
+       type: 'object',
+       content: {
+         "application/json": {
+           example: {
+             message: "What is AnythingLLM?",
+             mode: "query | chat"
+           }
+         }
+       }
+     }
+   #swagger.responses[200] = {
+     content: {
+       "text/event-stream": {
+         schema: {
+           type: 'array',
+           example: [
+            {
+              id: 'uuid-123',
+              type: "abort | textResponseChunk",
+              textResponse: "First chunk",
+              sources: [],
+              close: false,
+              error: "null | text string of the failure mode."
+            },
+            {
+              id: 'uuid-123',
+              type: "abort | textResponseChunk",
+              textResponse: "chunk two",
+              sources: [],
+              close: false,
+              error: "null | text string of the failure mode."
+            },
+             {
+              id: 'uuid-123',
+              type: "abort | textResponseChunk",
+              textResponse: "final chunk of LLM output!",
+              sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."}],
+              close: true,
+              error: "null | text string of the failure mode."
+            }
+          ]
+         }
+       }
+     }
+   }
+   #swagger.responses[403] = {
+     schema: {
+       "$ref": "#/definitions/InvalidAPIKey"
+     }
+   }
+   */
+      try {
+        const { slug } = request.params;
+        const { message, mode = "query" } = reqBody(request);
+        const workspace = await Workspace.get({ slug });
+
+        if (!workspace) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: `Workspace ${slug} is not a valid workspace.`,
+          });
+          return;
+        }
+
+        if (!message?.length || !VALID_CHAT_MODE.includes(mode)) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: !message?.length
+              ? "Message is empty"
+              : `${mode} is not a valid mode.`,
+          });
+          return;
+        }
+
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Content-Type", "text/event-stream");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Connection", "keep-alive");
+        response.flushHeaders();
+
+        await streamChatWithWorkspace(response, workspace, message, mode);
+        await Telemetry.sendTelemetry("sent_chat", {
+          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        });
+        await EventLogs.logEvent("api_sent_chat", {
+          workspaceName: workspace?.name,
+          chatModel: workspace?.chatModel || "System Default",
+        });
+        response.end();
+      } catch (e) {
+        console.error(e);
+        writeResponseChunk(response, {
+          id: uuidv4(),
+          type: "abort",
+          textResponse: null,
+          sources: [],
+          close: true,
+          error: e.message,
+        });
+        response.end();
       }
     }
   );

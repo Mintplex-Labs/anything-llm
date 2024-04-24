@@ -32,9 +32,13 @@ async function loadGithubRepo(args) {
     `${repo.author}-${repo.project}-${repo.branch}-${v4().slice(0, 4)}`
   ).toLowerCase();
 
-  const outFolderPath = process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../../../server/storage/documents/${outFolder}`)
-    : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
+  const outFolderPath =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(
+          __dirname,
+          `../../../../server/storage/documents/${outFolder}`
+        )
+      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
   fs.mkdirSync(outFolderPath);
 
   for (const doc of docs) {
@@ -45,8 +49,8 @@ async function loadGithubRepo(args) {
       title: doc.metadata.source,
       docAuthor: repo.author,
       description: "No description found.",
-      docSource: repo.repo,
-      chunkSource: doc.metadata.source,
+      docSource: doc.metadata.source,
+      chunkSource: `link://${doc.metadata.repository}/blob/${doc.metadata.branch}/${doc.metadata.source}`,
       published: new Date().toLocaleString(),
       wordCount: doc.pageContent.split(" ").length,
       pageContent: doc.pageContent,

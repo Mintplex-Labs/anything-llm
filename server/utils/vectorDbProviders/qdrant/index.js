@@ -1,8 +1,14 @@
 const { QdrantClient } = require("@qdrant/js-client-rest");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
+const { TextSplitter } = require("../../TextSplitter");
+const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
-const { toChunks, getLLMProvider } = require("../../helpers");
+const {
+  toChunks,
+  getLLMProvider,
+  getEmbeddingEngineSelection,
+} = require("../../helpers");
+const { sourceIdentifier } = require("../../chats");
 
 const QDrant = {
   name: "QDrant",
@@ -49,7 +55,9 @@ const QDrant = {
     _client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const { client } = await this.connect();
     const result = {
@@ -60,12 +68,19 @@ const QDrant = {
 
     const responses = await client.search(namespace, {
       vector: queryVector,
-      limit: 4,
+      limit: topN,
       with_payload: true,
     });
 
     responses.forEach((response) => {
       if (response.score < similarityThreshold) return;
+      if (filterIdentifiers.includes(sourceIdentifier(response?.payload))) {
+        console.log(
+          "QDrant: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
+
       result.contextTexts.push(response?.payload?.text || "");
       result.sourceDocuments.push({
         ...(response?.payload || {}),
@@ -104,13 +119,20 @@ const QDrant = {
     await client.deleteCollection(namespace);
     return true;
   },
-  getOrCreateCollection: async function (client, namespace) {
+  // QDrant requires a dimension aspect for collection creation
+  // we pass this in from the first chunk to infer the dimensions like other
+  // providers do.
+  getOrCreateCollection: async function (client, namespace, dimensions = null) {
     if (await this.namespaceExists(client, namespace)) {
       return await client.getCollection(namespace);
     }
+    if (!dimensions)
+      throw new Error(
+        `Qdrant:getOrCreateCollection Unable to infer vector dimension from input. Open an issue on Github for support.`
+      );
     await client.createCollection(namespace, {
       vectors: {
-        size: 1536, //TODO: Fixed to OpenAI models - when other embeddings exist make variable.
+        size: dimensions,
         distance: "Cosine",
       },
     });
@@ -123,6 +145,7 @@ const QDrant = {
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
+      let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
@@ -130,14 +153,20 @@ const QDrant = {
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
-        const collection = await this.getOrCreateCollection(client, namespace);
+        const { chunks } = cacheResult;
+        const documentVectors = [];
+        vectorDimension =
+          chunks[0][0]?.vector?.length ?? chunks[0][0]?.values?.length ?? null;
+
+        const collection = await this.getOrCreateCollection(
+          client,
+          namespace,
+          vectorDimension
+        );
         if (!collection)
           throw new Error("Failed to create new QDrant collection!", {
             namespace,
           });
-
-        const { chunks } = cacheResult;
-        const documentVectors = [];
 
         for (const chunk of chunks) {
           const submission = {
@@ -148,13 +177,20 @@ const QDrant = {
 
           // Before sending to Qdrant and saving the records to our db
           // we need to assign the id of each chunk that is stored in the cached file.
+          // The id property must be defined or else it will be unable to be managed by ALLM.
           chunk.forEach((chunk) => {
             const id = uuidv4();
-            const { id: _id, ...payload } = chunk.payload;
-            documentVectors.push({ docId, vectorId: id });
-            submission.ids.push(id);
-            submission.vectors.push(chunk.vector);
-            submission.payloads.push(payload);
+            if (chunk?.payload?.hasOwnProperty("id")) {
+              const { id: _id, ...payload } = chunk.payload;
+              documentVectors.push({ docId, vectorId: id });
+              submission.ids.push(id);
+              submission.vectors.push(chunk.vector);
+              submission.payloads.push(payload);
+            } else {
+              console.error(
+                "The 'id' property is not defined in chunk.payload - it will be omitted from being inserted in QDrant collection."
+              );
+            }
           });
 
           const additionResult = await client.upsert(namespace, {
@@ -166,16 +202,24 @@ const QDrant = {
         }
 
         await DocumentVectors.bulkInsert(documentVectors);
-        return true;
+        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.
       // We have to do this manually as opposed to using LangChains `Qdrant.fromDocuments`
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
-      const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1000,
-        chunkOverlap: 20,
+      const textSplitter = new TextSplitter({
+        chunkSize: TextSplitter.determineMaxChunkSize(
+          await SystemSettings.getValueOrFallback({
+            label: "text_splitter_chunk_size",
+          }),
+          getEmbeddingEngineSelection()?.embeddingMaxChunkLength
+        ),
+        chunkOverlap: await SystemSettings.getValueOrFallback(
+          { label: "text_splitter_chunk_overlap" },
+          20
+        ),
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
@@ -192,6 +236,7 @@ const QDrant = {
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
+          if (!vectorDimension) vectorDimension = vector.length;
           const vectorRecord = {
             id: uuidv4(),
             vector: vector,
@@ -215,7 +260,11 @@ const QDrant = {
       }
 
       const { client } = await this.connect();
-      const collection = await this.getOrCreateCollection(client, namespace);
+      const collection = await this.getOrCreateCollection(
+        client,
+        namespace,
+        vectorDimension
+      );
       if (!collection)
         throw new Error("Failed to create new QDrant collection!", {
           namespace,
@@ -242,11 +291,10 @@ const QDrant = {
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
-      return true;
+      return { vectorized: true, error: null };
     } catch (e) {
-      console.error(e);
       console.error("addDocumentToNamespace", e.message);
-      return false;
+      return { vectorized: false, error: e.message };
     }
   },
   deleteDocumentFromNamespace: async function (namespace, docId) {
@@ -272,6 +320,8 @@ const QDrant = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -290,7 +340,9 @@ const QDrant = {
       client,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

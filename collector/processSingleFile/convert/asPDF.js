@@ -18,7 +18,8 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
   const docs = await pdfLoader.load();
   for (const doc of docs) {
     console.log(
-      `-- Parsing content from pg ${doc.metadata?.loc?.pageNumber || "unknown"
+      `-- Parsing content from pg ${
+        doc.metadata?.loc?.pageNumber || "unknown"
       } --`
     );
     if (!doc.pageContent.length) continue;
@@ -28,28 +29,35 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
   if (!pageContent.length) {
     console.error(`Resulting text content was empty for ${filename}.`);
     trashFile(fullFilePath);
-    return { success: false, reason: `No text content found in ${filename}.` };
+    return {
+      success: false,
+      reason: `No text content found in ${filename}.`,
+      documents: [],
+    };
   }
 
   const content = pageContent.join("");
   const data = {
     id: v4(),
     url: "file://" + fullFilePath,
-    title: docs[0]?.metadata?.pdf?.info?.Title || filename,
+    title: filename,
     docAuthor: docs[0]?.metadata?.pdf?.info?.Creator || "no author found",
-    description: "No description found.",
+    description: docs[0]?.metadata?.pdf?.info?.Title || "No description found.",
     docSource: "pdf file uploaded by the user.",
-    chunkSource: filename,
+    chunkSource: "",
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,
     token_count_estimate: tokenizeString(content).length,
   };
 
-  writeToServerDocuments(data, `${slugify(filename)}-${data.id}`);
+  const document = writeToServerDocuments(
+    data,
+    `${slugify(filename)}-${data.id}`
+  );
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
-  return { success: true, reason: null };
+  return { success: true, reason: null, documents: [document] };
 }
 
 module.exports = asPDF;

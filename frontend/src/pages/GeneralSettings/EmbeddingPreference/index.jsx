@@ -1,34 +1,46 @@
-import React, { useEffect, useState } from "react";
-import Sidebar, {
-} from "../../../components/SettingsSidebar";
-import System from "../../../models/system";
-import showToast from "../../../utils/toast";
-import OpenAiLogo from "../../../assets/llmprovider/openai.png";
-import AzureOpenAiLogo from "../../../assets/llmprovider/azure.png";
-import LocalAiLogo from "../../../assets/llmprovider/localai.png";
-import PreLoader from "../../../components/Preloader";
-import LLMProviderOption from "../../../components/LLMSelection/LLMProviderOption";
-import ChangeWarningModal from "../../../components/ChangeWarning";
-import OpenAiOptions from "../../../components/EmbeddingSelection/OpenAiOptions";
-import AzureAiOptions from "../../../components/EmbeddingSelection/AzureAiOptions";
-import LocalAiOptions from "../../../components/EmbeddingSelection/LocalAiOptions";
+import React, { useEffect, useState, useRef } from "react";
+import Sidebar from "@/components/SettingsSidebar";
+import System from "@/models/system";
+import showToast from "@/utils/toast";
+import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
+import OpenAiLogo from "@/assets/llmprovider/openai.png";
+import AzureOpenAiLogo from "@/assets/llmprovider/azure.png";
+import LocalAiLogo from "@/assets/llmprovider/localai.png";
+import OllamaLogo from "@/assets/llmprovider/ollama.png";
+import PreLoader from "@/components/Preloader";
+import ChangeWarningModal from "@/components/ChangeWarning";
+import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
+import AzureAiOptions from "@/components/EmbeddingSelection/AzureAiOptions";
+import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
+import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
+import OllamaEmbeddingOptions from "@/components/EmbeddingSelection/OllamaOptions";
+import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
+import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function GeneralEmbeddingPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [hasEmbeddings, setHasEmbeddings] = useState(false);
-  const [embeddingChoice, setEmbeddingChoice] = useState("openai");
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredEmbedders, setFilteredEmbedders] = useState([]);
+  const [selectedEmbedder, setSelectedEmbedder] = useState(null);
+  const [searchMenuOpen, setSearchMenuOpen] = useState(false);
+  const searchInputRef = useRef(null);
+  const { isOpen, openModal, closeModal } = useModal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
-      embeddingChoice !== settings?.EmbeddingEngine &&
+      selectedEmbedder !== settings?.EmbeddingEngine &&
       hasChanges &&
       hasEmbeddings
     ) {
-      document.getElementById("confirmation-modal")?.showModal();
+      openModal();
     } else {
       await handleSaveSettings();
     }
@@ -36,83 +48,128 @@ export default function GeneralEmbeddingPreference() {
 
   const handleSaveSettings = async () => {
     setSaving(true);
-    const data = new FormData(document.getElementById("embedding-form"));
+    const form = document.getElementById("embedding-form");
     const settingsData = {};
-    for (let [key, value] of data.entries()) {
-      settingsData[key] = value;
-    }
+    const formData = new FormData(form);
+    settingsData.EmbeddingEngine = selectedEmbedder;
+    for (var [key, value] of formData.entries()) settingsData[key] = value;
 
     const { error } = await System.updateSystem(settingsData);
     if (error) {
-      showToast(`Failed to save LLM settings: ${error}`, "error");
+      showToast(`Failed to save embedding settings: ${error}`, "error");
       setHasChanges(true);
     } else {
-      showToast("LLM preferences saved successfully.", "success");
+      showToast("Embedding preferences saved successfully.", "success");
       setHasChanges(false);
     }
     setSaving(false);
-    document.getElementById("confirmation-modal")?.close();
+    closeModal();
   };
 
   const updateChoice = (selection) => {
-    setEmbeddingChoice(selection);
+    setSearchQuery("");
+    setSelectedEmbedder(selection);
+    setSearchMenuOpen(false);
     setHasChanges(true);
+  };
+
+  const handleXButton = () => {
+    if (searchQuery.length > 0) {
+      setSearchQuery("");
+      if (searchInputRef.current) searchInputRef.current.value = "";
+    } else {
+      setSearchMenuOpen(!searchMenuOpen);
+    }
   };
 
   useEffect(() => {
     async function fetchKeys() {
       const _settings = await System.keys();
       setSettings(_settings);
-      setEmbeddingChoice(_settings?.EmbeddingEngine || "openai");
+      setSelectedEmbedder(_settings?.EmbeddingEngine || "native");
       setHasEmbeddings(_settings?.HasExistingEmbeddings || false);
       setLoading(false);
     }
     fetchKeys();
   }, []);
 
+  const EMBEDDERS = [
+    {
+      name: "AnythingLLM Embedder",
+      value: "native",
+      logo: AnythingLLMIcon,
+      options: <NativeEmbeddingOptions settings={settings} />,
+      description:
+        "Use the built-in embedding engine for AnythingLLM. Zero setup!",
+    },
+    {
+      name: "OpenAI",
+      value: "openai",
+      logo: OpenAiLogo,
+      options: <OpenAiOptions settings={settings} />,
+      description: "The standard option for most non-commercial use.",
+    },
+    {
+      name: "Azure OpenAI",
+      value: "azure",
+      logo: AzureOpenAiLogo,
+      options: <AzureAiOptions settings={settings} />,
+      description: "The enterprise option of OpenAI hosted on Azure services.",
+    },
+    {
+      name: "Local AI",
+      value: "localai",
+      logo: LocalAiLogo,
+      options: <LocalAiOptions settings={settings} />,
+      description: "Run embedding models locally on your own machine.",
+    },
+    {
+      name: "Ollama",
+      value: "ollama",
+      logo: OllamaLogo,
+      options: <OllamaEmbeddingOptions settings={settings} />,
+      description: "Run embedding models locally on your own machine.",
+    },
+  ];
+
+  useEffect(() => {
+    const filtered = EMBEDDERS.filter((embedder) =>
+      embedder.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredEmbedders(filtered);
+  }, [searchQuery, selectedEmbedder]);
+
+  const selectedEmbedderObject = EMBEDDERS.find(
+    (embedder) => embedder.value === selectedEmbedder
+  );
+
   return (
-    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
-      <ChangeWarningModal
-        warningText=" Switching the embedder may affect previously embedded documents and future similarity search results."
-        onClose={() => document.getElementById("confirmation-modal")?.close()}
-        onConfirm={handleSaveSettings}
-      />
+    <div
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex"
+    >
       <Sidebar />
       {loading ? (
-        <div
-          className="relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient p-[18px] h-full overflow-y-scroll animate-pulse border-4 border-accent"
-        >
+        <div className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll animate-pulse border-2 border-outline">
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
           </div>
         </div>
       ) : (
-        <div
-          className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
-        >
+        <div className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
           <form
             id="embedding-form"
             onSubmit={handleSubmit}
-            onChange={() => setHasChanges(true)}
             className="flex w-full"
           >
-            <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
+            <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
-                <div className="items-center flex gap-x-4">
-                  <p className="text-2xl font-semibold text-white">
+                <div className="flex gap-x-4 items-center">
+                  <p className="text-lg leading-6 font-bold text-white">
                     Embedding Preference
                   </p>
-                  {hasChanges && (
-                    <button
-                      type="submit"
-                      disabled={saving}
-                      className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
-                    >
-                      {saving ? "Saving..." : "Save changes"}
-                    </button>
-                  )}
                 </div>
-                <p className="text-sm font-base text-white text-opacity-60">
+                <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
                   When using an LLM that does not natively support an embedding
                   engine - you may need to additionally specify credentials to
                   for embedding text.
@@ -122,61 +179,118 @@ export default function GeneralEmbeddingPreference() {
                   format which AnythingLLM can use to process.
                 </p>
               </div>
-
-              <>
-                <div className="text-white text-sm font-medium py-4">
-                  Embedding Providers
-                </div>
-                <div className="w-full flex md:flex-wrap overflow-x-scroll gap-4 max-w-[900px]">
-                  <input
-                    hidden={true}
-                    name="EmbeddingEngine"
-                    value={embeddingChoice}
+              <div className="w-full justify-end flex">
+                {hasChanges && (
+                  <CTAButton
+                    onClick={() => handleSubmit()}
+                    className="mt-3 mr-0 -mb-14 z-10"
+                  >
+                    {saving ? "Saving..." : "Save changes"}
+                  </CTAButton>
+                )}
+              </div>
+              <div className="text-base font-bold text-white mt-6 mb-4">
+                Embedding Provider
+              </div>
+              <div className="relative">
+                {searchMenuOpen && (
+                  <div
+                    className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-sm z-10"
+                    onClick={() => setSearchMenuOpen(false)}
                   />
-                  <LLMProviderOption
-                    name="OpenAI"
-                    value="openai"
-                    link="openai.com"
-                    description="Use OpenAI's text-embedding-ada-002 embedding model."
-                    checked={embeddingChoice === "openai"}
-                    image={OpenAiLogo}
-                    onClick={updateChoice}
-                  />
-                  <LLMProviderOption
-                    name="Azure OpenAI"
-                    value="azure"
-                    link="azure.microsoft.com"
-                    description="The enterprise option of OpenAI hosted on Azure services."
-                    checked={embeddingChoice === "azure"}
-                    image={AzureOpenAiLogo}
-                    onClick={updateChoice}
-                  />
-                  <LLMProviderOption
-                    name="LocalAI"
-                    value="localai"
-                    link="localai.io"
-                    description="Self hosted LocalAI embedding engine."
-                    checked={embeddingChoice === "localai"}
-                    image={LocalAiLogo}
-                    onClick={updateChoice}
-                  />
-                </div>
-                <div className="mt-10 flex flex-wrap gap-4 max-w-[800px]">
-                  {embeddingChoice === "openai" && (
-                    <OpenAiOptions settings={settings} />
-                  )}
-                  {embeddingChoice === "azure" && (
-                    <AzureAiOptions settings={settings} />
-                  )}
-                  {embeddingChoice === "localai" && (
-                    <LocalAiOptions settings={settings} />
-                  )}
-                </div>
-              </>
+                )}
+                {searchMenuOpen ? (
+                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-[#18181B] rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#46C8FF] z-20">
+                    <div className="w-full flex flex-col gap-y-1">
+                      <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-[#18181B]">
+                        <MagnifyingGlass
+                          size={20}
+                          weight="bold"
+                          className="absolute left-4 z-30 text-white -ml-4 my-2"
+                        />
+                        <input
+                          type="text"
+                          name="embedder-search"
+                          autoComplete="off"
+                          placeholder="Search all embedding providers"
+                          className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:border-white text-white placeholder:text-white placeholder:font-medium"
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          ref={searchInputRef}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") e.preventDefault();
+                          }}
+                        />
+                        <X
+                          size={20}
+                          weight="bold"
+                          className="cursor-pointer text-white hover:text-[#9CA3AF]"
+                          onClick={handleXButton}
+                        />
+                      </div>
+                      <div className="flex-1 pl-4 pr-2 flex flex-col gap-y-1 overflow-y-auto white-scrollbar pb-4">
+                        {filteredEmbedders.map((embedder) => (
+                          <EmbedderItem
+                            key={embedder.name}
+                            name={embedder.name}
+                            value={embedder.value}
+                            image={embedder.logo}
+                            description={embedder.description}
+                            checked={selectedEmbedder === embedder.value}
+                            onClick={() => updateChoice(embedder.value)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    className="w-full max-w-[640px] h-[64px] bg-[#18181B] rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-[#46C8FF] transition-all duration-300"
+                    type="button"
+                    onClick={() => setSearchMenuOpen(true)}
+                  >
+                    <div className="flex gap-x-4 items-center">
+                      <img
+                        src={selectedEmbedderObject.logo}
+                        alt={`${selectedEmbedderObject.name} logo`}
+                        className="w-10 h-10 rounded-md"
+                      />
+                      <div className="flex flex-col text-left">
+                        <div className="text-sm font-semibold text-white">
+                          {selectedEmbedderObject.name}
+                        </div>
+                        <div className="mt-1 text-xs text-[#D2D5DB]">
+                          {selectedEmbedderObject.description}
+                        </div>
+                      </div>
+                    </div>
+                    <CaretUpDown
+                      size={24}
+                      weight="bold"
+                      className="text-white"
+                    />
+                  </button>
+                )}
+              </div>
+              <div
+                onChange={() => setHasChanges(true)}
+                className="mt-4 flex flex-col gap-y-1"
+              >
+                {selectedEmbedder &&
+                  EMBEDDERS.find(
+                    (embedder) => embedder.value === selectedEmbedder
+                  )?.options}
+              </div>
             </div>
           </form>
         </div>
       )}
+      <ModalWrapper isOpen={isOpen}>
+        <ChangeWarningModal
+          warningText="Switching the vector database will ignore previously embedded documents and future similarity search results. They will need to be re-added to each workspace."
+          onClose={closeModal}
+          onConfirm={handleSaveSettings}
+        />
+      </ModalWrapper>
     </div>
   );
 }

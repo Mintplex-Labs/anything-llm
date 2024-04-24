@@ -1,52 +1,59 @@
 import { useEffect, useState } from "react";
-import Sidebar, {
-} from "../../../components/SettingsSidebar";
+import Sidebar from "@/components/SettingsSidebar";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { PlusCircle } from "@phosphor-icons/react";
-import Admin from "../../../models/admin";
+import Admin from "@/models/admin";
 import ApiKeyRow from "./ApiKeyRow";
-import NewApiKeyModal, { NewApiKeyModalId } from "./NewApiKeyModal";
-import paths from "../../../utils/paths";
-import { userFromStorage } from "../../../utils/request";
-import System from "../../../models/system";
+import NewApiKeyModal from "./NewApiKeyModal";
+import paths from "@/utils/paths";
+import { userFromStorage } from "@/utils/request";
+import System from "@/models/system";
+import ModalWrapper from "@/components/ModalWrapper";
+import { useModal } from "@/hooks/useModal";
 import { Link } from "react-router-dom";
+import { openElectronWindow } from "@/ipc/node-api";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminApiKeys() {
+  const { isOpen, openModal, closeModal } = useModal();
+
   return (
-    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+    <div
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex"
+    >
       <Sidebar />
-      <div
-        className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
-      >
-        <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
+      <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
+        <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[86px] md:py-6 py-16">
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
-              <p className="text-2xl font-semibold text-white">API Keys</p>
-              <button
-                onClick={() =>
-                  document?.getElementById(NewApiKeyModalId)?.showModal()
-                }
-                className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
-              >
-                <PlusCircle className="h-4 w-4" /> Generate New API Key
-              </button>
+              <p className="text-lg leading-6 font-bold text-white">API Keys</p>
             </div>
-            <p className="text-sm font-base text-white text-opacity-60">
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
               API keys allow the holder to programmatically access and manage
               this AnythingLLM instance.
             </p>
             <Link
-              to={paths.apiDocs()}
+              onClick={() => openElectronWindow(paths.apiDocs())}
               target="_blank"
-              className="text-sm font-base text-blue-300 hover:underline"
+              rel="noreferrer"
+              className="text-xs leading-[18px] font-base text-blue-300 hover:underline"
             >
               Read the API documentation &rarr;
             </Link>
           </div>
+          <div className="w-full justify-end flex">
+            <CTAButton onClick={openModal} className="mt-3 mr-0 -mb-14 z-10">
+              <PlusCircle className="h-4 w-4" weight="bold" /> Generate New API
+              Key
+            </CTAButton>
+          </div>
           <ApiKeysContainer />
         </div>
-        <NewApiKeyModal />
+        <ModalWrapper isOpen={isOpen}>
+          <NewApiKeyModal closeModal={closeModal} />
+        </ModalWrapper>
       </div>
     </div>
   );
@@ -55,11 +62,11 @@ export default function AdminApiKeys() {
 function ApiKeysContainer() {
   const [loading, setLoading] = useState(true);
   const [apiKeys, setApiKeys] = useState([]);
+
   useEffect(() => {
     async function fetchExistingKeys() {
       const user = userFromStorage();
       const Model = !!user ? Admin : System;
-
       const { apiKeys: foundKeys } = await Model.getApiKeys();
       setApiKeys(foundKeys);
       setLoading(false);
@@ -82,8 +89,8 @@ function ApiKeysContainer() {
   }
 
   return (
-    <table className="md:w-3/4 w-full text-sm text-left rounded-lg mt-5">
-      <thead className="text-white text-opacity-80 text-sm font-bold uppercase border-white border-b border-opacity-60">
+    <table className="w-full text-sm text-left rounded-lg mt-6">
+      <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
         <tr>
           <th scope="col" className="px-6 py-3 rounded-tl-lg">
             API Key

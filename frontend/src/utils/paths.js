@@ -4,11 +4,31 @@ export default {
   home: () => {
     return "/";
   },
-  login: () => {
-    return "/login";
+  login: (noTry = false) => {
+    return `/login${noTry ? "?nt=1" : ""}`;
   },
-  onboarding: () => {
-    return "/onboarding";
+  onboarding: {
+    home: () => {
+      return "/onboarding";
+    },
+    survey: () => {
+      return "/onboarding/survey";
+    },
+    llmPreference: () => {
+      return "/onboarding/llm-preference";
+    },
+    embeddingPreference: () => {
+      return "/onboarding/embedding-preference";
+    },
+    vectorDatabase: () => {
+      return "/onboarding/vector-database";
+    },
+    dataHandling: () => {
+      return "/onboarding/data-handling";
+    },
+    createWorkspace: () => {
+      return "/onboarding/create-workspace";
+    },
   },
   github: () => {
     return "https://github.com/Mintplex-Labs/anything-llm";
@@ -25,6 +45,26 @@ export default {
   workspace: {
     chat: (slug) => {
       return `/workspace/${slug}`;
+    },
+    settings: {
+      generalAppearance: (slug) => {
+        return `/workspace/${slug}/settings/general-appearance`;
+      },
+      chatSettings: (slug) => {
+        return `/workspace/${slug}/settings/chat-settings`;
+      },
+      vectorDatabase: (slug) => {
+        return `/workspace/${slug}/settings/vector-database`;
+      },
+      members: (slug) => {
+        return `/workspace/${slug}/settings/members`;
+      },
+      agentConfig: (slug) => {
+        return `/workspace/${slug}/settings/agent-config`;
+      },
+    },
+    thread: (wsSlug, threadSlug) => {
+      return `/workspace/${wsSlug}/t/${threadSlug}`;
     },
   },
   apiDocs: () => {
@@ -49,14 +89,18 @@ export default {
     llmPreference: () => {
       return "/settings/llm-preference";
     },
+    transcriptionPreference: () => {
+      return "/settings/transcription-preference";
+    },
+    embedder: {
+      modelPreference: () => "/settings/embedding-preference",
+      chunkingPreference: () => "/settings/text-splitter-preference",
+    },
     embeddingPreference: () => {
       return "/settings/embedding-preference";
     },
     vectorDatabase: () => {
       return "/settings/vector-database";
-    },
-    exportImport: () => {
-      return "/settings/export-import";
     },
     security: () => {
       return "/settings/security";
@@ -67,16 +111,17 @@ export default {
     apiKeys: () => {
       return "/settings/api-keys";
     },
-    dataConnectors: {
-      list: () => {
-        return "/settings/data-connectors";
-      },
-      github: () => {
-        return "/settings/data-connectors/github";
-      },
-      youtubeTranscript: () => {
-        return "/settings/data-connectors/youtube-transcript";
-      },
+    logs: () => {
+      return "/settings/event-logs";
+    },
+    privacy: () => {
+      return "/settings/privacy";
+    },
+    embedSetup: () => {
+      return `/settings/embed-config`;
+    },
+    embedChats: () => {
+      return `/settings/embed-chats`;
     },
   },
 };

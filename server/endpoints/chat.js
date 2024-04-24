@@ -1,34 +1,42 @@
 const { v4: uuidv4 } = require("uuid");
 const { reqBody, userFromSession, multiUserMode } = require("../utils/http");
-const { Workspace } = require("../models/workspace");
-const { chatWithWorkspace } = require("../utils/chats");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { SystemSettings } = require("../models/systemSettings");
 const { Telemetry } = require("../models/telemetry");
+const { streamChatWithWorkspace } = require("../utils/chats/stream");
 const {
-  streamChatWithWorkspace,
-  writeResponseChunk,
-} = require("../utils/chats/stream");
+  ROLES,
+  flexUserRoleValid,
+} = require("../utils/middleware/multiUserProtected");
+const { EventLogs } = require("../models/eventLogs");
+const {
+  validWorkspaceAndThreadSlug,
+  validWorkspaceSlug,
+} = require("../utils/middleware/validWorkspace");
+const { writeResponseChunk } = require("../utils/helpers/chat/responses");
 
 function chatEndpoints(app) {
   if (!app) return;
 
   app.post(
     "/workspace/:slug/stream-chat",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { slug } = request.params;
-        const { message, mode = "query" } = reqBody(request);
+        const { message } = reqBody(request);
+        const workspace = response.locals.workspace;
 
-        const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
-
-        if (!workspace) {
-          response.sendStatus(400).end();
+        if (!message?.length) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: !message?.length ? "Message is empty." : null,
+          });
           return;
         }
 
@@ -38,7 +46,7 @@ function chatEndpoints(app) {
         response.setHeader("Connection", "keep-alive");
         response.flushHeaders();
 
-        if (multiUserMode(response) && user.role !== "admin") {
+        if (multiUserMode(response) && user.role !== ROLES.admin) {
           const limitMessagesSetting = await SystemSettings.get({
             label: "limit_user_messages",
           });
@@ -73,12 +81,27 @@ function chatEndpoints(app) {
           }
         }
 
-        await streamChatWithWorkspace(response, workspace, message, mode, user);
+        await streamChatWithWorkspace(
+          response,
+          workspace,
+          message,
+          workspace?.chatMode,
+          user
+        );
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           VectorDbSelection: process.env.VECTOR_DB || "pinecone",
         });
+
+        await EventLogs.logEvent(
+          "sent_chat",
+          {
+            workspaceName: workspace?.name,
+            chatModel: workspace?.chatModel || "System Default",
+          },
+          user?.id
+        );
         response.end();
       } catch (e) {
         console.error(e);
@@ -96,24 +119,38 @@ function chatEndpoints(app) {
   );
 
   app.post(
-    "/workspace/:slug/chat",
-    [validatedRequest],
+    "/workspace/:slug/thread/:threadSlug/stream-chat",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.all]),
+      validWorkspaceAndThreadSlug,
+    ],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { slug } = request.params;
-        const { message, mode = "query" } = reqBody(request);
+        const { message } = reqBody(request);
+        const workspace = response.locals.workspace;
+        const thread = response.locals.thread;
 
-        const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
-
-        if (!workspace) {
-          response.sendStatus(400).end();
+        if (!message?.length) {
+          response.status(400).json({
+            id: uuidv4(),
+            type: "abort",
+            textResponse: null,
+            sources: [],
+            close: true,
+            error: !message?.length ? "Message is empty." : null,
+          });
           return;
         }
 
-        if (multiUserMode(response) && user.role !== "admin") {
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Content-Type", "text/event-stream");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Connection", "keep-alive");
+        response.flushHeaders();
+
+        if (multiUserMode(response) && user.role !== ROLES.admin) {
           const limitMessagesSetting = await SystemSettings.get({
             label: "limit_user_messages",
           });
@@ -126,6 +163,8 @@ function chatEndpoints(app) {
             const systemLimit = Number(messageLimitSetting?.value);
 
             if (!!systemLimit) {
+              // Chat qty includes all threads because any user can freely
+              // create threads and would bypass this rule.
               const currentChatCount = await WorkspaceChats.count({
                 user_id: user.id,
                 createdAt: {
@@ -134,7 +173,7 @@ function chatEndpoints(app) {
               });
 
               if (currentChatCount >= systemLimit) {
-                response.status(500).json({
+                writeResponseChunk(response, {
                   id: uuidv4(),
                   type: "abort",
                   textResponse: null,
@@ -148,20 +187,34 @@ function chatEndpoints(app) {
           }
         }
 
-        const result = await chatWithWorkspace(workspace, message, mode, user);
-        await Telemetry.sendTelemetry(
+        await streamChatWithWorkspace(
+          response,
+          workspace,
+          message,
+          workspace?.chatMode,
+          user,
+          thread
+        );
+        await Telemetry.sendTelemetry("sent_chat", {
+          multiUserMode: multiUserMode(response),
+          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+        });
+
+        await EventLogs.logEvent(
           "sent_chat",
           {
-            multiUserMode: multiUserMode(response),
-            LLMSelection: process.env.LLM_PROVIDER || "openai",
-            VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+            workspaceName: workspace.name,
+            thread: thread.name,
+            chatModel: workspace?.chatModel || "System Default",
           },
           user?.id
         );
-        response.status(200).json({ ...result });
+        response.end();
       } catch (e) {
         console.error(e);
-        response.status(500).json({
+        writeResponseChunk(response, {
           id: uuidv4(),
           type: "abort",
           textResponse: null,
@@ -169,6 +222,7 @@ function chatEndpoints(app) {
           close: true,
           error: e.message,
         });
+        response.end();
       }
     }
   );

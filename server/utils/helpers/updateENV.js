@@ -2,6 +2,7 @@ const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
     checks: [isNotEmpty, supportedLLM],
+    postUpdate: [manageOllamaService],
   },
   // OpenAI Settings
   OpenAiKey: {
@@ -44,10 +45,23 @@ const KEY_MAPPING = {
     checks: [isNotEmpty, validAnthropicModel],
   },
 
+  GeminiLLMApiKey: {
+    envKey: "GEMINI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  GeminiLLMModelPref: {
+    envKey: "GEMINI_LLM_MODEL_PREF",
+    checks: [isNotEmpty, validGeminiModel],
+  },
+
   // LMStudio Settings
   LMStudioBasePath: {
     envKey: "LMSTUDIO_BASE_PATH",
-    checks: [isNotEmpty, validLLMExternalBasePath],
+    checks: [isNotEmpty, validLLMExternalBasePath, validDockerizedUrl],
+  },
+  LMStudioModelPref: {
+    envKey: "LMSTUDIO_MODEL_PREF",
+    checks: [],
   },
   LMStudioTokenLimit: {
     envKey: "LMSTUDIO_MODEL_TOKEN_LIMIT",
@@ -57,7 +71,7 @@ const KEY_MAPPING = {
   // LocalAI Settings
   LocalAiBasePath: {
     envKey: "LOCAL_AI_BASE_PATH",
-    checks: [isNotEmpty, validLLMExternalBasePath],
+    checks: [isNotEmpty, validLLMExternalBasePath, validDockerizedUrl],
   },
   LocalAiModelPref: {
     envKey: "LOCAL_AI_MODEL_PREF",
@@ -67,6 +81,53 @@ const KEY_MAPPING = {
     envKey: "LOCAL_AI_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  LocalAiApiKey: {
+    envKey: "LOCAL_AI_API_KEY",
+    checks: [],
+  },
+
+  OllamaLLMBasePath: {
+    envKey: "OLLAMA_BASE_PATH",
+    checks: [isNotEmpty, validOllamaLLMBasePath, validDockerizedUrl],
+  },
+  OllamaLLMModelPref: {
+    envKey: "OLLAMA_MODEL_PREF",
+    checks: [],
+  },
+  OllamaLLMTokenLimit: {
+    envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
+  // Mistral AI API Settings
+  MistralApiKey: {
+    envKey: "MISTRAL_API_KEY",
+    checks: [isNotEmpty],
+  },
+  MistralModelPref: {
+    envKey: "MISTRAL_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Hugging Face LLM Inference Settings
+  HuggingFaceLLMEndpoint: {
+    envKey: "HUGGING_FACE_LLM_ENDPOINT",
+    checks: [isNotEmpty, isValidURL, validHuggingFaceEndpoint],
+  },
+  HuggingFaceLLMAccessToken: {
+    envKey: "HUGGING_FACE_LLM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  HuggingFaceLLMTokenLimit: {
+    envKey: "HUGGING_FACE_LLM_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
+  // AnythingLLM x Ollama embedded:
+  AnythingLLMOllamaModelPref: {
+    envKey: "ANYTHINGLLM_MODEL_PREF",
+    checks: [],
+  },
 
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
@@ -74,11 +135,15 @@ const KEY_MAPPING = {
   },
   EmbeddingBasePath: {
     envKey: "EMBEDDING_BASE_PATH",
-    checks: [isNotEmpty, validLLMExternalBasePath],
+    checks: [isNotEmpty, validDockerizedUrl],
   },
   EmbeddingModelPref: {
     envKey: "EMBEDDING_MODEL_PREF",
     checks: [isNotEmpty],
+  },
+  EmbeddingModelMaxChunkLength: {
+    envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
+    checks: [nonZero],
   },
 
   // Vector Database Selection Settings
@@ -90,7 +155,7 @@ const KEY_MAPPING = {
   // Chroma Options
   ChromaEndpoint: {
     envKey: "CHROMA_ENDPOINT",
-    checks: [isValidURL, validChromaURL],
+    checks: [isValidURL, validChromaURL, validDockerizedUrl],
   },
   ChromaApiHeader: {
     envKey: "CHROMA_API_HEADER",
@@ -104,7 +169,7 @@ const KEY_MAPPING = {
   // Weaviate Options
   WeaviateEndpoint: {
     envKey: "WEAVIATE_ENDPOINT",
-    checks: [isValidURL],
+    checks: [isValidURL, validDockerizedUrl],
   },
   WeaviateApiKey: {
     envKey: "WEAVIATE_API_KEY",
@@ -114,15 +179,10 @@ const KEY_MAPPING = {
   // QDrant Options
   QdrantEndpoint: {
     envKey: "QDRANT_ENDPOINT",
-    checks: [isValidURL],
+    checks: [isValidURL, validDockerizedUrl],
   },
   QdrantApiKey: {
     envKey: "QDRANT_API_KEY",
-    checks: [],
-  },
-
-  PineConeEnvironment: {
-    envKey: "PINECONE_ENVIRONMENT",
     checks: [],
   },
   PineConeKey: {
@@ -134,6 +194,88 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Milvus Options
+  MilvusAddress: {
+    envKey: "MILVUS_ADDRESS",
+    checks: [isValidURL, validDockerizedUrl],
+  },
+  MilvusUsername: {
+    envKey: "MILVUS_USERNAME",
+    checks: [isNotEmpty],
+  },
+  MilvusPassword: {
+    envKey: "MILVUS_PASSWORD",
+    checks: [isNotEmpty],
+  },
+
+  // Zilliz Cloud Options
+  ZillizEndpoint: {
+    envKey: "ZILLIZ_ENDPOINT",
+    checks: [isValidURL],
+  },
+  ZillizApiToken: {
+    envKey: "ZILLIZ_API_TOKEN",
+    checks: [isNotEmpty],
+  },
+
+  // Astra DB Options
+
+  AstraDBApplicationToken: {
+    envKey: "ASTRA_DB_APPLICATION_TOKEN",
+    checks: [isNotEmpty],
+  },
+  AstraDBEndpoint: {
+    envKey: "ASTRA_DB_ENDPOINT",
+    checks: [isNotEmpty],
+  },
+
+  // Together Ai Options
+  TogetherAiApiKey: {
+    envKey: "TOGETHER_AI_API_KEY",
+    checks: [isNotEmpty],
+  },
+  TogetherAiModelPref: {
+    envKey: "TOGETHER_AI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Perplexity Options
+  PerplexityApiKey: {
+    envKey: "PERPLEXITY_API_KEY",
+    checks: [isNotEmpty],
+  },
+  PerplexityModelPref: {
+    envKey: "PERPLEXITY_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // OpenRouter Options
+  OpenRouterApiKey: {
+    envKey: "OPENROUTER_API_KEY",
+    checks: [isNotEmpty],
+  },
+  OpenRouterModelPref: {
+    envKey: "OPENROUTER_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Groq Options
+  GroqApiKey: {
+    envKey: "GROQ_API_KEY",
+    checks: [isNotEmpty],
+  },
+  GroqModelPref: {
+    envKey: "GROQ_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
+  // Whisper (transcription) providers
+  WhisperProvider: {
+    envKey: "WHISPER_PROVIDER",
+    checks: [isNotEmpty, supportedTranscriptionProvider],
+    postUpdate: [],
+  },
+
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
@@ -142,6 +284,24 @@ const KEY_MAPPING = {
   JWTSecret: {
     envKey: "JWT_SECRET",
     checks: [requiresForceMode],
+  },
+  DisableTelemetry: {
+    envKey: "DISABLE_TELEMETRY",
+    checks: [],
+  },
+
+  // Agent Integration ENVs
+  AgentGoogleSearchEngineId: {
+    envKey: "AGENT_GSE_CTX",
+    checks: [],
+  },
+  AgentGoogleSearchEngineKey: {
+    envKey: "AGENT_GSE_KEY",
+    checks: [],
+  },
+  AgentSerperApiKey: {
+    envKey: "AGENT_SERPER_DEV_KEY",
+    checks: [],
   },
 };
 
@@ -185,28 +345,83 @@ function validLLMExternalBasePath(input = "") {
   }
 }
 
+function validOllamaLLMBasePath(input = "") {
+  try {
+    new URL(input);
+    if (input.split("").slice(-1)?.[0] === "/")
+      return "URL cannot end with a slash";
+    return null;
+  } catch {
+    return "Not a valid URL";
+  }
+}
+
 function supportedLLM(input = "") {
-  return ["openai", "azure", "anthropic", "lmstudio", "localai"].includes(
-    input
-  );
+  const validSelection = [
+    "anythingllm_ollama",
+    "openai",
+    "azure",
+    "anthropic",
+    "gemini",
+    "lmstudio",
+    "localai",
+    "ollama",
+    "togetherai",
+    "mistral",
+    "huggingface",
+    "perplexity",
+    "openrouter",
+    "groq",
+  ].includes(input);
+  return validSelection ? null : `${input} is not a valid LLM provider.`;
+}
+
+function supportedTranscriptionProvider(input = "") {
+  const validSelection = ["openai", "local"].includes(input);
+  return validSelection
+    ? null
+    : `${input} is not a valid transcription model provider.`;
+}
+
+function validGeminiModel(input = "") {
+  const validModels = ["gemini-pro"];
+  return validModels.includes(input)
+    ? null
+    : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
 }
 
 function validAnthropicModel(input = "") {
-  const validModels = ["claude-2", "claude-instant-1"];
+  const validModels = [
+    "claude-instant-1.2",
+    "claude-2.0",
+    "claude-2.1",
+    "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307",
+  ];
   return validModels.includes(input)
     ? null
     : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
 }
 
 function supportedEmbeddingModel(input = "") {
-  const supported = ["openai", "azure", "localai"];
+  const supported = ["openai", "azure", "localai", "native", "ollama"];
   return supported.includes(input)
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;
 }
 
 function supportedVectorDB(input = "") {
-  const supported = ["chroma", "pinecone", "lancedb", "weaviate", "qdrant"];
+  const supported = [
+    "chroma",
+    "pinecone",
+    "lancedb",
+    "weaviate",
+    "qdrant",
+    "milvus",
+    "zilliz",
+    "astra",
+  ];
   return supported.includes(input)
     ? null
     : `Invalid VectorDB type. Must be one of ${supported.join(", ")}.`;
@@ -221,8 +436,8 @@ function validChromaURL(input = "") {
 function validAzureURL(input = "") {
   try {
     new URL(input);
-    if (!input.includes("openai.azure.com"))
-      return "URL must include openai.azure.com";
+    if (!input.includes("openai.azure.com") && !input.includes("microsoft.com"))
+      return "Valid Azure endpoints must contain openai.azure.com OR microsoft.com";
     return null;
   } catch {
     return "Not a valid URL";
@@ -232,7 +447,7 @@ function validAzureURL(input = "") {
 function validOpenAiTokenLimit(input = "") {
   const tokenLimit = Number(input);
   if (isNaN(tokenLimit)) return "Token limit is not a number";
-  if (![4_096, 16_384, 8_192, 32_768].includes(tokenLimit))
+  if (![4_096, 16_384, 8_192, 32_768, 128_000].includes(tokenLimit))
     return "Invalid OpenAI token limit.";
   return null;
 }
@@ -241,11 +456,62 @@ function requiresForceMode(_, forceModeEnabled = false) {
   return forceModeEnabled === true ? null : "Cannot set this setting.";
 }
 
+async function validDockerizedUrl(input = "") {
+  if (process.env.ANYTHING_LLM_RUNTIME !== "docker") return null;
+
+  try {
+    const { isPortInUse, getLocalHosts } = require("./portAvailabilityChecker");
+    const localInterfaces = getLocalHosts();
+    const url = new URL(input);
+    const hostname = url.hostname.toLowerCase();
+    const port = parseInt(url.port, 10);
+
+    // If not a loopback, skip this check.
+    if (!localInterfaces.includes(hostname)) return null;
+    if (isNaN(port)) return "Invalid URL: Port is not specified or invalid";
+
+    const isPortAvailableFromDocker = await isPortInUse(port, hostname);
+    if (isPortAvailableFromDocker)
+      return "Port is not running a reachable service on loopback address from inside the AnythingLLM container. Please use host.docker.internal (for linux use 172.17.0.1), a real machine ip, or domain to connect to your service.";
+  } catch (error) {
+    console.error(error.message);
+    return "An error occurred while validating the URL";
+  }
+
+  return null;
+}
+
+function validHuggingFaceEndpoint(input = "") {
+  return input.slice(-6) !== ".cloud"
+    ? `Your HF Endpoint should end in ".cloud"`
+    : null;
+}
+
+// When toggling between model providers there is no reason to have the Background AnythingLLMOllama
+// service running since its just extra overhead for nothing. So we can send a pkill or boot
+// to the main thread.
+async function manageOllamaService(_key, prev, next) {
+  if (prev === next) return;
+  if (prev !== "anythingllm_ollama" && next !== "anythingllm_ollama") return;
+
+  const { AnythingLLMOllama } = require("../AiProviders/anythingLLM");
+  const anythingLLMOllama = new AnythingLLMOllama();
+  if (next !== "anythingllm_ollama") {
+    await anythingLLMOllama.kill();
+    return;
+  }
+
+  if (next === "anythingllm_ollama") {
+    await anythingLLMOllama.bootOrContinue();
+    return;
+  }
+}
+
 // This will force update .env variables which for any which reason were not able to be parsed or
 // read from an ENV file as this seems to be a complicating step for many so allowing people to write
 // to the process will at least alleviate that issue. It does not perform comprehensive validity checks or sanity checks
 // and is simply for debugging when the .env not found issue many come across.
-function updateENV(newENVs = {}, force = false) {
+async function updateENV(newENVs = {}, force = false, userId = null) {
   let error = "";
   const validKeys = Object.keys(KEY_MAPPING);
   const ENV_KEYS = Object.keys(newENVs).filter(
@@ -253,23 +519,48 @@ function updateENV(newENVs = {}, force = false) {
   );
   const newValues = {};
 
-  ENV_KEYS.forEach((key) => {
-    const { envKey, checks } = KEY_MAPPING[key];
-    const value = newENVs[key];
-    const errors = checks
-      .map((validityCheck) => validityCheck(value, force))
-      .filter((err) => typeof err === "string");
+  for (const key of ENV_KEYS) {
+    const { envKey, checks, postUpdate = [] } = KEY_MAPPING[key];
+    const prevValue = process.env[envKey];
+    const nextValue = newENVs[key];
 
+    const errors = await executeValidationChecks(checks, nextValue, force);
     if (errors.length > 0) {
       error += errors.join("\n");
-      return;
+      break;
     }
 
-    newValues[key] = value;
-    process.env[envKey] = value;
-  });
+    newValues[key] = nextValue;
+    process.env[envKey] = nextValue;
 
+    for (const postUpdateFunc of postUpdate)
+      await postUpdateFunc(key, prevValue, nextValue);
+  }
+
+  await logChangesToEventLog(newValues, userId);
   return { newValues, error: error?.length > 0 ? error : false };
+}
+
+async function executeValidationChecks(checks, value, force) {
+  const results = await Promise.all(
+    checks.map((validator) => validator(value, force))
+  );
+  return results.filter((err) => typeof err === "string");
+}
+
+async function logChangesToEventLog(newValues = {}, userId = null) {
+  const { EventLogs } = require("../../models/eventLogs");
+  const eventMapping = {
+    LLMProvider: "update_llm_provider",
+    EmbeddingEngine: "update_embedding_engine",
+    VectorDB: "update_vector_db",
+  };
+
+  for (const [key, eventName] of Object.entries(eventMapping)) {
+    if (!newValues.hasOwnProperty(key)) continue;
+    await EventLogs.logEvent(eventName, {}, userId);
+  }
+  return;
 }
 
 async function dumpENV() {
@@ -282,7 +573,37 @@ async function dumpENV() {
     "STORAGE_DIR",
     "SERVER_PORT",
     "COLLECTOR_PORT",
+    // Password Schema Keys if present.
+    "PASSWORDMINCHAR",
+    "PASSWORDMAXCHAR",
+    "PASSWORDLOWERCASE",
+    "PASSWORDUPPERCASE",
+    "PASSWORDNUMERIC",
+    "PASSWORDSYMBOL",
+    "PASSWORDREQUIREMENTS",
+    // HTTPS SETUP KEYS
+    "ENABLE_HTTPS",
+    "HTTPS_CERT_PATH",
+    "HTTPS_KEY_PATH",
+    // DISABLED TELEMETRY
+    "DISABLE_TELEMETRY",
+
+    // Agent Integrations
+    // Search engine integrations
+    "AGENT_GSE_CTX",
+    "AGENT_GSE_KEY",
+    "AGENT_SERPER_DEV_KEY",
   ];
+
+  // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
+  function sanitizeValue(value) {
+    const offendingChars =
+      /[\n\r\t\v\f\u0085\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000"'`#]/;
+    const firstOffendingCharIndex = value.search(offendingChars);
+    if (firstOffendingCharIndex === -1) return value;
+
+    return value.substring(0, firstOffendingCharIndex);
+  }
 
   for (const key of protectedKeys) {
     const envValue = process.env?.[key] || null;
@@ -292,12 +613,12 @@ async function dumpENV() {
 
   var envResult = `# Auto-dump ENV from system call on ${new Date().toTimeString()}\n`;
   envResult += Object.entries(frozenEnvs)
-    .map(([key, value]) => {
-      return `${key}='${value}'`;
-    })
+    .map(([key, value]) => `${key}='${sanitizeValue(value)}'`)
     .join("\n");
 
-  const envPath = process.env.STORAGE_DIR ? path.join(process.env.STORAGE_DIR, ".env") : path.join(__dirname, "../../.env");
+  const envPath = process.env.STORAGE_DIR
+    ? path.join(process.env.STORAGE_DIR, ".env")
+    : path.join(__dirname, "../../.env");
   fs.writeFileSync(envPath, envResult, { encoding: "utf8", flag: "w" });
   return true;
 }

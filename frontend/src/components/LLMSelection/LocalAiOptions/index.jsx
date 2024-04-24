@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { Info } from "@phosphor-icons/react";
-import paths from "../../../utils/paths";
-import System from "../../../models/system";
+import paths from "@/utils/paths";
+import System from "@/models/system";
 import { Link } from "react-router-dom";
 
 export default function LocalAiOptions({ settings, showAlert = false }) {
   const [basePathValue, setBasePathValue] = useState(settings?.LocalAiBasePath);
   const [basePath, setBasePath] = useState(settings?.LocalAiBasePath);
+  const [apiKeyValue, setApiKeyValue] = useState(settings?.LocalAiApiKey);
+  const [apiKey, setApiKey] = useState(settings?.LocalAiApiKey);
   function updateBasePath() {
     setBasePath(basePathValue);
   }
@@ -23,7 +25,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             </p>
           </div>
           <Link
-            to={paths.settings.embeddingPreference()}
+            to={paths.settings.embedder.modelPreference()}
             className="text-sm md:text-base my-2 underline"
           >
             Manage embedding &rarr;
@@ -38,31 +40,61 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
           <input
             type="url"
             name="LocalAiBasePath"
-            className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="http://localhost:1234/v1"
             defaultValue={settings?.LocalAiBasePath}
             required={true}
             autoComplete="off"
             spellCheck={false}
             onChange={(e) => setBasePathValue(e.target.value)}
-            onBlur={updateBasePath}
+            onBlur={() => setBasePath(basePathValue)}
           />
         </div>
-        <LocalAIModelSelection settings={settings} basePath={basePath} />
+        {!settings?.credentialsOnly && (
+          <>
+            <LocalAIModelSelection
+              settings={settings}
+              basePath={basePath}
+              apiKey={apiKey}
+            />
+            <div className="flex flex-col w-60">
+              <label className="text-white text-sm font-semibold block mb-4">
+                Token context window
+              </label>
+              <input
+                type="number"
+                name="LocalAiTokenLimit"
+                className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                placeholder="4096"
+                min={1}
+                onScroll={(e) => e.target.blur()}
+                defaultValue={settings?.LocalAiTokenLimit}
+                required={true}
+                autoComplete="off"
+              />
+            </div>
+          </>
+        )}
+      </div>
+      <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Token context window
-          </label>
+          <div className="flex flex-col gap-y-1 mb-4">
+            <label className="text-white text-sm font-semibold flex items-center gap-x-2">
+              Local AI API Key{" "}
+              <p className="!text-xs !italic !font-thin">optional</p>
+            </label>
+          </div>
+
           <input
-            type="number"
-            name="LocalAiTokenLimit"
-            className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="4096"
-            min={1}
-            onScroll={(e) => e.target.blur()}
-            defaultValue={settings?.LocalAiTokenLimit}
-            required={true}
+            type="password"
+            name="LocalAiApiKey"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            placeholder="sk-mysecretkey"
+            defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
             autoComplete="off"
+            spellCheck={false}
+            onChange={(e) => setApiKeyValue(e.target.value)}
+            onBlur={() => setApiKey(apiKeyValue)}
           />
         </div>
       </div>
@@ -70,7 +102,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
   );
 }
 
-function LocalAIModelSelection({ settings, basePath = null }) {
+function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -82,12 +114,16 @@ function LocalAIModelSelection({ settings, basePath = null }) {
         return;
       }
       setLoading(true);
-      const { models } = await System.customModels("localai", null, basePath);
+      const { models } = await System.customModels(
+        "localai",
+        typeof apiKey === "boolean" ? null : apiKey,
+        basePath
+      );
       setCustomModels(models || []);
       setLoading(false);
     }
     findCustomModels();
-  }, [basePath]);
+  }, [basePath, apiKey]);
 
   if (loading || customModels.length == 0) {
     return (
@@ -98,7 +134,7 @@ function LocalAIModelSelection({ settings, basePath = null }) {
         <select
           name="LocalAiModelPref"
           disabled={true}
-          className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
@@ -118,7 +154,7 @@ function LocalAIModelSelection({ settings, basePath = null }) {
       <select
         name="LocalAiModelPref"
         required={true}
-        className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">

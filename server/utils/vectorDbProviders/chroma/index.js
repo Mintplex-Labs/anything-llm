@@ -1,8 +1,15 @@
 const { ChromaClient } = require("chromadb");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
+const { TextSplitter } = require("../../TextSplitter");
+const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
-const { toChunks, getLLMProvider } = require("../../helpers");
+const {
+  toChunks,
+  getLLMProvider,
+  getEmbeddingEngineSelection,
+} = require("../../helpers");
+const { parseAuthHeader } = require("../../http");
+const { sourceIdentifier } = require("../../chats");
 
 const Chroma = {
   name: "Chroma",
@@ -15,10 +22,10 @@ const Chroma = {
       ...(!!process.env.CHROMA_API_HEADER && !!process.env.CHROMA_API_KEY
         ? {
             fetchOptions: {
-              headers: {
-                [process.env.CHROMA_API_HEADER || "X-Api-Key"]:
-                  process.env.CHROMA_API_KEY,
-              },
+              headers: parseAuthHeader(
+                process.env.CHROMA_API_HEADER || "X-Api-Key",
+                process.env.CHROMA_API_KEY
+              ),
             },
           }
         : {}),
@@ -63,7 +70,9 @@ const Chroma = {
     client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const collection = await client.getCollection({ name: namespace });
     const result = {
@@ -74,7 +83,7 @@ const Chroma = {
 
     const response = await collection.query({
       queryEmbeddings: queryVector,
-      nResults: 4,
+      nResults: topN,
     });
     response.ids[0].forEach((_, i) => {
       if (
@@ -82,6 +91,15 @@ const Chroma = {
         similarityThreshold
       )
         return;
+
+      if (
+        filterIdentifiers.includes(sourceIdentifier(response.metadatas[0][i]))
+      ) {
+        console.log(
+          "Chroma: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
       result.contextTexts.push(response.documents[0][i]);
       result.sourceDocuments.push(response.metadatas[0][i]);
       result.scores.push(this.distanceToSimilarity(response.distances[0][i]));
@@ -167,16 +185,24 @@ const Chroma = {
         }
 
         await DocumentVectors.bulkInsert(documentVectors);
-        return true;
+        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.
       // We have to do this manually as opposed to using LangChains `Chroma.fromDocuments`
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
-      const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1000,
-        chunkOverlap: 20,
+      const textSplitter = new TextSplitter({
+        chunkSize: TextSplitter.determineMaxChunkSize(
+          await SystemSettings.getValueOrFallback({
+            label: "text_splitter_chunk_size",
+          }),
+          getEmbeddingEngineSelection()?.embeddingMaxChunkLength
+        ),
+        chunkOverlap: await SystemSettings.getValueOrFallback(
+          { label: "text_splitter_chunk_overlap" },
+          20
+        ),
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
@@ -237,11 +263,10 @@ const Chroma = {
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
-      return true;
+      return { vectorized: true, error: null };
     } catch (e) {
-      console.error(e);
       console.error("addDocumentToNamespace", e.message);
-      return false;
+      return { vectorized: false, error: e.message };
     }
   },
   deleteDocumentFromNamespace: async function (namespace, docId) {
@@ -267,6 +292,8 @@ const Chroma = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -285,7 +312,9 @@ const Chroma = {
       client,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

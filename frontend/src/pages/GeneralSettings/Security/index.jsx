@@ -1,23 +1,20 @@
 import { useEffect, useState } from "react";
-import Sidebar, {
-} from "../../../components/SettingsSidebar";
-import showToast from "../../../utils/toast";
-import System from "../../../models/system";
-import paths from "../../../utils/paths";
-import {
-  AUTH_TIMESTAMP,
-  AUTH_TOKEN,
-  AUTH_USER,
-} from "../../../utils/constants";
-import PreLoader from "../../../components/Preloader";
+import Sidebar from "@/components/SettingsSidebar";
+import showToast from "@/utils/toast";
+import System from "@/models/system";
+import paths from "@/utils/paths";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import PreLoader from "@/components/Preloader";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function GeneralSecurity() {
   return (
-    <div style={{ height: 'calc(100vh - 40px)' }} className="w-screen overflow-hidden bg-sidebar flex">
+    <div
+      style={{ height: "calc(100vh - 32px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex"
+    >
       <Sidebar />
-      <div
-        className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
-      >
+      <div className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-2 border-outline">
         <MultiUserMode />
         <PasswordProtection />
       </div>
@@ -35,7 +32,7 @@ function MultiUserMode() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-
+    setHasChanges(false);
     if (useMultiUserMode) {
       const form = new FormData(e.target);
       const data = {
@@ -74,7 +71,7 @@ function MultiUserMode() {
 
   if (loading) {
     return (
-      <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] p-[18px] h-full overflow-y-scroll">
+      <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[16px] p-[18px] h-full overflow-y-scroll">
         <div className="w-full h-full flex justify-center items-center">
           <PreLoader />
         </div>
@@ -86,27 +83,30 @@ function MultiUserMode() {
     <form
       onSubmit={handleSubmit}
       onChange={() => setHasChanges(true)}
-      className="flex w-full"
+      className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16"
     >
-      <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
-        <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+      <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+        <div className="w-full flex flex-col gap-y-1">
           <div className="items-center flex gap-x-4">
-            <p className="text-2xl font-semibold text-white">Multi-User Mode</p>
-            {hasChanges && (
-              <button
-                type="submit"
-                disabled={saving}
-                className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
-              >
-                {saving ? "Saving..." : "Save changes"}
-              </button>
-            )}
+            <p className="text-lg leading-6 font-bold text-white">
+              Multi-User Mode
+            </p>
           </div>
-          <p className="text-sm font-base text-white text-opacity-60">
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
             Set up your instance to support your team by activating Multi-User
             Mode.
           </p>
         </div>
+        {hasChanges && (
+          <div className="flex justify-end">
+            <CTAButton
+              onClick={() => handleSubmit()}
+              className="mt-3 mr-0 -mb-20 z-10"
+            >
+              {saving ? "Saving..." : "Save changes"}
+            </CTAButton>
+          </div>
+        )}
         <div className="relative w-full max-h-full">
           <div className="relative rounded-lg">
             <div className="flex items-start justify-between px-6 py-4"></div>
@@ -144,7 +144,7 @@ function MultiUserMode() {
                       <input
                         name="username"
                         type="text"
-                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
+                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder:text-white/20 focus:ring-blue-500"
                         placeholder="Your admin username"
                         minLength={2}
                         required={true}
@@ -163,7 +163,7 @@ function MultiUserMode() {
                       <input
                         name="password"
                         type="text"
-                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
+                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder:text-white/20 focus:ring-blue-500"
                         placeholder="Your admin password"
                         minLength={8}
                         required={true}
@@ -201,6 +201,7 @@ function PasswordProtection() {
     if (multiUserModeEnabled) return false;
 
     setSaving(true);
+    setHasChanges(false);
     const form = new FormData(e.target);
     const data = {
       usePassword,
@@ -238,7 +239,7 @@ function PasswordProtection() {
 
   if (loading) {
     return (
-      <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] p-[18px] h-full overflow-y-scroll">
+      <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[16px] p-[18px] h-full overflow-y-scroll">
         <div className="w-full h-full flex justify-center items-center">
           <PreLoader />
         </div>
@@ -251,29 +252,30 @@ function PasswordProtection() {
     <form
       onSubmit={handleSubmit}
       onChange={() => setHasChanges(true)}
-      className="flex w-full"
+      className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16"
     >
-      <div className="flex flex-col w-full px-1 md:px-20 md:py-12 py-16">
-        <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+      <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
+        <div className="w-full flex flex-col gap-y-1">
           <div className="items-center flex gap-x-4">
-            <p className="text-2xl font-semibold text-white">
+            <p className="text-lg leading-6 font-bold text-white">
               Password Protection
             </p>
-            {hasChanges && (
-              <button
-                type="submit"
-                disabled={saving}
-                className="border border-slate-200 px-4 py-1 rounded-lg text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800"
-              >
-                {saving ? "Saving..." : "Save changes"}
-              </button>
-            )}
           </div>
-          <p className="text-sm font-base text-white text-opacity-60">
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
             Protect your AnythingLLM instance with a password. If you forget
             this there is no recovery method so ensure you save this password.
           </p>
         </div>
+        {hasChanges && (
+          <div className="flex justify-end">
+            <CTAButton
+              onClick={() => handleSubmit()}
+              className="mt-3 mr-0 -mb-20 z-10"
+            >
+              {saving ? "Saving..." : "Save changes"}
+            </CTAButton>
+          </div>
+        )}
         <div className="relative w-full max-h-full">
           <div className="relative rounded-lg">
             <div className="flex items-start justify-between px-6 py-4"></div>
@@ -306,7 +308,7 @@ function PasswordProtection() {
                       <input
                         name="password"
                         type="text"
-                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder-white placeholder-opacity-60 focus:ring-blue-500"
+                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder:text-white/20 focus:ring-blue-500"
                         placeholder="Your Instance Password"
                         minLength={8}
                         required={true}

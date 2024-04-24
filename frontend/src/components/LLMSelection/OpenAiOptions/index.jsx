@@ -9,7 +9,7 @@ export default function OpenAiOptions({ settings }) {
   }
 
   return (
-    <>
+    <div className="flex gap-x-4">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-4">
           API Key
@@ -17,7 +17,7 @@ export default function OpenAiOptions({ settings }) {
         <input
           type="password"
           name="OpenAiKey"
-          className="border-none bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
           placeholder="OpenAI API Key"
           defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
           required={true}
@@ -27,28 +27,34 @@ export default function OpenAiOptions({ settings }) {
           onBlur={updateOpenAiKey}
         />
       </div>
-      <OpenAIModelSelection settings={settings} apiKey={openAIKey} />
-    </>
+      {!settings?.credentialsOnly && (
+        <OpenAIModelSelection settings={settings} apiKey={openAIKey} />
+      )}
+    </div>
   );
 }
 
 function OpenAIModelSelection({ apiKey, settings }) {
-  const [customModels, setCustomModels] = useState([]);
+  const [groupedModels, setGroupedModels] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function findCustomModels() {
-      if (!apiKey) {
-        setCustomModels([]);
-        setLoading(false);
-        return;
-      }
       setLoading(true);
       const { models } = await System.customModels(
         "openai",
         typeof apiKey === "boolean" ? null : apiKey
       );
-      setCustomModels(models || []);
+
+      if (models?.length > 0) {
+        const modelsByOrganization = models.reduce((acc, model) => {
+          acc[model.organization] = acc[model.organization] || [];
+          acc[model.organization].push(model);
+          return acc;
+        }, {});
+        setGroupedModels(modelsByOrganization);
+      }
+
       setLoading(false);
     }
     findCustomModels();
@@ -63,7 +69,7 @@ function OpenAIModelSelection({ apiKey, settings }) {
         <select
           name="OpenAiModelPref"
           disabled={true}
-          className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available models --
@@ -81,38 +87,23 @@ function OpenAIModelSelection({ apiKey, settings }) {
       <select
         name="OpenAiModelPref"
         required={true}
-        className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
-        <optgroup label="General LLM models">
-          {["gpt-3.5-turbo", "gpt-4", "gpt-4-1106-preview", "gpt-4-32k"].map(
-            (model) => {
-              return (
-                <option
-                  key={model}
-                  value={model}
-                  selected={settings.OpenAiModelPref === model}
-                >
-                  {model}
-                </option>
-              );
-            }
-          )}
-        </optgroup>
-        {customModels.length > 0 && (
-          <optgroup label="Your fine-tuned models">
-            {customModels.map((model) => {
-              return (
+        {Object.keys(groupedModels)
+          .sort()
+          .map((organization) => (
+            <optgroup key={organization} label={organization}>
+              {groupedModels[organization].map((model) => (
                 <option
                   key={model.id}
                   value={model.id}
-                  selected={settings.OpenAiModelPref === model.id}
+                  selected={settings?.OpenAiModelPref === model.id}
                 >
-                  {model.id}
+                  {model.name}
                 </option>
-              );
-            })}
-          </optgroup>
-        )}
+              ))}
+            </optgroup>
+          ))}
       </select>
     </div>
   );

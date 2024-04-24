@@ -1,8 +1,10 @@
+const { EventLogs } = require("../../../models/eventLogs");
 const { Invite } = require("../../../models/invite");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { User } = require("../../../models/user");
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
+const { canModifyAdmin } = require("../../../utils/helpers/admin");
 const { multiUserMode, reqBody } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 
@@ -198,23 +200,13 @@ function apiAdminEndpoints(app) {
       const { id } = request.params;
       const updates = reqBody(request);
       const user = await User.get({ id: Number(id) });
+      const validAdminRoleModification = await canModifyAdmin(user, updates);
 
-      // Check to make sure with this update that includes a role change to
-      // something other than admin that we still have at least one admin left.
-      if (
-        updates.hasOwnProperty("role") && // has admin prop to change
-        updates.role !== "admin" && // and we are changing to non-admin
-        user.role === "admin" // and they currently are an admin
-      ) {
-        const adminCount = await User.count({ role: "admin" });
-        if (adminCount - 1 <= 0) {
-          response.status(200).json({
-            success: false,
-            error:
-              "No system admins will remain if you do this. Update failed.",
-          });
-          return;
-        }
+      if (!validAdminRoleModification.valid) {
+        response
+          .status(200)
+          .json({ success: false, error: validAdminRoleModification.error });
+        return;
       }
 
       const { success, error } = await User.update(id, updates);
@@ -268,7 +260,11 @@ function apiAdminEndpoints(app) {
         }
 
         const { id } = request.params;
-        await User.delete({ id });
+        const user = await User.get({ id: Number(id) });
+        await User.delete({ id: user.id });
+        await EventLogs.logEvent("api_user_deleted", {
+          userName: user.username,
+        });
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.error(e);
@@ -327,6 +323,18 @@ function apiAdminEndpoints(app) {
     /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Create a new invite code for someone to use to register with instance. Methods are disabled until multi user mode is enabled via the UI.'
+    #swagger.requestBody = {
+        description: 'Request body for creation parameters of the invitation',
+        required: false,
+        type: 'object',
+        content: {
+          "application/json": {
+            example: {
+              workspaceIds: [1,2,45],
+            }
+          }
+        }
+      }
     #swagger.responses[200] = {
       content: {
         "application/json": {
@@ -359,7 +367,10 @@ function apiAdminEndpoints(app) {
         return;
       }
 
-      const { invite, error } = await Invite.create();
+      const body = reqBody(request);
+      const { invite, error } = await Invite.create({
+        workspaceIds: body?.workspaceIds ?? [],
+      });
       response.status(200).json({ invite, error });
     } catch (e) {
       console.error(e);
@@ -524,15 +535,8 @@ function apiAdminEndpoints(app) {
         "$ref": "#/definitions/InvalidAPIKey"
       }
     }
-     #swagger.responses[401] = {
-      description: "Instance is not in Multi-User mode. Method denied",
-    }
     */
       try {
-        if (!multiUserMode(response)) {
-          response.sendStatus(401).end();
-          return;
-        }
         const pgSize = 20;
         const { offset = 0 } = reqBody(request);
         const chats = await WorkspaceChats.whereWithData(

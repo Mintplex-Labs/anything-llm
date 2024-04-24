@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http:///api/"
+      "url": "/api"
     }
   ],
   "paths": {
@@ -489,6 +489,22 @@
           "500": {
             "description": "Internal Server Error"
           }
+        },
+        "requestBody": {
+          "description": "Request body for creation parameters of the invitation",
+          "required": false,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "workspaceIds": [
+                  1,
+                  2,
+                  45
+                ]
+              }
+            }
+          }
         }
       }
     },
@@ -664,9 +680,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Instance is not in Multi-User mode. Method denied"
           },
           "403": {
             "description": "Forbidden",
@@ -848,7 +861,22 @@
                   "type": "object",
                   "example": {
                     "success": true,
-                    "error": null
+                    "error": null,
+                    "documents": [
+                      {
+                        "location": "custom-documents/anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                        "name": "anythingllm.txt-6e8be64c-c162-4b43-9997-b068c0071e8b.json",
+                        "url": "file://Users/tim/Documents/anything-llm/collector/hotdir/anythingllm.txt",
+                        "title": "anythingllm.txt",
+                        "docAuthor": "Unknown",
+                        "description": "Unknown",
+                        "docSource": "a text file uploaded by the user.",
+                        "chunkSource": "anythingllm.txt",
+                        "published": "1/16/2024, 3:07:00 PM",
+                        "wordCount": 93,
+                        "token_count_estimate": 115
+                      }
+                    ]
                   }
                 }
               }
@@ -885,6 +913,178 @@
                   "file": {
                     "type": "string",
                     "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/document/upload-link": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Upload a valid URL for AnythingLLM to scrape and prepare for embedding.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null,
+                    "documents": [
+                      {
+                        "id": "c530dbe6-bff1-4b9e-b87f-710d539d20bc",
+                        "url": "file://useanything_com.html",
+                        "title": "useanything_com.html",
+                        "docAuthor": "no author found",
+                        "description": "No description found.",
+                        "docSource": "URL link uploaded by the user.",
+                        "chunkSource": "https:useanything.com.html",
+                        "published": "1/16/2024, 3:46:33 PM",
+                        "wordCount": 252,
+                        "pageContent": "AnythingLLM is the best....",
+                        "token_count_estimate": 447,
+                        "location": "custom-documents/url-useanything_com-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Link of web address to be scraped.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "link": "https://useanything.com"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/document/raw-text": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Upload a file by specifying its raw text content and metadata values without having to upload a file.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "error": null,
+                    "documents": [
+                      {
+                        "id": "c530dbe6-bff1-4b9e-b87f-710d539d20bc",
+                        "url": "file://my-document.txt",
+                        "title": "hello-world.txt",
+                        "docAuthor": "no author found",
+                        "description": "No description found.",
+                        "docSource": "My custom description set during upload",
+                        "chunkSource": "no chunk source specified",
+                        "published": "1/16/2024, 3:46:33 PM",
+                        "wordCount": 252,
+                        "pageContent": "AnythingLLM is the best....",
+                        "token_count_estimate": 447,
+                        "location": "custom-documents/raw-my-doc-text-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Text content and metadata of the file to be saved to the system. Use metadata-schema endpoint to get the possible metadata keys",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
+                  "metadata": {
+                    "keyOne": "valueOne",
+                    "keyTwo": "valueTwo",
+                    "etc": "etc"
                   }
                 }
               }
@@ -1022,6 +1222,273 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/document/metadata-schema": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Get the known available metadata schema for when doing a raw-text upload and the acceptable type of value for each key.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "schema": {
+                      "keyOne": "string | number | nullable",
+                      "keyTwo": "string | number | nullable",
+                      "specialKey": "number",
+                      "title": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/document/{docName}": {
+      "get": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Get a single document by its unique AnythingLLM document name",
+        "parameters": [
+          {
+            "name": "docName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique document name to find (name in /documents)"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "localFiles": {
+                      "name": "documents",
+                      "type": "folder",
+                      "items": [
+                        {
+                          "name": "my-stored-document.txt-uuid1234.json",
+                          "type": "file",
+                          "id": "bb07c334-4dab-4419-9462-9d00065a49a1",
+                          "url": "file://my-stored-document.txt",
+                          "title": "my-stored-document.txt",
+                          "cached": false
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/document/create-folder": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Create a new folder inside the documents storage directory.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "message": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Name of the folder to create.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "name": "new-folder"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/document/move-files": {
+      "post": {
+        "tags": [
+          "Documents"
+        ],
+        "description": "Move files within the documents storage directory.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "message": null
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Array of objects containing source and destination paths of files to move.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "files": [
+                    {
+                      "from": "custom-documents/file.txt-fc4beeeb-e436-454d-8bb4-e5b8979cb48f.json",
+                      "to": "folder/file.txt-fc4beeeb-e436-454d-8bb4-e5b8979cb48f.json"
+                    }
+                  ]
+                }
+              }
+            }
           }
         }
       }
@@ -1521,9 +1988,11 @@
           "content": {
             "application/json": {
               "example": {
-                "adds": [],
+                "adds": [
+                  "custom-documents/my-pdf.pdf-hash.json"
+                ],
                 "deletes": [
-                  "custom-documents/anythingllm-hash.json"
+                  "custom-documents/anythingllm.txt-hash.json"
                 ]
               }
             }
@@ -1601,7 +2070,106 @@
           }
         },
         "requestBody": {
-          "description": "prompt to send to the workspace and the type of conversation (query or chat).",
+          "description": "Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "message": "What is AnythingLLM?",
+                "mode": "query | chat"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/workspace/{slug}/stream-chat": {
+      "post": {
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Execute a streamable chat with a workspace",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "array",
+                  "example": [
+                    {
+                      "id": "uuid-123",
+                      "type": "abort | textResponseChunk",
+                      "textResponse": "First chunk",
+                      "sources": [],
+                      "close": false,
+                      "error": "null | text string of the failure mode."
+                    },
+                    {
+                      "id": "uuid-123",
+                      "type": "abort | textResponseChunk",
+                      "textResponse": "chunk two",
+                      "sources": [],
+                      "close": false,
+                      "error": "null | text string of the failure mode."
+                    },
+                    {
+                      "id": "uuid-123",
+                      "type": "abort | textResponseChunk",
+                      "textResponse": "final chunk of LLM output!",
+                      "sources": [
+                        {
+                          "title": "anythingllm.txt",
+                          "chunk": "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."
+                        }
+                      ],
+                      "close": true,
+                      "error": "null | text string of the failure mode."
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.",
           "required": true,
           "type": "object",
           "content": {
@@ -1671,7 +2239,6 @@
                   "example": {
                     "settings": {
                       "VectorDB": "pinecone",
-                      "PineConeEnvironment": "us-west4-gcp-free",
                       "PineConeKey": true,
                       "PineConeIndex": "my-pinecone-index",
                       "LLMProvider": "azure",
@@ -1815,6 +2382,72 @@
                 "AnotherKey": "updatedValue"
               }
             }
+          }
+        }
+      }
+    },
+    "/v1/system/export-chats": {
+      "get": {
+        "tags": [
+          "System Settings"
+        ],
+        "description": "Export all of the chats from the system in a known format. Output depends on the type sent. Will be send with the correct header for the output.",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Export format jsonl, json, csv, jsonAlpaca",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": [
+                    {
+                      "role": "user",
+                      "content": "What is AnythinglLM?"
+                    },
+                    {
+                      "role": "assistant",
+                      "content": "AnythingLLM is a knowledge graph and vector database management system built using NodeJS express server. It provides an interface for handling all interactions, including vectorDB management and LLM (Language Model) interactions."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }

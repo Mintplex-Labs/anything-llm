@@ -1,118 +1,143 @@
-const path = require('path');
+const path = require("path");
 require("dotenv").config({
-  path: process.env.STORAGE_DIR ?
-    `${path.join(process.env.STORAGE_DIR, '.env')}` :
-    `${path.join(__dirname, '.env')}`
-})
+  path: process.env.STORAGE_DIR
+    ? `${path.join(process.env.STORAGE_DIR, ".env")}`
+    : `${path.join(__dirname, ".env")}`,
+});
 
+const { isValidUrl } = require("../utils/http");
 const prisma = require("../utils/prisma");
+
+function isNullOrNaN(value) {
+  if (value === null) return true;
+  return isNaN(value);
+}
+
 const SystemSettings = {
+  protectedFields: ["multi_user_mode"],
   supportedFields: [
-    "multi_user_mode",
     "users_can_delete_workspaces",
     "limit_user_messages",
     "message_limit",
     "logo_filename",
     "telemetry_id",
+    "footer_data",
+    "support_email",
+    "text_splitter_chunk_size",
+    "text_splitter_chunk_overlap",
+    "agent_search_provider",
+    "default_agent_skills",
   ],
+  validations: {
+    footer_data: (updates) => {
+      try {
+        const array = JSON.parse(updates)
+          .filter((setting) => isValidUrl(setting.url))
+          .slice(0, 3); // max of 3 items in footer.
+        return JSON.stringify(array);
+      } catch (e) {
+        console.error(`Failed to run validation function on footer_data`);
+        return JSON.stringify([]);
+      }
+    },
+    text_splitter_chunk_size: (update) => {
+      try {
+        if (isNullOrNaN(update)) throw new Error("Value is not a number.");
+        if (Number(update) <= 0) throw new Error("Value must be non-zero.");
+        return Number(update);
+      } catch (e) {
+        console.error(
+          `Failed to run validation function on text_splitter_chunk_size`,
+          e.message
+        );
+        return 1000;
+      }
+    },
+    text_splitter_chunk_overlap: (update) => {
+      try {
+        if (isNullOrNaN(update)) throw new Error("Value is not a number");
+        if (Number(update) < 0) throw new Error("Value cannot be less than 0.");
+        return Number(update);
+      } catch (e) {
+        console.error(
+          `Failed to run validation function on text_splitter_chunk_overlap`,
+          e.message
+        );
+        return 20;
+      }
+    },
+    agent_search_provider: (update) => {
+      try {
+        if (!["google-search-engine", "serper-dot-dev"].includes(update))
+          throw new Error("Invalid SERP provider.");
+        return String(update);
+      } catch (e) {
+        console.error(
+          `Failed to run validation function on agent_search_provider`,
+          e.message
+        );
+        return null;
+      }
+    },
+    default_agent_skills: (updates) => {
+      try {
+        const skills = updates.split(",").filter((skill) => !!skill);
+        return JSON.stringify(skills);
+      } catch (e) {
+        console.error(`Could not validate agent skills.`);
+        return JSON.stringify([]);
+      }
+    },
+  },
   currentSettings: async function () {
-    const llmProvider = process.env.LLM_PROVIDER || "openai";
-    const vectorDB = process.env.VECTOR_DB || "pinecone";
+    const llmProvider = process.env.LLM_PROVIDER;
+    const vectorDB = process.env.VECTOR_DB;
     return {
-      CanDebug: !!!process.env.NO_DEBUG,
+      // --------------------------------------------------------
+      // General Settings
+      // --------------------------------------------------------
       RequiresAuth: !!process.env.AUTH_TOKEN,
       AuthToken: !!process.env.AUTH_TOKEN,
       JWTSecret: !!process.env.JWT_SECRET,
       StorageDir: process.env.STORAGE_DIR,
       MultiUserMode: await this.isMultiUserMode(),
-      VectorDB: vectorDB,
-      HasExistingEmbeddings: await this.hasEmbeddings(),
+      DisableTelemetry: process.env.DISABLE_TELEMETRY || "false",
+
+      // --------------------------------------------------------
+      // Embedder Provider Selection Settings & Configs
+      // --------------------------------------------------------
       EmbeddingEngine: process.env.EMBEDDING_ENGINE,
+      HasExistingEmbeddings: await this.hasEmbeddings(),
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-      ...(vectorDB === "pinecone"
-        ? {
-          PineConeEnvironment: process.env.PINECONE_ENVIRONMENT,
-          PineConeKey: !!process.env.PINECONE_API_KEY,
-          PineConeIndex: process.env.PINECONE_INDEX,
-        }
-        : {}),
-      ...(vectorDB === "chroma"
-        ? {
-          ChromaEndpoint: process.env.CHROMA_ENDPOINT,
-          ChromaApiHeader: process.env.CHROMA_API_HEADER,
-          ChromaApiKey: !!process.env.CHROMA_API_KEY,
-        }
-        : {}),
-      ...(vectorDB === "weaviate"
-        ? {
-          WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
-          WeaviateApiKey: process.env.WEAVIATE_API_KEY,
-        }
-        : {}),
-      ...(vectorDB === "qdrant"
-        ? {
-          QdrantEndpoint: process.env.QDRANT_ENDPOINT,
-          QdrantApiKey: process.env.QDRANT_API_KEY,
-        }
-        : {}),
+      EmbeddingModelMaxChunkLength:
+        process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
+
+      // --------------------------------------------------------
+      // VectorDB Provider Selection Settings & Configs
+      // --------------------------------------------------------
+      VectorDB: vectorDB,
+      ...this.vectorDBPreferenceKeys(),
+
+      // --------------------------------------------------------
+      // LLM Provider Selection Settings & Configs
+      // --------------------------------------------------------
       LLMProvider: llmProvider,
-      ...(llmProvider === "openai"
-        ? {
-          OpenAiKey: !!process.env.OPEN_AI_KEY,
-          OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
-        }
-        : {}),
+      ...this.llmPreferenceKeys(),
 
-      ...(llmProvider === "azure"
-        ? {
-          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-          AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
-          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-          AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
-        }
-        : {}),
+      // --------------------------------------------------------
+      // Whisper (Audio transcription) Selection Settings & Configs
+      // - Currently the only 3rd party is OpenAI, so is OPEN_AI_KEY is set
+      // - then it can be shared.
+      // --------------------------------------------------------
+      WhisperProvider: process.env.WHISPER_PROVIDER || "local",
 
-      ...(llmProvider === "anthropic"
-        ? {
-          AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
-          AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
-
-          // For embedding credentials when Anthropic is selected.
-          OpenAiKey: !!process.env.OPEN_AI_KEY,
-          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-        }
-        : {}),
-
-      ...(llmProvider === "lmstudio"
-        ? {
-          LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
-          LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
-
-          // For embedding credentials when lmstudio is selected.
-          OpenAiKey: !!process.env.OPEN_AI_KEY,
-          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-        }
-        : {}),
-
-      ...(llmProvider === "localai"
-        ? {
-          LocalAiBasePath: process.env.LOCAL_AI_BASE_PATH,
-          LocalAiModelPref: process.env.LOCAL_AI_MODEL_PREF,
-          LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
-
-          // For embedding credentials when localai is selected.
-          OpenAiKey: !!process.env.OPEN_AI_KEY,
-          AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
-          AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
-          AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
-        }
-        : {}),
+      // --------------------------------------------------------
+      // Agent Settings & Configs
+      // --------------------------------------------------------
+      AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
+      AgentGoogleSearchEngineKey: process.env.AGENT_GSE_KEY || null,
+      AgentSerperApiKey: process.env.AGENT_SERPER_DEV_KEY || null,
     };
   },
 
@@ -123,6 +148,15 @@ const SystemSettings = {
     } catch (error) {
       console.error(error.message);
       return null;
+    }
+  },
+
+  getValueOrFallback: async function (clause = {}, fallback = null) {
+    try {
+      return (await this.get(clause))?.value ?? fallback;
+    } catch (error) {
+      console.error(error.message);
+      return fallback;
     }
   },
 
@@ -139,22 +173,43 @@ const SystemSettings = {
     }
   },
 
+  // Can take generic keys and will pre-filter invalid keys
+  // from the set before sending to the explicit update function
+  // that will then enforce validations as well.
   updateSettings: async function (updates = {}) {
+    const validFields = Object.keys(updates).filter((key) =>
+      this.supportedFields.includes(key)
+    );
+
+    Object.entries(updates).forEach(([key]) => {
+      if (validFields.includes(key)) return;
+      delete updates[key];
+    });
+
+    return this._updateSettings(updates);
+  },
+
+  // Explicit update of settings + key validations.
+  // Only use this method when directly setting a key value
+  // that takes no user input for the keys being modified.
+  _updateSettings: async function (updates = {}) {
     try {
-      const updatePromises = Object.keys(updates)
-        .filter((key) => this.supportedFields.includes(key))
-        .map((key) => {
-          return prisma.system_settings.upsert({
-            where: { label: key },
-            update: {
-              value: updates[key] === null ? null : String(updates[key]),
-            },
-            create: {
-              label: key,
-              value: updates[key] === null ? null : String(updates[key]),
-            },
-          });
+      const updatePromises = Object.keys(updates).map((key) => {
+        const validatedValue = this.validations.hasOwnProperty(key)
+          ? this.validations[key](updates[key])
+          : updates[key];
+
+        return prisma.system_settings.upsert({
+          where: { label: key },
+          update: {
+            value: validatedValue === null ? null : String(validatedValue),
+          },
+          create: {
+            label: key,
+            value: validatedValue === null ? null : String(validatedValue),
+          },
         });
+      });
 
       await Promise.all(updatePromises);
       return { success: true, error: null };
@@ -203,6 +258,111 @@ const SystemSettings = {
       console.error(error.message);
       return false;
     }
+  },
+
+  vectorDBPreferenceKeys: function () {
+    return {
+      // Pinecone DB Keys
+      PineConeKey: !!process.env.PINECONE_API_KEY,
+      PineConeIndex: process.env.PINECONE_INDEX,
+
+      // Chroma DB Keys
+      ChromaEndpoint: process.env.CHROMA_ENDPOINT,
+      ChromaApiHeader: process.env.CHROMA_API_HEADER,
+      ChromaApiKey: !!process.env.CHROMA_API_KEY,
+
+      // Weaviate DB Keys
+      WeaviateEndpoint: process.env.WEAVIATE_ENDPOINT,
+      WeaviateApiKey: process.env.WEAVIATE_API_KEY,
+
+      // QDrant DB Keys
+      QdrantEndpoint: process.env.QDRANT_ENDPOINT,
+      QdrantApiKey: process.env.QDRANT_API_KEY,
+
+      // Milvus DB Keys
+      MilvusAddress: process.env.MILVUS_ADDRESS,
+      MilvusUsername: process.env.MILVUS_USERNAME,
+      MilvusPassword: !!process.env.MILVUS_PASSWORD,
+
+      // Zilliz DB Keys
+      ZillizEndpoint: process.env.ZILLIZ_ENDPOINT,
+      ZillizApiToken: process.env.ZILLIZ_API_TOKEN,
+
+      // AstraDB Keys
+      AstraDBApplicationToken: process?.env?.ASTRA_DB_APPLICATION_TOKEN,
+      AstraDBEndpoint: process?.env?.ASTRA_DB_ENDPOINT,
+    };
+  },
+
+  llmPreferenceKeys: function () {
+    return {
+      // AnythingLLM Embedded Ollama service
+      AnythingLLMOllamaModelPref: process.env.ANYTHINGLLM_MODEL_PREF,
+
+      // OpenAI Keys
+      OpenAiKey: !!process.env.OPEN_AI_KEY,
+      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
+
+      // Azure + OpenAI Keys
+      AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
+      AzureOpenAiKey: !!process.env.AZURE_OPENAI_KEY,
+      AzureOpenAiModelPref: process.env.OPEN_MODEL_PREF,
+      AzureOpenAiEmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
+      AzureOpenAiTokenLimit: process.env.AZURE_OPENAI_TOKEN_LIMIT || 4096,
+
+      // Anthropic Keys
+      AnthropicApiKey: !!process.env.ANTHROPIC_API_KEY,
+      AnthropicModelPref: process.env.ANTHROPIC_MODEL_PREF || "claude-2",
+
+      // Gemini Keys
+      GeminiLLMApiKey: !!process.env.GEMINI_API_KEY,
+      GeminiLLMModelPref: process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro",
+
+      // LMStudio Keys
+      LMStudioBasePath: process.env.LMSTUDIO_BASE_PATH,
+      LMStudioTokenLimit: process.env.LMSTUDIO_MODEL_TOKEN_LIMIT,
+      LMStudioModelPref: process.env.LMSTUDIO_MODEL_PREF,
+
+      // LocalAI Keys
+      LocalAiApiKey: !!process.env.LOCAL_AI_API_KEY,
+      LocalAiBasePath: process.env.LOCAL_AI_BASE_PATH,
+      LocalAiModelPref: process.env.LOCAL_AI_MODEL_PREF,
+      LocalAiTokenLimit: process.env.LOCAL_AI_MODEL_TOKEN_LIMIT,
+
+      // Ollama LLM Keys
+      OllamaLLMBasePath: process.env.OLLAMA_BASE_PATH,
+      OllamaLLMModelPref: process.env.OLLAMA_MODEL_PREF,
+      OllamaLLMTokenLimit: process.env.OLLAMA_MODEL_TOKEN_LIMIT,
+
+      // TogetherAI Keys
+      TogetherAiApiKey: !!process.env.TOGETHER_AI_API_KEY,
+      TogetherAiModelPref: process.env.TOGETHER_AI_MODEL_PREF,
+
+      // Perplexity AI Keys
+      PerplexityApiKey: !!process.env.PERPLEXITY_API_KEY,
+      PerplexityModelPref: process.env.PERPLEXITY_MODEL_PREF,
+
+      // OpenRouter Keys
+      OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
+      OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
+
+      // Mistral AI (API) Keys
+      MistralApiKey: !!process.env.MISTRAL_API_KEY,
+      MistralModelPref: process.env.MISTRAL_MODEL_PREF,
+
+      // Groq AI API Keys
+      GroqApiKey: !!process.env.GROQ_API_KEY,
+      GroqModelPref: process.env.GROQ_MODEL_PREF,
+
+      // Native LLM Keys
+      NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
+      NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
+
+      // HuggingFace Dedicated Inference
+      HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
+      HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
+      HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
+    };
   },
 };
 

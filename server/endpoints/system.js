@@ -1,16 +1,12 @@
-const path = require('path');
+const path = require("path");
 require("dotenv").config({
-  path: process.env.STORAGE_DIR ?
-    `${path.join(process.env.STORAGE_DIR, '.env')}` :
-    `${path.join(__dirname, '.env')}`
-})
+  path: process.env.STORAGE_DIR
+    ? `${path.join(process.env.STORAGE_DIR, ".env")}`
+    : `${path.join(__dirname, ".env")}`,
+});
 
 const { viewLocalFiles } = require("../utils/files");
-const {
-  checkProcessorAlive,
-  acceptedFileTypes,
-} = require("../utils/files/documentProcessor");
-const { purgeDocument } = require("../utils/files/purgeDocument");
+const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
 const {
@@ -18,13 +14,13 @@ const {
   makeJWT,
   userFromSession,
   multiUserMode,
+  queryParams,
 } = require("../utils/http");
-const { setupLogoUploads } = require("../utils/files/multer");
+const { handleAssetUpload } = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { handleLogoUploads } = setupLogoUploads();
 const {
   getDefaultFilename,
   determineLogoFilepath,
@@ -39,8 +35,17 @@ const { WelcomeMessages } = require("../models/welcomeMessages");
 const { ApiKey } = require("../models/apiKeys");
 const { getCustomModels } = require("../utils/helpers/customModels");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { Workspace } = require("../models/workspace");
-const { flexUserRoleValid } = require("../utils/middleware/multiUserProtected");
+const {
+  flexUserRoleValid,
+  ROLES,
+} = require("../utils/middleware/multiUserProtected");
+const {
+  prepareWorkspaceChatsForExport,
+  exportChatsAsType,
+} = require("../utils/helpers/chat/convertTo");
+const { EventLogs } = require("../models/eventLogs");
+const { CollectorApi } = require("../utils/collectorApi");
+const { request } = require("http");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -92,11 +97,21 @@ function systemEndpoints(app) {
 
   app.post("/request-token", async (request, response) => {
     try {
+      const bcrypt = require("bcrypt");
+
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-        const existingUser = await User.get({ username });
+        const existingUser = await User.get({ username: String(username) });
 
         if (!existingUser) {
+          await EventLogs.logEvent(
+            "failed_login_invalid_username",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
           response.status(200).json({
             user: null,
             valid: false,
@@ -106,8 +121,15 @@ function systemEndpoints(app) {
           return;
         }
 
-        const bcrypt = require("bcrypt");
-        if (!bcrypt.compareSync(password, existingUser.password)) {
+        if (!bcrypt.compareSync(String(password), existingUser.password)) {
+          await EventLogs.logEvent(
+            "failed_login_invalid_password",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
           response.status(200).json({
             user: null,
             valid: false,
@@ -118,6 +140,14 @@ function systemEndpoints(app) {
         }
 
         if (existingUser.suspended) {
+          await EventLogs.logEvent(
+            "failed_login_account_suspended",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
           response.status(200).json({
             user: null,
             valid: false,
@@ -132,6 +162,16 @@ function systemEndpoints(app) {
           { multiUserMode: false },
           existingUser?.id
         );
+
+        await EventLogs.logEvent(
+          "login_event",
+          {
+            ip: request.ip || "Unknown IP",
+            username: existingUser.username || "Unknown user",
+          },
+          existingUser?.id
+        );
+
         response.status(200).json({
           valid: true,
           user: existingUser,
@@ -144,7 +184,16 @@ function systemEndpoints(app) {
         return;
       } else {
         const { password } = reqBody(request);
-        if (password !== process.env.AUTH_TOKEN) {
+        if (
+          !bcrypt.compareSync(
+            password,
+            bcrypt.hashSync(process.env.AUTH_TOKEN, 10)
+          )
+        ) {
+          await EventLogs.logEvent("failed_login_invalid_password", {
+            ip: request.ip || "Unknown IP",
+            multiUserMode: false,
+          });
           response.status(401).json({
             valid: false,
             token: null,
@@ -154,6 +203,10 @@ function systemEndpoints(app) {
         }
 
         await Telemetry.sendTelemetry("login_event", { multiUserMode: false });
+        await EventLogs.logEvent("login_event", {
+          ip: request.ip || "Unknown IP",
+          multiUserMode: false,
+        });
         response.status(200).json({
           valid: true,
           token: makeJWT({ p: password }, "30d"),
@@ -166,24 +219,31 @@ function systemEndpoints(app) {
     }
   });
 
-  app.get("/system/system-vectors", [validatedRequest], async (_, response) => {
-    try {
-      const VectorDb = getVectorDbClass();
-      const vectorCount = await VectorDb.totalVectors();
-      response.status(200).json({ vectorCount });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+  app.get(
+    "/system/system-vectors",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const query = queryParams(request);
+        const VectorDb = getVectorDbClass();
+        const vectorCount = !!query.slug
+          ? await VectorDb.namespaceCount(query.slug)
+          : await VectorDb.totalVectors();
+        response.status(200).json({ vectorCount });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
 
   app.delete(
     "/system/remove-document",
-    [validatedRequest],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
-        const { name, meta } = reqBody(request);
-        await purgeDocument(name, meta);
+        const { name } = reqBody(request);
+        await purgeDocument(name);
         response.sendStatus(200).end();
       } catch (e) {
         console.log(e.message, e);
@@ -192,22 +252,56 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/local-files", [validatedRequest], async (_, response) => {
-    try {
-      const localFiles = await viewLocalFiles();
-      response.status(200).json({ localFiles });
-    } catch (e) {
-      console.log(e.message, e);
-      response.sendStatus(500).end();
+  app.delete(
+    "/system/remove-documents",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { names } = reqBody(request);
+        for await (const name of names) await purgeDocument(name);
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
     }
-  });
+  );
+
+  app.delete(
+    "/system/remove-folder",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { name } = reqBody(request);
+        await purgeFolder(name);
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/system/local-files",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (_, response) => {
+      try {
+        const localFiles = await viewLocalFiles();
+        response.status(200).json({ localFiles });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 
   app.get(
     "/system/document-processing-status",
     [validatedRequest],
     async (_, response) => {
       try {
-        const online = await checkProcessorAlive();
+        const online = await new CollectorApi().online();
         response.sendStatus(online ? 200 : 503);
       } catch (e) {
         console.log(e.message, e);
@@ -221,7 +315,7 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (_, response) => {
       try {
-        const types = await acceptedFileTypes();
+        const types = await new CollectorApi().acceptedFileTypes();
         if (!types) {
           response.sendStatus(404).end();
           return;
@@ -237,12 +331,16 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/update-env",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
         const body = reqBody(request);
-        const { newValues, error } = updateENV(body);
-        await dumpENV();
+        const { newValues, error } = await updateENV(
+          body,
+          false,
+          response?.locals?.user?.id
+        );
+        if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
         console.log(e.message, e);
@@ -263,14 +361,14 @@ function systemEndpoints(app) {
         }
 
         const { usePassword, newPassword } = reqBody(request);
-        const { error } = updateENV(
+        const { error } = await updateENV(
           {
             AuthToken: usePassword ? newPassword : "",
             JWTSecret: usePassword ? v4() : "",
           },
           true
         );
-        await dumpENV();
+        if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ success: !error, error });
       } catch (e) {
         console.log(e.message, e);
@@ -284,9 +382,7 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const { username, password } = reqBody(request);
-        const multiUserModeEnabled = await SystemSettings.isMultiUserMode();
-        if (multiUserModeEnabled) {
+        if (response.locals.multiUserMode) {
           response.status(200).json({
             success: false,
             error: "Multi-user mode is already enabled.",
@@ -294,33 +390,35 @@ function systemEndpoints(app) {
           return;
         }
 
+        const { username, password } = reqBody(request);
         const { user, error } = await User.create({
           username,
           password,
-          role: "admin",
+          role: ROLES.admin,
         });
-        await SystemSettings.updateSettings({
+        await SystemSettings._updateSettings({
           multi_user_mode: true,
           users_can_delete_workspaces: false,
           limit_user_messages: false,
           message_limit: 25,
         });
 
-        updateENV(
+        await updateENV(
           {
             AuthToken: "",
             JWTSecret: process.env.JWT_SECRET || v4(),
           },
           true
         );
-        await dumpENV();
+        if (process.env.NODE_ENV === "production") await dumpENV();
         await Telemetry.sendTelemetry("enabled_multi_user_mode", {
           multiUserMode: true,
         });
+        await EventLogs.logEvent("multi_user_mode_enabled", {}, user?.id);
         response.status(200).json({ success: !!user, error });
       } catch (e) {
         await User.delete({});
-        await SystemSettings.updateSettings({
+        await SystemSettings._updateSettings({
           multi_user_mode: false,
         });
 
@@ -330,7 +428,7 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/multi-user-mode", async (request, response) => {
+  app.get("/system/multi-user-mode", async (_, response) => {
     try {
       const multiUserMode = await SystemSettings.isMultiUserMode();
       response.status(200).json({ multiUserMode });
@@ -365,12 +463,27 @@ function systemEndpoints(app) {
     }
   });
 
+  app.get("/system/footer-data", [validatedRequest], async (_, response) => {
+    try {
+      const footerData =
+        (await SystemSettings.get({ label: "footer_data" }))?.value ??
+        JSON.stringify([]);
+      response.status(200).json({ footerData: footerData });
+    } catch (error) {
+      console.error("Error fetching footer data:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.post(
     "/system/upload-logo",
-    [validatedRequest, flexUserRoleValid],
-    handleLogoUploads.single("logo"),
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      handleAssetUpload,
+    ],
     async (request, response) => {
-      if (!request.file || !request.file.originalname) {
+      if (!request?.file || !request?.file.originalname) {
         return response.status(400).json({ message: "No logo file provided." });
       }
 
@@ -385,7 +498,7 @@ function systemEndpoints(app) {
         const existingLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(existingLogoFilename);
 
-        const { success, error } = await SystemSettings.updateSettings({
+        const { success, error } = await SystemSettings._updateSettings({
           logo_filename: newFilename,
         });
 
@@ -401,7 +514,7 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/is-default-logo", async (request, response) => {
+  app.get("/system/is-default-logo", async (_, response) => {
     try {
       const currentLogoFilename = await SystemSettings.currentLogoFilename();
       const isDefaultLogo = currentLogoFilename === LOGO_FILENAME;
@@ -414,12 +527,12 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/remove-logo",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (_request, response) => {
       try {
         const currentLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(currentLogoFilename);
-        const { success, error } = await SystemSettings.updateSettings({
+        const { success, error } = await SystemSettings._updateSettings({
           logo_filename: LOGO_FILENAME,
         });
 
@@ -445,7 +558,7 @@ function systemEndpoints(app) {
         }
 
         const user = await userFromSession(request, response);
-        if (["admin", "manager"].includes(user?.role)) {
+        if ([ROLES.admin, ROLES.manager].includes(user?.role)) {
           return response.status(200).json({ canDelete: true });
         }
 
@@ -462,21 +575,25 @@ function systemEndpoints(app) {
     }
   );
 
-  app.get("/system/welcome-messages", async function (request, response) {
-    try {
-      const welcomeMessages = await WelcomeMessages.getMessages();
-      response.status(200).json({ success: true, welcomeMessages });
-    } catch (error) {
-      console.error("Error fetching welcome messages:", error);
-      response
-        .status(500)
-        .json({ success: false, message: "Internal server error" });
+  app.get(
+    "/system/welcome-messages",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async function (_, response) {
+      try {
+        const welcomeMessages = await WelcomeMessages.getMessages();
+        response.status(200).json({ success: true, welcomeMessages });
+      } catch (error) {
+        console.error("Error fetching welcome messages:", error);
+        response
+          .status(500)
+          .json({ success: false, message: "Internal server error" });
+      }
     }
-  });
+  );
 
   app.post(
     "/system/set-welcome-messages",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { messages = [] } = reqBody(request);
@@ -532,6 +649,12 @@ function systemEndpoints(app) {
         }
 
         const { apiKey, error } = await ApiKey.create();
+        await Telemetry.sendTelemetry("api_key_created");
+        await EventLogs.logEvent(
+          "api_key_created",
+          {},
+          response?.locals?.user?.id
+        );
         return response.status(200).json({
           apiKey,
           error,
@@ -553,6 +676,11 @@ function systemEndpoints(app) {
       }
 
       await ApiKey.delete();
+      await EventLogs.logEvent(
+        "api_key_deleted",
+        { deletedBy: response.locals?.user?.username },
+        response?.locals?.user?.id
+      );
       return response.status(200).end();
     } catch (error) {
       console.error(error);
@@ -583,8 +711,47 @@ function systemEndpoints(app) {
   );
 
   app.post(
+    "/system/event-logs",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (request, response) => {
+      try {
+        const { offset = 0, limit = 20 } = reqBody(request);
+        const logs = await EventLogs.whereWithData({}, limit, offset * limit, {
+          id: "desc",
+        });
+        const totalLogs = await EventLogs.count();
+        const hasPages = totalLogs > (offset + 1) * limit;
+
+        response.status(200).json({ logs: logs, hasPages, totalLogs });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/system/event-logs",
+    [validatedRequest, flexUserRoleValid([ROLES.admin])],
+    async (_, response) => {
+      try {
+        await EventLogs.delete();
+        await EventLogs.logEvent(
+          "event_logs_cleared",
+          {},
+          response?.locals?.user?.id
+        );
+        response.json({ success: true });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
     "/system/workspace-chats",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { offset = 0, limit = 20 } = reqBody(request);
@@ -607,12 +774,12 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/workspace-chats/:id",
-    [validatedRequest, flexUserRoleValid],
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const { id } = request.params;
         await WorkspaceChats.delete({ id: Number(id) });
-        response.status(200).json({ success, error });
+        response.json({ success: true, error: null });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
@@ -622,69 +789,135 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/export-chats",
-    [validatedRequest, flexUserRoleValid],
-    async (_request, response) => {
+    [validatedRequest, flexUserRoleValid([ROLES.manager, ROLES.admin])],
+    async (request, response) => {
       try {
-        const chats = await WorkspaceChats.whereWithData({}, null, null, {
-          id: "asc",
-        });
-        const workspaceIds = [
-          ...new Set(chats.map((chat) => chat.workspaceId)),
-        ];
-
-        const workspacesWithPrompts = await Promise.all(
-          workspaceIds.map((id) => Workspace.get({ id: Number(id) }))
-        );
-
-        const workspacePromptsMap = workspacesWithPrompts.reduce(
-          (acc, workspace) => {
-            acc[workspace.id] = workspace.openAiPrompt;
-            return acc;
+        const { type = "jsonl" } = request.query;
+        const chats = await prepareWorkspaceChatsForExport(type);
+        const { contentType, data } = await exportChatsAsType(chats, type);
+        await EventLogs.logEvent(
+          "exported_chats",
+          {
+            type,
           },
-          {}
+          response.locals.user?.id
         );
-
-        const workspaceChatsMap = chats.reduce((acc, chat) => {
-          const { prompt, response, workspaceId } = chat;
-          const responseJson = JSON.parse(response);
-
-          if (!acc[workspaceId]) {
-            acc[workspaceId] = {
-              messages: [
-                {
-                  role: "system",
-                  content:
-                    workspacePromptsMap[workspaceId] ||
-                    "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
-                },
-              ],
-            };
-          }
-
-          acc[workspaceId].messages.push(
-            {
-              role: "user",
-              content: prompt,
-            },
-            {
-              role: "assistant",
-              content: responseJson.text,
-            }
-          );
-
-          return acc;
-        }, {});
-
-        // Convert to JSONL
-        const jsonl = Object.values(workspaceChatsMap)
-          .map((workspaceChats) => JSON.stringify(workspaceChats))
-          .join("\n");
-
-        response.setHeader("Content-Type", "application/jsonl");
-        response.status(200).send(jsonl);
+        response.setHeader("Content-Type", contentType);
+        response.status(200).send(data);
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/system/download-ollama-model",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const {
+          AnythingLLMOllama,
+        } = require("../utils/AiProviders/anythingLLM");
+        const { modelName } = reqBody(request);
+        response.writeHead(200, {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        });
+
+        const progressCallback = (percentage, status) => {
+          response.write(
+            `event: progress\ndata: ${JSON.stringify({
+              percentage,
+              status,
+            })}\n\n`
+          );
+        };
+
+        const successCallback = () => {
+          response.write(
+            `event: done\ndata: ${JSON.stringify({
+              done: true,
+            })}\n\n`
+          );
+          response.end();
+        };
+
+        const errorCallback = (error) => {
+          response.write(
+            `event: error\ndata: ${JSON.stringify({ error })}\n\n`
+          );
+          response.end();
+        };
+
+        await new AnythingLLMOllama().pullModel(
+          modelName,
+          progressCallback,
+          successCallback,
+          errorCallback
+        );
+      } catch (error) {
+        console.error(
+          "Error downloading Ollama model - it may have been killed manually.",
+          error.message
+        );
+        response.write(
+          `event: error\ndata: ${JSON.stringify({
+            error: "Internal server error",
+          })}\n\n`
+        );
+        response.end();
+      }
+    }
+  );
+
+  app.delete(
+    "/system/download-ollama-model",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (_request, response) => {
+      try {
+        const {
+          AnythingLLMOllama,
+        } = require("../utils/AiProviders/anythingLLM");
+        await new AnythingLLMOllama().rebootOllama();
+        response.status(200).json({ success: true });
+      } catch (error) {
+        console.error("Error aborting Ollama model download:", error);
+        response.status(500).json({ success: false });
+      }
+    }
+  );
+
+  app.delete(
+    "/system/remove-ollama-model",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const {
+          AnythingLLMOllama,
+        } = require("../utils/AiProviders/anythingLLM");
+        const { modelName } = reqBody(request);
+        await new AnythingLLMOllama().deleteModel(modelName);
+        response.status(200).json({ success: true });
+      } catch (error) {
+        console.error("Error aborting Ollama model removal:", error);
+        response.status(500).json({ success: false });
+      }
+    }
+  );
+
+  app.head(
+    "/system/support-interest/:action",
+    [validatedRequest],
+    async (request, response) => {
+      try {
+        const { action = "open" } = request.params;
+        console.log({ supporter_interest: action });
+        await Telemetry.sendTelemetry("supporter_interest", { action });
+        response.status(200).json({ success: true });
+      } catch (error) {
+        response.status(500).json({ success: false });
       }
     }
   );

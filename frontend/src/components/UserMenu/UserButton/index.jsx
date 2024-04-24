@@ -1,0 +1,115 @@
+import useLoginMode from "@/hooks/useLoginMode";
+import usePfp from "@/hooks/usePfp";
+import useUser from "@/hooks/useUser";
+import paths from "@/utils/paths";
+import { userFromStorage } from "@/utils/request";
+import { Person } from "@phosphor-icons/react";
+import { useEffect, useRef, useState } from "react";
+import AccountModal from "../AccountModal";
+import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+
+export default function UserButton() {
+  const mode = useLoginMode();
+  const { user } = useUser();
+  const menuRef = useRef();
+  const buttonRef = useRef();
+  const [showMenu, setShowMenu] = useState(false);
+  const [showAccountSettings, setShowAccountSettings] = useState(false);
+
+  const handleClose = (event) => {
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(event.target) &&
+      !buttonRef.current.contains(event.target)
+    ) {
+      setShowMenu(false);
+    }
+  };
+
+  const handleOpenAccountModal = () => {
+    setShowAccountSettings(true);
+    setShowMenu(false);
+  };
+
+  useEffect(() => {
+    if (showMenu) {
+      document.addEventListener("mousedown", handleClose);
+    }
+    return () => document.removeEventListener("mousedown", handleClose);
+  }, [showMenu]);
+
+  if (mode === null) return null;
+  return (
+    <div className="absolute top-3 right-4 md:top-9 md:right-10 w-fit h-fit z-99">
+      <button
+        ref={buttonRef}
+        onClick={() => setShowMenu(!showMenu)}
+        type="button"
+        className="uppercase transition-all duration-300 w-[35px] h-[35px] text-base font-semibold rounded-full flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient justify-center text-white p-2 hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+      >
+        {mode === "multi" ? <UserDisplay /> : <Person size={14} />}
+      </button>
+
+      {showMenu && (
+        <div
+          ref={menuRef}
+          className="w-fit rounded-lg absolute top-12 right-0 bg-sidebar p-4 flex items-center-justify-center"
+        >
+          <div className="flex flex-col gap-y-2">
+            {mode === "multi" && !!user && (
+              <button
+                onClick={handleOpenAccountModal}
+                className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+              >
+                Account
+              </button>
+            )}
+            <a
+              href="mailto:team@mintplexlabs.com"
+              className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+            >
+              Support
+            </a>
+            <button
+              onClick={() => {
+                window.localStorage.removeItem(AUTH_USER);
+                window.localStorage.removeItem(AUTH_TOKEN);
+                window.localStorage.removeItem(AUTH_TIMESTAMP);
+                window.location.hash = paths.home();
+              }}
+              type="button"
+              className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
+      )}
+      {user && showAccountSettings && (
+        <AccountModal
+          user={user}
+          hideModal={() => setShowAccountSettings(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+function UserDisplay() {
+  const { pfp } = usePfp();
+  const user = userFromStorage();
+
+  if (pfp) {
+    return (
+      <div className="w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden transition-all duration-300 bg-gray-100 hover:border-slate-100 hover:border-opacity-50 border-transparent border hover:opacity-60">
+        <img
+          src={pfp}
+          alt="User profile picture"
+          className="w-full h-full object-cover"
+        />
+      </div>
+    );
+  }
+
+  return user?.username?.slice(0, 2) || "AA";
+}

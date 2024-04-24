@@ -1,8 +1,9 @@
 const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
 const { chatPrompt } = require("../../chats");
+const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
 
 class OpenAiLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, modelPreference = null) {
     const { Configuration, OpenAIApi } = require("openai");
     if (!process.env.OPEN_AI_KEY) throw new Error("No OpenAI API key was set.");
 
@@ -10,7 +11,8 @@ class OpenAiLLM {
       apiKey: process.env.OPEN_AI_KEY,
     });
     this.openai = new OpenAIApi(config);
-    this.model = process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
+    this.model =
+      modelPreference || process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -22,6 +24,19 @@ class OpenAiLLM {
         "No embedding provider defined for OpenAiLLM - falling back to OpenAiEmbedder for embedding!"
       );
     this.embedder = !embedder ? new OpenAiEmbedder() : embedder;
+    this.defaultTemp = 0.7;
+  }
+
+  #appendContext(contextTexts = []) {
+    if (!contextTexts || !contextTexts.length) return "";
+    return (
+      "\nContext:\n" +
+      contextTexts
+        .map((text, i) => {
+          return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+        })
+        .join("")
+    );
   }
 
   streamingEnabled() {
@@ -31,26 +46,28 @@ class OpenAiLLM {
   promptWindowLimit() {
     switch (this.model) {
       case "gpt-3.5-turbo":
-        return 4096;
-      case "gpt-4":
-        return 8192;
+      case "gpt-3.5-turbo-1106":
+        return 16_385;
+      case "gpt-4-turbo":
       case "gpt-4-1106-preview":
-        return 128000;
+      case "gpt-4-turbo-preview":
+        return 128_000;
+      case "gpt-4":
+        return 8_192;
       case "gpt-4-32k":
-        return 32000;
+        return 32_000;
       default:
-        return 4096; // assume a fine-tune 3.5
+        return 4_096; // assume a fine-tune 3.5?
     }
   }
 
+  // Short circuit if name has 'gpt' since we now fetch models from OpenAI API
+  // via the user API key, so the model must be relevant and real.
+  // and if somehow it is not, chat will fail but that is caught.
+  // we don't want to hit the OpenAI api every chat because it will get spammed
+  // and introduce latency for no reason.
   async isValidChatCompletionModel(modelName = "") {
-    const validModels = [
-      "gpt-4",
-      "gpt-3.5-turbo",
-      "gpt-4-1106-preview",
-      "gpt-4-32k",
-    ];
-    const isPreset = validModels.some((model) => modelName === model);
+    const isPreset = modelName.toLowerCase().includes("gpt");
     if (isPreset) return true;
 
     const model = await this.openai
@@ -68,13 +85,7 @@ class OpenAiLLM {
   }) {
     const prompt = {
       role: "system",
-      content: `${systemPrompt}
-Context:
-    ${contextTexts
-      .map((text, i) => {
-        return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
-      })
-      .join("")}`,
+      content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
@@ -120,7 +131,7 @@ Context:
     const textResponse = await this.openai
       .createChatCompletion({
         model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {
@@ -158,7 +169,7 @@ Context:
       {
         model: this.model,
         stream: true,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
+        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
         messages: await this.compressMessages(
           {
@@ -180,11 +191,15 @@ Context:
         `OpenAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const { data } = await this.openai.createChatCompletion({
-      model: this.model,
-      messages,
-      temperature,
-    });
+    const { data } = await this.openai
+      .createChatCompletion({
+        model: this.model,
+        messages,
+        temperature,
+      })
+      .catch((e) => {
+        throw new Error(e.response.data.error.message);
+      });
 
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
@@ -206,6 +221,10 @@ Context:
       { responseType: "stream" }
     );
     return streamRequest;
+  }
+
+  handleStream(response, stream, responseProps) {
+    return handleDefaultStreamResponse(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

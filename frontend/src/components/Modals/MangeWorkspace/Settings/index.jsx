@@ -6,6 +6,9 @@ import System from "../../../../models/system";
 import PreLoader from "../../../Preloader";
 import { useParams } from "react-router-dom";
 import showToast from "../../../../utils/toast";
+import ChatModelPreference from "./ChatModelPreference";
+import { Link } from "react-router-dom";
+import { refocusApplication } from "@/ipc/node-api";
 
 // Ensure that a type is correct before sending the body
 // to the backend.
@@ -20,30 +23,31 @@ function castToType(key, value) {
     similarityThreshold: {
       cast: (value) => parseFloat(value),
     },
+    topN: {
+      cast: (value) => Number(value),
+    },
   };
 
   if (!definitions.hasOwnProperty(key)) return value;
   return definitions[key].cast(value);
 }
 
-export default function WorkspaceSettings({ workspace }) {
+function recommendedSettings(provider = null) {
+  switch (provider) {
+    case "mistral":
+      return { temp: 0 };
+    default:
+      return { temp: 0.7 };
+  }
+}
+
+export default function WorkspaceSettings({ active, workspace, settings }) {
   const { slug } = useParams();
   const formEl = useRef(null);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [totalVectors, setTotalVectors] = useState(null);
-  const [canDelete, setCanDelete] = useState(false);
-
-  useEffect(() => {
-    async function fetchKeys() {
-      const canDelete = await System.getCanDeleteWorkspaces();
-      setCanDelete(canDelete);
-
-      const totalVectors = await System.totalIndexes();
-      setTotalVectors(totalVectors);
-    }
-    fetchKeys();
-  }, []);
+  const [deleting, setDeleting] = useState(false);
+  const defaults = recommendedSettings(settings?.LLMProvider);
 
   const handleUpdate = async (e) => {
     setSaving(true);
@@ -69,11 +73,22 @@ export default function WorkspaceSettings({ workspace }) {
       !window.confirm(
         `You are about to delete your entire ${workspace.name} workspace. This will remove all vector embeddings on your vector database.\n\nThe original source files will remain untouched. This action is irreversible.`
       )
-    )
+    ) {
+      refocusApplication();
       return false;
-    await Workspace.delete(workspace.slug);
+    }
+
+    refocusApplication();
+    setDeleting(true);
+    const success = await Workspace.delete(workspace.slug);
+    if (!success) {
+      showToast("Workspace could not be deleted!", "error", { clear: true });
+      setDeleting(false);
+      return;
+    }
+
     workspace.slug === slug
-      ? window.location.hash = paths.home()
+      ? (window.location.hash = paths.home())
       : window.location.reload();
   };
 
@@ -89,6 +104,9 @@ export default function WorkspaceSettings({ workspace }) {
               <h3 className="text-white text-sm font-semibold">
                 Vector database identifier
               </h3>
+              <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+                {" "}
+              </p>
               <p className="text-white text-opacity-60 text-sm font-medium">
                 {workspace?.slug}
               </p>
@@ -101,13 +119,7 @@ export default function WorkspaceSettings({ workspace }) {
               <p className="text-white text-opacity-60 text-xs font-medium my-[2px]">
                 Total number of vectors in your vector database.
               </p>
-              {totalVectors !== null ? (
-                <p className="text-white text-opacity-60 text-sm font-medium">
-                  {totalVectors}
-                </p>
-              ) : (
-                <PreLoader size="4" />
-              )}
+              <VectorCount reload={active} workspace={workspace} />
             </div>
           </div>
         </div>
@@ -115,6 +127,11 @@ export default function WorkspaceSettings({ workspace }) {
           <div className="flex">
             <div className="flex flex-col gap-y-4 w-1/2">
               <div className="w-3/4 flex flex-col gap-y-4">
+                <ChatModelPreference
+                  settings={settings}
+                  workspace={workspace}
+                  setHasChanges={setHasChanges}
+                />
                 <div>
                   <div className="flex flex-col">
                     <label
@@ -153,20 +170,20 @@ export default function WorkspaceSettings({ workspace }) {
                       This setting controls how "random" or dynamic your chat
                       responses will be.
                       <br />
-                      The higher the number (2.0 maximum) the more random and
+                      The higher the number (1.0 maximum) the more random and
                       incoherent.
                       <br />
-                      <i>Recommended: 0.7</i>
+                      <i>Recommended: {defaults.temp}</i>
                     </p>
                   </div>
                   <input
                     name="openAiTemp"
                     type="number"
                     min={0.0}
-                    max={2.0}
+                    max={1.0}
                     step={0.1}
                     onWheel={(e) => e.target.blur()}
-                    defaultValue={workspace?.openAiTemp ?? 0.7}
+                    defaultValue={workspace?.openAiTemp ?? defaults.temp}
                     className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     placeholder="0.7"
                     required={true}
@@ -236,6 +253,38 @@ export default function WorkspaceSettings({ workspace }) {
                   autoComplete="off"
                   onChange={() => setHasChanges(true)}
                 />
+
+                <div className="mt-4">
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-white"
+                    >
+                      Max Context Snippets
+                    </label>
+                    <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+                      This setting controls the maximum amount of context
+                      snippets the will be sent to the LLM for per chat or
+                      query.
+                      <br />
+                      <i>Recommended: 4</i>
+                    </p>
+                  </div>
+                  <input
+                    name="topN"
+                    type="number"
+                    min={1}
+                    max={12}
+                    step={1}
+                    onWheel={(e) => e.target.blur()}
+                    defaultValue={workspace?.topN ?? 4}
+                    className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder="4"
+                    required={true}
+                    autoComplete="off"
+                    onChange={() => setHasChanges(true)}
+                  />
+                </div>
                 <div className="mt-4">
                   <div className="flex flex-col">
                     <label
@@ -253,7 +302,7 @@ export default function WorkspaceSettings({ workspace }) {
                   <select
                     name="similarityThreshold"
                     defaultValue={workspace?.similarityThreshold ?? 0.25}
-                    className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     onChange={() => setHasChanges(true)}
                     required={true}
                   >
@@ -269,21 +318,24 @@ export default function WorkspaceSettings({ workspace }) {
                     </option>
                   </select>
                 </div>
+                <div className="mt-4 w-full flex justify-start">
+                  <Link to={paths.workspace.additionalSettings(workspace.slug)}>
+                    <a className="underline text-white/60 text-sm font-medium hover:text-sky-600">
+                      View additional settings
+                    </a>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div className="flex items-center justify-between p-2 md:p-6 space-x-2 border-t rounded-b border-gray-600">
-        {canDelete && (
-          <button
-            onClick={deleteWorkspace}
-            type="button"
-            className="transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-transparent text-white hover:text-white hover:bg-red-600"
-          >
-            Delete Workspace
-          </button>
-        )}
+        <DeleteWorkspace
+          deleting={deleting}
+          workspace={workspace}
+          onClick={deleteWorkspace}
+        />
         {hasChanges && (
           <button
             type="submit"
@@ -294,5 +346,46 @@ export default function WorkspaceSettings({ workspace }) {
         )}
       </div>
     </form>
+  );
+}
+
+function DeleteWorkspace({ deleting, workspace, onClick }) {
+  const [canDelete, setCanDelete] = useState(false);
+  useEffect(() => {
+    async function fetchKeys() {
+      const canDelete = await System.getCanDeleteWorkspaces();
+      setCanDelete(canDelete);
+    }
+    fetchKeys();
+  }, [workspace?.slug]);
+
+  if (!canDelete) return null;
+  return (
+    <button
+      disabled={deleting}
+      onClick={onClick}
+      type="button"
+      className="transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-transparent text-white hover:text-white hover:bg-red-600 disabled:bg-red-600 disabled:text-red-200 disabled:animate-pulse"
+    >
+      {deleting ? "Deleting Workspace..." : "Delete Workspace"}
+    </button>
+  );
+}
+
+function VectorCount({ reload, workspace }) {
+  const [totalVectors, setTotalVectors] = useState(null);
+  useEffect(() => {
+    async function fetchVectorCount() {
+      const totalVectors = await System.totalIndexes(workspace.slug);
+      setTotalVectors(totalVectors);
+    }
+    fetchVectorCount();
+  }, [workspace?.slug, reload]);
+
+  if (totalVectors === null) return <PreLoader size="4" />;
+  return (
+    <p className="text-white text-opacity-60 text-sm font-medium">
+      {totalVectors}
+    </p>
   );
 }

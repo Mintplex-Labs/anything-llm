@@ -21,9 +21,9 @@ function useIsAuthenticated() {
       const {
         MultiUserMode,
         RequiresAuth,
-        OpenAiKey = false,
-        AnthropicApiKey = false,
-        AzureOpenAiKey = false,
+        LLMProvider = null,
+        VectorDB = null,
+        EmbeddingEngine = null,
       } = await System.keys();
 
       setMultiUserMode(MultiUserMode);
@@ -32,9 +32,10 @@ function useIsAuthenticated() {
       if (
         !MultiUserMode &&
         !RequiresAuth && // Not in Multi-user AND no password set.
-        !OpenAiKey &&
-        !AnthropicApiKey &&
-        !AzureOpenAiKey // AND no LLM API Key set at all.
+        // And nothing has been set yet.
+        !LLMProvider &&
+        !VectorDB &&
+        !EmbeddingEngine
       ) {
         setShouldRedirectToOnboarding(true);
         setIsAuthed(true);
@@ -91,7 +92,7 @@ export function AdminRoute({ Component }) {
   if (isAuthd === null) return <FullScreenLoader />;
 
   if (shouldRedirectToOnboarding) {
-    return <Navigate to={paths.onboarding()} />;
+    return <Navigate to={paths.onboarding.home()} />;
   }
 
   const user = userFromStorage();
@@ -112,7 +113,7 @@ export function ManagerRoute({ Component }) {
   if (isAuthd === null) return <FullScreenLoader />;
 
   if (shouldRedirectToOnboarding) {
-    return <Navigate to={paths.onboarding()} />;
+    return <Navigate to={paths.onboarding.home()} />;
   }
 
   const user = userFromStorage();
@@ -138,6 +139,6 @@ export default function PrivateRoute({ Component }) {
       <Component />
     </AppLayout>
   ) : (
-    <Navigate to={paths.login()} />
+    <Navigate to={paths.login(true)} />
   );
 }

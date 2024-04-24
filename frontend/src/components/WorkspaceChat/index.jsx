@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Workspace from "../../models/workspace";
+import Workspace from "@/models/workspace";
 import LoadingChat from "./LoadingChat";
 import ChatContainer from "./ChatContainer";
-import paths from "../../utils/paths";
 import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
+import ModalWrapper from "@/components/ModalWrapper";
+import { useParams } from "react-router-dom";
 
 export default function WorkspaceChat({ loading, workspace }) {
+  const { threadSlug = null } = useParams();
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
@@ -17,7 +20,9 @@ export default function WorkspaceChat({ loading, workspace }) {
         return false;
       }
 
-      const chatHistory = await Workspace.chatHistory(workspace.slug);
+      const chatHistory = threadSlug
+        ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
+        : await Workspace.chatHistory(workspace.slug);
       setHistory(chatHistory);
       setLoadingHistory(false);
     }
@@ -29,11 +34,7 @@ export default function WorkspaceChat({ loading, workspace }) {
     return (
       <>
         {loading === false && !workspace && (
-          <dialog
-            open={true}
-            style={{ zIndex: 100 }}
-            className="border-none fixed top-0 flex bg-black bg-opacity-50 w-full md:w-[100vw] h-auto items-center justify-center"
-          >
+          <ModalWrapper isOpen={true}>
             <div className="relative w-full md:max-w-2xl max-h-full bg-main-gradient rounded-lg shadow p-4">
               <div className="flex flex-col gap-y-4 w-full p-6 text-center">
                 <p className="font-semibold text-red-500 text-xl">
@@ -53,12 +54,48 @@ export default function WorkspaceChat({ loading, workspace }) {
                 </div>
               </div>
             </div>
-          </dialog>
+          </ModalWrapper>
         )}
         <LoadingChat />
       </>
     );
   }
 
+  setEventDelegatorForCodeSnippets();
   return <ChatContainer workspace={workspace} knownHistory={history} />;
+}
+
+// Enables us to safely markdown and sanitize all responses without risk of injection
+// but still be able to attach a handler to copy code snippets on all elements
+// that are code snippets.
+function copyCodeSnippet(uuid) {
+  const target = document.querySelector(`[data-code="${uuid}"]`);
+  if (!target) return false;
+  const markdown =
+    target.parentElement?.parentElement?.querySelector(
+      "pre:first-of-type"
+    )?.innerText;
+  if (!markdown) return false;
+
+  window.navigator.clipboard.writeText(markdown);
+  target.classList.add("text-green-500");
+  const originalText = target.innerHTML;
+  target.innerText = "Copied!";
+  target.setAttribute("disabled", true);
+
+  setTimeout(() => {
+    target.classList.remove("text-green-500");
+    target.innerHTML = originalText;
+    target.removeAttribute("disabled");
+  }, 2500);
+}
+
+// Listens and hunts for all data-code-snippet clicks.
+function setEventDelegatorForCodeSnippets() {
+  document?.addEventListener("click", function (e) {
+    const target = e.target.closest("[data-code-snippet]");
+    const uuidCode = target?.dataset?.code;
+    if (!uuidCode) return false;
+    copyCodeSnippet(uuidCode);
+  });
 }

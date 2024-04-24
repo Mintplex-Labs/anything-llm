@@ -1,19 +1,35 @@
-import { memo, useState, useEffect, useRef } from "react";
-import { X } from "@phosphor-icons/react";
+import { memo, useState } from "react";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
-import { CaretRight, FileText } from "@phosphor-icons/react";
 import truncate from "truncate";
+import ModalWrapper from "@/components/ModalWrapper";
+import { middleTruncate } from "@/utils/directories";
+import {
+  CaretRight,
+  FileText,
+  Info,
+  ArrowSquareOut,
+  GithubLogo,
+  Link,
+  X,
+  YoutubeLogo,
+} from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
+import { toPercentString } from "@/utils/numbers";
 
 function combineLikeSources(sources) {
   const combined = {};
   sources.forEach((source) => {
-    const { id, title, text } = source;
+    const { id, title, text, chunkSource = "", score = null } = source;
     if (combined.hasOwnProperty(title)) {
-      combined[title].text += `\n\n ---- Chunk ${id || ""} ---- \n\n${text}`;
+      combined[title].chunks.push({ id, text, chunkSource, score });
       combined[title].references += 1;
     } else {
-      combined[title] = { title, text, references: 1 };
+      combined[title] = {
+        title,
+        chunks: [{ id, text, chunkSource, score }],
+        references: 1,
+      };
     }
   });
   return Object.values(combined);
@@ -28,20 +44,22 @@ export default function Citations({ sources = [] }) {
     <div className="flex flex-col mt-4 justify-left">
       <button
         onClick={() => setOpen(!open)}
-        className={`border-none text-white/50 font-medium italic text-sm text-left ml-14 pt-2 ${open ? "pb-2" : ""
-          } hover:text-white/75 transition-all duration-300`}
+        className={`border-none text-white/50 font-medium italic text-sm text-left ml-14 pt-2 ${
+          open ? "pb-2" : ""
+        } hover:text-white/75 transition-all duration-300`}
       >
         {open ? "Hide Citations" : "Show Citations"}
         <CaretRight
-          className={`w-3.5 h-3.5 inline-block ml-1 transform transition-transform duration-300 ${open ? "rotate-90" : ""
-            }`}
+          className={`w-3.5 h-3.5 inline-block ml-1 transform transition-transform duration-300 ${
+            open ? "rotate-90" : ""
+          }`}
         />
       </button>
       {open && (
-        <div className="flex flex-wrap md:flex-row flex-col items-center gap-4 overflow-x-scroll mt-1 doc__source">
+        <div className="flex flex-wrap md:flex-row flex-col md:items-center gap-4 overflow-x-scroll mt-1 doc__source">
           {combineLikeSources(sources).map((source) => (
             <Citation
-              key={source?.id || v4()}
+              key={v4()}
               source={source}
               onClick={() => setSelectedSource(source)}
             />
@@ -61,16 +79,18 @@ export default function Citations({ sources = [] }) {
 const Citation = memo(({ source, onClick }) => {
   const { title } = source;
   if (!title) return null;
-
-  const truncatedTitle = truncateMiddle(title);
+  const chunkSourceInfo = parseChunkSource(source);
+  const truncatedTitle = chunkSourceInfo?.text ?? middleTruncate(title, 25);
+  const CitationIcon = ICONS.hasOwnProperty(chunkSourceInfo?.icon)
+    ? ICONS[chunkSourceInfo.icon]
+    : ICONS.file;
 
   return (
     <div
-      className="flex flex-row justify-center items-center cursor-pointer text-sky-400"
-      style={{ width: "24%" }}
+      className="w-fit flex flex-row justify-center items-center cursor-pointer text-sky-400"
       onClick={onClick}
     >
-      <FileText className="w-6 h-6" weight="bold" />
+      <CitationIcon className="w-6 h-6" weight="bold" />
       <p className="text-sm font-medium whitespace-nowrap">{truncatedTitle}</p>
     </div>
   );
@@ -95,43 +115,41 @@ function SkeletonLine() {
 }
 
 function CitationDetailModal({ source, onClose }) {
-  const { references, title, text } = source;
-  const dialogRef = useRef(null);
-
-  useEffect(() => {
-    if (source && dialogRef.current) {
-      dialogRef.current.showModal();
-    }
-  }, [source]);
-
-  const handleModalClose = () => {
-    if (dialogRef.current) {
-      dialogRef.current.close();
-    }
-    onClose();
-  };
+  const { references, title, chunks } = source;
+  const { isUrl, text: webpageUrl, href: linkTo } = parseChunkSource(source);
 
   return (
-    <dialog
-      ref={dialogRef}
-      className="border-none bg-transparent outline-none fixed top-0 left-0 w-full h-full flex items-center justify-center z-10"
-    >
-      <div className="relative w-full max-w-2xl bg-main-gradient rounded-lg shadow border border-white/10 overflow-hidden">
-        <div className="flex items-start justify-between p-6 border-b rounded-t border-gray-500/50">
-          <div className="flex flex-col flex-grow mr-4">
-            <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
-              {truncate(title, 52)}
-            </h3>
-            {references > 1 && (
-              <p className="text-xs text-gray-400 mt-2">
-                Referenced {references} times.
-              </p>
+    <ModalWrapper isOpen={source}>
+      <div className="w-full max-w-2xl bg-main-gradient rounded-lg shadow border border-white/10 overflow-hidden">
+        <div className="relative p-6 border-b rounded-t border-gray-500/50">
+          <div className="w-full flex gap-x-2 items-center">
+            {isUrl ? (
+              <a
+                href={linkTo}
+                target="_blank"
+                rel="noreferrer"
+                className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline hover:text-blue-300 flex items-center gap-x-1"
+              >
+                <h3 className="flex items-center gap-x-1">
+                  {webpageUrl}
+                  <ArrowSquareOut />
+                </h3>
+              </a>
+            ) : (
+              <h3 className="text-xl font-semibold text-white overflow-hidden overflow-ellipsis whitespace-nowrap">
+                {truncate(title, 45)}
+              </h3>
             )}
           </div>
+          {references > 1 && (
+            <p className="text-xs text-gray-400 mt-2">
+              Referenced {references} times.
+            </p>
+          )}
           <button
-            onClick={handleModalClose}
+            onClick={onClose}
             type="button"
-            className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+            className="absolute top-6 right-6 transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
             <X className="text-gray-300 text-lg" />
           </button>
@@ -144,24 +162,88 @@ function CitationDetailModal({ source, onClose }) {
             {[...Array(3)].map((_, idx) => (
               <SkeletonLine key={idx} />
             ))}
-            <p className="text-white whitespace-pre-line">{HTMLDecode(text)}</p>
-            <div className="mb-6">
-              {[...Array(3)].map((_, idx) => (
-                <SkeletonLine key={idx} />
-              ))}
-            </div>
+            {chunks.map(({ text, score }, idx) => (
+              <div key={idx} className="pt-6 text-white">
+                <div className="flex flex-col w-full justify-start pb-6 gap-y-1">
+                  <p className="text-white whitespace-pre-line">
+                    {HTMLDecode(text)}
+                  </p>
+
+                  {!!score && (
+                    <>
+                      <div className="w-full flex items-center text-xs text-white/60 gap-x-2 cursor-default">
+                        <div
+                          data-tooltip-id="similarity-score"
+                          data-tooltip-content={`This is the semantic similarity score of this chunk of text compared to your query calculated by the vector database.`}
+                          className="flex items-center gap-x-1"
+                        >
+                          <Info size={14} />
+                          <p>{toPercentString(score)} match</p>
+                        </div>
+                      </div>
+                      <Tooltip
+                        id="similarity-score"
+                        place="top"
+                        delayShow={100}
+                      />
+                    </>
+                  )}
+                </div>
+                {[...Array(3)].map((_, idx) => (
+                  <SkeletonLine key={idx} />
+                ))}
+              </div>
+            ))}
+            <div className="mb-6"></div>
           </div>
         </div>
       </div>
-    </dialog>
+    </ModalWrapper>
   );
 }
 
-function truncateMiddle(title) {
-  if (title.length <= 18) return title;
+const ICONS = {
+  file: FileText,
+  link: Link,
+  youtube: YoutubeLogo,
+  github: GithubLogo,
+};
 
-  const startStr = title.substr(0, 9);
-  const endStr = title.substr(-9);
+// Show the correct title and/or display text for citations
+// which contain valid outbound links that can be clicked by the
+// user when viewing a citation. Optionally allows various icons
+// to show distinct types of sources.
+function parseChunkSource({ title = "", chunks = [] }) {
+  const nullResponse = {
+    isUrl: false,
+    text: null,
+    href: null,
+    icon: "file",
+  };
 
-  return `${startStr}...${endStr}`;
+  if (!chunks.length || !chunks[0].chunkSource.startsWith("link://"))
+    return nullResponse;
+  try {
+    const url = new URL(chunks[0].chunkSource.split("link://")[1]);
+    let text = url.host + url.pathname;
+    let icon = "link";
+
+    if (url.host.includes("youtube.com")) {
+      text = title;
+      icon = "youtube";
+    }
+
+    if (url.host.includes("github.com")) {
+      text = title;
+      icon = "github";
+    }
+
+    return {
+      isUrl: true,
+      href: url.toString(),
+      text,
+      icon,
+    };
+  } catch {}
+  return nullResponse;
 }

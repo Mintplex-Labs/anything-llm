@@ -1,9 +1,15 @@
 const lancedb = require("vectordb");
-const { toChunks, getLLMProvider } = require("../../helpers");
+const {
+  toChunks,
+  getLLMProvider,
+  getEmbeddingEngineSelection,
+} = require("../../helpers");
 const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
+const { TextSplitter } = require("../../TextSplitter");
+const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
+const { sourceIdentifier } = require("../../chats");
 
 const LanceDb = {
   uri: `${
@@ -58,7 +64,9 @@ const LanceDb = {
     client,
     namespace,
     queryVector,
-    similarityThreshold = 0.25
+    similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const collection = await client.openTable(namespace);
     const result = {
@@ -70,15 +78,26 @@ const LanceDb = {
     const response = await collection
       .search(queryVector)
       .metricType("cosine")
-      .limit(5)
+      .limit(topN)
       .execute();
 
     response.forEach((item) => {
-      if (this.distanceToSimilarity(item.score) < similarityThreshold) return;
+      if (this.distanceToSimilarity(item._distance) < similarityThreshold)
+        return;
       const { vector: _, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) {
+        console.log(
+          "LanceDB: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
+
       result.contextTexts.push(rest.text);
-      result.sourceDocuments.push(rest);
-      result.scores.push(this.distanceToSimilarity(item.score));
+      result.sourceDocuments.push({
+        ...rest,
+        score: this.distanceToSimilarity(item._distance),
+      });
+      result.scores.push(this.distanceToSimilarity(item._distance));
     });
 
     return result;
@@ -168,16 +187,24 @@ const LanceDb = {
 
         await this.updateOrCreateCollection(client, submissions, namespace);
         await DocumentVectors.bulkInsert(documentVectors);
-        return true;
+        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.
       // We have to do this manually as opposed to using LangChains `xyz.fromDocuments`
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
-      const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1000,
-        chunkOverlap: 20,
+      const textSplitter = new TextSplitter({
+        chunkSize: TextSplitter.determineMaxChunkSize(
+          await SystemSettings.getValueOrFallback({
+            label: "text_splitter_chunk_size",
+          }),
+          getEmbeddingEngineSelection()?.embeddingMaxChunkLength
+        ),
+        chunkOverlap: await SystemSettings.getValueOrFallback(
+          { label: "text_splitter_chunk_overlap" },
+          20
+        ),
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
@@ -201,9 +228,9 @@ const LanceDb = {
 
           vectors.push(vectorRecord);
           submissions.push({
+            ...vectorRecord.metadata,
             id: vectorRecord.id,
             vector: vectorRecord.values,
-            ...vectorRecord.metadata,
           });
           documentVectors.push({ docId, vectorId: vectorRecord.id });
         }
@@ -224,11 +251,10 @@ const LanceDb = {
       }
 
       await DocumentVectors.bulkInsert(documentVectors);
-      return true;
+      return { vectorized: true, error: null };
     } catch (e) {
-      console.error(e);
       console.error("addDocumentToNamespace", e.message);
-      return false;
+      return { vectorized: false, error: e.message };
     }
   },
   performSimilaritySearch: async function ({
@@ -236,6 +262,8 @@ const LanceDb = {
     input = "",
     LLMConnector = null,
     similarityThreshold = 0.25,
+    topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -254,7 +282,9 @@ const LanceDb = {
       client,
       namespace,
       queryVector,
-      similarityThreshold
+      similarityThreshold,
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
@@ -297,7 +327,7 @@ const LanceDb = {
   curateSources: function (sources = []) {
     const documents = [];
     for (const source of sources) {
-      const { text, vector: _v, score: _s, ...rest } = source;
+      const { text, vector: _v, _distance: _d, ...rest } = source;
       const metadata = rest.hasOwnProperty("metadata") ? rest.metadata : rest;
       if (Object.keys(metadata).length > 0) {
         documents.push({

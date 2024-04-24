@@ -1,202 +1,211 @@
 import React, { useRef } from "react";
-import paths from "../../utils/paths";
-import useLogo from "../../hooks/useLogo";
+import paths from "@/utils/paths";
+import useLogo from "@/hooks/useLogo";
+import useUser from "@/hooks/useUser";
 import {
-  DiscordLogo,
-  EnvelopeSimple,
-  SquaresFour,
-  Users,
-  BookOpen,
   ChatCenteredText,
   Eye,
-  Key,
   ChatText,
   Database,
-  Lock,
-  GithubLogo,
-  X,
   FileCode,
-  Plugs,
+  Notepad,
+  Key,
+  ClosedCaptioning,
+  EyeSlash,
+  SplitVertical,
 } from "@phosphor-icons/react";
-import useUser from "../../hooks/useUser";
 import { Link } from "react-router-dom";
+import Footer from "../Footer";
 
 export default function SettingsSidebar() {
   const { logo } = useLogo();
-  const sidebarRef = useRef(null);
   const { user } = useUser();
+  const sidebarRef = useRef(null);
 
   return (
-    <>
+    <div>
+      <Link
+        to={paths.home()}
+        className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
+      >
+        <img
+          src={logo}
+          alt="Logo"
+          className="rounded max-h-[24px]"
+          style={{ objectFit: "contain" }}
+        />
+      </Link>
       <div
         ref={sidebarRef}
-        style={{ height: "calc(100% - 32px)" }}
-        className="transition-all duration-500 relative m-[16px] rounded-[26px] bg-sidebar border-4 border-accent min-w-[250px] p-[18px]"
+        style={{ height: "calc(100% - 76px)" }}
+        className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px]"
       >
-        <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
-          {/* Header Information */}
-          <div className="flex w-full items-center justify-between">
-            <div className="flex shrink-0 max-w-[65%] items-center justify-start ml-2">
-              <img
-                src={logo}
-                alt="Logo"
-                className="rounded max-h-[40px] max-w-[100%]"
-                style={{ objectFit: "contain" }}
-              />
-            </div>
-            <div className="flex gap-x-2 items-center text-slate-500">
-              <Link
-                to={paths.home()}
-                className="transition-all duration-300 p-2 flex items-center justify-center rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-              >
-                <X className="h-4 w-4" />
-              </Link>
-            </div>
+        <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
+          <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
+            Instance Settings
           </div>
-          <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-4 mb-0 ml-2">
-            Settings
-          </div>
-          {/* Primary Body */}
-          <div className="h-[100%] flex flex-col w-full justify-between pt-4 overflow-y-hidden">
+          <div className="relative h-full flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
             <div className="h-auto sidebar-items">
-              <div className="flex flex-col gap-y-2 h-[65vh] pb-8 overflow-y-scroll no-scroll">
-                {/* Admin/manager Multi-user Settings */}
-                {!!user && user?.role !== "default" && (
-                  <>
-                    <Option
-                      href={paths.settings.system()}
-                      btnText="System Preferences"
-                      icon={<SquaresFour className="h-5 w-5 flex-shrink-0" />}
-                    />
-                    <Option
-                      href={paths.settings.invites()}
-                      btnText="Invitation"
-                      icon={
-                        <EnvelopeSimple className="h-5 w-5 flex-shrink-0" />
-                      }
-                    />
-                    <Option
-                      href={paths.settings.users()}
-                      btnText="Users"
-                      icon={<Users className="h-5 w-5 flex-shrink-0" />}
-                    />
-                    <Option
-                      href={paths.settings.workspaces()}
-                      btnText="Workspaces"
-                      icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
-                    />
-                  </>
-                )}
-
-                <Option
-                  href={paths.settings.chats()}
-                  btnText="Workspace Chat"
-                  icon={<ChatCenteredText className="h-5 w-5 flex-shrink-0" />}
-                />
-
-                <Option
-                  href={paths.settings.appearance()}
-                  btnText="Appearance"
-                  icon={<Eye className="h-5 w-5 flex-shrink-0" />}
-                />
-                <Option
-                  href={paths.settings.apiKeys()}
-                  btnText="API Keys"
-                  icon={<Key className="h-5 w-5 flex-shrink-0" />}
-                />
-
-                {(!user || user?.role === "admin") && (
-                  <>
-                    <Option
-                      href={paths.settings.llmPreference()}
-                      btnText="LLM Preference"
-                      icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
-                    />
-                    <Option
-                      href={paths.settings.embeddingPreference()}
-                      btnText="Embedding Preference"
-                      icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
-                    />
-                    <Option
-                      href={paths.settings.vectorDatabase()}
-                      btnText="Vector Database"
-                      icon={<Database className="h-5 w-5 flex-shrink-0" />}
-                    />
-                    <Option
-                      href={paths.settings.dataConnectors.list()}
-                      btnText="Data Connectors"
-                      icon={<Plugs className="h-5 w-5 flex-shrink-0" />}
-                    />
-                  </>
-                )}
-                <Option
-                  href={paths.settings.security()}
-                  btnText="Security"
-                  icon={<Lock className="h-5 w-5 flex-shrink-0" />}
-                />
+              <div className="flex flex-col gap-y-2 h-full pb-8 overflow-y-scroll no-scroll">
+                <SidebarOptions user={user} />
               </div>
             </div>
-            <div>
-              {/* Footer */}
-              <div className="flex justify-center mt-2">
-                <div className="flex space-x-4">
-                  <Link
-                    target="_blank"
-                    to={paths.github()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                  >
-                    <GithubLogo weight="fill" className="h-5 w-5 " />
-                  </Link>
-                  <Link
-                    target="_blank"
-                    to={paths.docs()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                  >
-                    <BookOpen weight="fill" className="h-5 w-5 " />
-                  </Link>
-                  <Link
-                    target="_blank"
-                    to={paths.discord()}
-                    className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-                  >
-                    <DiscordLogo
-                      weight="fill"
-                      className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
-                    />
-                  </Link>
-                  {/* <button className="invisible transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border">
-                    <DotsThree className="h-5 w-5 group-hover:stroke-slate-200" />
-                  </button> */}
-                </div>
-              </div>
+            <div className="mb-2">
+              <Footer />
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
-const Option = ({ btnText, icon, href }) => {
-  const isActive = window.location.hash?.replace('#', '') === href;
+const Option = ({
+  btnText,
+  icon,
+  href,
+  childLinks = [],
+  flex = false,
+  user = null,
+  allowedRole = [],
+  subOptions = null,
+  hidden = false,
+}) => {
+  if (hidden) return null;
+
+  const hasActiveChild = childLinks.includes(
+    window.location.hash?.replace("#", "")
+  );
+  const isActive = window.location.hash?.replace("#", "") === href;
+
+  // Option only for multi-user
+  if (!flex && !allowedRole.includes(user?.role)) return null;
+
+  // Option is dual-mode, but user exists, we need to check permissions
+  if (flex && !!user && !allowedRole.includes(user?.role)) return null;
+
   return (
-    <div className="flex gap-x-2 items-center justify-between text-white">
-      <Link
-        to={href}
-        className={`
+    <>
+      <div className="flex gap-x-2 items-center justify-between text-white">
+        <Link
+          to={href}
+          className={`
           transition-all duration-[200ms]
-          flex flex-grow w-[75%] h-[36px] gap-x-2 py-[5px] px-4 rounded justify-start items-center border
-          ${isActive
-            ? "bg-menu-item-selected-gradient border-slate-100 border-opacity-50 font-medium"
-            : "hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent"
+          flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] justify-start items-center
+          hover:bg-workspace-item-selected-gradient hover:text-white hover:font-medium
+          ${
+            isActive
+              ? "bg-menu-item-selected-gradient font-medium border-outline text-white"
+              : "hover:bg-menu-item-selected-gradient text-zinc-200"
           }
         `}
-      >
-        {React.cloneElement(icon, { weight: isActive ? "fill" : "regular" })}
-        <p className="text-sm leading-loose text-opacity-60 whitespace-nowrap overflow-hidden ">
-          {btnText}
-        </p>
-      </Link>
-    </div>
+        >
+          {React.cloneElement(icon, { weight: isActive ? "fill" : "regular" })}
+          <p className="text-sm leading-loose whitespace-nowrap overflow-hidden ">
+            {btnText}
+          </p>
+        </Link>
+      </div>
+      {!!subOptions && (isActive || hasActiveChild) && (
+        <div
+          className={`ml-4 ${
+            hasActiveChild ? "" : "border-l-2 border-slate-400"
+          } rounded-r-lg`}
+        >
+          {subOptions}
+        </div>
+      )}
+    </>
   );
 };
+
+const SidebarOptions = ({ user = null }) => (
+  <>
+    <Option
+      href={paths.settings.apiKeys()}
+      btnText="API Keys"
+      icon={<Key className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
+      href={paths.settings.chats()}
+      btnText="Workspace Chat"
+      icon={<ChatCenteredText className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin", "manager"]}
+    />
+    <Option
+      href={paths.settings.appearance()}
+      btnText="Appearance"
+      icon={<Eye className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin", "manager"]}
+    />
+
+    <Option
+      href={paths.settings.llmPreference()}
+      btnText="LLM Preference"
+      icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
+      href={paths.settings.transcriptionPreference()}
+      btnText="Transcription Model"
+      icon={<ClosedCaptioning className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
+      href={paths.settings.embedder.modelPreference()}
+      childLinks={[paths.settings.embedder.chunkingPreference()]}
+      btnText="Embedder Preferences"
+      icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+      subOptions={
+        <>
+          <Option
+            href={paths.settings.embedder.chunkingPreference()}
+            btnText="Text Splitter & Chunking"
+            icon={<SplitVertical className="h-5 w-5 flex-shrink-0" />}
+            user={user}
+            flex={true}
+            allowedRole={["admin"]}
+          />
+        </>
+      }
+    />
+    <Option
+      href={paths.settings.vectorDatabase()}
+      btnText="Vector Database"
+      icon={<Database className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
+      href={paths.settings.logs()}
+      btnText="Event Logs"
+      icon={<Notepad className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
+      href={paths.settings.privacy()}
+      btnText="Privacy & Data"
+      icon={<EyeSlash className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+  </>
+);

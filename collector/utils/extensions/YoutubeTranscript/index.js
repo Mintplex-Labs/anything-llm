@@ -1,16 +1,20 @@
-const { YoutubeLoader } = require("langchain/document_loaders/web/youtube");
 const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
+const { YoutubeLoader } = require("./YoutubeLoader");
 
-function validYoutubeVideoUrl(url) {
+function validYoutubeVideoUrl(link) {
   const UrlPattern = require("url-pattern");
+  const opts = new URL(link);
+  const url = `${opts.protocol}//${opts.host}${opts.pathname}${
+    opts.searchParams.has("v") ? `?v=${opts.searchParams.get("v")}` : ""
+  }`;
 
   const shortPatternMatch = new UrlPattern(
-    "https\\://youtu.be/(:videoId)"
+    "https\\://(www.)youtu.be/(:videoId)"
   ).match(url);
   const fullPatternMatch = new UrlPattern(
     "https\\://(www.)youtube.com/watch?v=(:videoId)"
@@ -32,19 +36,27 @@ async function loadYouTubeTranscript({ url }) {
 
   console.log(`-- Working YouTube ${url} --`);
   const loader = YoutubeLoader.createFromUrl(url, { addVideoInfo: true });
-  const docs = await loader.load();
+  const { docs, error } = await loader
+    .load()
+    .then((docs) => {
+      return { docs, error: null };
+    })
+    .catch((e) => {
+      return {
+        docs: [],
+        error: e.message?.split("Error:")?.[1] || e.message,
+      };
+    });
 
-  if (!docs.length) {
+  if (!docs.length || !!error) {
     return {
       success: false,
-      reason: "No transcript found for that YouTube video.",
+      reason: error ?? "No transcript found for that YouTube video.",
     };
   }
 
   const metadata = docs[0].metadata;
-  let content = "";
-  docs.forEach((doc) => (content = content.concat(doc.pageContent)));
-
+  const content = docs[0].pageContent;
   if (!content.length) {
     return {
       success: false,
@@ -55,9 +67,13 @@ async function loadYouTubeTranscript({ url }) {
   const outFolder = slugify(
     `${metadata.author} YouTube transcripts`
   ).toLowerCase();
-  const outFolderPath = process.env.NODE_ENV === "development"
-    ? path.resolve(__dirname, `../../../../server/storage/documents/${outFolder}`)
-    : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
+  const outFolderPath =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(
+          __dirname,
+          `../../../../server/storage/documents/${outFolder}`
+        )
+      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 
   if (!fs.existsSync(outFolderPath)) fs.mkdirSync(outFolderPath);
 
@@ -68,7 +84,7 @@ async function loadYouTubeTranscript({ url }) {
     docAuthor: metadata.author,
     description: metadata.description,
     docSource: url,
-    chunkSource: url,
+    chunkSource: `link://${url}`,
     published: new Date().toLocaleString(),
     wordCount: content.split(" ").length,
     pageContent: content,
@@ -88,6 +104,7 @@ async function loadYouTubeTranscript({ url }) {
     data: {
       title: metadata.title,
       author: metadata.author,
+      destination: outFolder,
     },
   };
 }

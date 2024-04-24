@@ -1,9 +1,9 @@
-const path = require('path');
+const path = require("path");
 require("dotenv").config({
-  path: process.env.STORAGE_DIR ?
-    `${path.join(process.env.STORAGE_DIR, '.env')}` :
-    `${path.join(__dirname, '.env')}`
-})
+  path: process.env.STORAGE_DIR
+    ? `${path.join(process.env.STORAGE_DIR, ".env")}`
+    : `${path.join(__dirname, ".env")}`,
+});
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -11,13 +11,22 @@ const cors = require("cors");
 const { systemEndpoints } = require("./endpoints/system");
 const { workspaceEndpoints } = require("./endpoints/workspaces");
 const { chatEndpoints } = require("./endpoints/chat");
+const { embeddedEndpoints } = require("./endpoints/embed");
+const { embedManagementEndpoints } = require("./endpoints/embedManagement");
 const { adminEndpoints } = require("./endpoints/admin");
 const { inviteEndpoints } = require("./endpoints/invite");
 const { utilEndpoints } = require("./endpoints/utils");
-const { Telemetry } = require("./models/telemetry");
 const { developerEndpoints } = require("./endpoints/api");
+const { extensionEndpoints } = require("./endpoints/extensions");
+const { documentEndpoints } = require("./endpoints/document");
 const setupTelemetry = require("./utils/telemetry");
-const { extensionEndpoints } = require('./endpoints/extensions');
+const { Telemetry } = require("./models/telemetry");
+const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
+const {
+  preloadOllamaService,
+} = require("./utils/AiProviders/anythingLLM/utils/preload");
+const { CommunicationKey } = require("./utils/comKey");
+const { agentWebsocket } = require("./endpoints/agentWebsocket");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -31,15 +40,24 @@ app.use(
     extended: true,
   })
 );
+
+require("express-ws")(app);
 app.use("/api", apiRouter);
 systemEndpoints(apiRouter);
 extensionEndpoints(apiRouter);
 workspaceEndpoints(apiRouter);
+workspaceThreadEndpoints(apiRouter);
 chatEndpoints(apiRouter);
 adminEndpoints(apiRouter);
 inviteEndpoints(apiRouter);
+embedManagementEndpoints(apiRouter);
 utilEndpoints(apiRouter);
+documentEndpoints(apiRouter);
+agentWebsocket(apiRouter);
 developerEndpoints(app, apiRouter);
+
+// Externally facing embedder endpoints
+embeddedEndpoints(apiRouter);
 
 app.all("*", function (_, response) {
   response.sendStatus(404);
@@ -48,19 +66,25 @@ app.all("*", function (_, response) {
 app
   .listen(process.env.SERVER_PORT || 3001, async () => {
     await setupTelemetry();
+    await preloadOllamaService();
+    new CommunicationKey(true);
     console.log(
-      `[${process.env.NODE_ENV || 'development'}] AnythingLLM Standalone Backend listening on port ${process.env.SERVER_PORT || 3001}`
+      `[${
+        process.env.NODE_ENV || "development"
+      }] AnythingLLM Standalone Backend listening on port ${
+        process.env.SERVER_PORT || 3001
+      }`
     );
   })
   .on("error", function (err) {
     process.once("SIGUSR2", function () {
       Telemetry.flush();
-      console.error(err)
+      console.error(err);
       process.kill(process.pid, "SIGUSR2");
     });
     process.on("SIGINT", function () {
       Telemetry.flush();
-      console.log('SIGINT')
+      console.log("SIGINT");
       process.kill(process.pid, "SIGINT");
     });
   });

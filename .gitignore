@@ -13,3 +13,5 @@ server/dist
 dist
 bundleinspector.html
 *.log
+dist-server
+*.bak

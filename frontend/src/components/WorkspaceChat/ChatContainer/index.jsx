@@ -1,14 +1,23 @@
+import { v4 } from "uuid";
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import ChatHistory from "./ChatHistory";
 import PromptInput from "./PromptInput";
-import Workspace from "../../../models/workspace";
-import handleChat from "../../../utils/chat";
+import Workspace from "@/models/workspace";
+import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
+import handleSocketResponse, {
+  websocketURI,
+  AGENT_SESSION_END,
+  AGENT_SESSION_START,
+} from "@/utils/chat/agent";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
+  const { threadSlug = null } = useParams();
   const [message, setMessage] = useState("");
   const [loadingResponse, setLoadingResponse] = useState(false);
-  const [chatHistory, setChatHistory] = useState([]);
-
+  const [chatHistory, setChatHistory] = useState(knownHistory);
+  const [socketId, setSocketId] = useState(null);
+  const [websocket, setWebsocket] = useState(null);
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
@@ -34,9 +43,33 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     setLoadingResponse(true);
   };
 
+  const sendCommand = async (command, submit = false) => {
+    if (!command || command === "") return false;
+    if (!submit) {
+      setMessage(command);
+      return;
+    }
+
+    const prevChatHistory = [
+      ...chatHistory,
+      { content: command, role: "user" },
+      {
+        content: "",
+        role: "assistant",
+        pending: true,
+        userMessage: command,
+        animate: true,
+      },
+    ];
+
+    setChatHistory(prevChatHistory);
+    setMessage("");
+    setLoadingResponse(true);
+  };
+
   useEffect(() => {
-    setChatHistory(knownHistory)
-  }, [knownHistory])
+    setChatHistory(knownHistory);
+  }, [knownHistory]);
 
   useEffect(() => {
     async function fetchReply() {
@@ -45,58 +78,140 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       const remHistory = chatHistory.length > 0 ? chatHistory.slice(0, -1) : [];
       var _chatHistory = [...remHistory];
 
-      if (!promptMessage || !promptMessage?.userMessage) {
-        setLoadingResponse(false);
-        return false;
+      // Override hook for new messages to now go to agents until the connection closes
+      if (!!websocket) {
+        if (!promptMessage || !promptMessage?.userMessage) return false;
+        websocket.send(
+          JSON.stringify({
+            type: "awaitingFeedback",
+            feedback: promptMessage?.userMessage,
+          })
+        );
+        return;
       }
 
-      // TODO: Delete this snippet once we have streaming stable.
-      // const chatResult = await Workspace.sendChat(
-      //   workspace,
-      //   promptMessage.userMessage,
-      //   window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
-      //   "chat",
-      // )
-      // handleChat(
-      //   chatResult,
-      //   setLoadingResponse,
-      //   setChatHistory,
-      //   remHistory,
-      //   _chatHistory
-      // )
-
-      await Workspace.streamChat(
-        workspace,
-        promptMessage.userMessage,
-        window.localStorage.getItem(`workspace_chat_mode_${workspace.slug}`) ??
-        "chat",
-        (chatResult) =>
-          handleChat(
-            chatResult,
-            setLoadingResponse,
-            setChatHistory,
-            remHistory,
-            _chatHistory
-          )
-      );
+      // TODO: Simplify this
+      if (!promptMessage || !promptMessage?.userMessage) return false;
+      if (!!threadSlug) {
+        await Workspace.threads.streamChat(
+          { workspaceSlug: workspace.slug, threadSlug },
+          promptMessage.userMessage,
+          (chatResult) =>
+            handleChat(
+              chatResult,
+              setLoadingResponse,
+              setChatHistory,
+              remHistory,
+              _chatHistory,
+              setSocketId
+            )
+        );
+      } else {
+        await Workspace.streamChat(
+          workspace,
+          promptMessage.userMessage,
+          (chatResult) =>
+            handleChat(
+              chatResult,
+              setLoadingResponse,
+              setChatHistory,
+              remHistory,
+              _chatHistory,
+              setSocketId
+            )
+        );
+      }
       return;
     }
     loadingResponse === true && fetchReply();
   }, [loadingResponse, chatHistory, workspace]);
 
+  // TODO: Simplify this WSS stuff
+  useEffect(() => {
+    function handleWSS() {
+      try {
+        if (!socketId || !!websocket) return;
+        const socket = new WebSocket(
+          `${websocketURI()}/api/agent-invocation/${socketId}`
+        );
+
+        window.addEventListener(ABORT_STREAM_EVENT, () => {
+          window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+          websocket.close();
+        });
+
+        socket.addEventListener("message", (event) => {
+          setLoadingResponse(true);
+          try {
+            handleSocketResponse(event, setChatHistory);
+          } catch (e) {
+            console.error("Failed to parse data");
+            window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+            socket.close();
+          }
+          setLoadingResponse(false);
+        });
+
+        socket.addEventListener("close", (_event) => {
+          window.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+          setChatHistory((prev) => [
+            ...prev.filter((msg) => !!msg.content),
+            {
+              uuid: v4(),
+              type: "statusResponse",
+              content: "Agent session complete.",
+              role: "assistant",
+              sources: [],
+              closed: true,
+              error: null,
+              animate: false,
+              pending: false,
+            },
+          ]);
+          setLoadingResponse(false);
+          setWebsocket(null);
+          setSocketId(null);
+        });
+        setWebsocket(socket);
+        window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
+      } catch (e) {
+        setChatHistory((prev) => [
+          ...prev.filter((msg) => !!msg.content),
+          {
+            uuid: v4(),
+            type: "abort",
+            content: e.message,
+            role: "assistant",
+            sources: [],
+            closed: true,
+            error: e.message,
+            animate: false,
+            pending: false,
+          },
+        ]);
+        setLoadingResponse(false);
+        setWebsocket(null);
+        setSocketId(null);
+      }
+    }
+    handleWSS();
+  }, [socketId]);
+
   return (
-    <div
-      className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[26px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-4 border-accent"
-    >
+    <div className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
-        <ChatHistory history={chatHistory} workspace={workspace} />
-        <PromptInput
+        <ChatHistory
+          history={chatHistory}
           workspace={workspace}
+          sendCommand={sendCommand}
+        />
+        <PromptInput
           message={message}
           submit={handleSubmit}
           onChange={handleMessageChange}
           inputDisabled={loadingResponse}
           buttonDisabled={loadingResponse}
+          sendCommand={sendCommand}
         />
       </div>
     </div>

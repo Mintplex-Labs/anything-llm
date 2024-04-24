@@ -1,16 +1,29 @@
 import UserButton from "../components/UserMenu";
+import DownloadIndicator from "./DownloadIndicator";
+import VersionStatus from "./VersionStatus";
 
 export default function AppLayout({ children }) {
   return (
     <div>
-      <div className="frame-header relative h-[40px] bg-sidebar w-full flex flex-col">
+      <div className="relative h-[40px] bg-sidebar w-full flex flex-col">
         <div className="w-full h-full flex items-center">
-
           {/* To prevent building on top of stoplights */}
-          <div className="flex h-full w-[6%] shrink-0" />
-          <div id='left-header' className="w-[calc(100%-6%*0.10)] h-full flex items-center justify-start ml-4" />
-          <div id='mid-header' className="w-[calc(100%-6%*0.25)] h-full flex items-center justify-center" />
-          <div id='right-header' className="w-[calc(100%-6%*0.05)] h-full flex items-center justify-end mr-4">
+          <div className="frame-header flex h-full w-[6%] shrink-0" />
+          <div
+            id="left-header"
+            className="frame-header w-[calc(100%-6%*0.10)] h-full flex items-center justify-start ml-4"
+          />
+          <div
+            id="mid-header"
+            className="frame-header w-[calc(100%-6%*0.25)] h-full flex items-center justify-center"
+          />
+          <div
+            id="right-header"
+            className="w-[calc(100%-6%*0.05)] h-full flex items-center justify-end mr-4"
+          >
+            <div className="frame-header flex grow h-full" />
+            <DownloadIndicator />
+            <VersionStatus />
             <UserButton />
           </div>
         </div>
@@ -18,5 +31,5 @@ export default function AppLayout({ children }) {
       </div>
       <>{children}</>
     </div>
-  )
+  );
 }
