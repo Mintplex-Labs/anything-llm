@@ -8,14 +8,8 @@ const {
   ConfluencePagesLoader,
 } = require("langchain/document_loaders/web/confluence");
 
-async function loadConfluence({
-  baseUrl,
-  spaceKey,
-  username,
-  accessToken,
-  personalAccessToken,
-}) {
-  if ((!username || !accessToken) && !personalAccessToken) {
+async function loadConfluence({ baseUrl, spaceKey, username, accessToken }) {
+  if (!username || !accessToken) {
     return {
       success: false,
       reason:
@@ -23,13 +17,14 @@ async function loadConfluence({
     };
   }
 
+  const subdomain = baseUrl.split("//")[1].split(".")[0];
+
   console.log(`-- Working Confluence ${baseUrl} --`);
   const loader = new ConfluencePagesLoader({
     baseUrl,
     spaceKey,
     username,
     accessToken,
-    personalAccessToken,
   });
 
   const { docs, error } = await loader
@@ -50,8 +45,9 @@ async function loadConfluence({
       reason: error ?? "No pages found for that Confluence space.",
     };
   }
-
-  const outFolder = slugify(`Confluence ${spaceKey}`).toLowerCase();
+  const outFolder = slugify(
+    `${subdomain}-confluence-${v4().slice(0, 4)}`
+  ).toLowerCase();
   const outFolderPath = path.resolve(
     __dirname,
     `../../../../server/storage/documents/${outFolder}`
@@ -61,12 +57,12 @@ async function loadConfluence({
   docs.forEach((doc) => {
     const data = {
       id: v4(),
-      url: doc.metadata.source,
+      url: doc.metadata.url,
       title: doc.metadata.title || doc.metadata.source,
-      docAuthor: doc.metadata.author,
-      description: doc.metadata.description,
-      docSource: doc.metadata.source,
-      chunkSource: `link://${doc.metadata.source}`,
+      docAuthor: "Confluence",
+      description: doc.metadata.title,
+      docSource: "Confluence",
+      chunkSource: `confluence://${doc.metadata.url}`,
       published: new Date().toLocaleString(),
       wordCount: doc.pageContent.split(" ").length,
       pageContent: doc.pageContent,
