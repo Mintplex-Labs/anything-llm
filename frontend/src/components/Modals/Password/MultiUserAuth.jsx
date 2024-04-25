@@ -39,7 +39,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
             Password Reset
           </h3>
           <p className="text-sm text-white/90 md:text-left md:max-w-[300px] px-4 md:px-0 text-center">
-            Provide the necessary information below to reset your pasword.
+            Provide the necessary information below to reset your password.
           </p>
         </div>
       </div>
@@ -189,6 +189,7 @@ export default function MultiUserAuth() {
     if (valid && !!token && !!user) {
       setUser(user);
       setToken(token);
+
       if (recoveryCodes) {
         setRecoveryCodes(recoveryCodes);
         openRecoveryCodeModal();
@@ -204,10 +205,8 @@ export default function MultiUserAuth() {
     setLoading(false);
   };
 
-  const handleResetPassword = () => {
-    setShowRecoveryForm(true);
-  };
-
+  const handleDownloadComplete = () => setDownloadComplete(true);
+  const handleResetPassword = () => setShowRecoveryForm(true);
   const handleRecoverySubmit = async (username, recoveryCodes) => {
     const { success, resetToken, error } = await System.recoverAccount(
       username,
@@ -245,10 +244,6 @@ export default function MultiUserAuth() {
     }
   };
 
-  const handleDownloadComplete = () => {
-    setDownloadComplete(true);
-  };
-
   useEffect(() => {
     if (downloadComplete && user && token) {
       window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
@@ -266,10 +261,8 @@ export default function MultiUserAuth() {
     );
   }
 
-  if (showResetPasswordForm) {
+  if (showResetPasswordForm)
     return <ResetPasswordForm onSubmit={handleResetSubmit} />;
-  }
-
   return (
     <>
       <form onSubmit={handleLogin}>

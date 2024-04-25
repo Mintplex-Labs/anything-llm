@@ -1,5 +1,6 @@
 import showToast from "@/utils/toast";
 import { DownloadSimple, Key } from "@phosphor-icons/react";
+import { saveAs } from "file-saver";
 import { useState } from "react";
 
 export default function RecoveryCodeModal({
@@ -10,13 +11,8 @@ export default function RecoveryCodeModal({
   const [downloadClicked, setDownloadClicked] = useState(false);
 
   const downloadRecoveryCodes = () => {
-    const element = document.createElement("a");
-    const file = new Blob([recoveryCodes.join("\n")], { type: "text/plain" });
-    element.href = URL.createObjectURL(file);
-    element.download = "recovery_codes.txt";
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    const blob = new Blob([recoveryCodes.join("\n")], { type: "text/plain" });
+    saveAs(blob, "recovery_codes.txt");
     setDownloadClicked(true);
   };
 

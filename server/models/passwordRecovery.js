@@ -1,3 +1,4 @@
+const { v4 } = require("uuid");
 const prisma = require("../utils/prisma");
 const bcrypt = require("bcrypt");
 
@@ -60,15 +61,25 @@ const RecoveryCode = {
       return false;
     }
   },
+  hashesForUser: async function (userId = null) {
+    if (!userId) return [];
+    return (await this.findMany({ user_id: userId })).map(
+      (recovery) => recovery.code_hash
+    );
+  },
 };
 
 const PasswordResetToken = {
   tablename: "password_reset_tokens",
+  resetExpiryMs: 600_000, // 10 minutes in ms;
   writable: [],
-  create: async function (userId, token, expiresAt) {
+  calcExpiry: function () {
+    return new Date(Date.now() + this.resetExpiryMs);
+  },
+  create: async function (userId) {
     try {
       const passwordResetToken = await prisma.password_reset_tokens.create({
-        data: { user_id: userId, token, expiresAt },
+        data: { user_id: userId, token: v4(), expiresAt: this.calcExpiry() },
       });
       return { passwordResetToken, error: null };
     } catch (error) {
