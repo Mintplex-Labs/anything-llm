@@ -235,7 +235,7 @@ function GitHubBranchSelection({ repo, accessToken }) {
         <select
           name="branch"
           required={true}
-          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             -- loading available branches --
@@ -256,7 +256,7 @@ function GitHubBranchSelection({ repo, accessToken }) {
       <select
         name="branch"
         required={true}
-        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {allBranches.map((branch) => {
           return (

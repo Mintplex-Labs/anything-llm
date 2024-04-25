@@ -129,6 +129,24 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Generic OpenAI InferenceSettings
+  GenericOpenAiBasePath: {
+    envKey: "GENERIC_OPEN_AI_BASE_PATH",
+    checks: [isValidURL],
+  },
+  GenericOpenAiModelPref: {
+    envKey: "GENERIC_OPEN_AI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  GenericOpenAiTokenLimit: {
+    envKey: "GENERIC_OPEN_AI_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  GenericOpenAiKey: {
+    envKey: "GENERIC_OPEN_AI_API_KEY",
+    checks: [],
+  },
+
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
@@ -372,6 +390,7 @@ function supportedLLM(input = "") {
     "perplexity",
     "openrouter",
     "groq",
+    "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -384,7 +403,7 @@ function supportedTranscriptionProvider(input = "") {
 }
 
 function validGeminiModel(input = "") {
-  const validModels = ["gemini-pro"];
+  const validModels = ["gemini-pro", "gemini-1.5-pro-latest"];
   return validModels.includes(input)
     ? null
     : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
@@ -405,7 +424,14 @@ function validAnthropicModel(input = "") {
 }
 
 function supportedEmbeddingModel(input = "") {
-  const supported = ["openai", "azure", "localai", "native", "ollama"];
+  const supported = [
+    "openai",
+    "azure",
+    "localai",
+    "native",
+    "ollama",
+    "lmstudio",
+  ];
   return supported.includes(input)
     ? null
     : `Invalid Embedding model type. Must be one of ${supported.join(", ")}.`;

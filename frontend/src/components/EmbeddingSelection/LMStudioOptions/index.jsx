@@ -1,34 +1,14 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Info } from "@phosphor-icons/react";
-import paths from "@/utils/paths";
+import React, { useEffect, useState } from "react";
 import System from "@/models/system";
 
-export default function LMStudioOptions({ settings, showAlert = false }) {
+export default function LMStudioEmbeddingOptions({ settings }) {
   const [basePathValue, setBasePathValue] = useState(
-    settings?.LMStudioBasePath
+    settings?.EmbeddingBasePath
   );
-  const [basePath, setBasePath] = useState(settings?.LMStudioBasePath);
+  const [basePath, setBasePath] = useState(settings?.EmbeddingBasePath);
 
   return (
-    <div className="w-full flex flex-col">
-      {showAlert && (
-        <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-6 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
-          <div className="gap-x-2 flex items-center">
-            <Info size={12} className="hidden md:visible" />
-            <p className="text-sm md:text-base">
-              LMStudio as your LLM requires you to set an embedding service to
-              use.
-            </p>
-          </div>
-          <Link
-            to={paths.settings.embedder.modelPreference()}
-            className="text-sm md:text-base my-2 underline"
-          >
-            Manage embedding &rarr;
-          </Link>
-        </div>
-      )}
+    <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
@@ -36,38 +16,34 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
           </label>
           <input
             type="url"
-            name="LMStudioBasePath"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            name="EmbeddingBasePath"
+            className="border-none bg-zinc-900 text-white placeholder-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="http://localhost:1234/v1"
-            defaultValue={settings?.LMStudioBasePath}
+            defaultValue={settings?.EmbeddingBasePath}
+            onChange={(e) => setBasePathValue(e.target.value)}
+            onBlur={() => setBasePath(basePathValue)}
             required={true}
             autoComplete="off"
             spellCheck={false}
-            onChange={(e) => setBasePathValue(e.target.value)}
-            onBlur={() => setBasePath(basePathValue)}
           />
         </div>
-        {!settings?.credentialsOnly && (
-          <>
-            <LMStudioModelSelection settings={settings} basePath={basePath} />
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-4">
-                Token context window
-              </label>
-              <input
-                type="number"
-                name="LMStudioTokenLimit"
-                className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                placeholder="4096"
-                min={1}
-                onScroll={(e) => e.target.blur()}
-                defaultValue={settings?.LMStudioTokenLimit}
-                required={true}
-                autoComplete="off"
-              />
-            </div>
-          </>
-        )}
+        <LMStudioModelSelection settings={settings} basePath={basePath} />
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-4">
+            Max embedding chunk length
+          </label>
+          <input
+            type="number"
+            name="EmbeddingModelMaxChunkLength"
+            className="border-none bg-zinc-900 text-white placeholder-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            placeholder="8192"
+            min={1}
+            onScroll={(e) => e.target.blur()}
+            defaultValue={settings?.EmbeddingModelMaxChunkLength}
+            required={false}
+            autoComplete="off"
+          />
+        </div>
       </div>
     </div>
   );
@@ -99,7 +75,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
           Chat Model Selection
         </label>
         <select
-          name="LMStudioModelPref"
+          name="EmbeddingModelPref"
           disabled={true}
           className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
@@ -119,7 +95,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
         Chat Model Selection
       </label>
       <select
-        name="LMStudioModelPref"
+        name="EmbeddingModelPref"
         required={true}
         className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
@@ -130,7 +106,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
                 <option
                   key={model.id}
                   value={model.id}
-                  selected={settings.LMStudioModelPref === model.id}
+                  selected={settings.EmbeddingModelPref === model.id}
                 >
                   {model.id}
                 </option>

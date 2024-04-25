@@ -192,6 +192,19 @@ function normalizePath(filepath = "") {
   return result;
 }
 
+// Check if the vector-cache folder is empty or not
+// useful for it the user is changing embedders as this will
+// break the previous cache.
+function hasVectorCachedFiles() {
+  try {
+    return (
+      fs.readdirSync(vectorCachePath)?.filter((name) => name.endsWith(".json"))
+        .length !== 0
+    );
+  } catch {}
+  return false;
+}
+
 module.exports = {
   findDocumentInDocuments,
   cachedVectorInformation,
@@ -203,4 +216,5 @@ module.exports = {
   normalizePath,
   isWithin,
   documentsPath,
+  hasVectorCachedFiles,
 };

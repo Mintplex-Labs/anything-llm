@@ -8,6 +8,7 @@ import CTAButton from "@/components/lib/CTAButton";
 
 import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/assets/llmprovider/openai.png";
+import GenericOpenAiLogo from "@/assets/llmprovider/generic-openai.png";
 import AzureOpenAiLogo from "@/assets/llmprovider/azure.png";
 import AnthropicLogo from "@/assets/llmprovider/anthropic.png";
 import GeminiLogo from "@/assets/llmprovider/gemini.png";
@@ -22,6 +23,7 @@ import OpenRouterLogo from "@/assets/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/assets/llmprovider/groq.png";
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
+import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
 import AnthropicAiOptions from "@/components/LLMSelection/AnthropicAiOptions";
 import LMStudioOptions from "@/components/LLMSelection/LMStudioOptions";
@@ -166,15 +168,20 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "The fastest LLM inferencing available for real-time AI applications.",
     requiredConfig: ["GroqApiKey"],
   },
-  // {
-  //   name: "Native",
-  //   value: "native",
-  //   logo: AnythingLLMIcon,
-  //   options: (settings) => <NativeLLMOptions settings={settings} />,
-  //   description:
-  //     "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
-  //   requiredConfig: [],
-  // },
+  {
+    name: "Generic OpenAI",
+    value: "generic-openai",
+    logo: GenericOpenAiLogo,
+    options: (settings) => <GenericOpenAiOptions settings={settings} />,
+    description:
+      "Connect to any OpenAi-compatible service via a custom configuration",
+    requiredConfig: [
+      "GenericOpenAiBasePath",
+      "GenericOpenAiModelPref",
+      "GenericOpenAiTokenLimit",
+      "GenericOpenAiKey",
+    ],
+  },
 ];
 
 export default function GeneralLLMPreference() {

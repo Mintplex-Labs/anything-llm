@@ -5,6 +5,12 @@ import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import ChatModelSelection from "../ChatModelSelection";
 
+const NO_MODEL_SELECTION = [
+  "default",
+  "anythingllm_ollama",
+  "huggingface",
+  "generic-openai",
+];
 const DISABLED_PROVIDERS = [
   "anythingllm_ollama",
   "azure",
@@ -150,7 +156,7 @@ export default function WorkspaceLLMSelection({
           </button>
         )}
       </div>
-      {selectedLLM !== "default" && (
+      {!NO_MODEL_SELECTION.includes(selectedLLM) && (
         <div className="mt-4 flex flex-col gap-y-1">
           <ChatModelSelection
             provider={selectedLLM}
