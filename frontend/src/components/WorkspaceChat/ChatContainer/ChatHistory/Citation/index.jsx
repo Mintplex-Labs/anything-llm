@@ -91,7 +91,11 @@ const Citation = memo(({ source, onClick }) => {
       className="w-fit flex flex-row justify-center items-center cursor-pointer text-sky-400"
       onClick={onClick}
     >
-      <CitationIcon className="w-6 h-6" weight="bold" />
+      {chunkSourceInfo.icon === "confluence" ? (
+        <img src={ConfluenceLogo} alt="Confluence" className="w-6 h-6" />
+      ) : (
+        <CitationIcon className="w-6 h-6" weight="bold" />
+      )}
       <p className="text-sm font-medium whitespace-nowrap">{truncatedTitle}</p>
     </div>
   );
@@ -225,12 +229,15 @@ function parseChunkSource({ title = "", chunks = [] }) {
 
   if (
     !chunks.length ||
-    !chunks[0].chunkSource.startsWith("link://") ||
-    !chunks[0].chunkSource.startsWith("confluence://")
+    (!chunks[0].chunkSource.startsWith("link://") &&
+      !chunks[0].chunkSource.startsWith("confluence://"))
   )
     return nullResponse;
   try {
-    const url = new URL(chunks[0].chunkSource.split("link://")[1]);
+    const url = new URL(
+      chunks[0].chunkSource.split("link://")[1] ||
+        chunks[0].chunkSource.split("confluence://")[1]
+    );
     let text = url.host + url.pathname;
     let icon = "link";
 
