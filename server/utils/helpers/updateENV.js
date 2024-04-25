@@ -132,6 +132,24 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // Generic OpenAI InferenceSettings
+  GenericOpenAiBasePath: {
+    envKey: "GENERIC_OPEN_AI_BASE_PATH",
+    checks: [isValidURL],
+  },
+  GenericOpenAiModelPref: {
+    envKey: "GENERIC_OPEN_AI_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  GenericOpenAiTokenLimit: {
+    envKey: "GENERIC_OPEN_AI_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  GenericOpenAiKey: {
+    envKey: "GENERIC_OPEN_AI_API_KEY",
+    checks: [],
+  },
+
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
@@ -375,6 +393,7 @@ function supportedLLM(input = "") {
     "perplexity",
     "openrouter",
     "groq",
+    "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

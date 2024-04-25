@@ -88,7 +88,9 @@ function ThirdParty({ settings }) {
           </ul>
         </div>
         <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-white text-base font-bold">Embedding Engine</div>
+          <div className="text-white text-base font-bold">
+            Embedding Preference
+          </div>
           <div className="flex items-center gap-2.5">
             <img
               src={EMBEDDING_ENGINE_PRIVACY[embeddingEngine].logo}

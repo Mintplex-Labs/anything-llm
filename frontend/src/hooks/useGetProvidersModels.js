@@ -19,7 +19,13 @@ const PROVIDER_DEFAULT_MODELS = {
   localai: [],
   ollama: [],
   togetherai: [],
-  groq: ["llama2-70b-4096", "mixtral-8x7b-32768"],
+  groq: [
+    "llama2-70b-4096",
+    "mixtral-8x7b-32768",
+    "llama3-8b-8192",
+    "llama3-70b-8192",
+    "gemma-7b-it",
+  ],
   native: [],
 };
 
@@ -34,7 +40,7 @@ function groupModels(models) {
   }, {});
 }
 
-const groupedProviders = ["togetherai", "openai"];
+const groupedProviders = ["togetherai", "openai", "openrouter"];
 export default function useGetProviderModels(provider = null) {
   const [defaultModels, setDefaultModels] = useState([]);
   const [customModels, setCustomModels] = useState([]);

@@ -2,27 +2,41 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { chatPrompt } = require("../../chats");
 const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
 
-class GroqLLM {
+class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
     const { Configuration, OpenAIApi } = require("openai");
-    if (!process.env.GROQ_API_KEY) throw new Error("No Groq API key was set.");
+    if (!process.env.GENERIC_OPEN_AI_BASE_PATH)
+      throw new Error(
+        "GenericOpenAI must have a valid base path to use for the api."
+      );
 
+    this.basePath = process.env.GENERIC_OPEN_AI_BASE_PATH;
     const config = new Configuration({
-      basePath: "https://api.groq.com/openai/v1",
-      apiKey: process.env.GROQ_API_KEY,
+      basePath: this.basePath,
+      apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
     });
-
     this.openai = new OpenAIApi(config);
     this.model =
-      modelPreference || process.env.GROQ_MODEL_PREF || "llama2-70b-4096";
+      modelPreference ?? process.env.GENERIC_OPEN_AI_MODEL_PREF ?? null;
+    if (!this.model)
+      throw new Error("GenericOpenAI must have a valid model set.");
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
 
+    if (!embedder)
+      console.warn(
+        "No embedding provider defined for GenericOpenAiLLM - falling back to NativeEmbedder for embedding!"
+      );
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
     this.defaultTemp = 0.7;
+    this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -40,39 +54,20 @@ class GroqLLM {
   streamingEnabled() {
     return "streamChat" in this && "streamGetChatCompletion" in this;
   }
+
+  // Ensure the user set a value for the token limit
+  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    switch (this.model) {
-      case "llama2-70b-4096":
-        return 4096;
-      case "mixtral-8x7b-32768":
-        return 32_768;
-      case "llama3-8b-8192":
-        return 8192;
-      case "llama3-70b-8192":
-        return 8192;
-      case "gemma-7b-it":
-        return 8192;
-      default:
-        return 4096;
-    }
+    const limit = process.env.GENERIC_OPEN_AI_MODEL_TOKEN_LIMIT || 4096;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No token context limit was set.");
+    return Number(limit);
   }
 
-  async isValidChatCompletionModel(modelName = "") {
-    const validModels = [
-      "llama2-70b-4096",
-      "mixtral-8x7b-32768",
-      "llama3-8b-8192",
-      "llama3-70b-8192",
-      "gemma-7b-it",
-    ];
-    const isPreset = validModels.some((model) => modelName === model);
-    if (isPreset) return true;
-
-    const model = await this.openai
-      .retrieveModel(modelName)
-      .then((res) => res.data)
-      .catch(() => null);
-    return !!model;
+  // Short circuit since we have no idea if the model is valid or not
+  // in pre-flight for generic endpoints
+  isValidChatCompletionModel(_modelName = "") {
+    return true;
   }
 
   constructPrompt({
@@ -94,11 +89,6 @@ class GroqLLM {
   }
 
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `Groq chat: ${this.model} is not valid for chat completion!`
-      );
-
     const textResponse = await this.openai
       .createChatCompletion({
         model: this.model,
@@ -116,14 +106,14 @@ class GroqLLM {
       .then((json) => {
         const res = json.data;
         if (!res.hasOwnProperty("choices"))
-          throw new Error("GroqAI chat: No results!");
+          throw new Error("GenericOpenAI chat: No results!");
         if (res.choices.length === 0)
-          throw new Error("GroqAI chat: No results length!");
+          throw new Error("GenericOpenAI chat: No results length!");
         return res.choices[0].message.content;
       })
       .catch((error) => {
         throw new Error(
-          `GroqAI::createChatCompletion failed with: ${error.message}`
+          `GenericOpenAI::createChatCompletion failed with: ${error.message}`
         );
       });
 
@@ -131,11 +121,6 @@ class GroqLLM {
   }
 
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `GroqAI:streamChat: ${this.model} is not valid for chat completion!`
-      );
-
     const streamRequest = await this.openai.createChatCompletion(
       {
         model: this.model,
@@ -157,11 +142,6 @@ class GroqLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `GroqAI:chatCompletion: ${this.model} is not valid for chat completion!`
-      );
-
     const { data } = await this.openai
       .createChatCompletion({
         model: this.model,
@@ -177,11 +157,6 @@ class GroqLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `GroqAI:streamChatCompletion: ${this.model} is not valid for chat completion!`
-      );
-
     const streamRequest = await this.openai.createChatCompletion(
       {
         model: this.model,
@@ -214,5 +189,5 @@ class GroqLLM {
 }
 
 module.exports = {
-  GroqLLM,
+  GenericOpenAiLLM,
 };
