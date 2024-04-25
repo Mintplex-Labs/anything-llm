@@ -4,6 +4,9 @@
 | `sonar-small-online`  | 7B              | 12000          | Chat Completion |
 | `sonar-medium-chat`   | 8x7B            | 16384          | Chat Completion |
 | `sonar-medium-online` | 8x7B            | 12000          | Chat Completion |
+| `llama-3-8b-instruct`     | 8B              | 8192           | Chat Completion |
+| `llama-3-70b-instruct`    | 70B             | 8192           | Chat Completion |
 | `codellama-70b-instruct`  | 70B             | 16384          | Chat Completion |
 | `mistral-7b-instruct` [1] | 7B              | 16384          | Chat Completion |
 | `mixtral-8x7b-instruct`   | 8x7B            | 16384          | Chat Completion |
+| `mixtral-8x22b-instruct`  | 8x22B           | 16384          | Chat Completion |

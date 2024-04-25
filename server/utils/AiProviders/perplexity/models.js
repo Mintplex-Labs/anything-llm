@@ -19,6 +19,16 @@ const MODELS = {
     name: "sonar-medium-online",
     maxLength: 12000,
   },
+  "llama-3-8b-instruct": {
+    id: "llama-3-8b-instruct",
+    name: "llama-3-8b-instruct",
+    maxLength: 8192,
+  },
+  "llama-3-70b-instruct": {
+    id: "llama-3-70b-instruct",
+    name: "llama-3-70b-instruct",
+    maxLength: 8192,
+  },
   "codellama-70b-instruct": {
     id: "codellama-70b-instruct",
     name: "codellama-70b-instruct",
@@ -32,6 +42,11 @@ const MODELS = {
   "mixtral-8x7b-instruct": {
     id: "mixtral-8x7b-instruct",
     name: "mixtral-8x7b-instruct",
+    maxLength: 16384,
+  },
+  "mixtral-8x22b-instruct": {
+    id: "mixtral-8x22b-instruct",
+    name: "mixtral-8x22b-instruct",
     maxLength: 16384,
   },
 };
