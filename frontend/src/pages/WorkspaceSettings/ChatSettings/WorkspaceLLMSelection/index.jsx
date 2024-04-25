@@ -5,6 +5,9 @@ import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import ChatModelSelection from "../ChatModelSelection";
 
+// Some providers can only be associated with a single model.
+// In that case there is no selection to be made so we can just move on.
+const NO_MODEL_SELECTION = ["default", "huggingface", "generic-openai"];
 const DISABLED_PROVIDERS = ["azure", "lmstudio", "native"];
 const LLM_DEFAULT = {
   name: "System default",
@@ -145,7 +148,7 @@ export default function WorkspaceLLMSelection({
           </button>
         )}
       </div>
-      {selectedLLM !== "default" && (
+      {!NO_MODEL_SELECTION.includes(selectedLLM) && (
         <div className="mt-4 flex flex-col gap-y-1">
           <ChatModelSelection
             provider={selectedLLM}

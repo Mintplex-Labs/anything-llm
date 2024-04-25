@@ -2,6 +2,7 @@ import PreLoader from "@/components/Preloader";
 import System from "@/models/system";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
+import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import AnthropicLogo from "@/media/llmprovider/anthropic.png";
 import GeminiLogo from "@/media/llmprovider/gemini.png";
@@ -136,6 +137,13 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: GroqLogo,
   },
+  "generic-openai": {
+    name: "Generic OpenAI compatible service",
+    description: [
+      "Data is shared according to the terms of service applicable with your generic endpoint provider.",
+    ],
+    logo: GenericOpenAiLogo,
+  },
 };
 
 export const VECTOR_DB_PRIVACY = {
@@ -237,6 +245,13 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: OllamaLogo,
   },
+  lmstudio: {
+    name: "LMStudio",
+    description: [
+      "Your document text is embedded privately on the server running LMStudio",
+    ],
+    logo: LMStudioLogo,
+  },
 };
 
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
@@ -298,7 +313,9 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
           </ul>
         </div>
         <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-white text-base font-bold">Embedding Engine</div>
+          <div className="text-white text-base font-bold">
+            Embedding Preference
+          </div>
           <div className="flex items-center gap-2.5">
             <img
               src={EMBEDDING_ENGINE_PRIVACY[embeddingEngine].logo}
@@ -337,6 +354,9 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
           </ul>
         </div>
       </div>
+      <p className="text-white/60 text-sm font-medium py-1">
+        These settings can be reconfigured at any time in the settings.
+      </p>
     </div>
   );
 }

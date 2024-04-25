@@ -14,7 +14,13 @@ class GeminiLLM {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     this.model =
       modelPreference || process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro";
-    this.gemini = genAI.getGenerativeModel({ model: this.model });
+    this.gemini = genAI.getGenerativeModel(
+      { model: this.model },
+      {
+        // Gemini-1.5-pro is only available on the v1beta API.
+        apiVersion: this.model === "gemini-1.5-pro-latest" ? "v1beta" : "v1",
+      }
+    );
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -49,13 +55,15 @@ class GeminiLLM {
     switch (this.model) {
       case "gemini-pro":
         return 30_720;
+      case "gemini-1.5-pro-latest":
+        return 1_048_576;
       default:
         return 30_720; // assume a gemini-pro model
     }
   }
 
   isValidChatCompletionModel(modelName = "") {
-    const validModels = ["gemini-pro"];
+    const validModels = ["gemini-pro", "gemini-1.5-pro-latest"];
     return validModels.includes(modelName);
   }
 
@@ -90,11 +98,11 @@ class GeminiLLM {
     const allMessages = messages
       .map((message) => {
         if (message.role === "system")
-          return { role: "user", parts: message.content };
+          return { role: "user", parts: [{ text: message.content }] };
         if (message.role === "user")
-          return { role: "user", parts: message.content };
+          return { role: "user", parts: [{ text: message.content }] };
         if (message.role === "assistant")
-          return { role: "model", parts: message.content };
+          return { role: "model", parts: [{ text: message.content }] };
         return null;
       })
       .filter((msg) => !!msg);
