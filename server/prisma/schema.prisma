@@ -56,22 +56,22 @@ model system_settings {
 }
 
 model users {
-  id                                Int                               @id @default(autoincrement())
-  username                          String?                           @unique
-  password                          String
-  pfpFilename                       String?
-  role                              String                            @default("default")
-  suspended                         Int                               @default(0)
-  seen_recovery_codes   Boolean                 @default(false)
-  createdAt                         DateTime                          @default(now())
-  lastUpdatedAt                     DateTime                          @default(now())
-  workspace_chats                   workspace_chats[]
-  workspace_users                   workspace_users[]
-  embed_configs                     embed_configs[]
-  embed_chats                       embed_chats[]
-  threads                           workspace_threads[]
-  recovery_codes        recovery_codes[]
-  password_reset_tokens password_reset_tokens[]
+  id                          Int                           @id @default(autoincrement())
+  username                    String?                       @unique
+  password                    String
+  pfpFilename                 String?
+  role                        String                        @default("default")
+  suspended                   Int                           @default(0)
+  seen_recovery_codes         Boolean?                      @default(false)
+  createdAt                   DateTime                      @default(now())
+  lastUpdatedAt               DateTime                      @default(now())
+  workspace_chats             workspace_chats[]
+  workspace_users             workspace_users[]
+  embed_configs               embed_configs[]
+  embed_chats                 embed_chats[]
+  threads                     workspace_threads[]
+  recovery_codes              recovery_codes[]
+  password_reset_tokens       password_reset_tokens[]
   workspace_agent_invocations workspace_agent_invocations[]
 }
 
@@ -94,7 +94,6 @@ model password_reset_tokens {
   user      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
-
 }
 
 model document_vectors {
