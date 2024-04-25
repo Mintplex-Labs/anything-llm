@@ -14,6 +14,7 @@ import {
   X,
   YoutubeLogo,
 } from "@phosphor-icons/react";
+import ConfluenceLogo from "@/media/dataConnectors/confluence.png";
 import { Tooltip } from "react-tooltip";
 import { toPercentString } from "@/utils/numbers";
 
@@ -207,6 +208,7 @@ const ICONS = {
   link: Link,
   youtube: YoutubeLogo,
   github: GithubLogo,
+  confluence: ConfluenceLogo,
 };
 
 // Show the correct title and/or display text for citations
@@ -221,7 +223,11 @@ function parseChunkSource({ title = "", chunks = [] }) {
     icon: "file",
   };
 
-  if (!chunks.length || !chunks[0].chunkSource.startsWith("link://"))
+  if (
+    !chunks.length ||
+    !chunks[0].chunkSource.startsWith("link://") ||
+    !chunks[0].chunkSource.startsWith("confluence://")
+  )
     return nullResponse;
   try {
     const url = new URL(chunks[0].chunkSource.split("link://")[1]);
@@ -236,6 +242,11 @@ function parseChunkSource({ title = "", chunks = [] }) {
     if (url.host.includes("github.com")) {
       text = title;
       icon = "github";
+    }
+
+    if (url.host.includes("atlassian.net")) {
+      text = title;
+      icon = "confluence";
     }
 
     return {
