@@ -37,6 +37,7 @@ export default {
         "main-gradient": "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)",
         "modal-gradient": "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)",
         "sidebar-gradient": "linear-gradient(90deg, #5B616A 0%, #3F434B 100%)",
+        "login-gradient": "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)",
         "menu-item-gradient":
           "linear-gradient(90deg, #3D4147 0%, #2C2F35 100%)",
         "menu-item-selected-gradient":
