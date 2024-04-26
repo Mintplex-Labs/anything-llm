@@ -22,7 +22,7 @@ async function generateRecoveryCodes(userId) {
   const { error } = await RecoveryCode.createMany(newRecoveryCodes);
   if (!!error) throw new Error(error);
 
-  const { success } = await User.update(userId, {
+  const { user: success } = await User._update(userId, {
     seen_recovery_codes: true,
   });
   if (!success) throw new Error("Failed to generate user recovery codes!");
@@ -80,6 +80,11 @@ async function resetPassword(token, _newPassword = "", confirmPassword = "") {
   // JOI password rules will be enforced inside .update.
   const { error } = await User.update(resetToken.user_id, {
     password: newPassword,
+  });
+
+  // seen_recovery_codes is not publicly writable
+  // so we have to do direct update here
+  await User._update(resetToken.user_id, {
     seen_recovery_codes: false,
   });
 
