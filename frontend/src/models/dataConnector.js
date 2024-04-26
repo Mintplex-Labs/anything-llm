@@ -61,11 +61,11 @@ const DataConnector = {
     },
   },
   websiteDepth: {
-    scrape: async ({ url, depth }) => {
+    scrape: async ({ url, depth, maxLinks }) => {
       return await fetch(`${API_BASE}/ext/website-depth`, {
         method: "POST",
         headers: baseHeaders(),
-        body: JSON.stringify({ url, depth }),
+        body: JSON.stringify({ url, depth, maxLinks }),
       })
         .then((res) => res.json())
         .then((res) => {

@@ -92,8 +92,8 @@ function extensions(app) {
     async function (request, response) {
       try {
         const websiteDepth = require("../utils/extensions/WebsiteDepth");
-        const { url, depth } = reqBody(request);
-        const scrapedData = await websiteDepth(url, depth);
+        const { url, depth, maxLinks } = reqBody(request);
+        const scrapedData = await websiteDepth(url, depth, maxLinks);
         response.status(200).json({ success: true, data: scrapedData });
       } catch (e) {
         console.error(e);

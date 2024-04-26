@@ -6,13 +6,29 @@ const { default: slugify } = require("slugify");
 const { parse } = require("node-html-parser");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
+const path = require("path");
+const fs = require("fs");
 
-async function websiteDepth(startUrl, depth = 1) {
+async function websiteDepth(startUrl, depth = 1, maxLinks = 20) {
   const scrapedData = [];
   const visitedUrls = new Set();
+  const websiteName = new URL(startUrl).hostname;
+  const outputFolder = path.resolve(
+    __dirname,
+    `../../../../server/storage/documents/${slugify(websiteName)}`
+  );
+
+  if (!fs.existsSync(outputFolder)) {
+    fs.mkdirSync(outputFolder, { recursive: true });
+  }
 
   async function scrapeLevel(currentLink, currentLevel) {
-    if (currentLevel > depth || visitedUrls.has(currentLink)) return;
+    if (
+      currentLevel > depth ||
+      visitedUrls.has(currentLink) ||
+      visitedUrls.size >= maxLinks
+    )
+      return;
 
     visitedUrls.add(currentLink);
 
@@ -26,6 +42,7 @@ async function websiteDepth(startUrl, depth = 1) {
 
     const url = new URL(currentLink);
     const filename = (url.host + "-" + url.pathname).replace(".", "_");
+
     const data = {
       id: v4(),
       url: "file://" + slugify(filename) + ".html",
@@ -42,18 +59,20 @@ async function websiteDepth(startUrl, depth = 1) {
 
     scrapedData.push(data);
 
-    const links = extractLinks(content, url.origin);
+    const links = extractLinks(await getPageHTML(currentLink), url.origin);
     for (const link of links) {
+      if (visitedUrls.size >= maxLinks) break;
       await scrapeLevel(link, currentLevel + 1);
     }
   }
 
-  await scrapeLevel(startUrl, 1);
+  await scrapeLevel(startUrl, 0);
 
   for (const data of scrapedData) {
     const document = writeToServerDocuments(
       data,
-      `url-${slugify(data.title)}-${data.id}`
+      `${data.title}`,
+      outputFolder
     );
     console.log(
       `[SUCCESS]: URL ${data.chunkSource} converted & ready for embedding.\n`
@@ -69,7 +88,7 @@ async function getPageContent(link) {
       launchOptions: { headless: "new" },
       gotoOptions: { waitUntil: "domcontentloaded" },
       async evaluate(page, browser) {
-        const result = await page.evaluate(() => document.body.innerHTML);
+        const result = await page.evaluate(() => document.body.innerText);
         await browser.close();
         return result;
       },
@@ -79,6 +98,26 @@ async function getPageContent(link) {
     return docs[0].pageContent;
   } catch (error) {
     console.error("getPageContent failed to be fetched by Puppeteer.", error);
+    return null;
+  }
+}
+
+async function getPageHTML(link) {
+  try {
+    const loader = new PuppeteerWebBaseLoader(link, {
+      launchOptions: { headless: "new" },
+      gotoOptions: { waitUntil: "domcontentloaded" },
+      async evaluate(page, browser) {
+        const result = await page.evaluate(() => document.body.innerHTML);
+        await browser.close();
+        return result;
+      },
+    });
+
+    const docs = await loader.load();
+    return docs[0].pageContent;
+  } catch (error) {
+    console.error("getPageHTML failed to be fetched by Puppeteer.", error);
     return null;
   }
 }

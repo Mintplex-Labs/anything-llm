@@ -5,11 +5,10 @@ import pluralize from "pluralize";
 
 export default function WebsiteDepthOptions() {
   const [loading, setLoading] = useState(false);
-  const [url, setUrl] = useState("");
-  const [depth, setDepth] = useState(1);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const form = new FormData(e.target);
 
     try {
       setLoading(true);
@@ -20,9 +19,12 @@ export default function WebsiteDepthOptions() {
       );
 
       const { data, error } = await System.dataConnectors.websiteDepth.scrape({
-        url,
-        depth,
+        url: form.get("url"),
+        depth: parseInt(form.get("depth")),
+        maxLinks: parseInt(form.get("maxLinks")),
       });
+
+      console.log({ data, error });
 
       if (!!error) {
         showToast(error, "error", { clear: true });
@@ -31,7 +33,7 @@ export default function WebsiteDepthOptions() {
       }
 
       showToast(
-        `${data.scrapedPages} ${pluralize("page", data.scrapedPages)} scraped from ${url}. Output folder is ${data.folderName}.`,
+        `Successfully scraped ${data.length} ${pluralize("page", data.length)}!`,
         "success",
         { clear: true }
       );
@@ -56,7 +58,7 @@ export default function WebsiteDepthOptions() {
                     Website URL
                   </label>
                   <p className="text-xs font-normal text-white/50">
-                    URL of the website you wish to scrape.
+                    URL of the website you want to scrape.
                   </p>
                 </div>
                 <input
@@ -66,7 +68,6 @@ export default function WebsiteDepthOptions() {
                   placeholder="https://example.com"
                   required={true}
                   autoComplete="off"
-                  onChange={(e) => setUrl(e.target.value)}
                   spellCheck={false}
                 />
               </div>
@@ -84,8 +85,23 @@ export default function WebsiteDepthOptions() {
                   max="5"
                   className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                   required={true}
-                  value={depth}
-                  onChange={(e) => setDepth(parseInt(e.target.value))}
+                  defaultValue="1"
+                />
+              </div>
+              <div className="flex flex-col pr-10">
+                <div className="flex flex-col gap-y-1 mb-4">
+                  <label className="text-white text-sm font-bold">Max Links</label>
+                  <p className="text-xs font-normal text-white/50">
+                    Maximum number of links to scrape.
+                  </p>
+                </div>
+                <input
+                  type="number"
+                  name="maxLinks"
+                  min="1"
+                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  required={true}
+                  defaultValue="20"
                 />
               </div>
             </div>

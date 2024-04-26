@@ -23,9 +23,9 @@ export const DATA_CONNECTORS = {
   },
   "website-depth": {
     name: "Website Depth",
-    image: ConnectorImages.youtube,
+    image: ConnectorImages.websiteDepth,
     description:
-      "Scrape a website and all the links on the page up to a certain depth.",
+      "Scrape a website and its links on a page up to a certain depth.",
     options: <WebsiteDepthOptions />,
   },
 };
