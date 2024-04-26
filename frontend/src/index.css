@@ -679,3 +679,16 @@ does not extend the close button beyond the viewport. */
 .white-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #cccccc;
 }
+
+/* Recharts rendering styles */
+.recharts-text > * {
+  fill: #fff;
+}
+
+.recharts-legend-wrapper {
+  margin-bottom: 10px;
+}
+
+.text-tremor-content {
+  padding-bottom: 10px;
+}

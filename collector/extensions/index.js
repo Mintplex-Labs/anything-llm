@@ -102,6 +102,31 @@ function extensions(app) {
       return;
     }
   );
+
+  app.post(
+    "/ext/confluence",
+    [verifyPayloadIntegrity],
+    async function (request, response) {
+      try {
+        const loadConfluence = require("../utils/extensions/Confluence");
+        const { success, reason, data } = await loadConfluence(
+          reqBody(request)
+        );
+        response.status(200).json({ success, reason, data });
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: {
+            title: null,
+            author: null,
+          },
+        });
+      }
+      return;
+    }
+  );
 }
 
 module.exports = extensions;

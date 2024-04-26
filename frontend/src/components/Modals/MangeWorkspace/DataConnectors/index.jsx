@@ -2,6 +2,7 @@ import ConnectorImages from "@/components/DataConnectorOption/media";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import GithubOptions from "./Connectors/Github";
 import YoutubeOptions from "./Connectors/Youtube";
+import ConfluenceOptions from "./Connectors/Confluence";
 import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
 import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
@@ -27,6 +28,12 @@ export const DATA_CONNECTORS = {
     description:
       "Scrape a website and its links on a page up to a certain depth.",
     options: <WebsiteDepthOptions />,
+  },
+  confluence: {
+    name: "Confluence",
+    image: ConnectorImages.confluence,
+    description: "Import an entire Confluence page in a single click.",
+    options: <ConfluenceOptions />,
   },
 };
 

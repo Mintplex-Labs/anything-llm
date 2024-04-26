@@ -6,6 +6,7 @@ import ManageWorkspace from "../../../Modals/MangeWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import useUser from "@/hooks/useUser";
+import Chartable from "./Chartable";
 
 export default function ChatHistory({ history = [], workspace, sendCommand }) {
   const { user } = useUser();
@@ -131,6 +132,12 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
 
         if (props?.type === "statusResponse" && !!props.content) {
           return <StatusResponse key={props.uuid} props={props} />;
+        }
+
+        if (props.type === "rechartVisualize" && !!props.content) {
+          return (
+            <Chartable key={props.uuid} workspace={workspace} props={props} />
+          );
         }
 
         if (isLastBotReply && props.animate) {
