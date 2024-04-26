@@ -375,7 +375,7 @@ export function Chartable({ props, workspace }) {
               <DownloadGraph onClick={handleDownload} />
               <div ref={ref}>{renderChart()}</div>
               <span
-                className={`reply flex flex-col gap-y-1 mt-2`}
+                className={`flex flex-col gap-y-1 mt-2`}
                 dangerouslySetInnerHTML={{
                   __html: renderMarkdown(content.caption),
                 }}
@@ -396,7 +396,7 @@ export function Chartable({ props, workspace }) {
         </div>
         <div className="flex gap-x-5">
           <span
-            className={`reply flex flex-col gap-y-1 mt-2`}
+            className={`flex flex-col gap-y-1 mt-2`}
             dangerouslySetInnerHTML={{
               __html: renderMarkdown(content.caption),
             }}
