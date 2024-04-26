@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import React, { memo, useState } from "react";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
 import truncate from "truncate";
@@ -91,11 +91,7 @@ const Citation = memo(({ source, onClick }) => {
       className="w-fit flex flex-row justify-center items-center cursor-pointer text-sky-400"
       onClick={onClick}
     >
-      {chunkSourceInfo.icon === "confluence" ? (
-        <img src={ConfluenceLogo} alt="Confluence" className="w-6 h-6" />
-      ) : (
-        <CitationIcon className="w-6 h-6" weight="bold" />
-      )}
+      <CitationIcon className="w-6 h-6" weight="bold" />
       <p className="text-sm font-medium whitespace-nowrap">{truncatedTitle}</p>
     </div>
   );
@@ -207,14 +203,6 @@ function CitationDetailModal({ source, onClose }) {
   );
 }
 
-const ICONS = {
-  file: FileText,
-  link: Link,
-  youtube: YoutubeLogo,
-  github: GithubLogo,
-  confluence: ConfluenceLogo,
-};
-
 // Show the correct title and/or display text for citations
 // which contain valid outbound links that can be clicked by the
 // user when viewing a citation. Optionally allows various icons
@@ -265,3 +253,16 @@ function parseChunkSource({ title = "", chunks = [] }) {
   } catch {}
   return nullResponse;
 }
+
+// Patch to render Confluence icon as a element like we do with Phosphor
+const ConfluenceIcon = ({ ...props }) => (
+  <img src={ConfluenceLogo} {...props} />
+);
+
+const ICONS = {
+  file: FileText,
+  link: Link,
+  youtube: YoutubeLogo,
+  github: GithubLogo,
+  confluence: ConfluenceIcon,
+};
