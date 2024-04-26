@@ -60,6 +60,29 @@ const DataConnector = {
         });
     },
   },
+
+  confluence: {
+    collect: async function ({ pageUrl, username, accessToken }) {
+      return await fetch(`${API_BASE}/ext/confluence`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({
+          pageUrl,
+          username,
+          accessToken,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason);
+          return { data: res.data, error: null };
+        })
+        .catch((e) => {
+          console.error(e);
+          return { data: null, error: e.message };
+        });
+    },
+  },
 };
 
 export default DataConnector;
