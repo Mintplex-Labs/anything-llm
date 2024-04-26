@@ -56,7 +56,14 @@ embeddedEndpoints(apiRouter);
 
 if (process.env.NODE_ENV !== "development") {
   app.use(
-    express.static(path.resolve(__dirname, "public"), { extensions: ["js"] })
+    express.static(path.resolve(__dirname, "public"), {
+      extensions: ["js"],
+      setHeaders: (res) => {
+        // Disable I-framing of entire site UI
+        res.removeHeader("X-Powered-By");
+        res.setHeader("X-Frame-Options", "DENY");
+      },
+    })
   );
 
   app.use("/", function (_, response) {
