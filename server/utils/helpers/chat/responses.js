@@ -123,6 +123,7 @@ function convertToChatHistory(history = []) {
         sentAt: moment(createdAt).unix(),
       },
       {
+        type: data?.type || "chart",
         role: "assistant",
         content: data.text,
         sources: data.sources || [],

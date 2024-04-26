@@ -11,6 +11,7 @@ const handledEvents = [
   "fileDownload",
   "awaitingFeedback",
   "wssFailure",
+  "rechartVisualize",
 ];
 
 export function websocketURI() {
@@ -48,6 +49,25 @@ export default function handleSocketResponse(event, setChatHistory) {
   if (data.type === "fileDownload") {
     saveAs(data.content.b64Content, data.content.filename ?? "unknown.txt");
     return;
+  }
+
+  if (data.type === "rechartVisualize") {
+    return setChatHistory((prev) => {
+      return [
+        ...prev.filter((msg) => !!msg.content),
+        {
+          type: "rechartVisualize",
+          uuid: v4(),
+          content: data.content,
+          role: "assistant",
+          sources: [],
+          closed: true,
+          error: null,
+          animate: false,
+          pending: false,
+        },
+      ];
+    });
   }
 
   if (data.type === "wssFailure") {

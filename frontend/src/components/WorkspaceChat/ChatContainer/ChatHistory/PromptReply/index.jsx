@@ -71,7 +71,7 @@ const PromptReply = ({
   );
 };
 
-function WorkspaceProfileImage({ workspace }) {
+export function WorkspaceProfileImage({ workspace }) {
   if (!!workspace.pfpUrl) {
     return (
       <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden">
