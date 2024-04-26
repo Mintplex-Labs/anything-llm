@@ -60,6 +60,24 @@ const DataConnector = {
         });
     },
   },
+  websiteDepth: {
+    scrape: async ({ url, depth }) => {
+      return await fetch(`${API_BASE}/ext/website-depth`, {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ url, depth }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (!res.success) throw new Error(res.reason);
+          return { data: res.data, error: null };
+        })
+        .catch((e) => {
+          console.error(e);
+          return { data: null, error: e.message };
+        });
+    },
+  },
 };
 
 export default DataConnector;

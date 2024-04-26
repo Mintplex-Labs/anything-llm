@@ -4,6 +4,7 @@ import GithubOptions from "./Connectors/Github";
 import YoutubeOptions from "./Connectors/Youtube";
 import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
+import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
 
 export const DATA_CONNECTORS = {
   github: {
@@ -19,6 +20,13 @@ export const DATA_CONNECTORS = {
     description:
       "Import the transcription of an entire YouTube video from a link.",
     options: <YoutubeOptions />,
+  },
+  "website-depth": {
+    name: "Website Depth",
+    image: ConnectorImages.youtube,
+    description:
+      "Scrape a website and all the links on the page up to a certain depth.",
+    options: <WebsiteDepthOptions />,
   },
 };
 
