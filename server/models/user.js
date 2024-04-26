@@ -10,12 +10,11 @@ const User = {
     "role",
     "suspended",
   ],
+  // validations for the above writable fields.
   castColumnValue: function (key, value) {
     switch (key) {
       case "suspended":
         return Number(Boolean(value));
-      case "seen_recovery_codes":
-        return Boolean(value);
       default:
         return String(value);
     }
