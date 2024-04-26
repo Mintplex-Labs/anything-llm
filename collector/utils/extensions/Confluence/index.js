@@ -8,8 +8,18 @@ const {
   ConfluencePagesLoader,
 } = require("langchain/document_loaders/web/confluence");
 
-async function loadConfluence({ baseUrl, spaceKey, username, accessToken }) {
-  if (!username || !accessToken) {
+function validSpaceUrl(spaceUrl = "") {
+  const UrlPattern = require("url-pattern");
+  const pattern = new UrlPattern(
+    "https\\://(:subdomain).atlassian.net/wiki/spaces/(:spaceKey)*"
+  );
+  const match = pattern.match(spaceUrl);
+  if (!match) return { valid: false, result: null };
+  return { valid: true, result: match };
+}
+
+async function loadConfluence({ pageUrl, username, accessToken }) {
+  if (!pageUrl || !username || !accessToken) {
     return {
       success: false,
       reason:
@@ -17,11 +27,19 @@ async function loadConfluence({ baseUrl, spaceKey, username, accessToken }) {
     };
   }
 
-  const subdomain = baseUrl.split("//")[1].split(".")[0];
+  const validSpace = validSpaceUrl(pageUrl);
+  if (!validSpace.result) {
+    return {
+      success: false,
+      reason:
+        "Confluence space URL is not in the expected format of https://domain.atlassian.net/wiki/space/~SPACEID/*",
+    };
+  }
 
-  console.log(`-- Working Confluence ${baseUrl} --`);
+  const { subdomain, spaceKey } = validSpace.result;
+  console.log(`-- Working Confluence ${subdomain}.atlassian.net --`);
   const loader = new ConfluencePagesLoader({
-    baseUrl,
+    baseUrl: `https://${subdomain}.atlassian.net/wiki`,
     spaceKey,
     username,
     accessToken,
@@ -52,16 +70,16 @@ async function loadConfluence({ baseUrl, spaceKey, username, accessToken }) {
     __dirname,
     `../../../../server/storage/documents/${outFolder}`
   );
-  if (!fs.existsSync(outFolderPath)) fs.mkdirSync(outFolderPath);
+  fs.mkdirSync(outFolderPath);
 
   docs.forEach((doc) => {
     const data = {
       id: v4(),
-      url: doc.metadata.url,
+      url: doc.metadata.url + ".page",
       title: doc.metadata.title || doc.metadata.source,
-      docAuthor: "Confluence",
+      docAuthor: subdomain,
       description: doc.metadata.title,
-      docSource: "Confluence",
+      docSource: `${subdomain} Confluence`,
       chunkSource: `confluence://${doc.metadata.url}`,
       published: new Date().toLocaleString(),
       wordCount: doc.pageContent.split(" ").length,

@@ -62,22 +62,14 @@ const DataConnector = {
   },
 
   confluence: {
-    collect: async function ({
-      baseUrl,
-      spaceKey,
-      username,
-      accessToken,
-      personalAccessToken,
-    }) {
+    collect: async function ({ pageUrl, username, accessToken }) {
       return await fetch(`${API_BASE}/ext/confluence`, {
         method: "POST",
         headers: baseHeaders(),
         body: JSON.stringify({
-          baseUrl,
-          spaceKey,
+          pageUrl,
           username,
           accessToken,
-          personalAccessToken,
         }),
       })
         .then((res) => res.json())

@@ -6,20 +6,6 @@ import { Tooltip } from "react-tooltip";
 
 export default function ConfluenceOptions() {
   const [loading, setLoading] = useState(false);
-  const [pageUrl, setPageUrl] = useState("");
-
-  const extractBaseUrlAndSpaceKey = (url) => {
-    const regex =
-      /https:\/\/(.*?)\.atlassian\.net\/wiki\/spaces\/~(.*?)\/pages/;
-    const match = url.match(regex);
-    if (match) {
-      return {
-        baseUrl: `https://${match[1]}.atlassian.net/wiki`,
-        spaceKey: `~${match[2]}`,
-      };
-    }
-    return null;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,8 +22,7 @@ export default function ConfluenceOptions() {
         }
       );
       const { data, error } = await System.dataConnectors.confluence.collect({
-        baseUrl: extractBaseUrlAndSpaceKey(pageUrl).baseUrl,
-        spaceKey: extractBaseUrlAndSpaceKey(pageUrl).spaceKey,
+        pageUrl: form.get("pageUrl"),
         username: form.get("username"),
         accessToken: form.get("accessToken"),
       });
@@ -85,8 +70,6 @@ export default function ConfluenceOptions() {
                   required={true}
                   autoComplete="off"
                   spellCheck={false}
-                  value={pageUrl}
-                  onChange={(e) => setPageUrl(e.target.value)}
                 />
               </div>
               <div className="flex flex-col pr-10">
@@ -99,7 +82,7 @@ export default function ConfluenceOptions() {
                   </p>
                 </div>
                 <input
-                  type="text"
+                  type="email"
                   name="username"
                   className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                   placeholder="jdoe@example.com"
@@ -147,7 +130,7 @@ export default function ConfluenceOptions() {
                   </p>
                 </div>
                 <input
-                  type="text"
+                  type="password"
                   name="accessToken"
                   className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                   placeholder="abcd1234"
