@@ -5,11 +5,9 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
-
-function openRouterModels() {
-  const { MODELS } = require("./models.js");
-  return MODELS || {};
-}
+const fs = require("fs");
+const path = require("path");
+const { safeJsonParse } = require("../../http");
 
 class OpenRouterLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -17,8 +15,9 @@ class OpenRouterLLM {
     if (!process.env.OPENROUTER_API_KEY)
       throw new Error("No OpenRouter API key was set.");
 
+    this.basePath = "https://openrouter.ai/api/v1";
     const config = new Configuration({
-      basePath: "https://openrouter.ai/api/v1",
+      basePath: this.basePath,
       apiKey: process.env.OPENROUTER_API_KEY,
       baseOptions: {
         headers: {
@@ -38,6 +37,81 @@ class OpenRouterLLM {
 
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
     this.defaultTemp = 0.7;
+
+    const cacheFolder = path.resolve(
+      process.env.STORAGE_DIR
+        ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
+        : path.resolve(__dirname, `../../../storage/models/openrouter`)
+    );
+    fs.mkdirSync(cacheFolder, { recursive: true });
+    this.cacheModelPath = path.resolve(cacheFolder, "models.json");
+    this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+  }
+
+  async init() {
+    await this.#syncModels();
+    return this;
+  }
+
+  // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)
+  // from the current date. If it is, then we will refetch the API so that all the models are up
+  // to date.
+  #cacheIsStale() {
+    const MAX_STALE = 6.048e8; // 1 Week in MS
+    if (!fs.existsSync(this.cacheAtPath)) return true;
+    const now = Number(new Date());
+    const timestampMs = Number(fs.readFileSync(this.cacheAtPath));
+    return now - timestampMs > MAX_STALE;
+  }
+
+  // The OpenRouter model API has a lot of models, so we cache this locally in the directory
+  // as if the cache directory JSON file is stale or does not exist we will fetch from API and store it.
+  // This might slow down the first request, but we need the proper token context window
+  // for each model and this is a constructor property - so we can really only get it if this cache exists.
+  // We used to have this as a chore, but given there is an API to get the info - this makes little sense.
+  async #syncModels() {
+    if (fs.existsSync(this.cacheModelPath) && !this.#cacheIsStale())
+      return false;
+
+    this.log(
+      "Model cache is not present or stale. Fetching from OpenRouter API."
+    );
+    await fetch(`${this.basePath}/models`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then(({ data = [] }) => {
+        const models = {};
+        data.forEach((model) => {
+          models[model.id] = {
+            id: model.id,
+            name: model.name,
+            organization:
+              model.id.split("/")[0].charAt(0).toUpperCase() +
+              model.id.split("/")[0].slice(1),
+            maxLength: model.context_length,
+          };
+        });
+        fs.writeFileSync(this.cacheModelPath, JSON.stringify(models), {
+          encoding: "utf-8",
+        });
+        fs.writeFileSync(this.cacheAtPath, String(Number(new Date())), {
+          encoding: "utf-8",
+        });
+        return models;
+      })
+      .catch((e) => {
+        console.error(e);
+        return {};
+      });
+    return;
   }
 
   #appendContext(contextTexts = []) {
@@ -52,8 +126,12 @@ class OpenRouterLLM {
     );
   }
 
-  allModelInformation() {
-    return openRouterModels();
+  models() {
+    if (!fs.existsSync(this.cacheModelPath)) return {};
+    return safeJsonParse(
+      fs.readFileSync(this.cacheModelPath, { encoding: "utf-8" }),
+      {}
+    );
   }
 
   streamingEnabled() {
@@ -61,12 +139,13 @@ class OpenRouterLLM {
   }
 
   promptWindowLimit() {
-    const availableModels = this.allModelInformation();
+    const availableModels = this.models();
     return availableModels[this.model]?.maxLength || 4096;
   }
 
   async isValidChatCompletionModel(model = "") {
-    const availableModels = this.allModelInformation();
+    await this.#syncModels();
+    const availableModels = this.models();
     return availableModels.hasOwnProperty(model);
   }
 
@@ -343,5 +422,4 @@ class OpenRouterLLM {
 
 module.exports = {
   OpenRouterLLM,
-  openRouterModels,
 };

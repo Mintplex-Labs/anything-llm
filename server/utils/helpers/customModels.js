@@ -1,4 +1,4 @@
-const { openRouterModels } = require("../AiProviders/openRouter");
+const { OpenRouterLLM } = require("../AiProviders/openRouter");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
 const SUPPORT_CUSTOM_MODELS = [
@@ -232,7 +232,8 @@ async function getPerplexityModels() {
 }
 
 async function getOpenRouterModels() {
-  const knownModels = await openRouterModels();
+  const openrouter = await new OpenRouterLLM().init();
+  const knownModels = openrouter.models();
   if (!Object.keys(knownModels).length === 0)
     return { models: [], error: null };
 

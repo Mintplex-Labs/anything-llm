@@ -11,6 +11,7 @@ import AvailableAgentsButton, {
   AvailableAgents,
   useAvailableAgents,
 } from "./AgentMenu";
+import TextSizeButton from "./TextSizeMenu";
 export default function PromptInput({
   message,
   submit,
@@ -137,6 +138,7 @@ export default function PromptInput({
                   showing={showAgents}
                   setShowAgents={setShowAgents}
                 />
+                <TextSizeButton />
               </div>
             </div>
           </div>

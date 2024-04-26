@@ -1,4 +1,4 @@
-const OpenAI = require("openai:latest");
+const OpenAI = require("openai-latest");
 const Provider = require("./ai-provider.js");
 const { RetryError } = require("../error.js");
 

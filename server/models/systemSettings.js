@@ -87,6 +87,7 @@ const SystemSettings = {
     },
   },
   currentSettings: async function () {
+    const { hasVectorCachedFiles } = require("../utils/files");
     const llmProvider = process.env.LLM_PROVIDER;
     const vectorDB = process.env.VECTOR_DB;
     return {
@@ -104,7 +105,8 @@ const SystemSettings = {
       // Embedder Provider Selection Settings & Configs
       // --------------------------------------------------------
       EmbeddingEngine: process.env.EMBEDDING_ENGINE,
-      HasExistingEmbeddings: await this.hasEmbeddings(),
+      HasExistingEmbeddings: await this.hasEmbeddings(), // check if they have any currently embedded documents active in workspaces.
+      HasCachedEmbeddings: hasVectorCachedFiles(), // check if they any currently cached embedded docs.
       EmbeddingBasePath: process.env.EMBEDDING_BASE_PATH,
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
@@ -356,6 +358,12 @@ const SystemSettings = {
       HuggingFaceLLMEndpoint: process.env.HUGGING_FACE_LLM_ENDPOINT,
       HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
       HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
+
+      // Generic OpenAI Keys
+      GenericOpenAiBasePath: process.env.GENERIC_OPEN_AI_BASE_PATH,
+      GenericOpenAiModelPref: process.env.GENERIC_OPEN_AI_MODEL_PREF,
+      GenericOpenAiTokenLimit: process.env.GENERIC_OPEN_AI_MODEL_TOKEN_LIMIT,
+      GenericOpenAiKey: !!process.env.GENERIC_OPEN_AI_API_KEY,
     };
   },
 };

@@ -2,6 +2,7 @@ const { Document } = require("../../../../models/documents");
 const { safeJsonParse } = require("../../../http");
 const { validate } = require("uuid");
 const { summarizeContent } = require("../utils/summarize");
+const Provider = require("../providers/ai-provider");
 
 const docSummarizer = {
   name: "document-summarizer",
@@ -26,21 +27,21 @@ const docSummarizer = {
                 type: "string",
                 enum: ["list", "summarize"],
                 description:
-                  "The action to take. 'list' will return all files available and their document ids. 'summarize' will open and summarize the file by the document_id, in the format of a uuid.",
+                  "The action to take. 'list' will return all files available with their filename and descriptions. 'summarize' will open and summarize the file by the a document name.",
               },
-              document_id: {
+              document_filename: {
                 type: "string",
                 "x-nullable": true,
                 description:
-                  "A document id to summarize the content of. Document id must be a uuid.",
+                  "The file name of the document you want to get the full content of.",
               },
             },
             additionalProperties: false,
           },
-          handler: async function ({ action, document_id }) {
+          handler: async function ({ action, document_filename }) {
             if (action === "list") return await this.listDocuments();
             if (action === "summarize")
-              return await this.summarizeDoc(document_id);
+              return await this.summarizeDoc(document_filename);
             return "There is nothing we can do. This function call returns no information.";
           },
 
@@ -80,25 +81,51 @@ const docSummarizer = {
             }
           },
 
-          summarizeDoc: async function (documentId) {
+          summarizeDoc: async function (filename) {
             try {
-              if (!validate(documentId)) {
+              const availableDocs = safeJsonParse(
+                await this.listDocuments(),
+                []
+              );
+              if (!availableDocs.length) {
                 this.super.handlerProps.log(
-                  `${this.caller}: documentId ${documentId} is not a valid UUID`
+                  `${this.caller}: No available documents to summarize.`
                 );
-                return "This was not a valid documentID because it was not a uuid. No content was found.";
+                return "No documents were found.";
               }
 
-              const document = await Document.content(documentId);
+              const docInfo = availableDocs.find(
+                (info) => info.filename === filename
+              );
+              if (!docInfo) {
+                this.super.handlerProps.log(
+                  `${this.caller}: No available document by the name "${filename}".`
+                );
+                return `No available document by the name "${filename}".`;
+              }
+
+              const document = await Document.content(docInfo.document_id);
               this.super.introspect(
                 `${this.caller}: Grabbing all content for ${
-                  document?.title ?? "a discovered file."
+                  filename ?? "a discovered file."
                 }`
               );
-              if (document?.content?.length < 8000) return content;
+
+              if (!document.content || document.content.length === 0) {
+                throw new Error(
+                  "This document has no readable content that could be found."
+                );
+              }
+
+              if (
+                document.content?.length <
+                Provider.contextLimit(this.super.provider)
+              ) {
+                return document.content;
+              }
 
               this.super.introspect(
-                `${this.caller}: Summarizing ${document?.title ?? ""}...`
+                `${this.caller}: Summarizing ${filename ?? ""}...`
               );
 
               this.super.onAbort(() => {
@@ -109,6 +136,7 @@ const docSummarizer = {
               });
 
               return await summarizeContent(
+                this.super.provider,
                 this.controller.signal,
                 document.content
               );

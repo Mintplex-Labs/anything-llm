@@ -436,9 +436,9 @@ function apiWorkspaceEndpoints(app) {
 
         await Document.removeDocuments(currWorkspace, deletes);
         await Document.addDocuments(currWorkspace, adds);
-        const updatedWorkspace = await Workspace.get(
-          `id = ${Number(currWorkspace.id)}`
-        );
+        const updatedWorkspace = await Workspace.get({
+          id: Number(currWorkspace.id),
+        });
         response.status(200).json({ workspace: updatedWorkspace });
       } catch (e) {
         console.log(e.message, e);

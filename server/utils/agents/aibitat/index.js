@@ -12,6 +12,7 @@ const { Telemetry } = require("../../../models/telemetry.js");
 class AIbitat {
   emitter = new EventEmitter();
 
+  provider = null;
   defaultProvider = null;
   defaultInterrupt;
   maxRounds;
@@ -39,6 +40,7 @@ class AIbitat {
       provider,
       ...rest,
     };
+    this.provider = this.defaultProvider.provider;
   }
 
   /**

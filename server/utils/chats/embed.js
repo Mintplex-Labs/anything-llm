@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
-const { chatPrompt } = require("./index");
+const { chatPrompt, sourceIdentifier } = require("./index");
 const { EmbedChats } = require("../../models/embedChats");
 const {
   convertToPromptHistory,
@@ -69,6 +69,7 @@ async function streamChatWithForEmbed(
   let completeText;
   let contextTexts = [];
   let sources = [];
+  let pinnedDocIdentifiers = [];
   const { rawHistory, chatHistory } = await recentEmbedChatHistory(
     sessionId,
     embed,
@@ -86,6 +87,7 @@ async function streamChatWithForEmbed(
     .then((pinnedDocs) => {
       pinnedDocs.forEach((doc) => {
         const { pageContent, ...metadata } = doc;
+        pinnedDocIdentifiers.push(sourceIdentifier(doc));
         contextTexts.push(doc.pageContent);
         sources.push({
           text:
@@ -104,6 +106,7 @@ async function streamChatWithForEmbed(
           LLMConnector,
           similarityThreshold: embed.workspace?.similarityThreshold,
           topN: embed.workspace?.topN,
+          filterIdentifiers: pinnedDocIdentifiers,
         })
       : {
           contextTexts: [],

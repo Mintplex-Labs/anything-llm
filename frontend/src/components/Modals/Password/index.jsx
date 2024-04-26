@@ -8,26 +8,40 @@ import {
   AUTH_TIMESTAMP,
 } from "../../../utils/constants";
 import useLogo from "../../../hooks/useLogo";
+import illustration from "@/media/illustrations/login-illustration.svg";
+import loginLogo from "@/media/illustrations/login-logo.svg";
 
 export default function PasswordModal({ mode = "single" }) {
   const { logo: _initLogo } = useLogo();
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-zinc-800 flex items-center justify-center">
+    <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-[#25272C] flex flex-col md:flex-row items-center justify-center">
       <div
-        className="fixed top-0 left-0 right-0 bottom-0 z-40 animate-slow-pulse"
         style={{
           background: `
-            radial-gradient(circle at center, transparent 40%, black 100%),
-            linear-gradient(180deg, #FF8585 0%, #D4A447 100%)
-          `,
+    radial-gradient(circle at center, transparent 40%, black 100%),
+    linear-gradient(180deg, #85F8FF 0%, #65A6F2 100%)
+  `,
           width: "575px",
-          filter: "blur(200px)",
-          margin: "auto",
+          filter: "blur(150px)",
+          opacity: "0.4",
         }}
+        className="absolute left-0 top-0 z-0 h-full w-full"
       />
-
-      <div className="flex flex-col items-center justify-center h-full w-full z-50">
-        <img src={_initLogo} className="mb-20 w-80 opacity-80" alt="logo" />
+      <div className="hidden md:flex md:w-1/2 md:h-full md:items-center md:justify-center">
+        <img
+          className="w-full h-full object-contain z-50"
+          src={illustration}
+          alt="login illustration"
+        />
+      </div>
+      <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative">
+        <img
+          src={loginLogo}
+          className={`mb-8 w-[84px] h-[84px] absolute  ${
+            mode === "single" ? "md:top-50" : "md:top-36"
+          } top-44 z-30`}
+          alt="logo"
+        />
         {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth />}
       </div>
     </div>
