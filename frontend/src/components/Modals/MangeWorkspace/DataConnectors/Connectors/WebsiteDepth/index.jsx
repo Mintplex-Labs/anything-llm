@@ -12,11 +12,10 @@ export default function WebsiteDepthOptions() {
 
     try {
       setLoading(true);
-      showToast(
-        "Scraping website - this may take a while.",
-        "info",
-        { clear: true, autoClose: false }
-      );
+      showToast("Scraping website - this may take a while.", "info", {
+        clear: true,
+        autoClose: false,
+      });
 
       const { data, error } = await System.dataConnectors.websiteDepth.scrape({
         url: form.get("url"),
@@ -33,7 +32,10 @@ export default function WebsiteDepthOptions() {
       }
 
       showToast(
-        `Successfully scraped ${data.length} ${pluralize("page", data.length)}!`,
+        `Successfully scraped ${data.length} ${pluralize(
+          "page",
+          data.length
+        )}!`,
         "success",
         { clear: true }
       );
@@ -90,7 +92,9 @@ export default function WebsiteDepthOptions() {
               </div>
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
-                  <label className="text-white text-sm font-bold">Max Links</label>
+                  <label className="text-white text-sm font-bold">
+                    Max Links
+                  </label>
                   <p className="text-xs font-normal text-white/50">
                     Maximum number of links to scrape.
                   </p>
@@ -111,7 +115,9 @@ export default function WebsiteDepthOptions() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full justify-center border border-slate-200 px-4 py-2 rounded-lg text-[#222628] text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed"
+              className={`mt-2 w-full ${
+                loading ? "cursor-not-allowed animate-pulse" : ""
+              } justify-center border border-slate-200 px-4 py-2 rounded-lg text-[#222628] text-sm font-bold items-center flex gap-x-2 bg-slate-200 hover:bg-slate-300 hover:text-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed`}
             >
               {loading ? "Scraping website..." : "Submit"}
             </button>
