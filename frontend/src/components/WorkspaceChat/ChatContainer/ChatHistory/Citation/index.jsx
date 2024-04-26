@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import { memo, useState } from "react";
 import { v4 } from "uuid";
 import { decode as HTMLDecode } from "he";
 import truncate from "truncate";
