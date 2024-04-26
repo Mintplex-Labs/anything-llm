@@ -8,6 +8,11 @@ const {
 const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
+const cacheFolder = path.resolve(
+  process.env.STORAGE_DIR
+    ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
+    : path.resolve(__dirname, `../../../storage/models/openrouter`)
+);
 
 class OpenRouterLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -38,23 +43,14 @@ class OpenRouterLLM {
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
     this.defaultTemp = 0.7;
 
-    const cacheFolder = path.resolve(
-      process.env.STORAGE_DIR
-        ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
-        : path.resolve(__dirname, `../../../storage/models/openrouter`)
-    );
-    fs.mkdirSync(cacheFolder, { recursive: true });
+    if (!fs.existsSync(cacheFolder))
+      fs.mkdirSync(cacheFolder, { recursive: true });
     this.cacheModelPath = path.resolve(cacheFolder, "models.json");
     this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
   }
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
-  }
-
-  async init() {
-    await this.#syncModels();
-    return this;
   }
 
   // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)
@@ -80,37 +76,7 @@ class OpenRouterLLM {
     this.log(
       "Model cache is not present or stale. Fetching from OpenRouter API."
     );
-    await fetch(`${this.basePath}/models`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then(({ data = [] }) => {
-        const models = {};
-        data.forEach((model) => {
-          models[model.id] = {
-            id: model.id,
-            name: model.name,
-            organization:
-              model.id.split("/")[0].charAt(0).toUpperCase() +
-              model.id.split("/")[0].slice(1),
-            maxLength: model.context_length,
-          };
-        });
-        fs.writeFileSync(this.cacheModelPath, JSON.stringify(models), {
-          encoding: "utf-8",
-        });
-        fs.writeFileSync(this.cacheAtPath, String(Number(new Date())), {
-          encoding: "utf-8",
-        });
-        return models;
-      })
-      .catch((e) => {
-        console.error(e);
-        return {};
-      });
+    await fetchOpenRouterModels();
     return;
   }
 
@@ -330,7 +296,7 @@ class OpenRouterLLM {
           try {
             JSON.parse(message);
             validJSON = true;
-          } catch {}
+          } catch { }
 
           if (!validJSON) {
             // It can be possible that the chunk decoding is running away
@@ -420,6 +386,54 @@ class OpenRouterLLM {
   }
 }
 
+async function fetchOpenRouterModels() {
+  return await fetch(`https://openrouter.ai/api/v1/models`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json())
+    .then(({ data = [] }) => {
+      const models = {};
+      data.forEach((model) => {
+        models[model.id] = {
+          id: model.id,
+          name: model.name,
+          organization:
+            model.id.split("/")[0].charAt(0).toUpperCase() +
+            model.id.split("/")[0].slice(1),
+          maxLength: model.context_length,
+        };
+      });
+
+      // Cache all response information
+      if (!fs.existsSync(cacheFolder))
+        fs.mkdirSync(cacheFolder, { recursive: true });
+      fs.writeFileSync(
+        path.resolve(cacheFolder, "models.json"),
+        JSON.stringify(models),
+        {
+          encoding: "utf-8",
+        }
+      );
+      fs.writeFileSync(
+        path.resolve(cacheFolder, ".cached_at"),
+        String(Number(new Date())),
+        {
+          encoding: "utf-8",
+        }
+      );
+
+      return models;
+    })
+    .catch((e) => {
+      console.error(e);
+      return {};
+    });
+}
+
 module.exports = {
   OpenRouterLLM,
+  fetchOpenRouterModels,
 };
