@@ -6,6 +6,7 @@ import { useDropzone } from "react-dropzone";
 import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
+import debounce from "lodash.debounce";
 
 export default function UploadFile({
   workspace,
@@ -39,14 +40,9 @@ export default function UploadFile({
     setFetchingUrl(false);
   };
 
-  const handleUploadSuccess = () => {
-    fetchKeys(true);
-    showToast("File uploaded successfully", "success", { clear: true });
-  };
-
-  const handleUploadError = (message) => {
-    showToast(`Error uploading file: ${message}`, "error");
-  };
+  // Don't spam fetchKeys, wait 1s between calls at least.
+  const handleUploadSuccess = debounce(() => fetchKeys(true), 1000);
+  const handleUploadError = (_msg) => null; // stubbed.
 
   const onDrop = async (acceptedFiles, rejections) => {
     const newAccepted = acceptedFiles.map((file) => {
@@ -115,6 +111,8 @@ export default function UploadFile({
               <FileUploadProgress
                 key={file.uid}
                 file={file.file}
+                uuid={file.uid}
+                setFiles={setFiles}
                 slug={workspace.slug}
                 rejected={file?.rejected}
                 reason={file?.reason}
