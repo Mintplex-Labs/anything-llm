@@ -7,7 +7,12 @@ import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
 
-export default function UploadFile({ workspace, fetchKeys, setLoading, setLoadingMessage }) {
+export default function UploadFile({
+  workspace,
+  fetchKeys,
+  setLoading,
+  setLoadingMessage,
+}) {
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
