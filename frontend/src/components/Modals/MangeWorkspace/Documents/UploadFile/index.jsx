@@ -7,7 +7,12 @@ import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
 
-export default function UploadFile({ workspace, fetchKeys, setLoading }) {
+export default function UploadFile({
+  workspace,
+  fetchKeys,
+  setLoading,
+  setLoadingMessage,
+}) {
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
@@ -15,6 +20,7 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
   const handleSendLink = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setLoadingMessage("Scraping link...");
     setFetchingUrl(true);
     const formEl = e.target;
     const form = new FormData(formEl);
@@ -114,6 +120,8 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
                 reason={file?.reason}
                 onUploadSuccess={handleUploadSuccess}
                 onUploadError={handleUploadError}
+                setLoading={setLoading}
+                setLoadingMessage={setLoadingMessage}
               />
             ))}
           </div>

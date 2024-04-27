@@ -306,6 +306,7 @@ function Directory({
           workspace={workspace}
           fetchKeys={fetchKeys}
           setLoading={setLoading}
+          setLoadingMessage={setLoadingMessage}
         />
       </div>
     </div>
