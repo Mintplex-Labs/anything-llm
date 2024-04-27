@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useRef } from "react";
+import React, { useState, useEffect, memo } from "react";
 import truncate from "truncate";
 import { CheckCircle, XCircle } from "@phosphor-icons/react";
 import Workspace from "../../../../../../models/workspace";
@@ -60,6 +60,7 @@ function FileUploadProgressComponent({
         onUploadSuccess();
       }
 
+      // Begin fadeout timer to clear uploader queue.
       setTimeout(() => {
         fadeOut(() => setTimeout(() => beginFadeOut(), 300));
       }, 5000);
