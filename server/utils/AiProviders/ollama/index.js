@@ -1,5 +1,5 @@
 const { chatPrompt } = require("../../chats");
-const { StringOutputParser } = require("langchain/schema/output_parser");
+const { StringOutputParser } = require("@langchain/core/output_parsers");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -44,7 +44,7 @@ class OllamaAILLM {
       HumanMessage,
       SystemMessage,
       AIMessage,
-    } = require("langchain/schema");
+    } = require("@langchain/core/messages");
     const langchainChats = [];
     const roleToMessageMap = {
       system: SystemMessage,
