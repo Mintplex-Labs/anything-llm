@@ -350,6 +350,10 @@ const SystemSettings = {
       GroqApiKey: !!process.env.GROQ_API_KEY,
       GroqModelPref: process.env.GROQ_MODEL_PREF,
 
+      // Cohere API Keys
+      CohereApiKey: !!process.env.COHERE_API_KEY,
+      CohereModelPref: process.env.COHERE_MODEL_PREF,
+
       // Native LLM Keys
       NativeLLMModelPref: process.env.NATIVE_LLM_MODEL_PREF,
       NativeLLMTokenLimit: process.env.NATIVE_LLM_MODEL_TOKEN_LIMIT,
