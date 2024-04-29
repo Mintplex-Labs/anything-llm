@@ -207,13 +207,8 @@ class CohereLLM {
         `Cohere chat: ${this.model} is not valid for chat completion!`
       );
 
-    const message = messages[messages.length - 1].content;
-
-    console.log("message", message, "\n\n");
-    console.log("chatHistory", messages.slice(0, -1), "\n\n");
-
+    const message = messages[messages.length - 1].content; // Get the last message
     const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
-    console.log("CONVERTED CHAT HISTORY", cohereHistory, "\n\n");
 
     const chat = await this.cohere.chat({
       model: this.model,
@@ -221,8 +216,6 @@ class CohereLLM {
       chatHistory: cohereHistory,
       temperature,
     });
-
-    console.log("chat", chat, "\n\n");
 
     if (!chat.hasOwnProperty("text")) return null;
     return chat.text;
