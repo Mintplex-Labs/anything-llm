@@ -28,7 +28,7 @@ class OllamaAILLM {
   }
 
   #ollamaClient({ temperature = 0.07 }) {
-    const { ChatOllama } = require("langchain/chat_models/ollama");
+    const { ChatOllama } = require("@langchain/community/chat_models/ollama");
     return new ChatOllama({
       baseUrl: this.basePath,
       model: this.model,
