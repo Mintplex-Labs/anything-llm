@@ -1,4 +1,9 @@
 const { chatPrompt } = require("../../chats");
+const {
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
+const { v4 } = require("uuid");
 
 class CohereLLM {
   constructor(embedder = null) {
@@ -57,8 +62,7 @@ class CohereLLM {
   }
 
   streamingEnabled() {
-    return false;
-    // return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamChat" in this && "streamGetChatCompletion" in this;
   }
 
   promptWindowLimit() {
@@ -116,64 +120,27 @@ class CohereLLM {
         `Cohere chat: ${this.model} is not valid for chat completion!`
       );
 
-    // const textResponse = await this.cohere
-    //   .createChatCompletion({
-    //     model: this.model,
-    //     temperature: Number(workspace?.openAiTemp ?? 0.7),
-    //     n: 1,
-    //     messages: await this.compressMessages(
-    //       {
-    //         systemPrompt: chatPrompt(workspace),
-    //         userPrompt: prompt,
-    //         chatHistory,
-    //       },
-    //       rawHistory
-    //     ),
-    //   })
-    //   .then((json) => {
-    //     const res = json.data;
-    //     if (!res.hasOwnProperty("choices"))
-    //       throw new Error("Cohere chat: No results!");
-    //     if (res.choices.length === 0)
-    //       throw new Error("Cohere chat: No results length!");
-    //     return res.choices[0].message.content;
-    //   })
-    //   .catch((error) => {
-    //     throw new Error(
-    //       `Cohere::createChatCompletion failed with: ${error.message}`
-    //     );
-    //   });
+    const messages = await this.compressMessages(
+      {
+        systemPrompt: chatPrompt(workspace),
+        userPrompt: prompt,
+        chatHistory,
+      },
+      rawHistory
+    );
 
-    console.log("CHAT HISTORY", chatHistory);
-    const textResponse = await this.cohere
-      .chat({
-        model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
-        message: "Say a joke as a pirate",
-        chatHistory: await this.compressMessages(
-          {
-            systemPrompt: chatPrompt(workspace),
-            userPrompt: prompt,
-            chatHistory,
-          },
-          rawHistory
-        ),
-      })
-      .then((json) => {
-        const res = json.data;
-        if (!res.hasOwnProperty("choices"))
-          throw new Error("Cohere chat: No results!");
-        if (res.choices.length === 0)
-          throw new Error("Cohere chat: No results length!");
-        return res.choices[0].message.content;
-      })
-      .catch((error) => {
-        throw new Error(
-          `Cohere::createChatCompletion failed with: ${error.message}`
-        );
-      });
+    const message = messages[messages.length - 1].content; // Get the last message
+    const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
 
-    return textResponse;
+    const chat = await this.cohere.chat({
+      model: this.model,
+      message: message,
+      chatHistory: cohereHistory,
+      temperature: Number(workspace?.openAiTemp ?? 0.7),
+    });
+
+    if (!chat.hasOwnProperty("text")) return null;
+    return chat.text;
   }
 
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
@@ -227,16 +194,75 @@ class CohereLLM {
         `Cohere chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.createChatCompletion(
-      {
-        model: this.model,
-        stream: true,
-        messages,
-        temperature,
-      },
-      { responseType: "stream" }
-    );
-    return { type: "togetherAiStream", stream: streamRequest };
+    const message = messages[messages.length - 1].content; // Get the last message
+    const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
+
+    const stream = await this.cohere.chatStream({
+      model: this.model,
+      message: message,
+      chatHistory: cohereHistory,
+      temperature,
+    });
+
+    return { type: "stream", stream: stream };
+  }
+
+  async handleStream(response, stream, responseProps) {
+    let fullText = "";
+    const { uuid = v4(), sources = [] } = responseProps;
+
+    const handleAbort = () => {
+      writeResponseChunk(response, {
+        uuid,
+        sources,
+        type: "abort",
+        textResponse: fullText,
+        close: true,
+        error: false,
+      });
+      response.removeListener("close", handleAbort);
+    };
+    response.on("close", handleAbort);
+
+    try {
+      for await (const chat of stream.stream) {
+        if (chat.eventType === "text-generation") {
+          const text = chat.text;
+          fullText += text;
+
+          writeResponseChunk(response, {
+            uuid,
+            sources,
+            type: "textResponseChunk",
+            textResponse: text,
+            close: false,
+            error: false,
+          });
+        }
+      }
+
+      writeResponseChunk(response, {
+        uuid,
+        sources,
+        type: "textResponseChunk",
+        textResponse: "",
+        close: true,
+        error: false,
+      });
+      response.removeListener("close", handleAbort);
+      return fullText;
+    } catch (error) {
+      writeResponseChunk(response, {
+        uuid,
+        sources,
+        type: "abort",
+        textResponse: null,
+        close: true,
+        error: error.message,
+      });
+      response.removeListener("close", handleAbort);
+      throw error;
+    }
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
