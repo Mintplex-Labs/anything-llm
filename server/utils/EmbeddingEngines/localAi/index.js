@@ -23,7 +23,9 @@ class LocalAiEmbedder {
   }
 
   async embedTextInput(textInput) {
-    const result = await this.embedChunks(textInput);
+    const result = await this.embedChunks(
+      Array.isArray(textInput) ? textInput : [textInput]
+    );
     return result?.[0] || [];
   }
 
