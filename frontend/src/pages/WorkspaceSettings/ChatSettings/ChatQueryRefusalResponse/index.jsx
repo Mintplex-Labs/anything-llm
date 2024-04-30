@@ -17,7 +17,7 @@ export default function ChatQueryRefusalResponse({ workspace, setHasChanges }) {
         name="queryRefusalResponse"
         rows={2}
         defaultValue={chatQueryRefusalResponse(workspace)}
-        className="bg-zinc-900 placeholder:text-white/20 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-2"
+        className="border-none bg-zinc-900 placeholder:text-white/20 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-2"
         placeholder="The text returned in query mode when there is no relevant context found for a response."
         required={true}
         wrap="soft"
