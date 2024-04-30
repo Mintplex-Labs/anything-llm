@@ -28,7 +28,7 @@
     "html-to-text": "^9.0.5",
     "ignore": "^5.3.0",
     "js-tiktoken": "^1.0.8",
-    "langchain": "0.0.201",
+    "langchain": "0.1.36",
     "mammoth": "^1.6.0",
     "mbox-parser": "^1.0.1",
     "mime": "^3.0.0",

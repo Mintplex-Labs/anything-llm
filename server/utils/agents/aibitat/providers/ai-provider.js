@@ -2,8 +2,8 @@
  * A service that provides an AI client to create a completion.
  */
 
-const { ChatOpenAI } = require("langchain/chat_models/openai");
-const { ChatAnthropic } = require("langchain/chat_models/anthropic");
+const { ChatOpenAI } = require("@langchain/openai");
+const { ChatAnthropic } = require("@langchain/anthropic");
 
 class Provider {
   _client;
@@ -22,17 +22,17 @@ class Provider {
     switch (provider) {
       case "openai":
         return new ChatOpenAI({
-          openAIApiKey: process.env.OPEN_AI_KEY,
+          apiKey: process.env.OPEN_AI_KEY,
           ...config,
         });
       case "anthropic":
         return new ChatAnthropic({
-          anthropicApiKey: process.env.ANTHROPIC_API_KEY,
+          apiKey: process.env.ANTHROPIC_API_KEY,
           ...config,
         });
       default:
         return new ChatOpenAI({
-          openAIApiKey: process.env.OPEN_AI_KEY,
+          apiKey: process.env.OPEN_AI_KEY,
           ...config,
         });
     }

@@ -1,6 +1,6 @@
 const { loadSummarizationChain } = require("langchain/chains");
-const { PromptTemplate } = require("langchain/prompts");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
+const { PromptTemplate } = require("@langchain/core/prompts");
+const { RecursiveCharacterTextSplitter } = require("@langchain/textsplitters");
 const Provider = require("../providers/ai-provider");
 /**
  * Summarize content using OpenAI's GPT-3.5 model.

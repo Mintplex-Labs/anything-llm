@@ -7,9 +7,9 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 
-// Docs: https://api.js.langchain.com/classes/chat_models_llama_cpp.ChatLlamaCpp.html
+// Docs: https://js.langchain.com/docs/integrations/chat/llama_cpp
 const ChatLlamaCpp = (...args) =>
-  import("langchain/chat_models/llama_cpp").then(
+  import("@langchain/community/chat_models/llama_cpp").then(
     ({ ChatLlamaCpp }) => new ChatLlamaCpp(...args)
   );
 
@@ -64,7 +64,7 @@ class NativeLLM {
       HumanMessage,
       SystemMessage,
       AIMessage,
-    } = require("langchain/schema");
+    } = require("@langchain/core/messages");
     const langchainChats = [];
     const roleToMessageMap = {
       system: SystemMessage,
