@@ -4,7 +4,6 @@ const {
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
-const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { TextSplitter } = require("../../TextSplitter");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
@@ -56,9 +55,6 @@ const LanceDb = {
 
     const table = await client.openTable(_namespace);
     return (await table.countRows()) || 0;
-  },
-  embedder: function () {
-    return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
   },
   similarityResponse: async function (
     client,

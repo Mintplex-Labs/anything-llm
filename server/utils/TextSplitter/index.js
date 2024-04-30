@@ -64,7 +64,7 @@ class RecursiveSplitter {
   constructor({ chunkSize, chunkOverlap }) {
     const {
       RecursiveCharacterTextSplitter,
-    } = require("langchain/text_splitter");
+    } = require("@langchain/textsplitters");
     this.log(`Will split with`, { chunkSize, chunkOverlap });
     this.engine = new RecursiveCharacterTextSplitter({
       chunkSize,
