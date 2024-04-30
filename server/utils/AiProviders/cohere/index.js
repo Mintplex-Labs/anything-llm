@@ -149,24 +149,26 @@ class CohereLLM {
         `Cohere chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.createChatCompletion(
+    const messages = await this.compressMessages(
       {
-        model: this.model,
-        stream: true,
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
-        n: 1,
-        messages: await this.compressMessages(
-          {
-            systemPrompt: chatPrompt(workspace),
-            userPrompt: prompt,
-            chatHistory,
-          },
-          rawHistory
-        ),
+        systemPrompt: chatPrompt(workspace),
+        userPrompt: prompt,
+        chatHistory,
       },
-      { responseType: "stream" }
+      rawHistory
     );
-    return { type: "togetherAiStream", stream: streamRequest };
+
+    const message = messages[messages.length - 1].content; // Get the last message
+    const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
+
+    const stream = await this.cohere.chatStream({
+      model: this.model,
+      message: message,
+      chatHistory: cohereHistory,
+      temperature: Number(workspace?.openAiTemp ?? 0.7),
+    });
+
+    return { type: "stream", stream: stream };
   }
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))

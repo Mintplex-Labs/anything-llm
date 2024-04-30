@@ -112,6 +112,8 @@ const SystemSettings = {
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
 
+      CohereEmbeddingInputType: process.env.COHERE_EMBEDDING_INPUT_TYPE,
+
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
       // --------------------------------------------------------

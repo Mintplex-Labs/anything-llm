@@ -113,6 +113,9 @@ function getEmbeddingEngineSelection() {
     case "lmstudio":
       const { LMStudioEmbedder } = require("../EmbeddingEngines/lmstudio");
       return new LMStudioEmbedder();
+    case "cohere":
+      const { CohereEmbedder } = require("../EmbeddingEngines/cohere");
+      return new CohereEmbedder();
     default:
       return null;
   }
