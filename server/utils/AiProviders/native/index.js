@@ -64,7 +64,7 @@ class NativeLLM {
       HumanMessage,
       SystemMessage,
       AIMessage,
-    } = require("langchain/schema");
+    } = require("@langchain/core/messages");
     const langchainChats = [];
     const roleToMessageMap = {
       system: SystemMessage,
