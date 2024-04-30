@@ -2,20 +2,16 @@ const { toChunks, maximumChunkLength } = require("../../helpers");
 
 class LocalAiEmbedder {
   constructor() {
-    const { Configuration, OpenAIApi } = require("openai");
     if (!process.env.EMBEDDING_BASE_PATH)
       throw new Error("No embedding base path was set.");
     if (!process.env.EMBEDDING_MODEL_PREF)
       throw new Error("No embedding model was set.");
-    const config = new Configuration({
-      basePath: process.env.EMBEDDING_BASE_PATH,
-      ...(!!process.env.LOCAL_AI_API_KEY
-        ? {
-            apiKey: process.env.LOCAL_AI_API_KEY,
-          }
-        : {}),
+
+    const { OpenAI: OpenAIApi } = require("openai");
+    this.openai = new OpenAIApi({
+      baseURL: process.env.EMBEDDING_BASE_PATH,
+      apiKey: process.env.LOCAL_AI_API_KEY ?? null,
     });
-    this.openai = new OpenAIApi(config);
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 50;
@@ -34,13 +30,13 @@ class LocalAiEmbedder {
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
-          this.openai
-            .createEmbedding({
+          this.openai.embeddings
+            .create({
               model: process.env.EMBEDDING_MODEL_PREF,
               input: chunk,
             })
-            .then((res) => {
-              resolve({ data: res.data?.data, error: null });
+            .then((result) => {
+              resolve({ data: result?.data, error: null });
             })
             .catch((e) => {
               e.type =

@@ -1,5 +1,7 @@
 const { chatPrompt } = require("../../chats");
-const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
+const {
+  handleDefaultStreamResponseV2,
+} = require("../../helpers/chat/responses");
 
 //  hybrid of openAi LLM chat completion for LMStudio
 class LMStudioLLM {
@@ -7,11 +9,11 @@ class LMStudioLLM {
     if (!process.env.LMSTUDIO_BASE_PATH)
       throw new Error("No LMStudio API Base Path was set.");
 
-    const { Configuration, OpenAIApi } = require("openai");
-    const config = new Configuration({
-      basePath: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
+    const { OpenAI: OpenAIApi } = require("openai");
+    this.lmstudio = new OpenAIApi({
+      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
+      apiKey: null,
     });
-    this.lmstudio = new OpenAIApi(config);
 
     // Prior to LMStudio 0.2.17 the `model` param was not required and you could pass anything
     // into that field and it would work. On 0.2.17 LMStudio introduced multi-model chat
@@ -89,8 +91,8 @@ class LMStudioLLM {
         `LMStudio chat: ${this.model} is not valid or defined for chat completion!`
       );
 
-    const textResponse = await this.lmstudio
-      .createChatCompletion({
+    const textResponse = await this.lmstudio.chat.completions
+      .create({
         model: this.model,
         temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
@@ -103,13 +105,12 @@ class LMStudioLLM {
           rawHistory
         ),
       })
-      .then((json) => {
-        const res = json.data;
-        if (!res.hasOwnProperty("choices"))
+      .then((result) => {
+        if (!result.hasOwnProperty("choices"))
           throw new Error("LMStudio chat: No results!");
-        if (res.choices.length === 0)
+        if (result.choices.length === 0)
           throw new Error("LMStudio chat: No results length!");
-        return res.choices[0].message.content;
+        return result.choices[0].message.content;
       })
       .catch((error) => {
         throw new Error(
@@ -126,23 +127,20 @@ class LMStudioLLM {
         `LMStudio chat: ${this.model} is not valid or defined for chat completion!`
       );
 
-    const streamRequest = await this.lmstudio.createChatCompletion(
-      {
-        model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-        n: 1,
-        stream: true,
-        messages: await this.compressMessages(
-          {
-            systemPrompt: chatPrompt(workspace),
-            userPrompt: prompt,
-            chatHistory,
-          },
-          rawHistory
-        ),
-      },
-      { responseType: "stream" }
-    );
+    const streamRequest = await this.lmstudio.chat.completions.create({
+      model: this.model,
+      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
+      n: 1,
+      stream: true,
+      messages: await this.compressMessages(
+        {
+          systemPrompt: chatPrompt(workspace),
+          userPrompt: prompt,
+          chatHistory,
+        },
+        rawHistory
+      ),
+    });
     return streamRequest;
   }
 
@@ -152,14 +150,15 @@ class LMStudioLLM {
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
-    const { data } = await this.lmstudio.createChatCompletion({
+    const result = await this.lmstudio.chat.completions.create({
       model: this.model,
       messages,
       temperature,
     });
 
-    if (!data.hasOwnProperty("choices")) return null;
-    return data.choices[0].message.content;
+    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+      return null;
+    return result.choices[0].message.content;
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -168,20 +167,17 @@ class LMStudioLLM {
         `LMStudio chat: ${this.model} is not valid or defined model for chat completion!`
       );
 
-    const streamRequest = await this.lmstudio.createChatCompletion(
-      {
-        model: this.model,
-        stream: true,
-        messages,
-        temperature,
-      },
-      { responseType: "stream" }
-    );
+    const streamRequest = await this.lmstudio.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages,
+      temperature,
+    });
     return streamRequest;
   }
 
   handleStream(response, stream, responseProps) {
-    return handleDefaultStreamResponse(response, stream, responseProps);
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
