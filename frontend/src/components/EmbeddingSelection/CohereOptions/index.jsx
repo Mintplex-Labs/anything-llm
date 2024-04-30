@@ -49,35 +49,6 @@ export default function CohereEmbeddingOptions({ settings }) {
             </optgroup>
           </select>
         </div>
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Input Type
-          </label>
-          <select
-            name="CohereEmbeddingInputType"
-            required={true}
-            className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
-          >
-            <optgroup label="Available Input Types">
-              {[
-                "search_document",
-                "search_query",
-                "classification",
-                "clustering",
-              ].map((model) => {
-                return (
-                  <option
-                    key={model}
-                    value={model}
-                    selected={settings?.CohereEmbeddingInputType === model}
-                  >
-                    {model}
-                  </option>
-                );
-              })}
-            </optgroup>
-          </select>
-        </div>
       </div>
     </div>
   );

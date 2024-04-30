@@ -300,12 +300,6 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
-  // Cohere Embedding Options
-  CohereEmbeddingInputType: {
-    envKey: "COHERE_EMBEDDING_INPUT_TYPE",
-    checks: [isNotEmpty],
-  },
-
   // Whisper (transcription) providers
   WhisperProvider: {
     envKey: "WHISPER_PROVIDER",

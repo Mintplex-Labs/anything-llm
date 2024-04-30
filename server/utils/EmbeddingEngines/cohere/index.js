@@ -12,7 +12,7 @@ class CohereEmbedder {
 
     this.cohere = cohere;
     this.model = process.env.EMBEDDING_MODEL_PREF || "embed-english-v3.0";
-    this.inputType = process.env.EMBEDDING_INPUT_TYPE || "classification";
+    this.inputType = "search_document";
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 96; // Cohere's limit per request is 96
@@ -20,12 +20,14 @@ class CohereEmbedder {
   }
 
   async embedTextInput(textInput) {
+    this.inputType = "search_query";
     const result = await this.embedChunks([textInput]);
     return result?.[0] || [];
   }
 
   async embedChunks(textChunks = []) {
     const embeddingRequests = [];
+    this.inputType = "search_document";
 
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
