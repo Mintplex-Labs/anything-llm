@@ -38,7 +38,8 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         });
       }
 
-      if (message.finish_reason !== null) {
+      // LocalAi returns '' and others return null.
+      if (message.finish_reason !== "" && message.finish_reason !== null) {
         writeResponseChunk(response, {
           uuid,
           sources,
