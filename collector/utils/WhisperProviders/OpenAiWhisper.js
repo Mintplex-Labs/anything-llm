@@ -2,13 +2,12 @@ const fs = require("fs");
 
 class OpenAiWhisper {
   constructor({ options }) {
-    const { Configuration, OpenAIApi } = require("openai");
+    const { OpenAI: OpenAIApi } = require("openai");
     if (!options.openAiKey) throw new Error("No OpenAI API key was set.");
 
-    const config = new Configuration({
+    this.openai = new OpenAIApi({
       apiKey: options.openAiKey,
     });
-    this.openai = new OpenAIApi(config);
     this.model = "whisper-1";
     this.temperature = 0;
     this.#log("Initialized.");
@@ -19,22 +18,30 @@ class OpenAiWhisper {
   }
 
   async processFile(fullFilePath) {
-    return await this.openai
-      .createTranscription(
-        fs.createReadStream(fullFilePath),
-        this.model,
-        undefined,
-        "text",
-        this.temperature
-      )
-      .then((res) => {
-        if (res.hasOwnProperty("data"))
-          return { content: res.data, error: null };
-        return { content: "", error: "No content was able to be transcribed." };
+    return await this.openai.audio.transcriptions
+      .create({
+        file: fs.createReadStream(fullFilePath),
+        model: this.model,
+        model: "whisper-1",
+        response_format: "text",
+        temperature: this.temperature,
       })
-      .catch((e) => {
-        this.#log(`Could not get any response from openai whisper`, e.message);
-        return { content: "", error: e.message };
+      .then((response) => {
+        if (!response) {
+          return {
+            content: "",
+            error: "No content was able to be transcribed.",
+          };
+        }
+
+        return { content: response, error: null };
+      })
+      .catch((error) => {
+        this.#log(
+          `Could not get any response from openai whisper`,
+          error.message
+        );
+        return { content: "", error: error.message };
       });
   }
 }

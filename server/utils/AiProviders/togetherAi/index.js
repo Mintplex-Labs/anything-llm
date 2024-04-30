@@ -1,7 +1,6 @@
 const { chatPrompt } = require("../../chats");
 const {
-  writeResponseChunk,
-  clientAbortedHandler,
+  handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 
 function togetherAiModels() {
@@ -11,15 +10,13 @@ function togetherAiModels() {
 
 class TogetherAiLLM {
   constructor(embedder = null, modelPreference = null) {
-    const { Configuration, OpenAIApi } = require("openai");
     if (!process.env.TOGETHER_AI_API_KEY)
       throw new Error("No TogetherAI API key was set.");
-
-    const config = new Configuration({
-      basePath: "https://api.together.xyz/v1",
-      apiKey: process.env.TOGETHER_AI_API_KEY,
+    const { OpenAI: OpenAIApi } = require("openai");
+    this.openai = new OpenAIApi({
+      baseURL: "https://api.together.xyz/v1",
+      apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
     });
-    this.openai = new OpenAIApi(config);
     this.model = modelPreference || process.env.TOGETHER_AI_MODEL_PREF;
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
@@ -91,8 +88,8 @@ class TogetherAiLLM {
         `Together AI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const textResponse = await this.openai
-      .createChatCompletion({
+    const textResponse = await this.openai.chat.completions
+      .create({
         model: this.model,
         temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
@@ -105,13 +102,12 @@ class TogetherAiLLM {
           rawHistory
         ),
       })
-      .then((json) => {
-        const res = json.data;
-        if (!res.hasOwnProperty("choices"))
+      .then((result) => {
+        if (!result.hasOwnProperty("choices"))
           throw new Error("Together AI chat: No results!");
-        if (res.choices.length === 0)
+        if (result.choices.length === 0)
           throw new Error("Together AI chat: No results length!");
-        return res.choices[0].message.content;
+        return result.choices[0].message.content;
       })
       .catch((error) => {
         throw new Error(
@@ -128,23 +124,20 @@ class TogetherAiLLM {
         `TogetherAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.createChatCompletion(
-      {
-        model: this.model,
-        stream: true,
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-        n: 1,
-        messages: await this.compressMessages(
-          {
-            systemPrompt: chatPrompt(workspace),
-            userPrompt: prompt,
-            chatHistory,
-          },
-          rawHistory
-        ),
-      },
-      { responseType: "stream" }
-    );
+    const streamRequest = await this.openai.chat.completions.create({
+      model: this.model,
+      stream: true,
+      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
+      n: 1,
+      messages: await this.compressMessages(
+        {
+          systemPrompt: chatPrompt(workspace),
+          userPrompt: prompt,
+          chatHistory,
+        },
+        rawHistory
+      ),
+    });
     return streamRequest;
   }
 
@@ -154,14 +147,15 @@ class TogetherAiLLM {
         `TogetherAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const { data } = await this.openai.createChatCompletion({
+    const result = await this.openai.chat.completions.create({
       model: this.model,
       messages,
       temperature,
     });
 
-    if (!data.hasOwnProperty("choices")) return null;
-    return data.choices[0].message.content;
+    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+      return null;
+    return result.choices[0].message.content;
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -170,118 +164,17 @@ class TogetherAiLLM {
         `TogetherAI chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.createChatCompletion(
-      {
-        model: this.model,
-        stream: true,
-        messages,
-        temperature,
-      },
-      { responseType: "stream" }
-    );
+    const streamRequest = await this.openai.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages,
+      temperature,
+    });
     return streamRequest;
   }
 
   handleStream(response, stream, responseProps) {
-    const { uuid = uuidv4(), sources = [] } = responseProps;
-
-    return new Promise((resolve) => {
-      let fullText = "";
-      let chunk = "";
-
-      // Establish listener to early-abort a streaming response
-      // in case things go sideways or the user does not like the response.
-      // We preserve the generated text but continue as if chat was completed
-      // to preserve previously generated content.
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
-      response.on("close", handleAbort);
-
-      stream.data.on("data", (data) => {
-        const lines = data
-          ?.toString()
-          ?.split("\n")
-          .filter((line) => line.trim() !== "");
-
-        for (const line of lines) {
-          let validJSON = false;
-          const message = chunk + line.replace(/^data: /, "");
-
-          if (message !== "[DONE]") {
-            // JSON chunk is incomplete and has not ended yet
-            // so we need to stitch it together. You would think JSON
-            // chunks would only come complete - but they don't!
-            try {
-              JSON.parse(message);
-              validJSON = true;
-            } catch {}
-
-            if (!validJSON) {
-              // It can be possible that the chunk decoding is running away
-              // and the message chunk fails to append due to string length.
-              // In this case abort the chunk and reset so we can continue.
-              // ref: https://github.com/Mintplex-Labs/anything-llm/issues/416
-              try {
-                chunk += message;
-              } catch (e) {
-                console.error(`Chunk appending error`, e);
-                chunk = "";
-              }
-              continue;
-            } else {
-              chunk = "";
-            }
-          }
-
-          if (message == "[DONE]") {
-            writeResponseChunk(response, {
-              uuid,
-              sources,
-              type: "textResponseChunk",
-              textResponse: "",
-              close: true,
-              error: false,
-            });
-            response.removeListener("close", handleAbort);
-            resolve(fullText);
-          } else {
-            let finishReason = null;
-            let token = "";
-            try {
-              const json = JSON.parse(message);
-              token = json?.choices?.[0]?.delta?.content;
-              finishReason = json?.choices?.[0]?.finish_reason || null;
-            } catch {
-              continue;
-            }
-
-            if (token) {
-              fullText += token;
-              writeResponseChunk(response, {
-                uuid,
-                sources: [],
-                type: "textResponseChunk",
-                textResponse: token,
-                close: false,
-                error: false,
-              });
-            }
-
-            if (finishReason !== null) {
-              writeResponseChunk(response, {
-                uuid,
-                sources,
-                type: "textResponseChunk",
-                textResponse: "",
-                close: true,
-                error: false,
-              });
-              response.removeListener("close", handleAbort);
-              resolve(fullText);
-            }
-          }
-        }
-      });
-    });
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

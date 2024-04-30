@@ -45,14 +45,13 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
 }
 
 async function openAiModels(apiKey = null) {
-  const { Configuration, OpenAIApi } = require("openai");
-  const config = new Configuration({
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
     apiKey: apiKey || process.env.OPEN_AI_KEY,
   });
-  const openai = new OpenAIApi(config);
-  const allModels = await openai
-    .listModels()
-    .then((res) => res.data.data)
+  const allModels = await openai.models
+    .list()
+    .then((results) => results.data)
     .catch((e) => {
       console.error(`OpenAI:listModels`, e.message);
       return [
@@ -132,15 +131,14 @@ async function openAiModels(apiKey = null) {
 }
 
 async function localAIModels(basePath = null, apiKey = null) {
-  const { Configuration, OpenAIApi } = require("openai");
-  const config = new Configuration({
-    basePath: basePath || process.env.LOCAL_AI_BASE_PATH,
-    apiKey: apiKey || process.env.LOCAL_AI_API_KEY,
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    baseURL: basePath || process.env.LOCAL_AI_BASE_PATH,
+    apiKey: apiKey || process.env.LOCAL_AI_API_KEY || null,
   });
-  const openai = new OpenAIApi(config);
-  const models = await openai
-    .listModels()
-    .then((res) => res.data.data)
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
     .catch((e) => {
       console.error(`LocalAI:listModels`, e.message);
       return [];
@@ -153,14 +151,14 @@ async function localAIModels(basePath = null, apiKey = null) {
 
 async function getLMStudioModels(basePath = null) {
   try {
-    const { Configuration, OpenAIApi } = require("openai");
-    const config = new Configuration({
-      basePath: basePath || process.env.LMSTUDIO_BASE_PATH,
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: basePath || process.env.LMSTUDIO_BASE_PATH,
+      apiKey: null,
     });
-    const openai = new OpenAIApi(config);
-    const models = await openai
-      .listModels()
-      .then((res) => res.data.data)
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
       .catch((e) => {
         console.error(`LMStudio:listModels`, e.message);
         return [];
@@ -250,15 +248,16 @@ async function getOpenRouterModels() {
 }
 
 async function getMistralModels(apiKey = null) {
-  const { Configuration, OpenAIApi } = require("openai");
-  const config = new Configuration({
-    apiKey: apiKey || process.env.MISTRAL_API_KEY,
-    basePath: "https://api.mistral.ai/v1",
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    apiKey: apiKey || process.env.MISTRAL_API_KEY || null,
+    baseURL: "https://api.mistral.ai/v1",
   });
-  const openai = new OpenAIApi(config);
-  const models = await openai
-    .listModels()
-    .then((res) => res.data.data.filter((model) => !model.id.includes("embed")))
+  const models = await openai.models
+    .list()
+    .then((results) =>
+      results.data.filter((model) => !model.id.includes("embed"))
+    )
     .catch((e) => {
       console.error(`Mistral:listModels`, e.message);
       return [];
