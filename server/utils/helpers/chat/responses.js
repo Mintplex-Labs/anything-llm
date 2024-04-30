@@ -55,6 +55,7 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
   });
 }
 
+// TODO: Fully remove - deprecated.
 // The default way to handle a stream response. Functions best with OpenAI.
 // Currently used for LMStudio, LocalAI, Mistral API, and OpenAI
 function handleDefaultStreamResponse(response, stream, responseProps) {
@@ -87,7 +88,7 @@ function handleDefaultStreamResponse(response, stream, responseProps) {
         try {
           JSON.parse(message);
           validJSON = true;
-        } catch {}
+        } catch { }
 
         if (!validJSON) {
           // It can be possible that the chunk decoding is running away
