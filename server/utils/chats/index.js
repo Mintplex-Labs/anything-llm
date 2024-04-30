@@ -70,6 +70,7 @@ async function chatWithWorkspace(
       close: true,
       error: null,
       textResponse:
+        workspace?.queryRefusalResponse ??
         "There is no relevant information in this workspace to answer your query.",
     };
   }
@@ -150,6 +151,7 @@ async function chatWithWorkspace(
       close: true,
       error: null,
       textResponse:
+        workspace?.queryRefusalResponse ??
         "There is no relevant information in this workspace to answer your query.",
     };
   }

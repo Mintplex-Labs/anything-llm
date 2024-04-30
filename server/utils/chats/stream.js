@@ -79,6 +79,7 @@ async function streamChatWithWorkspace(
       id: uuid,
       type: "textResponse",
       textResponse:
+        workspace?.queryRefusalResponse ??
         "There is no relevant information in this workspace to answer your query.",
       sources: [],
       close: true,
@@ -162,6 +163,7 @@ async function streamChatWithWorkspace(
       id: uuid,
       type: "textResponse",
       textResponse:
+        workspace?.queryRefusalResponse ??
         "There is no relevant information in this workspace to answer your query.",
       sources: [],
       close: true,
