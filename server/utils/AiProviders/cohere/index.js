@@ -210,61 +210,64 @@ class CohereLLM {
   }
 
   async handleStream(response, stream, responseProps) {
-    let fullText = "";
-    const { uuid = v4(), sources = [] } = responseProps;
+    return new Promise(async (resolve) => {
+      let fullText = "";
+      const { uuid = v4(), sources = [] } = responseProps;
 
-    const handleAbort = () => {
-      writeResponseChunk(response, {
-        uuid,
-        sources,
-        type: "abort",
-        textResponse: fullText,
-        close: true,
-        error: false,
-      });
-      response.removeListener("close", handleAbort);
-    };
-    response.on("close", handleAbort);
+      const handleAbort = () => {
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "abort",
+          textResponse: fullText,
+          close: true,
+          error: false,
+        });
+        response.removeListener("close", handleAbort);
+        resolve(fullText);
+      };
+      response.on("close", handleAbort);
 
-    try {
-      for await (const chat of stream.stream) {
-        if (chat.eventType === "text-generation") {
-          const text = chat.text;
-          fullText += text;
+      try {
+        for await (const chat of stream.stream) {
+          if (chat.eventType === "text-generation") {
+            const text = chat.text;
+            fullText += text;
 
-          writeResponseChunk(response, {
-            uuid,
-            sources,
-            type: "textResponseChunk",
-            textResponse: text,
-            close: false,
-            error: false,
-          });
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: text,
+              close: false,
+              error: false,
+            });
+          }
         }
-      }
 
-      writeResponseChunk(response, {
-        uuid,
-        sources,
-        type: "textResponseChunk",
-        textResponse: "",
-        close: true,
-        error: false,
-      });
-      response.removeListener("close", handleAbort);
-      return fullText;
-    } catch (error) {
-      writeResponseChunk(response, {
-        uuid,
-        sources,
-        type: "abort",
-        textResponse: null,
-        close: true,
-        error: error.message,
-      });
-      response.removeListener("close", handleAbort);
-      throw error;
-    }
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "textResponseChunk",
+          textResponse: "",
+          close: true,
+          error: false,
+        });
+        response.removeListener("close", handleAbort);
+        resolve(fullText);
+      } catch (error) {
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "abort",
+          textResponse: null,
+          close: true,
+          error: error.message,
+        });
+        response.removeListener("close", handleAbort);
+        resolve(fullText);
+      }
+    });
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
