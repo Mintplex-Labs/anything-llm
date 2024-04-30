@@ -4,7 +4,6 @@ const {
   getLLMProvider,
   getEmbeddingEngineSelection,
 } = require("../../helpers");
-const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
 const { TextSplitter } = require("../../TextSplitter");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
@@ -57,9 +56,6 @@ const LanceDb = {
     const table = await client.openTable(_namespace);
     return (await table.countRows()) || 0;
   },
-  embedder: function () {
-    return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
-  },
   similarityResponse: async function (
     client,
     namespace,
@@ -82,7 +78,8 @@ const LanceDb = {
       .execute();
 
     response.forEach((item) => {
-      if (this.distanceToSimilarity(item.score) < similarityThreshold) return;
+      if (this.distanceToSimilarity(item._distance) < similarityThreshold)
+        return;
       const { vector: _, ...rest } = item;
       if (filterIdentifiers.includes(sourceIdentifier(rest))) {
         console.log(
@@ -92,8 +89,11 @@ const LanceDb = {
       }
 
       result.contextTexts.push(rest.text);
-      result.sourceDocuments.push(rest);
-      result.scores.push(this.distanceToSimilarity(item.score));
+      result.sourceDocuments.push({
+        ...rest,
+        score: this.distanceToSimilarity(item._distance),
+      });
+      result.scores.push(this.distanceToSimilarity(item._distance));
     });
 
     return result;
@@ -323,7 +323,7 @@ const LanceDb = {
   curateSources: function (sources = []) {
     const documents = [];
     for (const source of sources) {
-      const { text, vector: _v, score: _s, ...rest } = source;
+      const { text, vector: _v, _distance: _d, ...rest } = source;
       const metadata = rest.hasOwnProperty("metadata") ? rest.metadata : rest;
       if (Object.keys(metadata).length > 0) {
         documents.push({

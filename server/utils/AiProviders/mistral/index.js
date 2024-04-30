@@ -1,17 +1,18 @@
 const { chatPrompt } = require("../../chats");
-const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
+const {
+  handleDefaultStreamResponseV2,
+} = require("../../helpers/chat/responses");
 
 class MistralLLM {
   constructor(embedder = null, modelPreference = null) {
-    const { Configuration, OpenAIApi } = require("openai");
     if (!process.env.MISTRAL_API_KEY)
       throw new Error("No Mistral API key was set.");
 
-    const config = new Configuration({
-      basePath: "https://api.mistral.ai/v1",
-      apiKey: process.env.MISTRAL_API_KEY,
+    const { OpenAI: OpenAIApi } = require("openai");
+    this.openai = new OpenAIApi({
+      baseURL: "https://api.mistral.ai/v1",
+      apiKey: process.env.MISTRAL_API_KEY ?? null,
     });
-    this.openai = new OpenAIApi(config);
     this.model =
       modelPreference || process.env.MISTRAL_MODEL_PREF || "mistral-tiny";
     this.limits = {
@@ -75,8 +76,8 @@ class MistralLLM {
         `Mistral chat: ${this.model} is not valid for chat completion!`
       );
 
-    const textResponse = await this.openai
-      .createChatCompletion({
+    const textResponse = await this.openai.chat.completions
+      .create({
         model: this.model,
         temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         messages: await this.compressMessages(
@@ -88,13 +89,12 @@ class MistralLLM {
           rawHistory
         ),
       })
-      .then((json) => {
-        const res = json.data;
-        if (!res.hasOwnProperty("choices"))
+      .then((result) => {
+        if (!result.hasOwnProperty("choices"))
           throw new Error("Mistral chat: No results!");
-        if (res.choices.length === 0)
+        if (result.choices.length === 0)
           throw new Error("Mistral chat: No results length!");
-        return res.choices[0].message.content;
+        return result.choices[0].message.content;
       })
       .catch((error) => {
         throw new Error(
@@ -111,22 +111,19 @@ class MistralLLM {
         `Mistral chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.createChatCompletion(
-      {
-        model: this.model,
-        stream: true,
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-        messages: await this.compressMessages(
-          {
-            systemPrompt: chatPrompt(workspace),
-            userPrompt: prompt,
-            chatHistory,
-          },
-          rawHistory
-        ),
-      },
-      { responseType: "stream" }
-    );
+    const streamRequest = await this.openai.chat.completions.create({
+      model: this.model,
+      stream: true,
+      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
+      messages: await this.compressMessages(
+        {
+          systemPrompt: chatPrompt(workspace),
+          userPrompt: prompt,
+          chatHistory,
+        },
+        rawHistory
+      ),
+    });
 
     return streamRequest;
   }
@@ -137,14 +134,15 @@ class MistralLLM {
         `Mistral chat: ${this.model} is not valid for chat completion!`
       );
 
-    const { data } = await this.openai.createChatCompletion({
+    const result = await this.openai.chat.completions.create({
       model: this.model,
       messages,
       temperature,
     });
 
-    if (!data.hasOwnProperty("choices")) return null;
-    return data.choices[0].message.content;
+    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+      return null;
+    return result.choices[0].message.content;
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -153,20 +151,17 @@ class MistralLLM {
         `Mistral chat: ${this.model} is not valid for chat completion!`
       );
 
-    const streamRequest = await this.openai.createChatCompletion(
-      {
-        model: this.model,
-        stream: true,
-        messages,
-        temperature,
-      },
-      { responseType: "stream" }
-    );
+    const streamRequest = await this.openai.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages,
+      temperature,
+    });
     return streamRequest;
   }
 
   handleStream(response, stream, responseProps) {
-    return handleDefaultStreamResponse(response, stream, responseProps);
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
