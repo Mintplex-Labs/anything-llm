@@ -92,7 +92,7 @@ async function chatWithWorkspace(
   // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
   await new DocumentManager({
     workspace,
-    maxTokens: LLMConnector.limits.system,
+    maxTokens: LLMConnector.promptWindowLimit(),
   })
     .pinnedDocs()
     .then((pinnedDocs) => {
