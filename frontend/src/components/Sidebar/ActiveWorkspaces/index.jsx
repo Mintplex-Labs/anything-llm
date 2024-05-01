@@ -150,9 +150,13 @@ export default function ActiveWorkspaces() {
 
                       <Link
                         type="button"
-                        to={paths.workspace.settings.generalAppearance(
-                          workspace.slug
-                        )}
+                        to={
+                          isInWorkspaceSettings
+                            ? paths.workspace.chat(workspace.slug)
+                            : paths.workspace.settings.generalAppearance(
+                                workspace.slug
+                              )
+                        }
                         onMouseEnter={() => handleGearMouseEnter(workspace.id)}
                         onMouseLeave={() => handleGearMouseLeave(workspace.id)}
                         className="rounded-md flex items-center justify-center text-[#A7A8A9] hover:text-white ml-auto"
