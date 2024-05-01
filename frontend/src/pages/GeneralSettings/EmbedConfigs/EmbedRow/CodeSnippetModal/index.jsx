@@ -54,7 +54,7 @@ https://github.com/Mintplex-Labs/anything-llm/tree/master/embed/README.md
   data-base-api-url="${serverHost}/api/embed"
   src="${scriptHost}/embed/anythingllm-chat-widget.min.js">
 </script>
-<!-- ChatLTT (https://useanything.com) -->
+<!-- ChatLTT (https://ChatLTT.com) -->
 `;
 }
 
