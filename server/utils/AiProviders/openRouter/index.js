@@ -99,7 +99,7 @@ class OpenRouterLLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   promptWindowLimit() {
@@ -129,65 +129,6 @@ class OpenRouterLLM {
   async isSafe(_input = "") {
     // Not implemented so must be stubbed
     return { safe: true, reasons: [] };
-  }
-
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `OpenRouter chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const textResponse = await this.openai.chat.completions
-      .create({
-        model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-        n: 1,
-        messages: await this.compressMessages(
-          {
-            systemPrompt: chatPrompt(workspace),
-            userPrompt: prompt,
-            chatHistory,
-          },
-          rawHistory
-        ),
-      })
-      .then((result) => {
-        if (!result.hasOwnProperty("choices"))
-          throw new Error("OpenRouter chat: No results!");
-        if (result.choices.length === 0)
-          throw new Error("OpenRouter chat: No results length!");
-        return result.choices[0].message.content;
-      })
-      .catch((error) => {
-        throw new Error(
-          `OpenRouter::createChatCompletion failed with: ${error.message}`
-        );
-      });
-
-    return textResponse;
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `OpenRouter chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const streamRequest = await this.openai.chat.completions.create({
-      model: this.model,
-      stream: true,
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-      n: 1,
-      messages: await this.compressMessages(
-        {
-          systemPrompt: chatPrompt(workspace),
-          userPrompt: prompt,
-          chatHistory,
-        },
-        rawHistory
-      ),
-    });
-    return streamRequest;
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {

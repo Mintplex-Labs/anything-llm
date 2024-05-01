@@ -33,7 +33,7 @@ class AnthropicLLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   promptWindowLimit() {
@@ -108,31 +108,6 @@ class AnthropicLLM {
       console.log(error);
       return error;
     }
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Anthropic chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const streamRequest = await this.anthropic.messages.stream({
-      model: this.model,
-      max_tokens: 4096,
-      system: messages[0].content, // Strip out the system message
-      messages: messages.slice(1), // Pop off the system message
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-    });
-    return streamRequest;
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
