@@ -1,5 +1,4 @@
 const { v4 } = require("uuid");
-const { chatPrompt } = require("../../chats");
 const {
   writeResponseChunk,
   clientAbortedHandler,

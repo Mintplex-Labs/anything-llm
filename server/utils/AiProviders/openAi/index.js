@@ -1,5 +1,4 @@
 const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
-const { chatPrompt } = require("../../chats");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");

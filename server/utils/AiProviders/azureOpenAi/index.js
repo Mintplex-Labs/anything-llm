@@ -1,5 +1,4 @@
 const { AzureOpenAiEmbedder } = require("../../EmbeddingEngines/azureOpenAi");
-const { chatPrompt } = require("../../chats");
 const {
   writeResponseChunk,
   clientAbortedHandler,

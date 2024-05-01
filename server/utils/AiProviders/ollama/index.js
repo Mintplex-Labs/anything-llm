@@ -1,4 +1,3 @@
-const { chatPrompt } = require("../../chats");
 const { StringOutputParser } = require("@langchain/core/output_parsers");
 const {
   writeResponseChunk,
