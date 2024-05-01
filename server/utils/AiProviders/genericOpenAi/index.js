@@ -1,21 +1,22 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const { chatPrompt } = require("../../chats");
-const { handleDefaultStreamResponse } = require("../../helpers/chat/responses");
+const {
+  handleDefaultStreamResponseV2,
+} = require("../../helpers/chat/responses");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
-    const { Configuration, OpenAIApi } = require("openai");
+    const { OpenAI: OpenAIApi } = require("openai");
     if (!process.env.GENERIC_OPEN_AI_BASE_PATH)
       throw new Error(
         "GenericOpenAI must have a valid base path to use for the api."
       );
 
     this.basePath = process.env.GENERIC_OPEN_AI_BASE_PATH;
-    const config = new Configuration({
-      basePath: this.basePath,
+    this.openai = new OpenAIApi({
+      baseURL: this.basePath,
       apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
     });
-    this.openai = new OpenAIApi(config);
     this.model =
       modelPreference ?? process.env.GENERIC_OPEN_AI_MODEL_PREF ?? null;
     if (!this.model)
@@ -89,8 +90,8 @@ class GenericOpenAiLLM {
   }
 
   async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const textResponse = await this.openai
-      .createChatCompletion({
+    const textResponse = await this.openai.chat.completions
+      .create({
         model: this.model,
         temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
         n: 1,
@@ -103,13 +104,12 @@ class GenericOpenAiLLM {
           rawHistory
         ),
       })
-      .then((json) => {
-        const res = json.data;
-        if (!res.hasOwnProperty("choices"))
+      .then((result) => {
+        if (!result.hasOwnProperty("choices"))
           throw new Error("GenericOpenAI chat: No results!");
-        if (res.choices.length === 0)
+        if (result.choices.length === 0)
           throw new Error("GenericOpenAI chat: No results length!");
-        return res.choices[0].message.content;
+        return result.choices[0].message.content;
       })
       .catch((error) => {
         throw new Error(
@@ -121,29 +121,26 @@ class GenericOpenAiLLM {
   }
 
   async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const streamRequest = await this.openai.createChatCompletion(
-      {
-        model: this.model,
-        stream: true,
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-        n: 1,
-        messages: await this.compressMessages(
-          {
-            systemPrompt: chatPrompt(workspace),
-            userPrompt: prompt,
-            chatHistory,
-          },
-          rawHistory
-        ),
-      },
-      { responseType: "stream" }
-    );
+    const streamRequest = await this.openai.chat.completions.create({
+      model: this.model,
+      stream: true,
+      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
+      n: 1,
+      messages: await this.compressMessages(
+        {
+          systemPrompt: chatPrompt(workspace),
+          userPrompt: prompt,
+          chatHistory,
+        },
+        rawHistory
+      ),
+    });
     return streamRequest;
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const { data } = await this.openai
-      .createChatCompletion({
+    const result = await this.openai.chat.completions
+      .create({
         model: this.model,
         messages,
         temperature,
@@ -152,25 +149,23 @@ class GenericOpenAiLLM {
         throw new Error(e.response.data.error.message);
       });
 
-    if (!data.hasOwnProperty("choices")) return null;
-    return data.choices[0].message.content;
+    if (!result.hasOwnProperty("choices") || result.choices.length === 0)
+      return null;
+    return result.choices[0].message.content;
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    const streamRequest = await this.openai.createChatCompletion(
-      {
-        model: this.model,
-        stream: true,
-        messages,
-        temperature,
-      },
-      { responseType: "stream" }
-    );
+    const streamRequest = await this.openai.chat.completions.create({
+      model: this.model,
+      stream: true,
+      messages,
+      temperature,
+    });
     return streamRequest;
   }
 
   handleStream(response, stream, responseProps) {
-    return handleDefaultStreamResponse(response, stream, responseProps);
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

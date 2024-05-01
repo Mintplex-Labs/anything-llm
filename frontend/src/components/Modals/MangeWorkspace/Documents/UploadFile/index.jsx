@@ -6,8 +6,14 @@ import { useDropzone } from "react-dropzone";
 import { v4 } from "uuid";
 import FileUploadProgress from "./FileUploadProgress";
 import Workspace from "../../../../../models/workspace";
+import debounce from "lodash.debounce";
 
-export default function UploadFile({ workspace, fetchKeys, setLoading }) {
+export default function UploadFile({
+  workspace,
+  fetchKeys,
+  setLoading,
+  setLoadingMessage,
+}) {
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
@@ -15,6 +21,7 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
   const handleSendLink = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setLoadingMessage("Scraping link...");
     setFetchingUrl(true);
     const formEl = e.target;
     const form = new FormData(formEl);
@@ -33,14 +40,9 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
     setFetchingUrl(false);
   };
 
-  const handleUploadSuccess = () => {
-    fetchKeys(true);
-    showToast("File uploaded successfully", "success", { clear: true });
-  };
-
-  const handleUploadError = (message) => {
-    showToast(`Error uploading file: ${message}`, "error");
-  };
+  // Don't spam fetchKeys, wait 1s between calls at least.
+  const handleUploadSuccess = debounce(() => fetchKeys(true), 1000);
+  const handleUploadError = (_msg) => null; // stubbed.
 
   const onDrop = async (acceptedFiles, rejections) => {
     const newAccepted = acceptedFiles.map((file) => {
@@ -109,11 +111,15 @@ export default function UploadFile({ workspace, fetchKeys, setLoading }) {
               <FileUploadProgress
                 key={file.uid}
                 file={file.file}
+                uuid={file.uid}
+                setFiles={setFiles}
                 slug={workspace.slug}
                 rejected={file?.rejected}
                 reason={file?.reason}
                 onUploadSuccess={handleUploadSuccess}
                 onUploadError={handleUploadError}
+                setLoading={setLoading}
+                setLoadingMessage={setLoadingMessage}
               />
             ))}
           </div>
