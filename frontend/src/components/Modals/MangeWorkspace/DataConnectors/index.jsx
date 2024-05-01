@@ -2,6 +2,7 @@ import ConnectorImages from "@/components/DataConnectorOption/media";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import GithubOptions from "./Connectors/Github";
 import YoutubeOptions from "./Connectors/Youtube";
+import ConfluenceOptions from "./Connectors/Confluence";
 import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
 
@@ -19,6 +20,12 @@ export const DATA_CONNECTORS = {
     description:
       "Import the transcription of an entire YouTube video from a link.",
     options: <YoutubeOptions />,
+  },
+  confluence: {
+    name: "Confluence",
+    image: ConnectorImages.confluence,
+    description: "Import an entire Confluence page in a single click.",
+    options: <ConfluenceOptions />,
   },
 };
 
