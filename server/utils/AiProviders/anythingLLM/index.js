@@ -1,5 +1,5 @@
 const { chatPrompt } = require("../../chats");
-const { StringOutputParser } = require("langchain/schema/output_parser");
+const { StringOutputParser } = require("@langchain/core/output_parsers");
 const {
   writeResponseChunk,
   clientAbortedHandler,

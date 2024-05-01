@@ -45,13 +45,15 @@ export default function Citations({ sources = [] }) {
     <div className="flex flex-col mt-4 justify-left">
       <button
         onClick={() => setOpen(!open)}
-        className={`border-none text-white/50 font-medium italic text-sm text-left ml-14 pt-2 ${open ? "pb-2" : ""
-          } hover:text-white/75 transition-all duration-300`}
+        className={`border-none text-white/50 font-medium italic text-sm text-left ml-14 pt-2 ${
+          open ? "pb-2" : ""
+        } hover:text-white/75 transition-all duration-300`}
       >
         {open ? "Hide Citations" : "Show Citations"}
         <CaretRight
-          className={`w-3.5 h-3.5 inline-block ml-1 transform transition-transform duration-300 ${open ? "rotate-90" : ""
-            }`}
+          className={`w-3.5 h-3.5 inline-block ml-1 transform transition-transform duration-300 ${
+            open ? "rotate-90" : ""
+          }`}
         />
       </button>
       {open && (
@@ -222,7 +224,7 @@ function parseChunkSource({ title = "", chunks = [] }) {
   try {
     const url = new URL(
       chunks[0].chunkSource.split("link://")[1] ||
-      chunks[0].chunkSource.split("confluence://")[1]
+        chunks[0].chunkSource.split("confluence://")[1]
     );
     let text = url.host + url.pathname;
     let icon = "link";
@@ -248,7 +250,7 @@ function parseChunkSource({ title = "", chunks = [] }) {
       text,
       icon,
     };
-  } catch { }
+  } catch {}
   return nullResponse;
 }
 
