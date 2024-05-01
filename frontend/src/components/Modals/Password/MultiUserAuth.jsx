@@ -274,11 +274,11 @@ export default function MultiUserAuth() {
                   Welcome to
                 </h3>
                 <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
-                  AnythingLLM
+                  ChatLTT
                 </p>
               </div>
               <p className="text-sm text-white/90 text-center">
-                Sign in to your AnythingLLM account.
+                Sign in to your ChatLTT account.
               </p>
             </div>
           </div>

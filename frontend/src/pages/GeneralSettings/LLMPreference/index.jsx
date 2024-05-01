@@ -172,7 +172,7 @@ export const AVAILABLE_LLM_PROVIDERS = [
     logo: AnythingLLMIcon,
     options: (settings) => <NativeLLMOptions settings={settings} />,
     description:
-      "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
+      "Use a downloaded custom Llama model for chatting on this ChatLTT instance.",
     requiredConfig: [],
   },
 ];
@@ -272,7 +272,7 @@ export default function GeneralLLMPreference() {
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
                   These are the credentials and settings for your preferred LLM
                   chat & embedding provider. Its important these keys are
-                  current and correct or else AnythingLLM will not function
+                  current and correct or else ChatLTT will not function
                   properly.
                 </p>
               </div>

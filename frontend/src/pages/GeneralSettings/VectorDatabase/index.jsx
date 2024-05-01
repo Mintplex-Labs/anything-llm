@@ -110,7 +110,7 @@ export default function GeneralVectorDatabase() {
       logo: LanceDbLogo,
       options: <LanceDBOptions />,
       description:
-        "100% local vector DB that runs on the same instance as AnythingLLM.",
+        "100% local vector DB that runs on the same instance as ChatLTT.",
     },
     {
       name: "Chroma",
@@ -199,7 +199,7 @@ export default function GeneralVectorDatabase() {
                 </div>
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
                   These are the credentials and settings for how your
-                  AnythingLLM instance will function. It's important these keys
+                  ChatLTT instance will function. It's important these keys
                   are current and correct.
                 </p>
               </div>

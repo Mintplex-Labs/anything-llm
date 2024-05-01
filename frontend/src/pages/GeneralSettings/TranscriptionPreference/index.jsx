@@ -78,7 +78,7 @@ export default function TranscriptionModelPreference() {
         "Leverage the OpenAI Whisper-large model using your API key.",
     },
     {
-      name: "AnythingLLM Built-In",
+      name: "ChatLTT Built-In",
       value: "local",
       logo: AnythingLLMIcon,
       options: <NativeTranscriptionOptions settings={settings} />,

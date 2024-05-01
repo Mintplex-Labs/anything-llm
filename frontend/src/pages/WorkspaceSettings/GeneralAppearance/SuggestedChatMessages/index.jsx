@@ -46,7 +46,7 @@ export default function SuggestedChatMessages({ slug }) {
     }
     const defaultMessage = {
       heading: "Explain to me",
-      message: "the benefits of AnythingLLM",
+      message: "the benefits of ChatLTT",
     };
     setNewMessage(defaultMessage);
     setSuggestedMessages([...suggestedMessages, { ...defaultMessage }]);
