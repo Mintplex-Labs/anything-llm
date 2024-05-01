@@ -7,18 +7,37 @@ import PreLoader from "../../../../../Preloader";
 
 function FileUploadProgressComponent({
   slug,
+  uuid,
   file,
+  setFiles,
   rejected = false,
   reason = null,
   onUploadSuccess,
   onUploadError,
+  setLoading,
+  setLoadingMessage,
 }) {
   const [timerMs, setTimerMs] = useState(10);
   const [status, setStatus] = useState("pending");
   const [error, setError] = useState("");
+  const [isFadingOut, setIsFadingOut] = useState(false);
+
+  const fadeOut = (cb) => {
+    setIsFadingOut(true);
+    cb?.();
+  };
+
+  const beginFadeOut = () => {
+    setIsFadingOut(false);
+    setFiles((prev) => {
+      return prev.filter((item) => item.uid !== uuid);
+    });
+  };
 
   useEffect(() => {
     async function uploadFile() {
+      setLoading(true);
+      setLoadingMessage("Uploading file...");
       const start = Number(new Date());
       const formData = new FormData();
       formData.append("file", file, file.name);
@@ -34,17 +53,28 @@ function FileUploadProgressComponent({
         onUploadError(data.error);
         setError(data.error);
       } else {
+        setLoading(false);
+        setLoadingMessage("");
         setStatus("complete");
         clearInterval(timer);
         onUploadSuccess();
       }
+
+      // Begin fadeout timer to clear uploader queue.
+      setTimeout(() => {
+        fadeOut(() => setTimeout(() => beginFadeOut(), 300));
+      }, 5000);
     }
     !!file && !rejected && uploadFile();
   }, []);
 
   if (rejected) {
     return (
-      <div className="h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40">
+      <div
+        className={`${
+          isFadingOut ? "file-upload-fadeout" : "file-upload"
+        } h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40`}
+      >
         <div className="w-6 h-6 flex-shrink-0">
           <XCircle className="w-6 h-6 stroke-white bg-red-500 rounded-full p-1 w-full h-full" />
         </div>
@@ -60,7 +90,11 @@ function FileUploadProgressComponent({
 
   if (status === "failed") {
     return (
-      <div className="h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40 overflow-y-auto">
+      <div
+        className={`${
+          isFadingOut ? "file-upload-fadeout" : "file-upload"
+        } h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40 overflow-y-auto`}
+      >
         <div className="w-6 h-6 flex-shrink-0">
           <XCircle className="w-6 h-6 stroke-white bg-red-500 rounded-full p-1 w-full h-full" />
         </div>
@@ -75,7 +109,11 @@ function FileUploadProgressComponent({
   }
 
   return (
-    <div className="h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40">
+    <div
+      className={`${
+        isFadingOut ? "file-upload-fadeout" : "file-upload"
+      } h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40`}
+    >
       <div className="w-6 h-6 flex-shrink-0">
         {status !== "complete" ? (
           <div className="flex items-center justify-center">

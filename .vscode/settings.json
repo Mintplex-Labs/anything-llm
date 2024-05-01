@@ -1,11 +1,14 @@
 {
   "cSpell.words": [
-    "AIbitat",
     "adoc",
     "aibitat",
+    "AIbitat",
     "anythingllm",
     "Astra",
+    "Chartable",
     "comkey",
+    "cooldown",
+    "cooldowns",
     "Deduplicator",
     "Dockerized",
     "Embeddable",
@@ -17,6 +20,7 @@
     "mbox",
     "Milvus",
     "Mintplex",
+    "moderations",
     "Ollama",
     "openai",
     "opendocument",

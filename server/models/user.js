@@ -2,6 +2,23 @@ const prisma = require("../utils/prisma");
 const bcrypt = require("bcrypt");
 
 const User = {
+  writable: [
+    // Used for generic updates so we can validate keys in request body
+    "username",
+    "password",
+    "pfpFilename",
+    "role",
+    "suspended",
+  ],
+  // validations for the above writable fields.
+  castColumnValue: function (key, value) {
+    switch (key) {
+      case "suspended":
+        return Number(Boolean(value));
+      default:
+        return String(value);
+    }
+  },
   create: async function ({ username, password, role = "default" }) {
     try {
       const hashedPassword = bcrypt.hashSync(password, 10);
@@ -36,9 +53,32 @@ const User = {
 
   update: async function (userId, updates = {}) {
     try {
-      // Rehash new password if it exists as update
-      // will be given to us as plaintext.
-      if (updates.hasOwnProperty("password") && updates.password.length >= 8) {
+      if (!userId) throw new Error("No user id provided for update");
+      const currentUser = await prisma.users.findUnique({
+        where: { id: parseInt(userId) },
+      });
+      if (!currentUser) return { success: false, error: "User not found" };
+
+      // Removes non-writable fields for generic updates
+      // and force-casts to the proper type;
+      Object.entries(updates).forEach(([key, value]) => {
+        if (this.writable.includes(key)) {
+          updates[key] = this.castColumnValue(key, value);
+          return;
+        }
+        delete updates[key];
+      });
+
+      if (Object.keys(updates).length === 0)
+        return { success: false, error: "No valid updates applied." };
+
+      // Handle password specific updates
+      if (updates.hasOwnProperty("password")) {
+        const passwordCheck = this.checkPasswordComplexity(updates.password);
+        if (!passwordCheck.checkedOK) {
+          return { success: false, error: passwordCheck.error };
+        }
+        const bcrypt = require("bcrypt");
         updates.password = bcrypt.hashSync(updates.password, 10);
       } else {
         delete updates.password;
@@ -52,6 +92,24 @@ const User = {
     } catch (error) {
       console.error(error.message);
       return { success: false, error: error.message };
+    }
+  },
+
+  // Explicit direct update of user object.
+  // Only use this method when directly setting a key value
+  // that takes no user input for the keys being modified.
+  _update: async function (id = null, data = {}) {
+    if (!id) throw new Error("No user id provided for update");
+
+    try {
+      const user = await prisma.users.update({
+        where: { id },
+        data,
+      });
+      return { user, message: null };
+    } catch (error) {
+      console.error(error.message);
+      return { user: null, message: error.message };
     }
   },
 

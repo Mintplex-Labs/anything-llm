@@ -89,6 +89,7 @@ export function AvailableAgents({
                   <AbilityTag text="save-file-to-browser" />
                   <AbilityTag text="list-documents" />
                   <AbilityTag text="summarize-document" />
+                  <AbilityTag text="chart-generation" />
                 </div>
               </div>
             </button>

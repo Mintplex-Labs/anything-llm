@@ -86,7 +86,7 @@ function TogetherAiModelSelection({ settings }) {
                 <option
                   key={model.id}
                   value={model.id}
-                  selected={settings?.OpenRouterModelPref === model.id}
+                  selected={settings?.TogetherAiModelPref === model.id}
                 >
                   {model.name}
                 </option>

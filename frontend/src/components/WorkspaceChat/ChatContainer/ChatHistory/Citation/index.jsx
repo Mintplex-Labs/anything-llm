@@ -14,6 +14,7 @@ import {
   X,
   YoutubeLogo,
 } from "@phosphor-icons/react";
+import ConfluenceLogo from "@/assets/dataConnectors/confluence.png";
 import { Tooltip } from "react-tooltip";
 import { toPercentString } from "@/utils/numbers";
 
@@ -44,15 +45,13 @@ export default function Citations({ sources = [] }) {
     <div className="flex flex-col mt-4 justify-left">
       <button
         onClick={() => setOpen(!open)}
-        className={`border-none text-white/50 font-medium italic text-sm text-left ml-14 pt-2 ${
-          open ? "pb-2" : ""
-        } hover:text-white/75 transition-all duration-300`}
+        className={`border-none text-white/50 font-medium italic text-sm text-left ml-14 pt-2 ${open ? "pb-2" : ""
+          } hover:text-white/75 transition-all duration-300`}
       >
         {open ? "Hide Citations" : "Show Citations"}
         <CaretRight
-          className={`w-3.5 h-3.5 inline-block ml-1 transform transition-transform duration-300 ${
-            open ? "rotate-90" : ""
-          }`}
+          className={`w-3.5 h-3.5 inline-block ml-1 transform transition-transform duration-300 ${open ? "rotate-90" : ""
+            }`}
         />
       </button>
       {open && (
@@ -202,13 +201,6 @@ function CitationDetailModal({ source, onClose }) {
   );
 }
 
-const ICONS = {
-  file: FileText,
-  link: Link,
-  youtube: YoutubeLogo,
-  github: GithubLogo,
-};
-
 // Show the correct title and/or display text for citations
 // which contain valid outbound links that can be clicked by the
 // user when viewing a citation. Optionally allows various icons
@@ -221,10 +213,17 @@ function parseChunkSource({ title = "", chunks = [] }) {
     icon: "file",
   };
 
-  if (!chunks.length || !chunks[0].chunkSource.startsWith("link://"))
+  if (
+    !chunks.length ||
+    (!chunks[0].chunkSource.startsWith("link://") &&
+      !chunks[0].chunkSource.startsWith("confluence://"))
+  )
     return nullResponse;
   try {
-    const url = new URL(chunks[0].chunkSource.split("link://")[1]);
+    const url = new URL(
+      chunks[0].chunkSource.split("link://")[1] ||
+      chunks[0].chunkSource.split("confluence://")[1]
+    );
     let text = url.host + url.pathname;
     let icon = "link";
 
@@ -238,12 +237,30 @@ function parseChunkSource({ title = "", chunks = [] }) {
       icon = "github";
     }
 
+    if (url.host.includes("atlassian.net")) {
+      text = title;
+      icon = "confluence";
+    }
+
     return {
       isUrl: true,
       href: url.toString(),
       text,
       icon,
     };
-  } catch {}
+  } catch { }
   return nullResponse;
 }
+
+// Patch to render Confluence icon as a element like we do with Phosphor
+const ConfluenceIcon = ({ ...props }) => (
+  <img src={ConfluenceLogo} {...props} />
+);
+
+const ICONS = {
+  file: FileText,
+  link: Link,
+  youtube: YoutubeLogo,
+  github: GithubLogo,
+  confluence: ConfluenceIcon,
+};
