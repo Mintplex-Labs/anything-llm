@@ -1,6 +1,8 @@
 const { safeJsonParse } = require("../../../http");
 const { Deduplicator } = require("../utils/dedupe");
 
+// Useful inheritance class for a model which supports OpenAi schema for API requests
+// but does not have tool-calling or JSON output support.
 class UnTooled {
   constructor() {
     this.deduplicator = new Deduplicator();
