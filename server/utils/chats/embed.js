@@ -77,11 +77,10 @@ async function streamChatWithForEmbed(
     chatMode
   );
 
-  // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
-  // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
+  // See stream.js comment for more information on this implementation.
   await new DocumentManager({
     workspace: embed.workspace,
-    maxTokens: LLMConnector.limits.system,
+    maxTokens: LLMConnector.promptWindowLimit(),
   })
     .pinnedDocs()
     .then((pinnedDocs) => {
