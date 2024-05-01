@@ -13,6 +13,7 @@ const chatHistory = {
       name: this.name,
       setup: function (aibitat) {
         aibitat.onMessage(async () => {
+          return;
           try {
             const lastResponses = aibitat.chats.slice(-2);
             if (lastResponses.length !== 2) return;

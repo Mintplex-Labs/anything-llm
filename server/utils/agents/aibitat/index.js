@@ -727,6 +727,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.OpenAIProvider({ model: config.model });
       case "anthropic":
         return new Providers.AnthropicProvider({ model: config.model });
+      case "lmstudio":
+        return new Providers.LMStudioProvider({});
 
       default:
         throw new Error(
