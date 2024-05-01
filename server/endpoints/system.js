@@ -913,7 +913,7 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const { offset = 0, limit = 20 } = reqBody(request);
+        const { offset = 0, limit = 10 } = reqBody(request);
         const logs = await EventLogs.whereWithData({}, limit, offset * limit, {
           id: "desc",
         });
