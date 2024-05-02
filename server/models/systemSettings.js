@@ -364,6 +364,10 @@ const SystemSettings = {
       GenericOpenAiModelPref: process.env.GENERIC_OPEN_AI_MODEL_PREF,
       GenericOpenAiTokenLimit: process.env.GENERIC_OPEN_AI_MODEL_TOKEN_LIMIT,
       GenericOpenAiKey: !!process.env.GENERIC_OPEN_AI_API_KEY,
+
+      // Cohere API Keys
+      CohereApiKey: !!process.env.COHERE_API_KEY,
+      CohereModelPref: process.env.COHERE_MODEL_PREF,
     };
   },
 };

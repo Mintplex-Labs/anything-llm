@@ -15,6 +15,7 @@ import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
+import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
@@ -144,6 +145,13 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: GenericOpenAiLogo,
   },
+  cohere: {
+    name: "Cohere",
+    description: [
+      "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
+    ],
+    logo: CohereLogo,
+  },
 };
 
 export const VECTOR_DB_PRIVACY = {
@@ -251,6 +259,13 @@ export const EMBEDDING_ENGINE_PRIVACY = {
       "Your document text is embedded privately on the server running LMStudio",
     ],
     logo: LMStudioLogo,
+  },
+  cohere: {
+    name: "Cohere",
+    description: [
+      "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
+    ],
+    logo: CohereLogo,
   },
 };
 
