@@ -304,6 +304,16 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // Cohere Options
+  CohereApiKey: {
+    envKey: "COHERE_API_KEY",
+    checks: [isNotEmpty],
+  },
+  CohereModelPref: {
+    envKey: "COHERE_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+
   // Whisper (transcription) providers
   WhisperProvider: {
     envKey: "WHISPER_PROVIDER",
@@ -408,6 +418,7 @@ function supportedLLM(input = "") {
     "openrouter",
     "groq",
     "koboldcpp",
+    "cohere",
     "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
@@ -449,6 +460,7 @@ function supportedEmbeddingModel(input = "") {
     "native",
     "ollama",
     "lmstudio",
+    "cohere",
   ];
   return supported.includes(input)
     ? null

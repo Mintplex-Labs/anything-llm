@@ -19,6 +19,7 @@ import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
+import CohereLogo from "@/media/llmprovider/cohere.png";
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -35,6 +36,7 @@ import HuggingFaceOptions from "@/components/LLMSelection/HuggingFaceOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
+import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -165,6 +167,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "KoboldCPPBasePath",
       "KoboldCPPTokenLimit",
     ],
+  },
+  {
+    name: "Cohere",
+    value: "cohere",
+    logo: CohereLogo,
+    options: (settings) => <CohereAiOptions settings={settings} />,
+    description: "Run Cohere's powerful Command models.",
+    requiredConfig: ["CohereApiKey"],
   },
   {
     name: "Generic OpenAI",

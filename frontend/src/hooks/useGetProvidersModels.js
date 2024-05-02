@@ -26,6 +26,14 @@ const PROVIDER_DEFAULT_MODELS = {
     "gemma-7b-it",
   ],
   native: [],
+  cohere: [
+    "command-r",
+    "command-r-plus",
+    "command",
+    "command-light",
+    "command-nightly",
+    "command-light-nightly",
+  ],
 };
 
 // For togetherAi, which has a large model list - we subgroup the options

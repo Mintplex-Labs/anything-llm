@@ -16,6 +16,7 @@ import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
+import CohereLogo from "@/media/llmprovider/cohere.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -31,6 +32,8 @@ import TogetherAiOptions from "@/components/LLMSelection/TogetherAiOptions";
 import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
+import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
+
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
@@ -144,6 +147,13 @@ const LLMS = [
     logo: KoboldCPPLogo,
     options: (settings) => <KoboldCPPOptions settings={settings} />,
     description: "Run local LLMs using koboldcpp.",
+  },
+  {
+    name: "Cohere",
+    value: "cohere",
+    logo: CohereLogo,
+    options: (settings) => <CohereAiOptions settings={settings} />,
+    description: "Run Cohere's powerful Command models.",
   },
   {
     name: "Generic OpenAI",
