@@ -51,11 +51,15 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              Welcome to ChatLTT, ChatLTT is an open-source AI tool by
-              Mintplex Labs that turns anything into a trained chatbot you can
-              query and chat with. ChatLTT is a BYOK (bring-your-own-keys)
-              software so there is no subscription, fee, or charges for this
-              software outside of the services you want to use with it.
+              "Welcome to ChatLTT! I'm your AI companion, ready to assist you. 
+              ChatLTT is powered by robust GPUs housed in German data centers, 
+              ensuring top-notch performance. Our focus is on hosting Large Language 
+              Models (LLMs) to offer you a seamless AI chat experience. We aim to simplify 
+              the process for you by handling all the technical aspects—hosting, installation, 
+              and maintenance of LLMs. Your privacy is our priority; all your chats are 
+              completely private and automatically deleted when you close your account.
+              Say goodbye to the hassle of managing technical details and enjoy effortless 
+              AI conversations with us. Let's chat!".
             </span>
           </div>
         </div>
@@ -98,20 +102,22 @@ export default function DefaultChatContainer() {
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               >
-                ChatLTT can run totally locally on your machine with little
-                overhead you wont even notice it's there! No GPU needed. Cloud
-                and on-premises installation is available as well.
+                "With our paid plans, you'll enjoy complete privacy. You can create Workspaces, 
+                train your LLM models with text, PDFs, and audio notes. Utilize agents to browse 
+                the internet and answer your queries. Engage in uncensored chats that are wiped 
+                out after you leave. Rest assured, we never use your chats to train our models; 
+                everything operates locally on your GPU servers. Plus, you can have a multi-user 
+                account and invite your team, colleagues, or friends to converse with your trained 
+                model. The possibilities are endless. <br /><br />Dive into our blogs to explore different use cases."
                 <br />
-                The AI tooling ecosystem gets more powerful everyday.
-                ChatLTT makes it easy to use.
-              </span>
+                </span>
               <a
-                href={paths.github()}
+                href={https://chatltt.com</div></div>}
                 target="_blank"
                 className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
               >
                 <GitMerge className="h-4 w-4" />
-                <p>Create an issue on Github</p>
+                <p>Check our paid plans</p>
               </a>
             </div>
           </div>
@@ -136,7 +142,7 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              How do I get started?!
+              What is Workspace or these categories at the side bar?!
             </span>
           </div>
         </div>
@@ -156,155 +162,31 @@ export default function DefaultChatContainer() {
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               >
-                It's simple. All collections are organized into buckets we call{" "}
-                "Workspaces". Workspaces are buckets of files, documents,
-                images, PDFs, and other files which will be transformed into
-                something LLM's can understand and use in conversation.
+                Paid Plans: Users can access and train their own Workspaces using a collection of text files, 
+                audio scripts, and PDFs tailored to their specific subjects of interest. They have the flexibility
+                to create multiple customized Workspaces according to their needs.
                 <br />
                 <br />
-                You can add and remove files at anytime.
+                Free Plan: We provide pre-tuned Workspaces featuring Large Trained Transformers
+                (LTT) for users to explore and engage with. These pre-tuned libraries cover 
+                a wide range of topics and are readily available for use without any additional
+                training required.
+                
               </span>
 
-              {(!user || user?.role !== "default") && (
-                <button
-                  onClick={showNewWsModal}
-                  className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                >
-                  <Plus className="h-4 w-4" />
-                  <p>Create your first workspace</p>
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>,
-
-    <React.Fragment>
-      <div
-        className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
-      >
-        <div
-          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
-        >
-          <div className="flex gap-x-5">
-            <Jazzicon
-              size={36}
-              user={{ uid: userFromStorage()?.username }}
-              role={"user"}
-            />
-
-            <span
-              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-            >
-              Is this like an AI dropbox or something? What about chatting? It
-              is a chatbot isn't it?
-            </span>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>,
-
-    <React.Fragment>
-      <div
-        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
-      >
-        <div
-          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
-        >
-          <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
-
-            <span
-              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-            >
-              ChatLTT is more than a smarter Dropbox.
-              <br />
-              <br />
-              ChatLTT offers two ways of talking with your data:
-              <br />
-              <br />
-              <i>Query:</i> Your chats will return data or inferences found with
-              the documents in your workspace it has access to. Adding more
-              documents to the Workspace make it smarter!
-              <br />
-              <br />
-              <i>Conversational:</i> Your documents + your on-going chat history
-              both contribute to the LLM knowledge at the same time. Great for
-              appending real-time text-based info or corrections and
-              misunderstandings the LLM might have.
-              <br />
-              <br />
-              You can toggle between either mode{" "}
-              <i>in the middle of chatting!</i>
-            </span>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>,
-
-    <React.Fragment>
-      <div
-        className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
-      >
-        <div
-          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
-        >
-          <div className="flex gap-x-5">
-            <Jazzicon
-              size={36}
-              user={{ uid: userFromStorage()?.username }}
-              role={"user"}
-            />
-
-            <span
-              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-            >
-              Wow, this sounds amazing, let me try it out already!
-            </span>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>,
-
-    <React.Fragment>
-      <div
-        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
-      >
-        <div
-          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
-        >
-          <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
-            <div>
-              <span
-                className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-              >
-                Have Fun!
-              </span>
-
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
-                <a
-                  href={paths.github()}
-                  target="_blank"
-                  className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                >
-                  <GithubLogo className="h-4 w-4" />
-                  <p>Star on GitHub</p>
-                </a>
-                <a
-                  href={paths.mailToMintplex()}
-                  className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                >
-                  <EnvelopeSimple className="h-4 w-4" />
-                  <p>Contact Mintplex Labs</p>
-                </a>
               </div>
-            </div>
           </div>
         </div>
       </div>
     </React.Fragment>,
+
+    
+
+    
+
+   
+
+    
   ];
 
   useEffect(() => {
