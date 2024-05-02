@@ -1,4 +1,3 @@
-const { chatPrompt } = require("../../chats");
 const { StringOutputParser } = require("@langchain/core/output_parsers");
 const {
   writeResponseChunk,
@@ -74,7 +73,7 @@ class OllamaAILLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   // Ensure the user set a value for the token limit
@@ -106,53 +105,6 @@ class OllamaAILLM {
   async isSafe(_input = "") {
     // Not implemented so must be stubbed
     return { safe: true, reasons: [] };
-  }
-
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const model = this.#ollamaClient({
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-    });
-    const textResponse = await model
-      .pipe(new StringOutputParser())
-      .invoke(this.#convertToLangchainPrototypes(messages))
-      .catch((e) => {
-        throw new Error(
-          `Ollama::getChatCompletion failed to communicate with Ollama. ${e.message}`
-        );
-      });
-
-    if (!textResponse || !textResponse.length)
-      throw new Error(`Ollama::sendChat text response was empty.`);
-
-    return textResponse;
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const model = this.#ollamaClient({
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-    });
-    const stream = await model
-      .pipe(new StringOutputParser())
-      .stream(this.#convertToLangchainPrototypes(messages));
-    return stream;
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {

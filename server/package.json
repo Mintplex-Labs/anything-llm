@@ -41,6 +41,7 @@
     "chalk": "^4",
     "check-disk-space": "^3.4.0",
     "chromadb": "^1.5.2",
+    "cohere-ai": "^7.9.5",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",

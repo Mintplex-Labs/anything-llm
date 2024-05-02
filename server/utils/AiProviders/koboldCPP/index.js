@@ -1,27 +1,42 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
-  handleDefaultStreamResponseV2,
+  clientAbortedHandler,
+  writeResponseChunk,
 } = require("../../helpers/chat/responses");
+const { v4: uuidv4 } = require("uuid");
 
-class GroqLLM {
+class KoboldCPPLLM {
   constructor(embedder = null, modelPreference = null) {
     const { OpenAI: OpenAIApi } = require("openai");
-    if (!process.env.GROQ_API_KEY) throw new Error("No Groq API key was set.");
+    if (!process.env.KOBOLD_CPP_BASE_PATH)
+      throw new Error(
+        "KoboldCPP must have a valid base path to use for the api."
+      );
 
+    this.basePath = process.env.KOBOLD_CPP_BASE_PATH;
     this.openai = new OpenAIApi({
-      baseURL: "https://api.groq.com/openai/v1",
-      apiKey: process.env.GROQ_API_KEY,
+      baseURL: this.basePath,
+      apiKey: null,
     });
-    this.model =
-      modelPreference || process.env.GROQ_MODEL_PREF || "llama3-8b-8192";
+    this.model = modelPreference ?? process.env.KOBOLD_CPP_MODEL_PREF ?? null;
+    if (!this.model) throw new Error("KoboldCPP must have a valid model set.");
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
 
+    if (!embedder)
+      console.warn(
+        "No embedding provider defined for KoboldCPPLLM - falling back to NativeEmbedder for embedding!"
+      );
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
     this.defaultTemp = 0.7;
+    this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
+  }
+
+  log(text, ...args) {
+    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
   }
 
   #appendContext(contextTexts = []) {
@@ -40,36 +55,19 @@ class GroqLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  // Ensure the user set a value for the token limit
+  // and if undefined - assume 4096 window.
   promptWindowLimit() {
-    switch (this.model) {
-      case "mixtral-8x7b-32768":
-        return 32_768;
-      case "llama3-8b-8192":
-        return 8192;
-      case "llama3-70b-8192":
-        return 8192;
-      case "gemma-7b-it":
-        return 8192;
-      default:
-        return 8192;
-    }
+    const limit = process.env.KOBOLD_CPP_MODEL_TOKEN_LIMIT || 4096;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No token context limit was set.");
+    return Number(limit);
   }
 
-  async isValidChatCompletionModel(modelName = "") {
-    const validModels = [
-      "mixtral-8x7b-32768",
-      "llama3-8b-8192",
-      "llama3-70b-8192",
-      "gemma-7b-it",
-    ];
-    const isPreset = validModels.some((model) => modelName === model);
-    if (isPreset) return true;
-
-    const model = await this.openai.models
-      .retrieve(modelName)
-      .then((modelObj) => modelObj)
-      .catch(() => null);
-    return !!model;
+  // Short circuit since we have no idea if the model is valid or not
+  // in pre-flight for generic endpoints
+  isValidChatCompletionModel(_modelName = "") {
+    return true;
   }
 
   constructPrompt({
@@ -91,11 +89,6 @@ class GroqLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `GroqAI:chatCompletion: ${this.model} is not valid for chat completion!`
-      );
-
     const result = await this.openai.chat.completions
       .create({
         model: this.model,
@@ -112,11 +105,6 @@ class GroqLLM {
   }
 
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `GroqAI:streamChatCompletion: ${this.model} is not valid for chat completion!`
-      );
-
     const streamRequest = await this.openai.chat.completions.create({
       model: this.model,
       stream: true,
@@ -127,7 +115,49 @@ class GroqLLM {
   }
 
   handleStream(response, stream, responseProps) {
-    return handleDefaultStreamResponseV2(response, stream, responseProps);
+    const { uuid = uuidv4(), sources = [] } = responseProps;
+
+    // Custom handler for KoboldCPP stream responses
+    return new Promise(async (resolve) => {
+      let fullText = "";
+      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      response.on("close", handleAbort);
+
+      for await (const chunk of stream) {
+        const message = chunk?.choices?.[0];
+        const token = message?.delta?.content;
+
+        if (token) {
+          fullText += token;
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: token,
+            close: false,
+            error: false,
+          });
+        }
+
+        // KoboldCPP finishes with "length" or "stop"
+        if (
+          message.finish_reason !== "null" &&
+          (message.finish_reason === "length" ||
+            message.finish_reason === "stop")
+        ) {
+          writeResponseChunk(response, {
+            uuid,
+            sources,
+            type: "textResponseChunk",
+            textResponse: "",
+            close: true,
+            error: false,
+          });
+          response.removeListener("close", handleAbort);
+          resolve(fullText);
+        }
+      }
+    });
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
@@ -146,5 +176,5 @@ class GroqLLM {
 }
 
 module.exports = {
-  GroqLLM,
+  KoboldCPPLLM,
 };

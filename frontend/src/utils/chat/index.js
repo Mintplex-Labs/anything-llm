@@ -17,6 +17,7 @@ export default function handleChat(
     error,
     close,
     chatId = null,
+    action = null,
   } = chatResult;
 
   if (type === "abort" || type === "statusResponse") {
@@ -132,11 +133,24 @@ export default function handleChat(
     setChatHistory([..._chatHistory]);
     setLoadingResponse(false);
   }
+
+  // Action Handling via special 'action' attribute on response.
+  if (action === "reset_chat") {
+    // Chat was reset, keep reset message and clear everything else.
+    setChatHistory([_chatHistory.pop()]);
+  }
 }
 
 export function chatPrompt(workspace) {
   return (
     workspace?.openAiPrompt ??
     "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed."
+  );
+}
+
+export function chatQueryRefusalResponse(workspace) {
+  return (
+    workspace?.queryRefusalResponse ??
+    "There is no relevant information in this workspace to answer your query."
   );
 }

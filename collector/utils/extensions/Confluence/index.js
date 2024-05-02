@@ -66,11 +66,17 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
   const outFolder = slugify(
     `${subdomain}-confluence-${v4().slice(0, 4)}`
   ).toLowerCase();
-  const outFolderPath = path.resolve(
-    __dirname,
-    `../../../../server/storage/documents/${outFolder}`
-  );
-  fs.mkdirSync(outFolderPath);
+
+  const outFolderPath =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(
+          __dirname,
+          `../../../../server/storage/documents/${outFolder}`
+        )
+      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
+
+  if (!fs.existsSync(outFolderPath))
+    fs.mkdirSync(outFolderPath, { recursive: true });
 
   docs.forEach((doc) => {
     const data = {
