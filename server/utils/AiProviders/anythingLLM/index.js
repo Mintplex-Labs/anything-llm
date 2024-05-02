@@ -91,7 +91,7 @@ class AnythingLLMOllama {
   }
 
   #ollamaClient({ temperature = 0.07 }) {
-    const { ChatOllama } = require("langchain/chat_models/ollama");
+    const { ChatOllama } = require("@langchain/community/chat_models/ollama");
     return new ChatOllama({
       baseUrl: this.basePath(),
       model: this.model,
@@ -106,7 +106,7 @@ class AnythingLLMOllama {
       HumanMessage,
       SystemMessage,
       AIMessage,
-    } = require("langchain/schema");
+    } = require("@langchain/core/message");
     const langchainChats = [];
     const roleToMessageMap = {
       system: SystemMessage,
@@ -446,8 +446,7 @@ class AnythingLLMOllama {
           textResponse: "",
           close: true,
           error: this.#errorHandler(
-            `AnythingLLM:streaming - could not stream chat. ${
-              error?.cause ?? error.message
+            `AnythingLLM:streaming - could not stream chat. ${error?.cause ?? error.message
             }`
           ),
         });

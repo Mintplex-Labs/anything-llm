@@ -1473,27 +1473,6 @@ cliui@^8.0.1:
     strip-ansi "^6.0.1"
     wrap-ansi "^7.0.0"
 
-<<<<<<< HEAD
-=======
-cmake-js@^7.2.1:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/cmake-js/-/cmake-js-7.3.0.tgz#6fd6234b7aeec4545c1c806f9e3f7ffacd9798b2"
-  integrity sha512-dXs2zq9WxrV87bpJ+WbnGKv8WUBXDw8blNiwNHoRe/it+ptscxhQHKB1SJXa1w+kocLMeP28Tk4/eTCezg4o+w==
-  dependencies:
-    axios "^1.6.5"
-    debug "^4"
-    fs-extra "^11.2.0"
-    lodash.isplainobject "^4.0.6"
-    memory-stream "^1.0.0"
-    node-api-headers "^1.1.0"
-    npmlog "^6.0.2"
-    rc "^1.2.7"
-    semver "^7.5.4"
-    tar "^6.2.0"
-    url-join "^4.0.1"
-    which "^2.0.2"
-    yargs "^17.7.2"
-
 cohere-ai@^7.9.5:
   version "7.9.5"
   resolved "https://registry.yarnpkg.com/cohere-ai/-/cohere-ai-7.9.5.tgz#05a592fe19decb8692d1b19d93ac835d7f816b8b"
@@ -1505,7 +1484,6 @@ cohere-ai@^7.9.5:
     qs "6.11.2"
     url-join "4.0.1"
 
->>>>>>> fc77b468006749af434a123625ee3a8b4a78fb45
 color-convert@^1.9.3:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.3.tgz#bb71850690e1f136567de629d2d5471deda4c1e8"
@@ -5344,14 +5322,11 @@ uri-js@^4.2.2, uri-js@^4.4.1:
   dependencies:
     punycode "^2.1.0"
 
-<<<<<<< HEAD
-=======
-url-join@4.0.1, url-join@^4.0.1:
+url-join@4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/url-join/-/url-join-4.0.1.tgz#b642e21a2646808ffa178c4c5fda39844e12cde7"
   integrity sha512-jk1+QP6ZJqyOiuEI9AEWQfju/nB2Pw466kbA0LEZljHwKeMgd9WrAEgEGxjPDD2+TNbbb37rTyhEfrCXfuKXnA==
 
->>>>>>> fc77b468006749af434a123625ee3a8b4a78fb45
 url-template@^2.0.8:
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/url-template/-/url-template-2.0.8.tgz#fc565a3cccbff7730c775f5641f9555791439f21"
