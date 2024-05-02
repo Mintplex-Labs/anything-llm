@@ -17,6 +17,7 @@ export default function handleChat(
     error,
     close,
     chatId = null,
+    action = null,
   } = chatResult;
 
   if (type === "abort" || type === "statusResponse") {
@@ -131,6 +132,12 @@ export default function handleChat(
 
     setChatHistory([..._chatHistory]);
     setLoadingResponse(false);
+  }
+
+  // Action Handling via special 'action' attribute on response.
+  if (action === "reset_chat") {
+    // Chat was reset, keep reset message and clear everything else.
+    setChatHistory([_chatHistory.pop()]);
   }
 }
 
