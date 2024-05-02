@@ -26,6 +26,7 @@ const Workspace = {
     "pfpFilename",
     "agentProvider",
     "agentModel",
+    "queryRefusalResponse",
   ],
 
   new: async function (name = null, creatorId = null) {

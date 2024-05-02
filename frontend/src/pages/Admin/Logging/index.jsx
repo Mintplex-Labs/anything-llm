@@ -9,6 +9,22 @@ import showToast from "@/utils/toast";
 import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminLogs() {
+  const query = useQuery();
+  const [loading, setLoading] = useState(true);
+  const [logs, setLogs] = useState([]);
+  const [offset, setOffset] = useState(Number(query.get("offset") || 0));
+  const [canNext, setCanNext] = useState(false);
+
+  useEffect(() => {
+    async function fetchLogs() {
+      const { logs: _logs, hasPages = false } = await System.eventLogs(offset);
+      setLogs(_logs);
+      setCanNext(hasPages);
+      setLoading(false);
+    }
+    fetchLogs();
+  }, [offset]);
+
   const handleResetLogs = async () => {
     if (
       !window.confirm(
@@ -19,13 +35,22 @@ export default function AdminLogs() {
     const { success, error } = await System.clearEventLogs();
     if (success) {
       showToast("Event logs cleared successfully.", "success");
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      setLogs([]);
+      setCanNext(false);
+      setOffset(0);
     } else {
       showToast(`Failed to clear logs: ${error}`, "error");
     }
   };
+
+  const handlePrevious = () => {
+    setOffset(Math.max(offset - 1, 0));
+  };
+
+  const handleNext = () => {
+    setOffset(offset + 1);
+  };
+
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
@@ -53,37 +78,28 @@ export default function AdminLogs() {
               Clear Event Logs
             </CTAButton>
           </div>
-          <LogsContainer />
+          <LogsContainer
+            loading={loading}
+            logs={logs}
+            offset={offset}
+            canNext={canNext}
+            handleNext={handleNext}
+            handlePrevious={handlePrevious}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-function LogsContainer() {
-  const query = useQuery();
-  const [loading, setLoading] = useState(true);
-  const [logs, setLogs] = useState([]);
-  const [offset, setOffset] = useState(Number(query.get("offset") || 0));
-  const [canNext, setCanNext] = useState(false);
-
-  const handlePrevious = () => {
-    setOffset(Math.max(offset - 1, 0));
-  };
-  const handleNext = () => {
-    setOffset(offset + 1);
-  };
-
-  useEffect(() => {
-    async function fetchLogs() {
-      const { logs: _logs, hasPages = false } = await System.eventLogs(offset);
-      setLogs(_logs);
-      setCanNext(hasPages);
-      setLoading(false);
-    }
-    fetchLogs();
-  }, [offset]);
-
+function LogsContainer({
+  loading,
+  logs,
+  offset,
+  canNext,
+  handleNext,
+  handlePrevious,
+}) {
   if (loading) {
     return (
       <Skeleton.default

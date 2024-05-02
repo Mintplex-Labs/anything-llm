@@ -23,6 +23,7 @@ async function resetMemory(
     sources: [],
     close: true,
     error: false,
+    action: "reset_chat",
   };
 }
 

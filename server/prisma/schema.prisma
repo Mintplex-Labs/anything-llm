@@ -130,6 +130,7 @@ model workspaces {
   pfpFilename                  String?
   agentProvider                String?
   agentModel                   String?
+  queryRefusalResponse         String?
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
