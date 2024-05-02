@@ -1,5 +1,4 @@
 const { AzureOpenAiEmbedder } = require("../../EmbeddingEngines/azureOpenAi");
-const { chatPrompt } = require("../../chats");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -45,7 +44,7 @@ class AzureOpenAiLLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   // Sure the user selected a proper value for the token limit
@@ -80,66 +79,6 @@ class AzureOpenAiLLM {
   async isSafe(_input = "") {
     // Not implemented by Azure OpenAI so must be stubbed
     return { safe: true, reasons: [] };
-  }
-
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.model)
-      throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
-      );
-
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-    const textResponse = await this.openai
-      .getChatCompletions(this.model, messages, {
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-        n: 1,
-      })
-      .then((res) => {
-        if (!res.hasOwnProperty("choices"))
-          throw new Error("AzureOpenAI chat: No results!");
-        if (res.choices.length === 0)
-          throw new Error("AzureOpenAI chat: No results length!");
-        return res.choices[0].message.content;
-      })
-      .catch((error) => {
-        console.log(error);
-        throw new Error(
-          `AzureOpenAI::getChatCompletions failed with: ${error.message}`
-        );
-      });
-    return textResponse;
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.model)
-      throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
-      );
-
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-    const stream = await this.openai.streamChatCompletions(
-      this.model,
-      messages,
-      {
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-        n: 1,
-      }
-    );
-    return stream;
   }
 
   async getChatCompletion(messages = [], { temperature = 0.7 }) {

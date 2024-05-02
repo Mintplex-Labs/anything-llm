@@ -1,4 +1,3 @@
-const { chatPrompt } = require("../../chats");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -48,7 +47,7 @@ class GeminiLLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   promptWindowLimit() {
@@ -118,32 +117,6 @@ class GeminiLLM {
     return allMessages;
   }
 
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const compressedHistory = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const chatThread = this.gemini.startChat({
-      history: this.formatMessages(compressedHistory),
-    });
-    const result = await chatThread.sendMessage(prompt);
-    const response = result.response;
-    const responseText = response.text();
-
-    if (!responseText) throw new Error("Gemini: No response could be parsed.");
-
-    return responseText;
-  }
-
   async getChatCompletion(messages = [], _opts = {}) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
@@ -163,30 +136,6 @@ class GeminiLLM {
     if (!responseText) throw new Error("Gemini: No response could be parsed.");
 
     return responseText;
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const compressedHistory = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const chatThread = this.gemini.startChat({
-      history: this.formatMessages(compressedHistory),
-    });
-    const responseStream = await chatThread.sendMessageStream(prompt);
-    if (!responseStream.stream)
-      throw new Error("Could not stream response stream from Gemini.");
-
-    return responseStream.stream;
   }
 
   async streamGetChatCompletion(messages = [], _opts = {}) {
