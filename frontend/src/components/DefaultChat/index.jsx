@@ -51,7 +51,7 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              "Welcome to ChatLTT! I'm your AI companion, ready to assist you. 
+              Welcome to ChatLTT! I'm your AI companion, ready to assist you. 
               ChatLTT is powered by robust GPUs housed in German data centers, 
               ensuring top-notch performance. Our focus is on hosting Large Language 
               Models (LLMs) to offer you a seamless AI chat experience. We aim to simplify 
@@ -59,7 +59,7 @@ export default function DefaultChatContainer() {
               and maintenance of LLMs. Your privacy is our priority; all your chats are 
               completely private and automatically deleted when you close your account.
               Say goodbye to the hassle of managing technical details and enjoy effortless 
-              AI conversations with us. Let's chat!".
+              AI conversations with us. Let's chat!.
             </span>
           </div>
         </div>
@@ -102,13 +102,13 @@ export default function DefaultChatContainer() {
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               >
-                "With our paid plans, you'll enjoy complete privacy. You can create Workspaces, 
+                With our paid plans, you'll enjoy complete privacy. You can create Workspaces, 
                 train your LLM models with text, PDFs, and audio notes. Utilize agents to browse 
                 the internet and answer your queries. Engage in uncensored chats that are wiped 
                 out after you leave. Rest assured, we never use your chats to train our models; 
                 everything operates locally on your GPU servers. Plus, you can have a multi-user 
                 account and invite your team, colleagues, or friends to converse with your trained 
-                model. The possibilities are endless. <br /><br />Dive into our blogs to explore different use cases."
+                model. The possibilities are endless. <br /><br />Dive into our blogs to explore different use cases.
                 <br />
                 </span>
                 <a
