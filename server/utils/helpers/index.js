@@ -77,6 +77,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
       return new GroqLLM(embedder, model);
+    case "koboldcpp":
+      const { KoboldCPPLLM } = require("../AiProviders/koboldCPP");
+      return new KoboldCPPLLM(embedder, model);
     case "generic-openai":
       const { GenericOpenAiLLM } = require("../AiProviders/genericOpenAi");
       return new GenericOpenAiLLM(embedder, model);

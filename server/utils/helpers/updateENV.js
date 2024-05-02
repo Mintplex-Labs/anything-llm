@@ -132,6 +132,20 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // KoboldCPP Settings
+  KoboldCPPBasePath: {
+    envKey: "KOBOLD_CPP_BASE_PATH",
+    checks: [isNotEmpty],
+  },
+  KoboldCPPModelPref: {
+    envKey: "KOBOLD_CPP_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  KoboldCPPTokenLimit: {
+    envKey: "KOBOLD_CPP_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   // Generic OpenAI InferenceSettings
   GenericOpenAiBasePath: {
     envKey: "GENERIC_OPEN_AI_BASE_PATH",
@@ -393,6 +407,7 @@ function supportedLLM(input = "") {
     "perplexity",
     "openrouter",
     "groq",
+    "koboldcpp",
     "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;

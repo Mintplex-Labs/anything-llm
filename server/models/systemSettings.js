@@ -359,6 +359,11 @@ const SystemSettings = {
       HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
       HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
 
+      // KoboldCPP Keys
+      KoboldCPPModelPref: process.env.KOBOLD_CPP_MODEL_PREF,
+      KoboldCPPBasePath: process.env.KOBOLD_CPP_BASE_PATH,
+      KoboldCPPTokenLimit: process.env.KOBOLD_CPP_MODEL_TOKEN_LIMIT,
+
       // Generic OpenAI Keys
       GenericOpenAiBasePath: process.env.GENERIC_OPEN_AI_BASE_PATH,
       GenericOpenAiModelPref: process.env.GENERIC_OPEN_AI_MODEL_PREF,

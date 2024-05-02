@@ -15,6 +15,7 @@ import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
+import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
@@ -136,6 +137,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your prompts and document text used in response creation are visible to Groq",
     ],
     logo: GroqLogo,
+  },
+  koboldcpp: {
+    name: "KoboldCPP",
+    description: [
+      "Your model and chats are only accessible on the server running KoboldCPP",
+    ],
+    logo: KoboldCPPLogo,
   },
   "generic-openai": {
     name: "Generic OpenAI compatible service",

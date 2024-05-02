@@ -15,6 +15,7 @@ import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
+import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
 import AzureAiOptions from "@/components/LLMSelection/AzureAiOptions";
@@ -35,6 +36,7 @@ import System from "@/models/system";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
+import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -135,6 +137,13 @@ const LLMS = [
     options: (settings) => <GroqAiOptions settings={settings} />,
     description:
       "The fastest LLM inferencing available for real-time AI applications.",
+  },
+  {
+    name: "KoboldCPP",
+    value: "koboldcpp",
+    logo: KoboldCPPLogo,
+    options: (settings) => <KoboldCPPOptions settings={settings} />,
+    description: "Run local LLMs using koboldcpp.",
   },
   {
     name: "Generic OpenAI",
