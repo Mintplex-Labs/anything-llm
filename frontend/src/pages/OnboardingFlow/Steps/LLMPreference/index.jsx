@@ -105,6 +105,13 @@ const LLMS = [
     description: "Run LLMs locally on your own machine.",
   },
   {
+    name: "KoboldCPP",
+    value: "koboldcpp",
+    logo: KoboldCPPLogo,
+    options: (settings) => <KoboldCPPOptions settings={settings} />,
+    description: "Run local LLMs using koboldcpp.",
+  },
+  {
     name: "Together AI",
     value: "togetherai",
     logo: TogetherAILogo,
@@ -140,13 +147,6 @@ const LLMS = [
     options: (settings) => <GroqAiOptions settings={settings} />,
     description:
       "The fastest LLM inferencing available for real-time AI applications.",
-  },
-  {
-    name: "KoboldCPP",
-    value: "koboldcpp",
-    logo: KoboldCPPLogo,
-    options: (settings) => <KoboldCPPOptions settings={settings} />,
-    description: "Run local LLMs using koboldcpp.",
   },
   {
     name: "Cohere",

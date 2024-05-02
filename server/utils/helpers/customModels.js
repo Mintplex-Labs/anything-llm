@@ -192,7 +192,7 @@ async function getKoboldCPPModels(basePath = null) {
     return { models, error: null };
   } catch (e) {
     console.error(`KoboldCPP:getKoboldCPPModels`, e.message);
-    return { models: [], error: "Could not fetch LMStudio Models" };
+    return { models: [], error: "Could not fetch KoboldCPP Models" };
   }
 }
 

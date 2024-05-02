@@ -135,7 +135,7 @@ const KEY_MAPPING = {
   // KoboldCPP Settings
   KoboldCPPBasePath: {
     envKey: "KOBOLD_CPP_BASE_PATH",
-    checks: [isNotEmpty],
+    checks: [isNotEmpty, isValidURL],
   },
   KoboldCPPModelPref: {
     envKey: "KOBOLD_CPP_MODEL_PREF",
