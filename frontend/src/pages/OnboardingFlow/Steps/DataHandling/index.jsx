@@ -16,6 +16,8 @@ import HuggingFaceLogo from "@/assets/llmprovider/huggingface.png";
 import PerplexityLogo from "@/assets/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/assets/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/assets/llmprovider/groq.png";
+import KoboldCPPLogo from "@/assets/llmprovider/koboldcpp.png";
+import CohereLogo from "@/assets/llmprovider/cohere.png";
 
 import ZillizLogo from "@/assets/vectordbs/zilliz.png";
 import AstraDBLogo from "@/assets/vectordbs/astraDB.png";
@@ -139,12 +141,26 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: GroqLogo,
   },
+  koboldcpp: {
+    name: "KoboldCPP",
+    description: [
+      "Your model and chats are only accessible on the server running KoboldCPP",
+    ],
+    logo: KoboldCPPLogo,
+  },
   "generic-openai": {
     name: "Generic OpenAI compatible service",
     description: [
       "Data is shared according to the terms of service applicable with your generic endpoint provider.",
     ],
     logo: GenericOpenAiLogo,
+  },
+  cohere: {
+    name: "Cohere",
+    description: [
+      "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
+    ],
+    logo: CohereLogo,
   },
 };
 
@@ -253,6 +269,13 @@ export const EMBEDDING_ENGINE_PRIVACY = {
       "Your document text is embedded privately on the server running LMStudio",
     ],
     logo: LMStudioLogo,
+  },
+  cohere: {
+    name: "Cohere",
+    description: [
+      "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
+    ],
+    logo: CohereLogo,
   },
 };
 

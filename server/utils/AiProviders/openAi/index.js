@@ -1,5 +1,4 @@
 const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
-const { chatPrompt } = require("../../chats");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
@@ -41,7 +40,7 @@ class OpenAiLLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   promptWindowLimit() {
@@ -120,65 +119,6 @@ class OpenAiLLM {
       .filter((reason) => !!reason);
 
     return { safe: false, reasons };
-  }
-
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const textResponse = await this.openai.chat.completions
-      .create({
-        model: this.model,
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-        n: 1,
-        messages: await this.compressMessages(
-          {
-            systemPrompt: chatPrompt(workspace),
-            userPrompt: prompt,
-            chatHistory,
-          },
-          rawHistory
-        ),
-      })
-      .then((result) => {
-        if (!result.hasOwnProperty("choices"))
-          throw new Error("OpenAI chat: No results!");
-        if (result.choices.length === 0)
-          throw new Error("OpenAI chat: No results length!");
-        return result.choices[0].message.content;
-      })
-      .catch((error) => {
-        throw new Error(
-          `OpenAI::createChatCompletion failed with: ${error.message}`
-        );
-      });
-
-    return textResponse;
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const streamRequest = await this.openai.chat.completions({
-      model: this.model,
-      stream: true,
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-      n: 1,
-      messages: await this.compressMessages(
-        {
-          systemPrompt: chatPrompt(workspace),
-          userPrompt: prompt,
-          chatHistory,
-        },
-        rawHistory
-      ),
-    });
-    return streamRequest;
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {

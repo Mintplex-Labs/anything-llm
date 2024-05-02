@@ -5,6 +5,7 @@ import showToast from "@/utils/toast";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { _APP_PLATFORM } from "@/utils/constants";
 import CTAButton from "@/components/lib/CTAButton";
+import LLMItem from "@/components/LLMSelection/LLMItem";
 
 import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/assets/llmprovider/openai.png";
@@ -21,6 +22,9 @@ import HuggingFaceLogo from "@/assets/llmprovider/huggingface.png";
 import PerplexityLogo from "@/assets/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/assets/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/assets/llmprovider/groq.png";
+import KoboldCPPLogo from "@/assets/llmprovider/koboldcpp.png";
+import CohereLogo from "@/assets/llmprovider/cohere.png";
+
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -37,8 +41,8 @@ import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import AnythingLLMOptions from "@/components/LLMSelection/AnythingLLMOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
-
-import LLMItem from "@/components/LLMSelection/LLMItem";
+import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
+import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   _APP_PLATFORM.value !== "linux"
@@ -167,6 +171,26 @@ export const AVAILABLE_LLM_PROVIDERS = [
     description:
       "The fastest LLM inferencing available for real-time AI applications.",
     requiredConfig: ["GroqApiKey"],
+  },
+  {
+    name: "KoboldCPP",
+    value: "koboldcpp",
+    logo: KoboldCPPLogo,
+    options: (settings) => <KoboldCPPOptions settings={settings} />,
+    description: "Run local LLMs using koboldcpp.",
+    requiredConfig: [
+      "KoboldCPPModelPref",
+      "KoboldCPPBasePath",
+      "KoboldCPPTokenLimit",
+    ],
+  },
+  {
+    name: "Cohere",
+    value: "cohere",
+    logo: CohereLogo,
+    options: (settings) => <CohereAiOptions settings={settings} />,
+    description: "Run Cohere's powerful Command models.",
+    requiredConfig: ["CohereApiKey"],
   },
   {
     name: "Generic OpenAI",

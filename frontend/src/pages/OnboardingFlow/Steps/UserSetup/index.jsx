@@ -29,7 +29,7 @@ export default function UserSetup({ setHeader, setForwardBtn, setBackBtn }) {
   }
 
   function handleBack() {
-    navigate(paths.onboarding.customLogo());
+    navigate(paths.onboarding.llmPreference());
   }
 
   useEffect(() => {

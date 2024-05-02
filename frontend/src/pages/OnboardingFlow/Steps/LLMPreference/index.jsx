@@ -15,6 +15,8 @@ import HuggingFaceLogo from "@/assets/llmprovider/huggingface.png";
 import PerplexityLogo from "@/assets/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/assets/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/assets/llmprovider/groq.png";
+import KoboldCPPLogo from "@/assets/llmprovider/koboldcpp.png";
+import CohereLogo from "@/assets/llmprovider/cohere.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -31,6 +33,9 @@ import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 import AnythingLLMOptions from "@/components/LLMSelection/AnythingLLMOptions";
+import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
+import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
+
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
 import paths from "@/utils/paths";
@@ -114,6 +119,13 @@ const LLMS = [
     description: "Run LLMs locally on your own machine.",
   },
   {
+    name: "KoboldCPP",
+    value: "koboldcpp",
+    logo: KoboldCPPLogo,
+    options: (settings) => <KoboldCPPOptions settings={settings} />,
+    description: "Run local LLMs using koboldcpp.",
+  },
+  {
     name: "Together AI",
     value: "togetherai",
     logo: TogetherAILogo,
@@ -149,6 +161,13 @@ const LLMS = [
     options: (settings) => <GroqAiOptions settings={settings} />,
     description:
       "The fastest LLM inferencing available for real-time AI applications.",
+  },
+  {
+    name: "Cohere",
+    value: "cohere",
+    logo: CohereLogo,
+    options: (settings) => <CohereAiOptions settings={settings} />,
+    description: "Run Cohere's powerful Command models.",
   },
   {
     name: "Generic OpenAI",

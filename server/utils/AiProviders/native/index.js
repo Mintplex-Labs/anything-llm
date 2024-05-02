@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
-const { chatPrompt } = require("../../chats");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -94,7 +93,7 @@ class NativeLLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   // Ensure the user set a value for the token limit
@@ -121,45 +120,6 @@ class NativeLLM {
   async isSafe(_input = "") {
     // Not implemented so must be stubbed
     return { safe: true, reasons: [] };
-  }
-
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    try {
-      const messages = await this.compressMessages(
-        {
-          systemPrompt: chatPrompt(workspace),
-          userPrompt: prompt,
-          chatHistory,
-        },
-        rawHistory
-      );
-
-      const model = await this.#llamaClient({
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-      });
-      const response = await model.call(messages);
-      return response.content;
-    } catch (error) {
-      throw new Error(
-        `NativeLLM::createChatCompletion failed with: ${error.message}`
-      );
-    }
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const model = await this.#llamaClient({
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-    });
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-    const responseStream = await model.stream(messages);
-    return responseStream;
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
