@@ -16,7 +16,7 @@ class CohereEmbedder {
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 96; // Cohere's limit per request is 96
-    this.embeddingMaxChunkLength = 8_191;
+    this.embeddingMaxChunkLength = 1945; // https://docs.cohere.com/docs/embed-2 - assume a token is roughly 4 letters with some padding
   }
 
   async embedTextInput(textInput) {

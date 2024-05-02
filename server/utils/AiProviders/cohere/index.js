@@ -1,9 +1,6 @@
-const { chatPrompt } = require("../../chats");
-const {
-  writeResponseChunk,
-  clientAbortedHandler,
-} = require("../../helpers/chat/responses");
 const { v4 } = require("uuid");
+const { writeResponseChunk } = require("../../helpers/chat/responses");
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 
 class CohereLLM {
   constructor(embedder = null) {
@@ -22,12 +19,7 @@ class CohereLLM {
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
-
-    if (!embedder)
-      throw new Error(
-        "INVALID COHERE AI SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Cohere as your LLM."
-      );
-    this.embedder = embedder;
+    this.embedder = !!embedder ? embedder : new NativeEmbedder();
   }
 
   #appendContext(contextTexts = []) {
@@ -62,7 +54,7 @@ class CohereLLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   promptWindowLimit() {
@@ -114,62 +106,6 @@ class CohereLLM {
     return { safe: true, reasons: [] };
   }
 
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `Cohere chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const message = messages[messages.length - 1].content; // Get the last message
-    const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
-
-    const chat = await this.cohere.chat({
-      model: this.model,
-      message: message,
-      chatHistory: cohereHistory,
-      temperature: Number(workspace?.openAiTemp ?? 0.7),
-    });
-
-    if (!chat.hasOwnProperty("text")) return null;
-    return chat.text;
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!(await this.isValidChatCompletionModel(this.model)))
-      throw new Error(
-        `Cohere chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const message = messages[messages.length - 1].content; // Get the last message
-    const cohereHistory = this.#convertChatHistoryCohere(messages.slice(0, -1)); // Remove the last message and convert to Cohere
-
-    const stream = await this.cohere.chatStream({
-      model: this.model,
-      message: message,
-      chatHistory: cohereHistory,
-      temperature: Number(workspace?.openAiTemp ?? 0.7),
-    });
-
-    return { type: "stream", stream: stream };
-  }
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(
