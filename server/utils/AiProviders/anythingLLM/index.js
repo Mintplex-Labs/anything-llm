@@ -446,7 +446,8 @@ class AnythingLLMOllama {
           textResponse: "",
           close: true,
           error: this.#errorHandler(
-            `AnythingLLM:streaming - could not stream chat. ${error?.cause ?? error.message
+            `AnythingLLM:streaming - could not stream chat. ${
+              error?.cause ?? error.message
             }`
           ),
         });

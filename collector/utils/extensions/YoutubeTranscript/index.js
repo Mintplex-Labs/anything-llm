@@ -67,6 +67,7 @@ async function loadYouTubeTranscript({ url }) {
   const outFolder = slugify(
     `${metadata.author} YouTube transcripts`
   ).toLowerCase();
+
   const outFolderPath =
     process.env.NODE_ENV === "development"
       ? path.resolve(
@@ -75,7 +76,8 @@ async function loadYouTubeTranscript({ url }) {
         )
       : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 
-  if (!fs.existsSync(outFolderPath)) fs.mkdirSync(outFolderPath);
+  if (!fs.existsSync(outFolderPath))
+    fs.mkdirSync(outFolderPath, { recursive: true });
 
   const data = {
     id: v4(),

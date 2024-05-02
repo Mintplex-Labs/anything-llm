@@ -39,7 +39,9 @@ async function loadGithubRepo(args) {
           `../../../../server/storage/documents/${outFolder}`
         )
       : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
-  fs.mkdirSync(outFolderPath);
+
+  if (!fs.existsSync(outFolderPath))
+    fs.mkdirSync(outFolderPath, { recursive: true });
 
   for (const doc of docs) {
     if (!doc.pageContent) continue;
