@@ -18,12 +18,13 @@ import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
 import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
 import OllamaEmbeddingOptions from "@/components/EmbeddingSelection/OllamaOptions";
 import LMStudioEmbeddingOptions from "@/components/EmbeddingSelection/LMStudioOptions";
+import CohereEmbeddingOptions from "@/components/EmbeddingSelection/CohereOptions";
+
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
-import CohereEmbeddingOptions from "@/components/EmbeddingSelection/CohereOptions";
 
 const EMBEDDERS = [
   {
