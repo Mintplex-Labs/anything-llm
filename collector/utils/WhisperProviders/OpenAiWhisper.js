@@ -22,7 +22,6 @@ class OpenAiWhisper {
       .create({
         file: fs.createReadStream(fullFilePath),
         model: this.model,
-        model: "whisper-1",
         response_format: "text",
         temperature: this.temperature,
       })
