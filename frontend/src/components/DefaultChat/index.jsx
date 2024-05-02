@@ -178,15 +178,7 @@ export default function DefaultChatContainer() {
           </div>
         </div>
       </div>
-    </React.Fragment>,
-
-    
-
-    
-
-   
-
-    
+    </React.Fragment>,    
   ];
 
   useEffect(() => {
