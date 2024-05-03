@@ -364,6 +364,10 @@ const SystemSettings = {
       KoboldCPPBasePath: process.env.KOBOLD_CPP_BASE_PATH,
       KoboldCPPTokenLimit: process.env.KOBOLD_CPP_MODEL_TOKEN_LIMIT,
 
+      // Text Generation Web UI Keys
+      TextGenWebUIBasePath: process.env.TEXT_GEN_WEB_UI_BASE_PATH,
+      TextGenWebUITokenLimit: process.env.TEXT_GEN_WEB_UI_MODEL_TOKEN_LIMIT,
+
       // Generic OpenAI Keys
       GenericOpenAiBasePath: process.env.GENERIC_OPEN_AI_BASE_PATH,
       GenericOpenAiModelPref: process.env.GENERIC_OPEN_AI_MODEL_PREF,
