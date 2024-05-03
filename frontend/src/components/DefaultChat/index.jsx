@@ -77,10 +77,7 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              ChatLTT is the easiest way to put powerful AI products like
-              OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services
-              together in a neat package with no fuss to increase your
-              productivity by 100x.
+              ChatLTT is the easiest way to experience powerful LLMs from Hugging Face.
             </span>
           </div>
         </div>
