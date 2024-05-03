@@ -79,7 +79,11 @@ class AgentHandler {
         break;
       case "lmstudio":
         if (!process.env.LMSTUDIO_BASE_PATH)
-          throw new Error("LMStudio bash path must be provided to use agents.");
+          throw new Error("LMStudio base path must be provided to use agents.");
+        break;
+      case "ollama":
+        if (!process.env.OLLAMA_BASE_PATH)
+          throw new Error("Ollama base path must be provided to use agents.");
         break;
       default:
         throw new Error("No provider found to power agent cluster.");
@@ -94,6 +98,8 @@ class AgentHandler {
         return "claude-3-sonnet-20240229";
       case "lmstudio":
         return "server-default";
+      case "ollama":
+        return "llama3:latest";
       default:
         return "unknown";
     }

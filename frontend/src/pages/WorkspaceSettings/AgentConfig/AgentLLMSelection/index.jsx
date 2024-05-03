@@ -5,8 +5,8 @@ import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, Gauge, MagnifyingGlass, X } from "@phosphor-icons/react";
 import AgentModelSelection from "../AgentModelSelection";
 
-const ENABLED_PROVIDERS = ["openai", "anthropic", "lmstudio"];
-const WARN_PERFORMANCE = ["lmstudio"];
+const ENABLED_PROVIDERS = ["openai", "anthropic", "lmstudio", "ollama"];
+const WARN_PERFORMANCE = ["lmstudio", "ollama"];
 
 const LLM_DEFAULT = {
   name: "Please make a selection",
