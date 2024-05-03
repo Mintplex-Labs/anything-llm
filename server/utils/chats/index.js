@@ -140,9 +140,13 @@ async function chatWithWorkspace(
   contextTexts = [...contextTexts, ...vectorSearchResults.contextTexts];
   sources = [...sources, ...vectorSearchResults.sources];
 
-  // If in query mode and no sources are found, do not
+  // If in query mode and no sources are found from the vector search and no pinned documents, do not
   // let the LLM try to hallucinate a response or use general knowledge and exit early
-  if (chatMode === "query" && sources.length === 0) {
+  if (
+    chatMode === "query" &&
+    vectorSearchResults.sources.length === 0 &&
+    pinnedDocIdentifiers.length === 0
+  ) {
     return {
       id: uuid,
       type: "textResponse",

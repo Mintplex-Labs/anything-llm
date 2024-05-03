@@ -77,6 +77,12 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
       return new GroqLLM(embedder, model);
+    case "koboldcpp":
+      const { KoboldCPPLLM } = require("../AiProviders/koboldCPP");
+      return new KoboldCPPLLM(embedder, model);
+    case "cohere":
+      const { CohereLLM } = require("../AiProviders/cohere");
+      return new CohereLLM(embedder, model);
     case "generic-openai":
       const { GenericOpenAiLLM } = require("../AiProviders/genericOpenAi");
       return new GenericOpenAiLLM(embedder, model);
@@ -110,6 +116,9 @@ function getEmbeddingEngineSelection() {
     case "lmstudio":
       const { LMStudioEmbedder } = require("../EmbeddingEngines/lmstudio");
       return new LMStudioEmbedder();
+    case "cohere":
+      const { CohereEmbedder } = require("../EmbeddingEngines/cohere");
+      return new CohereEmbedder();
     default:
       return null;
   }

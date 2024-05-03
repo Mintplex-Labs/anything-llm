@@ -9,6 +9,7 @@ import AzureOpenAiLogo from "@/media/llmprovider/azure.png";
 import LocalAiLogo from "@/media/llmprovider/localai.png";
 import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
+import CohereLogo from "@/media/llmprovider/cohere.png";
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
 import OpenAiOptions from "@/components/EmbeddingSelection/OpenAiOptions";
@@ -17,6 +18,8 @@ import LocalAiOptions from "@/components/EmbeddingSelection/LocalAiOptions";
 import NativeEmbeddingOptions from "@/components/EmbeddingSelection/NativeEmbeddingOptions";
 import OllamaEmbeddingOptions from "@/components/EmbeddingSelection/OllamaOptions";
 import LMStudioEmbeddingOptions from "@/components/EmbeddingSelection/LMStudioOptions";
+import CohereEmbeddingOptions from "@/components/EmbeddingSelection/CohereOptions";
+
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { useModal } from "@/hooks/useModal";
@@ -67,6 +70,13 @@ const EMBEDDERS = [
     options: (settings) => <LMStudioEmbeddingOptions settings={settings} />,
     description:
       "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+  },
+  {
+    name: "Cohere",
+    value: "cohere",
+    logo: CohereLogo,
+    options: (settings) => <CohereEmbeddingOptions settings={settings} />,
+    description: "Run powerful embedding models from Cohere.",
   },
 ];
 

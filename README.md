@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-    <b>AnythingLLM: The all-in-one AI app you were looking for.<br />
+    <b>AnythingLLM:</b> The all-in-one AI app you were looking for.<br />
     Chat with your docs, use AI Agents, hyper-configurable, multi-user, & no fustrating set up required.
 </p>
 

@@ -107,14 +107,21 @@ class NativeEmbedder {
       );
 
     let fetchResponse = await this.#fetchWithHost();
-    if (fetchResponse.pipeline !== null) return fetchResponse.pipeline;
+    if (fetchResponse.pipeline !== null) {
+      this.modelDownloaded = true;
+      return fetchResponse.pipeline;
+    }
 
     this.log(
       `Failed to download model from primary URL. Using fallback ${fetchResponse.retry}`
     );
     if (!!fetchResponse.retry)
       fetchResponse = await this.#fetchWithHost(fetchResponse.retry);
-    if (fetchResponse.pipeline !== null) return fetchResponse.pipeline;
+    if (fetchResponse.pipeline !== null) {
+      this.modelDownloaded = true;
+      return fetchResponse.pipeline;
+    }
+
     throw fetchResponse.error;
   }
 
