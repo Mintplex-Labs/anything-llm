@@ -1,5 +1,5 @@
-const { safeJsonParse } = require("../../../http");
-const { Deduplicator } = require("../utils/dedupe");
+const { safeJsonParse } = require("../../../../http");
+const { Deduplicator } = require("../../utils/dedupe");
 
 // Useful inheritance class for a model which supports OpenAi schema for API requests
 // but does not have tool-calling or JSON output support.
@@ -22,17 +22,23 @@ class UnTooled {
     return modifiedMessages;
   }
 
-  formatFuncs(functions = []) {
-    const funcs = [];
+  showcaseFunctions(functions = []) {
+    let output = "";
     functions.forEach((def) => {
-      funcs.push({
-        name: def.name,
-        description: def.description,
-        properties: def.properties,
-      });
-    });
+      let shotExample = `-----------
+Function name: ${def.name}
+Function Description: ${def.description}
+Function parameters in JSON format:
+${JSON.stringify(def.parameters.properties, null, 4)}\n`;
 
-    return JSON.stringify(funcs, null, 2);
+      if (Array.isArray(def.examples)) {
+        def.examples.forEach(({ prompt, call }) => {
+          shotExample += `Query: "${prompt}"\nJSON: ${call}\n`;
+        });
+      }
+      output += `${shotExample}-----------\n`;
+    });
+    return output;
   }
 
   /**
@@ -114,67 +120,15 @@ When a function is selection, respond in JSON with no additional text.
 When there is no relevant function to call - return with a regular chat text response.
 Your task is to pick a **single** function that we will use to call, if any seem useful or relevant for the user query.
 
-Example of Tool definitions:
-[
-  {
-    name: 'rag-memory',
-    description: 'Search against local documents for context that is relevant to the query or store a snippet of text into memory for retrieval later. Storing information should only be done when the user specifically requests for information to be remembered or saved to long-term memory. You should use this tool before search the internet for information.',
-    parameters: {
-      '$schema': 'http://json-schema.org/draft-07/schema#',
-      type: 'object',
-      properties: [
-        action: {
-          type: "string",
-          enum: ["search", "store"],
-          description:
-            "The action we want to take to search for existing similar context or storage of new context.",
-        },
-        content: {
-          type: "string",
-          description:
-            "The plain text to search our local documents with or to store in our vector database.",
-        },
-      ],
-      additionalProperties: false
-    }
-  },
-  {
-    name: 'web-scraping',
-    description: 'Scrapes the content of a webpage or online resource from a URL.',
-    parameters: {
-      '$schema': 'http://json-schema.org/draft-07/schema#',
-      type: 'object',
-      properties: [
-        url: {
-          type: "string",
-          format: "uri",
-          description: "A web URL.",
-        },
-      ],
-      additionalProperties: false
-    },
-  }
-]
+All JSON responses should have two keys.
+'name': this is the name of the function name to call. eg: 'web-scraper', 'rag-memory', etc..
+'arguments': this is an object with the function properties to invoke the function.
+DO NOT INCLUDE ANY OTHER KEYS IN JSON RESPONSES.
 
-Example Query:
-User: Scrape https://example.com
-Your response (JSON ONLY): 
-{
-  name: 'web-scraping'.
-  arguments: {
-    url: 'https://example.com'
-  }
-}
+Here are the available tools you can use an examples of a query and response so you can understand how each one works.
+${this.showcaseFunctions(functions)}
 
-Example Query where tool cannot be used:
-User: Hello!
-Your response (Text Only): Hello, how are you today?
-
-The available function and their definitions are listed below - respond only with JSON or a regular chat response.
-${this.formatFuncs(functions)}
-
-Now, assess the next function to call:
-`,
+Now pick a function if there is an appropriate one to use given the last user message and the given conversation so far.`,
             role: "system",
           },
           ...history,

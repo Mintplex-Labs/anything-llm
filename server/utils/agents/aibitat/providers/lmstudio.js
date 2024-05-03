@@ -1,7 +1,7 @@
 const OpenAI = require("openai");
-const InheritMultiple = require("./classes.js");
 const Provider = require("./ai-provider.js");
-const UnTooled = require("./untooled.js");
+const InheritMultiple = require("./helpers/classes.js");
+const UnTooled = require("./helpers/untooled.js");
 
 /**
  * The provider for the LMStudio provider.
@@ -20,6 +20,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
     });
     this._client = client;
     this.model = model;
+    this.verbose = true;
   }
 
   get client() {
