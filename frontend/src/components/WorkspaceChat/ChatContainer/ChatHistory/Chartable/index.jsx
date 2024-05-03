@@ -107,7 +107,7 @@ export function Chartable({ props, workspace }) {
         );
       case "line":
         return (
-          <div className="bg-zinc-900 p-8 pb-12 rounded-xl text-white h-[500px]">
+          <div className="bg-zinc-900 p-8 pb-12 rounded-xl text-white h-[500px] w-full">
             <h3 className="text-lg font-medium">{title}</h3>
             <LineChart
               className="h-[400px]"
@@ -371,7 +371,7 @@ export function Chartable({ props, workspace }) {
         <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
           <div className="flex gap-x-5">
             <WorkspaceProfileImage workspace={workspace} />
-            <div className="relative">
+            <div className="relative w-full">
               <DownloadGraph onClick={handleDownload} />
               <div ref={ref}>{renderChart()}</div>
               <span
@@ -390,7 +390,7 @@ export function Chartable({ props, workspace }) {
   return (
     <div className="flex justify-center items-end w-full">
       <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
-        <div className="relative">
+        <div className="relative w-full">
           <DownloadGraph onClick={handleDownload} />
           <div ref={ref}>{renderChart()}</div>
         </div>

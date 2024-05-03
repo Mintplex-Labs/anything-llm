@@ -23,9 +23,6 @@ export default {
     vectorDatabase: () => {
       return "/onboarding/vector-database";
     },
-    customLogo: () => {
-      return "/onboarding/custom-logo";
-    },
     userSetup: () => {
       return "/onboarding/user-setup";
     },

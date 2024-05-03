@@ -14,6 +14,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "perplexity",
   "openrouter",
   "lmstudio",
+  "koboldcpp",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -39,6 +40,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getOpenRouterModels();
     case "lmstudio":
       return await getLMStudioModels(basePath);
+    case "koboldcpp":
+      return await getKoboldCPPModels(basePath);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -168,6 +171,28 @@ async function getLMStudioModels(basePath = null) {
   } catch (e) {
     console.error(`LMStudio:getLMStudioModels`, e.message);
     return { models: [], error: "Could not fetch LMStudio Models" };
+  }
+}
+
+async function getKoboldCPPModels(basePath = null) {
+  try {
+    const { OpenAI: OpenAIApi } = require("openai");
+    const openai = new OpenAIApi({
+      baseURL: basePath || process.env.LMSTUDIO_BASE_PATH,
+      apiKey: null,
+    });
+    const models = await openai.models
+      .list()
+      .then((results) => results.data)
+      .catch((e) => {
+        console.error(`KoboldCPP:listModels`, e.message);
+        return [];
+      });
+
+    return { models, error: null };
+  } catch (e) {
+    console.error(`KoboldCPP:getKoboldCPPModels`, e.message);
+    return { models: [], error: "Could not fetch KoboldCPP Models" };
   }
 }
 

@@ -131,7 +131,11 @@ async function streamChatWithForEmbed(
 
   // If in query mode and no sources are found, do not
   // let the LLM try to hallucinate a response or use general knowledge
-  if (chatMode === "query" && sources.length === 0) {
+  if (
+    chatMode === "query" &&
+    sources.length === 0 &&
+    pinnedDocIdentifiers.length === 0
+  ) {
     writeResponseChunk(response, {
       id: uuid,
       type: "textResponse",

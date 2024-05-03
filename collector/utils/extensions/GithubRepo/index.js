@@ -32,7 +32,7 @@ async function loadGithubRepo(args) {
     `${repo.author}-${repo.project}-${repo.branch}-${v4().slice(0, 4)}`
   ).toLowerCase();
   const outFolderPath = path.resolve(documentsFolder, outFolder);
-  fs.mkdirSync(outFolderPath);
+  if (!fs.existsSync(outFolderPath)) fs.mkdirSync(outFolderPath, { recursive: true });
 
   for (const doc of docs) {
     if (!doc.pageContent) continue;
