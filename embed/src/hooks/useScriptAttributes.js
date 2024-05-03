@@ -25,6 +25,7 @@ const DEFAULT_SETTINGS = {
   assistantIcon: null, // default assistant icon
   windowHeight: null, // height of chat window in px
   windowWidth: null, // width of chat window in px
+  textSize: null, // text size in px
 
   // behaviors
   openOnLoad: "off", // or "on"

@@ -91,6 +91,8 @@ REQUIRED data attributes:
 
 - `data-window-width` - Set the chat window width in pixels.
 
+- `data-text-size` - Set the text size of the chats in pixels.
+
 **Behavior Overrides**
 
 - `data-open-on-load` — Once loaded, open the chat as default. It can still be closed by the user.
