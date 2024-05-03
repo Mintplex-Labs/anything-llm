@@ -18,6 +18,7 @@ import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
+import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -40,6 +41,7 @@ import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
+import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   {
@@ -153,6 +155,18 @@ export const AVAILABLE_LLM_PROVIDERS = [
     description:
       "The fastest LLM inferencing available for real-time AI applications.",
     requiredConfig: ["GroqApiKey"],
+  },
+  {
+    name: "KoboldCPP",
+    value: "koboldcpp",
+    logo: KoboldCPPLogo,
+    options: (settings) => <KoboldCPPOptions settings={settings} />,
+    description: "Run local LLMs using koboldcpp.",
+    requiredConfig: [
+      "KoboldCPPModelPref",
+      "KoboldCPPBasePath",
+      "KoboldCPPTokenLimit",
+    ],
   },
   {
     name: "Cohere",
