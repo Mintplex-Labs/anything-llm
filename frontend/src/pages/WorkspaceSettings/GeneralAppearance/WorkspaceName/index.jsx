@@ -6,7 +6,7 @@ export default function WorkspaceName({ workspace, setHasChanges }) {
           ChatLTT Hub's Name
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          This will only change the display name of your HUb.
+          This will only change the display name of your Hub.
         </p>
       </div>
       <input
