@@ -93,7 +93,7 @@ export default function SuggestedChatMessages({ slug }) {
       <div className="flex flex-col">
         <label className="block input-label">Suggested Chat Messages</label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          Customize the messages that will be suggested to your workspace users.
+          Customize the messages that will be suggested to your hub users.
         </p>
         <p className="text-white text-opacity-60 text-sm font-medium mt-6">
           <PreLoader size="4" />
@@ -105,7 +105,7 @@ export default function SuggestedChatMessages({ slug }) {
       <div className="flex flex-col">
         <label className="block input-label">Suggested Chat Messages</label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          Customize the messages that will be suggested to your workspace users.
+          Customize the messages that will be suggested to your hub users.
         </p>
       </div>
 
