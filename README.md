@@ -77,6 +77,7 @@ Some cool features of AnythingLLM
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
+- [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
 
 **Supported Embedding models:**
 
@@ -143,7 +144,6 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 - create PR with branch name format of `<issue number>-<short name>`
 - yee haw let's merge
 
-
 ## Telemetry & Privacy
 
 AnythingLLM by Mintplex Labs Inc contains a telemetry feature that collects anonymous usage information.
@@ -171,7 +171,7 @@ We will only track usage details that help us make product and roadmap decisions
 
 You can verify these claims by finding all locations `Telemetry.sendTelemetry` is called. Additionally these events are written to the output log so you can also see the specific data which was sent - if enabled. No IP or other identifying information is collected. The Telemetry provider is [PostHog](https://posthog.com/) - an open-source telemetry collection service.
 
-[View all telemetry events in source code](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
+[View all telemetry events in source code](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry(&type=code)
 
 </details>
 
