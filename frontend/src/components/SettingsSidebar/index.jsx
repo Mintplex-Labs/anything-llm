@@ -262,7 +262,7 @@ const SidebarOptions = ({ user = null }) => (
       icon={<Eye className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
-      allowedRole={["admin"]}
+      allowedRole={["admin", "manager"]}
     />
     <Option
       href={paths.settings.apiKeys()}
