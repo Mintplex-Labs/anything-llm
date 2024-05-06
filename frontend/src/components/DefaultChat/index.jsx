@@ -137,7 +137,7 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              What is Workspace or these categories at the side bar?!
+              What is ChatLTT Hubs or these categories at the side bar?
             </span>
           </div>
         </div>
