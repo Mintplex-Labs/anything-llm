@@ -1750,7 +1750,7 @@
         "tags": [
           "Workspaces"
         ],
-        "description": "Update workspace settings by its unique slug.",
+        "description": "Update Hub settings by its unique slug.",
         "parameters": [
           {
             "name": "slug",

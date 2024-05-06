@@ -233,7 +233,7 @@ function apiWorkspaceEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Workspaces']
-    #swagger.description = 'Update workspace settings by its unique slug.'
+    #swagger.description = 'Update hub settings by its unique slug.'
     #swagger.path = '/v1/workspace/{slug}/update'
     #swagger.parameters['slug'] = {
         in: 'path',
