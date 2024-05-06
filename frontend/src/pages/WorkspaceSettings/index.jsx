@@ -90,17 +90,17 @@ function ShowWorkspaceChat() {
             to={paths.workspace.settings.generalAppearance(slug)}
           />
           <TabItem
-            title="Chat Settings"
+            title="Chat Settingss"
             icon={<ChatText className="h-6 w-6" />}
             to={paths.workspace.settings.chatSettings(slug)}
-            allowedRole={["admin"]}
+            visible={["admin"].includes(user?.role)}
             
           />
           <TabItem
             title="Vector Database"
             icon={<Database className="h-6 w-6" />}
             to={paths.workspace.settings.vectorDatabase(slug)}
-            allowedRole={["admin"]}
+            visible={["admin"].includes(user?.role)}
           />
           <TabItem
             title="Members"
