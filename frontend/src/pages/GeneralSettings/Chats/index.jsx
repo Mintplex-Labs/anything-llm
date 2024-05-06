@@ -94,7 +94,7 @@ export default function WorkspaceChats() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="flex gap-x-4 items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                Workspace Chats
+                ChatLTT Hub Chats
               </p>
               <div className="relative">
                 <button
@@ -195,7 +195,7 @@ function ChatsContainer() {
               Sent By
             </th>
             <th scope="col" className="px-6 py-3">
-              Workspace
+              ChatLTT Hub
             </th>
             <th scope="col" className="px-6 py-3">
               Prompt
