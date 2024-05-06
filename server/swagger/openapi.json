@@ -1498,7 +1498,7 @@
         "tags": [
           "Workspaces"
         ],
-        "description": "Create a new workspace",
+        "description": "Create a new chatltt hub",
         "parameters": [
           {
             "name": "Authorization",
@@ -1558,7 +1558,7 @@
           "content": {
             "application/json": {
               "example": {
-                "name": "My New Workspace"
+                "name": "My New ChatLTT Hub"
               }
             }
           }

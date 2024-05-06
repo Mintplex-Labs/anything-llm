@@ -20,7 +20,7 @@ Welcome to the AnythingLLM development container configuration, designed to crea
 
 ## Getting Started
 
-1. Using Github Codepaces. Just select to create a new workspace, and the devcontainer will be created for you.
+1. Using Github Codepaces. Just select to create a new chatltt hub, and the devcontainer will be created for you.
 
 2. Using your Local VSCode (Release or Insiders). We suggest you first make a fork of the repo and then clone it to your local machine using VSCode tools. Then open the project folder in VSCode, which will prompt you to open the project in a devcontainer. Select yes, and the devcontainer will be created for you. If this does not happen, you can open the command palette and select "Remote-Containers: Reopen in Container".
 

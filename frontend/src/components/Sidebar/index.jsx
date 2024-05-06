@@ -52,7 +52,7 @@ export default function Sidebar() {
                   >
                     <Plus size={18} weight="bold" />
                     <p className="text-sidebar text-sm font-semibold">
-                      New Workspace
+                      ChatLTT Hub
                     </p>
                   </button>
                 )}
@@ -170,7 +170,7 @@ export function SidebarMobileHeader() {
                       >
                         <Plus className="h-5 w-5" />
                         <p className="text-sidebar text-sm font-semibold">
-                          New Workspace
+                          ChatLTT Hub
                         </p>
                       </button>
                     )}

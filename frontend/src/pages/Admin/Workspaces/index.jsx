@@ -35,7 +35,7 @@ export default function AdminWorkspaces() {
           </div>
           <div className="w-full justify-end flex">
             <CTAButton onClick={openModal} className="mt-3 mr-0 -mb-14 z-10">
-              <BookOpen className="h-4 w-4" weight="bold" /> New Workspace
+              <BookOpen className="h-4 w-4" weight="bold" /> New ChatLTT Hub
             </CTAButton>
           </div>
           <WorkspacesContainer />

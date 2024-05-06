@@ -29,7 +29,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
       <div className="relative w-[500px] max-h-full">
         <div className="relative bg-modal-gradient rounded-lg shadow-md border-2 border-accent">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-white/10">
-            <h3 className="text-xl font-semibold text-white">New Workspace</h3>
+            <h3 className="text-xl font-semibold text-white">New ChatLTT Hub</h3>
             <button
               onClick={hideModal}
               type="button"

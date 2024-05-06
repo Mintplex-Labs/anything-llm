@@ -24,7 +24,7 @@ function apiWorkspaceEndpoints(app) {
   app.post("/v1/workspace/new", [validApiKey], async (request, response) => {
     /*
     #swagger.tags = ['Workspaces']
-    #swagger.description = 'Create a new workspace'
+    #swagger.description = 'Create a new chatltt hub'
     #swagger.requestBody = {
       description: 'JSON object containing new display name of workspace.',
       required: true,
@@ -32,7 +32,7 @@ function apiWorkspaceEndpoints(app) {
       content: {
         "application/json": {
           example: {
-            name: "My New Workspace",
+            name: "My New ChatLTT Hub",
           }
         }
       }

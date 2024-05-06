@@ -18,7 +18,7 @@ export default function NewWorkspaceModal({ closeModal }) {
       <div className="relative bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-600">
           <h3 className="text-xl font-semibold text-white">
-            Create new workspace
+            Create new ChatLTT Hub
           </h3>
           <button
             onClick={closeModal}
