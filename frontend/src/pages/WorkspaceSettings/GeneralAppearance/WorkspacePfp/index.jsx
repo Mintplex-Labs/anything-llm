@@ -49,7 +49,7 @@ export default function WorkspacePfp({ workspace, slug }) {
       <div className="flex flex-col">
         <label className="block input-label">Assistant Profile Image</label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          Customize the profile image of the assistant for this workspace.
+          Customize the profile image of the assistant for this Hub.
         </p>
       </div>
       <div className="flex flex-col md:flex-row items-center gap-8">
