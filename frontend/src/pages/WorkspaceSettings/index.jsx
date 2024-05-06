@@ -93,7 +93,7 @@ function ShowWorkspaceChat() {
             title="Chat Settings"
             icon={<ChatText className="h-6 w-6" />}
             to={paths.workspace.settings.chatSettings(slug)}
-            visible={["admin"].includes(user?.role)}
+            
           />
           <TabItem
             title="Vector Database"
