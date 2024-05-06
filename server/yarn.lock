@@ -2678,6 +2678,11 @@ extract-files@^9.0.0:
   resolved "https://registry.yarnpkg.com/extract-files/-/extract-files-9.0.0.tgz#8a7744f2437f81f5ed3250ed9f1550de902fe54a"
   integrity sha512-CvdFfHkC95B4bBBk36hcEmvdR2awOdhhVUYH6S/zrVj3477zven/fJMYg7121h4T1xHZC+tetUpubpAhxwI7hQ==
 
+extract-json-from-string@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/extract-json-from-string/-/extract-json-from-string-1.0.1.tgz#5001f17e6c905826dcd5989564e130959de60c96"
+  integrity sha512-xfQOSFYbELVs9QVkKsV9FZAjlAmXQ2SLR6FpfFX1kpn4QAvaGBJlrnVOblMLwrLPYc26H+q9qxo6JTd4E7AwgQ==
+
 extract-zip@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/extract-zip/-/extract-zip-2.0.1.tgz#663dca56fe46df890d5f131ef4a06d22bb8ba13a"

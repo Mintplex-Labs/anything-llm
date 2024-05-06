@@ -480,7 +480,7 @@ Read the following conversation.
 CHAT HISTORY
 ${history.map((c) => `@${c.from}: ${c.content}`).join("\n")}
 
-Then select the next role from that is going to speak next. 
+Then select the next role from that is going to speak next.
 Only return the role.
 `,
       },
@@ -522,7 +522,7 @@ Only return the role.
         ? [
             {
               role: "user",
-              content: `You are in a whatsapp group. Read the following conversation and then reply. 
+              content: `You are in a whatsapp group. Read the following conversation and then reply.
 Do not add introduction or conclusion to your reply because this will be a continuous conversation. Don't introduce yourself.
 
 CHAT HISTORY
@@ -741,7 +741,14 @@ ${this.getHistory({ to: route.to })
         return new Providers.AnthropicProvider({ model: config.model });
       case "lmstudio":
         return new Providers.LMStudioProvider({});
-
+      case "groq":
+        return new Providers.GroqProvider({});
+      case "togetherai":
+        return new Providers.TogetherAIProvider({});
+      case "azure":
+        return new Providers.AzureOpenAiProvider({});
+      case "koboldcpp":
+        return new Providers.KoboldCPPProvider({});
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use "openai"`
