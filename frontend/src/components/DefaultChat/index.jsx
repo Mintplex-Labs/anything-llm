@@ -64,25 +64,7 @@ export default function DefaultChatContainer() {
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
-      <div
-        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
-      >
-        <div
-          className={`pb-4 pt-2 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
-        >
-          <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
-
-            <span
-              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-            >
-              ChatLTT is the easiest way to experience powerful LLMs from Hugging Face.
-            </span>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>,
+    
 
     <React.Fragment>
       <div
@@ -98,7 +80,7 @@ export default function DefaultChatContainer() {
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               >
                 With our paid plans, you'll enjoy complete privacy. You can create ChatLTT HuB's, 
-                train your LLM models with text, PDFs, and audio notes. Utilize agents to browse 
+                train your LTT models with text, PDFs, and audio notes. Utilize agents to browse 
                 the internet and answer your queries. Engage in uncensored chats that are wiped 
                 out after you leave. Rest assured, we never use your chats to train our models; 
                 everything operates locally on your GPU servers. Plus, you can have a multi-user 
@@ -137,7 +119,7 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              What is ChatLTT Hubs or these categories at the side bar?
+              What is ChatLTT Hubs?
             </span>
           </div>
         </div>

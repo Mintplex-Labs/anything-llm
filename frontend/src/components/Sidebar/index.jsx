@@ -52,7 +52,7 @@ export default function Sidebar() {
                   >
                     <Plus size={18} weight="bold" />
                     <p className="text-sidebar text-sm font-semibold">
-                      ChatLTT Hub
+                      New ChatLTT Hub
                     </p>
                   </button>
                 )}

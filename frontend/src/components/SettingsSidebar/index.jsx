@@ -324,7 +324,7 @@ const SidebarOptions = ({ user = null }) => (
       icon={<CodeBlock className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
-      allowedRole={["admin"]}
+      allowedRole={["admin", "manager"]}
       subOptions={
         <>
           <Option
@@ -333,7 +333,7 @@ const SidebarOptions = ({ user = null }) => (
             icon={<Barcode className="h-5 w-5 flex-shrink-0" />}
             user={user}
             flex={true}
-            allowedRole={["admin"]}
+            allowedRole={["admin", "manager"]}
           />
         </>
       }
@@ -344,7 +344,7 @@ const SidebarOptions = ({ user = null }) => (
       icon={<Lock className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
-      allowedRole={["admin", "manager"]}
+      allowedRole={["admin"]}
       hidden={user?.role}
     />
     <Option
