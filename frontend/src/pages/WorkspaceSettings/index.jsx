@@ -112,6 +112,7 @@ function ShowWorkspaceChat() {
             title="Agent Configuration"
             icon={<Robot className="h-6 w-6" />}
             to={paths.workspace.settings.agentConfig(slug)}
+            visible={["admin"].includes(user?.role)}
           />
         </div>
         <div className="px-16 py-6">
