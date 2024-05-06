@@ -243,14 +243,14 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.workspaces()}
-      btnText="Workspaces"
+      btnText="ChatLTT Hub's"
       icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
       user={user}
       allowedRole={["admin", "manager"]}
     />
     <Option
       href={paths.settings.chats()}
-      btnText="Workspace Chat"
+      btnText="Hub Chats"
       icon={<ChatCenteredText className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}

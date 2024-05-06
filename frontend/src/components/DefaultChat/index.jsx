@@ -97,7 +97,7 @@ export default function DefaultChatContainer() {
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               >
-                With our paid plans, you'll enjoy complete privacy. You can create Workspaces, 
+                With our paid plans, you'll enjoy complete privacy. You can create ChatLTT HuB's, 
                 train your LLM models with text, PDFs, and audio notes. Utilize agents to browse 
                 the internet and answer your queries. Engage in uncensored chats that are wiped 
                 out after you leave. Rest assured, we never use your chats to train our models; 
@@ -157,12 +157,12 @@ export default function DefaultChatContainer() {
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               >
-                Paid Plans: Users can access and train their own Workspaces using a collection of text files, 
+                Paid Plans: Users can access and train their own ChatLTT Hub using a collection of text files, 
                 audio scripts, and PDFs tailored to their specific subjects of interest. They have the flexibility
-                to create multiple customized Workspaces according to their needs.
+                to create multiple customized ChatLTT Hub according to their needs.
                 <br />
                 <br />
-                Free Plan: We provide pre-tuned Workspaces featuring Large Trained Transformers
+                Free Plan: We provide pre-tuned ChatLTT Hub featuring Large Trained Transformers
                 (LTT) for users to explore and engage with. These pre-tuned libraries cover 
                 a wide range of topics and are readily available for use without any additional
                 training required.
