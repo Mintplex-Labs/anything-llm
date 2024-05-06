@@ -63,7 +63,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
     await System.updateSystem(data.env);
 
     if (!!updatedWorkspace) {
-      showToast("Workspace updated!", "success", { clear: true });
+      showToast("Hub updated!", "success", { clear: true });
     } else {
       showToast(`Error: ${message}`, "error", { clear: true });
     }

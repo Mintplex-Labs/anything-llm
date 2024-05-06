@@ -102,7 +102,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
           showToast(`Error: ${res.message}`, "error", { clear: true });
           return;
         }
-        showToast("Workspace updated successfully.", "success", {
+        showToast("Hub updated successfully.", "success", {
           clear: true,
         });
       })

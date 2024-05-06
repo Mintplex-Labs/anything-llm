@@ -23,7 +23,7 @@ export default function VectorDatabase({ workspace }) {
       data
     );
     if (!!updatedWorkspace) {
-      showToast("Workspace updated!", "success", { clear: true });
+      showToast("Hub updated!", "success", { clear: true });
     } else {
       showToast(`Error: ${message}`, "error", { clear: true });
     }
