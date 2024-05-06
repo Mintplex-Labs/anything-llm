@@ -71,7 +71,7 @@ export default function CreateWorkspace({
             htmlFor="name"
             className="block mb-3 text-sm font-medium text-white"
           >
-            Workspace Name
+            ChatLTT Hub Name
           </label>
           <input
             name="name"
@@ -84,7 +84,7 @@ export default function CreateWorkspace({
             onChange={(e) => setWorkspaceName(e.target.value)}
           />
           <div className="mt-4 text-white text-opacity-80 text-xs font-base -mb-2">
-            Workspace name must be at least 4 characters.
+            Hub's name must be at least 4 characters.
           </div>
         </div>
       </div>

@@ -248,7 +248,7 @@ function apiWorkspaceEndpoints(app) {
       content: {
         "application/json": {
           example: {
-            "name": 'Updated Workspace Name',
+            "name": 'Updated ChatLTT's Hub Name',
             "openAiTemp": 0.2,
             "openAiHistory": 20,
             "openAiPrompt": "Respond to all inquires and questions in binary - do not respond in any other format."

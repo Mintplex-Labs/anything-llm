@@ -3,10 +3,10 @@ export default function WorkspaceName({ workspace, setHasChanges }) {
     <div>
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Workspace Name
+          ChatLTT Hub's Name
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          This will only change the display name of your workspace.
+          This will only change the display name of your HUb.
         </p>
       </div>
       <input

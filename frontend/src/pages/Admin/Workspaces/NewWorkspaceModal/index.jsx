@@ -37,7 +37,7 @@ export default function NewWorkspaceModal({ closeModal }) {
                   htmlFor="name"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  Workspace name
+                  ChatLTT Hub name
                 </label>
                 <input
                   name="name"

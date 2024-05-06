@@ -46,14 +46,14 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                     htmlFor="name"
                     className="block mb-2 text-sm font-medium text-white"
                   >
-                    Workspace Name
+                    ChatLTT Hub Name
                   </label>
                   <input
                     name="name"
                     type="text"
                     id="name"
                     className="bg-zinc-900 w-full text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                    placeholder="My Workspace"
+                    placeholder="My ChatLTT Hub"
                     required={true}
                     autoComplete="off"
                   />

@@ -1823,7 +1823,7 @@
           "content": {
             "application/json": {
               "example": {
-                "name": "Updated Workspace Name",
+                "name": "Updated Hub's Name",
                 "openAiTemp": 0.2,
                 "openAiHistory": 20,
                 "openAiPrompt": "Respond to all inquires and questions in binary - do not respond in any other format."
@@ -1838,7 +1838,7 @@
         "tags": [
           "Workspaces"
         ],
-        "description": "Get a workspaces chats regardless of user by its unique slug.",
+        "description": "Get a Hub's chats regardless of user by its unique slug.",
         "parameters": [
           {
             "name": "slug",
@@ -1847,7 +1847,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Unique slug of workspace to find"
+            "description": "Unique slug of Hub's to find"
           },
           {
             "name": "Authorization",
@@ -1915,7 +1915,7 @@
         "tags": [
           "Workspaces"
         ],
-        "description": "Add or remove documents from a workspace by its unique slug.",
+        "description": "Add or remove documents from a Hub by its unique slug.",
         "parameters": [
           {
             "name": "slug",
@@ -1924,7 +1924,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Unique slug of workspace to find"
+            "description": "Unique slug of Hub to find"
           },
           {
             "name": "Authorization",
@@ -1944,7 +1944,7 @@
                   "example": {
                     "workspace": {
                       "id": 79,
-                      "name": "My workspace",
+                      "name": "My Hub",
                       "slug": "my-workspace-123",
                       "createdAt": "2023-08-17 00:45:03",
                       "openAiTemp": null,
@@ -2005,7 +2005,7 @@
         "tags": [
           "Workspaces"
         ],
-        "description": "Execute a chat with a workspace",
+        "description": "Execute a chat with a Hub",
         "parameters": [
           {
             "name": "slug",
@@ -2070,7 +2070,7 @@
           }
         },
         "requestBody": {
-          "description": "Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.",
+          "description": "Send a prompt to the Hub and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.",
           "required": true,
           "type": "object",
           "content": {
