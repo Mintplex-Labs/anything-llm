@@ -51,111 +51,25 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              Welcome to ChatLTT. I'm your AI companion, ready to assist you. ChatLTT serves as an interface to converse 
-              with Large pre-Trained Transformers. Powered by robust GPU servers housed in German data centers, we ensure
-              top-notch performance. Our focus is on hosting LTTs to provide you with a seamless AI chat experience. 
-              We aim to simplify the process for you by handling all technical aspects—hosting, installation, and maintenance
-              of LTTs. Your privacy is our priority; all your chats are completely private and automatically deleted when 
-              you close your account. Say goodbye to the hassle of managing technical details and enjoy effortless AI 
-              conversations with us. Let's chat!
+              Hey there! I'm your AI companion, here to lend a hand and assist you however I can. Just a heads up, 
+              I might not always get things perfect, so I apologize in advance for any slip-ups. If I give you any wrong info,
+              feel free to reach out to my creator with your feedback.<br><br>
+              To get the most out of our chats, start conversations with the Hubs in the sidebar. Each Hub has its own 
+              specialized training data, which helps me be more knowledgeable about specific topics.<br><br>
+              So, who am I exactly? Well, I'm your friendly AI chat bot, and you can think of me as having a home in 
+              data centers. My main spot is in Germany, but my creator might move me around to places like the US, Canada, 
+              Australia, and beyond. Don't worry, though—our chats are totally private, and nothing leaves this server. 
+              Unlike some other big players out there who use your data to train themselves, I never do that. Once this 
+              server is gone, any memory of our conversations is history. <br><br>
+              I rely on NVIDIA GPUs to power my brain, so if I'm not lightning-fast, just hang in there with me. Even 
+              AI needs a bit of time to mull things over, right?
             </span>
           </div>
         </div>
       </div>
     </React.Fragment>,
 
-    
-
-    <React.Fragment>
-      <div
-        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
-      >
-        <div
-          className={`pt-2 pb-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
-        >
-          <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
-            <div>
-              <span
-                className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-              >
-                With our paid plans, you'll enjoy complete privacy. You can create ChatLTT HuB's, 
-                train your LTT models with text, PDFs, and audio notes. Utilize agents to browse 
-                the internet and answer your queries. Engage in uncensored chats that are wiped 
-                out after you leave. Rest assured, we never use your chats to train our models; 
-                everything operates locally on your GPU servers. Plus, you can have a multi-user 
-                account and invite your team, colleagues, or friends to converse with your trained 
-                model. The possibilities are endless. <br /><br />Dive into our blogs to explore different use cases.
-                <br />
-                </span>
-                <a
-                href="https://chatltt.com"
-                target="_blank"
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                >
-                <GitMerge className="h-4 w-4" />
-                <p>Check our paid plans</p>
-                </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>,
-
-    <React.Fragment>
-      <div
-        className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
-      >
-        <div
-          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
-        >
-          <div className="flex gap-x-5">
-            <Jazzicon
-              size={36}
-              user={{ uid: userFromStorage()?.username }}
-              role={"user"}
-            />
-
-            <span
-              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-            >
-              What is ChatLTT Hubs?
-            </span>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>,
-
-    <React.Fragment>
-      <div
-        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
-      >
-        <div
-          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
-        >
-          <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
-            <div>
-              <span
-                className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-              >
-                Paid Plans: Users can access and train their own ChatLTT Hub using a collection of text files, 
-                audio scripts, and PDFs tailored to their specific subjects of interest. They have the flexibility
-                to create multiple customized ChatLTT Hub according to their needs.
-                <br />
-                <br />
-                Free Plan: We provide pre-tuned ChatLTT Hub featuring Large Trained Transformers
-                (LTT) for users to explore and engage with. These pre-tuned libraries cover 
-                a wide range of topics and are readily available for use without any additional
-                training required.
-                
-              </span>
-
-              </div>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>,    
+             
   ];
 
   useEffect(() => {
