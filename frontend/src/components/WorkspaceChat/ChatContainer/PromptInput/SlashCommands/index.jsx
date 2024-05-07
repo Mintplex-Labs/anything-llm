@@ -3,6 +3,7 @@ import SlashCommandIcon from "./icons/slash-commands-icon.svg";
 import { Tooltip } from "react-tooltip";
 import ResetCommand from "./reset";
 import EndAgentSession from "./endAgentSession";
+import SlashPresets from "./slashPresets";
 
 export default function SlashCommandsButton({ showing, setShowSlashCommand }) {
   return (
@@ -56,6 +57,7 @@ export function SlashCommands({ showing, setShowing, sendCommand }) {
         >
           <ResetCommand sendCommand={sendCommand} setShowing={setShowing} />
           <EndAgentSession sendCommand={sendCommand} setShowing={setShowing} />
+          <SlashPresets sendCommand={sendCommand} setShowing={setShowing} />
         </div>
       </div>
     </div>
