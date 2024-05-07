@@ -9,11 +9,14 @@ import ChatTemperatureSettings from "./ChatTemperatureSettings";
 import ChatModeSelection from "./ChatModeSelection";
 import WorkspaceLLMSelection from "./WorkspaceLLMSelection";
 import ChatQueryRefusalResponse from "./ChatQueryRefusalResponse";
+import useUser from "@/hooks/useUser";
 
 export default function ChatSettings({ workspace }) {
+  const { user } = useUser(); // Fetch user information including role
   const [settings, setSettings] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false); // State to track if user is admin
 
   const formEl = useRef(null);
   useEffect(() => {
@@ -22,7 +25,10 @@ export default function ChatSettings({ workspace }) {
       setSettings(_settings ?? {});
     }
     fetchSettings();
-  }, []);
+
+    // Update isAdmin state based on user's role
+    setIsAdmin(user?.role === "admin");
+  }, [user]);
 
   const handleUpdate = async (e) => {
     setSaving(true);
@@ -52,11 +58,15 @@ export default function ChatSettings({ workspace }) {
         id="chat-settings-form"
         className="w-1/2 flex flex-col gap-y-6"
       >
-        <WorkspaceLLMSelection
-          settings={settings}
-          workspace={workspace}
-          setHasChanges={setHasChanges}
-        />
+        {/* Conditionally render WorkspaceLLMSelection based on user's role */}
+        {isAdmin && (
+          <WorkspaceLLMSelection
+            settings={settings}
+            workspace={workspace}
+            setHasChanges={setHasChanges}
+          />
+        )}
+
         <ChatModeSelection
           workspace={workspace}
           setHasChanges={setHasChanges}
