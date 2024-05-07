@@ -1,130 +1,7 @@
-// const { GoogleGenerativeAI } = require("@google/generative-ai");
-// const Provider = require("./ai-provider.js");
-// const { RetryError } = require("../error.js");
-
-// /**
-//  * The provider for the Gemini API.
-//  * By default, the model is set to 'gemini-pro'.
-//  */
-// class GeminiProvider extends Provider {
-//   model;
-
-//   constructor(config = {}) {
-//     const {
-//       options = {
-//         apiKey: process.env.GEMINI_API_KEY,
-//       },
-//       model = "gemini-pro",
-//     } = config;
-
-//     const client = new GoogleGenerativeAI(options.apiKey).getGenerativeModel(
-//       { model },
-//       {
-//         // Gemini-1.5-pro is only available on the v1beta API.
-//         apiVersion: model === "gemini-1.5-pro-latest" ? "v1beta" : "v1",
-//       }
-//     );
-
-//     super(client);
-
-//     this.model = model;
-//   }
-
-//   /**
-//    * Create a completion based on the received messages.
-//    *
-//    * @param messages A list of messages to send to the Gemini API.
-//    * @param functions An array of function declarations to pass to the model.
-//    * @returns The completion.
-//    */
-//   async complete(messages, functions = null) {
-//     console.log("messages", JSON.stringify(messages, null, 2));
-//     try {
-//       const chat = this.client.startChat();
-
-//       //   Convert functions to Gemini's function calling schema
-// const functionDeclarations = functions?.map((func) => ({
-//   name: func.name,
-//   parameters: func.parameters,
-// }));
-
-//       //   console.log(
-//       //     "functionDeclarations",
-//       //     functionDeclarations[functionDeclarations.length - 1]
-//       //   );
-//       //   console.log(
-//       //     "functionDeclarations",
-//       //     functionDeclarations[functionDeclarations.length - 1].parameters
-//       //       .properties
-//       //   );
-
-//       const functionDeclarations = {
-//         name: "web-browsing",
-//         parameters: {
-//           description:
-//             "Searches for a given query using a search engine to get better results for the user query.",
-//           type: "object",
-//           properties: {
-//             query: { type: "string", description: "A search query." },
-//           },
-//         },
-//       };
-
-//       let response;
-//       for (const message of messages) {
-//         response = await chat.sendMessage(message.content, {
-//           functionDeclarations,
-//         });
-
-//         // console.log("response", JSON.stringify(response, null, 2));
-
-//         if (response.response.functionCalls()[0]) {
-//           const call = response.response.functionCalls()[0];
-//           console.log("call", JSON.stringify(call, null, 2));
-
-//           if (call) {
-//             const functionResponse = await functions
-//               .find((func) => func.name === call.name)
-//               ?.handler(call.args);
-
-//             response = await chat.sendMessage([
-//               {
-//                 functionResponse: {
-//                   name: call.name,
-//                   response: functionResponse,
-//                 },
-//               },
-//             ]);
-//           }
-//         }
-//       }
-
-//       const completion = response.response.text();
-//       const cost = this.getCost();
-
-//       return { result: completion, cost };
-//     } catch (error) {
-//       if (error instanceof RetryError) {
-//         throw error;
-//       }
-//       throw new Error(`Gemini API Error: ${error.message}`);
-//     }
-//   }
-
-//   /**
-//    * Get the cost of the completion.
-//    *
-//    * @returns The cost of the completion.
-//    * Stubbed since Gemini has no cost basis.
-//    */
-//   getCost() {
-//     return 0;
-//   }
-// }
-
-// module.exports = GeminiProvider;
-
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const {
+  GoogleGenerativeAI,
+  FunctionDeclarationSchemaType,
+} = require("@google/generative-ai");
 const Provider = require("./ai-provider.js");
 const { RetryError } = require("../error.js");
 
@@ -157,17 +34,34 @@ class GeminiProvider extends Provider {
     //   parameters: func.parameters,
     // }));
 
-    const functionDeclarations = {
-      name: "web-browsing",
-      parameters: {
-        description:
-          "Searches for a given query using a search engine to get better results for the user query.",
-        type: "object",
-        properties: {
-          query: { type: "string", description: "A search query." },
+    const functionDeclarations = [
+      {
+        name: "web-browsing",
+        description: "Searches for a given query using a search engine.",
+        parameters: {
+          description:
+            "Searches for a given query using a search engine to get better results for the user query.",
+          type: FunctionDeclarationSchemaType.OBJECT,
+          properties: {
+            query: {
+              type: FunctionDeclarationSchemaType.STRING,
+              description: "A search query.",
+            },
+          },
         },
       },
-    };
+      {
+        name: "convertCtoF",
+        description: "Convert temperature from Celsius to Fahrenheit",
+        parameters: {
+          type: FunctionDeclarationSchemaType.OBJECT,
+          properties: {
+            value: { type: FunctionDeclarationSchemaType.NUMBER },
+          },
+          required: ["value"],
+        },
+      },
+    ];
 
     console.log(
       "functionDeclarations",
@@ -178,7 +72,7 @@ class GeminiProvider extends Provider {
       {
         model: this.model,
         tools: {
-          functionDeclarations: functionDeclarations,
+          functionDeclarations: [functionDeclarations],
         },
       },
       {
@@ -186,6 +80,8 @@ class GeminiProvider extends Provider {
         apiVersion: "v1beta",
       }
     );
+
+    console.log("this.client", JSON.stringify(this.client, null, 2));
   }
 
   formatMessages(messages = []) {
@@ -223,48 +119,63 @@ class GeminiProvider extends Provider {
    */
   async complete(messages, functions = null) {
     try {
+      // TODO: Check if functions changed then re-initialize client if it has changed
       if (!this.client) {
         await this.initializeClient(functions);
       }
 
-      console.log("FORMATTING MESSAGES", this.formatMessages(messages));
-      const chat = this.client.startChat({
-        history: this.formatMessages(messages),
+      const prompt = {
+        role: "user",
+        parts: [
+          {
+            text: "research aapl stock for me",
+          },
+        ],
+      };
+
+      const response = await this.client.generateContent({
+        contents: [prompt],
       });
 
-      let response;
-      const userPrompt = messages.find(
-        (message) => message.role === "user"
-      )?.content;
+      console.log("RESPONSE", JSON.stringify(response, null, 2));
+      //   console.log("FORMATTING MESSAGES", this.formatMessages(messages));
+      //   const chat = this.client.startChat({
+      //     history: this.formatMessages(messages),
+      //   });
 
-      response = await chat.sendMessage(userPrompt);
+      //   let response;
+      //   const userPrompt = messages.find(
+      //     (message) => message.role === "user"
+      //   )?.content;
 
-      if (response.response.functionCalls()[0]) {
-        const call = response.response.functionCalls()[0];
+      //   response = await chat.sendMessage(userPrompt);
 
-        if (call) {
-          const functionHandler = functions.find(
-            (func) => func.name === call.name
-          )?.handler;
+      //   if (response.response.functionCalls()[0]) {
+      //     const call = response.response.functionCalls()[0];
 
-          if (functionHandler) {
-            const functionResponse = await functionHandler(call.args);
-            response = await chat.sendMessage([
-              {
-                functionResponse: {
-                  name: call.name,
-                  response: functionResponse,
-                },
-              },
-            ]);
-          }
-        }
-      }
+      //     if (call) {
+      //       const functionHandler = functions.find(
+      //         (func) => func.name === call.name
+      //       )?.handler;
 
-      const completion = response.response.text();
-      const cost = this.getCost();
+      //       if (functionHandler) {
+      //         const functionResponse = await functionHandler(call.args);
+      //         response = await chat.sendMessage([
+      //           {
+      //             functionResponse: {
+      //               name: call.name,
+      //               response: functionResponse,
+      //             },
+      //           },
+      //         ]);
+      //       }
+      //     }
+      //   }
 
-      return { result: completion, cost };
+      //   const completion = response.response.text();
+      //   const cost = this.getCost();
+
+      //   return { result: completion, cost };
     } catch (error) {
       if (error instanceof RetryError) {
         throw error;

@@ -12,7 +12,6 @@ const ENABLED_PROVIDERS = [
   "groq",
   "azure",
   "koboldcpp",
-  "gemini",
 ];
 const WARN_PERFORMANCE = ["lmstudio", "groq", "azure", "koboldcpp"];
 
