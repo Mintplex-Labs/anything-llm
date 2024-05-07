@@ -102,7 +102,7 @@ export default function UploadFile({
               Click to upload or drag and drop
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
-              supports text files, csv's, spreadsheets and (audio files needs to be less than 10 MB)
+              supports text files, csv's, spreadsheets and (audio files needs to be less than 5 MB)
             </div>
           </div>
         ) : (
