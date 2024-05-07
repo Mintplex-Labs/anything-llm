@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import AgentLLMItem from "./AgentLLMItem";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
-import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
+import { CaretUpDown, Gauge, MagnifyingGlass, X } from "@phosphor-icons/react";
 import AgentModelSelection from "../AgentModelSelection";
 
-const ENABLED_PROVIDERS = ["openai", "anthropic"];
+const ENABLED_PROVIDERS = ["openai", "anthropic", "lmstudio"];
+const WARN_PERFORMANCE = ["lmstudio"];
 
 const LLM_DEFAULT = {
   name: "Please make a selection",
@@ -62,6 +63,19 @@ export default function AgentLLMSelection({
   const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
   return (
     <div className="border-b border-white/40 pb-8">
+      {WARN_PERFORMANCE.includes(selectedLLM) && (
+        <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+          <div className="gap-x-2 flex items-center">
+            <Gauge className="shrink-0" size={25} />
+            <p className="text-sm">
+              Performance of LLMs that do not explicitly support tool-calling is
+              highly dependent on the model's capabilities and accuracy. Some
+              abilities may be limited or non-functional.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
           Workspace Agent LLM Provider

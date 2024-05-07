@@ -603,6 +603,18 @@ ${this.getHistory({ to: route.to })
 
       // Execute the function and return the result to the provider
       fn.caller = byAgent || "agent";
+
+      // For OSS LLMs we really need to keep tabs on what they are calling
+      // so we can log it here.
+      if (provider?.verbose) {
+        this?.introspect?.(
+          `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
+        );
+        this.handlerProps.log(
+          `[debug]: ${fn.caller} is attempting to call \`${name}\` tool`
+        );
+      }
+
       const result = await fn.handler(args);
       Telemetry.sendTelemetry("agent_tool_call", { tool: name }, null, true);
       return await this.handleExecution(
@@ -727,6 +739,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.OpenAIProvider({ model: config.model });
       case "anthropic":
         return new Providers.AnthropicProvider({ model: config.model });
+      case "lmstudio":
+        return new Providers.LMStudioProvider({});
 
       default:
         throw new Error(

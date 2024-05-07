@@ -77,14 +77,32 @@ class AgentHandler {
         if (!process.env.ANTHROPIC_API_KEY)
           throw new Error("Anthropic API key must be provided to use agents.");
         break;
+      case "lmstudio":
+        if (!process.env.LMSTUDIO_BASE_PATH)
+          throw new Error("LMStudio bash path must be provided to use agents.");
+        break;
       default:
         throw new Error("No provider found to power agent cluster.");
     }
   }
 
+  #providerDefault() {
+    switch (this.provider) {
+      case "openai":
+        return "gpt-3.5-turbo";
+      case "anthropic":
+        return "claude-3-sonnet-20240229";
+      case "lmstudio":
+        return "server-default";
+      default:
+        return "unknown";
+    }
+  }
+
   #providerSetupAndCheck() {
     this.provider = this.invocation.workspace.agentProvider || "openai";
-    this.model = this.invocation.workspace.agentModel || "gpt-3.5-turbo";
+    this.model =
+      this.invocation.workspace.agentModel || this.#providerDefault();
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.#checkSetup();
   }
@@ -137,7 +155,7 @@ class AgentHandler {
     this.aibitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
     this.aibitat.agent(
       WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition()
+      await WORKSPACE_AGENT.getDefinition(this.provider)
     );
 
     this.#funcsToLoad = [
