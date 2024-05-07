@@ -4,7 +4,6 @@ import WorkspaceLLMItem from "./WorkspaceLLMItem";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import ChatModelSelection from "../ChatModelSelection";
-import useUser from "@/hooks/useUser"; // Import the hook to get user information
 
 // Some providers can only be associated with a single model.
 // In that case there is no selection to be made so we can just move on.
@@ -28,9 +27,6 @@ export default function WorkspaceLLMSelection({
   workspace,
   setHasChanges,
 }) {
-  const { user } = useUser(); // Assuming useUser hook provides user information including role
-  const isAdmin = user?.role === "admin"; // Check if the user is an admin
-
   const [filteredLLMs, setFilteredLLMs] = useState([]);
   const [selectedLLM, setSelectedLLM] = useState(
     workspace?.chatProvider ?? "default"
@@ -65,19 +61,25 @@ export default function WorkspaceLLMSelection({
   const selectedLLMObject = LLMS.find((llm) => llm.value === selectedLLM);
   return (
     <div className="border-b border-white/40 pb-8">
-      {isAdmin && ( // Render only if the user is an admin
-        <div className="flex flex-col">
-          <label htmlFor="name" className="block input-label">
-            Workspace LLM Provider
-          </label>
-          <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-            The specific LLM provider & model that will be used for this
-            workspace. By default, it uses the system LLM provider and settings.
-          </p>
-        </div>
-      )}
+      <div className="flex flex-col">
+        <label htmlFor="name" className="block input-label">
+          Workspace LLM Provider
+        </label>
+        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+          The specific LLM provider & model that will be used for this
+          workspace. By default, it uses the system LLM provider and settings.
+        </p>
+      </div>
 
-      {searchMenuOpen ? (
+      <div className="relative">
+        <input type="hidden" name="chatProvider" value={selectedLLM} />
+        {searchMenuOpen && (
+          <div
+            className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-sm z-10"
+            onClick={() => setSearchMenuOpen(false)}
+          />
+        )}
+        {searchMenuOpen ? (
           <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-[#18181B] rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#FF5757] z-20">
             <div className="w-full flex flex-col gap-y-1">
               <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-[#18181B]">
