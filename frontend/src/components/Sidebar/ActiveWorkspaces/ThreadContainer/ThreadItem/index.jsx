@@ -14,7 +14,9 @@ export default function ThreadItem({
   workspace,
   thread,
   onRemove,
+  onSelect,
   hasNext,
+  ctrlPressed,
 }) {
   const { slug } = useParams();
   const optionsContainer = useRef(null);
@@ -64,9 +66,16 @@ export default function ThreadItem({
           </a>
         ) : (
           <a
-            href={window.location.pathname === linkTo ? "#" : linkTo}
+            href={
+              ctrlPressed
+                ? window.location.pathname === linkTo
+                : window.location.pathname === linkTo
+                ? "#"
+                : linkTo
+            }
             className="w-full"
             aria-current={isActive ? "page" : ""}
+            onClick={onSelect}
           >
             <p
               className={`text-left text-sm ${
@@ -79,15 +88,25 @@ export default function ThreadItem({
         )}
         {!!thread.slug && !thread.deleted && (
           <div ref={optionsContainer}>
-            <div className="flex items-center w-fit group-hover:visible md:invisible gap-x-1">
-              <button
-                type="button"
-                onClick={() => setShowOptions(!showOptions)}
-                aria-label="Thread options"
-              >
-                <DotsThree className="text-slate-300" size={25} />
-              </button>
-            </div>
+            {ctrlPressed || thread?.selected ? (
+              <div>
+                <input
+                  type="checkbox"
+                  checked={thread?.selected}
+                  onChange={onSelect}
+                />
+              </div>
+            ) : (
+              <div className="flex items-center w-fit group-hover:visible md:invisible gap-x-1">
+                <button
+                  type="button"
+                  onClick={() => setShowOptions(!showOptions)}
+                  aria-label="Thread options"
+                >
+                  <DotsThree className="text-slate-300" size={25} />
+                </button>
+              </div>
+            )}
             {showOptions && (
               <OptionsMenu
                 containerRef={optionsContainer}

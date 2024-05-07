@@ -1,7 +1,7 @@
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
-import { Plus, CircleNotch } from "@phosphor-icons/react";
+import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
@@ -10,6 +10,8 @@ export default function ThreadContainer({ workspace }) {
   const { threadSlug = null } = useParams();
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [ctrlPressed, setCtrlPressed] = useState(false);
+  const isThreadSelected = threads.some((_t) => _t.selected);
 
   useEffect(() => {
     async function fetchThreads() {
@@ -20,6 +22,44 @@ export default function ThreadContainer({ workspace }) {
     }
     fetchThreads();
   }, [workspace.slug]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Control") {
+        setCtrlPressed(true);
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      if (event.key === "Control") {
+        setCtrlPressed(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
+  const handleThreadClick = (id) => {
+    if (!ctrlPressed && !isThreadSelected) return;
+    const updatedItems = threads.map((_t) =>
+      _t.id === id ? { ..._t, selected: !_t.selected } : _t
+    );
+    setThreads(updatedItems);
+  };
+
+  const handleDeleteAll = () => {
+    const remainingItems = threads.map((item) => ({
+      ...item,
+      deleted: item.selected ? true : item.deleted, // Set deleted to true if selected is true
+    }));
+    setThreads(remainingItems);
+  };
 
   function removeThread(threadId) {
     setThreads((prev) =>
@@ -58,6 +98,8 @@ export default function ThreadContainer({ workspace }) {
         <ThreadItem
           key={thread.slug}
           idx={i + 1}
+          ctrlPressed={ctrlPressed}
+          onSelect={() => handleThreadClick(thread.id)}
           activeIdx={activeThreadIdx}
           isActive={activeThreadIdx === i + 1}
           workspace={workspace}
@@ -66,6 +108,7 @@ export default function ThreadContainer({ workspace }) {
           hasNext={i !== threads.length - 1}
         />
       ))}
+      {isThreadSelected && <DeleteAllThreadButton onDelete={handleDeleteAll} />}
       <NewThreadButton workspace={workspace} />
     </div>
   );
@@ -109,6 +152,22 @@ function NewThreadButton({ workspace }) {
         ) : (
           <p className="text-left text-slate-100 text-sm">New Thread</p>
         )}
+      </div>
+    </button>
+  );
+}
+
+function DeleteAllThreadButton({ onDelete }) {
+  return (
+    <button
+      onClick={onDelete}
+      className="w-full relative flex h-[40px] items-center border-none hover:bg-slate-600/20 rounded-lg"
+    >
+      <div className="flex w-full gap-x-2 items-center pl-4">
+        <div className="bg-zinc-600 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
+          <Trash weight="bold" size={14} className="shrink-0 text-slate-100" />
+        </div>
+        <p className=" text-red-600 text-left text-sm">Delete Selected</p>
       </div>
     </button>
   );

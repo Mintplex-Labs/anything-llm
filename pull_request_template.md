@@ -1,9 +1,8 @@
-
- ### Pull Request Type
+### Pull Request Type
 
 <!-- For change type, change [ ] to [x]. -->
 
-- [ ] ✨ feat
+- [x] ✨ feat
 - [ ] 🐛 fix
 - [ ] ♻️ refactor
 - [ ] 💄 style
@@ -12,23 +11,17 @@
 
 ### Relevant Issues
 
-<!-- Use "resolves #xxx" to auto resolve on merge. Otherwise, please use "connect #xxx" -->
-
-resolves #xxx
-
+resolves #1264
 
 ### What is in this change?
 
-<!-- Describe the changes in this PR that are impactful to the repo. -->
-
+Add fast delete for chat
 
 ### Additional Information
 
-<!-- Add any other context about the Pull Request here that was not captured above. -->
+By clicking the control button, checkboxes will appear next to the threads. Users can select thread items for deletion. At the bottom, there is a `New Thread` button, and a `Delete Selected` button is provided to delete all selected threads.
 
 ### Developer Validations
-
-<!-- All of the applicable items should be checked. -->
 
 - [ ] I ran `yarn lint` from the root of the repo & committed changes
 - [ ] Relevant documentation has been updated
