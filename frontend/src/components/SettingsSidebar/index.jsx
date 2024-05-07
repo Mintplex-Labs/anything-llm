@@ -250,7 +250,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.chats()}
-      btnText="Hub Chats"
+      btnText="Hub Chat"
       icon={<ChatCenteredText className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -324,7 +324,7 @@ const SidebarOptions = ({ user = null }) => (
       icon={<CodeBlock className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
-      allowedRole={["admin", "manager"]}
+      allowedRole={["admin"]}
       subOptions={
         <>
           <Option
@@ -333,7 +333,7 @@ const SidebarOptions = ({ user = null }) => (
             icon={<Barcode className="h-5 w-5 flex-shrink-0" />}
             user={user}
             flex={true}
-            allowedRole={["admin", "manager"]}
+            allowedRole={["admin"]}
           />
         </>
       }
@@ -344,7 +344,7 @@ const SidebarOptions = ({ user = null }) => (
       icon={<Lock className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
-      allowedRole={["admin"]}
+      allowedRole={["admin", "manager"]}
       hidden={user?.role}
     />
     <Option
