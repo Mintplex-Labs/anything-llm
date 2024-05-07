@@ -101,6 +101,10 @@ class AgentHandler {
             "KoboldCPP must have a valid base path to use for the api."
           );
         break;
+      case "gemini":
+        if (!process.env.GEMINI_API_KEY)
+          throw new Error("Gemini API key must be provided to use agents.");
+        break;
       default:
         throw new Error("No provider found to power agent cluster.");
     }
@@ -122,6 +126,8 @@ class AgentHandler {
         return "gpt-3.5-turbo";
       case "koboldcpp":
         return null;
+      case "gemini":
+        return "gemini-pro";
       default:
         return "unknown";
     }
