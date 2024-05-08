@@ -291,6 +291,7 @@ const Workspace = {
       });
   },
 
+  
   removePfp: async function (slug) {
     return await fetch(`${API_BASE}/workspace/${slug}/remove-pfp`, {
       method: "DELETE",
