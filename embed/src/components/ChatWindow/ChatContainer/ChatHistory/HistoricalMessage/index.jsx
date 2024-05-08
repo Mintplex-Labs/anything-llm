@@ -13,7 +13,6 @@ const HistoricalMessage = forwardRef(
     { uuid = v4(), message, role, sources = [], error = false, sentAt },
     ref
   ) => {
-    console.log("text size", embedderSettings.settings.textSize);
     const textSize = !!embedderSettings.settings.textSize
       ? `text-[${embedderSettings.settings.textSize}px]`
       : "text-sm";

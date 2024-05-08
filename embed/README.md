@@ -87,9 +87,9 @@ REQUIRED data attributes:
 
 - `data-assistant-icon` - Set the icon of the chat assistant.
 
-- `data-window-height` - Set the chat window height in pixels.
+- `data-window-height` - Set the chat window height. **must include CSS suffix:** `px`,`%`,`rem`
 
-- `data-window-width` - Set the chat window width in pixels.
+- `data-window-width` - Set the chat window width. **must include CSS suffix:** `px`,`%`,`rem`
 
 - `data-text-size` - Set the text size of the chats in pixels.
 

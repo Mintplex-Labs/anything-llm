@@ -27,12 +27,12 @@ export default function App() {
   };
 
   const position = embedSettings.position || "bottom-right";
-  const windowHeight = embedSettings.windowHeight
-    ? `md:max-h-[${embedSettings.windowHeight}px]`
-    : "md:max-h-[700px]";
   const windowWidth = embedSettings.windowWidth
-    ? `md:max-w-[${embedSettings.windowWidth}px]`
+    ? `md:max-w-[${embedSettings.windowWidth}]`
     : "md:max-w-[400px]";
+  const windowHeight = embedSettings.windowHeight
+    ? `md:max-h-[${embedSettings.windowHeight}]`
+    : "md:max-h-[700px]";
 
   return (
     <>
