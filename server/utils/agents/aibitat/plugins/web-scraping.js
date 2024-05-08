@@ -16,7 +16,17 @@ const webScraping = {
           name: this.name,
           controller: new AbortController(),
           description:
-            "Scrapes the content of a webpage or online resource from a URL.",
+            "Scrapes the content of a webpage or online resource from a provided URL.",
+          examples: [
+            {
+              prompt: "What is useanything.com about?",
+              call: JSON.stringify({ uri: "https://useanything.com" }),
+            },
+            {
+              prompt: "Scrape https://example.com",
+              call: JSON.stringify({ uri: "https://example.com" }),
+            },
+          ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
             type: "object",
@@ -24,7 +34,8 @@ const webScraping = {
               url: {
                 type: "string",
                 format: "uri",
-                description: "A web URL.",
+                description:
+                  "A complete web address URL including protocol. Assumes https if not provided.",
               },
             },
             additionalProperties: false,
