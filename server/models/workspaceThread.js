@@ -61,7 +61,7 @@ const WorkspaceThread = {
 
   delete: async function (clause = {}) {
     try {
-      await prisma.workspace_threads.delete({
+      await prisma.workspace_threads.deleteMany({
         where: clause,
       });
       return true;

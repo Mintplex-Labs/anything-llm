@@ -62,6 +62,18 @@ const WorkspaceThread = {
       .then((res) => res.ok)
       .catch(() => false);
   },
+  deleteBulk: async function (workspaceSlug, threadSlugs = []) {
+    return await fetch(
+      `${API_BASE}/workspace/${workspaceSlug}/thread-bulk-delete`,
+      {
+        method: "DELETE",
+        body: JSON.stringify({ slugs: threadSlugs }),
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.ok)
+      .catch(() => false);
+  },
   chatHistory: async function (workspaceSlug, threadSlug) {
     const history = await fetch(
       `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/chats`,
