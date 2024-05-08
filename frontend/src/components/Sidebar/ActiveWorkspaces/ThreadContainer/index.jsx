@@ -11,7 +11,6 @@ export default function ThreadContainer({ workspace }) {
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ctrlPressed, setCtrlPressed] = useState(false);
-  const isThreadSelected = threads.some((_t) => _t.selected);
 
   useEffect(() => {
     async function fetchThreads() {
@@ -23,42 +22,32 @@ export default function ThreadContainer({ workspace }) {
     fetchThreads();
   }, [workspace.slug]);
 
+  // Enable toggling of meta-key (ctrl on win and cmd/fn on others)
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === "Control") {
-        setCtrlPressed(true);
-      }
+      if (["Control", "Meta"].includes(event.key))
+        setCtrlPressed((prev) => !prev);
     };
-
-    const handleKeyUp = (event) => {
-      if (event.key === "Control") {
-        setCtrlPressed(false);
-      }
-    };
-
     window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
 
-  const handleThreadClick = (id) => {
-    if (!ctrlPressed && !isThreadSelected) return;
-    const updatedItems = threads.map((_t) =>
-      _t.id === id ? { ..._t, selected: !_t.selected } : _t
+  const toggleForDeletion = (id) => {
+    setThreads((prev) =>
+      prev.map((t) => {
+        if (t.id !== id) return t;
+        return { ...t, deleted: !t.deleted };
+      })
     );
-    setThreads(updatedItems);
   };
 
-  const handleDeleteAll = () => {
-    const remainingItems = threads.map((item) => ({
-      ...item,
-      deleted: item.selected ? true : item.deleted, // Set deleted to true if selected is true
-    }));
-    setThreads(remainingItems);
+  const handleDeleteAll = async () => {
+    const slugs = threads.filter((t) => t.deleted === true).map((t) => t.slug);
+    await Workspace.threads.deleteBulk(workspace.slug, slugs);
+    setThreads((prev) => prev.filter((t) => !t.deleted));
+    setCtrlPressed(false);
   };
 
   function removeThread(threadId) {
@@ -68,6 +57,12 @@ export default function ThreadContainer({ workspace }) {
         return { ..._t, deleted: true };
       })
     );
+
+    // Show thread was deleted, but then remove from threads entirely so it will
+    // not appear in bulk-selection.
+    setTimeout(() => {
+      setThreads((prev) => prev.filter((t) => !t.deleted));
+    }, 500);
   }
 
   if (loading) {
@@ -99,7 +94,7 @@ export default function ThreadContainer({ workspace }) {
           key={thread.slug}
           idx={i + 1}
           ctrlPressed={ctrlPressed}
-          onSelect={() => handleThreadClick(thread.id)}
+          toggleMarkForDeletion={toggleForDeletion}
           activeIdx={activeThreadIdx}
           isActive={activeThreadIdx === i + 1}
           workspace={workspace}
@@ -108,7 +103,11 @@ export default function ThreadContainer({ workspace }) {
           hasNext={i !== threads.length - 1}
         />
       ))}
-      {isThreadSelected && <DeleteAllThreadButton onDelete={handleDeleteAll} />}
+      <DeleteAllThreadButton
+        ctrlPressed={ctrlPressed}
+        threads={threads}
+        onDelete={handleDeleteAll}
+      />
       <NewThreadButton workspace={workspace} />
     </div>
   );
@@ -157,17 +156,26 @@ function NewThreadButton({ workspace }) {
   );
 }
 
-function DeleteAllThreadButton({ onDelete }) {
+function DeleteAllThreadButton({ ctrlPressed, threads, onDelete }) {
+  if (!ctrlPressed || threads.filter((t) => t.deleted).length === 0)
+    return null;
   return (
     <button
+      type="button"
       onClick={onDelete}
-      className="w-full relative flex h-[40px] items-center border-none hover:bg-slate-600/20 rounded-lg"
+      className="w-full relative flex h-[40px] items-center border-none hover:bg-red-400/20 rounded-lg group"
     >
       <div className="flex w-full gap-x-2 items-center pl-4">
         <div className="bg-zinc-600 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
-          <Trash weight="bold" size={14} className="shrink-0 text-slate-100" />
+          <Trash
+            weight="bold"
+            size={14}
+            className="shrink-0 text-slate-100 group-hover:text-red-400"
+          />
         </div>
-        <p className=" text-red-600 text-left text-sm">Delete Selected</p>
+        <p className="text-white text-left text-sm group-hover:text-red-400">
+          Delete Selected
+        </p>
       </div>
     </button>
   );

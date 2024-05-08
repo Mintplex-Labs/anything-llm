@@ -1,7 +1,13 @@
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
-import { DotsThree, PencilSimple, Trash } from "@phosphor-icons/react";
+import {
+  ArrowCounterClockwise,
+  DotsThree,
+  PencilSimple,
+  Trash,
+  X,
+} from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import truncate from "truncate";
@@ -14,9 +20,9 @@ export default function ThreadItem({
   workspace,
   thread,
   onRemove,
-  onSelect,
+  toggleMarkForDeletion,
   hasNext,
-  ctrlPressed,
+  ctrlPressed = false,
 }) {
   const { slug } = useParams();
   const optionsContainer = useRef(null);
@@ -59,23 +65,31 @@ export default function ThreadItem({
       />
       <div className="flex w-full items-center justify-between pr-2 group relative">
         {thread.deleted ? (
-          <a className="w-full">
-            <p className={`text-left text-sm text-slate-400/50 italic`}>
-              deleted thread
-            </p>
-          </a>
+          <div className="w-full flex justify-between">
+            <div className="w-full ">
+              <p className={`text-left text-sm text-slate-400/50 italic`}>
+                deleted thread
+              </p>
+            </div>
+            {ctrlPressed && (
+              <button
+                type="button"
+                onClick={() => toggleMarkForDeletion(thread.id)}
+              >
+                <ArrowCounterClockwise
+                  className="text-zinc-300 hover:text-white"
+                  size={18}
+                />
+              </button>
+            )}
+          </div>
         ) : (
           <a
             href={
-              ctrlPressed
-                ? window.location.pathname === linkTo
-                : window.location.pathname === linkTo
-                ? "#"
-                : linkTo
+              window.location.pathname === linkTo || ctrlPressed ? "#" : linkTo
             }
             className="w-full"
             aria-current={isActive ? "page" : ""}
-            onClick={onSelect}
           >
             <p
               className={`text-left text-sm ${
@@ -88,14 +102,17 @@ export default function ThreadItem({
         )}
         {!!thread.slug && !thread.deleted && (
           <div ref={optionsContainer}>
-            {ctrlPressed || thread?.selected ? (
-              <div>
-                <input
-                  type="checkbox"
-                  checked={thread?.selected}
-                  onChange={onSelect}
+            {ctrlPressed ? (
+              <button
+                type="button"
+                onClick={() => toggleMarkForDeletion(thread.id)}
+              >
+                <X
+                  className="text-zinc-300 hover:text-white"
+                  weight="bold"
+                  size={18}
                 />
-              </div>
+              </button>
             ) : (
               <div className="flex items-center w-fit group-hover:visible md:invisible gap-x-1">
                 <button
