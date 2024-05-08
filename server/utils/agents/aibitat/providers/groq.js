@@ -4,6 +4,9 @@ const { RetryError } = require("../error.js");
 
 /**
  * The provider for the Groq provider.
+ * Using OpenAI tool calling with groq really sucks right now
+ * its just fast and bad. We should probably migrate this to Untooled to improve
+ * coherence.
  */
 class GroqProvider extends Provider {
   model;

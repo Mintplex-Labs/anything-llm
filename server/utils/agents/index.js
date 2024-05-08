@@ -115,6 +115,29 @@ class AgentHandler {
         if (!process.env.GEMINI_API_KEY)
           throw new Error("Gemini API key must be provided to use agents.");
         break;
+      case "openrouter":
+        if (!process.env.OPENROUTER_API_KEY)
+          throw new Error("OpenRouter API key must be provided to use agents.");
+        break;
+      case "mistral":
+        if (!process.env.MISTRAL_API_KEY)
+          throw new Error("Mistral API key must be provided to use agents.");
+        break;
+      case "generic-openai":
+        if (!process.env.GENERIC_OPEN_AI_BASE_PATH)
+          throw new Error("API base path must be provided to use agents.");
+        break;
+      case "perplexity":
+        if (!process.env.PERPLEXITY_API_KEY)
+          throw new Error("Perplexity API key must be provided to use agents.");
+        break;
+      case "textgenwebui":
+        if (!process.env.TEXT_GEN_WEB_UI_BASE_PATH)
+          throw new Error(
+            "TextWebGenUI API base path must be provided to use agents."
+          );
+        break;
+
       default:
         throw new Error("No provider found to power agent cluster.");
     }
@@ -141,6 +164,16 @@ class AgentHandler {
       case "gemini":
         return "gemini-pro";
       case "localai":
+        return null;
+      case "openrouter":
+        return "openrouter/auto";
+      case "mistral":
+        return "mistral-medium";
+      case "generic-openai":
+        return "gpt-3.5-turbo";
+      case "perplexity":
+        return "sonar-small-online";
+      case "textgenwebui":
         return null;
       default:
         return "unknown";

@@ -15,6 +15,16 @@ const ENABLED_PROVIDERS = [
   "azure",
   "koboldcpp",
   "togetherai",
+  "openrouter",
+  "mistral",
+  "perplexity",
+  "textgenwebui",
+  // TODO: More agent support.
+  // "generic-openai", // Need to support text-input for agent model input for this to be enabled.
+  // "cohere",         // Has tool calling and will need to build explicit support
+  // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
+  // "gemini",         // Too rate limited and broken in several ways to use for agents.
+  // "gemini",         // Too rate limited and broken in several ways to use for agents.
 ];
 const WARN_PERFORMANCE = [
   "lmstudio",
@@ -23,6 +33,8 @@ const WARN_PERFORMANCE = [
   "koboldcpp",
   "ollama",
   "localai",
+  "openrouter",
+  "generic-openai",
 ];
 
 const LLM_DEFAULT = {

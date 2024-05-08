@@ -753,6 +753,16 @@ ${this.getHistory({ to: route.to })
         return new Providers.KoboldCPPProvider({});
       case "localai":
         return new Providers.LocalAIProvider({ model: config.model });
+      case "openrouter":
+        return new Providers.OpenRouterProvider({ model: config.model });
+      case "mistral":
+        return new Providers.MistralProvider({ model: config.model });
+      case "generic-openai":
+        return new Providers.GenericOpenAiProvider({ model: config.model });
+      case "perplexity":
+        return new Providers.PerplexityProvider({ model: config.model });
+      case "textgenwebui":
+        return new Providers.TextWebGenUiProvider({});
 
       default:
         throw new Error(
