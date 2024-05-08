@@ -753,6 +753,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.KoboldCPPProvider({});
       case "gemini":
         return new Providers.GeminiProvider({});
+      case "localai":
+        return new Providers.LocalAIProvider({});
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use "openai"`

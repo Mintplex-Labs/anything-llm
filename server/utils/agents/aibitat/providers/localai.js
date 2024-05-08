@@ -4,20 +4,21 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the KoboldCPP provider.
+ * The provider for the LocalAI provider.
  */
-class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
+class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
   constructor(_config = {}) {
     super();
-    const model = process.env.KOBOLD_CPP_MODEL_PREF ?? null;
+    const model = process.env.LOCAL_AI_MODEL_PREF ?? null;
     const client = new OpenAI({
-      baseURL: process.env.KOBOLD_CPP_BASE_PATH?.replace(/\/+$/, ""),
-      apiKey: null,
+      baseURL: process.env.LOCAL_AI_BASE_PATH?.replace(/\/+$/, ""),
+      apiKey: process.env.LOCAL_AI_API_KEY ?? null,
       maxRetries: 3,
       model,
     });
+
     this._client = client;
     this.model = model;
     this.verbose = true;
@@ -37,6 +38,7 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
   async complete(messages, functions = null) {
     try {
       let completion;
+
       if (functions.length > 0) {
         const { toolCall, text } = await this.functionCall(
           messages,
@@ -56,6 +58,7 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
             cost: 0,
           };
         }
+
         completion = { content: text };
       }
 
@@ -70,10 +73,7 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
         completion = response.choices[0].message;
       }
 
-      return {
-        result: completion.content,
-        cost: 0,
-      };
+      return { result: completion.content, cost: 0 };
     } catch (error) {
       throw error;
     }
@@ -88,9 +88,11 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("KoboldCPP chat: No results!");
+          throw new Error("LocalAI chat: No results!");
+
         if (result.choices.length === 0)
-          throw new Error("KoboldCPP chat: No results length!");
+          throw new Error("LocalAI chat: No results length!");
+
         return result.choices[0].message.content;
       })
       .catch((_) => {
@@ -103,11 +105,11 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
    *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since KoboldCPP has no cost basis.
+   * Stubbed since LocalAI has no cost basis.
    */
   getCost(_usage) {
     return 0;
   }
 }
 
-module.exports = KoboldCPPProvider;
+module.exports = LocalAiProvider;

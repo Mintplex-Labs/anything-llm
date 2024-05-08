@@ -110,7 +110,7 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     const response = await chatCb({
       messages: [
         {
-          content: `You are a program which picks the most optimal function and parameters to call. 
+          content: `You are a program which picks the most optimal function and parameters to call.
       DO NOT HAVE TO PICK A FUNCTION IF IT WILL NOT HELP ANSWER OR FULFILL THE USER'S QUERY.
       When a function is selection, respond in JSON with no additional text.
       When there is no relevant function to call - return with a regular chat text response.

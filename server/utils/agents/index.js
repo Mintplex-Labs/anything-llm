@@ -105,6 +105,12 @@ class AgentHandler {
             "KoboldCPP must have a valid base path to use for the api."
           );
         break;
+      case "localai":
+        if (!process.env.LOCAL_AI_BASE_PATH)
+          throw new Error(
+            "LocalAI must have a valid base path to use for the api."
+          );
+        break;
       case "gemini":
         if (!process.env.GEMINI_API_KEY)
           throw new Error("Gemini API key must be provided to use agents.");
@@ -134,6 +140,8 @@ class AgentHandler {
         return null;
       case "gemini":
         return "gemini-pro";
+      case "localai":
+        return null;
       default:
         return "unknown";
     }

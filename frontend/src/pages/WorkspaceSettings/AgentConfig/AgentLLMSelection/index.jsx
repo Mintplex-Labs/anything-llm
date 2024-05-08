@@ -10,11 +10,12 @@ const ENABLED_PROVIDERS = [
   "anthropic",
   "lmstudio",
   "ollama",
+  "localai",
   "groq",
-  "azure",
+  // "azure",
   "koboldcpp",
 ];
-const WARN_PERFORMANCE = ["lmstudio", "groq", "azure", "koboldcpp", "ollama"];
+const WARN_PERFORMANCE = ["lmstudio", "groq", "azure", "koboldcpp", "ollama", "localai"];
 
 const LLM_DEFAULT = {
   name: "Please make a selection",

@@ -65,39 +65,20 @@ function parseAuthHeader(headerValue = null, apiKey = null) {
 
 function safeJsonParse(jsonString, fallback = null) {
   try {
-    const jsonMatch = jsonString.match(/{.*}|\\[.*]/); // check if it starts with {} or []
-    if (jsonMatch) {
-      const extractedJson = jsonMatch[0];
-      const parsedExtractedJson = JSON.parse(extractedJson);
-      if (parsedExtractedJson) {
-        return parsedExtractedJson;
-      }
-    }
-
-    // Attempt to parse the JSON string directly
-    const parsedJson = JSON.parse(jsonString);
-    if (parsedJson) {
-      return parsedJson;
-    }
-
-    // If the jsonString starts with [ or {, attempt to repair it
-    if (jsonString?.startsWith("[") || jsonString?.startsWith("{")) {
-      const repairedJson = jsonrepair(jsonString);
-      const parsedRepairedJson = JSON.parse(repairedJson);
-      if (parsedRepairedJson) {
-        return parsedRepairedJson;
-      }
-    }
-
-    // If the jsonString contains a [ or {, attempt to extract it
-    if (jsonString?.includes("[") || jsonString?.includes("{")) {
-      const extractedJson = extract(jsonString);
-      const parsedExtractedJson = JSON.parse(extractedJson);
-      if (parsedExtractedJson) {
-        return parsedExtractedJson;
-      }
-    }
+    return JSON.parse(jsonString);
   } catch {}
+
+  if (jsonString?.startsWith("[") || jsonString?.startsWith("{")) {
+    try {
+      const repairedJson = jsonrepair(jsonString);
+      return JSON.parse(repairedJson);
+    } catch {}
+  }
+
+  try {
+    return extract(jsonString)[0];
+  } catch {}
+
   return fallback;
 }
 
