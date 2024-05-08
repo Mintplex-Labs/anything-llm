@@ -743,6 +743,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.LMStudioProvider({});
       case "ollama":
         return new Providers.OllamaProvider({ model: config.model });
+      case "anythingllm_ollama":
+        return new Providers.AnythingLLMOllamaProvider({ model: config.model });
 
       default:
         throw new Error(

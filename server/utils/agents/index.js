@@ -85,6 +85,12 @@ class AgentHandler {
         if (!process.env.OLLAMA_BASE_PATH)
           throw new Error("Ollama base path must be provided to use agents.");
         break;
+      case "anythingllm_ollama":
+        if (!process.env.ANYTHING_LLM_OLLAMA_PORT)
+          throw new Error(
+            "AnythingLLM built-in LLM is not detected as running."
+          );
+        break;
       default:
         throw new Error("No provider found to power agent cluster.");
     }
@@ -100,6 +106,8 @@ class AgentHandler {
         return "server-default";
       case "ollama":
         return "llama3:latest";
+      case "anythingllm_ollama":
+        return "default";
       default:
         return "unknown";
     }
