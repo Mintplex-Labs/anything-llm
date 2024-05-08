@@ -755,6 +755,9 @@ ${this.getHistory({ to: route.to })
         return new Providers.GeminiProvider({});
       case "localai":
         return new Providers.LocalAIProvider({});
+      case "ollama":
+        return new Providers.OllamaProvider({ model: config.model });
+
       default:
         throw new Error(
           `Unknown provider: ${config.provider}. Please use "openai"`

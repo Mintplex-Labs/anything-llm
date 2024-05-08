@@ -120,6 +120,10 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
       'name': this is the name of the function name to call. eg: 'web-scraper', 'rag-memory', etc..
       'arguments': this is an object with the function properties to invoke the function.
       DO NOT INCLUDE ANY OTHER KEYS IN JSON RESPONSES.
+      All JSON responses should have two keys.
+      'name': this is the name of the function name to call. eg: 'web-scraper', 'rag-memory', etc..
+      'arguments': this is an object with the function properties to invoke the function.
+      DO NOT INCLUDE ANY OTHER KEYS IN JSON RESPONSES.
 
       Here are the available tools you can use an examples of a query and response so you can understand how each one works.
       ${this.showcaseFunctions(functions)}
