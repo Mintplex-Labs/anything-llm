@@ -15,7 +15,13 @@ export default function NewUserModal({ closeModal }) {
     for (var [key, value] of form.entries()) data[key] = value;
     const { user, error } = await Admin.newUser(data);
     if (!!user) window.location.reload();
-    setError(error);
+    if (
+      error.includes("Unique constraint failed on the fields: (`username`)")
+    ) {
+      setError("Username already in use. Please choose a different username.");
+    } else {
+      setError(error);
+    }
   };
 
   const user = userFromStorage();

@@ -109,7 +109,9 @@ function systemEndpoints(app) {
 
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-        const existingUser = await User.get({ username: String(username) });
+        const existingUser = await User.get({
+          username: String(username.toLowerCase()),
+        });
 
         if (!existingUser) {
           await EventLogs.logEvent(

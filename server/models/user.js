@@ -30,7 +30,7 @@ const User = {
       const hashedPassword = bcrypt.hashSync(password, 10);
       const user = await prisma.users.create({
         data: {
-          username,
+          username: username.toLowerCase(),
           password: hashedPassword,
           role,
         },
