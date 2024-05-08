@@ -4082,24 +4082,6 @@ object.values@^1.1.6, object.values@^1.1.7:
     define-properties "^1.2.1"
     es-object-atoms "^1.0.0"
 
-<<<<<<< HEAD
-=======
-octokit@^3.1.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/octokit/-/octokit-3.2.0.tgz#2e75bb0a5f0511aa37ee20c2714206ed0d09e2bf"
-  integrity sha512-f25eJ/8ITwF2BdwymOjK9I5ll9Azt8UbfHE2u5ho0gVdgfpIZkUgMGbQjbvgOYGbtIAYxh7ghH3BUbZrYal1Gw==
-  dependencies:
-    "@octokit/app" "^14.0.2"
-    "@octokit/core" "^5.0.0"
-    "@octokit/oauth-app" "^6.0.0"
-    "@octokit/plugin-paginate-graphql" "^4.0.0"
-    "@octokit/plugin-paginate-rest" "^9.0.0"
-    "@octokit/plugin-rest-endpoint-methods" "^10.0.0"
-    "@octokit/plugin-retry" "^6.0.0"
-    "@octokit/plugin-throttling" "^8.0.0"
-    "@octokit/request-error" "^5.0.0"
-    "@octokit/types" "^12.0.0"
-
 ollama@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/ollama/-/ollama-0.5.0.tgz#cb9bc709d4d3278c9f484f751b0d9b98b06f4859"
@@ -4107,7 +4089,6 @@ ollama@^0.5.0:
   dependencies:
     whatwg-fetch "^3.6.20"
 
->>>>>>> 331d3741c9a675f8015c31bdf2b1cc37ff172c45
 on-finished@2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/on-finished/-/on-finished-2.4.1.tgz#58c8c44116e54845ad57f14ab10b03533184ac3f"
