@@ -1,4 +1,5 @@
-### Pull Request Type
+
+ ### Pull Request Type
 
 <!-- For change type, change [ ] to [x]. -->
 
@@ -15,9 +16,11 @@
 
 resolves #xxx
 
+
 ### What is in this change?
 
 <!-- Describe the changes in this PR that are impactful to the repo. -->
+
 
 ### Additional Information
 
