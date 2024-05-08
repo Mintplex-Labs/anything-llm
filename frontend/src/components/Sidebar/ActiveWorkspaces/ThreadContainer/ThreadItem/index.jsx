@@ -74,6 +74,7 @@ export default function ThreadItem({
             {ctrlPressed && (
               <button
                 type="button"
+                className="border-none"
                 onClick={() => toggleMarkForDeletion(thread.id)}
               >
                 <ArrowCounterClockwise
@@ -105,6 +106,7 @@ export default function ThreadItem({
             {ctrlPressed ? (
               <button
                 type="button"
+                className="border-none"
                 onClick={() => toggleMarkForDeletion(thread.id)}
               >
                 <X
@@ -117,6 +119,7 @@ export default function ThreadItem({
               <div className="flex items-center w-fit group-hover:visible md:invisible gap-x-1">
                 <button
                   type="button"
+                  className="border-none"
                   onClick={() => setShowOptions(!showOptions)}
                   aria-label="Thread options"
                 >
