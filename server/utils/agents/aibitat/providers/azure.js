@@ -28,7 +28,7 @@ class AzureOpenAiProvider extends Provider {
   };
 
   constructor(config = {}) {
-    const { model = "gpt-3.5-turbo" } = config;
+    const { model = "my-gpt35-deployment" } = config;
 
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
