@@ -46,6 +46,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-ws": "^5.0.2",
+    "extract-json-from-string": "^1.0.1",
     "extract-zip": "^2.0.1",
     "graphql": "^16.7.1",
     "joi": "^17.11.0",
