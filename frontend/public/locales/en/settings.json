@@ -1,0 +1,23 @@
+{
+    "title":"Instance Settings",
+    "WorkspaceChat": "Workspace Chat",
+    "Appearance": {
+        "menu-title":"Appearance",
+        "page-title":"Appearance"
+    },
+    "APIKeys": "API Keys",
+    "LLMPreference": "LLM Preference",
+    "TranscriptionModel": "Transcription Model",
+    "EmbedderPreferences": "Embedding Preferences",
+    "VectorDatabase": "Vector Database",
+    "EmbeddedChat": "Embedded Chat",
+    "EmbeddedChatHistory": "Embedded Chat History",
+    "Security": {
+        "menu-title": "Security",
+        "page-title": "Multi-User Mode",
+        "Enable_Multi-User_Mode": "Enable Multi-User Mode", 
+        "PasswordProtection": "Password Protection"
+    },
+    "EventLogs": "Event Logs",
+    "PrivacyData": "Privacy & Data"
+}

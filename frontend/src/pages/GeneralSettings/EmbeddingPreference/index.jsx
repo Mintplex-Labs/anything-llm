@@ -25,6 +25,7 @@ import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next";
 
 const EMBEDDERS = [
   {
@@ -93,6 +94,8 @@ export default function GeneralEmbeddingPreference() {
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const { isOpen, openModal, closeModal } = useModal();
+
+  const { t } = useTranslation(["main"]);
 
   function embedderModelChanged(formEl) {
     try {
@@ -204,7 +207,7 @@ export default function GeneralEmbeddingPreference() {
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">
                   <p className="text-lg leading-6 font-bold text-white">
-                    Embedding Preference
+                    {t("EmbedderPreferences")}
                   </p>
                 </div>
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">

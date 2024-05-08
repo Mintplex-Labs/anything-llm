@@ -50,6 +50,7 @@ const EmbedChats = lazy(() => import("@/pages/GeneralSettings/EmbedChats"));
 const PrivacyAndData = lazy(
   () => import("@/pages/GeneralSettings/PrivacyAndData")
 );
+import "./utils/locale/i18n"
 
 export default function App() {
   return (

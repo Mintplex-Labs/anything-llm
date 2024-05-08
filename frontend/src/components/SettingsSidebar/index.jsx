@@ -27,6 +27,7 @@ import { USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { isMobile } from "react-device-detect";
 import Footer from "../Footer";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function SettingsSidebar() {
   const { logo } = useLogo();
@@ -34,6 +35,8 @@ export default function SettingsSidebar() {
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
+
+  const { t } = useTranslation(["settings"]);
 
   useEffect(() => {
     function handleBg() {
@@ -143,12 +146,12 @@ export default function SettingsSidebar() {
       >
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
           <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
-            Instance Settings
+            {t("title")}
           </div>
           <div className="relative h-full flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
             <div className="h-auto sidebar-items">
               <div className="flex flex-col gap-y-2 h-full pb-8 overflow-y-scroll no-scroll">
-                <SidebarOptions user={user} />
+                <SidebarOptions user={user} t={t} />
               </div>
             </div>
             <div className="mb-2">
@@ -218,7 +221,7 @@ const Option = ({
   );
 };
 
-const SidebarOptions = ({ user = null }) => (
+const SidebarOptions = ({ user = null,t=null }) => (
   <>
     <Option
       href={paths.settings.system()}
@@ -250,7 +253,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.chats()}
-      btnText="Workspace Chat"
+      btnText={t("WorkspaceChat")}
       icon={<ChatCenteredText className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -258,7 +261,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.appearance()}
-      btnText="Appearance"
+      btnText={t("Appearance.menu-title")}
       icon={<Eye className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -266,7 +269,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.apiKeys()}
-      btnText="API Keys"
+      btnText={t("APIKeys")}
       icon={<Key className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -274,7 +277,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.llmPreference()}
-      btnText="LLM Preference"
+      btnText={t("LLMPreference")}
       icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -282,7 +285,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.transcriptionPreference()}
-      btnText="Transcription Model"
+      btnText={t("TranscriptionModel")}
       icon={<ClosedCaptioning className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -291,7 +294,7 @@ const SidebarOptions = ({ user = null }) => (
     <Option
       href={paths.settings.embedder.modelPreference()}
       childLinks={[paths.settings.embedder.chunkingPreference()]}
-      btnText="Embedder Preferences"
+      btnText={t("EmbedderPreferences")}
       icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -311,7 +314,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.vectorDatabase()}
-      btnText="Vector Database"
+      btnText={t("VectorDatabase")}
       icon={<Database className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -320,7 +323,7 @@ const SidebarOptions = ({ user = null }) => (
     <Option
       href={paths.settings.embedSetup()}
       childLinks={[paths.settings.embedChats()]}
-      btnText="Embedded Chat"
+      btnText={t("EmbeddedChat")}
       icon={<CodeBlock className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -329,7 +332,7 @@ const SidebarOptions = ({ user = null }) => (
         <>
           <Option
             href={paths.settings.embedChats()}
-            btnText="Embedded Chat History"
+            btnText={t("EmbeddedChatHistory")}
             icon={<Barcode className="h-5 w-5 flex-shrink-0" />}
             user={user}
             flex={true}
@@ -340,7 +343,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.security()}
-      btnText="Security"
+      btnText={t("Security.menu-title")}
       icon={<Lock className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -349,7 +352,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.logs()}
-      btnText="Event Logs"
+      btnText={t("EventLogs")}
       icon={<Notepad className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -357,7 +360,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.privacy()}
-      btnText="Privacy & Data"
+      btnText={t("PrivacyData")}
       icon={<EyeSlash className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}

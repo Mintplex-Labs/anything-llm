@@ -1,0 +1,23 @@
+{
+    "title":"设置",
+    "WorkspaceChat": "对话工作区",
+    "Appearance": {
+        "menu-title":"外观",
+        "page-title":"外观设置"
+    },
+    "APIKeys": "API 密钥",
+    "LLMPreference": "LLM 首选项",
+    "TranscriptionModel": "Transcription 模型", 
+    "EmbedderPreferences": "Embedder 首选项",
+    "VectorDatabase": "向量数据库",
+    "EmbeddedChat": "嵌入式对话",
+    "EmbeddedChatHistory": "嵌入式对话历史",
+    "Security": {
+        "menu-title": "用户与安全",
+        "page-title": "多用户模式",
+        "Enable_Multi-User_Mode": "启用多用户模式", 
+        "PasswordProtection": "密码保护"
+    },
+    "EventLogs": "事件日志",
+    "PrivacyData": "隐私与数据"
+}

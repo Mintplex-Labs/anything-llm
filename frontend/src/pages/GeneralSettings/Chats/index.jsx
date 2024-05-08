@@ -9,6 +9,7 @@ import showToast from "@/utils/toast";
 import System from "@/models/system";
 import { CaretDown, Download } from "@phosphor-icons/react";
 import { saveAs } from "file-saver";
+import { useTranslation } from "react-i18next";
 
 const exportOptions = {
   csv: {
@@ -46,6 +47,7 @@ const exportOptions = {
 };
 
 export default function WorkspaceChats() {
+  const { t } = useTranslation(["settings"]);
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef();
   const openMenuButton = useRef();
@@ -94,7 +96,7 @@ export default function WorkspaceChats() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="flex gap-x-4 items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                Workspace Chats
+                {t("WorkspaceChat")}
               </p>
               <div className="relative">
                 <button

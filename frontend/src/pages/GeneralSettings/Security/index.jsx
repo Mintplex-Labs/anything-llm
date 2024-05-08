@@ -7,6 +7,8 @@ import paths from "@/utils/paths";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import PreLoader from "@/components/Preloader";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next";
+
 
 export default function GeneralSecurity() {
   return (
@@ -29,6 +31,8 @@ function MultiUserMode() {
   const [useMultiUserMode, setUseMultiUserMode] = useState(false);
   const [multiUserModeEnabled, setMultiUserModeEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const { t } = useTranslation(["settings"]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,7 +94,7 @@ function MultiUserMode() {
         <div className="w-full flex flex-col gap-y-1">
           <div className="items-center flex gap-x-4">
             <p className="text-lg leading-6 font-bold text-white">
-              Multi-User Mode
+              {t("Security.page-title")}
             </p>
           </div>
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
@@ -116,8 +120,8 @@ function MultiUserMode() {
                 <div className="">
                   <label className="mb-2.5 block font-medium text-white">
                     {multiUserModeEnabled
-                      ? "Multi-User Mode is Enabled"
-                      : "Enable Multi-User Mode"}
+                      ? t("Multi-User_Mode_Enabled")
+                      : t("Security.Enable_Multi-User_Mode")}
                   </label>
 
                   <label className="relative inline-flex cursor-pointer items-center">
@@ -196,6 +200,7 @@ function PasswordProtection() {
   const [multiUserModeEnabled, setMultiUserModeEnabled] = useState(false);
   const [usePassword, setUsePassword] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation(["settings"]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -259,7 +264,7 @@ function PasswordProtection() {
         <div className="w-full flex flex-col gap-y-1">
           <div className="items-center flex gap-x-4">
             <p className="text-lg leading-6 font-bold text-white">
-              Password Protection
+              {t("Security.PasswordProtection")}
             </p>
           </div>
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
