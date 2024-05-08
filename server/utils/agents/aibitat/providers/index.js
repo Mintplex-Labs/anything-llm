@@ -7,6 +7,7 @@ const TogetherAIProvider = require("./togetherai.js");
 const AzureOpenAiProvider = require("./azure.js");
 const KoboldCPPProvider = require("./koboldcpp.js");
 const LocalAIProvider = require("./localai.js");
+const OpenRouterProvider = require("./openrouter.js");
 
 module.exports = {
   OpenAIProvider,
@@ -18,4 +19,5 @@ module.exports = {
   AzureOpenAiProvider,
   KoboldCPPProvider,
   LocalAIProvider,
+  OpenRouterProvider,
 };

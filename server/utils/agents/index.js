@@ -115,6 +115,11 @@ class AgentHandler {
         if (!process.env.GEMINI_API_KEY)
           throw new Error("Gemini API key must be provided to use agents.");
         break;
+      case "openrouter":
+        if (!process.env.OPENROUTER_API_KEY)
+          throw new Error("OpenRouter API key must be provided to use agents.");
+        break;
+
       default:
         throw new Error("No provider found to power agent cluster.");
     }
@@ -142,6 +147,8 @@ class AgentHandler {
         return "gemini-pro";
       case "localai":
         return null;
+      case "openrouter":
+        return "openrouter/auto";
       default:
         return "unknown";
     }

@@ -753,6 +753,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.KoboldCPPProvider({});
       case "localai":
         return new Providers.LocalAIProvider({ model: config.model });
+      case "openrouter":
+        return new Providers.OpenRouterProvider({ model: config.model });
 
       default:
         throw new Error(

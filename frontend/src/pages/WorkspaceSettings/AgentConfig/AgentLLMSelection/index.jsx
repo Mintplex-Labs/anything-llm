@@ -15,6 +15,7 @@ const ENABLED_PROVIDERS = [
   "azure",
   "koboldcpp",
   "togetherai",
+  "openrouter",
 ];
 const WARN_PERFORMANCE = [
   "lmstudio",
@@ -23,6 +24,7 @@ const WARN_PERFORMANCE = [
   "koboldcpp",
   "ollama",
   "localai",
+  "openrouter",
 ];
 
 const LLM_DEFAULT = {
