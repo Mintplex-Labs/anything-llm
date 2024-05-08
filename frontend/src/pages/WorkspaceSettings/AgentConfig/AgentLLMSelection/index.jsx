@@ -24,7 +24,6 @@ const ENABLED_PROVIDERS = [
   // "cohere",         // Has tool calling and will need to build explicit support
   // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
   // "gemini",         // Too rate limited and broken in several ways to use for agents.
-  // "gemini",         // Too rate limited and broken in several ways to use for agents.
 ];
 const WARN_PERFORMANCE = [
   "lmstudio",
@@ -35,6 +34,7 @@ const WARN_PERFORMANCE = [
   "localai",
   "openrouter",
   "generic-openai",
+  "textgenwebui",
 ];
 
 const LLM_DEFAULT = {
