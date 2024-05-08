@@ -19,6 +19,26 @@ const docSummarizer = {
           controller: new AbortController(),
           description:
             "Can get the list of files available to search with descriptions and can select a single file to open and summarize.",
+          examples: [
+            {
+              prompt: "Summarize example.txt",
+              call: JSON.stringify({
+                action: "summarize",
+                document_filename: "example.txt",
+              }),
+            },
+            {
+              prompt: "What files can you see?",
+              call: JSON.stringify({ action: "list", document_filename: null }),
+            },
+            {
+              prompt: "Tell me about readme.md",
+              call: JSON.stringify({
+                action: "summarize",
+                document_filename: "readme.md",
+              }),
+            },
+          ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
             type: "object",

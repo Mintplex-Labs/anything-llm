@@ -51,7 +51,7 @@ function agentWebsocket(app) {
       await agentHandler.createAIbitat({ socket });
       await agentHandler.startAgentCluster();
     } catch (e) {
-      console.error(e.message);
+      console.error(e.message, e);
       socket?.send(JSON.stringify({ type: "wssFailure", content: e.message }));
       socket?.close();
     }
