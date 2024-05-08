@@ -8,7 +8,6 @@ const AzureOpenAiProvider = require("./azure.js");
 const KoboldCPPProvider = require("./koboldcpp.js");
 const GeminiProvider = require("./gemini.js");
 const LocalAIProvider = require("./localai.js");
-const OllamaProvider = require("./ollama.js");
 
 module.exports = {
   OpenAIProvider,
@@ -21,5 +20,4 @@ module.exports = {
   KoboldCPPProvider,
   GeminiProvider,
   LocalAIProvider,
-  OllamaProvider,
 };
