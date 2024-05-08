@@ -14,6 +14,7 @@ const ENABLED_PROVIDERS = [
   "groq",
   "azure",
   "koboldcpp",
+  "togetherai",
 ];
 const WARN_PERFORMANCE = [
   "lmstudio",

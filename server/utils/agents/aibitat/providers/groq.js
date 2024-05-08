@@ -1,5 +1,6 @@
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
+const { RetryError } = require("../error.js");
 
 /**
  * The provider for the Groq provider.
@@ -7,13 +8,12 @@ const Provider = require("./ai-provider.js");
 class GroqProvider extends Provider {
   model;
 
-  constructor(_config = {}) {
-    const model = process.env.GROQ_MODEL_PREF || "llama3-8b-8192";
+  constructor(config = {}) {
+    const { model = "llama3-8b-8192" } = config;
     const client = new OpenAI({
       baseURL: "https://api.groq.com/openai/v1",
       apiKey: process.env.GROQ_API_KEY,
       maxRetries: 3,
-      model,
     });
     super(client);
     this.model = model;

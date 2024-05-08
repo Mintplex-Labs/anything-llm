@@ -9,14 +9,13 @@ const UnTooled = require("./helpers/untooled.js");
 class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
+  constructor(config = {}) {
+    const { model = null } = config;
     super();
-    const model = process.env.LOCAL_AI_MODEL_PREF ?? null;
     const client = new OpenAI({
-      baseURL: process.env.LOCAL_AI_BASE_PATH?.replace(/\/+$/, ""),
+      baseURL: process.env.LOCAL_AI_BASE_PATH,
       apiKey: process.env.LOCAL_AI_API_KEY ?? null,
       maxRetries: 3,
-      model,
     });
 
     this._client = client;
@@ -26,6 +25,27 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  async #handleFunctionCallChat({ messages = [] }) {
+    return await this.client.chat.completions
+      .create({
+        model: this.model,
+        temperature: 0,
+        messages,
+      })
+      .then((result) => {
+        if (!result.hasOwnProperty("choices"))
+          throw new Error("LocalAI chat: No results!");
+
+        if (result.choices.length === 0)
+          throw new Error("LocalAI chat: No results length!");
+
+        return result.choices[0].message.content;
+      })
+      .catch((_) => {
+        return null;
+      });
   }
 
   /**
@@ -77,27 +97,6 @@ class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
     } catch (error) {
       throw error;
     }
-  }
-
-  async #handleFunctionCallChat({ messages = [] }) {
-    return await this.client.chat.completions
-      .create({
-        model: this.model,
-        temperature: 0,
-        messages,
-      })
-      .then((result) => {
-        if (!result.hasOwnProperty("choices"))
-          throw new Error("LocalAI chat: No results!");
-
-        if (result.choices.length === 0)
-          throw new Error("LocalAI chat: No results length!");
-
-        return result.choices[0].message.content;
-      })
-      .catch((_) => {
-        return null;
-      });
   }
 
   /**

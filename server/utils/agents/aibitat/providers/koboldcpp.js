@@ -16,8 +16,8 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: process.env.KOBOLD_CPP_BASE_PATH?.replace(/\/+$/, ""),
       apiKey: null,
       maxRetries: 3,
-      model,
     });
+
     this._client = client;
     this.model = model;
     this.verbose = true;
@@ -25,6 +25,25 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
 
   get client() {
     return this._client;
+  }
+
+  async #handleFunctionCallChat({ messages = [] }) {
+    return await this.client.chat.completions
+      .create({
+        model: this.model,
+        temperature: 0,
+        messages,
+      })
+      .then((result) => {
+        if (!result.hasOwnProperty("choices"))
+          throw new Error("KoboldCPP chat: No results!");
+        if (result.choices.length === 0)
+          throw new Error("KoboldCPP chat: No results length!");
+        return result.choices[0].message.content;
+      })
+      .catch((_) => {
+        return null;
+      });
   }
 
   /**
@@ -77,25 +96,6 @@ class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
     } catch (error) {
       throw error;
     }
-  }
-
-  async #handleFunctionCallChat({ messages = [] }) {
-    return await this.client.chat.completions
-      .create({
-        model: this.model,
-        temperature: 0,
-        messages,
-      })
-      .then((result) => {
-        if (!result.hasOwnProperty("choices"))
-          throw new Error("KoboldCPP chat: No results!");
-        if (result.choices.length === 0)
-          throw new Error("KoboldCPP chat: No results length!");
-        return result.choices[0].message.content;
-      })
-      .catch((_) => {
-        return null;
-      });
   }
 
   /**

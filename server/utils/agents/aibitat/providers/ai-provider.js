@@ -58,6 +58,9 @@ class Provider {
     }
   }
 
+  // For some providers we may want to override the system prompt to be more verbose.
+  // Currently we only do this for lmstudio, but we probably will want to expand this even more
+  // to any Untooled LLM.
   static systemPrompt(provider = null) {
     switch (provider) {
       case "lmstudio":

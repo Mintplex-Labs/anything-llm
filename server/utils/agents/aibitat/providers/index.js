@@ -6,7 +6,6 @@ const GroqProvider = require("./groq.js");
 const TogetherAIProvider = require("./togetherai.js");
 const AzureOpenAiProvider = require("./azure.js");
 const KoboldCPPProvider = require("./koboldcpp.js");
-const GeminiProvider = require("./gemini.js");
 const LocalAIProvider = require("./localai.js");
 
 module.exports = {
@@ -18,6 +17,5 @@ module.exports = {
   TogetherAIProvider,
   AzureOpenAiProvider,
   KoboldCPPProvider,
-  GeminiProvider,
   LocalAIProvider,
 };

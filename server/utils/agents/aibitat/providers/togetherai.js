@@ -1,26 +1,49 @@
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
-const { RetryError } = require("../error.js");
+const InheritMultiple = require("./helpers/classes.js");
+const UnTooled = require("./helpers/untooled.js");
 
 /**
  * The provider for the TogetherAI provider.
  */
-class TogetherAIProvider extends Provider {
+class TogetherAIProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
-    const model =
-      process.env.TOGETHER_AI_MODEL_PREF ||
-      "mistralai/Mistral-7B-Instruct-v0.1";
+  constructor(config = {}) {
+    const { model = "mistralai/Mistral-7B-Instruct-v0.1" } = config;
+    super();
     const client = new OpenAI({
       baseURL: "https://api.together.xyz/v1",
       apiKey: process.env.TOGETHER_AI_API_KEY,
       maxRetries: 3,
-      model,
     });
-    super(client);
+
+    this._client = client;
     this.model = model;
     this.verbose = true;
+  }
+
+  get client() {
+    return this._client;
+  }
+
+  async #handleFunctionCallChat({ messages = [] }) {
+    return await this.client.chat.completions
+      .create({
+        model: this.model,
+        temperature: 0,
+        messages,
+      })
+      .then((result) => {
+        if (!result.hasOwnProperty("choices"))
+          throw new Error("LMStudio chat: No results!");
+        if (result.choices.length === 0)
+          throw new Error("LMStudio chat: No results length!");
+        return result.choices[0].message.content;
+      })
+      .catch((_) => {
+        return null;
+      });
   }
 
   /**
@@ -30,79 +53,47 @@ class TogetherAIProvider extends Provider {
    * @param functions
    * @returns The completion.
    */
-
-  // TODO: Fix function calling for TogetherAI
   async complete(messages, functions = null) {
     try {
-      const response = await this.client.chat.completions.create({
-        model: this.model,
-        // stream: true,
-        messages,
-        ...(Array.isArray(functions) && functions?.length > 0
-          ? { functions }
-          : {}),
-      });
+      let completion;
+      if (functions.length > 0) {
+        const { toolCall, text } = await this.functionCall(
+          messages,
+          functions,
+          this.#handleFunctionCallChat.bind(this)
+        );
 
-      //   console.log("OUTPUT");
-      //   console.log(response.choices[0].message);
-      //   console.log(response.choices[0].message.tool_calls[0].function);
-
-      // Right now, we only support one completion,
-      // so we just take the first one in the list
-      const completion = response.choices[0].content || "";
-      const cost = this.getCost(response.usage);
-      // treat function calls
-      if (completion.function_call) {
-        let functionArgs = {};
-        try {
-          functionArgs = JSON.parse(
-            completion.tool_calls[0].function.arguments
-          );
-        } catch (error) {
-          // call the complete function again in case it gets a json error
-          return this.complete(
-            [
-              ...messages,
-              {
-                role: "function",
-                name: completion.tool_calls[0].function.name,
-                function_call: completion.tool_calls[0].function,
-                content: error?.message,
-              },
-            ],
-            functions
-          );
+        if (toolCall !== null) {
+          this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
+          return {
+            result: null,
+            functionCall: {
+              name: toolCall.name,
+              arguments: toolCall.arguments,
+            },
+            cost: 0,
+          };
         }
+        completion = { content: text };
+      }
 
-        // console.log(completion, { functionArgs })
-        return {
-          result: null,
-          functionCall: {
-            name: completion.tool_calls[0].function.name,
-            arguments: functionArgs,
-          },
-          cost,
-        };
+      if (!completion?.content) {
+        this.providerLog(
+          "Will assume chat completion without tool call inputs."
+        );
+        const response = await this.client.chat.completions.create({
+          model: this.model,
+          messages: this.cleanMsgs(messages),
+        });
+        completion = response.choices[0].message;
       }
 
       return {
         result: completion.content,
-        cost,
+        cost: 0,
       };
     } catch (error) {
-      // If invalid Auth error we need to abort because no amount of waiting
-      // will make auth better.
-      console.log({ error });
-      if (error instanceof OpenAI.AuthenticationError) throw error;
-
-      if (
-        error instanceof OpenAI.RateLimitError ||
-        error instanceof OpenAI.InternalServerError ||
-        error instanceof OpenAI.APIError // Also will catch AuthenticationError!!!
-      ) {
-        throw new RetryError(error.message);
-      }
-
       throw error;
     }
   }
@@ -112,27 +103,10 @@ class TogetherAIProvider extends Provider {
    *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since TogetherAI has no cost basis.
+   * Stubbed since LMStudio has no cost basis.
    */
   getCost(_usage) {
     return 0;
-  }
-
-  /**
-   * Test if model supports function calling
-   * @param model
-   * @returns {boolean}
-   *
-   */
-
-  supportsOpenAIFunctionCalling(model) {
-    const supportedModels = [
-      "mistralai/Mistral-7B-Instruct-v0.1",
-      "mistralai/Mixtral-8x7B-Instruct-v0.1",
-      "togethercomputer/CodeLlama-34b-Instruct",
-    ];
-
-    return supportedModels.includes(model);
   }
 }
 

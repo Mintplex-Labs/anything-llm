@@ -16,8 +16,8 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
       baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
       apiKey: null,
       maxRetries: 3,
-      model,
     });
+
     this._client = client;
     this.model = model;
     this.verbose = true;

@@ -11,18 +11,34 @@ class AzureOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
 
   constructor(_config = {}) {
     super();
-    const model = process.env.OPEN_MODEL_PREF ?? "gpt-3.5-turbo";
     const client = new OpenAIClient(
       process.env.AZURE_OPENAI_ENDPOINT,
       new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
     );
     this._client = client;
-    this.model = model;
+    this.model = process.env.OPEN_MODEL_PREF ?? "gpt-3.5-turbo";
     this.verbose = true;
   }
 
   get client() {
     return this._client;
+  }
+
+  async #handleFunctionCallChat({ messages = [] }) {
+    return await this.client
+      .getChatCompletions(this.model, messages, {
+        temperature: 0,
+      })
+      .then((result) => {
+        if (!result.hasOwnProperty("choices"))
+          throw new Error("Azure OpenAI chat: No results!");
+        if (result.choices.length === 0)
+          throw new Error("Azure OpenAI chat: No results length!");
+        return result.choices[0].message.content;
+      })
+      .catch((_) => {
+        return null;
+      });
   }
 
   /**
@@ -72,23 +88,6 @@ class AzureOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     } catch (error) {
       throw error;
     }
-  }
-
-  async #handleFunctionCallChat({ messages = [] }) {
-    return await this.client
-      .getChatCompletions(this.model, messages, {
-        temperature: 0,
-      })
-      .then((result) => {
-        if (!result.hasOwnProperty("choices"))
-          throw new Error("Azure OpenAI chat: No results!");
-        if (result.choices.length === 0)
-          throw new Error("Azure OpenAI chat: No results length!");
-        return result.choices[0].message.content;
-      })
-      .catch((_) => {
-        return null;
-      });
   }
 
   /**
