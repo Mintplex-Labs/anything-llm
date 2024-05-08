@@ -171,11 +171,11 @@ export const AVAILABLE_LLM_PROVIDERS = [
     ],
   },
   {
-    name: "Text Generation Web UI",
+    name: "Oobabooga Web UI",
     value: "textgenwebui",
     logo: TextGenWebUILogo,
     options: (settings) => <TextGenWebUIOptions settings={settings} />,
-    description: "Run local LLMs using Text Generation Web UI.",
+    description: "Run local LLMs using Oobabooga's Text Generation Web UI.",
     requiredConfig: ["TextGenWebUIBasePath", "TextGenWebUITokenLimit"],
   },
   {

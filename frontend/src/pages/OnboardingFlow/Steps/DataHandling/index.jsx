@@ -148,9 +148,9 @@ export const LLM_SELECTION_PRIVACY = {
     logo: KoboldCPPLogo,
   },
   textgenwebui: {
-    name: "Text Generation Web UI",
+    name: "Oobabooga Web UI",
     description: [
-      "Your model and chats are only accessible on the server running Text Generation Web UI",
+      "Your model and chats are only accessible on the server running the Oobabooga Text Generation Web UI",
     ],
     logo: TextGenWebUILogo,
   },

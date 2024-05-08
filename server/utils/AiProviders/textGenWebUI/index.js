@@ -23,10 +23,6 @@ class TextGenWebUILLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      console.warn(
-        "No embedding provider defined for TextGenWebUILLM - falling back to NativeEmbedder for embedding!"
-      );
     this.embedder = !embedder ? new NativeEmbedder() : embedder;
     this.defaultTemp = 0.7;
     this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
