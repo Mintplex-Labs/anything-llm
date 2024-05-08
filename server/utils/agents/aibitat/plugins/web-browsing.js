@@ -13,7 +13,21 @@ const webBrowsing = {
           super: aibitat,
           name: this.name,
           description:
-            "Searches for a given query online using a search engine.",
+            "Searches for a given query using a search engine to get better results for the user query.",
+          examples: [
+            {
+              prompt: "Who won the world series today?",
+              call: JSON.stringify({ query: "Winner of today's world series" }),
+            },
+            {
+              prompt: "What is AnythingLLM?",
+              call: JSON.stringify({ query: "AnythingLLM" }),
+            },
+            {
+              prompt: "Current AAPL stock price",
+              call: JSON.stringify({ query: "AAPL stock price today" }),
+            },
+          ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
             type: "object",

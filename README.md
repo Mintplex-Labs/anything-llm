@@ -25,6 +25,10 @@
 </p>
 
 <p align="center">
+  <b>English</b> · <a href='/README.zh-CN.md'>简体中文</a>
+</p>
+
+<p align="center">
 👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://useanything.com/download" target="_blank"> Download Now</a>
 </p>
 
