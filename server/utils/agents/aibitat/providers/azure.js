@@ -1,130 +1,105 @@
 const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
 const Provider = require("./ai-provider.js");
-const { RetryError } = require("../error.js");
+const InheritMultiple = require("./helpers/classes.js");
+const UnTooled = require("./helpers/untooled.js");
 
 /**
  * The provider for the Azure OpenAI API.
- * By default, the model is set to 'gpt-3.5-turbo'.
  */
-class AzureOpenAiProvider extends Provider {
+class AzureOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
-  static COST_PER_TOKEN = {
-    "gpt-4": {
-      input: 0.03,
-      output: 0.06,
-    },
-    "gpt-4-32k": {
-      input: 0.06,
-      output: 0.12,
-    },
-    "gpt-3.5-turbo": {
-      input: 0.0015,
-      output: 0.002,
-    },
-    "gpt-3.5-turbo-16k": {
-      input: 0.003,
-      output: 0.004,
-    },
-  };
 
-  constructor(config = {}) {
-    const { model = "my-gpt35-deployment" } = config;
-
-    if (!process.env.AZURE_OPENAI_ENDPOINT)
-      throw new Error("No Azure API endpoint was set.");
-    if (!process.env.AZURE_OPENAI_KEY)
-      throw new Error("No Azure API key was set.");
-
+  constructor(_config = {}) {
+    super();
+    const model = process.env.OPEN_MODEL_PREF ?? "gpt-3.5-turbo";
     const client = new OpenAIClient(
       process.env.AZURE_OPENAI_ENDPOINT,
       new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
     );
-
-    super(client);
+    this._client = client;
     this.model = model;
+    this.verbose = true;
+  }
+
+  get client() {
+    return this._client;
   }
 
   /**
    * Create a completion based on the received messages.
    *
-   * @param messages A list of messages to send to the OpenAI API.
+   * @param messages A list of messages to send to the API.
    * @param functions
    * @returns The completion.
    */
   async complete(messages, functions = null) {
     try {
-      const response = await this.client.getChatCompletions(
-        this.model,
-        messages,
-        {
-          temperature: 0.7,
+      let completion;
+      if (functions.length > 0) {
+        const { toolCall, text } = await this.functionCall(
+          messages,
+          functions,
+          this.#handleFunctionCallChat.bind(this)
+        );
+        if (toolCall !== null) {
+          this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
+          return {
+            result: null,
+            functionCall: {
+              name: toolCall.name,
+              arguments: toolCall.arguments,
+            },
+            cost: 0,
+          };
         }
-      );
-
-      const completion = response.choices[0].message;
-      const cost = this.getCost(response.usage);
-
-      if (completion.function_call) {
-        let functionArgs = {};
-        try {
-          functionArgs = JSON.parse(completion.function_call.arguments);
-        } catch (error) {
-          return this.complete(
-            [
-              ...messages,
-              {
-                role: "function",
-                name: completion.function_call.name,
-                function_call: completion.function_call,
-                content: error?.message,
-              },
-            ],
-            functions
-          );
-        }
-
-        return {
-          result: null,
-          functionCall: {
-            name: completion.function_call.name,
-            arguments: functionArgs,
-          },
-          cost,
-        };
+        completion = { content: text };
       }
-
-      return { result: completion.content, cost };
+      if (!completion?.content) {
+        this.providerLog(
+          "Will assume chat completion without tool call inputs."
+        );
+        const response = await this.client.getChatCompletions(
+          this.model,
+          this.cleanMsgs(messages),
+          {
+            temperature: 0.7,
+          }
+        );
+        completion = response.choices[0].message;
+      }
+      return { result: completion.content, cost: 0 };
     } catch (error) {
-      if (error instanceof RetryError) {
-        throw error;
-      }
       throw error;
     }
   }
 
+  async #handleFunctionCallChat({ messages = [] }) {
+    return await this.client
+      .getChatCompletions(this.model, messages, {
+        temperature: 0,
+      })
+      .then((result) => {
+        if (!result.hasOwnProperty("choices"))
+          throw new Error("Azure OpenAI chat: No results!");
+        if (result.choices.length === 0)
+          throw new Error("Azure OpenAI chat: No results length!");
+        return result.choices[0].message.content;
+      })
+      .catch((_) => {
+        return null;
+      });
+  }
+
   /**
    * Get the cost of the completion.
+   * Stubbed since Azure OpenAI has no public cost basis.
    *
-   * @param usage The completion to get the cost for.
+   * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
    */
-  getCost(usage) {
-    if (!usage) {
-      return Number.NaN;
-    }
-
-    // regex to remove the version number from the model
-    const modelBase = this.model.replace(/-(\d{4})$/, "");
-
-    if (!(modelBase in AzureOpenAiProvider.COST_PER_TOKEN)) {
-      return Number.NaN;
-    }
-
-    const costPerToken = AzureOpenAiProvider.COST_PER_TOKEN?.[modelBase];
-    const inputCost = (usage.prompt_tokens / 1000) * costPerToken.input;
-    const outputCost = (usage.completion_tokens / 1000) * costPerToken.output;
-
-    return inputCost + outputCost;
+  getCost(_usage) {
+    return 0;
   }
 }
 

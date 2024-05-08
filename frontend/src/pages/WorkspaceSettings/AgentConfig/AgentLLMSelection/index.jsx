@@ -12,7 +12,7 @@ const ENABLED_PROVIDERS = [
   "ollama",
   "localai",
   "groq",
-  // "azure",
+  "azure",
   "koboldcpp",
 ];
 const WARN_PERFORMANCE = ["lmstudio", "groq", "azure", "koboldcpp", "ollama", "localai"];

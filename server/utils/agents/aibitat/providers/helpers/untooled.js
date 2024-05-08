@@ -130,7 +130,6 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
         ...history,
       ],
     });
-
     const call = safeJsonParse(response, null);
     if (call === null) return { toolCall: null, text: response }; // failed to parse, so must be text.
 
