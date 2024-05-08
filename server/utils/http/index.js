@@ -8,6 +8,8 @@ process.env.NODE_ENV === "development"
     });
 const JWT = require("jsonwebtoken");
 const { User } = require("../../models/user");
+const { jsonrepair } = require("jsonrepair");
+const extract = require("extract-json-from-string");
 
 function reqBody(request) {
   return typeof request.body === "string"
@@ -70,6 +72,18 @@ function safeJsonParse(jsonString, fallback = null) {
   try {
     return JSON.parse(jsonString);
   } catch {}
+
+  if (jsonString?.startsWith("[") || jsonString?.startsWith("{")) {
+    try {
+      const repairedJson = jsonrepair(jsonString);
+      return JSON.parse(repairedJson);
+    } catch {}
+  }
+
+  try {
+    return extract(jsonString)[0];
+  } catch {}
+
   return fallback;
 }
 

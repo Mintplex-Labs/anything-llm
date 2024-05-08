@@ -16,6 +16,7 @@ import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
+import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
@@ -145,6 +146,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chats are only accessible on the server running KoboldCPP",
     ],
     logo: KoboldCPPLogo,
+  },
+  textgenwebui: {
+    name: "Oobabooga Web UI",
+    description: [
+      "Your model and chats are only accessible on the server running the Oobabooga Text Generation Web UI",
+    ],
+    logo: TextGenWebUILogo,
   },
   "generic-openai": {
     name: "Generic OpenAI compatible service",

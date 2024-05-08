@@ -25,6 +25,10 @@
 </p>
 
 <p align="center">
+  <b>English</b> · <a href='/README.zh-CN.md'>简体中文</a>
+</p>
+
+<p align="center">
 👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://useanything.com/download" target="_blank"> Download Now</a>
 </p>
 
@@ -65,6 +69,7 @@ Some cool features of AnythingLLM
 
 - [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
+- [OpenAI (Generic)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Anthropic](https://www.anthropic.com/)
 - [Google Gemini Pro](https://ai.google.dev/)
@@ -77,6 +82,9 @@ Some cool features of AnythingLLM
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
+- [Cohere](https://cohere.com/)
+- [KoboldCPP](https://github.com/LostRuins/koboldcpp)
+- [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
 
 **Supported Embedding models:**
 
@@ -86,6 +94,7 @@ Some cool features of AnythingLLM
 - [LocalAi (all)](https://localai.io/)
 - [Ollama (all)](https://ollama.ai/)
 - [LM Studio (all)](https://lmstudio.ai)
+- [Cohere](https://cohere.com/)
 
 **Supported Transcription models:**
 
@@ -142,7 +151,6 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 - create issue
 - create PR with branch name format of `<issue number>-<short name>`
 - yee haw let's merge
-
 
 ## Telemetry & Privacy
 

@@ -146,6 +146,16 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // Text Generation Web UI Settings
+  TextGenWebUIBasePath: {
+    envKey: "TEXT_GEN_WEB_UI_BASE_PATH",
+    checks: [isValidURL],
+  },
+  TextGenWebUITokenLimit: {
+    envKey: "TEXT_GEN_WEB_UI_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   // Generic OpenAI InferenceSettings
   GenericOpenAiBasePath: {
     envKey: "GENERIC_OPEN_AI_BASE_PATH",
@@ -418,6 +428,7 @@ function supportedLLM(input = "") {
     "openrouter",
     "groq",
     "koboldcpp",
+    "textgenwebui",
     "cohere",
     "generic-openai",
   ].includes(input);
