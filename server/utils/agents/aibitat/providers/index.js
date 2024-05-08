@@ -8,6 +8,10 @@ const AzureOpenAiProvider = require("./azure.js");
 const KoboldCPPProvider = require("./koboldcpp.js");
 const LocalAIProvider = require("./localai.js");
 const OpenRouterProvider = require("./openrouter.js");
+const MistralProvider = require("./mistral.js");
+const GenericOpenAiProvider = require("./genericOpenAi.js");
+const PerplexityProvider = require("./perplexity.js");
+const TextWebGenUiProvider = require("./textgenwebui.js");
 
 module.exports = {
   OpenAIProvider,
@@ -20,4 +24,8 @@ module.exports = {
   KoboldCPPProvider,
   LocalAIProvider,
   OpenRouterProvider,
+  MistralProvider,
+  GenericOpenAiProvider,
+  PerplexityProvider,
+  TextWebGenUiProvider,
 };
