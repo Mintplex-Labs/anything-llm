@@ -1,24 +1,22 @@
-const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { Ollama } = require("ollama");
 
 /**
- * The provider for the LMStudio provider.
+ * The provider for the Ollama provider.
  */
-class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
+class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
+  constructor(config = {}) {
+    const {
+      // options = {},
+      model = null,
+    } = config;
+
     super();
-    const model = process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
-    const client = new OpenAI({
-      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
-      apiKey: null,
-      maxRetries: 3,
-      model,
-    });
-    this._client = client;
+    this._client = new Ollama({ host: process.env.OLLAMA_BASE_PATH });
     this.model = model;
     this.verbose = true;
   }
@@ -28,22 +26,14 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
-    return await this.client.chat.completions
-      .create({
-        model: this.model,
+    const response = await this.client.chat({
+      model: this.model,
+      messages,
+      options: {
         temperature: 0,
-        messages,
-      })
-      .then((result) => {
-        if (!result.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
-        if (result.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
-        return result.choices[0].message.content;
-      })
-      .catch((_) => {
-        return null;
-      });
+      },
+    });
+    return response?.message?.content || null;
   }
 
   /**
@@ -82,11 +72,15 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
         this.providerLog(
           "Will assume chat completion without tool call inputs."
         );
-        const response = await this.client.chat.completions.create({
+        const response = await this.client.chat({
           model: this.model,
           messages: this.cleanMsgs(messages),
+          options: {
+            use_mlock: true,
+            temperature: 0.5,
+          },
         });
-        completion = response.choices[0].message;
+        completion = response.message;
       }
 
       return {
@@ -110,4 +104,4 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 }
 
-module.exports = LMStudioProvider;
+module.exports = OllamaProvider;

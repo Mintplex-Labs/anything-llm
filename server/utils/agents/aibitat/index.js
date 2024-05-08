@@ -741,6 +741,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.AnthropicProvider({ model: config.model });
       case "lmstudio":
         return new Providers.LMStudioProvider({});
+      case "ollama":
+        return new Providers.OllamaProvider({ model: config.model });
 
       default:
         throw new Error(
