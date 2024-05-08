@@ -7,6 +7,19 @@ import { RoleHintDisplay } from "..";
 export default function NewUserModal({ closeModal }) {
   const [error, setError] = useState(null);
   const [role, setRole] = useState("default");
+
+  const addUserToWorkspaces = async (userId) => {
+    try {
+      const workspaces = await Admin.getAllWorkspaces(); // Assuming you have a function to fetch all workspaces
+      for (const workspace of workspaces) {
+        await Admin.addUserToWorkspace(workspace.id, userId); // Assuming workspace.id is the unique identifier for the workspace
+      }
+    } catch (error) {
+      console.error('Error adding user to workspaces:', error);
+      // Handle error if needed
+    }
+  };
+
   const handleCreate = async (e) => {
     setError(null);
     e.preventDefault();
@@ -14,7 +27,10 @@ export default function NewUserModal({ closeModal }) {
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) data[key] = value;
     const { user, error } = await Admin.newUser(data);
-    if (!!user) window.location.reload();
+    if (!!user) {
+      await addUserToWorkspaces(user.id); // Calling the function to add user to workspaces
+      window.location.reload();
+    }
     setError(error);
   };
 
