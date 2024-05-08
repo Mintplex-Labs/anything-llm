@@ -65,6 +65,7 @@ Some cool features of AnythingLLM
 
 - [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
+- [OpenAI (Generic)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Anthropic](https://www.anthropic.com/)
 - [Google Gemini Pro](https://ai.google.dev/)
@@ -77,6 +78,9 @@ Some cool features of AnythingLLM
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
+- [Cohere](https://cohere.com/)
+- [KoboldCPP](https://github.com/LostRuins/koboldcpp)
+
 
 **Supported Embedding models:**
 
@@ -86,11 +90,14 @@ Some cool features of AnythingLLM
 - [LocalAi (all)](https://localai.io/)
 - [Ollama (all)](https://ollama.ai/)
 - [LM Studio (all)](https://lmstudio.ai)
+- [Cohere](https://cohere.com/)
+
 
 **Supported Transcription models:**
 
 - [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
 - [OpenAI](https://openai.com/)
+
 
 **Supported Vector Databases:**
 
@@ -102,6 +109,7 @@ Some cool features of AnythingLLM
 - [QDrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
+
 
 ### Technical Overview
 

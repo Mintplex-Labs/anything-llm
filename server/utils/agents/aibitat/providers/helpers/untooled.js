@@ -102,48 +102,34 @@ ${JSON.stringify(def.parameters.properties, null, 4)}\n`;
     return { valid: true, reason: null };
   }
 
-  async functionCall(messages, functions) {
+  async functionCall(messages, functions, chatCb = null) {
     const history = [...messages].filter((msg) =>
       ["user", "assistant"].includes(msg.role)
     );
     if (history[history.length - 1].role !== "user") return null;
+    const response = await chatCb({
+      messages: [
+        {
+          content: `You are a program which picks the most optimal function and parameters to call. 
+      DO NOT HAVE TO PICK A FUNCTION IF IT WILL NOT HELP ANSWER OR FULFILL THE USER'S QUERY.
+      When a function is selection, respond in JSON with no additional text.
+      When there is no relevant function to call - return with a regular chat text response.
+      Your task is to pick a **single** function that we will use to call, if any seem useful or relevant for the user query.
 
-    const response = await this.client.chat.completions
-      .create({
-        model: this.model,
-        temperature: 0,
-        messages: [
-          {
-            content: `You are a program which picks the most optimal function and parameters to call. 
-DO NOT HAVE TO PICK A FUNCTION IF IT WILL NOT HELP ANSWER OR FULFILL THE USER'S QUERY.
-When a function is selection, respond in JSON with no additional text.
-When there is no relevant function to call - return with a regular chat text response.
-Your task is to pick a **single** function that we will use to call, if any seem useful or relevant for the user query.
+      All JSON responses should have two keys.
+      'name': this is the name of the function name to call. eg: 'web-scraper', 'rag-memory', etc..
+      'arguments': this is an object with the function properties to invoke the function.
+      DO NOT INCLUDE ANY OTHER KEYS IN JSON RESPONSES.
 
-All JSON responses should have two keys.
-'name': this is the name of the function name to call. eg: 'web-scraper', 'rag-memory', etc..
-'arguments': this is an object with the function properties to invoke the function.
-DO NOT INCLUDE ANY OTHER KEYS IN JSON RESPONSES.
+      Here are the available tools you can use an examples of a query and response so you can understand how each one works.
+      ${this.showcaseFunctions(functions)}
 
-Here are the available tools you can use an examples of a query and response so you can understand how each one works.
-${this.showcaseFunctions(functions)}
-
-Now pick a function if there is an appropriate one to use given the last user message and the given conversation so far.`,
-            role: "system",
-          },
-          ...history,
-        ],
-      })
-      .then((result) => {
-        if (!result.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
-        if (result.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
-        return result.choices[0].message.content;
-      })
-      .catch((_) => {
-        return null;
-      });
+      Now pick a function if there is an appropriate one to use given the last user message and the given conversation so far.`,
+          role: "system",
+        },
+        ...history,
+      ],
+    });
 
     const call = safeJsonParse(response, null);
     if (call === null) return { toolCall: null, text: response }; // failed to parse, so must be text.

@@ -79,7 +79,35 @@ class AgentHandler {
         break;
       case "lmstudio":
         if (!process.env.LMSTUDIO_BASE_PATH)
-          throw new Error("LMStudio bash path must be provided to use agents.");
+          throw new Error("LMStudio base path must be provided to use agents.");
+        break;
+      case "ollama":
+        if (!process.env.OLLAMA_BASE_PATH)
+          throw new Error("Ollama base path must be provided to use agents.");
+        break;
+      case "groq":
+        if (!process.env.GROQ_API_KEY)
+          throw new Error("Groq API key must be provided to use agents.");
+        break;
+      case "togetherai":
+        if (!process.env.TOGETHER_AI_API_KEY)
+          throw new Error("TogetherAI API key must be provided to use agents.");
+        break;
+      case "azure":
+        if (!process.env.AZURE_OPENAI_ENDPOINT || !process.env.AZURE_OPENAI_KEY)
+          throw new Error(
+            "Azure OpenAI API endpoint and key must be provided to use agents."
+          );
+        break;
+      case "koboldcpp":
+        if (!process.env.KOBOLD_CPP_BASE_PATH)
+          throw new Error(
+            "KoboldCPP must have a valid base path to use for the api."
+          );
+        break;
+      case "gemini":
+        if (!process.env.GEMINI_API_KEY)
+          throw new Error("Gemini API key must be provided to use agents.");
         break;
       case "groq":
         if (!process.env.GROQ_API_KEY)
@@ -118,6 +146,8 @@ class AgentHandler {
         return "claude-3-sonnet-20240229";
       case "lmstudio":
         return "server-default";
+      case "ollama":
+        return "llama3:latest";
       case "groq":
         return "llama3-70b-8192";
       case "togetherai":
