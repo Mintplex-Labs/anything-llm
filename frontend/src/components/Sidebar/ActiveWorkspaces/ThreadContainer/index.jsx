@@ -25,8 +25,17 @@ export default function ThreadContainer({ workspace }) {
   // Enable toggling of meta-key (ctrl on win and cmd/fn on others)
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (["Control", "Meta"].includes(event.key))
+      if (["Control", "Meta"].includes(event.key)) {
         setCtrlPressed((prev) => !prev);
+        // when toggling, unset bulk progress so
+        // previously marked threads that were never deleted
+        // come back to life.
+        setThreads((prev) =>
+          prev.map((t) => {
+            return { ...t, deleted: false };
+          })
+        );
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => {
