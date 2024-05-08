@@ -24,7 +24,9 @@
   </a>
 </p>
 
-[English](./README.md) · **简体中文**
+<p align="center">
+  <a href='/README.md'>English</a> · <b>简体中文</b>
+</p>
 
 <p align="center">
 👉 适用于桌面（Mac、Windows和Linux）的AnythingLLM！<a href="https://useanything.com/download" target="_blank">立即下载</a>
