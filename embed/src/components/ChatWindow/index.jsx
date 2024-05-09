@@ -32,6 +32,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
   }
 
   setEventDelegatorForCodeSnippets();
+
   return (
     <div className="flex flex-col h-full">
       <ChatWindowHeader
@@ -41,12 +42,14 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
         closeChat={closeChat}
         setChatHistory={setChatHistory}
       />
-      <ChatContainer
-        sessionId={sessionId}
-        settings={settings}
-        knownHistory={chatHistory}
-      />
-      <div className="-mt-2 pb-6 h-fit gap-y-2 z-10">
+      <div className="flex-grow overflow-y-auto">
+        <ChatContainer
+          sessionId={sessionId}
+          settings={settings}
+          knownHistory={chatHistory}
+        />
+      </div>
+      <div className="mt-4 pb-4 h-fit gap-y-2 z-10">
         <Sponsor settings={settings} />
         <ResetChat
           setChatHistory={setChatHistory}
@@ -64,6 +67,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
 function copyCodeSnippet(uuid) {
   const target = document.querySelector(`[data-code="${uuid}"]`);
   if (!target) return false;
+
   const markdown =
     target.parentElement?.parentElement?.querySelector(
       "pre:first-of-type"
@@ -71,6 +75,7 @@ function copyCodeSnippet(uuid) {
   if (!markdown) return false;
 
   window.navigator.clipboard.writeText(markdown);
+
   target.classList.add("text-green-500");
   const originalText = target.innerHTML;
   target.innerText = "Copied!";

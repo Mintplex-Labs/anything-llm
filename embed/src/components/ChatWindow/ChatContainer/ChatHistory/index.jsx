@@ -58,7 +58,7 @@ export default function ChatHistory({ settings = {}, history = [] }) {
 
   return (
     <div
-      className="pb-[30px] pt-[5px] rounded-lg px-2 h-full gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll md:max-h-[500px] max-h-[calc(100vh-200px)]"
+      className="pb-[30px] pt-[5px] rounded-lg px-2 h-full gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll md:max-h-[500px]"
       id="chat-history"
       ref={chatHistoryRef}
     >

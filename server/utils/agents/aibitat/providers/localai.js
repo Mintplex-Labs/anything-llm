@@ -4,17 +4,17 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the LMStudio provider.
+ * The provider for the LocalAI provider.
  */
-class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
+class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
+  constructor(config = {}) {
+    const { model = null } = config;
     super();
-    const model = process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
     const client = new OpenAI({
-      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
-      apiKey: null,
+      baseURL: process.env.LOCAL_AI_BASE_PATH,
+      apiKey: process.env.LOCAL_AI_API_KEY ?? null,
       maxRetries: 3,
     });
 
@@ -36,9 +36,11 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
+          throw new Error("LocalAI chat: No results!");
+
         if (result.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
+          throw new Error("LocalAI chat: No results length!");
+
         return result.choices[0].message.content;
       })
       .catch((_) => {
@@ -56,6 +58,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   async complete(messages, functions = null) {
     try {
       let completion;
+
       if (functions.length > 0) {
         const { toolCall, text } = await this.functionCall(
           messages,
@@ -75,6 +78,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
             cost: 0,
           };
         }
+
         completion = { content: text };
       }
 
@@ -89,10 +93,7 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
         completion = response.choices[0].message;
       }
 
-      return {
-        result: completion.content,
-        cost: 0,
-      };
+      return { result: completion.content, cost: 0 };
     } catch (error) {
       throw error;
     }
@@ -103,11 +104,11 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
    *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since LMStudio has no cost basis.
+   * Stubbed since LocalAI has no cost basis.
    */
   getCost(_usage) {
     return 0;
   }
 }
 
-module.exports = LMStudioProvider;
+module.exports = LocalAiProvider;

@@ -16,6 +16,7 @@ import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
+import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -40,6 +41,7 @@ import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
 import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
+import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -110,6 +112,13 @@ const LLMS = [
     logo: KoboldCPPLogo,
     options: (settings) => <KoboldCPPOptions settings={settings} />,
     description: "Run local LLMs using koboldcpp.",
+  },
+  {
+    name: "Oobabooga Web UI",
+    value: "textgenwebui",
+    logo: TextGenWebUILogo,
+    options: (settings) => <TextGenWebUIOptions settings={settings} />,
+    description: "Run local LLMs using Oobabooga's Text Generation Web UI.",
   },
   {
     name: "Together AI",

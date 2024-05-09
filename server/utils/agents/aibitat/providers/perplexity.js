@@ -4,17 +4,17 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the LMStudio provider.
+ * The provider for the Perplexity provider.
  */
-class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
+class PerplexityProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
+  constructor(config = {}) {
     super();
-    const model = process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
+    const { model = "sonar-small-online" } = config;
     const client = new OpenAI({
-      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
-      apiKey: null,
+      baseURL: "https://api.perplexity.ai",
+      apiKey: process.env.PERPLEXITY_API_KEY ?? null,
       maxRetries: 3,
     });
 
@@ -36,9 +36,9 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
+          throw new Error("Perplexity chat: No results!");
         if (result.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
+          throw new Error("Perplexity chat: No results length!");
         return result.choices[0].message.content;
       })
       .catch((_) => {
@@ -103,11 +103,10 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
    *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since LMStudio has no cost basis.
    */
   getCost(_usage) {
     return 0;
   }
 }
 
-module.exports = LMStudioProvider;
+module.exports = PerplexityProvider;

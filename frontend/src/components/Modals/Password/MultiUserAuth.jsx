@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import System from "../../../models/system";
 import { AUTH_TOKEN, AUTH_USER } from "../../../utils/constants";
-import useLogo from "../../../hooks/useLogo";
 import paths from "../../../utils/paths";
 import showToast from "@/utils/toast";
 import ModalWrapper from "@/components/ModalWrapper";
@@ -163,7 +162,6 @@ const ResetPasswordForm = ({ onSubmit }) => {
 export default function MultiUserAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { logo: _initLogo } = useLogo();
   const [recoveryCodes, setRecoveryCodes] = useState([]);
   const [downloadComplete, setDownloadComplete] = useState(false);
   const [user, setUser] = useState(null);

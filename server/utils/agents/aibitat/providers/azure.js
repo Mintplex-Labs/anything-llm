@@ -1,25 +1,22 @@
-const OpenAI = require("openai");
+const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the LMStudio provider.
+ * The provider for the Azure OpenAI API.
  */
-class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
+class AzureOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
   constructor(_config = {}) {
     super();
-    const model = process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
-    const client = new OpenAI({
-      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
-      apiKey: null,
-      maxRetries: 3,
-    });
-
+    const client = new OpenAIClient(
+      process.env.AZURE_OPENAI_ENDPOINT,
+      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
+    );
     this._client = client;
-    this.model = model;
+    this.model = process.env.OPEN_MODEL_PREF ?? "gpt-3.5-turbo";
     this.verbose = true;
   }
 
@@ -28,17 +25,15 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 
   async #handleFunctionCallChat({ messages = [] }) {
-    return await this.client.chat.completions
-      .create({
-        model: this.model,
+    return await this.client
+      .getChatCompletions(this.model, messages, {
         temperature: 0,
-        messages,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
+          throw new Error("Azure OpenAI chat: No results!");
         if (result.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
+          throw new Error("Azure OpenAI chat: No results length!");
         return result.choices[0].message.content;
       })
       .catch((_) => {
@@ -62,7 +57,6 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
           functions,
           this.#handleFunctionCallChat.bind(this)
         );
-
         if (toolCall !== null) {
           this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
           this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
@@ -77,22 +71,20 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
         }
         completion = { content: text };
       }
-
       if (!completion?.content) {
         this.providerLog(
           "Will assume chat completion without tool call inputs."
         );
-        const response = await this.client.chat.completions.create({
-          model: this.model,
-          messages: this.cleanMsgs(messages),
-        });
+        const response = await this.client.getChatCompletions(
+          this.model,
+          this.cleanMsgs(messages),
+          {
+            temperature: 0.7,
+          }
+        );
         completion = response.choices[0].message;
       }
-
-      return {
-        result: completion.content,
-        cost: 0,
-      };
+      return { result: completion.content, cost: 0 };
     } catch (error) {
       throw error;
     }
@@ -100,14 +92,14 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
 
   /**
    * Get the cost of the completion.
+   * Stubbed since Azure OpenAI has no public cost basis.
    *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since LMStudio has no cost basis.
    */
   getCost(_usage) {
     return 0;
   }
 }
 
-module.exports = LMStudioProvider;
+module.exports = AzureOpenAiProvider;

@@ -23,6 +23,9 @@ const DEFAULT_SETTINGS = {
   position: "bottom-right", // position of chat button/window
   assistantName: "AnythingLLM Chat Assistant", // default assistant name
   assistantIcon: null, // default assistant icon
+  windowHeight: null, // height of chat window in number:css-prefix
+  windowWidth: null, // width of chat window in number:css-prefix
+  textSize: null, // text size in px (number only)
 
   // behaviors
   openOnLoad: "off", // or "on"
