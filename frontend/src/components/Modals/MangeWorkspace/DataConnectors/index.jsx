@@ -1,13 +1,10 @@
-import ConnectorImages from "@/components/DataConnectorOption/media";
 import { MagnifyingGlass } from "@phosphor-icons/react";
-import GithubOptions from "./Connectors/Github";
-import YoutubeOptions from "./Connectors/Youtube";
-import ConfluenceOptions from "./Connectors/Confluence";
 import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
+import YoutubeOptions from "./Connectors/Youtube";
+import ConnectorImages from "@/components/DataConnectorOption/media"; // Added import statement
 
 export const DATA_CONNECTORS = {
-  
   "youtube-transcript": {
     name: "YouTube Transcript",
     image: ConnectorImages.youtube,
@@ -15,11 +12,10 @@ export const DATA_CONNECTORS = {
       "Import the transcription of an entire YouTube video from a link.",
     options: <YoutubeOptions />,
   },
-  
 };
 
 export default function DataConnectors() {
-  const [selectedConnector, setSelectedConnector] = useState("github");
+  const [selectedConnector, setSelectedConnector] = useState("youtube-transcript");
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredConnectors = Object.keys(DATA_CONNECTORS).filter((slug) =>
