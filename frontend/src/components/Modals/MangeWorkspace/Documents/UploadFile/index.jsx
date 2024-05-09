@@ -17,6 +17,7 @@ export default function UploadFile({
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSendLink = async (e) => {
     e.preventDefault();
@@ -60,6 +61,11 @@ export default function UploadFile({
       };
     });
     setFiles([...newAccepted, ...newRejected]);
+    if (newRejected.length > 0) {
+      setErrorMessage("Only txt and csv files are allowed.");
+    } else {
+      setErrorMessage("");
+    }
   };
 
   useEffect(() => {
@@ -73,6 +79,7 @@ export default function UploadFile({
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     disabled: !ready,
+    accept: ".txt, .csv",
   });
 
   return (
@@ -102,7 +109,7 @@ export default function UploadFile({
               Click to upload or drag and drop
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
-              Please upload txt files and csv's only. 
+              {errorMessage || "Please upload txt files and csv's only."}
             </div>
           </div>
         ) : (
