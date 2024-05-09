@@ -4,18 +4,22 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the LMStudio provider.
+ * The provider for the OpenRouter provider.
  */
-class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
+class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
+  constructor(config = {}) {
+    const { model = "openrouter/auto" } = config;
     super();
-    const model = process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
     const client = new OpenAI({
-      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
-      apiKey: null,
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey: process.env.OPENROUTER_API_KEY,
       maxRetries: 3,
+      defaultHeaders: {
+        "HTTP-Referer": "https://useanything.com",
+        "X-Title": "AnythingLLM",
+      },
     });
 
     this._client = client;
@@ -36,9 +40,9 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
+          throw new Error("OpenRouter chat: No results!");
         if (result.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
+          throw new Error("OpenRouter chat: No results length!");
         return result.choices[0].message.content;
       })
       .catch((_) => {
@@ -103,11 +107,11 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
    *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since LMStudio has no cost basis.
+   * Stubbed since OpenRouter has no cost basis.
    */
   getCost(_usage) {
     return 0;
   }
 }
 
-module.exports = LMStudioProvider;
+module.exports = OpenRouterProvider;

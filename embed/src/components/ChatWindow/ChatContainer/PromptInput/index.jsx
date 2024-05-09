@@ -46,7 +46,7 @@ export default function PromptInput({
   };
 
   return (
-    <div className="w-full absolute left-0 bottom-[25px] z-10 flex justify-center items-center px-5">
+    <div className="w-full sticky bottom-0 z-10 flex justify-center items-center px-5 bg-white">
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-y-1 rounded-t-lg w-full items-center justify-center"

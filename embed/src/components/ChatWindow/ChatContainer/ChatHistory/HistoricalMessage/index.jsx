@@ -13,6 +13,10 @@ const HistoricalMessage = forwardRef(
     { uuid = v4(), message, role, sources = [], error = false, sentAt },
     ref
   ) => {
+    const textSize = !!embedderSettings.settings.textSize
+      ? `text-[${embedderSettings.settings.textSize}px]`
+      : "text-sm";
+
     return (
       <div className="py-[5px]">
         {role === "assistant" && (
@@ -61,7 +65,7 @@ const HistoricalMessage = forwardRef(
                 </div>
               ) : (
                 <span
-                  className={`whitespace-pre-line font-medium flex flex-col gap-y-1 text-sm leading-[20px]`}
+                  className={`whitespace-pre-line font-medium flex flex-col gap-y-1 ${textSize} leading-[20px]`}
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(renderMarkdown(message)),
                   }}

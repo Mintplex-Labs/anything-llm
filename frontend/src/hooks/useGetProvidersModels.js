@@ -2,7 +2,12 @@ import System from "@/models/system";
 import { useEffect, useState } from "react";
 
 // Providers which cannot use this feature for workspace<>model selection
-export const DISABLED_PROVIDERS = ["azure", "lmstudio", "native"];
+export const DISABLED_PROVIDERS = [
+  "azure",
+  "lmstudio",
+  "native",
+  "textgenwebui",
+];
 const PROVIDER_DEFAULT_MODELS = {
   openai: [],
   gemini: ["gemini-pro", "gemini-1.5-pro-latest"],
@@ -34,6 +39,7 @@ const PROVIDER_DEFAULT_MODELS = {
     "command-nightly",
     "command-light-nightly",
   ],
+  textgenwebui: [],
 };
 
 // For togetherAi, which has a large model list - we subgroup the options
