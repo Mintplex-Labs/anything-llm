@@ -359,9 +359,9 @@ function adminEndpoints(app) {
           users_can_login_with_google:
             (await SystemSettings.get({ label: "users_can_login_with_google" }))
               ?.value === "true",
-          allowed_domain:
-            (await SystemSettings.get({ label: "allowed_domain" }))
-              ?.value,
+          allowed_domain: (
+            await SystemSettings.get({ label: "allowed_domain" })
+          )?.value,
         };
         response.status(200).json({ settings });
       } catch (e) {

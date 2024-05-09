@@ -362,8 +362,8 @@ const KEY_MAPPING = {
   // Social Providers
   GoogleAuthClientId: {
     envKey: "GOOGLE_AUTH_CLIENT_ID",
-    checks: [isNotEmpty]
-  }
+    checks: [isNotEmpty],
+  },
 };
 
 function isNotEmpty(input = "") {

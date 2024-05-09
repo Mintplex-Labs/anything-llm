@@ -143,7 +143,11 @@ const SystemSettings = {
       // --------------------------------------------------------
       // Social Providers
       // --------------------------------------------------------
-      GoogleAuthClientId: (await this.get({ label: "users_can_login_with_google" }))?.value === "true" ? process.env.GOOGLE_AUTH_CLIENT_ID : null,
+      GoogleAuthClientId:
+        (await this.get({ label: "users_can_login_with_google" }))?.value ===
+        "true"
+          ? process.env.GOOGLE_AUTH_CLIENT_ID
+          : null,
     };
   },
 

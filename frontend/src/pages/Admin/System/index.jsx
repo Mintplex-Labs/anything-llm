@@ -17,7 +17,7 @@ export default function AdminSystem() {
   const [canLoginWithGoogle, setCanLoginWithGoogle] = useState({
     enabled: false,
     clientId: null,
-    allowedDomain: null
+    allowedDomain: null,
   });
 
   const handleSubmit = async (e) => {
@@ -32,8 +32,8 @@ export default function AdminSystem() {
     });
     if (canLoginWithGoogle.enabled && canLoginWithGoogle.clientId) {
       await System.updateSystem({
-        GoogleAuthClientId: canLoginWithGoogle.clientId
-      })
+        GoogleAuthClientId: canLoginWithGoogle.clientId,
+      });
     }
     setSaving(false);
     setHasChanges(false);
@@ -54,7 +54,7 @@ export default function AdminSystem() {
         enabled: settings.users_can_login_with_google,
         clientId: settings.users_can_login_with_google ? "*".repeat(20) : "",
         allowedDomain: settings.allowed_domain,
-      })
+      });
     }
     fetchSettings();
   }, []);
@@ -174,7 +174,9 @@ export default function AdminSystem() {
                 Users can login with Google
               </h2>
               <p className="text-xs leading-[18px] font-base text-white/60">
-                Enable this option if you want users to be able to log in using their Google accounts. You can restrict access to users with emails from your organization's domain.
+                Enable this option if you want users to be able to log in using
+                their Google accounts. You can restrict access to users with
+                emails from your organization's domain.
               </p>
               <div className="mt-2">
                 <label className="relative inline-flex cursor-pointer items-center">
@@ -222,7 +224,8 @@ export default function AdminSystem() {
                   Organization domain
                 </label>
                 <p className="text-xs leading-[18px] font-base text-white/60">
-                  Restrict access to a specific domain, or leave empty to allow login with any Google account.
+                  Restrict access to a specific domain, or leave empty to allow
+                  login with any Google account.
                 </p>
                 <div className="relative mt-2">
                   <input
@@ -241,12 +244,10 @@ export default function AdminSystem() {
                     max={300}
                     className="w-1/3 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-slate-200 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                   />
-
                 </div>
               </div>
             )}
           </div>
-
         </form>
       </div>
     </div>

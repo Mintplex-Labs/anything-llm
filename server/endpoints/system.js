@@ -266,7 +266,7 @@ function systemEndpoints(app) {
 
   app.post("/social-login/:provider", async (request, response) => {
     try {
-      if (!await SystemSettings.isMultiUserMode()) {
+      if (!(await SystemSettings.isMultiUserMode())) {
         response.status(200).json({
           user: null,
           valid: false,
@@ -278,11 +278,13 @@ function systemEndpoints(app) {
 
       const { provider } = request.params;
       const data = reqBody(request);
-      const socialProvider = new SocialProvider(provider)
-      const { username } = await socialProvider.login(data)
+      const socialProvider = new SocialProvider(provider);
+      const { username } = await socialProvider.login(data);
       let user = await User.get({ username: String(username) });
 
-      const allowedDomain = (await SystemSettings.get({ label: "allowed_domain" }))?.value
+      const allowedDomain = (
+        await SystemSettings.get({ label: "allowed_domain" })
+      )?.value;
       if (allowedDomain && allowedDomain !== username.split("@")[1]) {
         await EventLogs.logEvent(
           "failed_login_domain_not_allowed",
@@ -302,7 +304,9 @@ function systemEndpoints(app) {
       }
 
       if (!user) {
-        const { user: newUser, error } = await User.createWithSocialProvider({ username: String(username) });
+        const { user: newUser, error } = await User.createWithSocialProvider({
+          username: String(username),
+        });
         if (!newUser) {
           await EventLogs.logEvent(
             "failed_login_error_creating_user",
@@ -328,7 +332,7 @@ function systemEndpoints(app) {
           },
           newUser.id
         );
-        user = newUser
+        user = newUser;
       }
 
       if (user.suspended) {
@@ -367,10 +371,7 @@ function systemEndpoints(app) {
       response.status(200).json({
         valid: true,
         user: user,
-        token: makeJWT(
-          { id: user.id, username: user.username },
-          "30d"
-        ),
+        token: makeJWT({ id: user.id, username: user.username }, "30d"),
         message: null,
       });
       return;
