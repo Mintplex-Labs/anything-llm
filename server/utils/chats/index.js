@@ -9,7 +9,7 @@ const VALID_COMMANDS = {
   "/reset": resetMemory,
 };
 
-function grepCommand(message) {
+function grepCommand(message, user = null) {
   const availableCommands = Object.keys(VALID_COMMANDS);
 
   for (let i = 0; i < availableCommands.length; i++) {

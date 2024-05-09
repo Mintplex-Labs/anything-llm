@@ -50,6 +50,7 @@ const {
   resetPassword,
   generateRecoveryCodes,
 } = require("../utils/PasswordRecovery");
+const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -1044,6 +1045,109 @@ function systemEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+  app.get(
+    "/system/slash-command-presets",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const multiUserMode = await SystemSettings.isMultiUserMode();
+        if (multiUserMode) {
+          const user = await userFromSession(request, response);
+          const userPresets = user
+            ? await SlashCommandPresets.getUserPresets(user.id)
+            : [];
+          response.status(200).json({ presets: userPresets });
+        } else {
+          const globalPresets = await SlashCommandPresets.getGlobalPresets();
+          response.status(200).json({ presets: globalPresets });
+        }
+      } catch (error) {
+        console.error("Error fetching slash command presets:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/slash-command-presets",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const multiUserMode = await SystemSettings.isMultiUserMode();
+        const { command, prompt, description } = reqBody(request);
+        const presetData = {
+          command,
+          prompt,
+          description,
+        };
+
+        if (multiUserMode) {
+          const user = await userFromSession(request, response);
+          presetData.userId = user ? user.id : null;
+        } else {
+          presetData.userId = null;
+        }
+
+        const preset = await SlashCommandPresets.create(presetData);
+        if (!preset) {
+          return response
+            .status(500)
+            .json({ message: "Failed to create preset" });
+        }
+        response.status(201).json({ preset });
+      } catch (error) {
+        console.error("Error creating slash command preset:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/slash-command-presets/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const { command, prompt, description } = reqBody(request);
+        const presetData = {
+          command,
+          prompt,
+          description,
+        };
+        const updatedPreset = await SlashCommandPresets.update(
+          Number(id),
+          presetData
+        );
+        if (!updatedPreset) {
+          return response.status(404).json({ message: "Preset not found" });
+        }
+        response.status(200).json({ preset: updatedPreset });
+      } catch (error) {
+        console.error("Error updating slash command preset:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.delete(
+    "/system/slash-command-presets/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const deleted = await SlashCommandPresets.delete(Number(id));
+        if (!deleted) {
+          return response
+            .status(500)
+            .json({ message: "Failed to delete preset" });
+        }
+        response.sendStatus(204);
+      } catch (error) {
+        console.error("Error deleting slash command preset:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
 }
 
 module.exports = { systemEndpoints };

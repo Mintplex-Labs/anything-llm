@@ -23,7 +23,7 @@ async function streamChatWithWorkspace(
   thread = null
 ) {
   const uuid = uuidv4();
-  const command = grepCommand(message);
+  const command = grepCommand(message, user);
 
   if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
     const data = await VALID_COMMANDS[command](
