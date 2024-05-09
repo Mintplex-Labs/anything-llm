@@ -1,6 +1,5 @@
 import { CloudArrowUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import showToast from "../../../../../utils/toast";
 import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";
 import { v4 } from "uuid";
@@ -17,6 +16,11 @@ export default function UploadFile({
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const showToast = (message, type) => {
+    alert(`${type.toUpperCase()}: ${message}`);
+  };
 
   const handleSendLink = async (e) => {
     e.preventDefault();
@@ -45,13 +49,20 @@ export default function UploadFile({
   const handleUploadError = (_msg) => null; // stubbed.
 
   const onDrop = async (acceptedFiles, rejections) => {
-    const newAccepted = acceptedFiles.map((file) => {
-      return {
-        uid: v4(),
-        file,
-      };
-    });
+    const newAccepted = acceptedFiles
+      .filter((file) => {
+        const allowedTypes = ["text/csv", "text/plain", "application/pdf"];
+        return allowedTypes.includes(file.type);
+      })
+      .map((file) => {
+        return {
+          uid: v4(),
+          file,
+        };
+      });
+
     const newRejected = rejections.map((file) => {
+      showToast(`File type ${file.file.type} is not allowed.`, "error");
       return {
         uid: v4(),
         file: file.file,
@@ -60,6 +71,11 @@ export default function UploadFile({
       };
     });
     setFiles([...newAccepted, ...newRejected]);
+    if (newRejected.length > 0) {
+      setErrorMessage("Only txt, pdf, and csv files are allowed.");
+    } else {
+      setErrorMessage("");
+    }
   };
 
   useEffect(() => {
@@ -73,6 +89,7 @@ export default function UploadFile({
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     disabled: !ready,
+    accept: ".txt, .csv, .pdf",
   });
 
   return (
@@ -102,7 +119,7 @@ export default function UploadFile({
               Click to upload or drag and drop
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
-              Please upload txt files and csv's only. 
+              {errorMessage || "Please upload txt, pdf, or csv files only."}
             </div>
           </div>
         ) : (

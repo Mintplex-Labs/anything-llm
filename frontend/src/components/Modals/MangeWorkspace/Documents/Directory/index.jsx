@@ -187,7 +187,7 @@ function Directory({
     <div className="px-8 pb-8">
       <div className="flex flex-col gap-y-6">
         <div className="flex items-center justify-between w-[560px] px-5 relative">
-          <h3 className="text-white text-base font-bold">My Documents</h3>
+          <h3 className="text-white text-base font-bold">My Documents (Only txt, pdf and csv files allowed)</h3>
           {showNewFolderInput ? (
             <div className="flex items-center gap-x-2 z-50">
               <input
