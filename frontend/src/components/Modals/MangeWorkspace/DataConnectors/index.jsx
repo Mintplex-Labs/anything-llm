@@ -7,13 +7,7 @@ import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
 
 export const DATA_CONNECTORS = {
-  github: {
-    name: "GitHub Repo",
-    image: ConnectorImages.github,
-    description:
-      "Import an entire public or private Github repository in a single click.",
-    options: <GithubOptions />,
-  },
+  
   "youtube-transcript": {
     name: "YouTube Transcript",
     image: ConnectorImages.youtube,
@@ -21,12 +15,7 @@ export const DATA_CONNECTORS = {
       "Import the transcription of an entire YouTube video from a link.",
     options: <YoutubeOptions />,
   },
-  confluence: {
-    name: "Confluence",
-    image: ConnectorImages.confluence,
-    description: "Import an entire Confluence page in a single click.",
-    options: <ConfluenceOptions />,
-  },
+  
 };
 
 export default function DataConnectors() {
