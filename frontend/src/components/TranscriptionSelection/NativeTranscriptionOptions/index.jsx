@@ -7,7 +7,7 @@ export default function NativeTranscriptionOptions() {
           <Gauge size={25} />
           <p className="text-sm">
             Using the local whisper model on machines with limited RAM or CPU
-            can stall AnythingLLM when processing media files.
+            can stall ChatLTT when processing media files.
             <br />
             We recommend at least 2GB of RAM and upload files &lt;10Mb.
             <br />

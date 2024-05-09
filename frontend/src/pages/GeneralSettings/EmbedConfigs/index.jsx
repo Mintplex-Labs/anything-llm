@@ -30,7 +30,7 @@ export default function EmbedConfigs() {
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
               Embeddable chat widgets are public facing chat interfaces that are
-              tied to a single workspace. These allow you to build workspaces
+              tied to a single hub. These allow you to build hubs
               that then you can publish to the world.
             </p>
           </div>

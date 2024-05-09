@@ -15,7 +15,7 @@ export default function EditingChatBubble({
   return (
     <div>
       <p className={`text-xs text-[#D3D4D4] ${isUser ? "text-right" : ""}`}>
-        {isUser ? "User" : "AnythingLLM Chat Assistant"}
+        {isUser ? "User" : "ChatLTT Assistant"}
       </p>
       <div
         className={`relative flex w-full mt-2 items-start ${

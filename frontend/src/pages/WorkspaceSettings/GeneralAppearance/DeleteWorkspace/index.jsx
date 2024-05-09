@@ -46,7 +46,7 @@ export default function DeleteWorkspace({ workspace }) {
       type="button"
       className="w-60 mt-[40px] transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-red-500/25 text-red-200 hover:text-white hover:bg-red-600 disabled:bg-red-600 disabled:text-red-200 disabled:animate-pulse"
     >
-      {deleting ? "Deleting Workspace..." : "Delete Workspace"}
+      {deleting ? "Deleting Hub..." : "Delete Hub"}
     </button>
   );
 }

@@ -29,7 +29,7 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
       <div className="relative w-[500px] max-h-full">
         <div className="relative bg-modal-gradient rounded-lg shadow-md border-2 border-accent">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-white/10">
-            <h3 className="text-xl font-semibold text-white">New Workspace</h3>
+            <h3 className="text-xl font-semibold text-white">New ChatLTT Hub</h3>
             <button
               onClick={hideModal}
               type="button"
@@ -46,14 +46,14 @@ export default function NewWorkspaceModal({ hideModal = noop }) {
                     htmlFor="name"
                     className="block mb-2 text-sm font-medium text-white"
                   >
-                    Workspace Name
+                    ChatLTT Hub Name
                   </label>
                   <input
                     name="name"
                     type="text"
                     id="name"
                     className="bg-zinc-900 w-full text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                    placeholder="My Workspace"
+                    placeholder="My ChatLTT Hub"
                     required={true}
                     autoComplete="off"
                   />

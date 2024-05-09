@@ -24,8 +24,8 @@ class OpenRouterLLM {
       baseURL: this.basePath,
       apiKey: process.env.OPENROUTER_API_KEY ?? null,
       defaultHeaders: {
-        "HTTP-Referer": "https://useanything.com",
-        "X-Title": "AnythingLLM",
+        "HTTP-Referer": "https://ChatLTT.com",
+        "X-Title": "ChatLTT",
       },
     });
     this.model =

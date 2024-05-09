@@ -102,7 +102,7 @@ export default function UploadFile({
               Click to upload or drag and drop
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
-              supports text files, csv's, spreadsheets, audio files, and more!
+              Please upload txt files and csv's only. 
             </div>
           </div>
         ) : (
@@ -147,7 +147,7 @@ export default function UploadFile({
       </form>
       <div className="mt-6 text-center text-white text-opacity-80 text-xs font-medium w-[560px]">
         These files will be uploaded to the document processor running on this
-        AnythingLLM instance. These files are not sent or shared with a third
+        ChatLTT instance. These files are not sent or shared with a third
         party.
       </div>
     </div>

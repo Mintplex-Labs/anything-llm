@@ -26,7 +26,7 @@ function apiDocumentEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'Upload a new file to AnythingLLM to be parsed and prepared for embedding.'
+    #swagger.description = 'Upload a new file to ChatLTT to be parsed and prepared for embedding.'
     #swagger.requestBody = {
       description: 'File to be uploaded.',
       required: true,
@@ -126,7 +126,7 @@ function apiDocumentEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'Upload a valid URL for AnythingLLM to scrape and prepare for embedding.'
+    #swagger.description = 'Upload a valid URL for ChatLTT to scrape and prepare for embedding.'
     #swagger.requestBody = {
       description: 'Link of web address to be scraped.',
       required: true,
@@ -136,7 +136,7 @@ function apiDocumentEndpoints(app) {
             schema: {
               type: 'object',
               example: {
-                "link": "https://useanything.com"
+                "link": "https://ChatLTT.com"
               }
             }
           }
@@ -161,7 +161,7 @@ function apiDocumentEndpoints(app) {
                   "chunkSource": "https:useanything.com.html",
                   "published": "1/16/2024, 3:46:33 PM",
                   "wordCount": 252,
-                  "pageContent": "AnythingLLM is the best....",
+                  "pageContent": "ChatLTT is the best....",
                   "token_count_estimate": 447,
                   "location": "custom-documents/url-useanything_com-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
                 }
@@ -234,7 +234,7 @@ function apiDocumentEndpoints(app) {
           schema: {
             type: 'object',
             example: {
-              "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
+              "textContent": "This is the raw text that will be saved as a document in ChatLTT.",
               "metadata": {
                 keyOne: "valueOne",
                 keyTwo: "valueTwo",
@@ -264,7 +264,7 @@ function apiDocumentEndpoints(app) {
                   "chunkSource": "no chunk source specified",
                   "published": "1/16/2024, 3:46:33 PM",
                   "wordCount": 252,
-                  "pageContent": "AnythingLLM is the best....",
+                  "pageContent": "ChatLTT is the best....",
                   "token_count_estimate": 447,
                   "location": "custom-documents/raw-my-doc-text-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
                 }
@@ -507,7 +507,7 @@ function apiDocumentEndpoints(app) {
   app.get("/v1/document/:docName", [validApiKey], async (request, response) => {
     /*
     #swagger.tags = ['Documents']
-    #swagger.description = 'Get a single document by its unique AnythingLLM document name'
+    #swagger.description = 'Get a single document by its unique ChatLTT document name'
     #swagger.parameters['docName'] = {
         in: 'path',
         description: 'Unique document name to find (name in /documents)',

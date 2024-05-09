@@ -80,7 +80,7 @@ export default function YoutubeOptions() {
             {loading && (
               <p className="text-xs text-white/50 max-w-sm">
                 Once complete, the transcription will be available for embedding
-                into workspaces in the document picker.
+                into ChatLTT Hub in the document picker.
               </p>
             )}
           </div>
