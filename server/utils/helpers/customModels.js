@@ -178,7 +178,7 @@ async function getKoboldCPPModels(basePath = null) {
   try {
     const { OpenAI: OpenAIApi } = require("openai");
     const openai = new OpenAIApi({
-      baseURL: basePath || process.env.LMSTUDIO_BASE_PATH,
+      baseURL: basePath || process.env.KOBOLD_CPP_BASE_PATH,
       apiKey: null,
     });
     const models = await openai.models

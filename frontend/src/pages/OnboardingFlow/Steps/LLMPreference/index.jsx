@@ -17,6 +17,7 @@ import OpenRouterLogo from "@/assets/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/assets/llmprovider/groq.png";
 import KoboldCPPLogo from "@/assets/llmprovider/koboldcpp.png";
 import CohereLogo from "@/assets/llmprovider/cohere.png";
+import TextGenWebUILogo from "@/assets/llmprovider/text-generation-webui.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -35,6 +36,7 @@ import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 import AnythingLLMOptions from "@/components/LLMSelection/AnythingLLMOptions";
 import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
 import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
+import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -124,6 +126,13 @@ const LLMS = [
     logo: KoboldCPPLogo,
     options: (settings) => <KoboldCPPOptions settings={settings} />,
     description: "Run local LLMs using koboldcpp.",
+  },
+  {
+    name: "Oobabooga Web UI",
+    value: "textgenwebui",
+    logo: TextGenWebUILogo,
+    options: (settings) => <TextGenWebUIOptions settings={settings} />,
+    description: "Run local LLMs using Oobabooga's Text Generation Web UI.",
   },
   {
     name: "Together AI",

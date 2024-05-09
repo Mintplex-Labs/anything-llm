@@ -24,6 +24,7 @@ import OpenRouterLogo from "@/assets/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/assets/llmprovider/groq.png";
 import KoboldCPPLogo from "@/assets/llmprovider/koboldcpp.png";
 import CohereLogo from "@/assets/llmprovider/cohere.png";
+import TextGenWebUILogo from "@/assets/llmprovider/text-generation-webui.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -43,6 +44,7 @@ import AnythingLLMOptions from "@/components/LLMSelection/AnythingLLMOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
 import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
+import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   _APP_PLATFORM.value !== "linux"
@@ -183,6 +185,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "KoboldCPPBasePath",
       "KoboldCPPTokenLimit",
     ],
+  },
+  {
+    name: "Oobabooga Web UI",
+    value: "textgenwebui",
+    logo: TextGenWebUILogo,
+    options: (settings) => <TextGenWebUIOptions settings={settings} />,
+    description: "Run local LLMs using Oobabooga's Text Generation Web UI.",
+    requiredConfig: ["TextGenWebUIBasePath", "TextGenWebUITokenLimit"],
   },
   {
     name: "Cohere",

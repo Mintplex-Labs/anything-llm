@@ -4,17 +4,21 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the LMStudio provider.
+ * The provider for the Mistral provider.
+ * Mistral limits what models can call tools and even when using those
+ * the model names change and dont match docs. When you do have the right model
+ * it still fails and is not truly OpenAI compatible so its easier to just wrap
+ * this with Untooled which 100% works since its just text & works far more reliably
  */
-class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
+class MistralProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
+  constructor(config = {}) {
     super();
-    const model = process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
+    const { model = "mistral-medium" } = config;
     const client = new OpenAI({
-      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
-      apiKey: null,
+      baseURL: "https://api.mistral.ai/v1",
+      apiKey: process.env.MISTRAL_API_KEY,
       maxRetries: 3,
     });
 
@@ -103,11 +107,10 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
    *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since LMStudio has no cost basis.
    */
   getCost(_usage) {
     return 0;
   }
 }
 
-module.exports = LMStudioProvider;
+module.exports = MistralProvider;

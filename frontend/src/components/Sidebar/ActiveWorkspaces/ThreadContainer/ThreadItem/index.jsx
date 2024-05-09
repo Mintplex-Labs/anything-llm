@@ -4,7 +4,13 @@ import { refocusApplication } from "@/ipc/node-api";
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
-import { DotsThree, PencilSimple, Trash, X } from "@phosphor-icons/react";
+import {
+  ArrowCounterClockwise,
+  DotsThree,
+  PencilSimple,
+  Trash,
+  X,
+} from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -19,7 +25,9 @@ export default function ThreadItem({
   thread,
   onUpdate,
   onRemove,
+  toggleMarkForDeletion,
   hasNext,
+  ctrlPressed = false,
 }) {
   const { slug } = useParams();
   const optionsContainer = useRef(null);
@@ -61,14 +69,30 @@ export default function ThreadItem({
       />
       <div className="flex w-full items-center justify-between pr-2 group relative">
         {thread.deleted ? (
-          <div className="w-full">
-            <p className={`text-left text-sm text-slate-400/50 italic`}>
-              deleted thread
-            </p>
+          <div className="w-full flex justify-between">
+            <div className="w-full">
+              <p className={`text-left text-sm text-slate-400/50 italic`}>
+                deleted thread
+              </p>
+            </div>
+            {ctrlPressed && (
+              <button
+                type="button"
+                className="border-none"
+                onClick={() => toggleMarkForDeletion(thread.id)}
+              >
+                <ArrowCounterClockwise
+                  className="text-zinc-300 hover:text-white"
+                  size={18}
+                />
+              </button>
+            )}
           </div>
         ) : (
           <Link
-            to={window.location.pathname === linkTo ? "#" : linkTo}
+            to={
+              window.location.pathname === linkTo || ctrlPressed ? "#" : linkTo
+            }
             className="w-full"
             aria-current={isActive ? "page" : ""}
           >
@@ -83,16 +107,31 @@ export default function ThreadItem({
         )}
         {!!thread.slug && !thread.deleted && (
           <div ref={optionsContainer}>
-            <div className="flex items-center w-fit group-hover:visible md:invisible gap-x-1">
+            {ctrlPressed ? (
               <button
                 type="button"
-                onClick={() => setShowOptions(!showOptions)}
                 className="border-none"
-                aria-label="Thread options"
+                aria-label="Thread mark for deletion"
+                onClick={() => toggleMarkForDeletion(thread.id)}
               >
-                <DotsThree className="text-slate-300" size={25} />
+                <X
+                  className="text-zinc-300 hover:text-white"
+                  weight="bold"
+                  size={18}
+                />
               </button>
-            </div>
+            ) : (
+              <div className="flex items-center w-fit group-hover:visible md:invisible gap-x-1">
+                <button
+                  type="button"
+                  className="border-none"
+                  onClick={() => setShowOptions(!showOptions)}
+                  aria-label="Thread options"
+                >
+                  <DotsThree className="text-slate-300" size={25} />
+                </button>
+              </div>
+            )}
             {showOptions && (
               <OptionsMenu
                 containerRef={optionsContainer}

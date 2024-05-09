@@ -6,13 +6,38 @@ import { CaretUpDown, Gauge, MagnifyingGlass, X } from "@phosphor-icons/react";
 import AgentModelSelection from "../AgentModelSelection";
 
 const ENABLED_PROVIDERS = [
+  "anythingllm_ollama",
   "openai",
   "anthropic",
   "lmstudio",
   "ollama",
-  "anythingllm_ollama",
+  "localai",
+  "groq",
+  "azure",
+  "koboldcpp",
+  "togetherai",
+  "openrouter",
+  "mistral",
+  "perplexity",
+  "textgenwebui",
+  // TODO: More agent support.
+  // "generic-openai", // Need to support text-input for agent model input for this to be enabled.
+  // "cohere",         // Has tool calling and will need to build explicit support
+  // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
+  // "gemini",         // Too rate limited and broken in several ways to use for agents.
 ];
-const WARN_PERFORMANCE = ["lmstudio", "ollama", "anythingllm_ollama"];
+const WARN_PERFORMANCE = [
+  "anythingllm_ollama",
+  "lmstudio",
+  "groq",
+  "azure",
+  "koboldcpp",
+  "ollama",
+  "localai",
+  "openrouter",
+  "generic-openai",
+  "textgenwebui",
+];
 
 const LLM_DEFAULT = {
   name: "Please make a selection",

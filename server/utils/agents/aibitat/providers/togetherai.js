@@ -4,17 +4,17 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the LMStudio provider.
+ * The provider for the TogetherAI provider.
  */
-class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
+class TogetherAIProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
+  constructor(config = {}) {
+    const { model = "mistralai/Mistral-7B-Instruct-v0.1" } = config;
     super();
-    const model = process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
     const client = new OpenAI({
-      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
-      apiKey: null,
+      baseURL: "https://api.together.xyz/v1",
+      apiKey: process.env.TOGETHER_AI_API_KEY,
       maxRetries: 3,
     });
 
@@ -110,4 +110,4 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
   }
 }
 
-module.exports = LMStudioProvider;
+module.exports = TogetherAIProvider;

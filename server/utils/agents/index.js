@@ -69,6 +69,12 @@ class AgentHandler {
 
   #checkSetup() {
     switch (this.provider) {
+      case "anythingllm_ollama":
+        if (!process.env.ANYTHING_LLM_OLLAMA_PORT)
+          throw new Error(
+            "AnythingLLM built-in LLM is not detected as running."
+          );
+        break;
       case "openai":
         if (!process.env.OPEN_AI_KEY)
           throw new Error("OpenAI API key must be provided to use agents.");
@@ -85,12 +91,59 @@ class AgentHandler {
         if (!process.env.OLLAMA_BASE_PATH)
           throw new Error("Ollama base path must be provided to use agents.");
         break;
-      case "anythingllm_ollama":
-        if (!process.env.ANYTHING_LLM_OLLAMA_PORT)
+      case "groq":
+        if (!process.env.GROQ_API_KEY)
+          throw new Error("Groq API key must be provided to use agents.");
+        break;
+      case "togetherai":
+        if (!process.env.TOGETHER_AI_API_KEY)
+          throw new Error("TogetherAI API key must be provided to use agents.");
+        break;
+      case "azure":
+        if (!process.env.AZURE_OPENAI_ENDPOINT || !process.env.AZURE_OPENAI_KEY)
           throw new Error(
-            "AnythingLLM built-in LLM is not detected as running."
+            "Azure OpenAI API endpoint and key must be provided to use agents."
           );
         break;
+      case "koboldcpp":
+        if (!process.env.KOBOLD_CPP_BASE_PATH)
+          throw new Error(
+            "KoboldCPP must have a valid base path to use for the api."
+          );
+        break;
+      case "localai":
+        if (!process.env.LOCAL_AI_BASE_PATH)
+          throw new Error(
+            "LocalAI must have a valid base path to use for the api."
+          );
+        break;
+      case "gemini":
+        if (!process.env.GEMINI_API_KEY)
+          throw new Error("Gemini API key must be provided to use agents.");
+        break;
+      case "openrouter":
+        if (!process.env.OPENROUTER_API_KEY)
+          throw new Error("OpenRouter API key must be provided to use agents.");
+        break;
+      case "mistral":
+        if (!process.env.MISTRAL_API_KEY)
+          throw new Error("Mistral API key must be provided to use agents.");
+        break;
+      case "generic-openai":
+        if (!process.env.GENERIC_OPEN_AI_BASE_PATH)
+          throw new Error("API base path must be provided to use agents.");
+        break;
+      case "perplexity":
+        if (!process.env.PERPLEXITY_API_KEY)
+          throw new Error("Perplexity API key must be provided to use agents.");
+        break;
+      case "textgenwebui":
+        if (!process.env.TEXT_GEN_WEB_UI_BASE_PATH)
+          throw new Error(
+            "TextWebGenUI API base path must be provided to use agents."
+          );
+        break;
+
       default:
         throw new Error("No provider found to power agent cluster.");
     }
@@ -98,6 +151,8 @@ class AgentHandler {
 
   #providerDefault() {
     switch (this.provider) {
+      case "anythingllm_ollama":
+        return "default";
       case "openai":
         return "gpt-3.5-turbo";
       case "anthropic":
@@ -106,8 +161,28 @@ class AgentHandler {
         return "server-default";
       case "ollama":
         return "llama3:latest";
-      case "anythingllm_ollama":
-        return "default";
+      case "groq":
+        return "llama3-70b-8192";
+      case "togetherai":
+        return "mistralai/Mixtral-8x7B-Instruct-v0.1";
+      case "azure":
+        return "gpt-3.5-turbo";
+      case "koboldcpp":
+        return null;
+      case "gemini":
+        return "gemini-pro";
+      case "localai":
+        return null;
+      case "openrouter":
+        return "openrouter/auto";
+      case "mistral":
+        return "mistral-medium";
+      case "generic-openai":
+        return "gpt-3.5-turbo";
+      case "perplexity":
+        return "sonar-small-online";
+      case "textgenwebui":
+        return null;
       default:
         return "unknown";
     }
