@@ -48,7 +48,7 @@ export default function UploadFile({
   const onDrop = async (acceptedFiles, rejections) => {
     const newAccepted = acceptedFiles
       .filter((file) => {
-        const allowedTypes = ["text/csv", "text/plain"];
+        const allowedTypes = ["text/csv", "text/plain", "application/pdf"];
         return allowedTypes.includes(file.type);
       })
       .map((file) => {
@@ -59,6 +59,7 @@ export default function UploadFile({
       });
 
     const newRejected = rejections.map((file) => {
+      showToast(`File type ${file.file.type} is not allowed.`, "error");
       return {
         uid: v4(),
         file: file.file,
@@ -68,7 +69,7 @@ export default function UploadFile({
     });
     setFiles([...newAccepted, ...newRejected]);
     if (newRejected.length > 0) {
-      setErrorMessage("Only txt and csv files are allowed.");
+      setErrorMessage("Only txt, pdf, and csv files are allowed.");
     } else {
       setErrorMessage("");
     }
@@ -85,7 +86,7 @@ export default function UploadFile({
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     disabled: !ready,
-    accept: ".txt, .csv",
+    accept: ".txt, .csv, .pdf",
   });
 
   return (
@@ -115,7 +116,7 @@ export default function UploadFile({
               Click to upload or drag and drop
             </div>
             <div className="text-white text-opacity-60 text-xs font-medium py-1">
-              {errorMessage || "Please upload txt files and csv's only."}
+              {errorMessage || "Please upload txt, pdf, or csv files only."}
             </div>
           </div>
         ) : (
