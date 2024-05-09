@@ -46,12 +46,18 @@ export default function UploadFile({
   const handleUploadError = (_msg) => null; // stubbed.
 
   const onDrop = async (acceptedFiles, rejections) => {
-    const newAccepted = acceptedFiles.map((file) => {
-      return {
-        uid: v4(),
-        file,
-      };
-    });
+    const newAccepted = acceptedFiles
+      .filter((file) => {
+        const allowedTypes = ["text/csv", "text/plain"];
+        return allowedTypes.includes(file.type);
+      })
+      .map((file) => {
+        return {
+          uid: v4(),
+          file,
+        };
+      });
+
     const newRejected = rejections.map((file) => {
       return {
         uid: v4(),
