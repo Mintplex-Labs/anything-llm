@@ -6,6 +6,7 @@ import showToast from "@/utils/toast";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
+import { useTranslation } from "react-i18next";
 
 const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
   const [username, setUsername] = useState("");
@@ -160,6 +161,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
 };
 
 export default function MultiUserAuth() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [recoveryCodes, setRecoveryCodes] = useState([]);
@@ -269,14 +271,14 @@ export default function MultiUserAuth() {
             <div className="flex items-center flex-col gap-y-4">
               <div className="flex gap-x-1">
                 <h3 className="text-md md:text-2xl font-bold text-white text-center white-space-nowrap hidden md:block">
-                  Welcome to
+                  {t("login.multi-user.welcome")}
                 </h3>
                 <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
                   AnythingLLM
                 </p>
               </div>
               <p className="text-sm text-white/90 text-center">
-                Sign in to your AnythingLLM account.
+                {t("login.sign-in")}
               </p>
             </div>
           </div>
@@ -318,7 +320,8 @@ export default function MultiUserAuth() {
               className="text-white text-sm flex gap-x-1 hover:text-[#46C8FF] hover:underline"
               onClick={handleResetPassword}
             >
-              Forgot password?<b>Reset</b>
+              {t("login.multi-user.forgot-pass")}?
+              <b>{t("login.multi-user.reset")}</b>
             </button>
           </div>
         </div>
