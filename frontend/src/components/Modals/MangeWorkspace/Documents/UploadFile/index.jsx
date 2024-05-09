@@ -1,6 +1,5 @@
 import { CloudArrowUp } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import showToast from "../../../../../utils/toast";
 import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";
 import { v4 } from "uuid";
@@ -18,6 +17,10 @@ export default function UploadFile({
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const showToast = (message, type) => {
+    alert(`${type.toUpperCase()}: ${message}`);
+  };
 
   const handleSendLink = async (e) => {
     e.preventDefault();
@@ -167,5 +170,3 @@ export default function UploadFile({
     </div>
   );
 }
-
-
