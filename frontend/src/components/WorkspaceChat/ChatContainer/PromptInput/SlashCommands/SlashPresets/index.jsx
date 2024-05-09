@@ -69,7 +69,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
           key={preset.id}
           onClick={() => {
             setShowing(false);
-            sendCommand(preset.command, true);
+            sendCommand(preset.command, false);
           }}
           className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-row justify-start"
         >

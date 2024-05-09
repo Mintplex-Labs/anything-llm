@@ -4,14 +4,33 @@ const { resetMemory } = require("./commands/reset");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { convertToPromptHistory } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
+const { SlashCommandPresets } = require("../../models/slashCommandsPresets");
+const { SystemSettings } = require("../../models/systemSettings");
 
 const VALID_COMMANDS = {
   "/reset": resetMemory,
 };
 
-function grepCommand(message, user = null) {
+async function grepCommand(message, user = null) {
   const availableCommands = Object.keys(VALID_COMMANDS);
+  let presets;
 
+  const multiUserMode = await SystemSettings.isMultiUserMode();
+  if (multiUserMode) {
+    presets = await SlashCommandPresets.getUserPresets(user.id);
+  } else {
+    presets = await SlashCommandPresets.getGlobalPresets();
+  }
+
+  // Check if the message starts with any preset command
+  const preset = presets.find((p) => message.startsWith(p.command));
+  if (preset) {
+    // Replace the preset command with the corresponding prompt
+    const updatedMessage = message.replace(preset.command, preset.prompt);
+    return updatedMessage;
+  }
+
+  // Check if the message starts with any built-in command
   for (let i = 0; i < availableCommands.length; i++) {
     const cmd = availableCommands[i];
     const re = new RegExp(`^(${cmd})`, "i");
@@ -20,7 +39,7 @@ function grepCommand(message, user = null) {
     }
   }
 
-  return null;
+  return message;
 }
 
 async function chatWithWorkspace(
@@ -31,10 +50,10 @@ async function chatWithWorkspace(
   thread = null
 ) {
   const uuid = uuidv4();
-  const command = grepCommand(message);
+  const updatedMessage = await grepCommand(message, user);
 
-  if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
-    return await VALID_COMMANDS[command](workspace, message, uuid, user);
+  if (Object.keys(VALID_COMMANDS).includes(updatedMessage)) {
+    return await VALID_COMMANDS[updatedMessage](workspace, message, uuid, user);
   }
 
   const LLMConnector = getLLMProvider({
@@ -164,7 +183,7 @@ async function chatWithWorkspace(
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt: chatPrompt(workspace),
-      userPrompt: message,
+      userPrompt: updatedMessage,
       contextTexts,
       chatHistory,
     },
