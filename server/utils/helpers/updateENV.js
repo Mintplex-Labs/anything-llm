@@ -358,6 +358,12 @@ const KEY_MAPPING = {
     envKey: "AGENT_SERPER_DEV_KEY",
     checks: [],
   },
+
+  // Social Providers
+  GoogleAuthClientId: {
+    envKey: "GOOGLE_AUTH_CLIENT_ID",
+    checks: [isNotEmpty]
+  }
 };
 
 function isNotEmpty(input = "") {
