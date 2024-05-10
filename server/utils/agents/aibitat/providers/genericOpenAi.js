@@ -24,6 +24,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = client;
     this.model = model;
     this.verbose = true;
+    this.maxTokens = process.env.GENERIC_OPEN_AI_MAX_TOKENS ?? 1024;
   }
 
   get client() {
@@ -36,6 +37,7 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         model: this.model,
         temperature: 0,
         messages,
+        max_tokens: this.maxTokens,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
