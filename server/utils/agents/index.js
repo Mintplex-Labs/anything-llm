@@ -35,7 +35,7 @@ class AgentHandler {
           {
             workspaceId: this.invocation.workspace_id,
             user_id: this.invocation.user_id || null,
-            thread_id: this.invocation.user_id || null,
+            thread_id: this.invocation.thread_id || null,
             include: true,
           },
           limit,

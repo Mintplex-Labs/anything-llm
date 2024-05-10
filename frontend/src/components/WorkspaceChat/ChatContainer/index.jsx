@@ -126,6 +126,15 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     loadingResponse === true && fetchReply();
   }, [loadingResponse, chatHistory, workspace]);
 
+  // If thread changed we need to abort the current socket if it exists.
+  // or else it will highjack the new threads agent session.
+  useEffect(() => {
+    if (!!socketId || !!websocket) {
+      window?.dispatchEvent(new CustomEvent(AGENT_SESSION_END));
+      websocket?.close();
+    }
+  }, [threadSlug]);
+
   // TODO: Simplify this WSS stuff
   useEffect(() => {
     function handleWSS() {
