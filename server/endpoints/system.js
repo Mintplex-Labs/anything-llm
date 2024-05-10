@@ -1045,22 +1045,15 @@ function systemEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
   app.get(
     "/system/slash-command-presets",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
-        const multiUserMode = await SystemSettings.isMultiUserMode();
-        if (multiUserMode) {
-          const user = await userFromSession(request, response);
-          const userPresets = user
-            ? await SlashCommandPresets.getUserPresets(user.id)
-            : [];
-          response.status(200).json({ presets: userPresets });
-        } else {
-          const globalPresets = await SlashCommandPresets.getGlobalPresets();
-          response.status(200).json({ presets: globalPresets });
-        }
+        const user = await userFromSession(request, response);
+        const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
+        response.status(200).json({ presets: userPresets });
       } catch (error) {
         console.error("Error fetching slash command presets:", error);
         response.status(500).json({ message: "Internal server error" });
@@ -1073,20 +1066,14 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
-        const multiUserMode = await SystemSettings.isMultiUserMode();
+        const user = await userFromSession(request, response);
         const { command, prompt, description } = reqBody(request);
         const presetData = {
-          command,
-          prompt,
-          description,
+          command: String(command),
+          prompt: String(prompt),
+          description: String(description),
+          userId: user?.id ?? null,
         };
-
-        if (multiUserMode) {
-          const user = await userFromSession(request, response);
-          presetData.userId = user ? user.id : null;
-        } else {
-          presetData.userId = null;
-        }
 
         const preset = await SlashCommandPresets.create(presetData);
         if (!preset) {
@@ -1103,25 +1090,30 @@ function systemEndpoints(app) {
   );
 
   app.post(
-    "/system/slash-command-presets/:id",
+    "/system/slash-command-presets/:slashCommandId",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
-        const { id } = request.params;
+        const user = await userFromSession(request, response);
+        const { slashCommandId } = request.params;
         const { command, prompt, description } = reqBody(request);
-        const presetData = {
-          command,
-          prompt,
-          description,
-        };
-        const updatedPreset = await SlashCommandPresets.update(
-          Number(id),
-          presetData
-        );
-        if (!updatedPreset) {
+
+        // Valid user running owns the preset if user session is valid.
+        const ownsPreset = await SlashCommandPresets.get({
+          userId: user?.id ?? null,
+          id: Number(slashCommandId),
+        });
+        if (!ownsPreset)
           return response.status(404).json({ message: "Preset not found" });
-        }
-        response.status(200).json({ preset: updatedPreset });
+
+        const updates = {
+          command: String(command),
+          prompt: String(prompt),
+          description: String(description),
+        };
+
+        await SlashCommandPresets.update(Number(slashCommandId), updates);
+        response.status(200).json({ preset: { ...ownsPreset, ...updates } });
       } catch (error) {
         console.error("Error updating slash command preset:", error);
         response.status(500).json({ message: "Internal server error" });
@@ -1130,17 +1122,24 @@ function systemEndpoints(app) {
   );
 
   app.delete(
-    "/system/slash-command-presets/:id",
+    "/system/slash-command-presets/:slashCommandId",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
-        const { id } = request.params;
-        const deleted = await SlashCommandPresets.delete(Number(id));
-        if (!deleted) {
+        const { slashCommandId } = request.params;
+        const user = await userFromSession(request, response);
+
+        // Valid user running owns the preset if user session is valid.
+        const ownsPreset = await SlashCommandPresets.get({
+          userId: user?.id ?? null,
+          id: Number(slashCommandId),
+        });
+        if (!ownsPreset)
           return response
-            .status(500)
+            .status(403)
             .json({ message: "Failed to delete preset" });
-        }
+
+        await SlashCommandPresets.delete(Number(slashCommandId));
         response.sendStatus(204);
       } catch (error) {
         console.error("Error deleting slash command preset:", error);

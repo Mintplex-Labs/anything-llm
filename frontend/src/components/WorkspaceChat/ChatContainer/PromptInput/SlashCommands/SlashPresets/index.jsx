@@ -6,6 +6,7 @@ import { useModal } from "@/hooks/useModal";
 import System from "@/models/system";
 import { DotsThree, Plus } from "@phosphor-icons/react";
 
+export const CMD_REGEX = new RegExp(/[^a-zA-Z0-9_-]/g);
 export default function SlashPresets({ setShowing, sendCommand }) {
   const isActiveAgentSession = useIsAgentSessionActive();
   const {
@@ -24,6 +25,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
   useEffect(() => {
     fetchPresets();
   }, []);
+  if (isActiveAgentSession) return null;
 
   const fetchPresets = async () => {
     const presets = await System.getSlashCommandPresets();
@@ -60,8 +62,6 @@ export default function SlashPresets({ setShowing, sendCommand }) {
     closeEditModal();
   };
 
-  if (isActiveAgentSession) return null; // Cannot reset during active agent chat
-
   return (
     <>
       {presets.map((preset) => (
@@ -69,7 +69,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
           key={preset.id}
           onClick={() => {
             setShowing(false);
-            sendCommand(preset.command, false);
+            sendCommand(`${preset.command} `, false);
           }}
           className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-row justify-start"
         >
@@ -96,12 +96,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
       >
         <div className="w-full flex-row flex pointer-events-none items-center gap-2">
           <Plus size={24} weight="fill" fill="white" />
-          <div className="text-white text-sm font-medium">
-            Add New Preset{" "}
-            <p className="text-white text-opacity-60 text-sm inline">
-              (or use /new)
-            </p>
-          </div>
+          <div className="text-white text-sm font-medium">Add New Preset </div>
         </div>
       </button>
       <AddPresetModal
@@ -109,13 +104,15 @@ export default function SlashPresets({ setShowing, sendCommand }) {
         onClose={closeAddModal}
         onSave={handleSavePreset}
       />
-      <EditPresetModal
-        isOpen={isEditModalOpen}
-        onClose={closeEditModal}
-        onSave={handleUpdatePreset}
-        onDelete={handleDeletePreset}
-        preset={selectedPreset}
-      />
+      {selectedPreset && (
+        <EditPresetModal
+          isOpen={isEditModalOpen}
+          onClose={closeEditModal}
+          onSave={handleUpdatePreset}
+          onDelete={handleDeletePreset}
+          preset={selectedPreset}
+        />
+      )}
     </>
   );
 }

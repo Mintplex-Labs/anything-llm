@@ -26,7 +26,7 @@ const SlashCommandPresets = {
     }
   },
 
-  create: async function (presetData) {
+  create: async function (presetData = {}) {
     try {
       const preset = await prisma.slash_command_presets.create({
         data: presetData,
@@ -38,13 +38,14 @@ const SlashCommandPresets = {
     }
   },
 
-  getUserPresets: async function (userId) {
+  getUserPresets: async function (userId = null) {
     try {
-      const presets = await prisma.slash_command_presets.findMany({
-        where: { userId: userId },
-        orderBy: { createdAt: "asc" },
-      });
-      return presets.map((preset) => ({
+      return (
+        await prisma.slash_command_presets.findMany({
+          where: { userId: !!userId ? Number(userId) : null },
+          orderBy: { createdAt: "asc" },
+        })
+      )?.map((preset) => ({
         id: preset.id,
         command: preset.command,
         prompt: preset.prompt,
@@ -56,28 +57,10 @@ const SlashCommandPresets = {
     }
   },
 
-  getGlobalPresets: async function () {
-    try {
-      const presets = await prisma.slash_command_presets.findMany({
-        where: { userId: null },
-        orderBy: { createdAt: "asc" },
-      });
-      return presets.map((preset) => ({
-        id: preset.id,
-        command: preset.command,
-        prompt: preset.prompt,
-        description: preset.description,
-      }));
-    } catch (error) {
-      console.error("Failed to get global presets", error.message);
-      return [];
-    }
-  },
-
-  update: async function (presetId, presetData) {
+  update: async function (presetId = null, presetData = {}) {
     try {
       const preset = await prisma.slash_command_presets.update({
-        where: { id: presetId },
+        where: { id: Number(presetId) },
         data: presetData,
       });
       return preset;
@@ -86,10 +69,11 @@ const SlashCommandPresets = {
       return null;
     }
   },
-  delete: async function (presetId) {
+
+  delete: async function (presetId = null) {
     try {
       await prisma.slash_command_presets.delete({
-        where: { id: presetId },
+        where: { id: Number(presetId) },
       });
       return true;
     } catch (error) {

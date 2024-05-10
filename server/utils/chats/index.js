@@ -5,28 +5,23 @@ const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { convertToPromptHistory } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
 const { SlashCommandPresets } = require("../../models/slashCommandsPresets");
-const { SystemSettings } = require("../../models/systemSettings");
 
 const VALID_COMMANDS = {
   "/reset": resetMemory,
 };
 
 async function grepCommand(message, user = null) {
+  const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
   const availableCommands = Object.keys(VALID_COMMANDS);
-  let presets;
-
-  const multiUserMode = await SystemSettings.isMultiUserMode();
-  if (multiUserMode) {
-    presets = await SlashCommandPresets.getUserPresets(user.id);
-  } else {
-    presets = await SlashCommandPresets.getGlobalPresets();
-  }
 
   // Check if the message starts with any preset command
-  const preset = presets.find((p) => message.startsWith(p.command));
-  if (preset) {
+  const foundPreset = userPresets.find((p) => message.startsWith(p.command));
+  if (!!foundPreset) {
     // Replace the preset command with the corresponding prompt
-    const updatedMessage = message.replace(preset.command, preset.prompt);
+    const updatedMessage = message.replace(
+      foundPreset.command,
+      foundPreset.prompt
+    );
     return updatedMessage;
   }
 

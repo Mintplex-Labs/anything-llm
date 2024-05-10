@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
+import { CMD_REGEX } from ".";
 
 export default function EditPresetModal({
   isOpen,
@@ -9,29 +10,23 @@ export default function EditPresetModal({
   onDelete,
   preset,
 }) {
-  const [command, setCommand] = useState("");
-  const [prompt, setPrompt] = useState("");
-  const [description, setDescription] = useState("");
+  const [command, setCommand] = useState(preset?.command?.slice(1) || "");
   const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    if (preset) {
-      setCommand(preset.command.slice(1));
-      setPrompt(preset.prompt);
-      setDescription(preset.description);
-    }
-  }, [preset]);
-
-  const handleSave = () => {
-    const sanitizedCommand = command.replace(/[^a-zA-Z0-9]/g, "");
-    onSave({ id: preset.id, command: `/${sanitizedCommand}`, prompt, description });
-    setCommand("");
-    setPrompt("");
-    setDescription("");
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+    const sanitizedCommand = command.replace(CMD_REGEX, "");
+    onSave({
+      id: preset.id,
+      command: `/${sanitizedCommand}`,
+      prompt: form.get("prompt"),
+      description: form.get("description"),
+    });
   };
 
   const handleCommandChange = (e) => {
-    const value = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
+    const value = e.target.value.replace(CMD_REGEX, "");
     setCommand(value);
   };
 
@@ -39,9 +34,7 @@ export default function EditPresetModal({
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this preset?"
     );
-    if (!confirmDelete) {
-      return;
-    }
+    if (!confirmDelete) return;
 
     setDeleting(true);
     await onDelete(preset.id);
@@ -51,7 +44,10 @@ export default function EditPresetModal({
 
   return (
     <ModalWrapper isOpen={isOpen}>
-      <div className="relative w-full max-w-2xl max-h-full">
+      <form
+        onSubmit={handleSubmit}
+        className="relative w-full max-w-2xl max-h-full"
+      >
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
             <h3 className="text-xl font-semibold text-white">Edit Preset</h3>
@@ -76,11 +72,11 @@ export default function EditPresetModal({
                   <span className="text-white text-sm mr-2 font-bold">/</span>
                   <input
                     type="text"
-                    id="command"
-                    placeholder="test"
+                    name="command"
+                    placeholder="your-command"
                     value={command}
                     onChange={handleCommandChange}
-                    className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   />
                 </div>
               </div>
@@ -92,10 +88,9 @@ export default function EditPresetModal({
                   Prompt
                 </label>
                 <textarea
-                  id="prompt"
+                  name="prompt"
                   placeholder="This is a test prompt. Please respond with a poem about LLMs."
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
+                  defaultValue={preset.prompt}
                   className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 ></textarea>
               </div>
@@ -108,10 +103,9 @@ export default function EditPresetModal({
                 </label>
                 <input
                   type="text"
-                  id="description"
+                  name="description"
+                  defaultValue={preset.description}
                   placeholder="Responds with a poem about LLMs."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
                   className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 />
               </div>
@@ -137,7 +131,7 @@ export default function EditPresetModal({
                 Cancel
               </button>
               <button
-                onClick={handleSave}
+                type="submit"
                 className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
               >
                 Save
@@ -145,7 +139,7 @@ export default function EditPresetModal({
             </div>
           </div>
         </div>
-      </div>
+      </form>
     </ModalWrapper>
   );
 }
