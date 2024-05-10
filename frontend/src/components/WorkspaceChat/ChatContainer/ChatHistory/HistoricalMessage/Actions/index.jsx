@@ -123,14 +123,10 @@ function CopyMessage({ message }) {
 }
 
 function RegenerateMessage({ regenerateMessage, chatId }) {
-  async function handleRegenerateMessage() {
-    await regenerateMessage(chatId);
-  }
-
   return (
     <div className="mt-3 relative">
       <button
-        onClick={handleRegenerateMessage}
+        onClick={() => regenerateMessage(chatId)}
         data-tooltip-id="regenerate-assistant-text"
         data-tooltip-content="Regenerate response"
         className="border-none text-zinc-300"
