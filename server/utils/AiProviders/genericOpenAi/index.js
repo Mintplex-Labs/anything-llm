@@ -18,6 +18,7 @@ class GenericOpenAiLLM {
     });
     this.model =
       modelPreference ?? process.env.GENERIC_OPEN_AI_MODEL_PREF ?? null;
+    this.maxTokens = process.env.GENERIC_OPEN_AI_MAX_TOKENS ?? 1024;
     if (!this.model)
       throw new Error("GenericOpenAI must have a valid model set.");
     this.limits = {
@@ -94,6 +95,7 @@ class GenericOpenAiLLM {
         model: this.model,
         messages,
         temperature,
+        max_tokens: this.maxTokens,
       })
       .catch((e) => {
         throw new Error(e.response.data.error.message);
@@ -110,6 +112,7 @@ class GenericOpenAiLLM {
       stream: true,
       messages,
       temperature,
+      max_tokens: this.maxTokens,
     });
     return streamRequest;
   }
