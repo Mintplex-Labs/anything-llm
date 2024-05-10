@@ -23,10 +23,10 @@ async function streamChatWithWorkspace(
   thread = null
 ) {
   const uuid = uuidv4();
-  const command = grepCommand(message);
+  const updatedMessage = await grepCommand(message, user);
 
-  if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
-    const data = await VALID_COMMANDS[command](
+  if (Object.keys(VALID_COMMANDS).includes(updatedMessage)) {
+    const data = await VALID_COMMANDS[updatedMessage](
       workspace,
       message,
       uuid,
@@ -185,7 +185,7 @@ async function streamChatWithWorkspace(
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt: chatPrompt(workspace),
-      userPrompt: message,
+      userPrompt: updatedMessage,
       contextTexts,
       chatHistory,
     },

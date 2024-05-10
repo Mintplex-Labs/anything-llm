@@ -4,23 +4,27 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the LMStudio provider.
+ * The provider for the Generic OpenAI provider.
+ * Since we cannot promise the generic provider even supports tool calling
+ * which is nearly 100% likely it does not, we can just wrap it in untooled
+ * which often is far better anyway.
  */
-class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
+class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
-  constructor(_config = {}) {
+  constructor(config = {}) {
     super();
-    const model = process.env.LMSTUDIO_MODEL_PREF || "Loaded from Chat UI";
+    const { model = "gpt-3.5-turbo" } = config;
     const client = new OpenAI({
-      baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""), // here is the URL to your LMStudio instance
-      apiKey: null,
+      baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
+      apiKey: process.env.GENERIC_OPEN_AI_API_KEY ?? null,
       maxRetries: 3,
     });
 
     this._client = client;
     this.model = model;
     this.verbose = true;
+    this.maxTokens = process.env.GENERIC_OPEN_AI_MAX_TOKENS ?? 1024;
   }
 
   get client() {
@@ -33,12 +37,13 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
         model: this.model,
         temperature: 0,
         messages,
+        max_tokens: this.maxTokens,
       })
       .then((result) => {
         if (!result.hasOwnProperty("choices"))
-          throw new Error("LMStudio chat: No results!");
+          throw new Error("Generic OpenAI chat: No results!");
         if (result.choices.length === 0)
-          throw new Error("LMStudio chat: No results length!");
+          throw new Error("Generic OpenAI chat: No results length!");
         return result.choices[0].message.content;
       })
       .catch((_) => {
@@ -103,11 +108,10 @@ class LMStudioProvider extends InheritMultiple([Provider, UnTooled]) {
    *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since LMStudio has no cost basis.
    */
   getCost(_usage) {
     return 0;
   }
 }
 
-module.exports = LMStudioProvider;
+module.exports = GenericOpenAiProvider;

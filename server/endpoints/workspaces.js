@@ -372,6 +372,37 @@ function workspaceEndpoints(app) {
     }
   );
 
+  app.delete(
+    "/workspace/:slug/delete-chats",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const { chatIds = [] } = reqBody(request);
+        const user = await userFromSession(request, response);
+        const workspace = response.locals.workspace;
+
+        if (!workspace || !Array.isArray(chatIds)) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        // This works for both workspace and threads.
+        // we simplify this by just looking at workspace<>user overlap
+        // since they are all on the same table.
+        await WorkspaceChats.delete({
+          id: { in: chatIds.map((id) => Number(id)) },
+          user_id: user?.id ?? null,
+          workspaceId: workspace.id,
+        });
+
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
   app.post(
     "/workspace/:slug/chat-feedback/:chatId",
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],

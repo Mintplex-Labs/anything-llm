@@ -173,6 +173,10 @@ const KEY_MAPPING = {
     envKey: "GENERIC_OPEN_AI_API_KEY",
     checks: [],
   },
+  GenericOpenAiMaxTokens: {
+    envKey: "GENERIC_OPEN_AI_MAX_TOKENS",
+    checks: [nonZero],
+  },
 
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
