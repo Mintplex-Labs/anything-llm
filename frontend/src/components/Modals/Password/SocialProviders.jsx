@@ -52,6 +52,7 @@ export default function SocialProviders({
             onError={() => {
               setError("Something went wrong");
             }}
+            theme={"filled_black"}
           />
           {/* Add here other social providers */}
           <p className="text-sm text-white/90 text-center my-2">or</p>
