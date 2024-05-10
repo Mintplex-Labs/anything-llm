@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import ChatHistory from "./ChatHistory";
-import PromptInput from "./PromptInput";
+import PromptInput, { PROMPT_INPUT_EVENT } from "./PromptInput";
 import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { isMobile } from "react-device-detect";
@@ -20,9 +20,18 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
+
+  // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
+
+  // Emit an update to the sate of the prompt input without directly
+  // passing a prop in so that it does not re-render constantly.
+  function setMessageEmit(messageContent = '') {
+    setMessage(messageContent);
+    window.dispatchEvent(new CustomEvent(PROMPT_INPUT_EVENT, { detail: messageContent }))
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -41,14 +50,14 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     ];
 
     setChatHistory(prevChatHistory);
-    setMessage("");
+    setMessageEmit("");
     setLoadingResponse(true);
   };
 
   const sendCommand = async (command, submit = false) => {
     if (!command || command === "") return false;
     if (!submit) {
-      setMessage(command);
+      setMessageEmit(command);
       return;
     }
 
@@ -65,7 +74,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     ];
 
     setChatHistory(prevChatHistory);
-    setMessage("");
+    setMessageEmit("");
     setLoadingResponse(true);
   };
 
@@ -208,7 +217,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           sendCommand={sendCommand}
         />
         <PromptInput
-          message={message}
           submit={handleSubmit}
           onChange={handleMessageChange}
           inputDisabled={loadingResponse}
