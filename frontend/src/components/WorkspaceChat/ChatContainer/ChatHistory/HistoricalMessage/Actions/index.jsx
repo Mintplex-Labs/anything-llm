@@ -133,7 +133,7 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
         onClick={handleRegenerateMessage}
         data-tooltip-id="regenerate-assistant-text"
         data-tooltip-content="Regenerate response"
-        className="text-zinc-300"
+        className="border-none text-zinc-300"
         aria-label="Regenerate"
       >
         <ArrowsClockwise size={18} className="mb-1" weight="fill" />

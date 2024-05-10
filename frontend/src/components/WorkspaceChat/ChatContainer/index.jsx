@@ -45,24 +45,47 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     setLoadingResponse(true);
   };
 
-  const sendCommand = async (command, submit = false) => {
+  const regenerateAssistantMessage = (chatId) => {
+    const updatedHistory = chatHistory.slice(0, -1);
+    const lastUserMessage = updatedHistory.slice(-1)[0];
+    Workspace.deleteChats(workspace.slug, [chatId])
+      .then(() => sendCommand(lastUserMessage.content, true, updatedHistory))
+      .catch((e) => console.error(e))
+  };
+
+  const sendCommand = async (command, submit = false, history = []) => {
     if (!command || command === "") return false;
     if (!submit) {
       setMessage(command);
       return;
     }
 
-    const prevChatHistory = [
-      ...chatHistory,
-      { content: command, role: "user" },
-      {
-        content: "",
-        role: "assistant",
-        pending: true,
-        userMessage: command,
-        animate: true,
-      },
-    ];
+    let prevChatHistory;
+    if (history.length > 0) { // use pre-determined history chain.
+      prevChatHistory = [
+        ...history,
+        {
+          content: "",
+          role: "assistant",
+          pending: true,
+          userMessage: command,
+          animate: true,
+        },
+      ];
+
+    } else {
+      prevChatHistory = [
+        ...chatHistory,
+        { content: command, role: "user" },
+        {
+          content: "",
+          role: "assistant",
+          pending: true,
+          userMessage: command,
+          animate: true,
+        },
+      ];
+    }
 
     setChatHistory(prevChatHistory);
     setMessage("");
@@ -194,40 +217,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     }
     handleWSS();
   }, [socketId]);
-
-  const regenerateAssistantMessage = async (chatId) => {
-    const updatedHistory = chatHistory.slice(0, -1);
-    const lastUserMessage = updatedHistory[updatedHistory.length - 1].content;
-
-    const deleted = await Workspace.deleteChats(workspace.slug, [chatId]);
-    if (deleted) {
-      setChatHistory(updatedHistory);
-      sendCommandWithHistory(lastUserMessage, updatedHistory, true);
-    }
-  };
-
-  const sendCommandWithHistory = async (command, history, submit = false) => {
-    if (!command || command === "") return false;
-    if (!submit) {
-      setMessage(command);
-      return;
-    }
-
-    const prevChatHistory = [
-      ...history,
-      {
-        content: "",
-        role: "assistant",
-        pending: true,
-        userMessage: command,
-        animate: true,
-      },
-    ];
-
-    setChatHistory(prevChatHistory);
-    setMessage("");
-    setLoadingResponse(true);
-  };
 
   return (
     <div

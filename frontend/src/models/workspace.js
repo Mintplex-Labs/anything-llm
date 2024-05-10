@@ -75,7 +75,7 @@ const Workspace = {
     return result;
   },
 
-  deleteChats: async function (slug, chatIds) {
+  deleteChats: async function (slug = '', chatIds = []) {
     return await fetch(`${API_BASE}/workspace/${slug}/delete-chats`, {
       method: "DELETE",
       headers: baseHeaders(),
@@ -143,7 +143,7 @@ const Workspace = {
         try {
           const chatResult = JSON.parse(msg.data);
           handleChat(chatResult);
-        } catch {}
+        } catch { }
       },
       onerror(err) {
         handleChat({
