@@ -19,6 +19,8 @@ const HistoricalMessage = ({
   error = false,
   feedbackScore = null,
   chatId = null,
+  isLastMessage = false,
+  regenerateMessage,
 }) => {
   return (
     <div
@@ -59,6 +61,8 @@ const HistoricalMessage = ({
               feedbackScore={feedbackScore}
               chatId={chatId}
               slug={workspace?.slug}
+              isLastMessage={isLastMessage}
+              regenerateMessage={regenerateMessage}
             />
           </div>
         )}

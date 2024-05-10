@@ -372,6 +372,36 @@ function workspaceEndpoints(app) {
     }
   );
 
+  app.delete(
+    "/workspace/:slug/delete-chats",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { chatIds } = reqBody(request);
+        const { slug } = request.params;
+        const user = await userFromSession(request, response);
+        const workspace = multiUserMode(response)
+          ? await Workspace.getWithUser(user, { slug })
+          : await Workspace.get({ slug });
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        await WorkspaceChats.delete({
+          id: { in: chatIds },
+          workspaceId: workspace.id,
+        });
+
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
   app.post(
     "/workspace/:slug/chat-feedback/:chatId",
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],

@@ -195,6 +195,40 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     handleWSS();
   }, [socketId]);
 
+  const regenerateAssistantMessage = async (chatId) => {
+    const updatedHistory = chatHistory.slice(0, -1);
+    const lastUserMessage = updatedHistory[updatedHistory.length - 1].content;
+
+    const deleted = await Workspace.deleteChats(workspace.slug, [chatId]);
+    if (deleted) {
+      setChatHistory(updatedHistory);
+      sendCommandWithHistory(lastUserMessage, updatedHistory, true);
+    }
+  };
+
+  const sendCommandWithHistory = async (command, history, submit = false) => {
+    if (!command || command === "") return false;
+    if (!submit) {
+      setMessage(command);
+      return;
+    }
+
+    const prevChatHistory = [
+      ...history,
+      {
+        content: "",
+        role: "assistant",
+        pending: true,
+        userMessage: command,
+        animate: true,
+      },
+    ];
+
+    setChatHistory(prevChatHistory);
+    setMessage("");
+    setLoadingResponse(true);
+  };
+
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
@@ -206,6 +240,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           history={chatHistory}
           workspace={workspace}
           sendCommand={sendCommand}
+          regenerateAssistantMessage={regenerateAssistantMessage}
         />
         <PromptInput
           message={message}
