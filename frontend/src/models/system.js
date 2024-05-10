@@ -567,6 +567,74 @@ const System = {
       });
   },
   dataConnectors: DataConnector,
+
+  getSlashCommandPresets: async function () {
+    return await fetch(`${API_BASE}/system/slash-command-presets`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not fetch slash command presets.");
+        return res.json();
+      })
+      .then((res) => res.presets)
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+
+  createSlashCommandPreset: async function (presetData) {
+    return await fetch(`${API_BASE}/system/slash-command-presets`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(presetData),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not create slash command preset.");
+        return res.json();
+      })
+      .then((res) => {
+        return { preset: res.preset, error: null };
+      })
+      .catch((e) => {
+        console.error(e);
+        return { preset: null, error: e.message };
+      });
+  },
+
+  updateSlashCommandPreset: async function (presetId, presetData) {
+    return await fetch(`${API_BASE}/system/slash-command-presets/${presetId}`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(presetData),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not update slash command preset.");
+        return res.json();
+      })
+      .then((res) => {
+        return { preset: res.preset, error: null };
+      })
+      .catch((e) => {
+        return { preset: null, error: "Failed to update this command." };
+      });
+  },
+
+  deleteSlashCommandPreset: async function (presetId) {
+    return await fetch(`${API_BASE}/system/slash-command-presets/${presetId}`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not delete slash command preset.");
+        return true;
+      })
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
 };
 
 export default System;
