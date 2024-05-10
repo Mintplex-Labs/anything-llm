@@ -27,7 +27,7 @@ Here you can find the scripts and known working process to run AnythingLLM outsi
 
 4. Ensure that the `server/.env` file has _at least_ these keys to start. These values will persist and this file will be automatically written and managed after your first successful boot.
 ```
-STORAGE_DIR="/your/absolute/path/to/server/.env"
+STORAGE_DIR="/your/absolute/path/to/server/storage"
 ```
 
 5. Edit the `frontend/.env` file for the `VITE_BASE_API` to now be set to `/api`. This is documented in the .env for which one you should use.
