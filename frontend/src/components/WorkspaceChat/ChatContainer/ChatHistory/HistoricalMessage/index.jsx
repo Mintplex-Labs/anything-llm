@@ -25,8 +25,9 @@ const HistoricalMessage = ({
   return (
     <div
       key={uuid}
-      className={`flex justify-center items-end w-full ${role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
-        }`}
+      className={`flex justify-center items-end w-full ${
+        role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
+      }`}
     >
       <div
         className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
@@ -98,17 +99,14 @@ function ProfileImage({ role, workspace }) {
 export default memo(
   HistoricalMessage,
   // Skip re-render the historical message:
-  // if the content is the exact same AND
-  // the lastMessage status is the same
+  // if the content is the exact same AND (not streaming)
+  // the lastMessage status is the same (regen icon)
+  // and the chatID matches between renders. (feedback icons)
   (prevProps, nextProps) => {
-    console.log(`skip?`,
-      (prevProps.message === nextProps.message) &&
-      (prevProps.isLastMessage === nextProps.isLastMessage),
-      prevProps.message
-    )
     return (
-      (prevProps.message === nextProps.message) &&
-      (prevProps.isLastMessage === nextProps.isLastMessage)
+      prevProps.message === nextProps.message &&
+      prevProps.isLastMessage === nextProps.isLastMessage &&
+      prevProps.chatId === nextProps.chatId
     );
   }
 );

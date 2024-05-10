@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import ChatHistory from "./ChatHistory";
-import PromptInput from "./PromptInput";
+import PromptInput, { PROMPT_INPUT_EVENT } from "./PromptInput";
 import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
 import { isMobile } from "react-device-detect";
@@ -20,9 +20,20 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
+
+  // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
     setMessage(event.target.value);
   };
+
+  // Emit an update to the state of the prompt input without directly
+  // passing a prop in so that it does not re-render constantly.
+  function setMessageEmit(messageContent = "") {
+    setMessage(messageContent);
+    window.dispatchEvent(
+      new CustomEvent(PROMPT_INPUT_EVENT, { detail: messageContent })
+    );
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -41,7 +52,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     ];
 
     setChatHistory(prevChatHistory);
-    setMessage("");
+    setMessageEmit("");
     setLoadingResponse(true);
   };
 
@@ -50,18 +61,19 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     const lastUserMessage = updatedHistory.slice(-1)[0];
     Workspace.deleteChats(workspace.slug, [chatId])
       .then(() => sendCommand(lastUserMessage.content, true, updatedHistory))
-      .catch((e) => console.error(e))
+      .catch((e) => console.error(e));
   };
 
   const sendCommand = async (command, submit = false, history = []) => {
     if (!command || command === "") return false;
     if (!submit) {
-      setMessage(command);
+      setMessageEmit(command);
       return;
     }
 
     let prevChatHistory;
-    if (history.length > 0) { // use pre-determined history chain.
+    if (history.length > 0) {
+      // use pre-determined history chain.
       prevChatHistory = [
         ...history,
         {
@@ -72,7 +84,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           animate: true,
         },
       ];
-
     } else {
       prevChatHistory = [
         ...chatHistory,
@@ -88,7 +99,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     }
 
     setChatHistory(prevChatHistory);
-    setMessage("");
+    setMessageEmit("");
     setLoadingResponse(true);
   };
 
@@ -232,7 +243,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           regenerateAssistantMessage={regenerateAssistantMessage}
         />
         <PromptInput
-          message={message}
           submit={handleSubmit}
           onChange={handleMessageChange}
           inputDisabled={loadingResponse}
