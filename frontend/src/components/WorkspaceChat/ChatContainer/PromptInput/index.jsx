@@ -13,7 +13,7 @@ import AvailableAgentsButton, {
 } from "./AgentMenu";
 import TextSizeButton from "./TextSizeMenu";
 
-export const PROMPT_INPUT_EVENT = 'set_prompt_input';
+export const PROMPT_INPUT_EVENT = "set_prompt_input";
 export default function PromptInput({
   submit,
   onChange,
@@ -21,7 +21,7 @@ export default function PromptInput({
   buttonDisabled,
   sendCommand,
 }) {
-  const [promptInput, setPromptInput] = useState('');
+  const [promptInput, setPromptInput] = useState("");
   const { showAgents, setShowAgents } = useAvailableAgents();
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const formRef = useRef(null);
@@ -31,12 +31,14 @@ export default function PromptInput({
   // To prevent too many re-renders we remotely listen for updates from the parent
   // via an event cycle. Otherwise, using message as a prop leads to a re-render every
   // change on the input.
-  function handlePromptUpdate(e) { setPromptInput(e?.detail ?? ''); }
+  function handlePromptUpdate(e) {
+    setPromptInput(e?.detail ?? "");
+  }
   useEffect(() => {
-    if (!!window) window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
-    return () => (
-      window?.removeEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate)
-    )
+    if (!!window)
+      window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
+    return () =>
+      window?.removeEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
   }, []);
 
   useEffect(() => {
@@ -115,7 +117,7 @@ export default function PromptInput({
                   watchForSlash(e);
                   watchForAt(e);
                   adjustTextArea(e);
-                  setPromptInput(e.target.value)
+                  setPromptInput(e.target.value);
                 }}
                 onKeyDown={captureEnter}
                 required={true}

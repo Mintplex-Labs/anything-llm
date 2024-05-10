@@ -28,9 +28,11 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
   // Emit an update to the sate of the prompt input without directly
   // passing a prop in so that it does not re-render constantly.
-  function setMessageEmit(messageContent = '') {
+  function setMessageEmit(messageContent = "") {
     setMessage(messageContent);
-    window.dispatchEvent(new CustomEvent(PROMPT_INPUT_EVENT, { detail: messageContent }))
+    window.dispatchEvent(
+      new CustomEvent(PROMPT_INPUT_EVENT, { detail: messageContent })
+    );
   }
 
   const handleSubmit = async (event) => {
