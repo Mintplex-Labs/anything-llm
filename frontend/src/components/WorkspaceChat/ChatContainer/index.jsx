@@ -26,7 +26,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     setMessage(event.target.value);
   };
 
-  // Emit an update to the sate of the prompt input without directly
+  // Emit an update to the state of the prompt input without directly
   // passing a prop in so that it does not re-render constantly.
   function setMessageEmit(messageContent = "") {
     setMessage(messageContent);
@@ -56,24 +56,47 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     setLoadingResponse(true);
   };
 
-  const sendCommand = async (command, submit = false) => {
+  const regenerateAssistantMessage = (chatId) => {
+    const updatedHistory = chatHistory.slice(0, -1);
+    const lastUserMessage = updatedHistory.slice(-1)[0];
+    Workspace.deleteChats(workspace.slug, [chatId])
+      .then(() => sendCommand(lastUserMessage.content, true, updatedHistory))
+      .catch((e) => console.error(e));
+  };
+
+  const sendCommand = async (command, submit = false, history = []) => {
     if (!command || command === "") return false;
     if (!submit) {
       setMessageEmit(command);
       return;
     }
 
-    const prevChatHistory = [
-      ...chatHistory,
-      { content: command, role: "user" },
-      {
-        content: "",
-        role: "assistant",
-        pending: true,
-        userMessage: command,
-        animate: true,
-      },
-    ];
+    let prevChatHistory;
+    if (history.length > 0) {
+      // use pre-determined history chain.
+      prevChatHistory = [
+        ...history,
+        {
+          content: "",
+          role: "assistant",
+          pending: true,
+          userMessage: command,
+          animate: true,
+        },
+      ];
+    } else {
+      prevChatHistory = [
+        ...chatHistory,
+        { content: command, role: "user" },
+        {
+          content: "",
+          role: "assistant",
+          pending: true,
+          userMessage: command,
+          animate: true,
+        },
+      ];
+    }
 
     setChatHistory(prevChatHistory);
     setMessageEmit("");
@@ -217,6 +240,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           history={chatHistory}
           workspace={workspace}
           sendCommand={sendCommand}
+          regenerateAssistantMessage={regenerateAssistantMessage}
         />
         <PromptInput
           submit={handleSubmit}
