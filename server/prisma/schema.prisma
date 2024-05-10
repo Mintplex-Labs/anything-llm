@@ -267,8 +267,11 @@ model slash_command_presets {
   command       String
   prompt        String
   description   String
+  uid           Int      @default(0) // 0 is null user
   userId        Int?
   createdAt     DateTime @default(now())
   lastUpdatedAt DateTime @default(now())
   user          users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([uid, command])
 }

@@ -76,6 +76,7 @@ export default function EditPresetModal({
                     placeholder="your-command"
                     value={command}
                     onChange={handleCommandChange}
+                    required={true}
                     className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   />
                 </div>
@@ -91,7 +92,8 @@ export default function EditPresetModal({
                   name="prompt"
                   placeholder="This is a test prompt. Please respond with a poem about LLMs."
                   defaultValue={preset.prompt}
-                  className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  required={true}
+                  className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 ></textarea>
               </div>
               <div>
@@ -106,7 +108,8 @@ export default function EditPresetModal({
                   name="description"
                   defaultValue={preset.description}
                   placeholder="Responds with a poem about LLMs."
-                  className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  required={true}
+                  className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 />
               </div>
             </div>

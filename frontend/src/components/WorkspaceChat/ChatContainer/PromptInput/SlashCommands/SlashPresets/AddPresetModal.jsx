@@ -6,16 +6,16 @@ import { CMD_REGEX } from ".";
 export default function AddPresetModal({ isOpen, onClose, onSave }) {
   const [command, setCommand] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
     const sanitizedCommand = command.replace(CMD_REGEX, "");
-    onSave({
+    const saved = await onSave({
       command: `/${sanitizedCommand}`,
       prompt: form.get("prompt"),
       description: form.get("description"),
     });
-    setCommand("");
+    if (saved) setCommand("");
   };
 
   const handleCommandChange = (e) => {
@@ -56,6 +56,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                     onChange={handleCommandChange}
                     maxLength={25}
                     autoComplete="off"
+                    required={true}
                     className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   />
                 </div>
@@ -68,6 +69,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                   name="prompt"
                   autoComplete="off"
                   placeholder="This is the content that will be injected in front of your prompt."
+                  required={true}
                   className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 ></textarea>
               </div>
@@ -81,6 +83,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
                   placeholder="Responds with a poem about LLMs."
                   maxLength={80}
                   autoComplete="off"
+                  required={true}
                   className="border-none bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 />
               </div>

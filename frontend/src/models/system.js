@@ -594,10 +594,12 @@ const System = {
         if (!res.ok) throw new Error("Could not create slash command preset.");
         return res.json();
       })
-      .then((res) => res.preset)
+      .then((res) => {
+        return { preset: res.preset, error: null };
+      })
       .catch((e) => {
         console.error(e);
-        return null;
+        return { preset: null, error: e.message };
       });
   },
 
@@ -611,10 +613,11 @@ const System = {
         if (!res.ok) throw new Error("Could not update slash command preset.");
         return res.json();
       })
-      .then((res) => res.preset)
+      .then((res) => {
+        return { preset: res.preset, error: null };
+      })
       .catch((e) => {
-        console.error(e);
-        return null;
+        return { preset: null, error: "Failed to update this command." };
       });
   },
 

@@ -5,6 +5,7 @@ import EditPresetModal from "./EditPresetModal";
 import { useModal } from "@/hooks/useModal";
 import System from "@/models/system";
 import { DotsThree, Plus } from "@phosphor-icons/react";
+import showToast from "@/utils/toast";
 
 export const CMD_REGEX = new RegExp(/[^a-zA-Z0-9_-]/g);
 export default function SlashPresets({ setShowing, sendCommand }) {
@@ -33,11 +34,15 @@ export default function SlashPresets({ setShowing, sendCommand }) {
   };
 
   const handleSavePreset = async (preset) => {
-    const newPreset = await System.createSlashCommandPreset(preset);
-    if (newPreset) {
-      fetchPresets();
-      closeAddModal();
+    const { error } = await System.createSlashCommandPreset(preset);
+    if (!!error) {
+      showToast(error, "error");
+      return false;
     }
+
+    fetchPresets();
+    closeAddModal();
+    return true;
   };
 
   const handleEditPreset = (preset) => {
@@ -46,14 +51,18 @@ export default function SlashPresets({ setShowing, sendCommand }) {
   };
 
   const handleUpdatePreset = async (updatedPreset) => {
-    const updated = await System.updateSlashCommandPreset(
+    const { error } = await System.updateSlashCommandPreset(
       updatedPreset.id,
       updatedPreset
     );
-    if (updated) {
-      fetchPresets();
-      closeEditModal();
+
+    if (!!error) {
+      showToast(error, "error");
+      return;
     }
+
+    fetchPresets();
+    closeEditModal();
   };
 
   const handleDeletePreset = async (presetId) => {

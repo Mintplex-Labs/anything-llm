@@ -1069,13 +1069,12 @@ function systemEndpoints(app) {
         const user = await userFromSession(request, response);
         const { command, prompt, description } = reqBody(request);
         const presetData = {
-          command: String(command),
+          command: SlashCommandPresets.formatCommand(String(command)),
           prompt: String(prompt),
           description: String(description),
-          userId: user?.id ?? null,
         };
 
-        const preset = await SlashCommandPresets.create(presetData);
+        const preset = await SlashCommandPresets.create(user?.id, presetData);
         if (!preset) {
           return response
             .status(500)
@@ -1107,12 +1106,16 @@ function systemEndpoints(app) {
           return response.status(404).json({ message: "Preset not found" });
 
         const updates = {
-          command: String(command),
+          command: SlashCommandPresets.formatCommand(String(command)),
           prompt: String(prompt),
           description: String(description),
         };
 
-        await SlashCommandPresets.update(Number(slashCommandId), updates);
+        const preset = await SlashCommandPresets.update(
+          Number(slashCommandId),
+          updates
+        );
+        if (!preset) return response.sendStatus(422);
         response.status(200).json({ preset: { ...ownsPreset, ...updates } });
       } catch (error) {
         console.error("Error updating slash command preset:", error);
