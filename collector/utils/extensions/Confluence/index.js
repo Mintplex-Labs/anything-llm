@@ -5,22 +5,29 @@ const { v4 } = require("uuid");
 const UrlPattern = require("url-pattern");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
-const { ConfluencePagesLoader } = require("langchain/document_loaders/web/confluence");
+const {
+  ConfluencePagesLoader,
+} = require("langchain/document_loaders/web/confluence");
 
 function validSpaceUrl(spaceUrl = "") {
   // Atlassian default URL match
-  const atlassianPattern = new UrlPattern("https\\://(:subdomain).atlassian.net/wiki/spaces/(:spaceKey)/*");
+  const atlassianPattern = new UrlPattern(
+    "https\\://(:subdomain).atlassian.net/wiki/spaces/(:spaceKey)/*"
+  );
   const atlassianMatch = atlassianPattern.match(spaceUrl);
   if (atlassianMatch) {
     return { valid: true, result: atlassianMatch };
   }
 
   // Custom Confluence URL match
-  const customPattern = new UrlPattern("https\\://(:subdomain.):domain.:tld/wiki/spaces/(:spaceKey)/*");
+  const customPattern = new UrlPattern(
+    "https\\://(:subdomain.):domain.:tld/wiki/spaces/(:spaceKey)/*"
+  );
   const customMatch = customPattern.match(spaceUrl);
   if (customMatch) {
-    customMatch.customDomain = (customMatch.subdomain ? `${customMatch.subdomain}.` : "") + //
-      (`${customMatch.domain}.${customMatch.tld}`);
+    customMatch.customDomain =
+      (customMatch.subdomain ? `${customMatch.subdomain}.` : "") + //
+      `${customMatch.domain}.${customMatch.tld}`;
     return { valid: true, result: customMatch, custom: true };
   }
 
@@ -41,7 +48,8 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
   if (!validSpace.result) {
     return {
       success: false,
-      reason: "Confluence space URL is not in the expected format of https://domain.atlassian.net/wiki/space/~SPACEID/* or https://customDomain/wiki/space/~SPACEID/*",
+      reason:
+        "Confluence space URL is not in the expected format of https://domain.atlassian.net/wiki/space/~SPACEID/* or https://customDomain/wiki/space/~SPACEID/*",
     };
   }
 
