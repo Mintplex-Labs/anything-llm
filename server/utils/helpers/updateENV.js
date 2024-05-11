@@ -338,7 +338,7 @@ const KEY_MAPPING = {
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
-    checks: [requiresForceMode],
+    checks: [requiresForceMode, noRestrictedChars],
   },
   JWTSecret: {
     envKey: "JWT_SECRET",
@@ -571,6 +571,13 @@ async function validDockerizedUrl(input = "") {
 function validHuggingFaceEndpoint(input = "") {
   return input.slice(-6) !== ".cloud"
     ? `Your HF Endpoint should end in ".cloud"`
+    : null;
+}
+
+function noRestrictedChars(input = "") {
+  const regExp = new RegExp(/^[a-zA-Z0-9_\-!@$%^&*();]+$/);
+  return !regExp.test(input)
+    ? `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`
     : null;
 }
 
