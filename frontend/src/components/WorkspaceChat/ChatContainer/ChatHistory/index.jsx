@@ -8,7 +8,12 @@ import debounce from "lodash.debounce";
 import useUser from "@/hooks/useUser";
 import Chartable from "./Chartable";
 
-export default function ChatHistory({ history = [], workspace, sendCommand }) {
+export default function ChatHistory({
+  history = [],
+  workspace,
+  sendCommand,
+  regenerateAssistantMessage,
+}) {
   const { user } = useUser();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -165,6 +170,8 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
             feedbackScore={props.feedbackScore}
             chatId={props.chatId}
             error={props.error}
+            regenerateMessage={regenerateAssistantMessage}
+            isLastMessage={isLastBotReply}
           />
         );
       })}
