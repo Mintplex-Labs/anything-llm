@@ -577,7 +577,7 @@ function validHuggingFaceEndpoint(input = "") {
 function noRestrictedChars(input = "") {
   const regExp = new RegExp(/^[a-zA-Z0-9_\-!@$%^&*();]+$/);
   return !regExp.test(input)
-    ? `Your password has restricted characters in it. It cannot contain backticks, quotes, or # signs.`
+    ? `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`
     : null;
 }
 
