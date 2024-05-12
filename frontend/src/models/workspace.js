@@ -74,6 +74,22 @@ const Workspace = {
       .catch(() => false);
     return result;
   },
+
+  deleteChats: async function (slug = "", chatIds = []) {
+    return await fetch(`${API_BASE}/workspace/${slug}/delete-chats`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ chatIds }),
+    })
+      .then((res) => {
+        if (res.ok) return true;
+        throw new Error("Failed to delete chats.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return false;
+      });
+  },
   streamChat: async function ({ slug }, message, handleChat) {
     const ctrl = new AbortController();
 

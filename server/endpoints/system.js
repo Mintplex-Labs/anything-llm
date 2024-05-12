@@ -50,6 +50,7 @@ const {
   resetPassword,
   generateRecoveryCodes,
 } = require("../utils/PasswordRecovery");
+const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -1044,6 +1045,111 @@ function systemEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.get(
+    "/system/slash-command-presets",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
+        response.status(200).json({ presets: userPresets });
+      } catch (error) {
+        console.error("Error fetching slash command presets:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/slash-command-presets",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { command, prompt, description } = reqBody(request);
+        const presetData = {
+          command: SlashCommandPresets.formatCommand(String(command)),
+          prompt: String(prompt),
+          description: String(description),
+        };
+
+        const preset = await SlashCommandPresets.create(user?.id, presetData);
+        if (!preset) {
+          return response
+            .status(500)
+            .json({ message: "Failed to create preset" });
+        }
+        response.status(201).json({ preset });
+      } catch (error) {
+        console.error("Error creating slash command preset:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/slash-command-presets/:slashCommandId",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { slashCommandId } = request.params;
+        const { command, prompt, description } = reqBody(request);
+
+        // Valid user running owns the preset if user session is valid.
+        const ownsPreset = await SlashCommandPresets.get({
+          userId: user?.id ?? null,
+          id: Number(slashCommandId),
+        });
+        if (!ownsPreset)
+          return response.status(404).json({ message: "Preset not found" });
+
+        const updates = {
+          command: SlashCommandPresets.formatCommand(String(command)),
+          prompt: String(prompt),
+          description: String(description),
+        };
+
+        const preset = await SlashCommandPresets.update(
+          Number(slashCommandId),
+          updates
+        );
+        if (!preset) return response.sendStatus(422);
+        response.status(200).json({ preset: { ...ownsPreset, ...updates } });
+      } catch (error) {
+        console.error("Error updating slash command preset:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.delete(
+    "/system/slash-command-presets/:slashCommandId",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { slashCommandId } = request.params;
+        const user = await userFromSession(request, response);
+
+        // Valid user running owns the preset if user session is valid.
+        const ownsPreset = await SlashCommandPresets.get({
+          userId: user?.id ?? null,
+          id: Number(slashCommandId),
+        });
+        if (!ownsPreset)
+          return response
+            .status(403)
+            .json({ message: "Failed to delete preset" });
+
+        await SlashCommandPresets.delete(Number(slashCommandId));
+        response.sendStatus(204);
+      } catch (error) {
+        console.error("Error deleting slash command preset:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
 }
 
 module.exports = { systemEndpoints };
