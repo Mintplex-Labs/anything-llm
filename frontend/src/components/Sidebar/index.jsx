@@ -45,7 +45,7 @@ export default function Sidebar() {
           <div className="flex-grow flex flex-col min-w-[235px]">
             <div className="flex flex-col gap-y-2 pb-8 overflow-y-scroll no-scroll">
               <div className="flex gap-x-2 items-center justify-between">
-                {(!user || user?.role !== "default") && (
+                {user?.role === "admin" && ( // Check if user is admin
                   <button
                     onClick={showNewWsModal}
                     className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
@@ -148,7 +148,7 @@ export function SidebarMobileHeader() {
                   style={{ objectFit: "contain" }}
                 />
               </div>
-              {(!user || user?.role !== "default") && (
+              {user?.role === "admin" && ( // Check if user is admin
                 <div className="flex gap-x-2 items-center text-slate-500 shink-0">
                   <SettingsButton />
                 </div>
@@ -163,7 +163,7 @@ export function SidebarMobileHeader() {
                   className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
                 >
                   <div className="flex gap-x-2 items-center justify-between">
-                    {(!user || user?.role !== "default") && (
+                    {user?.role === "admin" && ( // Check if user is admin
                       <button
                         onClick={showNewWsModal}
                         className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
