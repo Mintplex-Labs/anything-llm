@@ -35,7 +35,7 @@ class AgentHandler {
           {
             workspaceId: this.invocation.workspace_id,
             user_id: this.invocation.user_id || null,
-            thread_id: this.invocation.user_id || null,
+            thread_id: this.invocation.thread_id || null,
             include: true,
           },
           limit,
@@ -146,7 +146,7 @@ class AgentHandler {
   #providerDefault() {
     switch (this.provider) {
       case "openai":
-        return "gpt-3.5-turbo";
+        return "gpt-4o";
       case "anthropic":
         return "claude-3-sonnet-20240229";
       case "lmstudio":
@@ -258,7 +258,7 @@ class AgentHandler {
   ) {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
-      model: this.model ?? "gpt-3.5-turbo",
+      model: this.model ?? "gpt-4o",
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,
