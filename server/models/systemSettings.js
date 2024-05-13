@@ -367,6 +367,7 @@ const SystemSettings = {
       // Text Generation Web UI Keys
       TextGenWebUIBasePath: process.env.TEXT_GEN_WEB_UI_BASE_PATH,
       TextGenWebUITokenLimit: process.env.TEXT_GEN_WEB_UI_MODEL_TOKEN_LIMIT,
+      TextGenWebUIAPIKey: !!process.env.TEXT_GEN_WEB_UI_API_KEY,
 
       // Generic OpenAI Keys
       GenericOpenAiBasePath: process.env.GENERIC_OPEN_AI_BASE_PATH,
