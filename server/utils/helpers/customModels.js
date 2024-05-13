@@ -67,6 +67,14 @@ async function openAiModels(apiKey = null) {
           organization: "OpenAi",
         },
         {
+          name: "gpt-4o",
+          id: "gpt-4o",
+          object: "model",
+          created: 1677610602,
+          owned_by: "openai",
+          organization: "OpenAi",
+        },
+        {
           name: "gpt-4",
           id: "gpt-4",
           object: "model",
