@@ -41,7 +41,7 @@ export default function TextGenWebUIOptions({ settings }) {
           name="TextGenWebUIAPIKey"
           className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
           placeholder="TextGen Web UI API Key"
-          defaultValue={settings?.TextGenWebUIAPIKey}
+          defaultValue={settings?.TextGenWebUIAPIKey ? "*".repeat(20) : ""}
           autoComplete="off"
           spellCheck={false}
         />
