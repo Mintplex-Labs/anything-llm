@@ -35,7 +35,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
             <button
               onClick={onClose}
               type="button"
-              className="transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
+              className="border-none transition-all duration-300 text-gray-400 bg-transparent hover:border-white/60 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
             >
               <X className="text-gray-300 text-lg" />
             </button>
@@ -93,7 +93,7 @@ export default function AddPresetModal({ isOpen, onClose, onSave }) {
             <button
               onClick={onClose}
               type="button"
-              className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
+              className="border-none px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
             >
               Cancel
             </button>

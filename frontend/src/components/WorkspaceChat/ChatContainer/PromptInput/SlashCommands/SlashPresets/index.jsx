@@ -101,7 +101,8 @@ export default function SlashPresets({ setShowing, sendCommand }) {
       ))}
       <button
         onClick={openAddModal}
-        className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-1 rounded-xl flex flex-col justify-start"
+        type="button"
+        className="border-none w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-1 rounded-xl flex flex-col justify-start"
       >
         <div className="w-full flex-row flex pointer-events-none items-center gap-2">
           <Plus size={24} weight="fill" fill="white" />
