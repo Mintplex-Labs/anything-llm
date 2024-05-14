@@ -12,6 +12,7 @@ import AvailableAgentsButton, {
   useAvailableAgents,
 } from "./AgentMenu";
 import TextSizeButton from "./TextSizeMenu";
+import SpeechToText from "./SpeechToText";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 export default function PromptInput({
@@ -34,6 +35,7 @@ export default function PromptInput({
   function handlePromptUpdate(e) {
     setPromptInput(e?.detail ?? "");
   }
+
   useEffect(() => {
     if (!!window)
       window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
@@ -155,6 +157,9 @@ export default function PromptInput({
                   setShowAgents={setShowAgents}
                 />
                 <TextSizeButton />
+              </div>
+              <div className="flex gap-x-2">
+                <SpeechToText sendCommand={sendCommand} />
               </div>
             </div>
           </div>

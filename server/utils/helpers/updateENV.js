@@ -372,6 +372,32 @@ const KEY_MAPPING = {
     envKey: "GOOGLE_AUTH_CLIENT_ID",
     checks: [isNotEmpty],
   },
+  
+  // TTS/STT Integration ENVS
+  TextToSpeechProvider: {
+    envKey: "TTS_PROVIDER",
+    checks: [supportedTTSProvider],
+  },
+
+  // TTS OpenAI
+  TTSOpenAIKey: {
+    envKey: "TTS_OPEN_AI_KEY",
+    checks: [validOpenAIKey],
+  },
+  TTSOpenAIVoiceModel: {
+    envKey: "TTS_OPEN_AI_VOICE_MODEL",
+    checks: [],
+  },
+
+  // TTS ElevenLabs
+  TTSElevenLabsKey: {
+    envKey: "TTS_ELEVEN_LABS_KEY",
+    checks: [isNotEmpty],
+  },
+  TTSElevenLabsVoiceModel: {
+    envKey: "TTS_ELEVEN_LABS_VOICE_MODEL",
+    checks: [],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -423,6 +449,11 @@ function validOllamaLLMBasePath(input = "") {
   } catch {
     return "Not a valid URL";
   }
+}
+
+function supportedTTSProvider(input = "") {
+  const validSelection = ["native", "openai", "elevenlabs"].includes(input);
+  return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
 
 function supportedLLM(input = "") {

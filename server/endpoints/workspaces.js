@@ -1,6 +1,11 @@
 const path = require("path");
 const fs = require("fs");
-const { reqBody, multiUserMode, userFromSession } = require("../utils/http");
+const {
+  reqBody,
+  multiUserMode,
+  userFromSession,
+  safeJsonParse,
+} = require("../utils/http");
 const { normalizePath } = require("../utils/files");
 const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
@@ -25,6 +30,7 @@ const {
   determineWorkspacePfpFilepath,
   fetchPfp,
 } = require("../utils/files/pfp");
+const { getTTSProvider } = require("../utils/TextToSpeech");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -502,6 +508,48 @@ function workspaceEndpoints(app) {
       } catch (error) {
         console.error("Error processing the pin status update:", error);
         return response.status(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/workspace/:slug/tts/:chatId",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async function (request, response) {
+      try {
+        const { chatId } = request.params;
+        const workspace = response.locals.workspace;
+        const cacheKey = `${workspace.slug}:${chatId}`;
+        const wsChat = await WorkspaceChats.get({
+          id: Number(chatId),
+          workspaceId: workspace.id,
+        });
+
+        const cachedResponse = responseCache.get(cacheKey);
+        if (cachedResponse) {
+          response.writeHead(200, {
+            "Content-Type": cachedResponse.mime || "audio/mpeg",
+          });
+          response.end(cachedResponse.buffer);
+          return;
+        }
+
+        const text = safeJsonParse(wsChat.response, null)?.text;
+        if (!text) return response.sendStatus(204).end();
+
+        const TTSProvider = getTTSProvider();
+        const buffer = await TTSProvider.ttsBuffer(text);
+        if (buffer === null) return response.sendStatus(204).end();
+
+        responseCache.set(cacheKey, { buffer, mime: "audio/mpeg" });
+        response.writeHead(200, {
+          "Content-Type": "audio/mpeg",
+        });
+        response.end(buffer);
+        return;
+      } catch (error) {
+        console.error("Error processing the TTS request:", error);
+        response.status(500).json({ message: "TTS could not be completed" });
       }
     }
   );
