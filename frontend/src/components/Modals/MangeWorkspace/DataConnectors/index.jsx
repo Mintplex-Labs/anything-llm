@@ -1,10 +1,19 @@
+import ConnectorImages from "@/components/DataConnectorOption/media";
 import { MagnifyingGlass } from "@phosphor-icons/react";
+import GithubOptions from "./Connectors/Github";
+import YoutubeOptions from "./Connectors/Youtube";
+import ConfluenceOptions from "./Connectors/Confluence";
 import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
-import YoutubeOptions from "./Connectors/Youtube";
-import ConnectorImages from "@/components/DataConnectorOption/media"; // Added import statement
 
 export const DATA_CONNECTORS = {
+  github: {
+    name: "GitHub Repo",
+    image: ConnectorImages.github,
+    description:
+      "Import an entire public or private Github repository in a single click.",
+    options: <GithubOptions />,
+  },
   "youtube-transcript": {
     name: "YouTube Transcript",
     image: ConnectorImages.youtube,
@@ -12,10 +21,16 @@ export const DATA_CONNECTORS = {
       "Import the transcription of an entire YouTube video from a link.",
     options: <YoutubeOptions />,
   },
+  confluence: {
+    name: "Confluence",
+    image: ConnectorImages.confluence,
+    description: "Import an entire Confluence page in a single click.",
+    options: <ConfluenceOptions />,
+  },
 };
 
 export default function DataConnectors() {
-  const [selectedConnector, setSelectedConnector] = useState("youtube-transcript");
+  const [selectedConnector, setSelectedConnector] = useState("github");
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredConnectors = Object.keys(DATA_CONNECTORS).filter((slug) =>
