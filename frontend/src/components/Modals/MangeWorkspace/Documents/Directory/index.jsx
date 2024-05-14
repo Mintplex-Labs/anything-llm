@@ -270,7 +270,7 @@ function Directory({
                     onMouseLeave={() => setHighlightWorkspace(false)}
                     className="border-none text-sm font-semibold bg-white h-[30px] px-2.5 rounded-lg hover:text-white hover:bg-neutral-800/80"
                   >
-                    Move to Workspace
+                    Move to Hub
                   </button>
                   <div className="relative">
                     <button
