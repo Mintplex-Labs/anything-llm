@@ -383,7 +383,7 @@ const KEY_MAPPING = {
     checks: [],
   },
 
-  // TTS EleventLabs
+  // TTS ElevenLabs
   TTSElevenLabsKey: {
     envKey: "TTS_ELEVEN_LABS_KEY",
     checks: [isNotEmpty],
