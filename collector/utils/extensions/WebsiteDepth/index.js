@@ -76,7 +76,7 @@ function extractLinks(html, baseUrl) {
   return Array.from(extractedLinks);
 }
 
-async function bulkScrapePages(links, outputFolder) {
+async function bulkScrapePages(links, outFolderPath) {
   const scrapedData = [];
 
   for (let i = 0; i < links.length; i++) {
@@ -118,7 +118,7 @@ async function bulkScrapePages(links, outputFolder) {
         token_count_estimate: tokenizeString(content).length,
       };
 
-      writeToServerDocuments(data, data.title, outputFolder);
+      writeToServerDocuments(data, data.title, outFolderPath);
       scrapedData.push(data);
 
       console.log(`Successfully scraped ${link}.`);
@@ -132,19 +132,25 @@ async function bulkScrapePages(links, outputFolder) {
 
 async function websiteScraper(startUrl, depth = 1, maxLinks = 20) {
   const websiteName = new URL(startUrl).hostname;
-  const outputFolder = path.resolve(
-    __dirname,
-    `../../../../server/storage/documents/${slugify(websiteName)}`
-  );
-
-  fs.mkdirSync(outputFolder, { recursive: true });
+  const outFolder = slugify(
+    `${slugify(websiteName)}-${v4().slice(0, 4)}`
+  ).toLowerCase();
+  const outFolderPath =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(
+          __dirname,
+          `../../../../server/storage/documents/${outFolder}`
+        )
+      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 
   console.log("Discovering links...");
   const linksToScrape = await discoverLinks(startUrl, depth, maxLinks);
   console.log(`Found ${linksToScrape.length} links to scrape.`);
 
+  if (!fs.existsSync(outFolderPath))
+    fs.mkdirSync(outFolderPath, { recursive: true });
   console.log("Starting bulk scraping...");
-  const scrapedData = await bulkScrapePages(linksToScrape, outputFolder);
+  const scrapedData = await bulkScrapePages(linksToScrape, outFolderPath);
   console.log(`Scraped ${scrapedData.length} pages.`);
 
   return scrapedData;
