@@ -84,6 +84,7 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
       <select
         name="TTSElevenLabsVoiceModel"
         required={true}
+        defaultValue={settings?.TTSElevenLabsVoiceModel}
         className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {Object.keys(groupedModels)
@@ -91,11 +92,7 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
           .map((organization) => (
             <optgroup key={organization} label={organization}>
               {groupedModels[organization].map((model) => (
-                <option
-                  key={model.id}
-                  value={model.id}
-                  selected={settings?.OpenAiModelPref === model.id}
-                >
+                <option key={model.id} value={model.id}>
                   {model.name}
                 </option>
               ))}

@@ -47,7 +47,7 @@ export default function TextToSpeechProvider({ settings }) {
   const searchInputRef = useRef(null);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     const form = e.target;
     const data = { TextToSpeechProvider: selectedProvider };
     const formData = new FormData(form);
@@ -110,10 +110,7 @@ export default function TextToSpeechProvider({ settings }) {
         </div>
         <div className="w-full justify-end flex">
           {hasChanges && (
-            <CTAButton
-              onClick={() => handleSubmit()}
-              className="mt-3 mr-0 -mb-14 z-10"
-            >
+            <CTAButton className="mt-3 mr-0 -mb-14 z-10">
               {saving ? "Saving..." : "Save changes"}
             </CTAButton>
           )}
