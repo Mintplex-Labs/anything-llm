@@ -18,6 +18,7 @@ import GeneralChats from "./pages/GeneralSettings/Chats";
 import GeneralAppearance from "./pages/GeneralSettings/Appearance";
 import GeneralLLMPreference from "./pages/GeneralSettings/LLMPreference";
 import GeneralTranscriptionPreference from "./pages/GeneralSettings/TranscriptionPreference";
+import GeneralAudioPreference from "./pages/GeneralSettings/AudioPreference";
 import GeneralEmbeddingPreference from "./pages/GeneralSettings/EmbeddingPreference";
 import EmbeddingTextSplitterPreference from "./pages/GeneralSettings/EmbeddingTextSplitterPreference";
 import GeneralVectorDatabase from "./pages/GeneralSettings/VectorDatabase";
@@ -61,6 +62,10 @@ export default function App() {
                   element={
                     <AdminRoute Component={GeneralTranscriptionPreference} />
                   }
+                />
+                <Route
+                  path="/settings/audio-preference"
+                  element={<AdminRoute Component={GeneralAudioPreference} />}
                 />
                 <Route
                   path="/settings/embedding-preference"

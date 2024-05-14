@@ -13,6 +13,7 @@ import {
   ClosedCaptioning,
   EyeSlash,
   SplitVertical,
+  Microphone,
 } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import Footer from "../Footer";
@@ -150,6 +151,14 @@ const SidebarOptions = ({ user = null }) => (
       href={paths.settings.llmPreference()}
       btnText="LLM Preference"
       icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
+      href={paths.settings.audioPreference()}
+      btnText="Voice and Speech Support"
+      icon={<Microphone className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
       allowedRole={["admin"]}

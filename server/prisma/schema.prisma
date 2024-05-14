@@ -73,6 +73,7 @@ model users {
   recovery_codes              recovery_codes[]
   password_reset_tokens       password_reset_tokens[]
   workspace_agent_invocations workspace_agent_invocations[]
+  slash_command_presets       slash_command_presets[]
 }
 
 model recovery_codes {
@@ -259,4 +260,18 @@ model event_logs {
   occurredAt DateTime @default(now())
 
   @@index([event])
+}
+
+model slash_command_presets {
+  id            Int      @id @default(autoincrement())
+  command       String
+  prompt        String
+  description   String
+  uid           Int      @default(0) // 0 is null user
+  userId        Int?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+  user          users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([uid, command])
 }

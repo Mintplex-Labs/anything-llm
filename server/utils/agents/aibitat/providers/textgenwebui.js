@@ -13,7 +13,7 @@ class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
     super();
     const client = new OpenAI({
       baseURL: process.env.TEXT_GEN_WEB_UI_BASE_PATH,
-      apiKey: null,
+      apiKey: process.env.TEXT_GEN_WEB_UI_API_KEY ?? null,
       maxRetries: 3,
     });
 

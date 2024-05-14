@@ -91,7 +91,8 @@ function chatEndpoints(app) {
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
-          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
         });
 
         await EventLogs.logEvent(
@@ -199,7 +200,7 @@ function chatEndpoints(app) {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
         });
 
         await EventLogs.logEvent(

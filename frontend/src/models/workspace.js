@@ -74,6 +74,22 @@ const Workspace = {
       .catch(() => false);
     return result;
   },
+
+  deleteChats: async function (slug = "", chatIds = []) {
+    return await fetch(`${API_BASE()}/workspace/${slug}/delete-chats`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ chatIds }),
+    })
+      .then((res) => {
+        if (res.ok) return true;
+        throw new Error("Failed to delete chats.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return false;
+      });
+  },
   streamChat: async function ({ slug }, message, handleChat) {
     const ctrl = new AbortController();
 
@@ -240,6 +256,21 @@ const Workspace = {
         return false;
       });
   },
+  ttsMessage: async function (slug, chatId) {
+    return await fetch(`${API_BASE()}/workspace/${slug}/tts/${chatId}`, {
+      method: "GET",
+      cache: "no-cache",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (res.ok && res.status !== 204) return res.blob();
+        throw new Error("Failed to fetch TTS.");
+      })
+      .then((blob) => (blob ? URL.createObjectURL(blob) : null))
+      .catch((e) => {
+        return null;
+      });
+  },
   threads: WorkspaceThread,
 
   uploadPfp: async function (formData, slug) {
@@ -270,7 +301,7 @@ const Workspace = {
       })
       .then((blob) => (blob ? URL.createObjectURL(blob) : null))
       .catch((e) => {
-        console.log(e);
+        // console.log(e);
         return null;
       });
   },

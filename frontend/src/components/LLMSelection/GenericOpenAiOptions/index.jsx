@@ -61,6 +61,21 @@ export default function GenericOpenAiOptions({ settings }) {
           autoComplete="off"
         />
       </div>
+      <div className="flex flex-col w-60">
+        <label className="text-white text-sm font-semibold block mb-4">
+          Max Tokens
+        </label>
+        <input
+          type="number"
+          name="GenericOpenAiMaxTokens"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          placeholder="Max tokens per request (eg: 1024)"
+          min={1}
+          defaultValue={settings?.GenericOpenAiMaxTokens || 1024}
+          required={true}
+          autoComplete="off"
+        />
+      </div>
     </div>
   );
 }

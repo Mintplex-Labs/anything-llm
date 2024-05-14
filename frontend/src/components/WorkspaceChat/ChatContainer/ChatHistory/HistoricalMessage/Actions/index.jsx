@@ -5,11 +5,20 @@ import {
   ClipboardText,
   ThumbsUp,
   ThumbsDown,
+  ArrowsClockwise,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
+import TTSMessage from "./TTSButton";
 
-const Actions = ({ message, feedbackScore, chatId, slug }) => {
+const Actions = ({
+  message,
+  feedbackScore,
+  chatId,
+  slug,
+  isLastMessage,
+  regenerateMessage,
+}) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
 
   const handleFeedback = async (newFeedback) => {
@@ -20,26 +29,37 @@ const Actions = ({ message, feedbackScore, chatId, slug }) => {
   };
 
   return (
-    <div className="flex justify-start items-center">
-      <CopyMessage message={message} />
-      {chatId && (
-        <>
-          <FeedbackButton
-            isSelected={selectedFeedback === true}
-            handleFeedback={() => handleFeedback(true)}
-            tooltipId={`${chatId}-thumbs-up`}
-            tooltipContent="Good response"
-            IconComponent={ThumbsUp}
-          />
-          <FeedbackButton
-            isSelected={selectedFeedback === false}
-            handleFeedback={() => handleFeedback(false)}
-            tooltipId={`${chatId}-thumbs-down`}
-            tooltipContent="Bad response"
-            IconComponent={ThumbsDown}
-          />
-        </>
-      )}
+    <div className="flex w-full justify-between items-center">
+      <div className="flex justify-start items-center gap-x-4">
+        <CopyMessage message={message} />
+        {isLastMessage &&
+          !message?.includes("Workspace chat memory was reset!") && (
+            <RegenerateMessage
+              regenerateMessage={regenerateMessage}
+              slug={slug}
+              chatId={chatId}
+            />
+          )}
+        {chatId && (
+          <>
+            <FeedbackButton
+              isSelected={selectedFeedback === true}
+              handleFeedback={() => handleFeedback(true)}
+              tooltipId={`${chatId}-thumbs-up`}
+              tooltipContent="Good response"
+              IconComponent={ThumbsUp}
+            />
+            <FeedbackButton
+              isSelected={selectedFeedback === false}
+              handleFeedback={() => handleFeedback(false)}
+              tooltipId={`${chatId}-thumbs-down`}
+              tooltipContent="Bad response"
+              IconComponent={ThumbsDown}
+            />
+          </>
+        )}
+      </div>
+      <TTSMessage slug={slug} chatId={chatId} message={message} />
     </div>
   );
 };
@@ -103,6 +123,28 @@ function CopyMessage({ message }) {
         />
       </div>
     </>
+  );
+}
+
+function RegenerateMessage({ regenerateMessage, chatId }) {
+  return (
+    <div className="mt-3 relative">
+      <button
+        onClick={() => regenerateMessage(chatId)}
+        data-tooltip-id="regenerate-assistant-text"
+        data-tooltip-content="Regenerate response"
+        className="border-none text-zinc-300"
+        aria-label="Regenerate"
+      >
+        <ArrowsClockwise size={18} className="mb-1" weight="fill" />
+      </button>
+      <Tooltip
+        id="regenerate-assistant-text"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
+    </div>
   );
 }
 

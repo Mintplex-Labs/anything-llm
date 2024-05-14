@@ -93,6 +93,27 @@ function extensionEndpoints(app) {
       }
     }
   );
+  app.post(
+    "/ext/website-depth",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const responseFromProcessor =
+          await new CollectorApi().forwardExtensionRequest({
+            endpoint: "/ext/website-depth",
+            method: "POST",
+            body: request.body,
+          });
+        await Telemetry.sendTelemetry("extension_invoked", {
+          type: "website_depth",
+        });
+        response.status(200).json(responseFromProcessor);
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { extensionEndpoints };

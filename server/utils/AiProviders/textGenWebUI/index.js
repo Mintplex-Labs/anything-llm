@@ -14,7 +14,7 @@ class TextGenWebUILLM {
     this.basePath = process.env.TEXT_GEN_WEB_UI_BASE_PATH;
     this.openai = new OpenAIApi({
       baseURL: this.basePath,
-      apiKey: null,
+      apiKey: process.env.TEXT_GEN_WEB_UI_API_KEY ?? null,
     });
     this.model = null;
     this.limits = {
