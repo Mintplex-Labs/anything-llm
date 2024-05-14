@@ -125,7 +125,7 @@ function systemEndpoints(app) {
             user: null,
             valid: false,
             token: null,
-            message: "Invalid login credentials. Note: Username and Passwords are case sensitive.",
+            message: "Invalid login credentials.",
           });
           return;
         }
