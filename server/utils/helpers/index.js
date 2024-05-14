@@ -122,6 +122,9 @@ function getEmbeddingEngineSelection() {
     case "cohere":
       const { CohereEmbedder } = require("../EmbeddingEngines/cohere");
       return new CohereEmbedder();
+    case "voyageai":
+      const { VoyageAiEmbedder } = require("../EmbeddingEngines/voyageAi");
+      return new VoyageAiEmbedder();
     default:
       return null;
   }
