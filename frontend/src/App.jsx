@@ -9,7 +9,7 @@ import PrivateRoute, {
 import { ToastContainer } from "react-toastify";
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
-import AnythingLLMLogo from "./assets/logo/anything-llm.png";
+import AnythingLLMLogo from "./assets/logo/anything-llm-splash.png";
 import MintplexLabsLogo from "./assets/logo/mintplexlabs.png";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
@@ -144,12 +144,12 @@ function BootLoader({ children }) {
   const [ready, setReady] = useState(false);
   window.addEventListener(READY_EVENT_NAME, () => setReady(true));
 
-  if (ready) return <>{children}</>;
+  // if (ready) return <>{children}</>;
   return (
     <div className="fixed left-0 top-0 z-999999 flex h-screen w-screen bg-fullscreen-loader">
       <div className="flex w-full justify-center items-center flex-col">
         <img src={AnythingLLMLogo} className="w-[317px]" />
-        <p className="text-xs text-gray-400 mt-4  animate-pulse">
+        <p className="text-sm text-gray-400 mt-4 animate-pulse">
           loading workspaces...
         </p>
       </div>
