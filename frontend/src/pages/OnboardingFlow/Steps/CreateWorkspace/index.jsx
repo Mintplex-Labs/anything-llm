@@ -7,7 +7,7 @@ import Workspace from "@/models/workspace";
 
 const TITLE = "Create your first workspace";
 const DESCRIPTION =
-  "Create your first workspace and get started with ChatLTT.";
+  "Create your first workspace and get started with AnythingLLM.";
 
 export default function CreateWorkspace({
   setHeader,
@@ -24,7 +24,7 @@ export default function CreateWorkspace({
   }, []);
 
   useEffect(() => {
-    if (workspaceName.length > 3) {
+    if (workspaceName.length > 0) {
       setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
     } else {
       setForwardBtn({ showing: true, disabled: true, onClick: handleForward });
@@ -71,21 +71,17 @@ export default function CreateWorkspace({
             htmlFor="name"
             className="block mb-3 text-sm font-medium text-white"
           >
-            ChatLTT Hub Name
+            Workspace Name
           </label>
           <input
             name="name"
             type="text"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg block w-full p-2.5"
             placeholder="My Workspace"
-            minLength={4}
             required={true}
             autoComplete="off"
             onChange={(e) => setWorkspaceName(e.target.value)}
           />
-          <div className="mt-4 text-white text-opacity-80 text-xs font-base -mb-2">
-            Hub's name must be at least 4 characters.
-          </div>
         </div>
       </div>
       <button
