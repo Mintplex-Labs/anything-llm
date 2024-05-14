@@ -84,18 +84,21 @@ export default function ChatHistory({
     }
   };
 
+  console.log("HISTORY", history);
+
   const handleSendSuggestedMessage = (heading, message) => {
     sendCommand(`${heading} ${message}`, true);
   };
 
-  const handleEditMessage = async (editedMessage, chatId) => {
+  const saveEditedMessage = async (editedMessage, chatId) => {
     if (editedMessage) {
+      console.log("HISTORY", history);
       const updatedHistory = history.slice(
         0,
         history.findIndex((msg) => msg.chatId === chatId) + 1
       );
 
-      console.log("chatId", chatId);
+      console.log("updatedHistory", updatedHistory);
       await Workspace.deleteEditedChats(workspace.slug, chatId);
       sendCommand(editedMessage, true, updatedHistory);
     }
@@ -186,7 +189,7 @@ export default function ChatHistory({
             error={props.error}
             regenerateMessage={regenerateAssistantMessage}
             isLastMessage={isLastBotReply}
-            handleEditMessage={handleEditMessage}
+            saveEditedMessage={saveEditedMessage}
           />
         );
       })}

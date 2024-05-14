@@ -21,7 +21,7 @@ const HistoricalMessage = ({
   chatId = null,
   isLastMessage = false,
   regenerateMessage,
-  handleEditMessage,
+  saveEditedMessage,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const editableRef = useRef(null);
@@ -31,7 +31,7 @@ const HistoricalMessage = ({
     const form = new FormData(e.target);
     const editedMessage = form.get("editedMessage");
     console.log("chatid", chatId);
-    handleEditMessage(editedMessage, chatId);
+    saveEditedMessage(editedMessage, chatId);
     setIsEditing(false);
   };
 
@@ -119,7 +119,7 @@ const HistoricalMessage = ({
               isLastMessage={isLastMessage}
               regenerateMessage={regenerateMessage}
               role={role}
-              handleEditMessage={startEditing}
+              startEditing={startEditing}
             />
           </div>
         )}

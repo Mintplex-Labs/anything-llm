@@ -360,9 +360,13 @@ function workspaceEndpoints(app) {
           return;
         }
 
+        console.log("in here");
+
         const history = multiUserMode(response)
           ? await WorkspaceChats.forWorkspaceByUser(workspace.id, user.id)
           : await WorkspaceChats.forWorkspace(workspace.id);
+
+        console.log(history);
 
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {

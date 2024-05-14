@@ -19,7 +19,7 @@ const Actions = ({
   isLastMessage,
   regenerateMessage,
   role,
-  handleEditMessage,
+  startEditing,
 }) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
 
@@ -65,7 +65,7 @@ const Actions = ({
           )}
         </>
       ) : (
-        <EditMessage handleEditMessage={handleEditMessage} />
+        <EditMessage startEditing={startEditing} />
       )}
     </div>
   );
@@ -155,11 +155,11 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
   );
 }
 
-function EditMessage({ handleEditMessage, chatId }) {
+function EditMessage({ startEditing }) {
   return (
     <div className="mt-3 relative">
       <button
-        onClick={() => handleEditMessage(chatId)}
+        onClick={startEditing}
         data-tooltip-id="edit-input-text"
         data-tooltip-content="Edit"
         className="border-none text-zinc-300"
