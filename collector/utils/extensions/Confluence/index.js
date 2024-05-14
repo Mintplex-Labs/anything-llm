@@ -101,6 +101,8 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
     fs.mkdirSync(outFolderPath, { recursive: true });
 
   docs.forEach((doc) => {
+    if (!doc.pageContent) return;
+
     const data = {
       id: v4(),
       url: doc.metadata.url + ".page",
