@@ -98,6 +98,9 @@ export default {
     transcriptionPreference: () => {
       return "/settings/transcription-preference";
     },
+    audioPreference: () => {
+      return "/settings/audio-preference";
+    },
     embedder: {
       modelPreference: () => "/settings/embedding-preference",
       chunkingPreference: () => "/settings/text-splitter-preference",
