@@ -17,7 +17,7 @@ export default function NativeTTSMessage({ message }) {
 
   function speakMessage() {
     // if the user is pausing this particular message
-    // while the synth if speaking we can end it.
+    // while the synth is speaking we can end it.
     // If they are clicking another message's TTS
     // we need to ignore that until they pause the one that is playing.
     if (window.speechSynthesis.speaking && speaking) {

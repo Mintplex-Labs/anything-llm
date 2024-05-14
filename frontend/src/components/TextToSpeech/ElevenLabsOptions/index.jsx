@@ -64,7 +64,7 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
           Chat Model Selection
         </label>
         <select
-          name="OpenAiModelPref"
+          name="TTSElevenLabsVoiceModel"
           disabled={true}
           className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
@@ -82,7 +82,7 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
         Chat Model Selection
       </label>
       <select
-        name="OpenAiModelPref"
+        name="TTSElevenLabsVoiceModel"
         required={true}
         className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
