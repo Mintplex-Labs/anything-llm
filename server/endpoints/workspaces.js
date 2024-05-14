@@ -403,6 +403,32 @@ function workspaceEndpoints(app) {
     }
   );
 
+  app.delete(
+    "/workspace/:slug/delete-edited-chats",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const { startingId } = reqBody(request);
+        const workspace = response.locals.workspace;
+
+        if (!workspace) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        await WorkspaceChats.delete({
+          workspaceId: workspace.id,
+          id: { gt: Number(startingId) },
+        });
+
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
   app.post(
     "/workspace/:slug/chat-feedback/:chatId",
     [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],

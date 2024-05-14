@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useState, useRef } from "react";
 import { Warning } from "@phosphor-icons/react";
 import Jazzicon from "../../../../UserIcon";
 import Actions from "./Actions";
@@ -21,7 +21,35 @@ const HistoricalMessage = ({
   chatId = null,
   isLastMessage = false,
   regenerateMessage,
+  handleEditMessage,
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const editableRef = useRef(null);
+
+  const handleSaveMessage = (e) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+    const editedMessage = form.get("editedMessage");
+    console.log("chatid", chatId);
+    handleEditMessage(editedMessage, chatId);
+    setIsEditing(false);
+  };
+
+  const startEditing = () => {
+    setIsEditing(true);
+    setTimeout(() => {
+      // focus and move cursor to the end
+      editableRef.current.focus();
+      editableRef.current.selectionStart = editableRef.current.value.length;
+    }, 0);
+  };
+
+  const adjustTextArea = (event) => {
+    const element = event.target;
+    element.style.height = "auto";
+    element.style.height = element.scrollHeight + "px";
+  };
+
   return (
     <div
       key={uuid}
@@ -44,6 +72,33 @@ const HistoricalMessage = ({
                 {error}
               </p>
             </div>
+          ) : isEditing ? (
+            <form onSubmit={handleSaveMessage} className="flex flex-col w-full">
+              <textarea
+                ref={editableRef}
+                name="editedMessage"
+                className={`w-full rounded bg-historical-msg-user active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-none overflow-hidden`}
+                defaultValue={message}
+                onKeyUp={adjustTextArea}
+              />
+              <div className="mt-3 flex justify-center">
+                <button
+                  type="submit"
+                  className="px-2 py-1 bg-gray-200 text-gray-700 font-medium rounded-md mr-2 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  Save & Submit
+                </button>
+                <button
+                  type="button"
+                  className="px-2 py-1 bg-historical-msg-system text-white font-medium rounded-md hover:bg-historical-msg-user/90 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+                  onClick={() => {
+                    setIsEditing(false);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           ) : (
             <span
               className={`flex flex-col gap-y-1`}
@@ -53,7 +108,7 @@ const HistoricalMessage = ({
             />
           )}
         </div>
-        {role === "assistant" && !error && (
+        {!error && (
           <div className="flex gap-x-5">
             <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden" />
             <Actions
@@ -63,6 +118,8 @@ const HistoricalMessage = ({
               slug={workspace?.slug}
               isLastMessage={isLastMessage}
               regenerateMessage={regenerateMessage}
+              role={role}
+              handleEditMessage={startEditing}
             />
           </div>
         )}

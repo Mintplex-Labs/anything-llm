@@ -7,6 +7,7 @@ import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import useUser from "@/hooks/useUser";
 import Chartable from "./Chartable";
+import Workspace from "@/models/workspace";
 
 export default function ChatHistory({
   history = [],
@@ -85,6 +86,19 @@ export default function ChatHistory({
 
   const handleSendSuggestedMessage = (heading, message) => {
     sendCommand(`${heading} ${message}`, true);
+  };
+
+  const handleEditMessage = async (editedMessage, chatId) => {
+    if (editedMessage) {
+      const updatedHistory = history.slice(
+        0,
+        history.findIndex((msg) => msg.chatId === chatId) + 1
+      );
+
+      console.log("chatId", chatId);
+      await Workspace.deleteEditedChats(workspace.slug, chatId);
+      sendCommand(editedMessage, true, updatedHistory);
+    }
   };
 
   if (history.length === 0) {
@@ -172,6 +186,7 @@ export default function ChatHistory({
             error={props.error}
             regenerateMessage={regenerateAssistantMessage}
             isLastMessage={isLastBotReply}
+            handleEditMessage={handleEditMessage}
           />
         );
       })}

@@ -90,6 +90,22 @@ const Workspace = {
         return false;
       });
   },
+
+  deleteEditedChats: async function (slug = "", startingId) {
+    return await fetch(`${API_BASE}/workspace/${slug}/delete-edited-chats`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ startingId }),
+    })
+      .then((res) => {
+        if (res.ok) return true;
+        throw new Error("Failed to delete chats.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return false;
+      });
+  },
   streamChat: async function ({ slug }, message, handleChat) {
     const ctrl = new AbortController();
 

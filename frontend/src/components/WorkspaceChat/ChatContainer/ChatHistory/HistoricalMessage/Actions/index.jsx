@@ -6,6 +6,7 @@ import {
   ThumbsUp,
   ThumbsDown,
   ArrowsClockwise,
+  Pencil,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
@@ -17,6 +18,8 @@ const Actions = ({
   slug,
   isLastMessage,
   regenerateMessage,
+  role,
+  handleEditMessage,
 }) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
 
@@ -29,32 +32,40 @@ const Actions = ({
 
   return (
     <div className="flex justify-start items-center gap-x-4">
-      <CopyMessage message={message} />
-      {isLastMessage &&
-        !message?.includes("Workspace chat memory was reset!") && (
-          <RegenerateMessage
-            regenerateMessage={regenerateMessage}
-            slug={slug}
-            chatId={chatId}
-          />
-        )}
-      {chatId && (
+      {role === "assistant" ? (
         <>
-          <FeedbackButton
-            isSelected={selectedFeedback === true}
-            handleFeedback={() => handleFeedback(true)}
-            tooltipId={`${chatId}-thumbs-up`}
-            tooltipContent="Good response"
-            IconComponent={ThumbsUp}
-          />
-          <FeedbackButton
-            isSelected={selectedFeedback === false}
-            handleFeedback={() => handleFeedback(false)}
-            tooltipId={`${chatId}-thumbs-down`}
-            tooltipContent="Bad response"
-            IconComponent={ThumbsDown}
-          />
+          <CopyMessage message={message} />
+          {isLastMessage &&
+            !message?.includes("Workspace chat memory was reset!") && (
+              <>
+                <RegenerateMessage
+                  regenerateMessage={regenerateMessage}
+                  slug={slug}
+                  chatId={chatId}
+                />
+              </>
+            )}
+          {chatId && (
+            <>
+              <FeedbackButton
+                isSelected={selectedFeedback === true}
+                handleFeedback={() => handleFeedback(true)}
+                tooltipId={`${chatId}-thumbs-up`}
+                tooltipContent="Good response"
+                IconComponent={ThumbsUp}
+              />
+              <FeedbackButton
+                isSelected={selectedFeedback === false}
+                handleFeedback={() => handleFeedback(false)}
+                tooltipId={`${chatId}-thumbs-down`}
+                tooltipContent="Bad response"
+                IconComponent={ThumbsDown}
+              />
+            </>
+          )}
         </>
+      ) : (
+        <EditMessage handleEditMessage={handleEditMessage} />
       )}
     </div>
   );
@@ -136,6 +147,28 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
       </button>
       <Tooltip
         id="regenerate-assistant-text"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
+    </div>
+  );
+}
+
+function EditMessage({ handleEditMessage, chatId }) {
+  return (
+    <div className="mt-3 relative">
+      <button
+        onClick={() => handleEditMessage(chatId)}
+        data-tooltip-id="edit-input-text"
+        data-tooltip-content="Edit"
+        className="border-none text-zinc-300"
+        aria-label="Edit"
+      >
+        <Pencil size={18} className="mb-1" />
+      </button>
+      <Tooltip
+        id="edit-input-text"
         place="bottom"
         delayShow={300}
         className="tooltip !text-xs"
