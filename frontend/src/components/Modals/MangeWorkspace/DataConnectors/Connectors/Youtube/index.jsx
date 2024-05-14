@@ -7,6 +7,7 @@ export default function BulkYoutubeOptions() {
   const [urls, setUrls] = useState(''); // State to store the comma-separated URLs
   const [currentUrlIndex, setCurrentUrlIndex] = useState(0); // State to keep track of the current URL being processed
   const [errors, setErrors] = useState([]); // State to store errors for each URL
+  const [backoffDelay, setBackoffDelay] = useState(2000); // Initial delay for backoff
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +25,9 @@ export default function BulkYoutubeOptions() {
   };
 
   const processUrls = async (urls) => {
+    let retryCount = 0; // Counter for retry attempts
+    let lastError = null; // Last error encountered
+
     setLoading(true);
     showToast("Fetching transcripts for YouTube videos.", "info", {
       clear: true,
@@ -46,19 +50,39 @@ export default function BulkYoutubeOptions() {
           );
         }
       } catch (e) {
-        console.error(e);
-        setErrors(prevErrors => [...prevErrors, e.message]); // Add error to the errors array
+        // Check if the error is due to rate limiting
+        if (e.message.includes('Rate limit')) {
+          const retryAfter = parseInt(e.headers['retry-after'] || '60', 10); // Parse the 'Retry-After' header if present
+          const newDelay = Math.min(backoffDelay * 2, retryAfter * 1000); // Calculate the new delay, capped at twice the backoff delay or the 'Retry-After' value multiplied by 10
+          setBackoffDelay(newDelay); // Update the backoff delay for the next time for the next attempt
+          showToast(`Rate limit exceeded. Retrying after ${newDelay / 1000} seconds...`, "warning", {
+            clear: true,
+            autoClose: true,
+          });
+          retryCount++;
+          lastError = e;
+          if (retryCount < 5) { // Implement a maximum number of retries
+            await new Promise(resolve => setTimeout(resolve, newDelay));
+            continue; // Retry after the delay
+          } else {
+            throw new Error(`Failed to process URL after ${retryCount}retries} retries: ${lastError.message}`);
+          }
+        } else {
+          console.error(e);
+          setErrors(prevErrors => [...prevErrors, e.message]); // Add error to the errors array
+        }
       } finally {
         if (currentUrlIndex < urls.length - 1) {
           setCurrentUrlIndex(currentUrlIndex + 1); // Move to the next URL
         } else {
           setLoading(false);
           showToast('All transcripts processed.', 'info');
+          setBackoffDelay(2000); // Reset the backoff delay for the next batch of URLs
         }
       }
 
       // Wait for 2 seconds before processing the next URL
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, backoffDelay));
     }
   };
 
@@ -117,3 +141,4 @@ export default function BulkYoutubeOptions() {
     </div>
   );
 }
+
