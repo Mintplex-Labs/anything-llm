@@ -39,7 +39,7 @@ export default function AsyncTTSMessage({ slug, chatId }) {
 
   useEffect(() => {
     function setupPlayer() {
-      if (!playerRef) return;
+      if (!playerRef?.current) return;
       playerRef.current.addEventListener("play", () => {
         setSpeaking(true);
       });
