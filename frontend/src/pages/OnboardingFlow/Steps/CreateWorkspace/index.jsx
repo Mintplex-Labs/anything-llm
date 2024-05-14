@@ -24,7 +24,7 @@ export default function CreateWorkspace({
   }, []);
 
   useEffect(() => {
-    if (workspaceName.length > 3) {
+    if (workspaceName.length > 0) {
       setForwardBtn({ showing: true, disabled: false, onClick: handleForward });
     } else {
       setForwardBtn({ showing: true, disabled: true, onClick: handleForward });
@@ -78,14 +78,10 @@ export default function CreateWorkspace({
             type="text"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg block w-full p-2.5"
             placeholder="My Workspace"
-            minLength={4}
             required={true}
             autoComplete="off"
             onChange={(e) => setWorkspaceName(e.target.value)}
           />
-          <div className="mt-4 text-white text-opacity-80 text-xs font-base -mb-2">
-            Workspace name must be at least 4 characters.
-          </div>
         </div>
       </div>
       <button
