@@ -811,3 +811,7 @@ does not extend the close button beyond the viewport. */
     opacity: 0;
   }
 }
+
+.bg-fullscreen-loader {
+  background: linear-gradient(#3d4147, #2c2f35);
+}

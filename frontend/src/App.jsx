@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
 import AnythingLLMLogo from "./assets/logo/anything-llm.png";
+import MintplexLabsLogo from "./assets/logo/mintplexlabs.png";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
 import WorkspaceChat from "./pages/WorkspaceChat";
@@ -145,13 +146,15 @@ function BootLoader({ children }) {
 
   if (ready) return <>{children}</>;
   return (
-    <div className="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-sidebar">
-      <div className="flex flex-col gap-y-1 items-center">
-        <img src={AnythingLLMLogo} className="w-[50%]" />
-        <p className="text-xs text-white">by Mintplex Labs Inc</p>
+    <div className="fixed left-0 top-0 z-999999 flex h-screen w-screen bg-fullscreen-loader">
+      <div className="flex w-full justify-center items-center flex-col">
+        <img src={AnythingLLMLogo} className="w-[317px]" />
         <p className="text-xs text-gray-400 mt-4  animate-pulse">
           loading workspaces...
         </p>
+      </div>
+      <div className="absolute bottom-[40px] flex w-full justify-center">
+        <img src={MintplexLabsLogo} className="w-[244px] h-[61px]" />
       </div>
     </div>
   );

@@ -30,15 +30,13 @@ export default function OpenAiTextToSpeechOptions({ settings }) {
         </label>
         <select
           name="TTSOpenAIVoiceModel"
+          defaultValue={settings?.TTSOpenAIVoiceModel}
           className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           {["alloy", "echo", "fable", "onyx", "nova", "shimmer"].map(
             (voice) => {
               return (
-                <option
-                  value={voice}
-                  selected={settings?.TTSOpenAIVoiceModel === voice}
-                >
+                <option key={voice} value={voice}>
                   {toProperCase(voice)}
                 </option>
               );

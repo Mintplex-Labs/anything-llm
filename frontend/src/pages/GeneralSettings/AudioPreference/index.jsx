@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { isMobile } from "react-device-detect";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
@@ -19,22 +18,19 @@ export default function AudioPreference() {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+    <div
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex"
+    >
       <Sidebar />
       {loading ? (
-        <div
-          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
-        >
+        <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
           </div>
         </div>
       ) : (
-        <div
-          style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-          className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
-        >
+        <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
           {/* Why no STT support for Electron? https://stackoverflow.com/a/74114170 */}
           {/* <SpeechToTextProvider settings={settings} /> */}
           <TextToSpeechProvider settings={settings} />
