@@ -1,5 +1,6 @@
 const { verifyPayloadIntegrity } = require("../middleware/verifyIntegrity");
 const { reqBody } = require("../utils/http");
+const { validURL } = require("../utils/url");
 
 function extensions(app) {
   if (!app) return;
@@ -92,7 +93,9 @@ function extensions(app) {
     async function (request, response) {
       try {
         const websiteDepth = require("../utils/extensions/WebsiteDepth");
-        const { url, depth, maxLinks } = reqBody(request);
+        const { url, depth = 1, maxLinks = 20 } = reqBody(request);
+        if (!validURL(url)) return { success: false, reason: "Not a valid URL." };
+
         const scrapedData = await websiteDepth(url, depth, maxLinks);
         response.status(200).json({ success: true, data: scrapedData });
       } catch (e) {

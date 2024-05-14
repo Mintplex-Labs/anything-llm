@@ -14,6 +14,8 @@ async function discoverLinks(startUrl, depth = 1, maxLinks = 20) {
   const discoveredLinks = new Set();
   const pendingLinks = [startUrl];
   let currentLevel = 0;
+  depth = depth < 1 ? 1 : depth;
+  maxLinks = maxLinks < 1 ? 1 : maxLinks;
 
   // Check depth and if there are any links left to scrape
   while (currentLevel < depth && pendingLinks.length > 0) {

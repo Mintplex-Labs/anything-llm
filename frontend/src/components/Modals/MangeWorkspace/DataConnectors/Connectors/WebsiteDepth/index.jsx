@@ -23,8 +23,6 @@ export default function WebsiteDepthOptions() {
         maxLinks: parseInt(form.get("maxLinks")),
       });
 
-      console.log({ data, error });
-
       if (!!error) {
         showToast(error, "error", { clear: true });
         setLoading(false);
@@ -66,7 +64,7 @@ export default function WebsiteDepthOptions() {
                 <input
                   type="url"
                   name="url"
-                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                   placeholder="https://example.com"
                   required={true}
                   autoComplete="off"
@@ -77,7 +75,8 @@ export default function WebsiteDepthOptions() {
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold">Depth</label>
                   <p className="text-xs font-normal text-white/50">
-                    Depth of the website scraping (number of levels to scrape).
+                    This is the number of child-links that the worker should
+                    follow from the origin URL.
                   </p>
                 </div>
                 <input
@@ -85,7 +84,7 @@ export default function WebsiteDepthOptions() {
                   name="depth"
                   min="1"
                   max="5"
-                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                   required={true}
                   defaultValue="1"
                 />
@@ -103,7 +102,7 @@ export default function WebsiteDepthOptions() {
                   type="number"
                   name="maxLinks"
                   min="1"
-                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                   required={true}
                   defaultValue="20"
                 />

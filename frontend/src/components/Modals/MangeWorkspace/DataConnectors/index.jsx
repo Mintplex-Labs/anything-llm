@@ -23,10 +23,9 @@ export const DATA_CONNECTORS = {
     options: <YoutubeOptions />,
   },
   "website-depth": {
-    name: "Website Depth",
+    name: "Bulk Link Scraper",
     image: ConnectorImages.websiteDepth,
-    description:
-      "Scrape a website and its links on a page up to a certain depth.",
+    description: "Scrape a website and its sub-links up to a certain depth.",
     options: <WebsiteDepthOptions />,
   },
   confluence: {
