@@ -332,7 +332,7 @@ const System = {
       })
       .then((blob) => (blob ? URL.createObjectURL(blob) : null))
       .catch((e) => {
-        console.log(e);
+        // console.log(e);
         return null;
       });
   },

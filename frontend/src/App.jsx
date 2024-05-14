@@ -32,6 +32,9 @@ const GeneralLLMPreference = lazy(
 const GeneralTranscriptionPreference = lazy(
   () => import("@/pages/GeneralSettings/TranscriptionPreference")
 );
+const GeneralAudioPreference = lazy(
+  () => import("@/pages/GeneralSettings/AudioPreference")
+);
 const GeneralEmbeddingPreference = lazy(
   () => import("@/pages/GeneralSettings/EmbeddingPreference")
 );
@@ -84,6 +87,10 @@ export default function App() {
                 element={
                   <AdminRoute Component={GeneralTranscriptionPreference} />
                 }
+              />
+              <Route
+                path="/settings/audio-preference"
+                element={<AdminRoute Component={GeneralAudioPreference} />}
               />
               <Route
                 path="/settings/embedding-preference"

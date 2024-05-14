@@ -2841,6 +2841,11 @@ react-smooth@^4.0.0:
     prop-types "^15.8.1"
     react-transition-group "^4.4.5"
 
+react-speech-recognition@^3.10.0:
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/react-speech-recognition/-/react-speech-recognition-3.10.0.tgz#7aa43bb28d78b92671864dabba3a70489ccad27b"
+  integrity sha512-EVSr4Ik8l9urwdPiK2r0+ADrLyDDrjB0qBRdUWO+w2MfwEBrj6NuRmy1GD3x7BU/V6/hab0pl8Lupen0zwlJyw==
+
 react-tag-input-component@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/react-tag-input-component/-/react-tag-input-component-2.0.2.tgz#f62f013c6a535141dd1c6c3a88858223170150f1"
