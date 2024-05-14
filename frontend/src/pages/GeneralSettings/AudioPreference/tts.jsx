@@ -47,7 +47,7 @@ export default function TextToSpeechProvider({ settings }) {
   const searchInputRef = useRef(null);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     const form = e.target;
     const data = { TextToSpeechProvider: selectedProvider };
     const formData = new FormData(form);
@@ -110,10 +110,7 @@ export default function TextToSpeechProvider({ settings }) {
         </div>
         <div className="w-full justify-end flex">
           {hasChanges && (
-            <CTAButton
-              onClick={() => handleSubmit()}
-              className="mt-3 mr-0 -mb-14 z-10"
-            >
+            <CTAButton className="mt-3 mr-0 -mb-14 z-10">
               {saving ? "Saving..." : "Save changes"}
             </CTAButton>
           )}
@@ -140,7 +137,7 @@ export default function TextToSpeechProvider({ settings }) {
                     name="tts-provider-search"
                     autoComplete="off"
                     placeholder="Search text to speech providers"
-                    className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:border-white text-white placeholder:text-white placeholder:font-medium"
+                    className="border-none -ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:border-white text-white placeholder:text-white placeholder:font-medium"
                     onChange={(e) => setSearchQuery(e.target.value)}
                     ref={searchInputRef}
                     onKeyDown={(e) => {
