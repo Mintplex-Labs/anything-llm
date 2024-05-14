@@ -46,7 +46,7 @@ function embeddedEndpoints(app) {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-          VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
         });
         response.end();
       } catch (e) {

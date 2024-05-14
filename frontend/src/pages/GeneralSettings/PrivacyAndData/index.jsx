@@ -64,7 +64,7 @@ export default function PrivacyAndDataHandling() {
 function ThirdParty({ settings }) {
   const llmChoice = settings?.LLMProvider || "openai";
   const embeddingEngine = settings?.EmbeddingEngine || "openai";
-  const vectorDb = settings?.VectorDB || "pinecone";
+  const vectorDb = settings?.VectorDB || "lancedb";
 
   return (
     <div className="py-8 w-full flex items-start justify-center flex-col gap-y-6 border-b-2 border-white/10">

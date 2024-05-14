@@ -155,6 +155,10 @@ const KEY_MAPPING = {
     envKey: "TEXT_GEN_WEB_UI_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  TextGenWebUIAPIKey: {
+    envKey: "TEXT_GEN_WEB_UI_API_KEY",
+    checks: [],
+  },
 
   // Generic OpenAI InferenceSettings
   GenericOpenAiBasePath: {

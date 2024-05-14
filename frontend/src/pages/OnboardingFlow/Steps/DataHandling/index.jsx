@@ -299,7 +299,7 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
     async function fetchKeys() {
       const _settings = await System.keys();
       setLLMChoice(_settings?.LLMProvider || "openai");
-      setVectorDb(_settings?.VectorDB || "pinecone");
+      setVectorDb(_settings?.VectorDB || "lancedb");
       setEmbeddingEngine(_settings?.EmbeddingEngine || "openai");
 
       setLoading(false);
