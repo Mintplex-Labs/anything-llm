@@ -144,7 +144,7 @@ function BootLoader({ children }) {
   const [ready, setReady] = useState(false);
   window.addEventListener(READY_EVENT_NAME, () => setReady(true));
 
-  // if (ready) return <>{children}</>;
+  if (ready) return <>{children}</>;
   return (
     <div className="fixed left-0 top-0 z-999999 flex h-screen w-screen bg-fullscreen-loader">
       <div className="flex w-full justify-center items-center flex-col">
