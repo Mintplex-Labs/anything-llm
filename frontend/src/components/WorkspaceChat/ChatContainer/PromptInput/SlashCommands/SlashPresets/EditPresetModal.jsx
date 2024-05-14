@@ -31,11 +31,12 @@ export default function EditPresetModal({
   };
 
   const handleDelete = async () => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this preset?"
-    );
-    if (!confirmDelete) return;
+    if (!window.confirm("Are you sure you want to delete this preset?")) {
+      refocusApplication();
+      return false;
+    }
 
+    refocusApplication();
     setDeleting(true);
     await onDelete(preset.id);
     setDeleting(false);
@@ -120,7 +121,7 @@ export default function EditPresetModal({
                 disabled={deleting}
                 onClick={handleDelete}
                 type="button"
-                className="px-4 py-2 rounded-lg text-red-500 hover:bg-red-500/25 transition-all duration-300 disabled:opacity-50"
+                className="border-none px-4 py-2 rounded-lg text-red-500 hover:bg-red-500/25 transition-all duration-300 disabled:opacity-50"
               >
                 {deleting ? "Deleting..." : "Delete Preset"}
               </button>
@@ -129,7 +130,7 @@ export default function EditPresetModal({
               <button
                 onClick={onClose}
                 type="button"
-                className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
+                className="border-none px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
               >
                 Cancel
               </button>

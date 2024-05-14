@@ -80,7 +80,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
             setShowing(false);
             sendCommand(`${preset.command} `, false);
           }}
-          className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-row justify-start"
+          className="border-none w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-2 rounded-xl flex flex-row justify-start items-center"
         >
           <div className="w-full flex-col text-left flex pointer-events-none">
             <div className="text-white text-sm font-bold">{preset.command}</div>
@@ -89,11 +89,12 @@ export default function SlashPresets({ setShowing, sendCommand }) {
             </div>
           </div>
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               handleEditPreset(preset);
             }}
-            className="text-white text-sm p-1 hover:cursor-pointer hover:bg-zinc-900 rounded-full mt-1"
+            className="border-none transition-all duration-300 flex w-fit h-fit p-1 rounded-full text-white text-sm hover:cursor-pointer hover:bg-zinc-900 rounded-full"
           >
             <DotsThree size={24} weight="bold" />
           </button>
