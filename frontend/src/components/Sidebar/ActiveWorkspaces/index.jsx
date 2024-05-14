@@ -166,7 +166,7 @@ export default function ActiveWorkspaces() {
                           <GearSix
                             color={
                               isInWorkspaceSettings && workspace.slug === slug
-                                ? "#46C8FF"
+                                ? "#FF5757"
                                 : gearHover[workspace.id]
                                 ? "#FFFFFF"
                                 : "#A7A8A9"
