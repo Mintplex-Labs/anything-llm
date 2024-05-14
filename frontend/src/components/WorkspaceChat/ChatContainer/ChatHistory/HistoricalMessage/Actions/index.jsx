@@ -156,10 +156,21 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
 }
 
 function EditMessage({ startEditing }) {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    startEditing();
+  }
+
+  if (isEditing) {
+    return null;
+  }
+
   return (
     <div className="mt-3 relative">
       <button
-        onClick={startEditing}
+        onClick={handleEditClick}
         data-tooltip-id="edit-input-text"
         data-tooltip-content="Edit"
         className="border-none text-zinc-300"

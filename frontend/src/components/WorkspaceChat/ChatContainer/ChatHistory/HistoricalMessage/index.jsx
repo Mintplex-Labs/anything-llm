@@ -79,7 +79,7 @@ const HistoricalMessage = ({
                 name="editedMessage"
                 className={`w-full rounded bg-historical-msg-user active:outline-none focus:outline-none focus:ring-0 pr-16 pl-1.5 pt-1.5 resize-none overflow-hidden`}
                 defaultValue={message}
-                onKeyUp={adjustTextArea}
+                onChange={adjustTextArea}
               />
               <div className="mt-3 flex justify-center">
                 <button

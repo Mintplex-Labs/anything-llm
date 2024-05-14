@@ -422,7 +422,7 @@ function workspaceEndpoints(app) {
 
         await WorkspaceChats.delete({
           workspaceId: workspace.id,
-          id: { gt: Number(startingId) },
+          id: { gte: Number(startingId) },
         });
 
         response.sendStatus(200).end();

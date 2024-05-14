@@ -84,21 +84,25 @@ export default function ChatHistory({
     }
   };
 
-  console.log("HISTORY", history);
-
   const handleSendSuggestedMessage = (heading, message) => {
     sendCommand(`${heading} ${message}`, true);
   };
 
   const saveEditedMessage = async (editedMessage, chatId) => {
     if (editedMessage) {
-      console.log("HISTORY", history);
+
+      // remove all messages after the edited message
       const updatedHistory = history.slice(
         0,
         history.findIndex((msg) => msg.chatId === chatId) + 1
       );
 
+      // update last message in history to edited message
+      updatedHistory[updatedHistory.length - 1].content = editedMessage;
+
       console.log("updatedHistory", updatedHistory);
+      console.log("chatId", chatId);
+      // remove all edited messages after the edited message in backend
       await Workspace.deleteEditedChats(workspace.slug, chatId);
       sendCommand(editedMessage, true, updatedHistory);
     }
