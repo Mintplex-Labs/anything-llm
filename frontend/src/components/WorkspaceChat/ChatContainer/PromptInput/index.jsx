@@ -11,7 +11,6 @@ import AvailableAgentsButton, {
   useAvailableAgents,
 } from "./AgentMenu";
 import TextSizeButton from "./TextSizeMenu";
-import SpeechToText from "./SpeechToText";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 export default function PromptInput({
@@ -157,7 +156,8 @@ export default function PromptInput({
                 <TextSizeButton />
               </div>
               <div className="flex gap-x-2">
-                <SpeechToText sendCommand={sendCommand} />
+                {/* Why no support for Electron? https://stackoverflow.com/a/74114170 */}
+                {/* <SpeechToText sendCommand={sendCommand} /> */}
               </div>
             </div>
           </div>

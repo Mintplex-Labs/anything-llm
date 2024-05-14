@@ -157,7 +157,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.audioPreference()}
-      btnText="Voice and Speech Support"
+      btnText="Text-to-speech Support"
       icon={<Microphone className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}

@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { isMobile } from "react-device-detect";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
-import SpeechToTextProvider from "./stt";
 import TextToSpeechProvider from "./tts";
 
 export default function AudioPreference() {
@@ -36,7 +35,8 @@ export default function AudioPreference() {
           style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
           className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
         >
-          <SpeechToTextProvider settings={settings} />
+          {/* Why no STT support for Electron? https://stackoverflow.com/a/74114170 */}
+          {/* <SpeechToTextProvider settings={settings} /> */}
           <TextToSpeechProvider settings={settings} />
         </div>
       )}
