@@ -1,5 +1,3 @@
-const { toChunks } = require("../../helpers");
-
 class VoyageAiEmbedder {
   constructor() {
     if (!process.env.VOYAGEAI_API_KEY)
