@@ -23,9 +23,6 @@ export default {
     vectorDatabase: () => {
       return "/onboarding/vector-database";
     },
-    customLogo: () => {
-      return "/onboarding/custom-logo";
-    },
     userSetup: () => {
       return "/onboarding/user-setup";
     },
@@ -100,6 +97,9 @@ export default {
     },
     transcriptionPreference: () => {
       return "/settings/transcription-preference";
+    },
+    audioPreference: () => {
+      return "/settings/audio-preference";
     },
     embedder: {
       modelPreference: () => "/settings/embedding-preference",

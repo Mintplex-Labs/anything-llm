@@ -1,6 +1,7 @@
 const AgentPlugins = require("./aibitat/plugins");
 const { SystemSettings } = require("../../models/systemSettings");
 const { safeJsonParse } = require("../http");
+const Provider = require("./aibitat/providers/ai-provider");
 
 const USER_AGENT = {
   name: "USER",
@@ -14,7 +15,7 @@ const USER_AGENT = {
 
 const WORKSPACE_AGENT = {
   name: "@agent",
-  getDefinition: async () => {
+  getDefinition: async (provider = null) => {
     const defaultFunctions = [
       AgentPlugins.memory.name, // RAG
       AgentPlugins.docSummarizer.name, // Doc Summary
@@ -30,7 +31,7 @@ const WORKSPACE_AGENT = {
     });
 
     return {
-      role: "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.",
+      role: Provider.systemPrompt(provider),
       functions: defaultFunctions,
     };
   },

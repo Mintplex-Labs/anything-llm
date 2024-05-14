@@ -34,7 +34,7 @@ function workspaceThreadEndpoints(app) {
             multiUserMode: multiUserMode(response),
             LLMSelection: process.env.LLM_PROVIDER || "openai",
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-            VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+            VectorDbSelection: process.env.VECTOR_DB || "lancedb",
           },
           user?.id
         );
@@ -84,6 +84,29 @@ function workspaceThreadEndpoints(app) {
       try {
         const thread = response.locals.thread;
         await WorkspaceThread.delete({ id: thread.id });
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/workspace/:slug/thread-bulk-delete",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const { slugs = [] } = reqBody(request);
+        if (slugs.length === 0) return response.sendStatus(200).end();
+
+        const user = await userFromSession(request, response);
+        const workspace = response.locals.workspace;
+        await WorkspaceThread.delete({
+          slug: { in: slugs },
+          user_id: user?.id ?? null,
+          workspace_id: workspace.id,
+        });
         response.sendStatus(200).end();
       } catch (e) {
         console.log(e.message, e);

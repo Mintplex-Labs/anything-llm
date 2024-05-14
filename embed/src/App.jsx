@@ -27,13 +27,19 @@ export default function App() {
   };
 
   const position = embedSettings.position || "bottom-right";
+  const windowWidth = embedSettings.windowWidth
+    ? `md:max-w-[${embedSettings.windowWidth}]`
+    : "md:max-w-[400px]";
+  const windowHeight = embedSettings.windowHeight
+    ? `md:max-h-[${embedSettings.windowHeight}]`
+    : "md:max-h-[700px]";
 
   return (
     <>
       <Head />
       <div className={`fixed inset-0 z-50 ${isChatOpen ? "block" : "hidden"}`}>
         <div
-          className={`w-full h-full bg-white md:max-w-[400px] md:max-h-[700px] md:fixed md:bottom-0 md:right-0 md:mb-4 md:mr-4 md:rounded-2xl md:border md:border-gray-300 md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] ${positionClasses[position]}`}
+          className={`${windowHeight} ${windowWidth} h-full w-full bg-white md:fixed md:bottom-0 md:right-0 md:mb-4 md:mr-4 md:rounded-2xl md:border md:border-gray-300 md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] ${positionClasses[position]}`}
           id="anything-llm-chat"
         >
           {isChatOpen && (

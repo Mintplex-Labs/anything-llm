@@ -26,6 +26,7 @@ export default function ChatContainer({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     if (!message || message === "") return false;
 
     const prevChatHistory = [
@@ -39,7 +40,6 @@ export default function ChatContainer({
         animate: true,
       },
     ];
-
     setChatHistory(prevChatHistory);
     setMessage("");
     setLoadingResponse(true);
@@ -72,12 +72,15 @@ export default function ChatContainer({
       );
       return;
     }
+
     loadingResponse === true && fetchReply();
   }, [loadingResponse, chatHistory]);
 
   return (
-    <div className="h-full w-full relative">
-      <ChatHistory settings={settings} history={chatHistory} />
+    <div className="h-full w-full flex flex-col">
+      <div className="flex-grow overflow-y-auto">
+        <ChatHistory settings={settings} history={chatHistory} />
+      </div>
       <PromptInput
         message={message}
         submit={handleSubmit}

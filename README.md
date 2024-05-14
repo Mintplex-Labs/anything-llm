@@ -4,8 +4,12 @@
   <a href="https://useanything.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
 
+<div align='center'>
+<a href="https://trendshift.io/repositories/2415" target="_blank"><img src="https://trendshift.io/api/badge/repositories/2415" alt="Mintplex-Labs%2Fanything-llm | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+</div>
+
 <p align="center">
-    <b>AnythingLLM: The all-in-one AI app you were looking for.<br />
+    <b>AnythingLLM:</b> The all-in-one AI app you were looking for.<br />
     Chat with your docs, use AI Agents, hyper-configurable, multi-user, & no fustrating set up required.
 </p>
 
@@ -22,6 +26,10 @@
    <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
     Hosted Instance
   </a>
+</p>
+
+<p align="center">
+  <b>English</b> · <a href='/README.zh-CN.md'>简体中文</a>
 </p>
 
 <p align="center">
@@ -65,6 +73,7 @@ Some cool features of AnythingLLM
 
 - [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
+- [OpenAI (Generic)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - [Anthropic](https://www.anthropic.com/)
 - [Google Gemini Pro](https://ai.google.dev/)
@@ -77,6 +86,9 @@ Some cool features of AnythingLLM
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [Mistral](https://mistral.ai/)
 - [Groq](https://groq.com/)
+- [Cohere](https://cohere.com/)
+- [KoboldCPP](https://github.com/LostRuins/koboldcpp)
+- [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
 
 **Supported Embedding models:**
 
@@ -86,6 +98,7 @@ Some cool features of AnythingLLM
 - [LocalAi (all)](https://localai.io/)
 - [Ollama (all)](https://ollama.ai/)
 - [LM Studio (all)](https://lmstudio.ai)
+- [Cohere](https://cohere.com/)
 
 **Supported Transcription models:**
 
@@ -142,7 +155,6 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 - create issue
 - create PR with branch name format of `<issue number>-<short name>`
 - yee haw let's merge
-
 
 ## Telemetry & Privacy
 

@@ -19,6 +19,8 @@ const HistoricalMessage = ({
   error = false,
   feedbackScore = null,
   chatId = null,
+  isLastMessage = false,
+  regenerateMessage,
 }) => {
   return (
     <div
@@ -59,6 +61,8 @@ const HistoricalMessage = ({
               feedbackScore={feedbackScore}
               chatId={chatId}
               slug={workspace?.slug}
+              isLastMessage={isLastMessage}
+              regenerateMessage={regenerateMessage}
             />
           </div>
         )}
@@ -92,4 +96,17 @@ function ProfileImage({ role, workspace }) {
   );
 }
 
-export default memo(HistoricalMessage);
+export default memo(
+  HistoricalMessage,
+  // Skip re-render the historical message:
+  // if the content is the exact same AND (not streaming)
+  // the lastMessage status is the same (regen icon)
+  // and the chatID matches between renders. (feedback icons)
+  (prevProps, nextProps) => {
+    return (
+      prevProps.message === nextProps.message &&
+      prevProps.isLastMessage === nextProps.isLastMessage &&
+      prevProps.chatId === nextProps.chatId
+    );
+  }
+);

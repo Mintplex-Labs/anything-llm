@@ -1,4 +1,3 @@
-const { chatPrompt } = require("../../chats");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -48,7 +47,7 @@ class GeminiLLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   promptWindowLimit() {
@@ -115,33 +114,25 @@ class GeminiLLM {
       allMessages[allMessages.length - 1].role === "user"
     )
       allMessages.pop();
+
+    // Validate that after every user message, there is a model message
+    // sometimes when using gemini we try to compress messages in order to retain as
+    // much context as possible but this may mess up the order of the messages that the gemini model expects
+    // we do this check to work around the edge case where 2 user prompts may be next to each other, in the message array
+    for (let i = 0; i < allMessages.length; i++) {
+      if (
+        allMessages[i].role === "user" &&
+        i < allMessages.length - 1 &&
+        allMessages[i + 1].role !== "model"
+      ) {
+        allMessages.splice(i + 1, 0, {
+          role: "model",
+          parts: [{ text: "Okay." }],
+        });
+      }
+    }
+
     return allMessages;
-  }
-
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const compressedHistory = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const chatThread = this.gemini.startChat({
-      history: this.formatMessages(compressedHistory),
-    });
-    const result = await chatThread.sendMessage(prompt);
-    const response = result.response;
-    const responseText = response.text();
-
-    if (!responseText) throw new Error("Gemini: No response could be parsed.");
-
-    return responseText;
   }
 
   async getChatCompletion(messages = [], _opts = {}) {
@@ -163,30 +154,6 @@ class GeminiLLM {
     if (!responseText) throw new Error("Gemini: No response could be parsed.");
 
     return responseText;
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Gemini chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const compressedHistory = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const chatThread = this.gemini.startChat({
-      history: this.formatMessages(compressedHistory),
-    });
-    const responseStream = await chatThread.sendMessageStream(prompt);
-    if (!responseStream.stream)
-      throw new Error("Could not stream response stream from Gemini.");
-
-    return responseStream.stream;
   }
 
   async streamGetChatCompletion(messages = [], _opts = {}) {

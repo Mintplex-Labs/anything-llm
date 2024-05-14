@@ -35,7 +35,7 @@ class AgentHandler {
           {
             workspaceId: this.invocation.workspace_id,
             user_id: this.invocation.user_id || null,
-            thread_id: this.invocation.user_id || null,
+            thread_id: this.invocation.thread_id || null,
             include: true,
           },
           limit,
@@ -77,14 +77,113 @@ class AgentHandler {
         if (!process.env.ANTHROPIC_API_KEY)
           throw new Error("Anthropic API key must be provided to use agents.");
         break;
+      case "lmstudio":
+        if (!process.env.LMSTUDIO_BASE_PATH)
+          throw new Error("LMStudio base path must be provided to use agents.");
+        break;
+      case "ollama":
+        if (!process.env.OLLAMA_BASE_PATH)
+          throw new Error("Ollama base path must be provided to use agents.");
+        break;
+      case "groq":
+        if (!process.env.GROQ_API_KEY)
+          throw new Error("Groq API key must be provided to use agents.");
+        break;
+      case "togetherai":
+        if (!process.env.TOGETHER_AI_API_KEY)
+          throw new Error("TogetherAI API key must be provided to use agents.");
+        break;
+      case "azure":
+        if (!process.env.AZURE_OPENAI_ENDPOINT || !process.env.AZURE_OPENAI_KEY)
+          throw new Error(
+            "Azure OpenAI API endpoint and key must be provided to use agents."
+          );
+        break;
+      case "koboldcpp":
+        if (!process.env.KOBOLD_CPP_BASE_PATH)
+          throw new Error(
+            "KoboldCPP must have a valid base path to use for the api."
+          );
+        break;
+      case "localai":
+        if (!process.env.LOCAL_AI_BASE_PATH)
+          throw new Error(
+            "LocalAI must have a valid base path to use for the api."
+          );
+        break;
+      case "gemini":
+        if (!process.env.GEMINI_API_KEY)
+          throw new Error("Gemini API key must be provided to use agents.");
+        break;
+      case "openrouter":
+        if (!process.env.OPENROUTER_API_KEY)
+          throw new Error("OpenRouter API key must be provided to use agents.");
+        break;
+      case "mistral":
+        if (!process.env.MISTRAL_API_KEY)
+          throw new Error("Mistral API key must be provided to use agents.");
+        break;
+      case "generic-openai":
+        if (!process.env.GENERIC_OPEN_AI_BASE_PATH)
+          throw new Error("API base path must be provided to use agents.");
+        break;
+      case "perplexity":
+        if (!process.env.PERPLEXITY_API_KEY)
+          throw new Error("Perplexity API key must be provided to use agents.");
+        break;
+      case "textgenwebui":
+        if (!process.env.TEXT_GEN_WEB_UI_BASE_PATH)
+          throw new Error(
+            "TextWebGenUI API base path must be provided to use agents."
+          );
+        break;
+
       default:
         throw new Error("No provider found to power agent cluster.");
     }
   }
 
+  #providerDefault() {
+    switch (this.provider) {
+      case "openai":
+        return "gpt-4o";
+      case "anthropic":
+        return "claude-3-sonnet-20240229";
+      case "lmstudio":
+        return "server-default";
+      case "ollama":
+        return "llama3:latest";
+      case "groq":
+        return "llama3-70b-8192";
+      case "togetherai":
+        return "mistralai/Mixtral-8x7B-Instruct-v0.1";
+      case "azure":
+        return "gpt-3.5-turbo";
+      case "koboldcpp":
+        return null;
+      case "gemini":
+        return "gemini-pro";
+      case "localai":
+        return null;
+      case "openrouter":
+        return "openrouter/auto";
+      case "mistral":
+        return "mistral-medium";
+      case "generic-openai":
+        return "gpt-3.5-turbo";
+      case "perplexity":
+        return "sonar-small-online";
+      case "textgenwebui":
+        return null;
+      default:
+        return "unknown";
+    }
+  }
+
   #providerSetupAndCheck() {
     this.provider = this.invocation.workspace.agentProvider || "openai";
-    this.model = this.invocation.workspace.agentModel || "gpt-3.5-turbo";
+    this.model =
+      this.invocation.workspace.agentModel || this.#providerDefault();
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.#checkSetup();
   }
@@ -137,7 +236,7 @@ class AgentHandler {
     this.aibitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
     this.aibitat.agent(
       WORKSPACE_AGENT.name,
-      await WORKSPACE_AGENT.getDefinition()
+      await WORKSPACE_AGENT.getDefinition(this.provider)
     );
 
     this.#funcsToLoad = [
@@ -159,7 +258,7 @@ class AgentHandler {
   ) {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
-      model: this.model ?? "gpt-3.5-turbo",
+      model: this.model ?? "gpt-4o",
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,

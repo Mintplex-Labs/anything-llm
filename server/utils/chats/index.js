@@ -4,14 +4,28 @@ const { resetMemory } = require("./commands/reset");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { convertToPromptHistory } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
+const { SlashCommandPresets } = require("../../models/slashCommandsPresets");
 
 const VALID_COMMANDS = {
   "/reset": resetMemory,
 };
 
-function grepCommand(message) {
+async function grepCommand(message, user = null) {
+  const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
   const availableCommands = Object.keys(VALID_COMMANDS);
 
+  // Check if the message starts with any preset command
+  const foundPreset = userPresets.find((p) => message.startsWith(p.command));
+  if (!!foundPreset) {
+    // Replace the preset command with the corresponding prompt
+    const updatedMessage = message.replace(
+      foundPreset.command,
+      foundPreset.prompt
+    );
+    return updatedMessage;
+  }
+
+  // Check if the message starts with any built-in command
   for (let i = 0; i < availableCommands.length; i++) {
     const cmd = availableCommands[i];
     const re = new RegExp(`^(${cmd})`, "i");
@@ -20,7 +34,7 @@ function grepCommand(message) {
     }
   }
 
-  return null;
+  return message;
 }
 
 async function chatWithWorkspace(
@@ -31,10 +45,10 @@ async function chatWithWorkspace(
   thread = null
 ) {
   const uuid = uuidv4();
-  const command = grepCommand(message);
+  const updatedMessage = await grepCommand(message, user);
 
-  if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
-    return await VALID_COMMANDS[command](workspace, message, uuid, user);
+  if (Object.keys(VALID_COMMANDS).includes(updatedMessage)) {
+    return await VALID_COMMANDS[updatedMessage](workspace, message, uuid, user);
   }
 
   const LLMConnector = getLLMProvider({
@@ -89,11 +103,10 @@ async function chatWithWorkspace(
     chatMode,
   });
 
-  // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
-  // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
+  // See stream.js comment for more information on this implementation.
   await new DocumentManager({
     workspace,
-    maxTokens: LLMConnector.limits.system,
+    maxTokens: LLMConnector.promptWindowLimit(),
   })
     .pinnedDocs()
     .then((pinnedDocs) => {
@@ -141,9 +154,13 @@ async function chatWithWorkspace(
   contextTexts = [...contextTexts, ...vectorSearchResults.contextTexts];
   sources = [...sources, ...vectorSearchResults.sources];
 
-  // If in query mode and no sources are found, do not
+  // If in query mode and no sources are found from the vector search and no pinned documents, do not
   // let the LLM try to hallucinate a response or use general knowledge and exit early
-  if (chatMode === "query" && sources.length === 0) {
+  if (
+    chatMode === "query" &&
+    vectorSearchResults.sources.length === 0 &&
+    pinnedDocIdentifiers.length === 0
+  ) {
     return {
       id: uuid,
       type: "textResponse",
@@ -161,7 +178,7 @@ async function chatWithWorkspace(
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt: chatPrompt(workspace),
-      userPrompt: message,
+      userPrompt: updatedMessage,
       contextTexts,
       chatHistory,
     },

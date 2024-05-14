@@ -36,7 +36,6 @@ export default function GeneralInfo({ slug }) {
     );
     if (!!updatedWorkspace) {
       showToast("Workspace updated!", "success", { clear: true });
-      setTimeout(() => window.location.reload(), 1_500);
     } else {
       showToast(`Error: ${message}`, "error", { clear: true });
     }

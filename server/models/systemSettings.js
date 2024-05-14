@@ -132,6 +132,17 @@ const SystemSettings = {
       WhisperProvider: process.env.WHISPER_PROVIDER || "local",
 
       // --------------------------------------------------------
+      // TTS/STT  Selection Settings & Configs
+      // - Currently the only 3rd party is OpenAI or the native browser-built in
+      // --------------------------------------------------------
+      TextToSpeechProvider: process.env.TTS_PROVIDER || "native",
+      TTSOpenAIKey: !!process.env.TTS_OPEN_AI_KEY,
+      TTSOpenAIVoiceModel: process.env.TTS_OPEN_AI_VOICE_MODEL,
+      // Eleven Labs TTS
+      TTSElevenLabsKey: !!process.env.TTS_ELEVEN_LABS_KEY,
+      TTSElevenLabsVoiceModel: process.env.TTS_ELEVEN_LABS_VOICE_MODEL,
+
+      // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------
       AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
@@ -297,7 +308,7 @@ const SystemSettings = {
     return {
       // OpenAI Keys
       OpenAiKey: !!process.env.OPEN_AI_KEY,
-      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo",
+      OpenAiModelPref: process.env.OPEN_MODEL_PREF || "gpt-4o",
 
       // Azure + OpenAI Keys
       AzureOpenAiEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
@@ -359,11 +370,26 @@ const SystemSettings = {
       HuggingFaceLLMAccessToken: !!process.env.HUGGING_FACE_LLM_API_KEY,
       HuggingFaceLLMTokenLimit: process.env.HUGGING_FACE_LLM_TOKEN_LIMIT,
 
+      // KoboldCPP Keys
+      KoboldCPPModelPref: process.env.KOBOLD_CPP_MODEL_PREF,
+      KoboldCPPBasePath: process.env.KOBOLD_CPP_BASE_PATH,
+      KoboldCPPTokenLimit: process.env.KOBOLD_CPP_MODEL_TOKEN_LIMIT,
+
+      // Text Generation Web UI Keys
+      TextGenWebUIBasePath: process.env.TEXT_GEN_WEB_UI_BASE_PATH,
+      TextGenWebUITokenLimit: process.env.TEXT_GEN_WEB_UI_MODEL_TOKEN_LIMIT,
+      TextGenWebUIAPIKey: !!process.env.TEXT_GEN_WEB_UI_API_KEY,
+
       // Generic OpenAI Keys
       GenericOpenAiBasePath: process.env.GENERIC_OPEN_AI_BASE_PATH,
       GenericOpenAiModelPref: process.env.GENERIC_OPEN_AI_MODEL_PREF,
       GenericOpenAiTokenLimit: process.env.GENERIC_OPEN_AI_MODEL_TOKEN_LIMIT,
       GenericOpenAiKey: !!process.env.GENERIC_OPEN_AI_API_KEY,
+      GenericOpenAiMaxTokens: process.env.GENERIC_OPEN_AI_MAX_TOKENS,
+
+      // Cohere API Keys
+      CohereApiKey: !!process.env.COHERE_API_KEY,
+      CohereModelPref: process.env.COHERE_MODEL_PREF,
     };
   },
 };

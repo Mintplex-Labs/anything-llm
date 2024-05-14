@@ -16,7 +16,37 @@ const memory = {
           tracker: new Deduplicator(),
           name: this.name,
           description:
-            "Search against local documents for context that is relevant to the query or store a snippet of text into memory for retrieval later. Storing information should only be done when the user specifically requests for information to be remembered or saved to long-term memory. You should use this tool before search the internet for information.",
+            "Search against local documents for context that is relevant to the query or store a snippet of text into memory for retrieval later. Storing information should only be done when the user specifically requests for information to be remembered or saved to long-term memory. You should use this tool before search the internet for information. Do not use this tool unless you are explicity told to 'remember' or 'store' information.",
+          examples: [
+            {
+              prompt: "What is AnythingLLM?",
+              call: JSON.stringify({
+                action: "search",
+                content: "What is AnythingLLM?",
+              }),
+            },
+            {
+              prompt: "What do you know about Plato's motives?",
+              call: JSON.stringify({
+                action: "search",
+                content: "What are the facts about Plato's motives?",
+              }),
+            },
+            {
+              prompt: "Remember that you are a robot",
+              call: JSON.stringify({
+                action: "store",
+                content: "I am a robot, the user told me that i am.",
+              }),
+            },
+            {
+              prompt: "Save that to memory please.",
+              call: JSON.stringify({
+                action: "store",
+                content: "<insert summary of conversation until now>",
+              }),
+            },
+          ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
             type: "object",

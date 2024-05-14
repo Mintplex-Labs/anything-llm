@@ -15,6 +15,9 @@ import HuggingFaceLogo from "@/media/llmprovider/huggingface.png";
 import PerplexityLogo from "@/media/llmprovider/perplexity.png";
 import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
+import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
+import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
+import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
@@ -137,12 +140,33 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: GroqLogo,
   },
+  koboldcpp: {
+    name: "KoboldCPP",
+    description: [
+      "Your model and chats are only accessible on the server running KoboldCPP",
+    ],
+    logo: KoboldCPPLogo,
+  },
+  textgenwebui: {
+    name: "Oobabooga Web UI",
+    description: [
+      "Your model and chats are only accessible on the server running the Oobabooga Text Generation Web UI",
+    ],
+    logo: TextGenWebUILogo,
+  },
   "generic-openai": {
     name: "Generic OpenAI compatible service",
     description: [
       "Data is shared according to the terms of service applicable with your generic endpoint provider.",
     ],
     logo: GenericOpenAiLogo,
+  },
+  cohere: {
+    name: "Cohere",
+    description: [
+      "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
+    ],
+    logo: CohereLogo,
   },
 };
 
@@ -252,6 +276,13 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: LMStudioLogo,
   },
+  cohere: {
+    name: "Cohere",
+    description: [
+      "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
+    ],
+    logo: CohereLogo,
+  },
 };
 
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
@@ -268,7 +299,7 @@ export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
     async function fetchKeys() {
       const _settings = await System.keys();
       setLLMChoice(_settings?.LLMProvider || "openai");
-      setVectorDb(_settings?.VectorDB || "pinecone");
+      setVectorDb(_settings?.VectorDB || "lancedb");
       setEmbeddingEngine(_settings?.EmbeddingEngine || "openai");
 
       setLoading(false);

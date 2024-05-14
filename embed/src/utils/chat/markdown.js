@@ -4,7 +4,7 @@ import { staticHljs as hljs } from "./hljs";
 import { v4 } from "uuid";
 
 const markdown = markdownIt({
-  html: true,
+  html: false,
   typographer: true,
   highlight: function (code, lang) {
     const uuid = v4();
