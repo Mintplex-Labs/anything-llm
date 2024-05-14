@@ -1,11 +1,9 @@
 const { v4 } = require("uuid");
-const {
-  PuppeteerWebBaseLoader,
-} = require("langchain/document_loaders/web/puppeteer");
 const { default: slugify } = require("slugify");
 const { parse } = require("node-html-parser");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
+const { getPageContent } = require("../../../processLink/convert/generic");
 const path = require("path");
 const fs = require("fs");
 
@@ -44,12 +42,7 @@ async function discoverLinks(startUrl, depth = 1, maxLinks = 20) {
 
 async function getPageLinks(url, baseUrl) {
   try {
-    const loader = new PuppeteerWebBaseLoader(url, {
-      launchOptions: { headless: "new" },
-      gotoOptions: { waitUntil: "domcontentloaded" },
-    });
-    const docs = await loader.load();
-    const html = docs[0].pageContent;
+    const html = await getPageContent(url, "html");
     const links = extractLinks(html, baseUrl);
     return links;
   } catch (error) {
@@ -84,18 +77,7 @@ async function bulkScrapePages(links, outFolderPath) {
     console.log(`Scraping ${i + 1}/${links.length}: ${link}`);
 
     try {
-      const loader = new PuppeteerWebBaseLoader(link, {
-        launchOptions: { headless: "new" },
-        gotoOptions: { waitUntil: "domcontentloaded" },
-        async evaluate(page, browser) {
-          const result = await page.evaluate(() => document.body.innerText);
-          await browser.close();
-          return result;
-        },
-      });
-      const docs = await loader.load();
-      const content = docs[0].pageContent;
-
+      const content = await getPageContent(link);
       if (!content.length) {
         console.warn(`Empty content for ${link}. Skipping.`);
         continue;
