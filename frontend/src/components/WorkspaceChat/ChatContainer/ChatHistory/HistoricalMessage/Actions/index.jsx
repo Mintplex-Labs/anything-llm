@@ -32,14 +32,13 @@ const Actions = ({
     <div className="flex w-full justify-between items-center">
       <div className="flex justify-start items-center gap-x-4">
         <CopyMessage message={message} />
-        {isLastMessage &&
-          !message?.includes("Workspace chat memory was reset!") && (
-            <RegenerateMessage
-              regenerateMessage={regenerateMessage}
-              slug={slug}
-              chatId={chatId}
-            />
-          )}
+        {isLastMessage && (
+          <RegenerateMessage
+            regenerateMessage={regenerateMessage}
+            slug={slug}
+            chatId={chatId}
+          />
+        )}
         {chatId && (
           <>
             <FeedbackButton
@@ -127,6 +126,7 @@ function CopyMessage({ message }) {
 }
 
 function RegenerateMessage({ regenerateMessage, chatId }) {
+  if (!chatId) return null;
   return (
     <div className="mt-3 relative">
       <button
