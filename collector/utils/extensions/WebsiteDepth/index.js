@@ -4,7 +4,7 @@ const {
 } = require("langchain/document_loaders/web/puppeteer");
 const { default: slugify } = require("slugify");
 const { parse } = require("node-html-parser");
-const { writeToServerDocuments } = require("../../files");
+const { writeToServerDocuments, documentsFolder } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const path = require("path");
 const fs = require("fs");
@@ -135,20 +135,14 @@ async function websiteScraper(startUrl, depth = 1, maxLinks = 20) {
   const outFolder = slugify(
     `${slugify(websiteName)}-${v4().slice(0, 4)}`
   ).toLowerCase();
-  const outFolderPath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(
-          __dirname,
-          `../../../../server/storage/documents/${outFolder}`
-        )
-      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
+  const outFolderPath = path.resolve(documentsFolder, outFolder);
 
   console.log("Discovering links...");
   const linksToScrape = await discoverLinks(startUrl, depth, maxLinks);
   console.log(`Found ${linksToScrape.length} links to scrape.`);
 
-  if (!fs.existsSync(outFolderPath))
-    fs.mkdirSync(outFolderPath, { recursive: true });
+  if (!fs.existsSync(outFolderPath)) fs.mkdirSync(outFolderPath, { recursive: true });
+
   console.log("Starting bulk scraping...");
   const scrapedData = await bulkScrapePages(linksToScrape, outFolderPath);
   console.log(`Scraped ${scrapedData.length} pages.`);
