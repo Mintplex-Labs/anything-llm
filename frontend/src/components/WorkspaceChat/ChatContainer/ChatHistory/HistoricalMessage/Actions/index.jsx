@@ -9,6 +9,7 @@ import {
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
+import TTSMessage from "./TTSButton";
 
 const Actions = ({
   message,
@@ -28,34 +29,37 @@ const Actions = ({
   };
 
   return (
-    <div className="flex justify-start items-center gap-x-4">
-      <CopyMessage message={message} />
-      {isLastMessage &&
-        !message?.includes("Workspace chat memory was reset!") && (
-          <RegenerateMessage
-            regenerateMessage={regenerateMessage}
-            slug={slug}
-            chatId={chatId}
-          />
+    <div className="flex w-full justify-between items-center">
+      <div className="flex justify-start items-center gap-x-4">
+        <CopyMessage message={message} />
+        {isLastMessage &&
+          !message?.includes("Workspace chat memory was reset!") && (
+            <RegenerateMessage
+              regenerateMessage={regenerateMessage}
+              slug={slug}
+              chatId={chatId}
+            />
+          )}
+        {chatId && (
+          <>
+            <FeedbackButton
+              isSelected={selectedFeedback === true}
+              handleFeedback={() => handleFeedback(true)}
+              tooltipId={`${chatId}-thumbs-up`}
+              tooltipContent="Good response"
+              IconComponent={ThumbsUp}
+            />
+            <FeedbackButton
+              isSelected={selectedFeedback === false}
+              handleFeedback={() => handleFeedback(false)}
+              tooltipId={`${chatId}-thumbs-down`}
+              tooltipContent="Bad response"
+              IconComponent={ThumbsDown}
+            />
+          </>
         )}
-      {chatId && (
-        <>
-          <FeedbackButton
-            isSelected={selectedFeedback === true}
-            handleFeedback={() => handleFeedback(true)}
-            tooltipId={`${chatId}-thumbs-up`}
-            tooltipContent="Good response"
-            IconComponent={ThumbsUp}
-          />
-          <FeedbackButton
-            isSelected={selectedFeedback === false}
-            handleFeedback={() => handleFeedback(false)}
-            tooltipId={`${chatId}-thumbs-down`}
-            tooltipContent="Bad response"
-            IconComponent={ThumbsDown}
-          />
-        </>
-      )}
+      </div>
+      <TTSMessage slug={slug} chatId={chatId} message={message} />
     </div>
   );
 };

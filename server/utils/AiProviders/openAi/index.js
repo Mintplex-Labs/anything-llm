@@ -11,8 +11,7 @@ class OpenAiLLM {
     this.openai = new OpenAIApi({
       apiKey: process.env.OPEN_AI_KEY,
     });
-    this.model =
-      modelPreference || process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
+    this.model = modelPreference || process.env.OPEN_MODEL_PREF || "gpt-4o";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -48,6 +47,7 @@ class OpenAiLLM {
       case "gpt-3.5-turbo":
       case "gpt-3.5-turbo-1106":
         return 16_385;
+      case "gpt-4o":
       case "gpt-4-turbo":
       case "gpt-4-1106-preview":
       case "gpt-4-turbo-preview":

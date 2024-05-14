@@ -486,7 +486,6 @@ function systemEndpoints(app) {
 
         await updateENV(
           {
-            AuthToken: "",
             JWTSecret: process.env.JWT_SECRET || v4(),
           },
           true
