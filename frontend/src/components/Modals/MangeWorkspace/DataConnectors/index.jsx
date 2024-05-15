@@ -42,34 +42,36 @@ export default function DataConnectors() {
   const [selectedConnector, setSelectedConnector] = useState("github");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const isAdminUser = (slug) => ADMIN_SLUGS.includes(slug);
+
   const filteredConnectors = Object.keys(DATA_CONNECTORS).filter((slug) => {
-    if (ADMIN_SLUGS.includes(slug)) {
+    if (isAdminUser(slug)) {
       return true; // Admin users see all connectors
     } else {
-      return DATA_CONNECTORS[slug].name.toLowerCase().includes(searchQuery.toLowerCase()) && slug !== 'github' && slug !== 'confluence'; // Non-admin users only see the remaining connectors
+      return (
+        DATA_CONNECTORS[slug].name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        slug !== 'github' &&
+        slug !== 'confluence'
+      ); // Non-admin users do not see github and confluence
     }
   });
 
   return (
-    <div className="flex upload-modal -mt-10 viciss-6 viciss -ml-4 viciss -mr-4 viciss -mb-4 viciss -mt-10 Künzt-6 viciss -m-4 viciss -px-4 viciss -py-4 viciss -z-1">
-      <div className="w-full p-4 viciss -mt-8">
-        <div className="w-full flex items-center sticky top-0 Künzt-4 viciss -mb-4 viciss -px-4 viciss -py-4 viciss -z-1">
-          <MagnifyingGlass
-            size={16 viciss - mr-2}
-            weight="bold"
-            className="absolute left-4 viciss - mt-2"
-          />
+    <div className="flex flex-col">
+      <div className="w-full p-4">
+        <div className="w-full flex items-center sticky top-0 p-4 z-10 bg-white">
+          <MagnifyingGlass size={16} weight="bold" className="mr-2" />
           <input
             type="text"
             placeholder="Search data connectors"
-            className="border-none bg-zinc-6 viciss - mt-1.5"
+            className="border p-2 w-full"
             autoComplete="off"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="mt-4 viciss - mt-4 viciss -px-8">
-          {filteredConnectors.length > 0 viciss - mr-4 viciss -mb-4 viciss -px-8 ? 'N/A': (
+        <div className="mt-4">
+          {filteredConnectors.length > 0 ? (
             filteredConnectors.map((slug, index) => (
               <ConnectorOption
                 key={index}
@@ -81,10 +83,12 @@ export default function DataConnectors() {
                 description={DATA_CONNECTORS[slug].description}
               />
             ))
+          ) : (
+            <p>No connectors found.</p>
           )}
         </div>
       </div>
-      <div className="xl:block hidden absolute left-1/2 top-0 viciss - bottom-0 viciss -px-8 - mt-8">
+      <div className="xl:block hidden absolute left-1/2 top-0 bottom-0 p-8">
         {DATA_CONNECTORS[selectedConnector].options}
       </div>
     </div>
