@@ -7,8 +7,6 @@ import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
 import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
 
-const ADMIN_SLUGS = ['admin']; // Define admin users' slugs
-
 export const DATA_CONNECTORS = {
   github: {
     name: "GitHub Repo",
@@ -38,39 +36,41 @@ export const DATA_CONNECTORS = {
   },
 };
 
-export default function DataConnectors() {
+export default function DataConnectors({ user }) {
   const [selectedConnector, setSelectedConnector] = useState("github");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const isAdminUser = (slug) => ADMIN_SLUGS.includes(slug);
-
   const filteredConnectors = Object.keys(DATA_CONNECTORS).filter((slug) => {
-    if (isAdminUser(slug)) {
-      return true; // Admin users see all connectors
-    } else {
-      return (
-        DATA_CONNECTORS[slug].name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        slug !== 'github' &&
-        slug !== 'confluence'
-      ); // Non-admin users do not see github and confluence
+    if (
+      (slug === "github" || slug === "confluence") &&
+      user.role !== "admin"
+    ) {
+      return false;
     }
+    return DATA_CONNECTORS[slug].name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
   });
 
   return (
-    <div className="flex flex-col">
-      <div className="w-full p-4">
-        <div className="w-full flex items-center sticky top-0 p-4 z-10 bg-white">
-          <MagnifyingGlass size={16} weight="bold" className="mr-2" />
+    <div className="flex upload-modal -mt-10 relative min-h-[80vh] w-[70vw]">
+      <div className="w-full p-4 top-0 z-20">
+        <div className="w-full flex items-center sticky top-0 z-50">
+          <MagnifyingGlass
+            size={16}
+            weight="bold"
+            className="absolute left-4 z-30 text-white"
+          />
           <input
             type="text"
             placeholder="Search data connectors"
-            className="border p-2 w-full"
+            className="border-none bg-zinc-600 z-20 pl-10 h-[38px] rounded-full w-full px-4 py-1 text-sm border-2 border-slate-300/40 outline-none focus:border-white text-white"
             autoComplete="off"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="mt-4">
+        <div className="mt-2 flex flex-col gap-y-2">
           {filteredConnectors.length > 0 ? (
             filteredConnectors.map((slug, index) => (
               <ConnectorOption
@@ -84,11 +84,14 @@ export default function DataConnectors() {
               />
             ))
           ) : (
-            <p>No connectors found.</p>
+            <div className="text-white text-center mt-4">
+              No data connectors found.
+            </div>
           )}
         </div>
       </div>
-      <div className="xl:block hidden absolute left-1/2 top-0 bottom-0 p-8">
+      <div className="xl:block hidden absolute left-1/2 top-0 bottom-0 w-[0.5px] bg-white/20 -translate-x-1/2"></div>
+      <div className="w-full p-4 top-0 text-white min-w-[500px]">
         {DATA_CONNECTORS[selectedConnector].options}
       </div>
     </div>
