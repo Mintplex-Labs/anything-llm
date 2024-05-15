@@ -1,8 +1,14 @@
 const { parse } = require("node-html-parser");
+const axios = require('axios');
+
 const RE_YOUTUBE =
   /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-const USER_AGENT =
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36,gzip(gfe)";
+
+const API_KEYS = [
+  'AIzaSyBA4WDjnqTuypdcQeJHJ7jfSk0ILk9TyuA',
+  'AIzaSyDLYrXs73QlcildnloqG7gTF0o1hVdHeZY',
+  // Add more API keys as needed
+];
 
 class YoutubeTranscriptError extends Error {
   constructor(message) {
@@ -18,77 +24,54 @@ class YoutubeTranscript {
    * Fetch transcript from YTB Video
    * @param videoId Video url or video identifier
    * @param config Object with lang param (eg: en, es, hk, uk) format.
-   * Will just the grab first caption if it can find one, so no special lang caption support.
+   * Will just grab the first caption if it can find one, so no special lang caption support.
    */
   static async fetchTranscript(videoId, config = {}) {
     const identifier = this.retrieveVideoId(videoId);
     const lang = config?.lang ?? "en";
     try {
-      const transcriptUrl = await fetch(
-        `https://www.youtube.com/watch?v=${identifier}`,
-        {
-          headers: {
-            "User-Agent": USER_AGENT,
-          },
-        }
-      )
-        .then((res) => res.text())
-        .then((html) => parse(html))
-        .then((html) => this.#parseTranscriptEndpoint(html, lang));
+      const transcriptUrl = await this.fetchTranscriptUrl(identifier);
 
       if (!transcriptUrl)
         throw new Error("Failed to locate a transcript for this video!");
 
       // Result is hopefully some XML.
-      const transcriptXML = await fetch(transcriptUrl)
-        .then((res) => res.text())
-        .then((xml) => parse(xml));
+      const transcriptXML = await axios.get(transcriptUrl).then(res => res.data);
 
       let transcript = "";
-      const chunks = transcriptXML.getElementsByTagName("text");
+      const chunks = parse(transcriptXML).querySelectorAll("text");
       for (const chunk of chunks) {
-        transcript += chunk.textContent;
+        transcript += chunk.text;
       }
 
       return transcript;
     } catch (e) {
-      throw new YoutubeTranscriptError(e);
+      throw new YoutubeTranscriptError(e.message);
     }
   }
 
-  static #parseTranscriptEndpoint(document, langCode = null) {
+  static async fetchTranscriptUrl(videoId) {
     try {
-      // Get all script tags on document page
-      const scripts = document.getElementsByTagName("script");
+      const apiKey = this.getApiKey();
+      const response = await axios.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${apiKey}`);
+      
+      const captions = response.data.items[0]?.contentDetails?.caption;
+      if (!captions) throw new Error('No captions found for this video.');
 
-      // find the player data script.
-      const playerScript = scripts.find((script) =>
-        script.textContent.includes("var ytInitialPlayerResponse = {")
-      );
-
-      const dataString =
-        playerScript.textContent
-          ?.split("var ytInitialPlayerResponse = ")?.[1] //get the start of the object {....
-          ?.split("};")?.[0] + // chunk off any code after object closure.
-        "}"; // add back that curly brace we just cut.
-
-      const data = JSON.parse(dataString.trim()); // Attempt a JSON parse
-      const availableCaptions =
-        data?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
-
-      // If languageCode was specified then search for it's code, otherwise get the first.
-      let captionTrack = availableCaptions?.[0];
-      if (langCode)
-        captionTrack =
-          availableCaptions.find((track) =>
-            track.languageCode.includes(langCode)
-          ) ?? availableCaptions?.[0];
-
-      return captionTrack?.baseUrl;
-    } catch (e) {
-      console.error(`YoutubeTranscript.#parseTranscriptEndpoint ${e.message}`);
-      return null;
+      await new Promise(resolve => setTimeout(resolve, 60000)); // Add a delay of 1 minute (60000 milliseconds)
+      
+      return `http://video.google.com/timedtext?lang=en&v=${videoId}`;
+    } catch (error) {
+      throw new YoutubeTranscriptError(`Error fetching transcript URL: ${error.message}`);
     }
+  }
+
+  static getApiKey() {
+    if (API_KEYS.length === 0) {
+      throw new YoutubeTranscriptError("No API keys available.");
+    }
+    const keyIndex = Math.floor(Math.random() * API_KEYS.length);
+    return API_KEYS[keyIndex];
   }
 
   /**
