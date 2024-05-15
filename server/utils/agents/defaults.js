@@ -25,8 +25,26 @@ const WORKSPACE_AGENT = {
     const _setting = (
       await SystemSettings.get({ label: "default_agent_skills" })
     )?.value;
-    safeJsonParse(_setting, []).forEach((skillName) => {
+
+    // TODO: Temp - remove please. Emulates adding the `sql-agent` to db for config.
+    const TEMP_SETTINGS = [...safeJsonParse(_setting, []), "sql-agent"];
+
+    // safeJsonParse(_setting, []).forEach((skillName) => {
+    TEMP_SETTINGS.forEach((skillName) => {
       if (!AgentPlugins.hasOwnProperty(skillName)) return;
+
+      // This is a plugin module with many sub-children plugins who
+      // need to be named via `${parent}#${child}` naming convention
+      if (Array.isArray(AgentPlugins[skillName].plugin)) {
+        for (const subPlugin of AgentPlugins[skillName].plugin) {
+          defaultFunctions.push(
+            `${AgentPlugins[skillName].name}#${subPlugin.name}`
+          );
+        }
+        return;
+      }
+
+      // This is normal single-stage plugin
       defaultFunctions.push(AgentPlugins[skillName].name);
     });
 

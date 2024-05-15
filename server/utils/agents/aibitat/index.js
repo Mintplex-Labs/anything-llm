@@ -499,6 +499,17 @@ Only return the role.
   }
 
   /**
+   *
+   * @param {string} pluginName this name of the plugin being called
+   * @returns string of the plugin to be called compensating for children denoted by # in the string.
+   * eg: sql-agent:list-database-connections
+   */
+  #parseFunctionName(pluginName = "") {
+    if (!pluginName.includes("#")) return pluginName;
+    return pluginName.split("#")[1];
+  }
+
+  /**
    * Check if the chat has reached the maximum number of rounds.
    */
   hasReachedMaximumRounds(from = "", to = "") {
@@ -550,7 +561,7 @@ ${this.getHistory({ to: route.to })
 
     // get the functions that the node can call
     const functions = fromConfig.functions
-      ?.map((name) => this.functions.get(name))
+      ?.map((name) => this.functions.get(this.#parseFunctionName(name)))
       .filter((a) => !!a);
 
     const provider = this.getProviderForConfig({

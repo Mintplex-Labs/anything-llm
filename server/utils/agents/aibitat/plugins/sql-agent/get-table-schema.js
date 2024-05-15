@@ -1,0 +1,64 @@
+module.exports.SqlAgentGetTableSchema = {
+  name: "sql-get-table-schema",
+  plugin: function () {
+    const { FAKE_DBS } = require("./index.js");
+    const { getDBClient } = require("./SQLConnectors/index.js");
+
+    return {
+      name: "sql-get-table-schema",
+      setup(aibitat) {
+        aibitat.function({
+          super: aibitat,
+          name: this.name,
+          description:
+            "Gets the table schema in SQL for a given `table` and `database_id`",
+          parameters: {
+            $schema: "http://json-schema.org/draft-07/schema#",
+            type: "object",
+            properties: {
+              database_id: {
+                type: "string",
+                description:
+                  "The database identifier for which we will connect to to query the table schema.",
+              },
+              table_name: {
+                type: "string",
+                description:
+                  "The database identifier for the table name we want the schema for.",
+              },
+            },
+            additionalProperties: false,
+          },
+          handler: async function ({ database_id = "", table_name = "" }) {
+            this.super.handlerProps.log(`Using the sql-get-table-schema tool.`);
+            try {
+              const databaseConfig = FAKE_DBS.find(
+                (db) => db.database_id === database_id
+              );
+              if (!databaseConfig)
+                return `No database connection for ${database_id} was found!`;
+
+              const db = getDBClient(databaseConfig.engine, databaseConfig);
+              this.super.introspect(
+                `${this.caller}: Querying the table schema for ${table_name} in the ${databaseConfig.database_id} database.`
+              );
+              this.super.introspect(
+                `Running SQL: ${db.getTableSchemaSql(table_name)}`
+              );
+              const result = await db.runQuery(
+                db.getTableSchemaSql(table_name)
+              );
+
+              return JSON.stringify(result);
+            } catch (e) {
+              this.super.handlerProps.log(
+                `sql-get-table-schema raised an error. ${e.message}`
+              );
+              return e.message;
+            }
+          },
+        });
+      },
+    };
+  },
+};
