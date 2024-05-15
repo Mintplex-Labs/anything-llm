@@ -14,6 +14,10 @@ const FAKE_DBS = [
     engine: "mysql",
     connectionString: "mysql://admin:password@127.0.0.1:3306/classicmodels",
   },
+  {
+    database_id: "user-database",
+    engine: "sql-server",
+  },
 ];
 
 const sqlAgent = {

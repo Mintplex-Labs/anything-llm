@@ -19,6 +19,7 @@ class MySQLConnector {
     const match = connectionPattern.match(this.connectionString);
     return match?.database;
   }
+
   async connect() {
     this._client = await mysql.createConnection({ uri: this.connectionString });
     this.#connected = true;
