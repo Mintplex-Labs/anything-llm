@@ -5,6 +5,7 @@ import YoutubeOptions from "./Connectors/Youtube";
 import ConfluenceOptions from "./Connectors/Confluence";
 import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
+import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
 
 export const DATA_CONNECTORS = {
   github: {
@@ -20,6 +21,12 @@ export const DATA_CONNECTORS = {
     description:
       "Import the transcription of an entire YouTube video from a link.",
     options: <YoutubeOptions />,
+  },
+  "website-depth": {
+    name: "Bulk Link Scraper",
+    image: ConnectorImages.websiteDepth,
+    description: "Scrape a website and its sub-links up to a certain depth.",
+    options: <WebsiteDepthOptions />,
   },
   confluence: {
     name: "Confluence",

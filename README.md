@@ -67,9 +67,9 @@ Some cool features of AnythingLLM
 - Extremely efficient cost-saving measures for managing very large documents. You'll never pay to embed a massive document or transcript more than once. 90% more cost effective than other document chatbot solutions.
 - Full Developer API for custom integrations!
 
-### Supported LLMs, Embedders, Transcriptions models, and Vector Databases
+### Supported LLMs, Embedder Models, Speech models, and Vector Databases
 
-**Supported LLMs:**
+**Language Learning Models:**
 
 - [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
@@ -90,7 +90,7 @@ Some cool features of AnythingLLM
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
 - [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
 
-**Supported Embedding models:**
+**Embedder models:**
 
 - [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
@@ -100,12 +100,22 @@ Some cool features of AnythingLLM
 - [LM Studio (all)](https://lmstudio.ai)
 - [Cohere](https://cohere.com/)
 
-**Supported Transcription models:**
+**Audio Transcription models:**
 
 - [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
 - [OpenAI](https://openai.com/)
 
-**Supported Vector Databases:**
+**TTS (text-to-speech) support:**
+
+- Native Browser Built-in (default)
+- [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
+- [ElevenLabs](https://elevenlabs.io/)
+
+**STT (speech-to-text) support:**
+
+- Native Browser Built-in (default)
+
+**Vector Databases:**
 
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
@@ -122,8 +132,9 @@ This monorepo consists of three main sections:
 
 - `frontend`: A viteJS + React frontend that you can run to easily create and manage all your content the LLM can use.
 - `server`: A NodeJS express server to handle all the interactions and do all the vectorDB management and LLM interactions.
-- `docker`: Docker instructions and build process + information for building from source.
 - `collector`: NodeJS express server that process and parses documents from the UI.
+- `docker`: Docker instructions and build process + information for building from source.
+- `embed`: Code specifically for generation of the [embed widget](./embed/README.md).
 
 ## 🛳 Self Hosting
 

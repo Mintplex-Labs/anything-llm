@@ -132,6 +132,17 @@ const SystemSettings = {
       WhisperProvider: process.env.WHISPER_PROVIDER || "local",
 
       // --------------------------------------------------------
+      // TTS/STT  Selection Settings & Configs
+      // - Currently the only 3rd party is OpenAI or the native browser-built in
+      // --------------------------------------------------------
+      TextToSpeechProvider: process.env.TTS_PROVIDER || "native",
+      TTSOpenAIKey: !!process.env.TTS_OPEN_AI_KEY,
+      TTSOpenAIVoiceModel: process.env.TTS_OPEN_AI_VOICE_MODEL,
+      // Eleven Labs TTS
+      TTSElevenLabsKey: !!process.env.TTS_ELEVEN_LABS_KEY,
+      TTSElevenLabsVoiceModel: process.env.TTS_ELEVEN_LABS_VOICE_MODEL,
+
+      // --------------------------------------------------------
       // Agent Settings & Configs
       // --------------------------------------------------------
       AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
