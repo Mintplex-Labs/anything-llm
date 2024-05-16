@@ -69,7 +69,7 @@ async function runAIbitat(socket) {
   console.log(chalk.blue("Booting AIbitat class & starting agent(s)"));
   const aibitat = new AIbitat({
     provider: "openai",
-    model: "gpt-3.5-turbo",
+    model: "gpt-4o",
   })
     .use(websocket.plugin({ socket }))
     .use(webBrowsing.plugin())

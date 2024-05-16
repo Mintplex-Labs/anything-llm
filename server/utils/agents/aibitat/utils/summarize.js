@@ -12,7 +12,7 @@ const Provider = require("../providers/ai-provider");
 
 const SUMMARY_MODEL = {
   anthropic: "claude-3-opus-20240229", // 200,000 tokens
-  openai: "gpt-3.5-turbo-1106", // 16,385 tokens
+  openai: "gpt-4o", // 128,000 tokens
 };
 
 async function summarizeContent(

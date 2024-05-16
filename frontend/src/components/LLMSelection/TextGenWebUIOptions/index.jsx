@@ -32,6 +32,20 @@ export default function TextGenWebUIOptions({ settings }) {
           autoComplete="off"
         />
       </div>
+      <div className="flex flex-col w-60">
+        <label className="text-white text-sm font-semibold block mb-4">
+          API Key (Optional)
+        </label>
+        <input
+          type="password"
+          name="TextGenWebUIAPIKey"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          placeholder="TextGen Web UI API Key"
+          defaultValue={settings?.TextGenWebUIAPIKey ? "*".repeat(20) : ""}
+          autoComplete="off"
+          spellCheck={false}
+        />
+      </div>
     </div>
   );
 }
