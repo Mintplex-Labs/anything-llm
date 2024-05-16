@@ -12,7 +12,7 @@ const {
 function validSpaceUrl(spaceUrl = "") {
   // Atlassian default URL match
   const atlassianPattern = new UrlPattern(
-    "https\\://(:subdomain).atlassian.net/wiki/spaces/(:spaceKey)/*"
+    "https\\://(:subdomain).atlassian.net/wiki/spaces/(:spaceKey)*"
   );
   const atlassianMatch = atlassianPattern.match(spaceUrl);
   if (atlassianMatch) {
@@ -21,8 +21,8 @@ function validSpaceUrl(spaceUrl = "") {
 
   let customMatch = null;
   [
-    "https\\://(:subdomain.):domain.:tld/wiki/spaces/(:spaceKey)/*", // Custom Confluence space
-    "https\\://(:subdomain.):domain.:tld/display/(:spaceKey)/*", // Custom Confluence space + Human-readable space tag.
+    "https\\://(:subdomain.):domain.:tld/wiki/spaces/(:spaceKey)*", // Custom Confluence space
+    "https\\://(:subdomain.):domain.:tld/display/(:spaceKey)*", // Custom Confluence space + Human-readable space tag.
   ].forEach((matchPattern) => {
     if (!!customMatch) return;
     const pattern = new UrlPattern(matchPattern);
