@@ -68,7 +68,7 @@ export default function GenericOpenAiOptions({ settings }) {
         <input
           type="number"
           name="GenericOpenAiMaxTokens"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
           placeholder="Max tokens per request (eg: 1024)"
           min={1}
           defaultValue={settings?.GenericOpenAiMaxTokens || 1024}

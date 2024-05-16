@@ -83,7 +83,7 @@ export default function SingleUserAuth() {
                   name="password"
                   type="password"
                   placeholder="Password"
-                  className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
+                  className="border-none bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required={true}
                   autoComplete="off"
                 />
