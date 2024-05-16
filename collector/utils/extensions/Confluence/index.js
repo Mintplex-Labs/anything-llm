@@ -19,11 +19,16 @@ function validSpaceUrl(spaceUrl = "") {
     return { valid: true, result: atlassianMatch };
   }
 
-  // Custom Confluence URL match
-  const customPattern = new UrlPattern(
-    "https\\://(:subdomain.):domain.:tld/wiki/spaces/(:spaceKey)/*"
-  );
-  const customMatch = customPattern.match(spaceUrl);
+  let customMatch = null;
+  [
+    "https\\://(:subdomain.):domain.:tld/wiki/spaces/(:spaceKey)/*", // Custom Confluence space
+    "https\\://(:subdomain.):domain.:tld/display/(:spaceKey)/*", // Custom Confluence space + Human-readable space tag.
+  ].forEach((matchPattern) => {
+    if (!!customMatch) return;
+    const pattern = new UrlPattern(matchPattern);
+    customMatch = pattern.match(spaceUrl);
+  });
+
   if (customMatch) {
     customMatch.customDomain =
       (customMatch.subdomain ? `${customMatch.subdomain}.` : "") + //
