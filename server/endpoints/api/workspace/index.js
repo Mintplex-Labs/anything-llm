@@ -533,6 +533,7 @@ function apiWorkspaceEndpoints(app) {
         });
         response.status(200).json({ ...result });
       } catch (e) {
+        console.log(e.message, e);
         response.status(500).json({
           id: uuidv4(),
           type: "abort",
@@ -655,7 +656,7 @@ function apiWorkspaceEndpoints(app) {
         });
         response.end();
       } catch (e) {
-        console.error(e);
+        console.log(e.message, e);
         writeResponseChunk(response, {
           id: uuidv4(),
           type: "abort",
