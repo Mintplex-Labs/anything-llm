@@ -16,6 +16,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "openrouter",
   "lmstudio",
   "koboldcpp",
+  "litellm",
   "elevenlabs-tts",
 ];
 
@@ -44,6 +45,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLMStudioModels(basePath);
     case "koboldcpp":
       return await getKoboldCPPModels(basePath);
+    case "litellm":
+      return await liteLLMModels(basePath, apiKey);
     case "elevenlabs-tts":
       return await getElevenLabsModels(apiKey);
     default:
@@ -161,6 +164,25 @@ async function localAIModels(basePath = null, apiKey = null) {
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.LOCAL_AI_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function liteLLMModels(basePath = null, apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    baseURL: basePath || process.env.LITE_LLM_BASE_PATH,
+    apiKey: apiKey || process.env.LITE_LLM_API_KEY || null,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .catch((e) => {
+      console.error(`LiteLLM:listModels`, e.message);
+      return [];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.LITE_LLM_API_KEY = apiKey;
   return { models, error: null };
 }
 

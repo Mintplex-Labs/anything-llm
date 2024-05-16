@@ -408,6 +408,12 @@ const SystemSettings = {
       TextGenWebUITokenLimit: process.env.TEXT_GEN_WEB_UI_MODEL_TOKEN_LIMIT,
       TextGenWebUIAPIKey: !!process.env.TEXT_GEN_WEB_UI_API_KEY,
 
+      // LiteLLM Keys
+      LiteLLMModelPref: process.env.LITE_LLM_MODEL_PREF,
+      LiteLLMTokenLimit: process.env.LITE_LLM_MODEL_TOKEN_LIMIT,
+      LiteLLMBasePath: process.env.LITE_LLM_BASE_PATH,
+      LiteLLMApiKey: !!process.env.LITE_LLM_API_KEY,
+
       // Generic OpenAI Keys
       GenericOpenAiBasePath: process.env.GENERIC_OPEN_AI_BASE_PATH,
       GenericOpenAiModelPref: process.env.GENERIC_OPEN_AI_MODEL_PREF,
