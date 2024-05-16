@@ -17,6 +17,7 @@ import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
+import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -42,6 +43,7 @@ import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
 import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
+import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 
 const TITLE = "LLM Preference";
 const DESCRIPTION =
@@ -163,6 +165,13 @@ const LLMS = [
     logo: CohereLogo,
     options: (settings) => <CohereAiOptions settings={settings} />,
     description: "Run Cohere's powerful Command models.",
+  },
+  {
+    name: "LiteLLM",
+    value: "litellm",
+    logo: LiteLLMLogo,
+    options: (settings) => <LiteLLMOptions settings={settings} />,
+    description: "Run LiteLLM's OpenAI compatible proxy for various LLMs.",
   },
   {
     name: "Generic OpenAI",

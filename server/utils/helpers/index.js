@@ -86,6 +86,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "cohere":
       const { CohereLLM } = require("../AiProviders/cohere");
       return new CohereLLM(embedder, model);
+    case "litellm":
+      const { LiteLLM } = require("../AiProviders/liteLLM");
+      return new LiteLLM(embedder, model);
     case "generic-openai":
       const { GenericOpenAiLLM } = require("../AiProviders/genericOpenAi");
       return new GenericOpenAiLLM(embedder, model);

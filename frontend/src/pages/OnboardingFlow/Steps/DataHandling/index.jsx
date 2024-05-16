@@ -17,6 +17,7 @@ import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
+import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
@@ -153,6 +154,14 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chats are only accessible on the server running the Oobabooga Text Generation Web UI",
     ],
     logo: TextGenWebUILogo,
+  },
+  litellm: {
+    name: "LiteLLM",
+    description: [
+      "Your model and chats are only accessible on the server running LiteLLM",
+      "Data is shared according to the terms of service applicable with your LiteLLM endpoint provider",
+    ],
+    logo: LiteLLMLogo,
   },
   "generic-openai": {
     name: "Generic OpenAI compatible service",
