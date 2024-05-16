@@ -38,6 +38,25 @@ class Deduplicator {
     return this.#hashes.hasOwnProperty(newSig);
   }
 
+  /**
+   * Resets the object property for this instance of the Deduplicator class
+   * @param {('runs'|'cooldowns'|'uniques')} type - The type of prop to reset
+   */
+  reset(type = "runs") {
+    switch (type) {
+      case "runs":
+        this.#hashes = {};
+        break;
+      case "cooldowns":
+        this.#cooldowns = {};
+        break;
+      case "uniques":
+        this.#uniques = {};
+        break;
+    }
+    return;
+  }
+
   startCooldown(
     key,
     parameters = {
