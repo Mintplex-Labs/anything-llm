@@ -1,8 +1,10 @@
 module.exports.SqlAgentQuery = {
   name: "sql-query",
   plugin: function () {
-    const { FAKE_DBS } = require("./index.js");
-    const { getDBClient } = require("./SQLConnectors/index.js");
+    const {
+      getDBClient,
+      listSQLConnections,
+    } = require("./SQLConnectors/index.js");
 
     return {
       name: "sql-query",
@@ -32,7 +34,7 @@ module.exports.SqlAgentQuery = {
           handler: async function ({ database_id = "", sql_query = "" }) {
             this.super.handlerProps.log(`Using the sql-query tool.`);
             try {
-              const databaseConfig = FAKE_DBS.find(
+              const databaseConfig = (await listSQLConnections()).find(
                 (db) => db.database_id === database_id
               );
               if (!databaseConfig)

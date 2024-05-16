@@ -1,8 +1,10 @@
 module.exports.SqlAgentListTables = {
   name: "sql-list-tables",
   plugin: function () {
-    const { FAKE_DBS } = require("./index.js");
-    const { getDBClient } = require("./SQLConnectors/index.js");
+    const {
+      listSQLConnections,
+      getDBClient,
+    } = require("./SQLConnectors/index.js");
 
     return {
       name: "sql-list-tables",
@@ -27,7 +29,7 @@ module.exports.SqlAgentListTables = {
           handler: async function ({ database_id = "" }) {
             try {
               this.super.handlerProps.log(`Using the sql-list-tables tool.`);
-              const databaseConfig = FAKE_DBS.find(
+              const databaseConfig = (await listSQLConnections()).find(
                 (db) => db.database_id === database_id
               );
               if (!databaseConfig)

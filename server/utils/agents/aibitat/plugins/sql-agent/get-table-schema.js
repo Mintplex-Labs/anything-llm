@@ -1,8 +1,10 @@
 module.exports.SqlAgentGetTableSchema = {
   name: "sql-get-table-schema",
   plugin: function () {
-    const { FAKE_DBS } = require("./index.js");
-    const { getDBClient } = require("./SQLConnectors/index.js");
+    const {
+      listSQLConnections,
+      getDBClient,
+    } = require("./SQLConnectors/index.js");
 
     return {
       name: "sql-get-table-schema",
@@ -32,7 +34,7 @@ module.exports.SqlAgentGetTableSchema = {
           handler: async function ({ database_id = "", table_name = "" }) {
             this.super.handlerProps.log(`Using the sql-get-table-schema tool.`);
             try {
-              const databaseConfig = FAKE_DBS.find(
+              const databaseConfig = (await listSQLConnections()).find(
                 (db) => db.database_id === database_id
               );
               if (!databaseConfig)

@@ -26,11 +26,7 @@ const WORKSPACE_AGENT = {
       await SystemSettings.get({ label: "default_agent_skills" })
     )?.value;
 
-    // TODO: Temp - remove please. Emulates adding the `sql-agent` to db for config.
-    const TEMP_SETTINGS = [...safeJsonParse(_setting, []), "sql-agent"];
-
-    // safeJsonParse(_setting, []).forEach((skillName) => {
-    TEMP_SETTINGS.forEach((skillName) => {
+    safeJsonParse(_setting, []).forEach((skillName) => {
       if (!AgentPlugins.hasOwnProperty(skillName)) return;
 
       // This is a plugin module with many sub-children plugins who

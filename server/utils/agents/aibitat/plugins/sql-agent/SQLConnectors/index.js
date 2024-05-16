@@ -1,5 +1,20 @@
+const { SystemSettings } = require("../../../../../../models/systemSettings");
+const { safeJsonParse } = require("../../../../../http");
+
 /**
- * @param {('postgresql'|'mysql'|'sql-server')} identifier
+ * @typedef {('postgresql'|'mysql'|'sql-server')} SQLEngine
+ */
+
+/**
+ * A valid database SQL connection object
+ * @typedef {Object} SQLConnection
+ * @property {string} database_id - Unique identifier of the database connection
+ * @property {SQLEngine} engine - Engine used by connection
+ * @property {string} connectionString - RFC connection string for db
+ */
+
+/**
+ * @param {SQLEngine} identifier
  * @param {object} connectionConfig
  * @returns Database Connection Engine Class for SQLAgent or throws error
  */
@@ -21,4 +36,18 @@ function getDBClient(identifier = "", connectionConfig = {}) {
   }
 }
 
-module.exports.getDBClient = getDBClient;
+/**
+ * Lists all of the known database connection that can be used by the agent.
+ * @returns {Promise<[SQLConnection]>}
+ */
+async function listSQLConnections() {
+  return safeJsonParse(
+    (await SystemSettings.get({ label: "agent_sql_connections" }))?.value,
+    []
+  );
+}
+
+module.exports = {
+  getDBClient,
+  listSQLConnections,
+};

@@ -2,8 +2,10 @@ process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
 
-const { isValidUrl } = require("../utils/http");
+const { default: slugify } = require("slugify");
+const { isValidUrl, safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
+const { v4 } = require("uuid");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -24,6 +26,7 @@ const SystemSettings = {
     "text_splitter_chunk_overlap",
     "agent_search_provider",
     "default_agent_skills",
+    "agent_sql_connections",
   ],
   validations: {
     footer_data: (updates) => {
@@ -65,6 +68,7 @@ const SystemSettings = {
     },
     agent_search_provider: (update) => {
       try {
+        if (update === "none") return null;
         if (!["google-search-engine", "serper-dot-dev"].includes(update))
           throw new Error("Invalid SERP provider.");
         return String(update);
@@ -83,6 +87,22 @@ const SystemSettings = {
       } catch (e) {
         console.error(`Could not validate agent skills.`);
         return JSON.stringify([]);
+      }
+    },
+    agent_sql_connections: async (updates) => {
+      const existingConnections = safeJsonParse(
+        (await SystemSettings.get({ label: "agent_sql_connections" }))?.value,
+        []
+      );
+      try {
+        const updatedConnections = mergeConnections(
+          existingConnections,
+          safeJsonParse(updates, [])
+        );
+        return JSON.stringify(updatedConnections);
+      } catch (e) {
+        console.error(`Failed to merge connections`);
+        return JSON.stringify(existingConnections ?? []);
       }
     },
   },
@@ -204,22 +224,30 @@ const SystemSettings = {
   // that takes no user input for the keys being modified.
   _updateSettings: async function (updates = {}) {
     try {
-      const updatePromises = Object.keys(updates).map((key) => {
-        const validatedValue = this.validations.hasOwnProperty(key)
-          ? this.validations[key](updates[key])
-          : updates[key];
+      const updatePromises = [];
+      for (const key of Object.keys(updates)) {
+        let validatedValue = updates[key];
+        if (this.validations.hasOwnProperty(key)) {
+          if (this.validations[key].constructor.name === "AsyncFunction") {
+            validatedValue = await this.validations[key](updates[key]);
+          } else {
+            validatedValue = this.validations[key](updates[key]);
+          }
+        }
 
-        return prisma.system_settings.upsert({
-          where: { label: key },
-          update: {
-            value: validatedValue === null ? null : String(validatedValue),
-          },
-          create: {
-            label: key,
-            value: validatedValue === null ? null : String(validatedValue),
-          },
-        });
-      });
+        updatePromises.push(
+          prisma.system_settings.upsert({
+            where: { label: key },
+            update: {
+              value: validatedValue === null ? null : String(validatedValue),
+            },
+            create: {
+              label: key,
+              value: validatedValue === null ? null : String(validatedValue),
+            },
+          })
+        );
+      }
 
       await Promise.all(updatePromises);
       return { success: true, error: null };
@@ -392,6 +420,58 @@ const SystemSettings = {
       CohereModelPref: process.env.COHERE_MODEL_PREF,
     };
   },
+
+  // For special retrieval of a key setting that does not expose any credential information
+  brief: {
+    agent_sql_connections: async function () {
+      const setting = await SystemSettings.get({
+        label: "agent_sql_connections",
+      });
+      if (!setting) return [];
+      return safeJsonParse(setting.value, []).map((dbConfig) => {
+        const { connectionString, ...rest } = dbConfig;
+        return rest;
+      });
+    },
+  },
 };
+
+function mergeConnections(existingConnections = [], updates = []) {
+  let updatedConnections = [...existingConnections];
+  const existingDbIds = existingConnections.map((conn) => conn.database_id);
+
+  // First remove all 'action:remove' candidates from existing connections.
+  const toRemove = updates
+    .filter((conn) => conn.action === "remove")
+    .map((conn) => conn.database_id);
+  updatedConnections = updatedConnections.filter(
+    (conn) => !toRemove.includes(conn.database_id)
+  );
+
+  // Next add all 'action:add' candidates into the updatedConnections; We DO NOT validate the connection strings.
+  // but we do validate their database_id is unique.
+  updates
+    .filter((conn) => conn.action === "add")
+    .forEach((update) => {
+      if (!update.connectionString) return; // invalid connection string
+
+      // Remap name to be unique to entire set.
+      if (existingDbIds.includes(update.database_id)) {
+        update.database_id = slugify(
+          `${update.database_id}-${v4().slice(0, 4)}`
+        );
+      } else {
+        update.database_id = slugify(update.database_id);
+      }
+
+      updatedConnections.push({
+        engine: update.engine,
+        database_id: update.database_id,
+        connectionString: update.connectionString,
+      });
+    });
+
+  return updatedConnections;
+}
 
 module.exports.SystemSettings = SystemSettings;

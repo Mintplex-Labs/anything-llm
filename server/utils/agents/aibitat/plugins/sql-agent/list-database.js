@@ -1,8 +1,7 @@
 module.exports.SqlAgentListDatabase = {
   name: "sql-list-databases",
   plugin: function () {
-    const { FAKE_DBS } = require("./index.js");
-
+    const { listSQLConnections } = require("./SQLConnectors");
     return {
       name: "sql-list-databases",
       setup(aibitat) {
@@ -22,9 +21,7 @@ module.exports.SqlAgentListDatabase = {
             this.super.introspect(
               `${this.caller}: Checking what are the available databases.`
             );
-            // TODO: List all DBs from some configuration in local system store.
-            // Make sure you dont return connection string!
-            return JSON.stringify(FAKE_DBS);
+            return JSON.stringify(await listSQLConnections());
           },
         });
       },
