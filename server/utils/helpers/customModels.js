@@ -170,8 +170,8 @@ async function localAIModels(basePath = null, apiKey = null) {
 async function liteLLMModels(basePath = null, apiKey = null) {
   const { OpenAI: OpenAIApi } = require("openai");
   const openai = new OpenAIApi({
-    baseURL: basePath || process.env.LOCAL_AI_BASE_PATH,
-    apiKey: apiKey || process.env.LOCAL_AI_API_KEY || null,
+    baseURL: basePath || process.env.LITE_LLM_BASE_PATH,
+    apiKey: apiKey || process.env.LITE_LLM_API_KEY || null,
   });
   const models = await openai.models
     .list()
@@ -182,7 +182,7 @@ async function liteLLMModels(basePath = null, apiKey = null) {
     });
 
   // Api Key was successful so lets save it for future uses
-  if (models.length > 0 && !!apiKey) process.env.LOCAL_AI_API_KEY = apiKey;
+  if (models.length > 0 && !!apiKey) process.env.LITE_LLM_API_KEY = apiKey;
   return { models, error: null };
 }
 

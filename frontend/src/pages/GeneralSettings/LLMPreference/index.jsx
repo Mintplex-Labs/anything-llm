@@ -20,8 +20,8 @@ import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
-import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
+import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -39,13 +39,13 @@ import PerplexityOptions from "@/components/LLMSelection/PerplexityOptions";
 import OpenRouterOptions from "@/components/LLMSelection/OpenRouterOptions";
 import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
+import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
+import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
+import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
-import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
-import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
-import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   {

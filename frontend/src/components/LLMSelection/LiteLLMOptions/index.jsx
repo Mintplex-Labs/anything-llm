@@ -53,8 +53,7 @@ export default function LiteLLMOptions({ settings }) {
         <div className="flex flex-col w-60">
           <div className="flex flex-col gap-y-1 mb-4">
             <label className="text-white text-sm font-semibold flex items-center gap-x-2">
-              API Key{" "}
-              <p className="!text-xs !italic !font-thin">optional</p>
+              API Key <p className="!text-xs !italic !font-thin">optional</p>
             </label>
           </div>
           <input

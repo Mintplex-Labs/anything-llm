@@ -117,8 +117,6 @@ class LiteLLM {
   }
 
   handleStream(response, stream, responseProps) {
-    // return handleDefaultStreamResponseV2(response, stream, responseProps);
-
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
     return new Promise(async (resolve) => {
