@@ -4,7 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the KoboldCPP provider.
+ * The agent provider for the KoboldCPP provider.
  */
 class KoboldCPPProvider extends InheritMultiple([Provider, UnTooled]) {
   model;

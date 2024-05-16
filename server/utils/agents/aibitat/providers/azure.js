@@ -4,7 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the Azure OpenAI API.
+ * The agent provider for the Azure OpenAI API.
  */
 class AzureOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;

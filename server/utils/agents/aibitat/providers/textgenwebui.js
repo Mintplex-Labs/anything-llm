@@ -4,7 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the Oobabooga provider.
+ * The agent provider for the Oobabooga provider.
  */
 class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;

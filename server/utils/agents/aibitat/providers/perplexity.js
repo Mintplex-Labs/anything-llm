@@ -4,7 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the Perplexity provider.
+ * The agent provider for the Perplexity provider.
  */
 class PerplexityProvider extends InheritMultiple([Provider, UnTooled]) {
   model;

@@ -4,7 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the OpenRouter provider.
+ * The agent provider for the OpenRouter provider.
  */
 class OpenRouterProvider extends InheritMultiple([Provider, UnTooled]) {
   model;

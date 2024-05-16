@@ -4,7 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the Generic OpenAI provider.
+ * The agent provider for the Generic OpenAI provider.
  * Since we cannot promise the generic provider even supports tool calling
  * which is nearly 100% likely it does not, we can just wrap it in untooled
  * which often is far better anyway.

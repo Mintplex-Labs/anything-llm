@@ -4,7 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the Mistral provider.
+ * The agent provider for the Mistral provider.
  * Mistral limits what models can call tools and even when using those
  * the model names change and dont match docs. When you do have the right model
  * it still fails and is not truly OpenAI compatible so its easier to just wrap

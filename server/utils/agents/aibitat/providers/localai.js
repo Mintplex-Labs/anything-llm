@@ -4,7 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the LocalAI provider.
+ * The agent provider for the LocalAI provider.
  */
 class LocalAiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;

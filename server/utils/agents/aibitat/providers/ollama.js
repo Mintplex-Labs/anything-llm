@@ -4,7 +4,7 @@ const UnTooled = require("./helpers/untooled.js");
 const { Ollama } = require("ollama");
 
 /**
- * The provider for the Ollama provider.
+ * The agent provider for the Ollama provider.
  */
 class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   model;

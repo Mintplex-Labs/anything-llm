@@ -4,7 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the TogetherAI provider.
+ * The agent provider for the TogetherAI provider.
  */
 class TogetherAIProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
