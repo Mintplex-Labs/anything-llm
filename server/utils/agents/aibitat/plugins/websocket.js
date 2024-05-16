@@ -49,7 +49,7 @@ const websocket = {
       setup(aibitat) {
         aibitat.onError(async (error) => {
           if (!!error?.message) {
-            console.error(chalk.red(`   error: ${error.message}`));
+            console.error(chalk.red(`   error: ${error.message}`), error);
             aibitat.introspect(
               `Error encountered while running: ${error.message}`
             );
