@@ -6,6 +6,13 @@ const { safeJsonParse } = require("../../../../../http");
  */
 
 /**
+ * @typedef {Object} QueryResult
+ * @property {[number]} rows - The query result rows
+ * @property {number} count - Number of rows the query returned/changed
+ * @property {string|null} error - Error string if there was an issue
+ */
+
+/**
  * A valid database SQL connection object
  * @typedef {Object} SQLConnection
  * @property {string} database_id - Unique identifier of the database connection

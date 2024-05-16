@@ -55,6 +55,11 @@ class MSSQLConnector {
     return this._client;
   }
 
+  /**
+   *
+   * @param {string} queryString the SQL query to be run
+   * @returns {import(".").QueryResult}
+   */
   async runQuery(queryString = "") {
     const result = { rows: [], count: 0, error: null };
     try {

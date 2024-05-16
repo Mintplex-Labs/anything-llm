@@ -60,8 +60,18 @@ module.exports.SqlAgentListTables = {
               this.super.introspect(
                 `${this.caller}: Checking what are the available tables in the ${databaseConfig.database_id} database.`
               );
+
               this.super.introspect(`Running SQL: ${db.getTablesSql()}`);
               const result = await db.runQuery(db.getTablesSql(database_id));
+              if (result.error) {
+                this.super.handlerProps.log(
+                  `sql-list-tables tool reported error`,
+                  result.error
+                );
+                this.super.introspect(`Error: ${result.error}`);
+                return `There was an error running the query: ${result.error}`;
+              }
+
               return JSON.stringify(result);
             } catch (e) {
               console.error(e);

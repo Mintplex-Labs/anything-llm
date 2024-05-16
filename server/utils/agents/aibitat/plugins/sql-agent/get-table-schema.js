@@ -74,6 +74,15 @@ module.exports.SqlAgentGetTableSchema = {
                 db.getTableSchemaSql(table_name)
               );
 
+              if (result.error) {
+                this.super.handlerProps.log(
+                  `sql-get-table-schema tool reported error`,
+                  result.error
+                );
+                this.super.introspect(`Error: ${result.error}`);
+                return `There was an error running the query: ${result.error}`;
+              }
+
               return JSON.stringify(result);
             } catch (e) {
               this.super.handlerProps.log(

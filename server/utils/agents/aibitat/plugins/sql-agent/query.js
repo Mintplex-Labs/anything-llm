@@ -79,6 +79,14 @@ module.exports.SqlAgentQuery = {
 
               this.super.introspect(`Running SQL: ${sql_query}`);
               const result = await db.runQuery(sql_query);
+              if (result.error) {
+                this.super.handlerProps.log(
+                  `sql-query tool reported error`,
+                  result.error
+                );
+                this.super.introspect(`Error: ${result.error}`);
+                return `There was an error running the query: ${result.error}`;
+              }
 
               return JSON.stringify(result);
             } catch (e) {
