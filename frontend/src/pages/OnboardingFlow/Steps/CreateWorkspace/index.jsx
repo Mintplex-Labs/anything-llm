@@ -4,6 +4,7 @@ import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
 import { useNavigate } from "react-router-dom";
 import Workspace from "@/models/workspace";
+import { useTranslation } from "react-i18next";
 
 const TITLE = "Create your first workspace";
 const DESCRIPTION =
@@ -17,6 +18,7 @@ export default function CreateWorkspace({
   const [workspaceName, setWorkspaceName] = useState("");
   const navigate = useNavigate();
   const createWorkspaceRef = useRef();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setHeader({ title: TITLE, description: DESCRIPTION });
@@ -71,7 +73,7 @@ export default function CreateWorkspace({
             htmlFor="name"
             className="block mb-3 text-sm font-medium text-white"
           >
-            Workspace Name
+            {t("common.workspaces-name")}
           </label>
           <input
             name="name"

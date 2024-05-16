@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 function recommendedSettings(provider = null) {
   switch (provider) {
     case "mistral":
@@ -13,19 +14,19 @@ export default function ChatTemperatureSettings({
   setHasChanges,
 }) {
   const defaults = recommendedSettings(settings?.LLMProvider);
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          LLM Temperature
+          {t("chat.temperature.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          This setting controls how &quot;random&quot; or dynamic your chat
-          responses will be.
+          {t("chat.temperature.desc-start")}
           <br />
-          The higher the number (1.0 maximum) the more random and incoherent.
+          {t("chat.temperature.desc-end")}
           <br />
-          <i>Recommended: {defaults.temp}</i>
+          <i>{t("chat.temperature.recommend")} {defaults.temp}</i>
         </p>
       </div>
       <input

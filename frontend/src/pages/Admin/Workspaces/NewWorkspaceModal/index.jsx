@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
+import { useTranslation } from "react-i18next";
 
 export default function NewWorkspaceModal({ closeModal }) {
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
   const handleCreate = async (e) => {
     setError(null);
     e.preventDefault();
@@ -37,7 +39,7 @@ export default function NewWorkspaceModal({ closeModal }) {
                   htmlFor="name"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  Workspace name
+                  {t("common.workspaces-name")}
                 </label>
                 <input
                   name="name"

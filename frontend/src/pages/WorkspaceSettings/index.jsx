@@ -22,6 +22,7 @@ import VectorDatabase from "./VectorDatabase";
 import Members from "./Members";
 import WorkspaceAgentConfiguration from "./AgentConfig";
 import useUser from "@/hooks/useUser";
+import { useTranslation } from "react-i18next";
 
 const TABS = {
   "general-appearance": GeneralAppearance,
@@ -43,6 +44,7 @@ export default function WorkspaceSettings() {
 }
 
 function ShowWorkspaceChat() {
+  const { t } = useTranslation();
   const { slug, tab } = useParams();
   const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
@@ -85,28 +87,28 @@ function ShowWorkspaceChat() {
             <ArrowUUpLeft className="h-5 w-5" weight="fill" />
           </Link>
           <TabItem
-            title="General Settings"
+            title={t("workspaces—settings.general")}
             icon={<Wrench className="h-6 w-6" />}
             to={paths.workspace.settings.generalAppearance(slug)}
           />
           <TabItem
-            title="Chat Settings"
+            title={t("workspaces—settings.chat")}
             icon={<ChatText className="h-6 w-6" />}
             to={paths.workspace.settings.chatSettings(slug)}
           />
           <TabItem
-            title="Vector Database"
+            title={t("workspaces—settings.vector")}
             icon={<Database className="h-6 w-6" />}
             to={paths.workspace.settings.vectorDatabase(slug)}
           />
           <TabItem
-            title="Members"
+            title={t("workspaces—settings.members")}
             icon={<User className="h-6 w-6" />}
             to={paths.workspace.settings.members(slug)}
             visible={["admin", "manager"].includes(user?.role)}
           />
           <TabItem
-            title="Agent Configuration"
+            title={t("workspaces—settings.agent")}
             icon={<Robot className="h-6 w-6" />}
             to={paths.workspace.settings.agentConfig(slug)}
           />
