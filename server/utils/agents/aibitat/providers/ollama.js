@@ -4,7 +4,7 @@ const UnTooled = require("./helpers/untooled.js");
 const { Ollama } = require("ollama");
 
 /**
- * The provider for the Ollama provider.
+ * The agent provider for the Ollama provider.
  */
 class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -83,6 +83,10 @@ class OllamaProvider extends InheritMultiple([Provider, UnTooled]) {
         completion = response.message;
       }
 
+      // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
+      // from calling the exact same function over and over in a loop within a single chat exchange
+      // _but_ we should enable it to call previously used tools in a new chat interaction.
+      this.deduplicator.reset("runs");
       return {
         result: completion.content,
         cost: 0,

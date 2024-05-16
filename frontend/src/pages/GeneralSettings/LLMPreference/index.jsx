@@ -25,6 +25,7 @@ import GroqLogo from "@/assets/llmprovider/groq.png";
 import KoboldCPPLogo from "@/assets/llmprovider/koboldcpp.png";
 import CohereLogo from "@/assets/llmprovider/cohere.png";
 import TextGenWebUILogo from "@/assets/llmprovider/text-generation-webui.png";
+import LiteLLMLogo from "@/assets/llmprovider/litellm.png";
 
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -45,6 +46,7 @@ import GroqAiOptions from "@/components/LLMSelection/GroqAiOptions";
 import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
 import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
+import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   _APP_PLATFORM.value !== "linux"
@@ -201,6 +203,14 @@ export const AVAILABLE_LLM_PROVIDERS = [
     options: (settings) => <CohereAiOptions settings={settings} />,
     description: "Run Cohere's powerful Command models.",
     requiredConfig: ["CohereApiKey"],
+  },
+  {
+    name: "LiteLLM",
+    value: "litellm",
+    logo: LiteLLMLogo,
+    options: (settings) => <LiteLLMOptions settings={settings} />,
+    description: "Run LiteLLM's OpenAI compatible proxy for various LLMs.",
+    requiredConfig: ["LiteLLMBasePath"],
   },
   {
     name: "Generic OpenAI",

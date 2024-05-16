@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PreLoader from "@/components/Preloader";
 import System from "@/models/system";
+
 import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/assets/llmprovider/openai.png";
 import GenericOpenAiLogo from "@/assets/llmprovider/generic-openai.png";
@@ -19,6 +20,7 @@ import GroqLogo from "@/assets/llmprovider/groq.png";
 import KoboldCPPLogo from "@/assets/llmprovider/koboldcpp.png";
 import CohereLogo from "@/assets/llmprovider/cohere.png";
 import TextGenWebUILogo from "@/assets/llmprovider/text-generation-webui.png";
+import LiteLLMLogo from "@/assets/llmprovider/litellm.png";
 
 import ZillizLogo from "@/assets/vectordbs/zilliz.png";
 import AstraDBLogo from "@/assets/vectordbs/astraDB.png";
@@ -169,6 +171,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
     ],
     logo: CohereLogo,
+  },
+  litellm: {
+    name: "LiteLLM",
+    description: [
+      "Your model and chats are only accessible on the server running LiteLLM",
+    ],
+    logo: LiteLLMLogo,
   },
 };
 

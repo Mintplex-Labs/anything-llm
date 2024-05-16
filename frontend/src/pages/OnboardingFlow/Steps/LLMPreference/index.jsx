@@ -1,5 +1,6 @@
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { useEffect, useState, useRef } from "react";
+
 import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
 import OpenAiLogo from "@/assets/llmprovider/openai.png";
 import GenericOpenAiLogo from "@/assets/llmprovider/generic-openai.png";
@@ -18,6 +19,7 @@ import GroqLogo from "@/assets/llmprovider/groq.png";
 import KoboldCPPLogo from "@/assets/llmprovider/koboldcpp.png";
 import CohereLogo from "@/assets/llmprovider/cohere.png";
 import TextGenWebUILogo from "@/assets/llmprovider/text-generation-webui.png";
+import LiteLLMLogo from "@/assets/llmprovider/litellm.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -37,6 +39,7 @@ import AnythingLLMOptions from "@/components/LLMSelection/AnythingLLMOptions";
 import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
 import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
+import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -177,6 +180,13 @@ const LLMS = [
     logo: CohereLogo,
     options: (settings) => <CohereAiOptions settings={settings} />,
     description: "Run Cohere's powerful Command models.",
+  },
+  {
+    name: "LiteLLM",
+    value: "litellm",
+    logo: LiteLLMLogo,
+    options: (settings) => <LiteLLMOptions settings={settings} />,
+    description: "Run LiteLLM's OpenAI compatible proxy for various LLMs.",
   },
   {
     name: "Generic OpenAI",
