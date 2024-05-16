@@ -10,6 +10,20 @@ module.exports.SqlAgentListDatabase = {
           name: this.name,
           description:
             "List all available databases via `list_databases` you currently have access to. Returns a unique string identifier `database_id` that can be used for future calls.",
+          examples: [
+            {
+              prompt: "What databases can you access?",
+              call: JSON.stringify({}),
+            },
+            {
+              prompt: "What databases can you tell me about?",
+              call: JSON.stringify({}),
+            },
+            {
+              prompt: "Is there a database named erp-logs you can access?",
+              call: JSON.stringify({}),
+            },
+          ],
           parameters: {
             $schema: "http://json-schema.org/draft-07/schema#",
             type: "object",
@@ -21,7 +35,12 @@ module.exports.SqlAgentListDatabase = {
             this.super.introspect(
               `${this.caller}: Checking what are the available databases.`
             );
-            return JSON.stringify(await listSQLConnections());
+
+            const connections = (await listSQLConnections()).map((conn) => {
+              const { connectionString, ...rest } = conn;
+              return rest;
+            });
+            return JSON.stringify(connections);
           },
         });
       },
