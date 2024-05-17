@@ -96,7 +96,7 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
     };
   }
   const outFolder = slugify(
-    `${subdomain}-confluence-${v4().slice(0, 4)}`,
+    `${subdomain}-confluence-${v4().slice(0, 4)}`
   ).toLowerCase();
 
   const outFolderPath =
@@ -126,12 +126,12 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
     };
 
     console.log(
-      `[Confluence Loader]: Saving ${doc.metadata.title} to ${outFolder}`,
+      `[Confluence Loader]: Saving ${doc.metadata.title} to ${outFolder}`
     );
     writeToServerDocuments(
       data,
       `${slugify(doc.metadata.title)}-${data.id}`,
-      outFolderPath,
+      outFolderPath
     );
   });
 
