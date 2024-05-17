@@ -36,7 +36,13 @@ app.use(
   })
 );
 
-require("express-ws")(app);
+if (!!process.env.ENABLE_HTTPS) {
+  const server = bootSSL(app, process.env.SERVER_PORT || 3001)?.server;
+  require("express-ws")(app, server); // User same certificate + server for WSS connections
+} else {
+  require("express-ws")(app);
+}
+
 app.use("/api", apiRouter);
 systemEndpoints(apiRouter);
 extensionEndpoints(apiRouter);
@@ -109,8 +115,4 @@ app.all("*", function (_, response) {
   response.sendStatus(404);
 });
 
-if (!!process.env.ENABLE_HTTPS) {
-  bootSSL(app, process.env.SERVER_PORT || 3001);
-} else {
-  bootHTTP(app, process.env.SERVER_PORT || 3001);
-}
+if (!process.env.ENABLE_HTTPS) bootHTTP(app, process.env.SERVER_PORT || 3001);
