@@ -38,7 +38,7 @@ app.use(
 
 if (!!process.env.ENABLE_HTTPS) {
   const server = bootSSL(app, process.env.SERVER_PORT || 3001)?.server;
-  require("express-ws")(app, server); // User same certificate + server for WSS connections
+  require("express-ws")(app, server); // Apply same certificate + server for WSS connections
 } else {
   require("express-ws")(app);
 }
