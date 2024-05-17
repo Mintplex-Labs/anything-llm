@@ -102,14 +102,13 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
   const outFolderPath =
     process.env.NODE_ENV === "development"
       ? path.resolve(
-        __dirname,
-        `../../../../server/storage/documents/${outFolder}`
-      )
+          __dirname,
+          `../../../../server/storage/documents/${outFolder}`
+        )
       : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 
-  if (!fs.existsSync(outFolderPath)) {
+  if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
-  }
 
   docs.forEach((doc) => {
     if (!doc.pageContent) return;
