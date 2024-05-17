@@ -23,7 +23,7 @@ class NativeLLM {
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
-    this.embedder = embedder || new NativeEmbedder();
+    this.embedder = embedder ?? new NativeEmbedder();
     this.cacheDir = path.resolve(
       process.env.STORAGE_DIR
         ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")

@@ -25,8 +25,22 @@ const WORKSPACE_AGENT = {
     const _setting = (
       await SystemSettings.get({ label: "default_agent_skills" })
     )?.value;
+
     safeJsonParse(_setting, []).forEach((skillName) => {
       if (!AgentPlugins.hasOwnProperty(skillName)) return;
+
+      // This is a plugin module with many sub-children plugins who
+      // need to be named via `${parent}#${child}` naming convention
+      if (Array.isArray(AgentPlugins[skillName].plugin)) {
+        for (const subPlugin of AgentPlugins[skillName].plugin) {
+          defaultFunctions.push(
+            `${AgentPlugins[skillName].name}#${subPlugin.name}`
+          );
+        }
+        return;
+      }
+
+      // This is normal single-stage plugin
       defaultFunctions.push(AgentPlugins[skillName].name);
     });
 

@@ -1,3 +1,4 @@
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
@@ -23,11 +24,7 @@ class TogetherAiLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      throw new Error(
-        "INVALID TOGETHER AI SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Together AI as your LLM."
-      );
-    this.embedder = embedder;
+    this.embedder = !embedder ? new NativeEmbedder() : embedder;
     this.defaultTemp = 0.7;
   }
 
