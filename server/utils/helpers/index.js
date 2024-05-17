@@ -100,6 +100,7 @@ function getLLMProvider({ provider = null, model = null } = {}) {
 }
 
 function getEmbeddingEngineSelection() {
+  const { NativeEmbedder } = require("../EmbeddingEngines/native");
   const engineSelection = process.env.EMBEDDING_ENGINE;
   switch (engineSelection) {
     case "openai":
@@ -117,7 +118,6 @@ function getEmbeddingEngineSelection() {
       const { OllamaEmbedder } = require("../EmbeddingEngines/ollama");
       return new OllamaEmbedder();
     case "native":
-      const { NativeEmbedder } = require("../EmbeddingEngines/native");
       return new NativeEmbedder();
     case "lmstudio":
       const { LMStudioEmbedder } = require("../EmbeddingEngines/lmstudio");
@@ -126,7 +126,7 @@ function getEmbeddingEngineSelection() {
       const { CohereEmbedder } = require("../EmbeddingEngines/cohere");
       return new CohereEmbedder();
     default:
-      return null;
+      return new NativeEmbedder();
   }
 }
 
