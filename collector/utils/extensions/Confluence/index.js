@@ -9,31 +9,34 @@ const {
   ConfluencePagesLoader,
 } = require("langchain/document_loaders/web/confluence");
 
+function urlMatchesPatter(url, patter) {
+  const urlPattern = new UrlPattern(patter);
+  return urlPattern.match(url);
+}
+
+function generateCustomDomain({ subdomain, domain, tld }) {
+  return (subdomain ? `${subdomain}.` : "") + `${domain}.${tld}`;
+}
+
 function validSpaceUrl(spaceUrl = "") {
   // Atlassian default URL match
-  const atlassianPattern = new UrlPattern(
-    "https\\://(:subdomain).atlassian.net/wiki/spaces/(:spaceKey)*"
-  );
-  const atlassianMatch = atlassianPattern.match(spaceUrl);
+  const atlassianMatch = urlMatchesPatter(spaceUrl, "https\\://(:subdomain).atlassian.net/wiki/spaces/(:spaceKey)*");
   if (atlassianMatch) {
     return { valid: true, result: atlassianMatch };
   }
 
-  let customMatch = null;
-  [
-    "https\\://(:subdomain.):domain.:tld/wiki/spaces/(:spaceKey)*", // Custom Confluence space
-    "https\\://(:subdomain.):domain.:tld/display/(:spaceKey)*", // Custom Confluence space + Human-readable space tag.
-  ].forEach((matchPattern) => {
-    if (!!customMatch) return;
-    const pattern = new UrlPattern(matchPattern);
-    customMatch = pattern.match(spaceUrl);
-  });
-
+  // Custom URL match
+  const customMatch = urlMatchesPatter(spaceUrl, "https\\://(:subdomain.):domain.:tld/wiki/spaces/(:spaceKey)*");
   if (customMatch) {
-    customMatch.customDomain =
-      (customMatch.subdomain ? `${customMatch.subdomain}.` : "") + //
-      `${customMatch.domain}.${customMatch.tld}`;
-    return { valid: true, result: customMatch, custom: true };
+    customMatch.customDomain = generateCustomDomain(customMatch);
+    return { valid: true, result: customMatch, humanReadable: false };
+  }
+
+  // Human Readable URL match
+  const humanReadableMatch = urlMatchesPatter(spaceUrl, "https\\://(:subdomain.):domain.:tld/display/(:spaceKey)*");
+  if (humanReadableMatch) {
+    humanReadableMatch.customDomain = generateCustomDomain(humanReadableMatch);
+    return { valid: true, result: humanReadableMatch, humanReadable: true };
   }
 
   // No match
@@ -44,32 +47,29 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
   if (!pageUrl || !username || !accessToken) {
     return {
       success: false,
-      reason:
-        "You need either a username and access token, or a personal access token (PAT), to use the Confluence connector.",
+      reason: "You need either a username and access token, or a personal access token (PAT), to use the Confluence connector.",
     };
   }
 
   const validSpace = validSpaceUrl(pageUrl);
-  if (!validSpace.result) {
+  const { result: validSpaceResult, humanReadable } = validSpace;
+  if (!validSpaceResult) {
     return {
       success: false,
-      reason:
-        "Confluence space URL is not in the expected format of https://domain.atlassian.net/wiki/space/~SPACEID/* or https://customDomain/wiki/space/~SPACEID/*",
+      reason: "Confluence space URL is not in the expected format of one of https://domain.atlassian.net/wiki/space/~SPACEID/* or https://customDomain/wiki/space/~SPACEID/* or https://customDomain/display/~SPACEID/*",
     };
   }
 
-  const { subdomain, customDomain, spaceKey } = validSpace.result;
-  let baseUrl = `https://${subdomain}.atlassian.net/wiki`;
+  const { subdomain, customDomain, spaceKey } = validSpaceResult;
+  let subpath = humanReadable ? `` : `/wiki`;
+  let baseUrl = `https://${subdomain}.atlassian.net${subpath}`;
   if (customDomain) {
-    baseUrl = `https://${customDomain}/wiki`;
+    baseUrl = `https://${customDomain}${subpath}`;
   }
 
   console.log(`-- Working Confluence ${baseUrl} --`);
   const loader = new ConfluencePagesLoader({
-    baseUrl,
-    spaceKey,
-    username,
-    accessToken,
+    baseUrl, spaceKey, username, accessToken,
   });
 
   const { docs, error } = await loader
@@ -79,8 +79,7 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
     })
     .catch((e) => {
       return {
-        docs: [],
-        error: e.message?.split("Error:")?.[1] || e.message,
+        docs: [], error: e.message?.split("Error:")?.[1] || e.message,
       };
     });
 
@@ -90,20 +89,11 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
       reason: error ?? "No pages found for that Confluence space.",
     };
   }
-  const outFolder = slugify(
-    `${subdomain}-confluence-${v4().slice(0, 4)}`
-  ).toLowerCase();
+  const outFolder = slugify(`${subdomain}-confluence-${v4().slice(0, 4)}`).toLowerCase();
 
-  const outFolderPath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(
-          __dirname,
-          `../../../../server/storage/documents/${outFolder}`
-        )
-      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
+  const outFolderPath = process.env.NODE_ENV === "development" ? path.resolve(__dirname, `../../../../server/storage/documents/${outFolder}`) : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 
-  if (!fs.existsSync(outFolderPath))
-    fs.mkdirSync(outFolderPath, { recursive: true });
+  if (!fs.existsSync(outFolderPath)) fs.mkdirSync(outFolderPath, { recursive: true });
 
   docs.forEach((doc) => {
     if (!doc.pageContent) return;
@@ -122,22 +112,13 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
       token_count_estimate: tokenizeString(doc.pageContent).length,
     };
 
-    console.log(
-      `[Confluence Loader]: Saving ${doc.metadata.title} to ${outFolder}`
-    );
-    writeToServerDocuments(
-      data,
-      `${slugify(doc.metadata.title)}-${data.id}`,
-      outFolderPath
-    );
+    console.log(`[Confluence Loader]: Saving ${doc.metadata.title} to ${outFolder}`);
+    writeToServerDocuments(data, `${slugify(doc.metadata.title)}-${data.id}`, outFolderPath);
   });
 
   return {
-    success: true,
-    reason: null,
-    data: {
-      spaceKey,
-      destination: outFolder,
+    success: true, reason: null, data: {
+      spaceKey, destination: outFolder,
     },
   };
 }
