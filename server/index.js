@@ -37,10 +37,9 @@ app.use(
 );
 
 if (!!process.env.ENABLE_HTTPS) {
-  const server = bootSSL(app, process.env.SERVER_PORT || 3001)?.server;
-  require("express-ws")(app, server); // Apply same certificate + server for WSS connections
+  bootSSL(app, process.env.SERVER_PORT || 3001);
 } else {
-  require("express-ws")(app);
+  require("express-ws")(app); // load WebSockets in non-SSL mode.
 }
 
 app.use("/api", apiRouter);
@@ -115,4 +114,6 @@ app.all("*", function (_, response) {
   response.sendStatus(404);
 });
 
+// In non-https mode we need to boot at the end since the server has not yet
+// started and is `.listen`ing.
 if (!process.env.ENABLE_HTTPS) bootHTTP(app, process.env.SERVER_PORT || 3001);

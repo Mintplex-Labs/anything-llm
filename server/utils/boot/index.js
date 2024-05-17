@@ -22,6 +22,7 @@ function bootSSL(app, port = 3001) {
       })
       .on("error", catchSigTerms);
 
+    require("express-ws")(app, server); // Apply same certificate + server for WSS connections
     return { app, server };
   } catch (e) {
     console.error(
