@@ -356,6 +356,11 @@ const KEY_MAPPING = {
     checks: [isNotEmpty, supportedTranscriptionProvider],
     postUpdate: [],
   },
+  WhisperModelPref: {
+    envKey: "WHISPER_MODEL_PREF",
+    checks: [validLocalWhisper],
+    postUpdate: [],
+  },
 
   // System Settings
   AuthToken: {
@@ -466,6 +471,16 @@ function validOllamaLLMBasePath(input = "") {
 function supportedTTSProvider(input = "") {
   const validSelection = ["native", "openai", "elevenlabs"].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
+}
+
+function validLocalWhisper(input = "") {
+  const validSelection = [
+    "Xenova/whisper-small",
+    "Xenova/whisper-large",
+  ].includes(input);
+  return validSelection
+    ? null
+    : `${input} is not a valid Whisper model selection.`;
 }
 
 function supportedLLM(input = "") {
