@@ -150,6 +150,8 @@ const SystemSettings = {
       // - then it can be shared.
       // --------------------------------------------------------
       WhisperProvider: process.env.WHISPER_PROVIDER || "local",
+      WhisperModelPref:
+        process.env.WHISPER_MODEL_PREF || "Xenova/whisper-small",
 
       // --------------------------------------------------------
       // TTS/STT  Selection Settings & Configs
