@@ -12,6 +12,23 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 
+const PROVIDERS = [
+  {
+    name: "OpenAI",
+    value: "openai",
+    logo: OpenAiLogo,
+    options: (settings) => <OpenAiWhisperOptions settings={settings} />,
+    description: "Leverage the OpenAI Whisper-large model using your API key.",
+  },
+  {
+    name: "AnythingLLM Built-In",
+    value: "local",
+    logo: AnythingLLMIcon,
+    options: (settings) => <NativeTranscriptionOptions settings={settings} />,
+    description: "Run a built-in whisper model on this instance privately.",
+  },
+];
+
 export default function TranscriptionModelPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -67,24 +84,6 @@ export default function TranscriptionModelPreference() {
     }
     fetchKeys();
   }, []);
-
-  const PROVIDERS = [
-    {
-      name: "OpenAI",
-      value: "openai",
-      logo: OpenAiLogo,
-      options: <OpenAiWhisperOptions settings={settings} />,
-      description:
-        "Leverage the OpenAI Whisper-large model using your API key.",
-    },
-    {
-      name: "ChatLTT Built-In",
-      value: "local",
-      logo: AnythingLLMIcon,
-      options: <NativeTranscriptionOptions settings={settings} />,
-      description: "Run a built-in whisper model on this instance privately.",
-    },
-  ];
 
   useEffect(() => {
     const filtered = PROVIDERS.filter((provider) =>
@@ -150,7 +149,7 @@ export default function TranscriptionModelPreference() {
                   />
                 )}
                 {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-[#18181B] rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#FF5757] z-20">
+                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-[#18181B] rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#46C8FF] z-20">
                     <div className="w-full flex flex-col gap-y-1">
                       <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-[#18181B]">
                         <MagnifyingGlass
@@ -194,7 +193,7 @@ export default function TranscriptionModelPreference() {
                   </div>
                 ) : (
                   <button
-                    className="w-full max-w-[640px] h-[64px] bg-[#18181B] rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-[#FF5757] transition-all duration-300"
+                    className="w-full max-w-[640px] h-[64px] bg-[#18181B] rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-[#46C8FF] transition-all duration-300"
                     type="button"
                     onClick={() => setSearchMenuOpen(true)}
                   >
@@ -228,7 +227,7 @@ export default function TranscriptionModelPreference() {
                 {selectedProvider &&
                   PROVIDERS.find(
                     (provider) => provider.value === selectedProvider
-                  )?.options}
+                  )?.options(settings)}
               </div>
             </div>
           </form>
