@@ -73,11 +73,11 @@ export default function AdminSystem() {
           <div className="mt-4 mb-8">
             <div className="flex flex-col gap-y-1">
               <h2 className="text-base leading-6 font-bold text-white">
-                Users can delete workspaces
+                Users can delete hubs
               </h2>
               <p className="text-xs leading-[18px] font-base text-white/60">
-                Allow non-admin users to delete workspaces that they are a part
-                of. This would delete the workspace for everyone.
+                Allow non-admin users to delete hubs that they are a part
+                of. This would delete the hub for everyone.
               </p>
               <label className="relative inline-flex cursor-pointer items-center mt-2">
                 <input
@@ -100,8 +100,7 @@ export default function AdminSystem() {
               </h2>
               <p className="text-xs leading-[18px] font-base text-white/60">
                 Restrict non-admin users to a number of successful queries or
-                chats within a 24 hour window. Enable this to prevent users from
-                running up OpenAI costs.
+                chats within a 24 hour window.
               </p>
               <div className="mt-2">
                 <label className="relative inline-flex cursor-pointer items-center">

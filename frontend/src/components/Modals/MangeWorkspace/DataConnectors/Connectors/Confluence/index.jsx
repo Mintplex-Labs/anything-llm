@@ -153,7 +153,7 @@ export default function ConfluenceOptions() {
             {loading && (
               <p className="text-xs text-white/50">
                 Once complete, all pages will be available for embedding into
-                workspaces.
+                ChatLTT Hub.
               </p>
             )}
           </div>

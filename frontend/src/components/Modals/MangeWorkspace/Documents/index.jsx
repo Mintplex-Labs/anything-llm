@@ -86,7 +86,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
   const updateWorkspace = async (e) => {
     e.preventDefault();
     setLoading(true);
-    showToast("Updating workspace...", "info", { autoClose: false });
+    showToast("Updating your Hub...", "info", { autoClose: false });
     setLoadingMessage("This may take a while for large documents");
 
     const changesToSend = {
@@ -102,7 +102,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
           showToast(`Error: ${res.message}`, "error", { clear: true });
           return;
         }
-        showToast("Workspace updated successfully.", "success", {
+        showToast("Hub updated successfully.", "success", {
           clear: true,
         });
       })

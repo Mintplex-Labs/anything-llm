@@ -4,8 +4,8 @@ import { CheckCircle } from "@phosphor-icons/react";
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-const TITLE = "Welcome to AnythingLLM";
-const DESCRIPTION = "Help us make AnythingLLM built for your needs. Optional.";
+const TITLE = "Welcome to ChatLTT";
+const DESCRIPTION = "Help us make ChatLTT built for your needs. Optional.";
 
 async function sendQuestionnaire({ email, useCase, comment }) {
   if (import.meta.env.DEV) {
@@ -131,7 +131,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
             className="text-white text-base font-medium"
             htmlFor="use_case"
           >
-            What will you use AnythingLLM for?{" "}
+            What will you use ChatLTT for?{" "}
           </label>
           <div className="mt-2 gap-y-3 flex flex-col">
             <label

@@ -273,7 +273,7 @@ function PasswordProtection() {
             </p>
           </div>
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-            Protect your AnythingLLM instance with a password. If you forget
+            Protect your ChatLTT instance with a password. If you forget
             this there is no recovery method so ensure you save this password.
           </p>
         </div>

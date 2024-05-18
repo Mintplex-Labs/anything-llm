@@ -51,7 +51,7 @@ export default function RecoveryCodeModal({
             <b className="mt-4">These recovery codes are only shown once!</b>
           </p>
           <div
-            className="bg-[#1C1E21] text-white hover:text-[#46C8FF]
+            className="bg-[#1C1E21] text-white hover:text-[#FF5757]
                  flex items-center justify-center rounded-md mt-6 cursor-pointer"
             onClick={handleCopyToClipboard}
           >
@@ -68,7 +68,7 @@ export default function RecoveryCodeModal({
       <div className="flex w-full justify-center items-center p-3 space-x-2 rounded-b border-gray-500/50 -mt-4 mb-4">
         <button
           type="button"
-          className="transition-all duration-300 text-xs md:w-[500px] md:h-[34px] h-[48px] w-full m-2 font-semibold rounded-lg bg-[#46C8FF] hover:bg-[#2C2F36] border-2 border-transparent hover:border-[#46C8FF] hover:text-white whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)] flex justify-center items-center gap-x-2"
+          className="transition-all duration-300 text-xs md:w-[500px] md:h-[34px] h-[48px] w-full m-2 font-semibold rounded-lg bg-[#FF5757] hover:bg-[#2C2F36] border-2 border-transparent hover:border-[#FF5757] hover:text-white whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)] flex justify-center items-center gap-x-2"
           onClick={downloadClicked ? handleClose : downloadRecoveryCodes}
         >
           {downloadClicked ? (

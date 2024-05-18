@@ -1,8 +1,8 @@
-# Native models used by AnythingLLM
+# Native models used by ChatLTT
 
 This folder is specifically created as a local cache and storage folder that is used for native models that can run on a CPU.
 
-Currently, AnythingLLM uses this folder for the following parts of the application.
+Currently, ChatLTT uses this folder for the following parts of the application.
 
 ## Embedding
 When your embedding engine preference is `native` we will use the ONNX **all-MiniLM-L6-v2** model built by [Xenova on HuggingFace.co](https://huggingface.co/Xenova/all-MiniLM-L6-v2). This model is a quantized and WASM version of the popular [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) which produces a 384-dimension vector.
@@ -10,7 +10,7 @@ When your embedding engine preference is `native` we will use the ONNX **all-Min
 If you are using the `native` embedding engine your vector database should be configured to accept 384-dimension models if that parameter is directly editable (Pinecone only).
 
 ## Audio/Video transcription
-AnythingLLM allows you to upload various audio and video formats as source documents. In all cases the audio tracks will be transcribed by a locally running ONNX model **whisper-small** built by [Xenova on HuggingFace.co](https://huggingface.co/Xenova/whisper-small). The model is a smaller version of the OpenAI Whisper model. Given the model runs locally on CPU, larger files will result in longer transcription times.
+ChatLTT allows you to upload various audio and video formats as source documents. In all cases the audio tracks will be transcribed by a locally running ONNX model **whisper-small** built by [Xenova on HuggingFace.co](https://huggingface.co/Xenova/whisper-small). The model is a smaller version of the OpenAI Whisper model. Given the model runs locally on CPU, larger files will result in longer transcription times.
 
 Once transcribed you can embed these transcriptions into your workspace like you would any other file! 
 

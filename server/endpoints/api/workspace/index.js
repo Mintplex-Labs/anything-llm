@@ -24,7 +24,7 @@ function apiWorkspaceEndpoints(app) {
   app.post("/v1/workspace/new", [validApiKey], async (request, response) => {
     /*
     #swagger.tags = ['Workspaces']
-    #swagger.description = 'Create a new workspace'
+    #swagger.description = 'Create a new chatltt hub'
     #swagger.requestBody = {
       description: 'JSON object containing new display name of workspace.',
       required: true,
@@ -32,7 +32,7 @@ function apiWorkspaceEndpoints(app) {
       content: {
         "application/json": {
           example: {
-            name: "My New Workspace",
+            name: "My New ChatLTT Hub",
           }
         }
       }
@@ -233,7 +233,7 @@ function apiWorkspaceEndpoints(app) {
     async (request, response) => {
       /*
     #swagger.tags = ['Workspaces']
-    #swagger.description = 'Update workspace settings by its unique slug.'
+    #swagger.description = 'Update hub settings by its unique slug.'
     #swagger.path = '/v1/workspace/{slug}/update'
     #swagger.parameters['slug'] = {
         in: 'path',
@@ -248,7 +248,7 @@ function apiWorkspaceEndpoints(app) {
       content: {
         "application/json": {
           example: {
-            "name": 'Updated Workspace Name',
+            "name": 'Updated ChatLTT's Hub Name',
             "openAiTemp": 0.2,
             "openAiHistory": 20,
             "openAiPrompt": "Respond to all inquires and questions in binary - do not respond in any other format."
@@ -330,12 +330,12 @@ function apiWorkspaceEndpoints(app) {
               history: [
                 {
                   "role": "user",
-                  "content": "What is AnythingLLM?",
+                  "content": "What is ChatLTT?",
                   "sentAt": 1692851630
                 },
                 {
                   "role": "assistant",
-                  "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                  "content": "ChatLTT is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
                   "sources": [{"source": "object about source document and snippets used"}]
                 }
               ]
@@ -461,7 +461,7 @@ function apiWorkspaceEndpoints(app) {
        content: {
          "application/json": {
            example: {
-             message: "What is AnythingLLM?",
+             message: "What is ChatLTT?",
              mode: "query | chat"
            }
          }
@@ -560,7 +560,7 @@ function apiWorkspaceEndpoints(app) {
        content: {
          "application/json": {
            example: {
-             message: "What is AnythingLLM?",
+             message: "What is ChatLTT?",
              mode: "query | chat"
            }
          }

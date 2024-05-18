@@ -201,7 +201,7 @@ const Weaviate = {
             .classCreator()
             .withClass({
               class: camelCase(namespace),
-              description: `Class created by AnythingLLM named ${camelCase(
+              description: `Class created by ChatLTT named ${camelCase(
                 namespace
               )}`,
               vectorizer: "none",
@@ -305,7 +305,7 @@ const Weaviate = {
           .classCreator()
           .withClass({
             class: camelCase(namespace),
-            description: `Class created by AnythingLLM named ${camelCase(
+            description: `Class created by ChatLTT named ${camelCase(
               namespace
             )}`,
             vectorizer: "none",
