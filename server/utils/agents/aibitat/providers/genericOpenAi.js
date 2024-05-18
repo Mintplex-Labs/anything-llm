@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { toValidNumber } = require("../../../http/index.js");
 
 /**
  * The agent provider for the Generic OpenAI provider.
@@ -24,7 +25,9 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = client;
     this.model = model;
     this.verbose = true;
-    this.maxTokens = process.env.GENERIC_OPEN_AI_MAX_TOKENS ?? 1024;
+    this.maxTokens = process.env.GENERIC_OPEN_AI_MAX_TOKENS
+      ? toValidNumber(process.env.GENERIC_OPEN_AI_MAX_TOKENS, 1024)
+      : 1024;
   }
 
   get client() {
