@@ -498,15 +498,18 @@ function apiWorkspaceEndpoints(app) {
         const { slug = null } = request.params;
         const { docPath, pinStatus = false } = reqBody(request);
         const workspace = await Workspace.get({ slug });
-  
+
         const document = await Document.get({
           workspaceId: workspace.id,
           docpath: docPath,
         });
         if (!document) return response.sendStatus(404).end();
-  
+
         await Document.update(document.id, { pinned: pinStatus });
-        return response.status(200).json({ message: 'Pin status updated successfully' }).end();
+        return response
+          .status(200)
+          .json({ message: "Pin status updated successfully" })
+          .end();
       } catch (error) {
         console.error("Error processing the pin status update:", error);
         return response.status(500).end();

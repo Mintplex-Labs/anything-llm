@@ -1999,7 +1999,8 @@
           }
         }
       }
-    },"/v1/workspace/{slug}/update-pin": {
+    },
+    "/workspace/{slug}/update-pin": {
       "post": {
         "tags": [
           "Workspaces"
@@ -2037,6 +2038,9 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden"
+          },
           "404": {
             "description": "Document not found"
           },
@@ -2047,20 +2051,12 @@
         "requestBody": {
           "description": "JSON object with the document path and pin status to update.",
           "required": true,
+          "type": "object",
           "content": {
             "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "docPath": {
-                    "type": "string",
-                    "example": "custom-documents/my-pdf.pdf-hash.json"
-                  },
-                  "pinStatus": {
-                    "type": "boolean",
-                    "example": true
-                  }
-                }
+              "example": {
+                "docPath": "custom-documents/my-pdf.pdf-hash.json",
+                "pinStatus": true
               }
             }
           }
