@@ -160,6 +160,24 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // LiteLLM Settings
+  LiteLLMModelPref: {
+    envKey: "LITE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  LiteLLMTokenLimit: {
+    envKey: "LITE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  LiteLLMBasePath: {
+    envKey: "LITE_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  LiteLLMApiKey: {
+    envKey: "LITE_LLM_API_KEY",
+    checks: [],
+  },
+
   // Generic OpenAI InferenceSettings
   GenericOpenAiBasePath: {
     envKey: "GENERIC_OPEN_AI_BASE_PATH",
@@ -344,6 +362,11 @@ const KEY_MAPPING = {
     checks: [isNotEmpty, supportedTranscriptionProvider],
     postUpdate: [],
   },
+  WhisperModelPref: {
+    envKey: "WHISPER_MODEL_PREF",
+    checks: [validLocalWhisper],
+    postUpdate: [],
+  },
 
   // System Settings
   AuthToken: {
@@ -456,6 +479,16 @@ function supportedTTSProvider(input = "") {
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
 
+function validLocalWhisper(input = "") {
+  const validSelection = [
+    "Xenova/whisper-small",
+    "Xenova/whisper-large",
+  ].includes(input);
+  return validSelection
+    ? null
+    : `${input} is not a valid Whisper model selection.`;
+}
+
 function supportedLLM(input = "") {
   const validSelection = [
     "openai",
@@ -475,6 +508,7 @@ function supportedLLM(input = "") {
     "koboldcpp",
     "textgenwebui",
     "cohere",
+    "litellm",
     "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;

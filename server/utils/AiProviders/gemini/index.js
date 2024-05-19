@@ -1,3 +1,4 @@
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -26,11 +27,7 @@ class GeminiLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      throw new Error(
-        "INVALID GEMINI LLM SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Gemini as your LLM."
-      );
-    this.embedder = embedder;
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7; // not used for Gemini
   }
 
