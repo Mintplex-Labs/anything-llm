@@ -24,6 +24,7 @@ export default function VoyageAiOptions({ settings }) {
           <select
             name="EmbeddingModelPref"
             required={true}
+            defaultValue={settings?.EmbeddingModelPref}
             className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
           >
             <optgroup label="Available embedding models">
@@ -35,11 +36,7 @@ export default function VoyageAiOptions({ settings }) {
                 "voyage-2",
               ].map((model) => {
                 return (
-                  <option
-                    key={model}
-                    value={model}
-                    selected={settings?.EmbeddingModelPref === model}
-                  >
+                  <option key={model} value={model}>
                     {model}
                   </option>
                 );

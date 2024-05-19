@@ -3,7 +3,9 @@ class VoyageAiEmbedder {
     if (!process.env.VOYAGEAI_API_KEY)
       throw new Error("No Voyage AI API key was set.");
 
-    const { VoyageEmbeddings } = require("langchain/embeddings/voyage");
+    const {
+      VoyageEmbeddings,
+    } = require("@langchain/community/embeddings/voyage");
     const voyage = new VoyageEmbeddings({
       apiKey: process.env.VOYAGEAI_API_KEY,
     });
@@ -17,9 +19,10 @@ class VoyageAiEmbedder {
   }
 
   async embedTextInput(textInput) {
-    const result = await this.voyage.embedQuery(textInput, {
-      modelName: this.model,
-    });
+    const result = await this.voyage.embedDocuments(
+      Array.isArray(textInput) ? textInput : [textInput],
+      { modelName: this.model }
+    );
     return result || [];
   }
 
