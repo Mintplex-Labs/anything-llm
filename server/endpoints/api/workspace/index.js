@@ -448,6 +448,73 @@ function apiWorkspaceEndpoints(app) {
   );
 
   app.post(
+    "/v1/workspace/:slug/update-pin",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Workspaces']
+      #swagger.description = 'Add or remove pin from a document in a workspace by its unique slug.'
+      #swagger.path = '/workspace/{slug}/update-pin'
+      #swagger.parameters['slug'] = {
+          in: 'path',
+          description: 'Unique slug of workspace to find',
+          required: true,
+          type: 'string'
+      }
+      #swagger.requestBody = {
+        description: 'JSON object with the document path and pin status to update.',
+        required: true,
+        type: 'object',
+        content: {
+          "application/json": {
+            example: {
+              docPath: "custom-documents/my-pdf.pdf-hash.json",
+              pinStatus: true
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        description: 'OK',
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                message: 'Pin status updated successfully'
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[404] = {
+        description: 'Document not found'
+      }
+      #swagger.responses[500] = {
+        description: 'Internal Server Error'
+      }
+      */
+      try {
+        const { slug = null } = request.params;
+        const { docPath, pinStatus = false } = reqBody(request);
+        const workspace = await Workspace.get({ slug });
+  
+        const document = await Document.get({
+          workspaceId: workspace.id,
+          docpath: docPath,
+        });
+        if (!document) return response.sendStatus(404).end();
+  
+        await Document.update(document.id, { pinned: pinStatus });
+        return response.status(200).json({ message: 'Pin status updated successfully' }).end();
+      } catch (error) {
+        console.error("Error processing the pin status update:", error);
+        return response.status(500).end();
+      }
+    }
+  );
+
+  app.post(
     "/v1/workspace/:slug/chat",
     [validApiKey],
     async (request, response) => {
