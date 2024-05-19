@@ -350,10 +350,21 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // VoyageAi Options
+  VoyageAiApiKey: {
+    envKey: "VOYAGEAI_API_KEY",
+    checks: [isNotEmpty],
+  },
+
   // Whisper (transcription) providers
   WhisperProvider: {
     envKey: "WHISPER_PROVIDER",
     checks: [isNotEmpty, supportedTranscriptionProvider],
+    postUpdate: [],
+  },
+  WhisperModelPref: {
+    envKey: "WHISPER_MODEL_PREF",
+    checks: [validLocalWhisper],
     postUpdate: [],
   },
 
@@ -468,6 +479,16 @@ function supportedTTSProvider(input = "") {
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
 
+function validLocalWhisper(input = "") {
+  const validSelection = [
+    "Xenova/whisper-small",
+    "Xenova/whisper-large",
+  ].includes(input);
+  return validSelection
+    ? null
+    : `${input} is not a valid Whisper model selection.`;
+}
+
 function supportedLLM(input = "") {
   const validSelection = [
     "openai",
@@ -530,6 +551,7 @@ function supportedEmbeddingModel(input = "") {
     "ollama",
     "lmstudio",
     "cohere",
+    "voyageai",
   ];
   return supported.includes(input)
     ? null

@@ -150,6 +150,8 @@ const SystemSettings = {
       // - then it can be shared.
       // --------------------------------------------------------
       WhisperProvider: process.env.WHISPER_PROVIDER || "local",
+      WhisperModelPref:
+        process.env.WHISPER_MODEL_PREF || "Xenova/whisper-small",
 
       // --------------------------------------------------------
       // TTS/STT  Selection Settings & Configs
@@ -424,6 +426,9 @@ const SystemSettings = {
       // Cohere API Keys
       CohereApiKey: !!process.env.COHERE_API_KEY,
       CohereModelPref: process.env.COHERE_MODEL_PREF,
+
+      // VoyageAi API Keys
+      VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
     };
   },
 
