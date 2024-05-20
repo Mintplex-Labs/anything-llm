@@ -4,8 +4,10 @@ import FooterCustomization from "./FooterCustomization";
 import SupportEmail from "./SupportEmail";
 import CustomLogo from "./CustomLogo";
 import CustomMessages from "./CustomMessages";
+import { useTranslation } from "react-i18next";
 
 export default function Appearance() {
+  const { t } = useTranslation();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
@@ -17,11 +19,11 @@ export default function Appearance() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                Appearance
+                {t("appearance.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              Customize the appearance settings of your platform.
+              {t("appearance.description")}
             </p>
           </div>
           <CustomLogo />

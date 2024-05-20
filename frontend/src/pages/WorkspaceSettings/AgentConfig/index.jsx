@@ -9,6 +9,7 @@ import GenericSkill from "./GenericSkill";
 import Admin from "@/models/admin";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useTranslation } from "react-i18next";
 
 export default function WorkspaceAgentConfiguration({ workspace }) {
   const [settings, setSettings] = useState({});
@@ -143,17 +144,17 @@ function LoadingSkeleton() {
 }
 
 function AvailableAgentSkills({ skills, settings, toggleAgentSkill }) {
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex flex-col mb-8">
         <div className="flex w-full justify-between items-center">
           <label htmlFor="name" className="text-white text-md font-semibold">
-            Default agent skills
+            {t("agent.skill.title")}
           </label>
         </div>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          Improve the natural abilities of the default agent with these
-          pre-built skills. This set up applies to all workspaces.
+          {t("agent.skill.description")}
         </p>
       </div>
       <input
@@ -163,37 +164,37 @@ function AvailableAgentSkills({ skills, settings, toggleAgentSkill }) {
       />
       <div className="flex flex-col gap-y-3">
         <GenericSkill
-          title="RAG & long-term memory"
-          description='Allow the agent to leverage your local documents to answer a query or ask the agent to "remember" pieces of content for long-term memory retrieval.'
+          title={t("agent.skill.rag.title")}
+          description={t("agent.skill.rag.description")}
           settings={settings}
           enabled={true}
           disabled={true}
         />
         <GenericSkill
-          title="View & summarize documents"
-          description="Allow the agent to list and summarize the content of workspace files currently embedded."
+          title={t("agent.skill.view.title")}
+          description={t("agent.skill.view.description")}
           settings={settings}
           enabled={true}
           disabled={true}
         />
         <GenericSkill
-          title="Scrape websites"
-          description="Allow the agent to visit and scrape the content of websites."
+          title={t("agent.skill.scrape.title")}
+          description={t("agent.skill.scrape.description")}
           settings={settings}
           enabled={true}
           disabled={true}
         />
         <GenericSkill
-          title="Generate charts"
-          description="Enable the default agent to generate various types of charts from data provided or given in chat."
+          title={t("agent.skill.generate.title")}
+          description={t("agent.skill.generate.description")}
           skill="create-chart"
           settings={settings}
           toggleSkill={toggleAgentSkill}
           enabled={skills.includes("create-chart")}
         />
         <GenericSkill
-          title="Generate & save files to browser"
-          description="Enable the default agent to generate and write to files that save and can be downloaded in your browser."
+          title={t("agent.skill.save.title")}
+          description={t("agent.skill.save.description")}
           skill="save-file-to-browser"
           settings={settings}
           toggleSkill={toggleAgentSkill}
