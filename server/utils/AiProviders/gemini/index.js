@@ -10,10 +10,7 @@ class GeminiLLM {
       throw new Error("No Gemini API key was set.");
 
     // Docs: https://ai.google.dev/tutorials/node_quickstart
-    const {
-      GoogleGenerativeAI,
-      HarmCategory,
-    } = require("@google/generative-ai");
+    const { GoogleGenerativeAI } = require("@google/generative-ai");
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     this.model =
       modelPreference || process.env.GEMINI_LLM_MODEL_PREF || "gemini-pro";
