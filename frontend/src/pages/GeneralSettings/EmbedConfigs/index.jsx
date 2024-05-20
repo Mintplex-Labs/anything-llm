@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
@@ -10,7 +11,6 @@ import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import Embed from "@/models/embed";
 import CTAButton from "@/components/lib/CTAButton";
-import { useTranslation } from "react-i18next";
 
 export default function EmbedConfigs() {
   const { isOpen, openModal, closeModal } = useModal();

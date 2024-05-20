@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Gauge } from "@phosphor-icons/react";
 
 export default function NativeTranscriptionOptions({ settings }) {
+  const { t } = useTranslation();
   const [model, setModel] = useState(settings?.WhisperModelPref);
 
   return (
