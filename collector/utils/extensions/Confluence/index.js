@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
+const UrlPattern = require("url-pattern");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const {
@@ -9,13 +10,34 @@ const {
 } = require("langchain/document_loaders/web/confluence");
 
 function validSpaceUrl(spaceUrl = "") {
-  const UrlPattern = require("url-pattern");
-  const pattern = new UrlPattern(
+  // Atlassian default URL match
+  const atlassianPattern = new UrlPattern(
     "https\\://(:subdomain).atlassian.net/wiki/spaces/(:spaceKey)*"
   );
-  const match = pattern.match(spaceUrl);
-  if (!match) return { valid: false, result: null };
-  return { valid: true, result: match };
+  const atlassianMatch = atlassianPattern.match(spaceUrl);
+  if (atlassianMatch) {
+    return { valid: true, result: atlassianMatch };
+  }
+
+  let customMatch = null;
+  [
+    "https\\://(:subdomain.):domain.:tld/wiki/spaces/(:spaceKey)*", // Custom Confluence space
+    "https\\://(:subdomain.):domain.:tld/display/(:spaceKey)*", // Custom Confluence space + Human-readable space tag.
+  ].forEach((matchPattern) => {
+    if (!!customMatch) return;
+    const pattern = new UrlPattern(matchPattern);
+    customMatch = pattern.match(spaceUrl);
+  });
+
+  if (customMatch) {
+    customMatch.customDomain =
+      (customMatch.subdomain ? `${customMatch.subdomain}.` : "") + //
+      `${customMatch.domain}.${customMatch.tld}`;
+    return { valid: true, result: customMatch, custom: true };
+  }
+
+  // No match
+  return { valid: false, result: null };
 }
 
 async function loadConfluence({ pageUrl, username, accessToken }) {
@@ -32,14 +54,19 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
     return {
       success: false,
       reason:
-        "Confluence space URL is not in the expected format of https://domain.atlassian.net/wiki/space/~SPACEID/*",
+        "Confluence space URL is not in the expected format of https://domain.atlassian.net/wiki/space/~SPACEID/* or https://customDomain/wiki/space/~SPACEID/*",
     };
   }
 
-  const { subdomain, spaceKey } = validSpace.result;
-  console.log(`-- Working Confluence ${subdomain}.atlassian.net --`);
+  const { subdomain, customDomain, spaceKey } = validSpace.result;
+  let baseUrl = `https://${subdomain}.atlassian.net/wiki`;
+  if (customDomain) {
+    baseUrl = `https://${customDomain}/wiki`;
+  }
+
+  console.log(`-- Working Confluence ${baseUrl} --`);
   const loader = new ConfluencePagesLoader({
-    baseUrl: `https://${subdomain}.atlassian.net/wiki`,
+    baseUrl,
     spaceKey,
     username,
     accessToken,
@@ -79,6 +106,8 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
     fs.mkdirSync(outFolderPath, { recursive: true });
 
   docs.forEach((doc) => {
+    if (!doc.pageContent) return;
+
     const data = {
       id: v4(),
       url: doc.metadata.url + ".page",

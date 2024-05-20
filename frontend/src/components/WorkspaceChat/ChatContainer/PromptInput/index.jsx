@@ -3,7 +3,6 @@ import SlashCommandsButton, {
   SlashCommands,
   useSlashCommands,
 } from "./SlashCommands";
-import { isMobile } from "react-device-detect";
 import debounce from "lodash.debounce";
 import { PaperPlaneRight } from "@phosphor-icons/react";
 import StopGenerationButton from "./StopGenerationButton";
@@ -12,19 +11,37 @@ import AvailableAgentsButton, {
   useAvailableAgents,
 } from "./AgentMenu";
 import TextSizeButton from "./TextSizeMenu";
+import SpeechToText from "./SpeechToText";
+import { Tooltip } from "react-tooltip";
+
+export const PROMPT_INPUT_EVENT = "set_prompt_input";
 export default function PromptInput({
-  message,
   submit,
   onChange,
   inputDisabled,
   buttonDisabled,
   sendCommand,
 }) {
+  const [promptInput, setPromptInput] = useState("");
   const { showAgents, setShowAgents } = useAvailableAgents();
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const formRef = useRef(null);
   const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
+
+  // To prevent too many re-renders we remotely listen for updates from the parent
+  // via an event cycle. Otherwise, using message as a prop leads to a re-render every
+  // change on the input.
+  function handlePromptUpdate(e) {
+    setPromptInput(e?.detail ?? "");
+  }
+
+  useEffect(() => {
+    if (!!window)
+      window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
+    return () =>
+      window?.removeEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
+  }, []);
 
   useEffect(() => {
     if (!inputDisabled && textareaRef.current) {
@@ -66,7 +83,6 @@ export default function PromptInput({
   };
 
   const adjustTextArea = (event) => {
-    if (isMobile) return false;
     const element = event.target;
     element.style.height = "auto";
     element.style.height = `${element.scrollHeight}px`;
@@ -102,6 +118,7 @@ export default function PromptInput({
                   watchForSlash(e);
                   watchForAt(e);
                   adjustTextArea(e);
+                  setPromptInput(e.target.value);
                 }}
                 onKeyDown={captureEnter}
                 required={true}
@@ -111,21 +128,32 @@ export default function PromptInput({
                   setFocused(false);
                   adjustTextArea(e);
                 }}
-                value={message}
-                className="cursor-text max-h-[100px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
+                value={promptInput}
+                className="cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
                 placeholder={"Send a message"}
               />
               {buttonDisabled ? (
                 <StopGenerationButton />
               ) : (
-                <button
-                  ref={formRef}
-                  type="submit"
-                  className="inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
-                >
-                  <PaperPlaneRight className="w-7 h-7 my-3" weight="fill" />
-                  <span className="sr-only">Send message</span>
-                </button>
+                <>
+                  <button
+                    ref={formRef}
+                    type="submit"
+                    className="inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
+                    data-tooltip-id="send-prompt"
+                    data-tooltip-content="Send prompt message to workspace"
+                    aria-label="Send prompt message to workspace"
+                  >
+                    <PaperPlaneRight className="w-7 h-7 my-3" weight="fill" />
+                    <span className="sr-only">Send message</span>
+                  </button>
+                  <Tooltip
+                    id="send-prompt"
+                    place="bottom"
+                    delayShow={300}
+                    className="tooltip !text-xs z-99"
+                  />
+                </>
               )}
             </div>
             <div className="flex justify-between py-3.5">
@@ -139,6 +167,9 @@ export default function PromptInput({
                   setShowAgents={setShowAgents}
                 />
                 <TextSizeButton />
+              </div>
+              <div className="flex gap-x-2">
+                <SpeechToText sendCommand={sendCommand} />
               </div>
             </div>
           </div>

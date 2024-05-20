@@ -9,8 +9,11 @@ export default function ChatQueryRefusalResponse({ workspace, setHasChanges }) {
           {t("chat.refusal.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-        {t("chat.refusal.desc-start")} <code className="bg-zinc-900 p-0.5 rounded-sm">{t("chat.refusal.query")}</code>{" "}
-        {t("chat.refusal.desc-end")}
+          {t("chat.refusal.desc-start")}{" "}
+          <code className="bg-zinc-900 p-0.5 rounded-sm">
+            {t("chat.refusal.query")}
+          </code>{" "}
+          {t("chat.refusal.desc-end")}
         </p>
       </div>
       <textarea

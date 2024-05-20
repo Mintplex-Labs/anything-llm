@@ -6,6 +6,7 @@ const { saveFileInBrowser } = require("./save-file-browser.js");
 const { chatHistory } = require("./chat-history.js");
 const { memory } = require("./memory.js");
 const { rechart } = require("./rechart.js");
+const { sqlAgent } = require("./sql-agent/index.js");
 
 module.exports = {
   webScraping,
@@ -16,6 +17,7 @@ module.exports = {
   chatHistory,
   memory,
   rechart,
+  sqlAgent,
 
   // Plugin name aliases so they can be pulled by slug as well.
   [webScraping.name]: webScraping,
@@ -26,4 +28,5 @@ module.exports = {
   [chatHistory.name]: chatHistory,
   [memory.name]: memory,
   [rechart.name]: rechart,
+  [sqlAgent.name]: sqlAgent,
 };

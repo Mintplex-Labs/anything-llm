@@ -189,6 +189,7 @@ function MultiUserMode() {
   );
 }
 
+const PW_REGEX = new RegExp(/^[a-zA-Z0-9_\-!@$%^&*();]+$/);
 function PasswordProtection() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -200,10 +201,19 @@ function PasswordProtection() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (multiUserModeEnabled) return false;
+    const form = new FormData(e.target);
+
+    if (!PW_REGEX.test(form.get("password"))) {
+      showToast(
+        `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`,
+        "error"
+      );
+      setSaving(false);
+      return;
+    }
 
     setSaving(true);
     setHasChanges(false);
-    const form = new FormData(e.target);
     const data = {
       usePassword,
       newPassword: form.get("password"),

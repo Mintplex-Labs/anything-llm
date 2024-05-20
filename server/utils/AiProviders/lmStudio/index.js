@@ -1,3 +1,4 @@
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
@@ -27,11 +28,7 @@ class LMStudioLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      throw new Error(
-        "INVALID LM STUDIO SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use LMStudio as your LLM."
-      );
-    this.embedder = embedder;
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
   }
 

@@ -92,7 +92,9 @@ export default function SuggestedChatMessages({ slug }) {
   if (loading)
     return (
       <div className="flex flex-col">
-        <label className="block input-label">{t("general.message.title")}</label>
+        <label className="block input-label">
+          {t("general.message.title")}
+        </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           {t("general.message.description")}
         </p>
@@ -104,7 +106,9 @@ export default function SuggestedChatMessages({ slug }) {
   return (
     <div className="w-screen mt-6">
       <div className="flex flex-col">
-        <label className="block input-label">{t("general.message.title")}</label>
+        <label className="block input-label">
+          {t("general.message.title")}
+        </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           {t("general.message.description")}
         </p>
@@ -126,8 +130,9 @@ export default function SuggestedChatMessages({ slug }) {
             <button
               key={index}
               onClick={(e) => startEditing(e, index)}
-              className={`text-left p-2.5 border rounded-xl w-full border-white/20 bg-sidebar hover:bg-workspace-item-selected-gradient ${editingIndex === index ? "border-sky-400" : ""
-                }`}
+              className={`text-left p-2.5 border rounded-xl w-full border-white/20 bg-sidebar hover:bg-workspace-item-selected-gradient ${
+                editingIndex === index ? "border-sky-400" : ""
+              }`}
             >
               <p className="font-semibold">{suggestion.heading}</p>
               <p>{suggestion.message}</p>
@@ -169,7 +174,8 @@ export default function SuggestedChatMessages({ slug }) {
           onClick={addMessage}
           className="flex gap-x-2 items-center justify-center mt-6 text-white text-sm hover:text-sky-400 transition-all duration-300"
         >
-          {t("general.message.add")} <Plus className="" size={24} weight="fill" />
+          {t("general.message.add")}{" "}
+          <Plus className="" size={24} weight="fill" />
         </button>
       )}
 

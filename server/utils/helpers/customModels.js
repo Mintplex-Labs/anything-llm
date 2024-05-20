@@ -4,6 +4,7 @@ const {
 } = require("../AiProviders/openRouter");
 const { perplexityModels } = require("../AiProviders/perplexity");
 const { togetherAiModels } = require("../AiProviders/togetherAi");
+const { ElevenLabsTTS } = require("../TextToSpeech/elevenLabs");
 const SUPPORT_CUSTOM_MODELS = [
   "openai",
   "localai",
@@ -15,6 +16,8 @@ const SUPPORT_CUSTOM_MODELS = [
   "openrouter",
   "lmstudio",
   "koboldcpp",
+  "litellm",
+  "elevenlabs-tts",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -42,6 +45,10 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await getLMStudioModels(basePath);
     case "koboldcpp":
       return await getKoboldCPPModels(basePath);
+    case "litellm":
+      return await liteLLMModels(basePath, apiKey);
+    case "elevenlabs-tts":
+      return await getElevenLabsModels(apiKey);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -61,6 +68,14 @@ async function openAiModels(apiKey = null) {
         {
           name: "gpt-3.5-turbo",
           id: "gpt-3.5-turbo",
+          object: "model",
+          created: 1677610602,
+          owned_by: "openai",
+          organization: "OpenAi",
+        },
+        {
+          name: "gpt-4o",
+          id: "gpt-4o",
           object: "model",
           created: 1677610602,
           owned_by: "openai",
@@ -149,6 +164,25 @@ async function localAIModels(basePath = null, apiKey = null) {
 
   // Api Key was successful so lets save it for future uses
   if (models.length > 0 && !!apiKey) process.env.LOCAL_AI_API_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function liteLLMModels(basePath = null, apiKey = null) {
+  const { OpenAI: OpenAIApi } = require("openai");
+  const openai = new OpenAIApi({
+    baseURL: basePath || process.env.LITE_LLM_BASE_PATH,
+    apiKey: apiKey || process.env.LITE_LLM_API_KEY || null,
+  });
+  const models = await openai.models
+    .list()
+    .then((results) => results.data)
+    .catch((e) => {
+      console.error(`LiteLLM:listModels`, e.message);
+      return [];
+    });
+
+  // Api Key was successful so lets save it for future uses
+  if (models.length > 0 && !!apiKey) process.env.LITE_LLM_API_KEY = apiKey;
   return { models, error: null };
 }
 
@@ -311,6 +345,32 @@ function nativeLLMModels() {
       return { id: file, name: file };
     });
   return { models: files, error: null };
+}
+
+async function getElevenLabsModels(apiKey = null) {
+  const models = (await ElevenLabsTTS.voices(apiKey)).map((model) => {
+    return {
+      id: model.voice_id,
+      organization: model.category,
+      name: model.name,
+    };
+  });
+
+  if (models.length === 0) {
+    return {
+      models: [
+        {
+          id: "21m00Tcm4TlvDq8ikWAM",
+          organization: "premade",
+          name: "Rachel (default)",
+        },
+      ],
+      error: null,
+    };
+  }
+
+  if (models.length > 0 && !!apiKey) process.env.TTS_ELEVEN_LABS_KEY = apiKey;
+  return { models, error: null };
 }
 
 module.exports = {

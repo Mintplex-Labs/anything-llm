@@ -1,4 +1,3 @@
-
 import { useTranslation } from "react-i18next";
 
 export default function WorkspaceName({ workspace, setHasChanges }) {

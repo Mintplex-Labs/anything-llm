@@ -64,13 +64,16 @@ export default function PrivacyAndDataHandling() {
 function ThirdParty({ settings }) {
   const llmChoice = settings?.LLMProvider || "openai";
   const embeddingEngine = settings?.EmbeddingEngine || "openai";
-  const vectorDb = settings?.VectorDB || "pinecone";
+  const vectorDb = settings?.VectorDB || "lancedb";
   const { t } = useTranslation();
+
   return (
     <div className="py-8 w-full flex items-start justify-center flex-col gap-y-6 border-b-2 border-white/10">
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-white text-base font-bold">{t("privacy.llm")}</div>
+          <div className="text-white text-base font-bold">
+            {t("privacy.llm")}
+          </div>
           <div className="flex items-center gap-2.5">
             <img
               src={LLM_SELECTION_PRIVACY[llmChoice].logo}
@@ -89,7 +92,7 @@ function ThirdParty({ settings }) {
         </div>
         <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
           <div className="text-white text-base font-bold">
-          {t("privacy.embedding")}
+            {t("privacy.embedding")}
           </div>
           <div className="flex items-center gap-2.5">
             <img
@@ -111,7 +114,9 @@ function ThirdParty({ settings }) {
         </div>
 
         <div className="flex flex-col gap-y-2 pb-4">
-          <div className="text-white text-base font-bold">{t("privacy.vector")}</div>
+          <div className="text-white text-base font-bold">
+            {t("privacy.vector")}
+          </div>
           <div className="flex items-center gap-2.5">
             <img
               src={VECTOR_DB_PRIVACY[vectorDb].logo}
@@ -158,7 +163,7 @@ function TelemetryLogs({ settings }) {
           <div className="w-full flex flex-col gap-y-4">
             <div className="">
               <label className="mb-2.5 block font-medium text-white">
-              {t("privacy.anonymous")}
+                {t("privacy.anonymous")}
               </label>
               <label className="relative inline-flex cursor-pointer items-center">
                 <input

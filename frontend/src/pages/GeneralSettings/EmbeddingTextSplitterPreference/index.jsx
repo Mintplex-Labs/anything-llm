@@ -96,8 +96,8 @@ export default function EmbeddingTextSplitterPreference() {
                   {t("text.desc-end")}
                 </p>
                 <p className="text-xs leading-[18px] font-semibold text-white/80">
-                {t("text.warn-start")}{" "}
-                  <i>{t("text.warn-center")}</i>{t("text.warn-end")}
+                  {t("text.warn-start")} <i>{t("text.warn-center")}</i>
+                  {t("text.warn-end")}
                 </p>
               </div>
               <div className="w-full justify-end flex">

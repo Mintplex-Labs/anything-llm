@@ -95,7 +95,10 @@ export default function CustomMessages() {
             <div className="flex items-center justify-start text-sm font-normal -ml-2">
               <Plus className="m-2" size={16} weight="bold" />
               <span className="leading-5">
-                {t("appearance.message.new")} <span className="font-bold italic mr-1">{t("appearance.message.system")}</span>{" "}
+                {t("appearance.message.new")}{" "}
+                <span className="font-bold italic mr-1">
+                  {t("appearance.message.system")}
+                </span>{" "}
                 {t("appearance.message.message")}
               </span>
             </div>
@@ -107,7 +110,11 @@ export default function CustomMessages() {
             <div className="flex items-center justify-start text-sm font-normal">
               <Plus className="m-2" size={16} weight="bold" />
               <span className="leading-5">
-              {t("appearance.message.new")} <span className="font-bold italic mr-1">{t("appearance.message.user")}</span> {t("appearance.message.message")}
+                {t("appearance.message.new")}{" "}
+                <span className="font-bold italic mr-1">
+                  {t("appearance.message.user")}
+                </span>{" "}
+                {t("appearance.message.message")}
               </span>
             </div>
           </button>

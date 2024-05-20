@@ -110,8 +110,9 @@ export default function WorkspaceChats() {
                 </button>
                 <div
                   ref={menuRef}
-                  className={`${showMenu ? "slide-down" : "slide-up hidden"
-                    } z-20 w-fit rounded-lg absolute top-full right-0 bg-[#2C2F36] mt-2 shadow-md`}
+                  className={`${
+                    showMenu ? "slide-down" : "slide-up hidden"
+                  } z-20 w-fit rounded-lg absolute top-full right-0 bg-[#2C2F36] mt-2 shadow-md`}
                 >
                   <div className="py-2">
                     {Object.entries(exportOptions).map(([key, data]) => (

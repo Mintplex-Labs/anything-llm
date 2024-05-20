@@ -155,6 +155,28 @@ const KEY_MAPPING = {
     envKey: "TEXT_GEN_WEB_UI_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  TextGenWebUIAPIKey: {
+    envKey: "TEXT_GEN_WEB_UI_API_KEY",
+    checks: [],
+  },
+
+  // LiteLLM Settings
+  LiteLLMModelPref: {
+    envKey: "LITE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  LiteLLMTokenLimit: {
+    envKey: "LITE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  LiteLLMBasePath: {
+    envKey: "LITE_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  LiteLLMApiKey: {
+    envKey: "LITE_LLM_API_KEY",
+    checks: [],
+  },
 
   // Generic OpenAI InferenceSettings
   GenericOpenAiBasePath: {
@@ -172,6 +194,10 @@ const KEY_MAPPING = {
   GenericOpenAiKey: {
     envKey: "GENERIC_OPEN_AI_API_KEY",
     checks: [],
+  },
+  GenericOpenAiMaxTokens: {
+    envKey: "GENERIC_OPEN_AI_MAX_TOKENS",
+    checks: [nonZero],
   },
 
   EmbeddingEngine: {
@@ -324,17 +350,28 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // VoyageAi Options
+  VoyageAiApiKey: {
+    envKey: "VOYAGEAI_API_KEY",
+    checks: [isNotEmpty],
+  },
+
   // Whisper (transcription) providers
   WhisperProvider: {
     envKey: "WHISPER_PROVIDER",
     checks: [isNotEmpty, supportedTranscriptionProvider],
     postUpdate: [],
   },
+  WhisperModelPref: {
+    envKey: "WHISPER_MODEL_PREF",
+    checks: [validLocalWhisper],
+    postUpdate: [],
+  },
 
   // System Settings
   AuthToken: {
     envKey: "AUTH_TOKEN",
-    checks: [requiresForceMode],
+    checks: [requiresForceMode, noRestrictedChars],
   },
   JWTSecret: {
     envKey: "JWT_SECRET",
@@ -356,6 +393,32 @@ const KEY_MAPPING = {
   },
   AgentSerperApiKey: {
     envKey: "AGENT_SERPER_DEV_KEY",
+    checks: [],
+  },
+
+  // TTS/STT Integration ENVS
+  TextToSpeechProvider: {
+    envKey: "TTS_PROVIDER",
+    checks: [supportedTTSProvider],
+  },
+
+  // TTS OpenAI
+  TTSOpenAIKey: {
+    envKey: "TTS_OPEN_AI_KEY",
+    checks: [validOpenAIKey],
+  },
+  TTSOpenAIVoiceModel: {
+    envKey: "TTS_OPEN_AI_VOICE_MODEL",
+    checks: [],
+  },
+
+  // TTS ElevenLabs
+  TTSElevenLabsKey: {
+    envKey: "TTS_ELEVEN_LABS_KEY",
+    checks: [isNotEmpty],
+  },
+  TTSElevenLabsVoiceModel: {
+    envKey: "TTS_ELEVEN_LABS_VOICE_MODEL",
     checks: [],
   },
 };
@@ -411,6 +474,21 @@ function validOllamaLLMBasePath(input = "") {
   }
 }
 
+function supportedTTSProvider(input = "") {
+  const validSelection = ["native", "openai", "elevenlabs"].includes(input);
+  return validSelection ? null : `${input} is not a valid TTS provider.`;
+}
+
+function validLocalWhisper(input = "") {
+  const validSelection = [
+    "Xenova/whisper-small",
+    "Xenova/whisper-large",
+  ].includes(input);
+  return validSelection
+    ? null
+    : `${input} is not a valid Whisper model selection.`;
+}
+
 function supportedLLM(input = "") {
   const validSelection = [
     "openai",
@@ -430,6 +508,7 @@ function supportedLLM(input = "") {
     "koboldcpp",
     "textgenwebui",
     "cohere",
+    "litellm",
     "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
@@ -472,6 +551,7 @@ function supportedEmbeddingModel(input = "") {
     "ollama",
     "lmstudio",
     "cohere",
+    "voyageai",
   ];
   return supported.includes(input)
     ? null
@@ -567,6 +647,13 @@ async function validDockerizedUrl(input = "") {
 function validHuggingFaceEndpoint(input = "") {
   return input.slice(-6) !== ".cloud"
     ? `Your HF Endpoint should end in ".cloud"`
+    : null;
+}
+
+function noRestrictedChars(input = "") {
+  const regExp = new RegExp(/^[a-zA-Z0-9_\-!@$%^&*();]+$/);
+  return !regExp.test(input)
+    ? `Your password has restricted characters in it. Allowed symbols are _,-,!,@,$,%,^,&,*,(,),;`
     : null;
 }
 

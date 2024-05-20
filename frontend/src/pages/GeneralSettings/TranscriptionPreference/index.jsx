@@ -13,6 +13,23 @@ import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
 
+const PROVIDERS = [
+  {
+    name: "OpenAI",
+    value: "openai",
+    logo: OpenAiLogo,
+    options: (settings) => <OpenAiWhisperOptions settings={settings} />,
+    description: "Leverage the OpenAI Whisper-large model using your API key.",
+  },
+  {
+    name: "AnythingLLM Built-In",
+    value: "local",
+    logo: AnythingLLMIcon,
+    options: (settings) => <NativeTranscriptionOptions settings={settings} />,
+    description: "Run a built-in whisper model on this instance privately.",
+  },
+];
+
 export default function TranscriptionModelPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -69,24 +86,6 @@ export default function TranscriptionModelPreference() {
     }
     fetchKeys();
   }, []);
-
-  const PROVIDERS = [
-    {
-      name: "OpenAI",
-      value: "openai",
-      logo: OpenAiLogo,
-      options: <OpenAiWhisperOptions settings={settings} />,
-      description:
-        "Leverage the OpenAI Whisper-large model using your API key.",
-    },
-    {
-      name: "AnythingLLM Built-In",
-      value: "local",
-      logo: AnythingLLMIcon,
-      options: <NativeTranscriptionOptions settings={settings} />,
-      description: "Run a built-in whisper model on this instance privately.",
-    },
-  ];
 
   useEffect(() => {
     const filtered = PROVIDERS.filter((provider) =>
@@ -227,7 +226,7 @@ export default function TranscriptionModelPreference() {
                 {selectedProvider &&
                   PROVIDERS.find(
                     (provider) => provider.value === selectedProvider
-                  )?.options}
+                  )?.options(settings)}
               </div>
             </div>
           </form>

@@ -35,7 +35,7 @@ class AgentHandler {
           {
             workspaceId: this.invocation.workspace_id,
             user_id: this.invocation.user_id || null,
-            thread_id: this.invocation.user_id || null,
+            thread_id: this.invocation.thread_id || null,
             include: true,
           },
           limit,
@@ -146,7 +146,7 @@ class AgentHandler {
   #providerDefault() {
     switch (this.provider) {
       case "openai":
-        return "gpt-3.5-turbo";
+        return "gpt-4o";
       case "anthropic":
         return "claude-3-sonnet-20240229";
       case "lmstudio":
@@ -197,8 +197,60 @@ class AgentHandler {
     this.invocation = invocation ?? null;
   }
 
+  #parseCallOptions(args, config = {}, pluginName) {
+    const callOpts = {};
+    for (const [param, definition] of Object.entries(config)) {
+      if (
+        definition.required &&
+        (!args.hasOwnProperty(param) || args[param] === null)
+      ) {
+        this.log(
+          `'${param}' required parameter for '${pluginName}' plugin is missing. Plugin may not function or crash agent.`
+        );
+        continue;
+      }
+      callOpts[param] = args.hasOwnProperty(param)
+        ? args[param]
+        : definition.default || null;
+    }
+    return callOpts;
+  }
+
   #attachPlugins(args) {
     for (const name of this.#funcsToLoad) {
+      // Load child plugin
+      if (name.includes("#")) {
+        const [parent, childPluginName] = name.split("#");
+        if (!AgentPlugins.hasOwnProperty(parent)) {
+          this.log(
+            `${parent} is not a valid plugin. Skipping inclusion to agent cluster.`
+          );
+          continue;
+        }
+
+        const childPlugin = AgentPlugins[parent].plugin.find(
+          (child) => child.name === childPluginName
+        );
+        if (!childPlugin) {
+          this.log(
+            `${parent} does not have child plugin named ${childPluginName}. Skipping inclusion to agent cluster.`
+          );
+          continue;
+        }
+
+        const callOpts = this.#parseCallOptions(
+          args,
+          childPlugin?.startupConfig?.params,
+          name
+        );
+        this.aibitat.use(childPlugin.plugin(callOpts));
+        this.log(
+          `Attached ${parent}:${childPluginName} plugin to Agent cluster`
+        );
+        continue;
+      }
+
+      // Load single-stage plugin.
       if (!AgentPlugins.hasOwnProperty(name)) {
         this.log(
           `${name} is not a valid plugin. Skipping inclusion to agent cluster.`
@@ -206,24 +258,10 @@ class AgentHandler {
         continue;
       }
 
-      const callOpts = {};
-      for (const [param, definition] of Object.entries(
+      const callOpts = this.#parseCallOptions(
+        args,
         AgentPlugins[name].startupConfig.params
-      )) {
-        if (
-          definition.required &&
-          (!args.hasOwnProperty(param) || args[param] === null)
-        ) {
-          this.log(
-            `'${param}' required parameter for '${name}' plugin is missing. Plugin may not function or crash agent.`
-          );
-          continue;
-        }
-        callOpts[param] = args.hasOwnProperty(param)
-          ? args[param]
-          : definition.default || null;
-      }
-
+      );
       const AIbitatPlugin = AgentPlugins[name];
       this.aibitat.use(AIbitatPlugin.plugin(callOpts));
       this.log(`Attached ${name} plugin to Agent cluster`);
@@ -258,7 +296,7 @@ class AgentHandler {
   ) {
     this.aibitat = new AIbitat({
       provider: this.provider ?? "openai",
-      model: this.model ?? "gpt-3.5-turbo",
+      model: this.model ?? "gpt-4o",
       chats: await this.#chatHistory(20),
       handlerProps: {
         invocation: this.invocation,

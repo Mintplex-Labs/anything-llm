@@ -26,14 +26,14 @@ export default function ChatTemperatureSettings({
           <br />
           {t("chat.temperature.desc-end")}
           <br />
-          <i>{t("chat.temperature.recommend")} {defaults.temp}</i>
+          <br />
+          <i>{t("chat.temperature.hint")}</i>
         </p>
       </div>
       <input
         name="openAiTemp"
         type="number"
         min={0.0}
-        max={1.0}
         step={0.1}
         onWheel={(e) => e.target.blur()}
         defaultValue={workspace?.openAiTemp ?? defaults.temp}

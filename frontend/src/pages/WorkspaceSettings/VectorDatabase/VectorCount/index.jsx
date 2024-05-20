@@ -30,9 +30,6 @@ export default function VectorCount({ reload, workspace }) {
   return (
     <div>
       <h3 className="input-label">{t("general.vector.title")}</h3>
-      <p className="text-white text-opacity-60 text-xs font-medium py-1">
-        {t("general.vector.description")}
-      </p>
       <p className="text-white text-opacity-60 text-sm font-medium">
         {totalVectors}
       </p>

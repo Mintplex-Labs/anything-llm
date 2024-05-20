@@ -1,3 +1,4 @@
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -26,11 +27,7 @@ class GeminiLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      throw new Error(
-        "INVALID GEMINI LLM SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Gemini as your LLM."
-      );
-    this.embedder = embedder;
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7; // not used for Gemini
   }
 
@@ -114,6 +111,24 @@ class GeminiLLM {
       allMessages[allMessages.length - 1].role === "user"
     )
       allMessages.pop();
+
+    // Validate that after every user message, there is a model message
+    // sometimes when using gemini we try to compress messages in order to retain as
+    // much context as possible but this may mess up the order of the messages that the gemini model expects
+    // we do this check to work around the edge case where 2 user prompts may be next to each other, in the message array
+    for (let i = 0; i < allMessages.length; i++) {
+      if (
+        allMessages[i].role === "user" &&
+        i < allMessages.length - 1 &&
+        allMessages[i + 1].role !== "model"
+      ) {
+        allMessages.splice(i + 1, 0, {
+          role: "model",
+          parts: [{ text: "Okay." }],
+        });
+      }
+    }
+
     return allMessages;
   }
 

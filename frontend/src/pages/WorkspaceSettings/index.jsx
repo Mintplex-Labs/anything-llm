@@ -67,7 +67,7 @@ function ShowWorkspaceChat() {
       setLoading(false);
     }
     getWorkspace();
-  }, [slug]);
+  }, [slug, tab]);
 
   if (loading) return <FullScreenLoader />;
 

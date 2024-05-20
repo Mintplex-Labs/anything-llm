@@ -3,11 +3,7 @@ const { TextSplitter } = require("../../TextSplitter");
 const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
-const {
-  toChunks,
-  getLLMProvider,
-  getEmbeddingEngineSelection,
-} = require("../../helpers");
+const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
 
 const AstraDB = {
@@ -149,12 +145,13 @@ const AstraDB = {
         return { vectorized: true, error: null };
       }
 
+      const EmbedderEngine = getEmbeddingEngineSelection();
       const textSplitter = new TextSplitter({
         chunkSize: TextSplitter.determineMaxChunkSize(
           await SystemSettings.getValueOrFallback({
             label: "text_splitter_chunk_size",
           }),
-          getEmbeddingEngineSelection()?.embeddingMaxChunkLength
+          EmbedderEngine?.embeddingMaxChunkLength
         ),
         chunkOverlap: await SystemSettings.getValueOrFallback(
           { label: "text_splitter_chunk_overlap" },
@@ -164,10 +161,9 @@ const AstraDB = {
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
-      const LLMConnector = getLLMProvider();
       const documentVectors = [];
       const vectors = [];
-      const vectorValues = await LLMConnector.embedChunks(textChunks);
+      const vectorValues = await EmbedderEngine.embedChunks(textChunks);
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {

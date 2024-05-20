@@ -4,7 +4,7 @@ const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The provider for the Oobabooga provider.
+ * The agent provider for the Oobabooga provider.
  */
 class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
@@ -13,7 +13,7 @@ class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
     super();
     const client = new OpenAI({
       baseURL: process.env.TEXT_GEN_WEB_UI_BASE_PATH,
-      apiKey: null,
+      apiKey: process.env.TEXT_GEN_WEB_UI_API_KEY ?? null,
       maxRetries: 3,
     });
 
@@ -88,6 +88,10 @@ class TextWebGenUiProvider extends InheritMultiple([Provider, UnTooled]) {
         completion = response.choices[0].message;
       }
 
+      // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
+      // from calling the exact same function over and over in a loop within a single chat exchange
+      // _but_ we should enable it to call previously used tools in a new chat interaction.
+      this.deduplicator.reset("runs");
       return {
         result: completion.content,
         cost: 0,

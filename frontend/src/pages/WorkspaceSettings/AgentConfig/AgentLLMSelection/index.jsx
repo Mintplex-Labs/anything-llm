@@ -97,9 +97,7 @@ export default function AgentLLMSelection({
         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
             <Gauge className="shrink-0" size={25} />
-            <p className="text-sm">
-              {t("agent.performance-warning")}
-            </p>
+            <p className="text-sm">{t("agent.performance-warning")}</p>
           </div>
         </div>
       )}

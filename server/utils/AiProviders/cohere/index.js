@@ -19,7 +19,8 @@ class CohereLLM {
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
-    this.embedder = !!embedder ? embedder : new NativeEmbedder();
+
+    this.embedder = embedder ?? new NativeEmbedder();
   }
 
   #appendContext(contextTexts = []) {

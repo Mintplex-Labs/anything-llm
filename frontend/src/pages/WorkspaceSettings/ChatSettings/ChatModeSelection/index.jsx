@@ -40,13 +40,17 @@ export default function ChatModeSelection({ workspace, setHasChanges }) {
         <p className="text-sm text-white/60">
           {chatMode === "chat" ? (
             <>
-              <b>{t("chat.mode.chat.title")}</b> {t("chat.mode.chat.desc-start")}{" "}
-              <i className="font-semibold">{t("chat.mode.chat.and")}</i> {t("chat.mode.chat.desc-end")}
+              <b>{t("chat.mode.chat.title")}</b>{" "}
+              {t("chat.mode.chat.desc-start")}{" "}
+              <i className="font-semibold">{t("chat.mode.chat.and")}</i>{" "}
+              {t("chat.mode.chat.desc-end")}
             </>
           ) : (
             <>
-              <b>{t("chat.mode.query.title")}</b> {t("chat.mode.query.desc-start")}{" "}
-              <i className="font-semibold">{t("chat.mode.query.only")}</i> {t("chat.mode.query.desc-end")}
+              <b>{t("chat.mode.query.title")}</b>{" "}
+              {t("chat.mode.query.desc-start")}{" "}
+              <i className="font-semibold">{t("chat.mode.query.only")}</i>{" "}
+              {t("chat.mode.query.desc-end")}
             </>
           )}
         </p>
