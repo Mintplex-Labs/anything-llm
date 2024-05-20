@@ -52,6 +52,10 @@ const KEY_MAPPING = {
     envKey: "GEMINI_LLM_MODEL_PREF",
     checks: [isNotEmpty, validGeminiModel],
   },
+  GeminiSafetySetting: {
+    envKey: "GEMINI_SAFETY_SETTING",
+    checks: [validGeminiSafetySetting],
+  },
 
   // LMStudio Settings
   LMStudioBasePath: {
@@ -526,6 +530,18 @@ function validGeminiModel(input = "") {
   return validModels.includes(input)
     ? null
     : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
+}
+
+function validGeminiSafetySetting(input = "") {
+  const validModes = [
+    "BLOCK_NONE",
+    "BLOCK_ONLY_HIGH",
+    "BLOCK_MEDIUM_AND_ABOVE",
+    "BLOCK_LOW_AND_ABOVE",
+  ];
+  return validModes.includes(input)
+    ? null
+    : `Invalid Safety setting. Must be one of ${validModes.join(", ")}.`;
 }
 
 function validAnthropicModel(input = "") {
