@@ -2000,6 +2000,69 @@
         }
       }
     },
+    "/workspace/{slug}/update-pin": {
+      "post": {
+        "tags": [
+          "Workspaces"
+        ],
+        "description": "Add or remove pin from a document in a workspace by its unique slug.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique slug of workspace to find"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "message": "Pin status updated successfully"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "JSON object with the document path and pin status to update.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "docPath": "custom-documents/my-pdf.pdf-hash.json",
+                "pinStatus": true
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/workspace/{slug}/chat": {
       "post": {
         "tags": [
