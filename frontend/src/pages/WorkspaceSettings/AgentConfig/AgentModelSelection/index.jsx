@@ -1,6 +1,7 @@
 import useGetProviderModels, {
   DISABLED_PROVIDERS,
 } from "@/hooks/useGetProvidersModels";
+import { useTranslation } from "react-i18next";
 
 // These models do NOT support function calling
 function supportedModel(provider, model = "") {
@@ -19,6 +20,8 @@ export default function AgentModelSelection({
 }) {
   const { defaultModels, customModels, loading } =
     useGetProviderModels(provider);
+
+  const { t } = useTranslation();
   if (DISABLED_PROVIDERS.includes(provider)) return null;
 
   if (loading) {
@@ -26,11 +29,10 @@ export default function AgentModelSelection({
       <div>
         <div className="flex flex-col">
           <label htmlFor="name" className="block input-label">
-            Workspace Agent Chat model
+            {t("agent.mode.chat.title")}
           </label>
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-            The specific chat model that will be used for this workspace's
-            @agent agent.
+            {t("agent.mode.chat.description")}
           </p>
         </div>
         <select
@@ -40,7 +42,7 @@ export default function AgentModelSelection({
           className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            -- waiting for models --
+            {t("agent.mode.wait")}
           </option>
         </select>
       </div>
@@ -51,11 +53,10 @@ export default function AgentModelSelection({
     <div>
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Workspace Agent model
+          {t("agent.mode.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          The specific LLM model that will be used for this workspace's @agent
-          agent.
+          {t("agent.mode.description")}
         </p>
       </div>
 

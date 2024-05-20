@@ -44,6 +44,7 @@ import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
+import { useTranslation } from "react-i18next";
 
 export const AVAILABLE_LLM_PROVIDERS = [
   {
@@ -222,6 +223,7 @@ export default function GeneralLLMPreference() {
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const isHosted = window.location.hostname.includes("useanything.com");
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -300,14 +302,11 @@ export default function GeneralLLMPreference() {
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">
                   <p className="text-lg leading-6 font-bold text-white">
-                    LLM Preference
+                    {t("llm.title")}
                   </p>
                 </div>
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-                  These are the credentials and settings for your preferred LLM
-                  chat & embedding provider. Its important these keys are
-                  current and correct or else AnythingLLM will not function
-                  properly.
+                  {t("llm.description")}
                 </p>
               </div>
               <div className="w-full justify-end flex">
@@ -321,7 +320,7 @@ export default function GeneralLLMPreference() {
                 )}
               </div>
               <div className="text-base font-bold text-white mt-6 mb-4">
-                LLM Provider
+                {t("llm.provider")}
               </div>
               <div className="relative">
                 {searchMenuOpen && (

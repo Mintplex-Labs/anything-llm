@@ -4,6 +4,7 @@ import AgentLLMItem from "./AgentLLMItem";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, Gauge, MagnifyingGlass, X } from "@phosphor-icons/react";
 import AgentModelSelection from "../AgentModelSelection";
+import { useTranslation } from "react-i18next";
 
 const ENABLED_PROVIDERS = [
   "openai",
@@ -65,7 +66,7 @@ export default function AgentLLMSelection({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
-
+  const { t } = useTranslation();
   function updateLLMChoice(selection) {
     setSearchQuery("");
     setSelectedLLM(selection);
@@ -97,9 +98,7 @@ export default function AgentLLMSelection({
           <div className="gap-x-2 flex items-center">
             <Gauge className="shrink-0" size={25} />
             <p className="text-sm">
-              Performance of LLMs that do not explicitly support tool-calling is
-              highly dependent on the model's capabilities and accuracy. Some
-              abilities may be limited or non-functional.
+              {t("agent.performance-warning")}
             </p>
           </div>
         </div>
@@ -107,11 +106,10 @@ export default function AgentLLMSelection({
 
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Workspace Agent LLM Provider
+          {t("agent.provider.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          The specific LLM provider & model that will be used for this
-          workspace's @agent agent.
+          {t("agent.provider.description")}
         </p>
       </div>
 
