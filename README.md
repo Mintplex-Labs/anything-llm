@@ -140,9 +140,9 @@ This monorepo consists of three main sections:
 ## 🛳 Self Hosting
 
 Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
-| Docker | AWS | GCP | Digital Ocean | Render.com |
+| Docker | AWS | GCP | Digital Ocean | Render.com | RepoCloud |
 |----------------------------------------|----:|-----|---------------|------------|
-| [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
+| [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] |
 
 | Railway                                             |
 | --------------------------------------------------- |
@@ -235,3 +235,5 @@ This project is [MIT](./LICENSE) licensed.
 [render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
 [railway-btn]: https://railway.app/button.svg
 [railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn
+[repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg
+[repocloud-deploy]: https://repocloud.io/details/?app_id=276
