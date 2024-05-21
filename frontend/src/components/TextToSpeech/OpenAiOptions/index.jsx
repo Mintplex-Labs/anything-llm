@@ -35,7 +35,11 @@ export default function OpenAiTextToSpeechOptions({ settings }) {
         >
           {["alloy", "echo", "fable", "onyx", "nova", "shimmer"].map(
             (voice) => {
-              return <option value={voice}>{toProperCase(voice)}</option>;
+              return (
+                <option key={voice} value={voice}>
+                  {toProperCase(voice)}
+                </option>
+              );
             }
           )}
         </select>

@@ -17,6 +17,8 @@ import OpenRouterLogo from "@/media/llmprovider/openrouter.jpeg";
 import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
+import LiteLLMLogo from "@/media/llmprovider/litellm.png";
+
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
 import AstraDBLogo from "@/media/vectordbs/astraDB.png";
@@ -26,6 +28,8 @@ import LanceDbLogo from "@/media/vectordbs/lancedb.png";
 import WeaviateLogo from "@/media/vectordbs/weaviate.png";
 import QDrantLogo from "@/media/vectordbs/qdrant.png";
 import MilvusLogo from "@/media/vectordbs/milvus.png";
+import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
+
 import React, { useState, useEffect } from "react";
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -168,6 +172,13 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: CohereLogo,
   },
+  litellm: {
+    name: "LiteLLM",
+    description: [
+      "Your model and chats are only accessible on the server running LiteLLM",
+    ],
+    logo: LiteLLMLogo,
+  },
 };
 
 export const VECTOR_DB_PRIVACY = {
@@ -282,6 +293,13 @@ export const EMBEDDING_ENGINE_PRIVACY = {
       "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
     ],
     logo: CohereLogo,
+  },
+  voyageai: {
+    name: "Voyage AI",
+    description: [
+      "Data sent to Voyage AI's servers is shared according to the terms of service of voyageai.com.",
+    ],
+    logo: VoyageAiLogo,
   },
 };
 

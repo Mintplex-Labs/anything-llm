@@ -17,6 +17,7 @@ class TextSplitter {
       Config: {
         chunkSize: number,
         chunkOverlap: number,
+        chunkHeaderMeta: object | null, // Gets appended to top of each chunk as metadata
       }
       ------
     */
@@ -44,6 +45,18 @@ class TextSplitter {
     return prefValue > limit ? limit : prefValue;
   }
 
+  stringifyHeader() {
+    if (!this.config.chunkHeaderMeta) return null;
+    let content = "";
+    Object.entries(this.config.chunkHeaderMeta).map(([key, value]) => {
+      if (!key || !value) return;
+      content += `${key}: ${value}\n`;
+    });
+
+    if (!content) return null;
+    return `<document_metadata>\n${content}</document_metadata>\n\n`;
+  }
+
   #setSplitter(config = {}) {
     // if (!config?.splitByFilename) {// TODO do something when specific extension is present? }
     return new RecursiveSplitter({
@@ -51,6 +64,7 @@ class TextSplitter {
       chunkOverlap: isNaN(config?.chunkOverlap)
         ? 20
         : Number(config?.chunkOverlap),
+      chunkHeader: this.stringifyHeader(),
     });
   }
 
@@ -61,11 +75,12 @@ class TextSplitter {
 
 // Wrapper for Langchain default RecursiveCharacterTextSplitter class.
 class RecursiveSplitter {
-  constructor({ chunkSize, chunkOverlap }) {
+  constructor({ chunkSize, chunkOverlap, chunkHeader = null }) {
     const {
       RecursiveCharacterTextSplitter,
     } = require("@langchain/textsplitters");
     this.log(`Will split with`, { chunkSize, chunkOverlap });
+    this.chunkHeader = chunkHeader;
     this.engine = new RecursiveCharacterTextSplitter({
       chunkSize,
       chunkOverlap,
@@ -77,7 +92,14 @@ class RecursiveSplitter {
   }
 
   async _splitText(documentText) {
-    return this.engine.splitText(documentText);
+    if (!this.chunkHeader) return this.engine.splitText(documentText);
+    const strings = await this.engine.splitText(documentText);
+    const documents = await this.engine.createDocuments(strings, [], {
+      chunkHeader: this.chunkHeader,
+    });
+    return documents
+      .filter((doc) => !!doc.pageContent)
+      .map((doc) => doc.pageContent);
   }
 }
 

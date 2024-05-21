@@ -57,7 +57,7 @@ const HistoricalMessage = ({
           <div className="flex gap-x-5">
             <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden" />
             <Actions
-              message={DOMPurify.sanitize(message)}
+              message={message}
               feedbackScore={feedbackScore}
               chatId={chatId}
               slug={workspace?.slug}

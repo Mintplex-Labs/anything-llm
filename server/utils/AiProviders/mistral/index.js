@@ -1,3 +1,4 @@
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
@@ -20,11 +21,7 @@ class MistralLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      console.warn(
-        "No embedding provider defined for MistralLLM - falling back to OpenAiEmbedder for embedding!"
-      );
-    this.embedder = embedder;
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.0;
   }
 

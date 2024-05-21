@@ -52,6 +52,10 @@ const KEY_MAPPING = {
     envKey: "GEMINI_LLM_MODEL_PREF",
     checks: [isNotEmpty, validGeminiModel],
   },
+  GeminiSafetySetting: {
+    envKey: "GEMINI_SAFETY_SETTING",
+    checks: [validGeminiSafetySetting],
+  },
 
   // LMStudio Settings
   LMStudioBasePath: {
@@ -157,6 +161,24 @@ const KEY_MAPPING = {
   },
   TextGenWebUIAPIKey: {
     envKey: "TEXT_GEN_WEB_UI_API_KEY",
+    checks: [],
+  },
+
+  // LiteLLM Settings
+  LiteLLMModelPref: {
+    envKey: "LITE_LLM_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  LiteLLMTokenLimit: {
+    envKey: "LITE_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+  LiteLLMBasePath: {
+    envKey: "LITE_LLM_BASE_PATH",
+    checks: [isValidURL],
+  },
+  LiteLLMApiKey: {
+    envKey: "LITE_LLM_API_KEY",
     checks: [],
   },
 
@@ -332,10 +354,21 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
 
+  // VoyageAi Options
+  VoyageAiApiKey: {
+    envKey: "VOYAGEAI_API_KEY",
+    checks: [isNotEmpty],
+  },
+
   // Whisper (transcription) providers
   WhisperProvider: {
     envKey: "WHISPER_PROVIDER",
     checks: [isNotEmpty, supportedTranscriptionProvider],
+    postUpdate: [],
+  },
+  WhisperModelPref: {
+    envKey: "WHISPER_MODEL_PREF",
+    checks: [validLocalWhisper],
     postUpdate: [],
   },
 
@@ -450,6 +483,16 @@ function supportedTTSProvider(input = "") {
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
 
+function validLocalWhisper(input = "") {
+  const validSelection = [
+    "Xenova/whisper-small",
+    "Xenova/whisper-large",
+  ].includes(input);
+  return validSelection
+    ? null
+    : `${input} is not a valid Whisper model selection.`;
+}
+
 function supportedLLM(input = "") {
   const validSelection = [
     "openai",
@@ -469,6 +512,7 @@ function supportedLLM(input = "") {
     "koboldcpp",
     "textgenwebui",
     "cohere",
+    "litellm",
     "generic-openai",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
@@ -486,6 +530,18 @@ function validGeminiModel(input = "") {
   return validModels.includes(input)
     ? null
     : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
+}
+
+function validGeminiSafetySetting(input = "") {
+  const validModes = [
+    "BLOCK_NONE",
+    "BLOCK_ONLY_HIGH",
+    "BLOCK_MEDIUM_AND_ABOVE",
+    "BLOCK_LOW_AND_ABOVE",
+  ];
+  return validModes.includes(input)
+    ? null
+    : `Invalid Safety setting. Must be one of ${validModes.join(", ")}.`;
 }
 
 function validAnthropicModel(input = "") {
@@ -511,6 +567,7 @@ function supportedEmbeddingModel(input = "") {
     "ollama",
     "lmstudio",
     "cohere",
+    "voyageai",
   ];
   return supported.includes(input)
     ? null

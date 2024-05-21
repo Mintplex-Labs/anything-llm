@@ -3,7 +3,7 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import pluralize from "pluralize";
 import { TagsInput } from "react-tag-input-component";
-import { Warning } from "@phosphor-icons/react";
+import { Info, Warning } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 
 const DEFAULT_BRANCHES = ["main", "master"];
@@ -92,45 +92,7 @@ export default function GithubOptions() {
                     <p className="font-bold text-white">Github Access Token</p>{" "}
                     <p className="text-xs text-white/50 font-light flex items-center">
                       optional
-                      {!accessToken && (
-                        <Warning
-                          size={14}
-                          className="ml-1 text-orange-500 cursor-pointer"
-                          data-tooltip-id="access-token-tooltip"
-                          data-tooltip-place="right"
-                        />
-                      )}
-                      <Tooltip
-                        delayHide={300}
-                        id="access-token-tooltip"
-                        className="max-w-xs"
-                        clickable={true}
-                      >
-                        <p className="text-sm">
-                          Without a{" "}
-                          <a
-                            href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
-                            rel="noreferrer"
-                            target="_blank"
-                            className="underline"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            Personal Access Token
-                          </a>
-                          , the GitHub API may limit the number of files that
-                          can be collected due to rate limits. You can{" "}
-                          <a
-                            href="https://github.com/settings/personal-access-tokens/new"
-                            rel="noreferrer"
-                            target="_blank"
-                            className="underline"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            create a temporary Access Token
-                          </a>{" "}
-                          to avoid this issue.
-                        </p>
-                      </Tooltip>
+                      <PATTooltip accessToken={accessToken} />
                     </p>
                   </label>
                   <p className="text-xs font-normal text-white/50">
@@ -180,6 +142,7 @@ export default function GithubOptions() {
           </div>
 
           <div className="flex flex-col gap-y-2 w-full pr-10">
+            <PATAlert accessToken={accessToken} />
             <button
               type="submit"
               disabled={loading}
@@ -267,5 +230,80 @@ function GitHubBranchSelection({ repo, accessToken }) {
         })}
       </select>
     </div>
+  );
+}
+
+function PATAlert({ accessToken }) {
+  if (!!accessToken) return null;
+  return (
+    <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-4 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
+      <div className="gap-x-2 flex items-center">
+        <Info className="shrink-0" size={25} />
+        <p className="text-sm">
+          Without filling out the <b>Github Access Token</b> this data connector
+          will only be able to collect the <b>top-level</b> files of the repo
+          due to GitHub's public API rate-limits.
+          <br />
+          <br />
+          <a
+            href="https://github.com/settings/personal-access-tokens/new"
+            rel="noreferrer"
+            target="_blank"
+            className="underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {" "}
+            Get a free Personal Access Token with a GitHub account here.
+          </a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function PATTooltip({ accessToken }) {
+  if (!!accessToken) return null;
+  return (
+    <>
+      {!accessToken && (
+        <Warning
+          size={14}
+          className="ml-1 text-orange-500 cursor-pointer"
+          data-tooltip-id="access-token-tooltip"
+          data-tooltip-place="right"
+        />
+      )}
+      <Tooltip
+        delayHide={300}
+        id="access-token-tooltip"
+        className="max-w-xs"
+        clickable={true}
+      >
+        <p className="text-sm">
+          Without a{" "}
+          <a
+            href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
+            rel="noreferrer"
+            target="_blank"
+            className="underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            Personal Access Token
+          </a>
+          , the GitHub API may limit the number of files that can be collected
+          due to rate limits. You can{" "}
+          <a
+            href="https://github.com/settings/personal-access-tokens/new"
+            rel="noreferrer"
+            target="_blank"
+            className="underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            create a temporary Access Token
+          </a>{" "}
+          to avoid this issue.
+        </p>
+      </Tooltip>
+    </>
   );
 }

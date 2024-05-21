@@ -67,9 +67,9 @@ Some cool features of AnythingLLM
 - Extremely efficient cost-saving measures for managing very large documents. You'll never pay to embed a massive document or transcript more than once. 90% more cost effective than other document chatbot solutions.
 - Full Developer API for custom integrations!
 
-### Supported LLMs, Embedders, Transcriptions models, and Vector Databases
+### Supported LLMs, Embedder Models, Speech models, and Vector Databases
 
-**Supported LLMs:**
+**Language Learning Models:**
 
 - [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
@@ -88,9 +88,10 @@ Some cool features of AnythingLLM
 - [Groq](https://groq.com/)
 - [Cohere](https://cohere.com/)
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
+- [LiteLLM](https://github.com/BerriAI/litellm)
 - [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
 
-**Supported Embedding models:**
+**Embedder models:**
 
 - [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
@@ -100,12 +101,22 @@ Some cool features of AnythingLLM
 - [LM Studio (all)](https://lmstudio.ai)
 - [Cohere](https://cohere.com/)
 
-**Supported Transcription models:**
+**Audio Transcription models:**
 
 - [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
 - [OpenAI](https://openai.com/)
 
-**Supported Vector Databases:**
+**TTS (text-to-speech) support:**
+
+- Native Browser Built-in (default)
+- [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
+- [ElevenLabs](https://elevenlabs.io/)
+
+**STT (speech-to-text) support:**
+
+- Native Browser Built-in (default)
+
+**Vector Databases:**
 
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
@@ -122,8 +133,9 @@ This monorepo consists of three main sections:
 
 - `frontend`: A viteJS + React frontend that you can run to easily create and manage all your content the LLM can use.
 - `server`: A NodeJS express server to handle all the interactions and do all the vectorDB management and LLM interactions.
-- `docker`: Docker instructions and build process + information for building from source.
 - `collector`: NodeJS express server that process and parses documents from the UI.
+- `docker`: Docker instructions and build process + information for building from source.
+- `embed`: Code specifically for generation of the [embed widget](./embed/README.md).
 
 ## 🛳 Self Hosting
 
@@ -132,9 +144,9 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 |----------------------------------------|----:|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway                                             |
-| --------------------------------------------------- |
-| [![Deploy on Railway][railway-btn]][railway-deploy] |
+| Railway  |  RepoCloud |
+| --- | --- |
+| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
@@ -223,3 +235,5 @@ This project is [MIT](./LICENSE) licensed.
 [render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
 [railway-btn]: https://railway.app/button.svg
 [railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn
+[repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg
+[repocloud-deploy]: https://repocloud.io/details/?app_id=276
