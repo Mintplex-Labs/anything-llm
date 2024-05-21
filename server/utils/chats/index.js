@@ -224,9 +224,7 @@ async function recentChatHistory({
   workspace,
   thread = null,
   messageLimit = 20,
-  chatMode = null,
 }) {
-  if (chatMode === "query") return { rawHistory: [], chatHistory: [] };
   const rawHistory = (
     await WorkspaceChats.where(
       {

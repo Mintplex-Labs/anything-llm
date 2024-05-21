@@ -11,6 +11,7 @@ const {
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
+const { fillSourceWindow } = require("../helpers/chat");
 
 const VALID_CHAT_MODE = ["chat", "query"];
 
@@ -100,7 +101,6 @@ async function streamChatWithWorkspace(
     workspace,
     thread,
     messageLimit,
-    chatMode,
   });
 
   // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
@@ -157,16 +157,19 @@ async function streamChatWithWorkspace(
     return;
   }
 
-  contextTexts = [...contextTexts, ...vectorSearchResults.contextTexts];
-  sources = [...sources, ...vectorSearchResults.sources];
+  const filledSources = fillSourceWindow({
+    nDocs: workspace?.topN || 4,
+    searchResults: vectorSearchResults.sources,
+    history: rawHistory,
+    filterIdentifiers: pinnedDocIdentifiers,
+  });
+
+  contextTexts = [...contextTexts, ...filledSources.contextTexts];
+  sources = [...sources, ...filledSources.sources];
 
   // If in query mode and no sources are found from the vector search and no pinned documents, do not
   // let the LLM try to hallucinate a response or use general knowledge and exit early
-  if (
-    chatMode === "query" &&
-    sources.length === 0 &&
-    pinnedDocIdentifiers.length === 0
-  ) {
+  if (chatMode === "query" && sources.length === 0) {
     writeResponseChunk(response, {
       id: uuid,
       type: "textResponse",
