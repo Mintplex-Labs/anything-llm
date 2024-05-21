@@ -157,6 +157,10 @@ const AstraDB = {
           { label: "text_splitter_chunk_overlap" },
           20
         ),
+        chunkHeaderMeta: {
+          sourceDocument: metadata?.title,
+          published: metadata?.published || "unknown",
+        },
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
