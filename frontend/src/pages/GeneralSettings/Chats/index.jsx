@@ -156,13 +156,15 @@ export default function WorkspaceChats() {
                   </div>
                 </div>
               </div>
-              <button
-                onClick={handleClearAllChats}
-                className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-[#46C8FF] hover:text-white text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
-              >
-                <Trash size={18} weight="bold" />
-                Clear Chats
-              </button>
+              {chats.length > 0 && (
+                <button
+                  onClick={handleClearAllChats}
+                  className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-white/40 text-white/40 rounded-lg bg-transparent hover:text-white text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                >
+                  <Trash size={18} weight="bold" />
+                  Clear Chats
+                </button>
+              )}
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
               These are all the recorded chats and messages that have been sent
