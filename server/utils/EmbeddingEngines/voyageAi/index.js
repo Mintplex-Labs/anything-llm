@@ -15,7 +15,22 @@ class VoyageAiEmbedder {
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.batchSize = 128; // Voyage AI's limit per request is 128 https://docs.voyageai.com/docs/rate-limits#use-larger-batches
-    this.embeddingMaxChunkLength = 4000; // https://docs.voyageai.com/docs/embeddings - assume a token is roughly 4 letters with some padding
+    this.embeddingMaxChunkLength = this.#getMaxEmbeddingLength();
+  }
+
+  // https://docs.voyageai.com/docs/embeddings
+  #getMaxEmbeddingLength() {
+    switch (this.model) {
+      case "voyage-large-2-instruct":
+      case "voyage-law-2":
+      case "voyage-code-2":
+      case "voyage-large-2":
+        return 16_000;
+      case "voyage-2":
+        return 4_000;
+      default:
+        return 4_000;
+    }
   }
 
   async embedTextInput(textInput) {
