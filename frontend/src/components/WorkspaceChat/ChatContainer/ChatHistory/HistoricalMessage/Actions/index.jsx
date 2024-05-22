@@ -6,10 +6,11 @@ import {
   ThumbsUp,
   ThumbsDown,
   ArrowsClockwise,
-  Pencil,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
+import TTSMessage from "./TTSButton";
+import { EditMessageAction } from "./EditMessage";
 
 const Actions = ({
   message,
@@ -19,10 +20,8 @@ const Actions = ({
   isLastMessage,
   regenerateMessage,
   role,
-  startEditing,
 }) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
-
   const handleFeedback = async (newFeedback) => {
     const updatedFeedback =
       selectedFeedback === newFeedback ? null : newFeedback;
@@ -31,42 +30,37 @@ const Actions = ({
   };
 
   return (
-    <div className="flex justify-start items-center gap-x-4">
-      {role === "assistant" ? (
-        <>
-          <CopyMessage message={message} />
-          {isLastMessage &&
-            !message?.includes("Workspace chat memory was reset!") && (
-              <>
-                <RegenerateMessage
-                  regenerateMessage={regenerateMessage}
-                  slug={slug}
-                  chatId={chatId}
-                />
-              </>
-            )}
-          {chatId && (
-            <>
-              <FeedbackButton
-                isSelected={selectedFeedback === true}
-                handleFeedback={() => handleFeedback(true)}
-                tooltipId={`${chatId}-thumbs-up`}
-                tooltipContent="Good response"
-                IconComponent={ThumbsUp}
-              />
-              <FeedbackButton
-                isSelected={selectedFeedback === false}
-                handleFeedback={() => handleFeedback(false)}
-                tooltipId={`${chatId}-thumbs-down`}
-                tooltipContent="Bad response"
-                IconComponent={ThumbsDown}
-              />
-            </>
-          )}
-        </>
-      ) : (
-        <EditMessage startEditing={startEditing} />
-      )}
+    <div className="flex w-full justify-between items-center">
+      <div className="flex justify-start items-center gap-x-4">
+        <CopyMessage message={message} />
+        <EditMessageAction chatId={chatId} role={role} />
+        {isLastMessage && (
+          <RegenerateMessage
+            regenerateMessage={regenerateMessage}
+            slug={slug}
+            chatId={chatId}
+          />
+        )}
+        {chatId && role !== "user" && (
+          <>
+            <FeedbackButton
+              isSelected={selectedFeedback === true}
+              handleFeedback={() => handleFeedback(true)}
+              tooltipId={`${chatId}-thumbs-up`}
+              tooltipContent="Good response"
+              IconComponent={ThumbsUp}
+            />
+            <FeedbackButton
+              isSelected={selectedFeedback === false}
+              handleFeedback={() => handleFeedback(false)}
+              tooltipId={`${chatId}-thumbs-down`}
+              tooltipContent="Bad response"
+              IconComponent={ThumbsDown}
+            />
+          </>
+        )}
+      </div>
+      <TTSMessage slug={slug} chatId={chatId} message={message} />
     </div>
   );
 };
@@ -134,6 +128,7 @@ function CopyMessage({ message }) {
 }
 
 function RegenerateMessage({ regenerateMessage, chatId }) {
+  if (!chatId) return null;
   return (
     <div className="mt-3 relative">
       <button
@@ -147,39 +142,6 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
       </button>
       <Tooltip
         id="regenerate-assistant-text"
-        place="bottom"
-        delayShow={300}
-        className="tooltip !text-xs"
-      />
-    </div>
-  );
-}
-
-function EditMessage({ startEditing }) {
-  const [isEditing, setIsEditing] = useState(false);
-
-  const handleEditClick = () => {
-    setIsEditing(true);
-    startEditing();
-  }
-
-  if (isEditing) {
-    return null;
-  }
-
-  return (
-    <div className="mt-3 relative">
-      <button
-        onClick={handleEditClick}
-        data-tooltip-id="edit-input-text"
-        data-tooltip-content="Edit"
-        className="border-none text-zinc-300"
-        aria-label="Edit"
-      >
-        <Pencil size={18} className="mb-1" />
-      </button>
-      <Tooltip
-        id="edit-input-text"
         place="bottom"
         delayShow={300}
         className="tooltip !text-xs"

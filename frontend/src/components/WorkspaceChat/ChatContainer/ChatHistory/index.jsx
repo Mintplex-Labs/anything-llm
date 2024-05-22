@@ -88,10 +88,17 @@ export default function ChatHistory({
     sendCommand(`${heading} ${message}`, true);
   };
 
-  const saveEditedMessage = async (editedMessage, chatId) => {
-    if (editedMessage) {
+  // TODO: Be able to edit both user and system response message.
+  // TODO: Pencil does not appear under user message while chatting because it
+  // does not know its own chatId since not response is present.
+  const saveEditedMessage = async ({ editedMessage, chatId, role }) => {
+    if (!editedMessage) return; // Don't save empty edits.
 
+    // if the edit was a user message, we will auto-regenerate the response and delete all
+    // messages post modified message
+    if (role === "user") {
       // remove all messages after the edited message
+      // technically there are two chatIds per-message pair, this will split the first.
       const updatedHistory = history.slice(
         0,
         history.findIndex((msg) => msg.chatId === chatId) + 1
@@ -99,12 +106,14 @@ export default function ChatHistory({
 
       // update last message in history to edited message
       updatedHistory[updatedHistory.length - 1].content = editedMessage;
-
-      console.log("updatedHistory", updatedHistory);
-      console.log("chatId", chatId);
       // remove all edited messages after the edited message in backend
       await Workspace.deleteEditedChats(workspace.slug, chatId);
       sendCommand(editedMessage, true, updatedHistory);
+      return;
+    }
+
+    // If role is an assistant we simply want to update the comment and save on the backend as an edit.
+    if (role === "assistant") {
     }
   };
 

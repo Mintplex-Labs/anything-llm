@@ -1,6 +1,5 @@
 const { Document } = require("../../../../models/documents");
 const { safeJsonParse } = require("../../../http");
-const { validate } = require("uuid");
 const { summarizeContent } = require("../utils/summarize");
 const Provider = require("../providers/ai-provider");
 

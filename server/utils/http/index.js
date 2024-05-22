@@ -91,6 +91,11 @@ function isValidUrl(urlString = "") {
   return false;
 }
 
+function toValidNumber(number = null, fallback = null) {
+  if (isNaN(Number(number))) return fallback;
+  return Number(number);
+}
+
 module.exports = {
   reqBody,
   multiUserMode,
@@ -101,4 +106,5 @@ module.exports = {
   parseAuthHeader,
   safeJsonParse,
   isValidUrl,
+  toValidNumber,
 };

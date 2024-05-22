@@ -21,6 +21,7 @@ import {
   ClosedCaptioning,
   EyeSlash,
   SplitVertical,
+  Microphone,
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
@@ -281,6 +282,14 @@ const SidebarOptions = ({ user = null }) => (
       allowedRole={["admin"]}
     />
     <Option
+      href={paths.settings.audioPreference()}
+      btnText="Voice and Speech Support"
+      icon={<Microphone className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
       href={paths.settings.transcriptionPreference()}
       btnText="Transcription Model"
       icon={<ClosedCaptioning className="h-5 w-5 flex-shrink-0" />}
@@ -320,7 +329,7 @@ const SidebarOptions = ({ user = null }) => (
     <Option
       href={paths.settings.embedSetup()}
       childLinks={[paths.settings.embedChats()]}
-      btnText="Embedded Chat"
+      btnText="Chat Embed Widgets"
       icon={<CodeBlock className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -329,7 +338,7 @@ const SidebarOptions = ({ user = null }) => (
         <>
           <Option
             href={paths.settings.embedChats()}
-            btnText="Embedded Chat History"
+            btnText="Chat Embed History"
             icon={<Barcode className="h-5 w-5 flex-shrink-0" />}
             user={user}
             flex={true}

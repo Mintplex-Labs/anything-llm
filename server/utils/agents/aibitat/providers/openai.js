@@ -3,7 +3,7 @@ const Provider = require("./ai-provider.js");
 const { RetryError } = require("../error.js");
 
 /**
- * The provider for the OpenAI API.
+ * The agent provider for the OpenAI API.
  * By default, the model is set to 'gpt-3.5-turbo'.
  */
 class OpenAIProvider extends Provider {
@@ -12,6 +12,10 @@ class OpenAIProvider extends Provider {
     "gpt-4": {
       input: 0.03,
       output: 0.06,
+    },
+    "gpt-4o": {
+      input: 0.005,
+      output: 0.015,
     },
     "gpt-4-32k": {
       input: 0.06,
@@ -33,7 +37,7 @@ class OpenAIProvider extends Provider {
         apiKey: process.env.OPEN_AI_KEY,
         maxRetries: 3,
       },
-      model = "gpt-3.5-turbo",
+      model = "gpt-4o",
     } = config;
 
     const client = new OpenAI(options);

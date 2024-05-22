@@ -2,6 +2,7 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const { toValidNumber } = require("../../http");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -18,7 +19,9 @@ class GenericOpenAiLLM {
     });
     this.model =
       modelPreference ?? process.env.GENERIC_OPEN_AI_MODEL_PREF ?? null;
-    this.maxTokens = process.env.GENERIC_OPEN_AI_MAX_TOKENS ?? 1024;
+    this.maxTokens = process.env.GENERIC_OPEN_AI_MAX_TOKENS
+      ? toValidNumber(process.env.GENERIC_OPEN_AI_MAX_TOKENS, 1024)
+      : 1024;
     if (!this.model)
       throw new Error("GenericOpenAI must have a valid model set.");
     this.limits = {
@@ -27,11 +30,7 @@ class GenericOpenAiLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      console.warn(
-        "No embedding provider defined for GenericOpenAiLLM - falling back to NativeEmbedder for embedding!"
-      );
-    this.embedder = !embedder ? new NativeEmbedder() : embedder;
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
   }

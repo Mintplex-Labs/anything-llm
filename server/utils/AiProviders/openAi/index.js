@@ -1,4 +1,4 @@
-const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
@@ -11,19 +11,14 @@ class OpenAiLLM {
     this.openai = new OpenAIApi({
       apiKey: process.env.OPEN_AI_KEY,
     });
-    this.model =
-      modelPreference || process.env.OPEN_MODEL_PREF || "gpt-3.5-turbo";
+    this.model = modelPreference || process.env.OPEN_MODEL_PREF || "gpt-4o";
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      console.warn(
-        "No embedding provider defined for OpenAiLLM - falling back to OpenAiEmbedder for embedding!"
-      );
-    this.embedder = !embedder ? new OpenAiEmbedder() : embedder;
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
   }
 
@@ -48,6 +43,7 @@ class OpenAiLLM {
       case "gpt-3.5-turbo":
       case "gpt-3.5-turbo-1106":
         return 16_385;
+      case "gpt-4o":
       case "gpt-4-turbo":
       case "gpt-4-1106-preview":
       case "gpt-4-turbo-preview":
