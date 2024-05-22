@@ -38,8 +38,13 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
         });
       }
 
-      // LocalAi returns '' and others return null.
-      if (message.finish_reason !== "" && message.finish_reason !== null) {
+      // LocalAi returns '' and others return null on chunks - the last chunk is not "" or null.
+      // Either way, the key `finish_reason` must be present to determine ending chunk.
+      if (
+        message.hasOwnProperty("finish_reason") &&
+        message.finish_reason !== "" &&
+        message.finish_reason !== null
+      ) {
         writeResponseChunk(response, {
           uuid,
           sources,
