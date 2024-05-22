@@ -108,10 +108,13 @@ export default function Footer() {
             rel="noreferrer"
             className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
           >
-            {React.createElement(ICON_COMPONENTS[item.icon], {
-              weight: "fill",
-              className: "h-5 w-5",
-            })}
+            {React.createElement(
+              ICON_COMPONENTS?.[item.icon] ?? ICON_COMPONENTS.Info,
+              {
+                weight: "fill",
+                className: "h-5 w-5",
+              }
+            )}
           </a>
         ))}
         {!isMobile && <SettingsButton />}
