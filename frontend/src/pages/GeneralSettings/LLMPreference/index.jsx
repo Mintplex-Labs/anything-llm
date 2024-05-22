@@ -394,16 +394,17 @@ export default function GeneralLLMPreference() {
                   >
                     <div className="flex gap-x-4 items-center">
                       <img
-                        src={selectedLLMObject.logo}
-                        alt={`${selectedLLMObject.name} logo`}
+                        src={selectedLLMObject?.logo || AnythingLLMIcon}
+                        alt={`${selectedLLMObject?.name} logo`}
                         className="w-10 h-10 rounded-md"
                       />
                       <div className="flex flex-col text-left">
                         <div className="text-sm font-semibold text-white">
-                          {selectedLLMObject.name}
+                          {selectedLLMObject?.name || "None selected"}
                         </div>
                         <div className="mt-1 text-xs text-[#D2D5DB]">
-                          {selectedLLMObject.description}
+                          {selectedLLMObject?.description ||
+                            "You need to select an LLM"}
                         </div>
                       </div>
                     </div>
