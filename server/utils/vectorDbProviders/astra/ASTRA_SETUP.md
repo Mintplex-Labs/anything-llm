@@ -10,7 +10,7 @@
 
 **Instructions**
 
-- [Create an Astra account or sign in to an existing Astra account](astra.datastax.com)
+- [Create an Astra account or sign in to an existing Astra account](https://astra.datastax.com)
 - Create an Astra Serverless(Vector) Database.
 - Make sure DB is in active state.
 - Get `API ENDPOINT`and `Application Token` from Overview screen
