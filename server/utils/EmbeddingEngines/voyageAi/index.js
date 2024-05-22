@@ -38,7 +38,10 @@ class VoyageAiEmbedder {
       Array.isArray(textInput) ? textInput : [textInput],
       { modelName: this.model }
     );
-    return result || [];
+
+    // If given an array return the native Array[Array] format since that should be the outcome.
+    // But if given a single string, we need to flatten it so that we have a 1D array.
+    return (Array.isArray(textInput) ? result : result.flat()) || [];
   }
 
   async embedChunks(textChunks = []) {
@@ -50,6 +53,12 @@ class VoyageAiEmbedder {
       return embeddings;
     } catch (error) {
       console.error("Voyage AI Failed to embed:", error);
+      if (
+        error.message.includes(
+          "Cannot read properties of undefined (reading '0')"
+        )
+      )
+        throw new Error("Voyage AI failed to embed: Rate limit reached");
       throw error;
     }
   }

@@ -115,7 +115,7 @@ function systemEndpoints(app) {
 
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-        const existingUser = await User.get({ username: String(username) });
+        const existingUser = await User._get({ username: String(username) });
 
         if (!existingUser) {
           await EventLogs.logEvent(
@@ -193,7 +193,7 @@ function systemEndpoints(app) {
           // Return recovery codes to frontend
           response.status(200).json({
             valid: true,
-            user: existingUser,
+            user: User.filterFields(existingUser),
             token: makeJWT(
               { id: existingUser.id, username: existingUser.username },
               "30d"
@@ -206,7 +206,7 @@ function systemEndpoints(app) {
 
         response.status(200).json({
           valid: true,
-          user: existingUser,
+          user: User.filterFields(existingUser),
           token: makeJWT(
             { id: existingUser.id, username: existingUser.username },
             "30d"
@@ -1029,7 +1029,7 @@ function systemEndpoints(app) {
 
       const updates = {};
       if (username) {
-        updates.username = String(username);
+        updates.username = User.validations.username(String(username));
       }
       if (password) {
         updates.password = String(password);
