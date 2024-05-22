@@ -8,7 +8,7 @@ export default function LoadingChat() {
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll"
+      className="p-4 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll"
     >
       <Skeleton.default
         height="100px"
