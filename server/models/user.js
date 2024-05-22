@@ -19,6 +19,12 @@ const User = {
         return String(value);
     }
   },
+
+  filterFields: function (user = {}) {
+    const { password, ...rest } = user;
+    return { ...rest };
+  },
+
   create: async function ({ username, password, role = "default" }) {
     const passwordCheck = this.checkPasswordComplexity(password);
     if (!passwordCheck.checkedOK) {
@@ -35,7 +41,7 @@ const User = {
           role,
         },
       });
-      return { user, error: null };
+      return { user: this.filterFields(user), error: null };
     } catch (error) {
       console.error("FAILED TO CREATE USER.", error.message);
       return { user: null, error: error.message };
@@ -129,6 +135,17 @@ const User = {
   get: async function (clause = {}) {
     try {
       const user = await prisma.users.findFirst({ where: clause });
+      return user ? this.filterFields({ ...user }) : null;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  },
+
+  // Returns user object with all fields
+  _get: async function (clause = {}) {
+    try {
+      const user = await prisma.users.findFirst({ where: clause });
       return user ? { ...user } : null;
     } catch (error) {
       console.error(error.message);
@@ -162,7 +179,7 @@ const User = {
         where: clause,
         ...(limit !== null ? { take: limit } : {}),
       });
-      return users;
+      return users.map((usr) => this.filterFields(usr));
     } catch (error) {
       console.error(error.message);
       return [];
