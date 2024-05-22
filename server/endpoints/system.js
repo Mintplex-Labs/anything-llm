@@ -976,7 +976,9 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
-        await WorkspaceChats.delete({ id: Number(id) });
+        Number(id) === -1
+          ? await WorkspaceChats.delete({}, true)
+          : await WorkspaceChats.delete({ id: Number(id) });
         response.json({ success: true, error: null });
       } catch (e) {
         console.error(e);
