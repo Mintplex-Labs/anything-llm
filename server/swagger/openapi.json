@@ -17,15 +17,7 @@
           "Authentication"
         ],
         "description": "Verify the attached Authentication header contains a valid API token.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Valid auth token was found.",
@@ -64,15 +56,7 @@
           "Admin"
         ],
         "description": "Check to see if the instance is in multi-user-mode first. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -111,15 +95,7 @@
           "Admin"
         ],
         "description": "Check to see if the instance is in multi-user-mode first. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -169,15 +145,7 @@
           "Admin"
         ],
         "description": "Create a new user with username and password. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -250,13 +218,6 @@
               "type": "string"
             },
             "description": "id of the user in the database."
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -326,13 +287,6 @@
               "type": "string"
             },
             "description": "id of the user in the database."
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -380,15 +334,7 @@
           "Admin"
         ],
         "description": "List all existing invitations to instance regardless of status. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -440,15 +386,7 @@
           "Admin"
         ],
         "description": "Create a new invite code for someone to use to register with instance. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -523,13 +461,6 @@
               "type": "string"
             },
             "description": "id of the invite in the database."
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -586,13 +517,6 @@
               "type": "string"
             },
             "description": "id of the workspace in the database."
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -657,15 +581,7 @@
           "Admin"
         ],
         "description": "All chats in the system ordered by most recent. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -720,15 +636,7 @@
           "Admin"
         ],
         "description": "Show all multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -775,15 +683,7 @@
           "Admin"
         ],
         "description": "Update multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -843,15 +743,7 @@
           "Documents"
         ],
         "description": "Upload a new file to AnythingLLM to be parsed and prepared for embedding.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -927,15 +819,7 @@
           "Documents"
         ],
         "description": "Upload a valid URL for AnythingLLM to scrape and prepare for embedding.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1009,15 +893,7 @@
           "Documents"
         ],
         "description": "Upload a file by specifying its raw text content and metadata values without having to upload a file.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1099,15 +975,7 @@
           "Documents"
         ],
         "description": "List of all locally-stored documents in instance",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1162,15 +1030,7 @@
           "Documents"
         ],
         "description": "Check available filetypes and MIMEs that can be uploaded.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1232,15 +1092,7 @@
           "Documents"
         ],
         "description": "Get the known available metadata schema for when doing a raw-text upload and the acceptable type of value for each key.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1296,13 +1148,6 @@
               "type": "string"
             },
             "description": "Unique document name to find (name in /documents)"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1362,15 +1207,7 @@
           "Documents"
         ],
         "description": "Create a new folder inside the documents storage directory.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1428,15 +1265,7 @@
           "Documents"
         ],
         "description": "Move files within the documents storage directory.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1499,15 +1328,7 @@
           "Workspaces"
         ],
         "description": "Create a new workspace",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1571,15 +1392,7 @@
           "Workspaces"
         ],
         "description": "List all current workspaces",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1641,13 +1454,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1708,13 +1514,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to delete"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1760,13 +1559,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1848,13 +1640,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1925,13 +1710,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -2015,13 +1793,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -2074,13 +1845,6 @@
             "name": "slug",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -2158,13 +1922,6 @@
             "name": "slug",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -2252,6 +2009,7 @@
           "System Settings"
         ],
         "description": "Dump all settings to file storage",
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -2283,15 +2041,7 @@
           "System Settings"
         ],
         "description": "Get all current system settings that are defined.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -2339,15 +2089,7 @@
           "System Settings"
         ],
         "description": "Number of all vectors in connected vector database",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -2389,15 +2131,7 @@
           "System Settings"
         ],
         "description": "Update a system setting or preference.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -2456,13 +2190,6 @@
         ],
         "description": "Export all of the chats from the system in a known format. Output depends on the type sent. Will be send with the correct header for the output.",
         "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "type",
             "in": "query",
