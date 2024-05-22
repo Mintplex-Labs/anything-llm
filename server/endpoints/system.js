@@ -1024,7 +1024,7 @@ function systemEndpoints(app) {
 
       const updates = {};
       if (username) {
-        updates.username = String(username);
+        updates.username = User.validations.username(String(username));
       }
       if (password) {
         updates.password = String(password);

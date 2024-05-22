@@ -10,6 +10,20 @@ const User = {
     "role",
     "suspended",
   ],
+  validations: {
+    username: (newValue = "") => {
+      try {
+        if (String(newValue).length > 100)
+          throw new Error("Username cannot be longer than 100 characters");
+        if (String(newValue).length < 2)
+          throw new Error("Username must be at least 2 characters");
+        return String(newValue);
+      } catch (e) {
+        throw new Error(e.message);
+      }
+    },
+  },
+
   // validations for the above writable fields.
   castColumnValue: function (key, value) {
     switch (key) {
@@ -36,9 +50,9 @@ const User = {
       const hashedPassword = bcrypt.hashSync(password, 10);
       const user = await prisma.users.create({
         data: {
-          username,
+          username: this.validations.username(username),
           password: hashedPassword,
-          role,
+          role: String(role),
         },
       });
       return { user: this.filterFields(user), error: null };
@@ -75,7 +89,13 @@ const User = {
       // and force-casts to the proper type;
       Object.entries(updates).forEach(([key, value]) => {
         if (this.writable.includes(key)) {
-          updates[key] = this.castColumnValue(key, value);
+          if (this.validations.hasOwnProperty(key)) {
+            updates[key] = this.validations[key](
+              this.castColumnValue(key, value)
+            );
+          } else {
+            updates[key] = this.castColumnValue(key, value);
+          }
           return;
         }
         delete updates[key];
