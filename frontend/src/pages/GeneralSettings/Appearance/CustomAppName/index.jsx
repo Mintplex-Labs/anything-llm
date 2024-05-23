@@ -1,24 +1,30 @@
-import useUser from "@/hooks/useUser";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useState } from "react";
 
 export default function CustomAppName() {
-  const { user } = useUser();
   const [loading, setLoading] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
   const [customAppName, setCustomAppName] = useState("");
   const [originalAppName, setOriginalAppName] = useState("");
+  const [canCustomize, setCanCustomize] = useState(false);
 
   useEffect(() => {
-    const fetchCustomAppName = async () => {
+    const fetchInitialParams = async () => {
+      const settings = await System.keys();
+      if (!settings?.MultiUserMode && !settings?.RequiresAuth) {
+        setCanCustomize(false);
+        return false;
+      }
+
       const { appName } = await System.fetchCustomAppName();
       setCustomAppName(appName || "");
       setOriginalAppName(appName || "");
+      setCanCustomize(true);
       setLoading(false);
     };
-    fetchCustomAppName();
+    fetchInitialParams();
   }, []);
 
   const updateCustomAppName = async (e, newValue = null) => {
@@ -48,7 +54,7 @@ export default function CustomAppName() {
     setHasChanges(true);
   };
 
-  if (loading) return null;
+  if (!canCustomize || loading) return null;
 
   return (
     <form className="mb-6" onSubmit={updateCustomAppName}>
