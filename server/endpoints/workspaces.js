@@ -6,7 +6,7 @@ const {
   userFromSession,
   safeJsonParse,
 } = require("../utils/http");
-const { normalizePath } = require("../utils/files");
+const { normalizePath, isWithin } = require("../utils/files");
 const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
@@ -629,13 +629,13 @@ function workspaceEndpoints(app) {
 
         const oldPfpFilename = workspaceRecord.pfpFilename;
         if (oldPfpFilename) {
+          const storagePath = path.join(__dirname, "../storage/assets/pfp");
           const oldPfpPath = path.join(
-            __dirname,
-            `../storage/assets/pfp/${normalizePath(
-              workspaceRecord.pfpFilename
-            )}`
+            storagePath,
+            normalizePath(workspaceRecord.pfpFilename)
           );
-
+          if (!isWithin(path.resolve(storagePath), path.resolve(oldPfpPath)))
+            throw new Error("Invalid path name");
           if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
         }
 
@@ -670,11 +670,13 @@ function workspaceEndpoints(app) {
         const oldPfpFilename = workspaceRecord.pfpFilename;
 
         if (oldPfpFilename) {
+          const storagePath = path.join(__dirname, "../storage/assets/pfp");
           const oldPfpPath = path.join(
-            __dirname,
-            `../storage/assets/pfp/${normalizePath(oldPfpFilename)}`
+            storagePath,
+            normalizePath(oldPfpFilename)
           );
-
+          if (!isWithin(path.resolve(storagePath), path.resolve(oldPfpPath)))
+            throw new Error("Invalid path name");
           if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
         }
 
