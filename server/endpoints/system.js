@@ -518,17 +518,22 @@ function systemEndpoints(app) {
       const defaultFilename = getDefaultFilename();
       const logoPath = await determineLogoFilepath(defaultFilename);
       const { found, buffer, size, mime } = fetchLogo(logoPath);
+
       if (!found) {
         response.sendStatus(204).end();
         return;
       }
 
+      const currentLogoFilename = await SystemSettings.currentLogoFilename();
       response.writeHead(200, {
+        "Access-Control-Expose-Headers":
+          "Content-Disposition,X-Is-Custom-Logo,Content-Type,Content-Length",
         "Content-Type": mime || "image/png",
         "Content-Disposition": `attachment; filename=${path.basename(
           logoPath
         )}`,
         "Content-Length": size,
+        "X-Is-Custom-Logo": currentLogoFilename !== defaultFilename,
       });
       response.end(Buffer.from(buffer, "base64"));
       return;

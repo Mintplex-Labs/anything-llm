@@ -342,14 +342,18 @@ const System = {
       method: "GET",
       cache: "no-cache",
     })
-      .then((res) => {
-        if (res.ok && res.status !== 204) return res.blob();
+      .then(async (res) => {
+        if (res.ok && res.status !== 204) {
+          const isCustomLogo = res.headers.get("X-Is-Custom-Logo") === "true";
+          const blob = await res.blob();
+          const logoURL = URL.createObjectURL(blob);
+          return { isCustomLogo, logoURL };
+        }
         throw new Error("Failed to fetch logo!");
       })
-      .then((blob) => URL.createObjectURL(blob))
       .catch((e) => {
         console.log(e);
-        return null;
+        return { isCustomLogo: false, logoURL: null };
       });
   },
   fetchPfp: async function (id) {
