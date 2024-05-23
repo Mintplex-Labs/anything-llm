@@ -526,7 +526,11 @@ function supportedTranscriptionProvider(input = "") {
 }
 
 function validGeminiModel(input = "") {
-  const validModels = ["gemini-pro", "gemini-1.5-pro-latest"];
+  const validModels = [
+    "gemini-pro",
+    "gemini-1.5-pro-latest",
+    "gemini-1.5-flash-latest",
+  ];
   return validModels.includes(input)
     ? null
     : `Invalid Model type. Must be one of ${validModels.join(", ")}.`;
