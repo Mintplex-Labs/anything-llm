@@ -438,7 +438,8 @@ function systemEndpoints(app) {
 
         let error = null;
         const { usePassword, newPassword } = reqBody(request);
-        if (!usePassword) { // Password is being disabled so directly unset everything to bypass validation.
+        if (!usePassword) {
+          // Password is being disabled so directly unset everything to bypass validation.
           process.env.AUTH_TOKEN = "";
           process.env.JWT_SECRET = "";
         } else {
