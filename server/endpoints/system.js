@@ -436,14 +436,21 @@ function systemEndpoints(app) {
           return;
         }
 
+        let error = null;
         const { usePassword, newPassword } = reqBody(request);
-        const { error } = await updateENV(
-          {
-            AuthToken: usePassword ? newPassword : "",
-            JWTSecret: usePassword ? v4() : "",
-          },
-          true
-        );
+        if (!usePassword) { // Password is being disabled so directly unset everything to bypass validation.
+          process.env.AUTH_TOKEN = "";
+          process.env.JWT_SECRET = "";
+        } else {
+          error = await updateENV(
+            {
+              AuthToken: newPassword,
+              JWTSecret: v4(),
+            },
+            true
+          )?.error;
+        }
+
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ success: !error, error });
       } catch (e) {
