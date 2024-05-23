@@ -5,6 +5,7 @@ const {
   viewLocalFiles,
   findDocumentInDocuments,
   normalizePath,
+  isWithin,
 } = require("../../../utils/files");
 const { reqBody } = require("../../../utils/http");
 const { EventLogs } = require("../../../models/eventLogs");
@@ -603,6 +604,8 @@ function apiDocumentEndpoints(app) {
       try {
         const { name } = reqBody(request);
         const storagePath = path.join(documentsPath, normalizePath(name));
+        if (!isWithin(path.resolve(documentsPath), path.resolve(storagePath)))
+          throw new Error("Invalid path name");
 
         if (fs.existsSync(storagePath)) {
           response.status(500).json({

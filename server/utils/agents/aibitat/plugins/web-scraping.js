@@ -20,11 +20,11 @@ const webScraping = {
           examples: [
             {
               prompt: "What is useanything.com about?",
-              call: JSON.stringify({ uri: "https://useanything.com" }),
+              call: JSON.stringify({ url: "https://useanything.com" }),
             },
             {
               prompt: "Scrape https://example.com",
-              call: JSON.stringify({ uri: "https://example.com" }),
+              call: JSON.stringify({ url: "https://example.com" }),
             },
           ],
           parameters: {

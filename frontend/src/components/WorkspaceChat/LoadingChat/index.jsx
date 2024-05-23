@@ -8,7 +8,7 @@ export default function LoadingChat() {
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-      className="transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll"
+      className="p-4 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] bg-main-gradient w-full h-full overflow-y-scroll"
     >
       <Skeleton.default
         height="100px"
@@ -16,7 +16,7 @@ export default function LoadingChat() {
         highlightColor={highlightColor}
         baseColor={baseColor}
         count={1}
-        className="max-w-full md:max-w-[75%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex justify-start"
       />
       <Skeleton.default
@@ -25,7 +25,7 @@ export default function LoadingChat() {
         baseColor={baseColor}
         highlightColor={highlightColor}
         count={1}
-        className="max-w-full md:max-w-[75%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex justify-end"
       />
       <Skeleton.default
@@ -34,7 +34,7 @@ export default function LoadingChat() {
         baseColor={baseColor}
         highlightColor={highlightColor}
         count={1}
-        className="max-w-full md:max-w-[75%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex justify-start"
       />
       <Skeleton.default
@@ -43,7 +43,7 @@ export default function LoadingChat() {
         baseColor={baseColor}
         highlightColor={highlightColor}
         count={1}
-        className="max-w-full md:max-w-[75%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex justify-end"
       />
       <Skeleton.default
@@ -52,7 +52,7 @@ export default function LoadingChat() {
         baseColor={baseColor}
         highlightColor={highlightColor}
         count={1}
-        className="max-w-full md:max-w-[75%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex justify-start"
       />
     </div>

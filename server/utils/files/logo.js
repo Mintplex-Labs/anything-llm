@@ -3,7 +3,7 @@ const fs = require("fs");
 const { getType } = require("mime");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../../models/systemSettings");
-const { normalizePath } = require(".");
+const { normalizePath, isWithin } = require(".");
 const LOGO_FILENAME = "anything-llm.png";
 
 function validFilename(newFilename = "") {
@@ -23,6 +23,8 @@ async function determineLogoFilepath(defaultFilename = LOGO_FILENAME) {
 
   if (currentLogoFilename && validFilename(currentLogoFilename)) {
     customLogoPath = path.join(basePath, normalizePath(currentLogoFilename));
+    if (!isWithin(path.resolve(basePath), path.resolve(customLogoPath)))
+      return defaultFilepath;
     return fs.existsSync(customLogoPath) ? customLogoPath : defaultFilepath;
   }
 
@@ -52,17 +54,17 @@ function fetchLogo(logoPath) {
 async function renameLogoFile(originalFilename = null) {
   const extname = path.extname(originalFilename) || ".png";
   const newFilename = `${v4()}${extname}`;
-  const originalFilepath = process.env.STORAGE_DIR
-    ? path.join(
-        process.env.STORAGE_DIR,
-        "assets",
-        normalizePath(originalFilename)
-      )
-    : path.join(
-        __dirname,
-        `../../storage/assets`,
-        normalizePath(originalFilename)
-      );
+  const assetsDirectory = process.env.STORAGE_DIR
+    ? path.join(process.env.STORAGE_DIR, "assets")
+    : path.join(__dirname, `../../storage/assets`);
+  const originalFilepath = path.join(
+    assetsDirectory,
+    normalizePath(originalFilename)
+  );
+  if (!isWithin(path.resolve(assetsDirectory), path.resolve(originalFilepath)))
+    throw new Error("Invalid file path.");
+
+  // The output always uses a random filename.
   const outputFilepath = process.env.STORAGE_DIR
     ? path.join(process.env.STORAGE_DIR, "assets", normalizePath(newFilename))
     : path.join(__dirname, `../../storage/assets`, normalizePath(newFilename));
@@ -73,9 +75,13 @@ async function renameLogoFile(originalFilename = null) {
 
 async function removeCustomLogo(logoFilename = LOGO_FILENAME) {
   if (!logoFilename || !validFilename(logoFilename)) return false;
-  const logoPath = process.env.STORAGE_DIR
-    ? path.join(process.env.STORAGE_DIR, `assets`, normalizePath(logoFilename))
-    : path.join(__dirname, `../../storage/assets`, normalizePath(logoFilename));
+  const assetsDirectory = process.env.STORAGE_DIR
+    ? path.join(process.env.STORAGE_DIR, "assets")
+    : path.join(__dirname, `../../storage/assets`);
+
+  const logoPath = path.join(assetsDirectory, normalizePath(logoFilename));
+  if (!isWithin(path.resolve(assetsDirectory), path.resolve(logoPath)))
+    throw new Error("Invalid file path.");
   if (fs.existsSync(logoPath)) fs.unlinkSync(logoPath);
   return true;
 }
