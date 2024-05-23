@@ -37,7 +37,10 @@ export default function App() {
   return (
     <>
       <Head />
-      <div className={`fixed inset-0 z-50 ${isChatOpen ? "block" : "hidden"}`}>
+      <div
+        id="anything-llm-embed-chat-container"
+        className={`fixed inset-0 z-50 ${isChatOpen ? "block" : "hidden"}`}
+      >
         <div
           className={`${windowHeight} ${windowWidth} h-full w-full bg-white fixed bottom-0 right-0 mb-4 md:mr-4 rounded-2xl border border-gray-300 shadow-[0_4px_14px_rgba(0,0,0,0.25)] ${positionClasses[position]}`}
           id="anything-llm-chat"
@@ -53,6 +56,7 @@ export default function App() {
       </div>
       {!isChatOpen && (
         <div
+          id="anything-llm-embed-chat-button-container"
           className={`fixed bottom-0 ${positionClasses[position]} mb-4 z-50`}
         >
           <OpenButton
