@@ -18,7 +18,11 @@ class GeminiLLM {
       { model: this.model },
       {
         // Gemini-1.5-pro is only available on the v1beta API.
-        apiVersion: this.model === "gemini-1.5-pro-latest" ? "v1beta" : "v1",
+        apiVersion:
+          this.model === "gemini-1.5-pro-latest" ||
+          this.model === "gemini-1.5-flash-latest"
+            ? "v1beta"
+            : "v1",
       }
     );
     this.limits = {
@@ -95,7 +99,11 @@ class GeminiLLM {
   }
 
   isValidChatCompletionModel(modelName = "") {
-    const validModels = ["gemini-pro", "gemini-1.5-pro-latest"];
+    const validModels = [
+      "gemini-pro",
+      "gemini-1.5-pro-latest",
+      "gemini-1.5-flash-latest",
+    ];
     return validModels.includes(modelName);
   }
 
