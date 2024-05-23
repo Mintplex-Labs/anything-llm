@@ -1,7 +1,7 @@
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
-const { viewLocalFiles, normalizePath } = require("../utils/files");
+const { viewLocalFiles, normalizePath, isWithin } = require("../utils/files");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
@@ -622,11 +622,13 @@ function systemEndpoints(app) {
         const userRecord = await User.get({ id: user.id });
         const oldPfpFilename = userRecord.pfpFilename;
         if (oldPfpFilename) {
+          const storagePath = path.join(__dirname, "../storage/assets/pfp");
           const oldPfpPath = path.join(
-            __dirname,
-            `../storage/assets/pfp/${normalizePath(userRecord.pfpFilename)}`
+            storagePath,
+            normalizePath(userRecord.pfpFilename)
           );
-
+          if (!isWithin(path.resolve(storagePath), path.resolve(oldPfpPath)))
+            throw new Error("Invalid path name");
           if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
         }
 
@@ -655,13 +657,14 @@ function systemEndpoints(app) {
         const userRecord = await User.get({ id: user.id });
         const oldPfpFilename = userRecord.pfpFilename;
 
-        console.log("oldPfpFilename", oldPfpFilename);
         if (oldPfpFilename) {
+          const storagePath = path.join(__dirname, "../storage/assets/pfp");
           const oldPfpPath = path.join(
-            __dirname,
-            `../storage/assets/pfp/${normalizePath(oldPfpFilename)}`
+            storagePath,
+            normalizePath(oldPfpFilename)
           );
-
+          if (!isWithin(path.resolve(storagePath), path.resolve(oldPfpPath)))
+            throw new Error("Invalid path name");
           if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
         }
 

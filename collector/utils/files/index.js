@@ -49,9 +49,9 @@ function writeToServerDocuments(
   const destination = destinationOverride
     ? path.resolve(destinationOverride)
     : path.resolve(
-      __dirname,
-      "../../../server/storage/documents/custom-documents"
-    );
+        __dirname,
+        "../../../server/storage/documents/custom-documents"
+      );
   if (!fs.existsSync(destination))
     fs.mkdirSync(destination, { recursive: true });
   const destinationFilePath = path.resolve(destination, filename) + ".json";
@@ -82,7 +82,7 @@ async function wipeCollectorStorage() {
         if (file === "__HOTDIR__.md") continue;
         try {
           fs.rmSync(path.join(directory, file));
-        } catch { }
+        } catch {}
       }
       resolve();
     });
@@ -97,7 +97,7 @@ async function wipeCollectorStorage() {
         if (file === ".placeholder") continue;
         try {
           fs.rmSync(path.join(directory, file));
-        } catch { }
+        } catch {}
       }
       resolve();
     });
