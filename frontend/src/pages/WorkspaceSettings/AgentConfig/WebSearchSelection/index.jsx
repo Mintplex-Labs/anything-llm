@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import GoogleSearchIcon from "./icons/google.png";
 import SerperDotDevIcon from "./icons/serper.png";
+import BingSearchIcon from "./icons/bing.png";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import SearchProviderItem from "./SearchProviderItem";
 import {
   SerperDotDevOptions,
   GoogleSearchOptions,
+  BingSearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -33,6 +35,14 @@ const SEARCH_PROVIDERS = [
     options: (settings) => <SerperDotDevOptions settings={settings} />,
     description:
       "Serper.dev web-search. Free account with a 2,500 calls, but then paid.",
+  },
+  {
+    name: "Bing Search",
+    value: "bing-search",
+    logo: BingSearchIcon,
+    options: (settings) => <BingSearchOptions settings={settings} />,
+    description:
+      "Web search powered by the Bing Search API. Free for 1000 queries per month.",
   },
 ];
 

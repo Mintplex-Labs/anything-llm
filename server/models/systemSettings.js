@@ -70,7 +70,11 @@ const SystemSettings = {
     agent_search_provider: (update) => {
       try {
         if (update === "none") return null;
-        if (!["google-search-engine", "serper-dot-dev"].includes(update))
+        if (
+          !["google-search-engine", "serper-dot-dev", "bing-search"].includes(
+            update
+          )
+        )
           throw new Error("Invalid SERP provider.");
         return String(update);
       } catch (e) {
@@ -171,6 +175,7 @@ const SystemSettings = {
       AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
       AgentGoogleSearchEngineKey: process.env.AGENT_GSE_KEY || null,
       AgentSerperApiKey: process.env.AGENT_SERPER_DEV_KEY || null,
+      AgentBingSearchApiKey: process.env.AGENT_BING_SEARCH_API_KEY || null,
     };
   },
 
