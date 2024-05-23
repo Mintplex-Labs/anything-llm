@@ -32,6 +32,14 @@ export default function ThreadContainer({ workspace }) {
     const handleKeyUp = (event) => {
       if (["Control", "Meta"].includes(event.key)) {
         setCtrlPressed(false);
+        // when toggling, unset bulk progress so
+        // previously marked threads that were never deleted
+        // come back to life.
+        setThreads((prev) =>
+          prev.map((t) => {
+            return { ...t, deleted: false };
+          })
+        );
       }
     };
 
