@@ -2,7 +2,6 @@ import React, { memo, useState } from "react";
 import useCopyText from "@/hooks/useCopyText";
 import {
   Check,
-  ClipboardText,
   ThumbsUp,
   ThumbsDown,
   ArrowsClockwise,

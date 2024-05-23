@@ -91,7 +91,6 @@ export default function ChatHistory({
     sendCommand(`${heading} ${message}`, true);
   };
 
-  // TODO: Be able to edit both user and system response message.
   const saveEditedMessage = async ({ editedMessage, chatId, role }) => {
     if (!editedMessage) return; // Don't save empty edits.
 
