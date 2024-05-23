@@ -533,8 +533,6 @@ function systemEndpoints(app) {
       }
 
       const currentLogoFilename = await SystemSettings.currentLogoFilename();
-
-      console.log(currentLogoFilename, defaultFilename);
       response.writeHead(200, {
         "Access-Control-Expose-Headers":
           "Content-Disposition,X-Is-Custom-Logo,Content-Type,Content-Length",
