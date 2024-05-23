@@ -10,7 +10,7 @@ export const DISABLED_PROVIDERS = [
 ];
 const PROVIDER_DEFAULT_MODELS = {
   openai: [],
-  gemini: ["gemini-pro", "gemini-1.5-pro-latest"],
+  gemini: ["gemini-pro", "gemini-1.5-pro-latest", "gemini-1.5-flash-latest"],
   anthropic: [
     "claude-instant-1.2",
     "claude-2.0",
