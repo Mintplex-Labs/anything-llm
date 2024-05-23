@@ -1,0 +1,214 @@
+---
+apiVersion: v1                                                                                                                                           
+kind: PersistentVolume                                                                                                                                   
+metadata:                                                                                                                                                
+  name: anything-llm-volume                                                                                                                              
+  annotations:                                                                                                                                           
+    pv.beta.kubernetes.io/uid: "1000"                                                                                                                    
+    pv.beta.kubernetes.io/gid: "1000"                                                                                                                    
+spec:                                                                                                                                                    
+  storageClassName: gp2                                                                                                                                  
+  capacity:                                                                                                                                              
+    storage: 5Gi                                                                                                                                        
+  accessModes:                                                                                                                                           
+    - ReadWriteOnce                                                                                                                                      
+  awsElasticBlockStore:    
+    # This is the volume UUID from AWS EC2 EBS Volumes list.                                                                                                                              
+    volumeID: "{{ anythingllm_awsElasticBlockStore_volumeID }}"                                                                                                                           
+    fsType: ext4
+  nodeAffinity:                                                                                                                                          
+    required:                                                                                                                                            
+      nodeSelectorTerms:                                                                                                                                 
+      - matchExpressions:                                                                                                                                
+        - key: topology.kubernetes.io/zone                                                                                                               
+          operator: In                                                                                                                                   
+          values:                                                                                                                                        
+          - us-east-1c  
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: anything-llm-volume-claim
+  namespace: "{{ namespace }}"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anything-llm
+  namespace: "{{ namespace }}"
+  labels:
+    anything-llm: "true"
+spec:
+  selector:
+    matchLabels:
+      k8s-app: anything-llm
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0%
+      maxUnavailable: 100%
+  template:
+    metadata:
+      labels:
+        anything-llm: "true"
+        k8s-app: anything-llm
+        app.kubernetes.io/name: anything-llm
+        app.kubernetes.io/part-of: anything-llm
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "9090"
+    spec:
+      serviceAccountName: "default"
+      terminationGracePeriodSeconds: 10
+      securityContext:                                                                                                                                                              
+        fsGroup: 1000
+        runAsNonRoot: true                                                                                                                                                          
+        runAsGroup: 1000
+        runAsUser: 1000
+      affinity:                                                                                                                                                                                                                                                                          
+        nodeAffinity:                                                                                                                                                                                                                                                                    
+          requiredDuringSchedulingIgnoredDuringExecution:                                                                                                                                                                                                                                
+            nodeSelectorTerms:                                                                                                                                                                                                                                                           
+            - matchExpressions:                                                                                                                                                                                                                                                          
+              - key: topology.kubernetes.io/zone                                                                                                                                                                                                                                         
+                operator: In                                                                                                                                                                                                                                                             
+                values:                                                                                                                                                                                                                                                                  
+                - us-east-1c  
+      containers:
+      - name: anything-llm
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+        imagePullPolicy: IfNotPresent
+        image: "mintplexlabs/anythingllm:render"
+        securityContext:                     
+          allowPrivilegeEscalation: true                                                                                                                                                                                                                                                 
+          capabilities:                                                                                                                                                                                                                                                                  
+            add:                                                                                                                                                                                                                                                                         
+              - SYS_ADMIN                                                                                                                                                                                                                                                                
+          runAsNonRoot: true                                                                                                                                                                                                                                                             
+          runAsGroup: 1000                                                                                                                                                                                                                                                               
+          runAsUser: 1000                                                                                                                                       
+        command: 
+          # Specify a command to override the Dockerfile's ENTRYPOINT.
+          - /bin/bash
+          - -c
+          - |
+            set -x -e
+            sleep 3
+            echo "AWS_REGION: $AWS_REGION"
+            echo "SERVER_PORT: $SERVER_PORT"
+            echo "NODE_ENV: $NODE_ENV"
+            echo "STORAGE_DIR: $STORAGE_DIR"
+            {
+              cd /app/server/ &&
+                npx prisma generate --schema=./prisma/schema.prisma &&
+                npx prisma migrate deploy --schema=./prisma/schema.prisma &&
+                node /app/server/index.js
+              echo "Server process exited with status $?"
+            } &
+            { 
+              node /app/collector/index.js
+              echo "Collector process exited with status $?"
+            } &
+            wait -n
+            exit $?
+        readinessProbe:
+          httpGet:
+            path: /v1/api/health
+            port: 8888
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          successThreshold: 2
+        livenessProbe:
+          httpGet:
+            path: /v1/api/health
+            port: 8888
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          failureThreshold: 3
+        env:
+          - name: AWS_REGION
+            value: "{{ aws_region }}"
+          - name: AWS_ACCESS_KEY_ID
+            value: "{{ aws_access_id }}"
+          - name: AWS_SECRET_ACCESS_KEY
+            value: "{{ aws_access_secret }}"
+          - name: SERVER_PORT
+            value: "3001"
+          - name: JWT_SECRET
+            value: "my-random-string-for-seeding" # Please generate random string at least 12 chars long.
+          - name: STORAGE_DIR
+            value: "/storage"
+          - name: NODE_ENV
+            value: "production"
+          - name: UID
+            value: "1000"
+          - name: GID
+            value: "1000"
+        volumeMounts: 
+          - name: anything-llm-server-storage-volume-mount
+            mountPath: /storage                                                                                                                                                  
+      volumes:
+        - name: anything-llm-server-storage-volume-mount
+          persistentVolumeClaim:
+            claimName: anything-llm-volume-claim
+---
+# This serves the UI and the backend.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: anything-llm-ingress
+  namespace: "{{ namespace }}"
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "{{ namespace }}-chat.{{ base_domain }}"
+    kubernetes.io/ingress.class: "internal-ingress"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - host: "{{ namespace }}-chat.{{ base_domain }}"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: anything-llm-svc
+            port: 
+              number: 3001
+  tls: # < placing a host in the TLS config will indicate a cert should be created
+    - hosts:
+        - "{{ namespace }}-chat.{{ base_domain }}"
+      secretName: letsencrypt-prod
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    kubernetes.io/name: anything-llm
+  name: anything-llm-svc
+  namespace: "{{ namespace }}"
+spec:
+  ports:
+  # "port" is external port, and "targetPort" is internal.
+  - port: 3301
+    targetPort: 3001
+    name: traffic
+  - port: 9090
+    targetPort: 9090
+    name: metrics
+  selector:
+    k8s-app: anything-llm

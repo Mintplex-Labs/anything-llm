@@ -92,7 +92,7 @@ class KoboldCPPLLM {
         temperature,
       })
       .catch((e) => {
-        throw new Error(e.response.data.error.message);
+        throw new Error(e.message);
       });
 
     if (!result.hasOwnProperty("choices") || result.choices.length === 0)

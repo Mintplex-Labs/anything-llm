@@ -1,6 +1,6 @@
 # How to setup a local (or remote) Chroma Vector Database
 
-[Official Chroma Docs](https://docs.trychroma.com/usage-guide#running-chroma-in-clientserver-mode) for reference.
+[Official Chroma Docs](https://docs.trychroma.com/guides#running-chroma-in-clientserver-mode) for reference.
 
 ### How to get started
 

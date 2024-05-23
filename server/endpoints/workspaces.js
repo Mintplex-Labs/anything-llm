@@ -111,39 +111,45 @@ function workspaceEndpoints(app) {
       handleFileUpload,
     ],
     async function (request, response) {
-      const Collector = new CollectorApi();
-      const { originalname } = request.file;
-      const processingOnline = await Collector.online();
+      try {
+        const Collector = new CollectorApi();
+        const { originalname } = request.file;
+        const processingOnline = await Collector.online();
 
-      if (!processingOnline) {
-        response
-          .status(500)
-          .json({
-            success: false,
-            error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
-          })
-          .end();
-        return;
+        if (!processingOnline) {
+          response
+            .status(500)
+            .json({
+              success: false,
+              error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
+            })
+            .end();
+          return;
+        }
+
+        const { success, reason } =
+          await Collector.processDocument(originalname);
+        if (!success) {
+          response.status(500).json({ success: false, error: reason }).end();
+          return;
+        }
+
+        Collector.log(
+          `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
+        );
+        await Telemetry.sendTelemetry("document_uploaded");
+        await EventLogs.logEvent(
+          "document_uploaded",
+          {
+            documentName: originalname,
+          },
+          response.locals?.user?.id
+        );
+        response.status(200).json({ success: true, error: null });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
       }
-
-      const { success, reason } = await Collector.processDocument(originalname);
-      if (!success) {
-        response.status(500).json({ success: false, error: reason }).end();
-        return;
-      }
-
-      Collector.log(
-        `Document ${originalname} uploaded processed and successfully. It is now available in documents.`
-      );
-      await Telemetry.sendTelemetry("document_uploaded");
-      await EventLogs.logEvent(
-        "document_uploaded",
-        {
-          documentName: originalname,
-        },
-        response.locals?.user?.id
-      );
-      response.status(200).json({ success: true, error: null });
     }
   );
 
@@ -151,37 +157,42 @@ function workspaceEndpoints(app) {
     "/workspace/:slug/upload-link",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
-      const Collector = new CollectorApi();
-      const { link = "" } = reqBody(request);
-      const processingOnline = await Collector.online();
+      try {
+        const Collector = new CollectorApi();
+        const { link = "" } = reqBody(request);
+        const processingOnline = await Collector.online();
 
-      if (!processingOnline) {
-        response
-          .status(500)
-          .json({
-            success: false,
-            error: `Document processing API is not online. Link ${link} will not be processed automatically.`,
-          })
-          .end();
-        return;
+        if (!processingOnline) {
+          response
+            .status(500)
+            .json({
+              success: false,
+              error: `Document processing API is not online. Link ${link} will not be processed automatically.`,
+            })
+            .end();
+          return;
+        }
+
+        const { success, reason } = await Collector.processLink(link);
+        if (!success) {
+          response.status(500).json({ success: false, error: reason }).end();
+          return;
+        }
+
+        Collector.log(
+          `Link ${link} uploaded processed and successfully. It is now available in documents.`
+        );
+        await Telemetry.sendTelemetry("link_uploaded");
+        await EventLogs.logEvent(
+          "link_uploaded",
+          { link },
+          response.locals?.user?.id
+        );
+        response.status(200).json({ success: true, error: null });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
       }
-
-      const { success, reason } = await Collector.processLink(link);
-      if (!success) {
-        response.status(500).json({ success: false, error: reason }).end();
-        return;
-      }
-
-      Collector.log(
-        `Link ${link} uploaded processed and successfully. It is now available in documents.`
-      );
-      await Telemetry.sendTelemetry("link_uploaded");
-      await EventLogs.logEvent(
-        "link_uploaded",
-        { link },
-        response.locals?.user?.id
-      );
-      response.status(200).json({ success: true, error: null });
     }
   );
 

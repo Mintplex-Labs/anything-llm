@@ -15,7 +15,22 @@ class VoyageAiEmbedder {
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.batchSize = 128; // Voyage AI's limit per request is 128 https://docs.voyageai.com/docs/rate-limits#use-larger-batches
-    this.embeddingMaxChunkLength = 4000; // https://docs.voyageai.com/docs/embeddings - assume a token is roughly 4 letters with some padding
+    this.embeddingMaxChunkLength = this.#getMaxEmbeddingLength();
+  }
+
+  // https://docs.voyageai.com/docs/embeddings
+  #getMaxEmbeddingLength() {
+    switch (this.model) {
+      case "voyage-large-2-instruct":
+      case "voyage-law-2":
+      case "voyage-code-2":
+      case "voyage-large-2":
+        return 16_000;
+      case "voyage-2":
+        return 4_000;
+      default:
+        return 4_000;
+    }
   }
 
   async embedTextInput(textInput) {
@@ -23,7 +38,10 @@ class VoyageAiEmbedder {
       Array.isArray(textInput) ? textInput : [textInput],
       { modelName: this.model }
     );
-    return result || [];
+
+    // If given an array return the native Array[Array] format since that should be the outcome.
+    // But if given a single string, we need to flatten it so that we have a 1D array.
+    return (Array.isArray(textInput) ? result : result.flat()) || [];
   }
 
   async embedChunks(textChunks = []) {
@@ -35,6 +53,12 @@ class VoyageAiEmbedder {
       return embeddings;
     } catch (error) {
       console.error("Voyage AI Failed to embed:", error);
+      if (
+        error.message.includes(
+          "Cannot read properties of undefined (reading '0')"
+        )
+      )
+        throw new Error("Voyage AI failed to embed: Rate limit reached");
       throw error;
     }
   }
