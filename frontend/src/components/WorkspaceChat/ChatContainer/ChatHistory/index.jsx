@@ -8,14 +8,17 @@ import debounce from "lodash.debounce";
 import useUser from "@/hooks/useUser";
 import Chartable from "./Chartable";
 import Workspace from "@/models/workspace";
+import { useParams } from "react-router-dom";
 
 export default function ChatHistory({
   history = [],
   workspace,
   sendCommand,
+  updateHistory,
   regenerateAssistantMessage,
 }) {
   const { user } = useUser();
+  const { threadSlug = null } = useParams();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
@@ -89,8 +92,6 @@ export default function ChatHistory({
   };
 
   // TODO: Be able to edit both user and system response message.
-  // TODO: Pencil does not appear under user message while chatting because it
-  // does not know its own chatId since not response is present.
   const saveEditedMessage = async ({ editedMessage, chatId, role }) => {
     if (!editedMessage) return; // Don't save empty edits.
 
@@ -107,13 +108,27 @@ export default function ChatHistory({
       // update last message in history to edited message
       updatedHistory[updatedHistory.length - 1].content = editedMessage;
       // remove all edited messages after the edited message in backend
-      await Workspace.deleteEditedChats(workspace.slug, chatId);
+      await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
       sendCommand(editedMessage, true, updatedHistory);
       return;
     }
 
     // If role is an assistant we simply want to update the comment and save on the backend as an edit.
     if (role === "assistant") {
+      const updatedHistory = [...history];
+      const targetIdx = history.findIndex(
+        (msg) => msg.chatId === chatId && msg.role === role
+      );
+      if (targetIdx < 0) return;
+      updatedHistory[targetIdx].content = editedMessage;
+      updateHistory(updatedHistory);
+      await Workspace.updateChatResponse(
+        workspace.slug,
+        threadSlug,
+        chatId,
+        editedMessage
+      );
+      return;
     }
   };
 

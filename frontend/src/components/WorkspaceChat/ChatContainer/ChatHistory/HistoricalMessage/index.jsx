@@ -1,6 +1,6 @@
-import React, { memo, useState, useRef, useEffect } from "react";
+import React, { memo } from "react";
 import { Warning } from "@phosphor-icons/react";
-import Jazzicon from "../../../../UserIcon";
+import UserIcon from "../../../../UserIcon";
 import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
 import { userFromStorage } from "@/utils/request";
@@ -60,7 +60,7 @@ const HistoricalMessage = ({
   return (
     <div
       key={uuid}
-      className={`flex justify-center items-end w-full ${
+      className={`flex justify-center items-end w-full group ${
         role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
       }`}
     >
@@ -93,6 +93,7 @@ const HistoricalMessage = ({
             slug={workspace?.slug}
             isLastMessage={isLastMessage}
             regenerateMessage={regenerateMessage}
+            isEditing={isEditing}
             role={role}
           />
         </div>
@@ -116,8 +117,7 @@ function ProfileImage({ role, workspace }) {
   }
 
   return (
-    <Jazzicon
-      size={36}
+    <UserIcon
       user={{
         uid: role === "user" ? userFromStorage()?.username : workspace.slug,
       }}

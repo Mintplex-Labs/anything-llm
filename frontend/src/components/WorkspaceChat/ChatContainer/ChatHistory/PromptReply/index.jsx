@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Warning } from "@phosphor-icons/react";
-import Jazzicon from "../../../../UserIcon";
+import UserIcon from "../../../../UserIcon";
 import renderMarkdown from "@/utils/chat/markdown";
 import Citations from "../Citation";
 
@@ -84,7 +84,7 @@ export function WorkspaceProfileImage({ workspace }) {
     );
   }
 
-  return <Jazzicon size={36} user={{ uid: workspace.slug }} role="assistant" />;
+  return <UserIcon user={{ uid: workspace.slug }} role="assistant" />;
 }
 
 export default memo(PromptReply);

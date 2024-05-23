@@ -6,6 +6,7 @@ import {
   ThumbsUp,
   ThumbsDown,
   ArrowsClockwise,
+  Copy,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
@@ -19,6 +20,7 @@ const Actions = ({
   slug,
   isLastMessage,
   regenerateMessage,
+  isEditing,
   role,
 }) => {
   const [selectedFeedback, setSelectedFeedback] = useState(feedbackScore);
@@ -33,15 +35,15 @@ const Actions = ({
     <div className="flex w-full justify-between items-center">
       <div className="flex justify-start items-center gap-x-4">
         <CopyMessage message={message} />
-        <EditMessageAction chatId={chatId} role={role} />
-        {isLastMessage && (
+        <EditMessageAction chatId={chatId} role={role} isEditing={isEditing} />
+        {isLastMessage && !isEditing && (
           <RegenerateMessage
             regenerateMessage={regenerateMessage}
             slug={slug}
             chatId={chatId}
           />
         )}
-        {chatId && role !== "user" && (
+        {chatId && role !== "user" && !isEditing && (
           <>
             <FeedbackButton
               isSelected={selectedFeedback === true}
@@ -113,7 +115,7 @@ function CopyMessage({ message }) {
           {copied ? (
             <Check size={18} className="mb-1" />
           ) : (
-            <ClipboardText size={18} className="mb-1" />
+            <Copy size={18} className="mb-1" />
           )}
         </button>
         <Tooltip

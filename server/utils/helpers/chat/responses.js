@@ -168,8 +168,6 @@ function convertToChatHistory(history = []) {
   const formattedHistory = [];
   history.forEach((history) => {
     const { prompt, response, createdAt, feedbackScore = null, id } = history;
-
-    console.log("HISTORY", history);
     const data = JSON.parse(response);
     formattedHistory.push([
       {

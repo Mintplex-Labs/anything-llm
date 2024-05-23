@@ -11,7 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@metamask/jazzicon": "^2.0.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@phosphor-icons/react": "^2.0.13",
     "@tremor/react": "^3.15.1",

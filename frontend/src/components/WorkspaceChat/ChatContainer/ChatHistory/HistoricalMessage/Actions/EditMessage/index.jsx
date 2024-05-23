@@ -29,24 +29,28 @@ export function useEditMessage({ chatId, role }) {
   return { isEditing, setIsEditing };
 }
 
-export function EditMessageAction({ chatId = null, role }) {
-  const [isEditing, setIsEditing] = useState(false);
+export function EditMessageAction({ chatId = null, role, isEditing }) {
   function handleEditClick() {
     window.dispatchEvent(
       new CustomEvent(EDIT_EVENT, { detail: { chatId, role } })
     );
-    setIsEditing(true);
   }
 
   if (!chatId || isEditing) return null;
   return (
-    <div className="mt-3 relative">
+    <div
+      className={`mt-3 relative ${
+        role === "user" && !isEditing ? "opacity-0" : ""
+      } group-hover:opacity-100 transition-all duration-300`}
+    >
       <button
         onClick={handleEditClick}
         data-tooltip-id="edit-input-text"
-        data-tooltip-content="Edit"
+        data-tooltip-content={`Edit ${
+          role === "user" ? "Prompt" : "Response"
+        } `}
         className="border-none text-zinc-300"
-        aria-label="Edit"
+        aria-label={`Edit ${role === "user" ? "Prompt" : "Response"}`}
       >
         <Pencil size={18} className="mb-1" />
       </button>

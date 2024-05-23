@@ -1,35 +1,44 @@
-import React, { useRef, useEffect } from "react";
-import JAZZ from "@metamask/jazzicon";
+import React from "react";
 import usePfp from "../../hooks/usePfp";
+import WorkspaceDefault from "./workspace.png";
 
-export default function Jazzicon({ size = 10, user, role }) {
+export default function UserIcon({ user, role }) {
   const { pfp } = usePfp();
-  const divRef = useRef(null);
-  const seed = user?.uid
-    ? toPseudoRandomInteger(user.uid)
-    : Math.floor(100000 + Math.random() * 900000);
 
-  useEffect(() => {
-    if (!divRef.current || (role === "user" && pfp)) return;
-
-    const result = JAZZ(size, seed);
-    divRef.current.appendChild(result);
-  }, [pfp, role, seed, size]);
-
-  return (
-    <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden">
-      <div ref={divRef} />
-      {role === "user" && pfp && (
+  if (role === "user") {
+    if (!pfp) {
+      return (
+        <div className="relative w-[36px] h-[36px] rounded-full flex-shrink-0 overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full object-cover rounded-full flex items-center justify-center bg-[#2DF4D0] text-black text-lg font-semibold">
+            <p className="p-0 !m-0">{user?.username?.slice(0, 2) || "U"}</p>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="relative w-[36px] h-[36px] rounded-full flex-shrink-0 overflow-hidden">
         <img
           src={pfp}
+          width={36}
+          height={36}
           alt="User profile picture"
-          className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-white"
+          className={`absolute top-0 left-0 w-full h-full object-cover rounded-full ${
+            !!pfp ? "" : "border border-white/40"
+          }`}
         />
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-[36px] h-[36px] rounded-full flex-shrink-0 overflow-hidden">
+      <img
+        src={pfp ?? WorkspaceDefault}
+        alt="User profile picture"
+        className={`absolute top-0 left-0 w-full h-full object-cover rounded-full ${
+          !!pfp ? "" : "border border-white/40"
+        }`}
+      />
     </div>
   );
-}
-
-function toPseudoRandomInteger(uidString = "") {
-  return uidString.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
 }
