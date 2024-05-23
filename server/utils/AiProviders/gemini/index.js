@@ -17,7 +17,7 @@ class GeminiLLM {
     this.gemini = genAI.getGenerativeModel(
       { model: this.model },
       {
-        // Gemini-1.5-pro is only available on the v1beta API.
+        // Gemini-1.5-pro and Gemini-1.5-flash are only available on the v1beta API.
         apiVersion:
           this.model === "gemini-1.5-pro-latest" ||
           this.model === "gemini-1.5-flash-latest"
