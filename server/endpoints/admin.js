@@ -355,6 +355,9 @@ function adminEndpoints(app) {
                 ?.value,
               []
             ) || [],
+          custom_app_name:
+            (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
+            null,
         };
         response.status(200).json({ settings });
       } catch (e) {

@@ -9,7 +9,6 @@ import {
 } from "../../../utils/constants";
 import useLogo from "../../../hooks/useLogo";
 import illustration from "@/media/illustrations/login-illustration.svg";
-import loginLogo from "@/media/illustrations/login-logo.svg";
 
 export default function PasswordModal({ mode = "single" }) {
   const { logo: _initLogo } = useLogo();
@@ -36,11 +35,12 @@ export default function PasswordModal({ mode = "single" }) {
       </div>
       <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative">
         <img
-          src={loginLogo}
-          className={`mb-8 w-[84px] h-[84px] absolute  ${
-            mode === "single" ? "md:top-50" : "md:top-36"
-          } top-44 z-30`}
-          alt="logo"
+          src={_initLogo}
+          alt="Logo"
+          className={`hidden md:flex rounded-2xl w-fit m-4 p-3 z-30 ${
+            mode === "single" ? "md:top-[170px]" : "md:top-36"
+          } absolute max-h-[65px] md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+          style={{ objectFit: "contain" }}
         />
         {mode === "single" ? <SingleUserAuth /> : <MultiUserAuth />}
       </div>

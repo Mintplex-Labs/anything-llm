@@ -565,6 +565,22 @@ function systemEndpoints(app) {
     }
   });
 
+  // No middleware protection in order to get this on the login page
+  app.get("/system/custom-app-name", async (_, response) => {
+    try {
+      const customAppName =
+        (
+          await SystemSettings.get({
+            label: "custom_app_name",
+          })
+        )?.value ?? null;
+      response.status(200).json({ customAppName: customAppName });
+    } catch (error) {
+      console.error("Error fetching custom app name:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.get(
     "/system/pfp/:id",
     [validatedRequest, flexUserRoleValid([ROLES.all])],

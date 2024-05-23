@@ -305,6 +305,37 @@ const System = {
     );
     return { email: supportEmail, error: null };
   },
+
+  fetchCustomAppName: async function () {
+    const cache = window.localStorage.getItem(this.cacheKeys.customAppName);
+    const { appName, lastFetched } = cache
+      ? safeJsonParse(cache, { appName: "", lastFetched: 0 })
+      : { appName: "", lastFetched: 0 };
+
+    if (!!appName && Date.now() - lastFetched < 3_600_000)
+      return { appName: appName, error: null };
+
+    const { customAppName, error } = await fetch(
+      `${API_BASE}/system/custom-app-name`,
+      {
+        method: "GET",
+        cache: "no-cache",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.log(e);
+        return { appName: "", error: e.message };
+      });
+
+    if (!customAppName || !!error) return { appName: "", error: null };
+    window.localStorage.setItem(
+      this.cacheKeys.customAppName,
+      JSON.stringify({ appName: customAppName, lastFetched: Date.now() })
+    );
+    return { appName: customAppName, error: null };
+  },
   fetchLogo: async function () {
     return await fetch(`${API_BASE}/system/logo`, {
       method: "GET",
