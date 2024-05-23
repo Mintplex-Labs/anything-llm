@@ -526,17 +526,24 @@ function systemEndpoints(app) {
       const defaultFilename = getDefaultFilename();
       const logoPath = await determineLogoFilepath(defaultFilename);
       const { found, buffer, size, mime } = fetchLogo(logoPath);
+
       if (!found) {
         response.sendStatus(204).end();
         return;
       }
 
+      const currentLogoFilename = await SystemSettings.currentLogoFilename();
       response.writeHead(200, {
+        "Access-Control-Expose-Headers":
+          "Content-Disposition,X-Is-Custom-Logo,Content-Type,Content-Length",
         "Content-Type": mime || "image/png",
         "Content-Disposition": `attachment; filename=${path.basename(
           logoPath
         )}`,
         "Content-Length": size,
+        "X-Is-Custom-Logo":
+          currentLogoFilename !== null &&
+          currentLogoFilename !== defaultFilename,
       });
       response.end(Buffer.from(buffer, "base64"));
       return;
@@ -569,6 +576,22 @@ function systemEndpoints(app) {
       response.status(200).json({ supportEmail: supportEmail });
     } catch (error) {
       console.error("Error fetching support email:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // No middleware protection in order to get this on the login page
+  app.get("/system/custom-app-name", async (_, response) => {
+    try {
+      const customAppName =
+        (
+          await SystemSettings.get({
+            label: "custom_app_name",
+          })
+        )?.value ?? null;
+      response.status(200).json({ customAppName: customAppName });
+    } catch (error) {
+      console.error("Error fetching custom app name:", error);
       response.status(500).json({ message: "Internal server error" });
     }
   });
