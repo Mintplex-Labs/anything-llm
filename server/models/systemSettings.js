@@ -27,6 +27,7 @@ const SystemSettings = {
     "agent_search_provider",
     "default_agent_skills",
     "agent_sql_connections",
+    "custom_app_name",
   ],
   validations: {
     footer_data: (updates) => {

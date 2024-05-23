@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import System from "../../../models/system";
 import { AUTH_TOKEN } from "../../../utils/constants";
-import useLogo from "../../../hooks/useLogo";
 import paths from "../../../utils/paths";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
@@ -10,10 +9,10 @@ import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
 export default function SingleUserAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { logo: _initLogo } = useLogo();
   const [recoveryCodes, setRecoveryCodes] = useState([]);
   const [downloadComplete, setDownloadComplete] = useState(false);
   const [token, setToken] = useState(null);
+  const [customAppName, setCustomAppName] = useState(null);
 
   const {
     isOpen: isRecoveryCodeModalOpen,
@@ -57,6 +56,15 @@ export default function SingleUserAuth() {
     }
   }, [downloadComplete, token]);
 
+  useEffect(() => {
+    const fetchCustomAppName = async () => {
+      const { appName } = await System.fetchCustomAppName();
+      setCustomAppName(appName || "");
+      setLoading(false);
+    };
+    fetchCustomAppName();
+  }, []);
+
   return (
     <>
       <form onSubmit={handleLogin}>
@@ -68,11 +76,11 @@ export default function SingleUserAuth() {
                   Welcome to
                 </h3>
                 <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
-                  AnythingLLM
+                  {customAppName || "AnythingLLM"}
                 </p>
               </div>
               <p className="text-sm text-white/90 text-center">
-                Sign in to your AnythingLLM instance.
+                Sign in to your {customAppName || "AnythingLLM"} instance.
               </p>
             </div>
           </div>
