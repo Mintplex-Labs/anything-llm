@@ -533,6 +533,8 @@ function systemEndpoints(app) {
       }
 
       const currentLogoFilename = await SystemSettings.currentLogoFilename();
+
+      console.log(currentLogoFilename, defaultFilename);
       response.writeHead(200, {
         "Access-Control-Expose-Headers":
           "Content-Disposition,X-Is-Custom-Logo,Content-Type,Content-Length",
@@ -541,7 +543,9 @@ function systemEndpoints(app) {
           logoPath
         )}`,
         "Content-Length": size,
-        "X-Is-Custom-Logo": currentLogoFilename !== defaultFilename,
+        "X-Is-Custom-Logo":
+          currentLogoFilename !== null &&
+          currentLogoFilename !== defaultFilename,
       });
       response.end(Buffer.from(buffer, "base64"));
       return;

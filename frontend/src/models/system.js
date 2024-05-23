@@ -327,10 +327,14 @@ const System = {
       .then((res) => res.json())
       .catch((e) => {
         console.log(e);
-        return { appName: "", error: e.message };
+        return { customAppName: "", error: e.message };
       });
 
-    if (!customAppName || !!error) return { appName: "", error: null };
+    if (!customAppName || !!error) {
+      window.localStorage.removeItem(this.cacheKeys.customAppName);
+      return { appName: "", error: null };
+    }
+
     window.localStorage.setItem(
       this.cacheKeys.customAppName,
       JSON.stringify({ appName: customAppName, lastFetched: Date.now() })
