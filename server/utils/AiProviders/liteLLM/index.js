@@ -1,7 +1,6 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
-  writeResponseChunk,
-  clientAbortedHandler,
+  handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 
 class LiteLLM {
@@ -113,45 +112,7 @@ class LiteLLM {
   }
 
   handleStream(response, stream, responseProps) {
-    const { uuid = uuidv4(), sources = [] } = responseProps;
-
-    return new Promise(async (resolve) => {
-      let fullText = "";
-
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
-      response.on("close", handleAbort);
-
-      for await (const chunk of stream) {
-        const message = chunk?.choices?.[0];
-        const token = message?.delta?.content;
-
-        if (token) {
-          fullText += token;
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: token,
-            close: false,
-            error: false,
-          });
-        }
-
-        // LiteLLM does not give a finish reason in stream until the final chunk
-        if (message.finish_reason || message.finish_reason === "stop") {
-          writeResponseChunk(response, {
-            uuid,
-            sources,
-            type: "textResponseChunk",
-            textResponse: "",
-            close: true,
-            error: false,
-          });
-          response.removeListener("close", handleAbort);
-          resolve(fullText);
-        }
-      }
-    });
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations
