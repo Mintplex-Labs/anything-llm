@@ -1,3 +1,5 @@
+const { sourceIdentifier } = require("../../chats");
+const { safeJsonParse } = require("../../http");
 const { TokenManager } = require("../tiktoken");
 const { convertToPromptHistory } = require("./responses");
 
@@ -343,7 +345,104 @@ function cannonball({
   return truncatedText;
 }
 
+/**
+ * Fill the sources window with the priority of
+ * 1. Pinned documents (handled prior to function)
+ * 2. VectorSearch results
+ * 3. prevSources in chat history - starting from most recent.
+ *
+ * Ensuring the window always has the desired amount of sources so that followup questions
+ * in any chat mode have relevant sources, but not infinite sources. This function is used during chatting
+ * and allows follow-up questions within a query chat that otherwise would have zero sources and would fail.
+ * The added benefit is that during regular RAG chat, we have better coherence of citations that otherwise would
+ * also yield no results with no need for a ReRanker to run and take much longer to return a response.
+ *
+ * The side effect of this is follow-up unrelated questions now have citations that would look totally irrelevant, however
+ * we would rather optimize on the correctness of a response vs showing extraneous sources during a response. Given search
+ * results always take a priority a good unrelated question that produces RAG results will still function as desired and due to previous
+ * history backfill sources "changing context" mid-chat is handled appropriately.
+ * example:
+ * ---previous implementation---
+ * prompt 1: "What is anythingllm?" -> possibly get 4 good sources
+ * prompt 2: "Tell me some features" -> possible get 0 - 1 maybe relevant source + previous answer response -> bad response due to bad context mgmt
+ * ---next implementation---
+ * prompt 1: "What is anythingllm?" -> possibly get 4 good sources
+ * prompt 2: "Tell me some features" -> possible get 0 - 1 maybe relevant source + previous answer response -> backfill with 3 good sources from previous -> much better response
+ *
+ * @param {Object} config - params to call
+ * @param {object} config.nDocs = fill size of the window
+ * @param {object} config.searchResults = vector similarityResponse results for .sources
+ * @param {object[]} config.history - rawHistory of chat containing sources
+ * @param {string[]} config.filterIdentifiers - Pinned document identifiers to prevent duplicate context
+ * @returns {{
+ *   contextTexts: string[],
+ *   sources: object[],
+ * }} - Array of sources that should be added to window
+ */
+function fillSourceWindow({
+  nDocs = 4, // Number of documents
+  searchResults = [], // Sources from similarity search
+  history = [], // Raw history
+  filterIdentifiers = [], // pinned document sources
+} = config) {
+  const sources = [...searchResults];
+
+  if (sources.length >= nDocs || history.length === 0) {
+    return {
+      sources,
+      contextTexts: sources.map((src) => src.text),
+    };
+  }
+
+  const log = (text, ...args) => {
+    console.log(`\x1b[36m[fillSourceWindow]\x1b[0m ${text}`, ...args);
+  };
+
+  log(
+    `Need to backfill ${nDocs - searchResults.length} chunks to fill in the source window for RAG!`
+  );
+  const seenChunks = new Set(searchResults.map((source) => source.id));
+
+  // We need to reverse again because we need to iterate from bottom of array (most recent chats)
+  // Looking at this function by itself you may think that this loop could be extreme for long history chats,
+  // but this was already handled where `history` we derived. This comes from `recentChatHistory` which
+  // includes a limit for history (default: 20). So this loop does not look as extreme as on first glance.
+  for (const chat of history.reverse()) {
+    if (sources.length >= nDocs) {
+      log(
+        `Citations backfilled to ${nDocs} references from ${searchResults.length} original citations.`
+      );
+      break;
+    }
+
+    const chatSources =
+      safeJsonParse(chat.response, { sources: [] })?.sources || [];
+    if (!chatSources?.length || !Array.isArray(chatSources)) continue;
+
+    const validSources = chatSources.filter((source) => {
+      return (
+        filterIdentifiers.includes(sourceIdentifier(source)) == false && // source cannot be in current pins
+        source.hasOwnProperty("score") && // source cannot have come from a pinned document that was previously pinned
+        source.hasOwnProperty("text") && // source has a valid text property we can use
+        seenChunks.has(source.id) == false // is unique
+      );
+    });
+
+    for (const validSource of validSources) {
+      if (sources.length >= nDocs) break;
+      sources.push(validSource);
+      seenChunks.add(validSource.id);
+    }
+  }
+
+  return {
+    sources,
+    contextTexts: sources.map((src) => src.text),
+  };
+}
+
 module.exports = {
   messageArrayCompressor,
   messageStringCompressor,
+  fillSourceWindow,
 };
