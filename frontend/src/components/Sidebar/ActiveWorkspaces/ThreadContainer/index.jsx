@@ -22,6 +22,7 @@ export default function ThreadContainer({ workspace }) {
     fetchThreads();
   }, [workspace.slug]);
 
+  // Enable toggling of bulk-deletion by holding meta-key (ctrl on win and cmd/fn on others)
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (["Control", "Meta"].includes(event.key)) {
