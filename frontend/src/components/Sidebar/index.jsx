@@ -1,18 +1,21 @@
+import { Brain, List, Plus } from "@phosphor-icons/react";
 import React, { useEffect, useRef, useState } from "react";
-import { Plus, List } from "@phosphor-icons/react";
+import { Link, useNavigate } from "react-router-dom";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
-import ActiveWorkspaces from "./ActiveWorkspaces";
-import { USER_BACKGROUND_COLOR } from "@/utils/constants";
+
+import { FullScreenLoader } from "@/components/Preloader";
 import useLogo from "@/hooks/useLogo";
 import useUser from "@/hooks/useUser";
+import { USER_BACKGROUND_COLOR } from "@/utils/constants";
+import paths from "@/utils/paths";
 import Footer from "../Footer";
 import SettingsButton from "../SettingsButton";
-import { Link } from "react-router-dom";
-import paths from "@/utils/paths";
+import ActiveWorkspaces from "./ActiveWorkspaces";
 
 export default function Sidebar() {
+  const navigate = useNavigate();
   const { user } = useUser();
   const { logo } = useLogo();
   const sidebarRef = useRef(null);
@@ -21,6 +24,15 @@ export default function Sidebar() {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 500); // Simulate a loading time
+    return () => clearTimeout(timer);
+  }, []);
+  if (isLoading) {
+    return <FullScreenLoader />;
+  }
 
   return (
     <div>
@@ -44,15 +56,26 @@ export default function Sidebar() {
         <div className="flex flex-col h-full overflow-x-hidden">
           <div className="flex-grow flex flex-col min-w-[235px]">
             <div className="flex flex-col gap-y-2 pb-8 overflow-y-scroll no-scroll">
-              <div className="flex gap-x-2 items-center justify-between">
+              <div className="flex flex-col gap-x-2 items-center justify-between">
                 {(!user || user?.role !== "default") && (
                   <button
                     onClick={showNewWsModal}
-                    className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                    className="flex flex-grow w-[100%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
                   >
                     <Plus size={18} weight="bold" />
                     <p className="text-sidebar text-sm font-semibold">
                       New Workspace
+                    </p>
+                  </button>
+                )}
+                {(!user || user?.role !== "default") && (
+                  <button
+                    onClick={() => navigate("/insight-bot/upload")}
+                    className="flex flex-grow w-[100%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                  >
+                    <Brain size={18} weight="bold" />
+                    <p className="text-sidebar text-sm font-semibold">
+                      Enrich your data
                     </p>
                   </button>
                 )}
@@ -162,15 +185,26 @@ export function SidebarMobileHeader() {
                   style={{ height: "calc(100vw - -3rem)" }}
                   className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
                 >
-                  <div className="flex gap-x-2 items-center justify-between">
+                  <div className="flex flex-col gap-x-2 items-center justify-between">
                     {(!user || user?.role !== "default") && (
                       <button
                         onClick={showNewWsModal}
-                        className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                        className="flex flex-grow w-[100%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
                       >
                         <Plus className="h-5 w-5" />
                         <p className="text-sidebar text-sm font-semibold">
                           New Workspace
+                        </p>
+                      </button>
+                    )}
+                    {(!user || user?.role !== "default") && (
+                      <button
+                        onClick={() => navigate("/insight-bot/upload")}
+                        className="flex flex-grow mt-2 w-[100%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                      >
+                        <Brain className="h-5 w-5" />
+                        <p className="text-sidebar text-sm font-semibold">
+                          Enrich your data
                         </p>
                       </button>
                     )}

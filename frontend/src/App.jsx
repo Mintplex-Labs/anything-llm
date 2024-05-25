@@ -1,18 +1,20 @@
-import React, { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
-import { ContextWrapper } from "@/AuthContext";
+import "react-toastify/dist/ReactToastify.css";
+
 import PrivateRoute, {
   AdminRoute,
   ManagerRoute,
 } from "@/components/PrivateRoute";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { Suspense, lazy } from "react";
+import { Route, Routes } from "react-router-dom";
+
+import { ContextWrapper } from "@/AuthContext";
 import Login from "@/pages/Login";
 import OnboardingFlow from "@/pages/OnboardingFlow";
-
-import { PfpProvider } from "./PfpContext";
+import { ToastContainer } from "react-toastify";
 import { LogoProvider } from "./LogoContext";
+import { PfpProvider } from "./PfpContext";
 
+const InsightBotUpload = lazy(() => import("@/pages/InsightBotUpload"));
 const Main = lazy(() => import("@/pages/Main"));
 const InvitePage = lazy(() => import("@/pages/Invite"));
 const WorkspaceChat = lazy(() => import("@/pages/WorkspaceChat"));
@@ -61,6 +63,10 @@ export default function App() {
         <LogoProvider>
           <PfpProvider>
             <Routes>
+              <Route
+                path="/insight-bot/upload"
+                element={<PrivateRoute Component={InsightBotUpload} />}
+              ></Route>
               <Route path="/" element={<PrivateRoute Component={Main} />} />
               <Route path="/login" element={<Login />} />
               <Route
