@@ -15,6 +15,7 @@
     "@microsoft/fetch-event-source": "^2.0.1",
     "@phosphor-icons/react": "^2.0.13",
     "@tremor/react": "^3.15.1",
+    "axios": "^1.7.2",
     "dompurify": "^3.0.8",
     "file-saver": "^2.0.5",
     "he": "^1.2.0",
