@@ -2241,6 +2241,84 @@
           }
         }
       }
+    },
+    "/v1/system/remove-documents": {
+      "delete": {
+        "tags": [
+          "System Settings"
+        ],
+        "description": "Permanently remove documents from the system.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "success": true,
+                    "message": "Documents removed successfully"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Array of document names to be removed permanently.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "names": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "custom-documents/file.txt-fc4beeeb-e436-454d-8bb4-e5b8979cb48f.json"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "InvalidAPIKey": {
+          "type": "object",
+          "properties": {
+            "error": {
+              "type": "string",
+              "example": "Invalid API Key"
+            }
+          }
+        }
+      }
     }
   },
   "components": {
