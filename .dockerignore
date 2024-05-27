@@ -16,3 +16,4 @@
 !docker/.env.example
 !frontend/.env.production
 **/tmp/**
+**/.models
