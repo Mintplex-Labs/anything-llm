@@ -50,7 +50,7 @@ Once everything is loaded you can navigate on your browser to: [http://localhost
 
 The Anything-LLM application is already pre-configured in this repo for ease of use. The next steps are to create a workspace, upload some **short documents** there, then add them to the workspace. You can follow additional guidance through the [main page](https://github.com/ypadilla-arch/anything-llm). After this step you can chat with your documents in the chat interface.
 
-execute the following command to stopping/removing the docker containers:
+execute the following command to stop/remove the docker containers:
 
 ```shell
 docker compose down
