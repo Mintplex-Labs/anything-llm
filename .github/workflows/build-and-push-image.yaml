@@ -12,7 +12,7 @@ concurrency:
 
 on:
   push:
-    branches: ['master'] # master branch only. Do not modify.
+    branches: ['lancedb-revert']
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
@@ -73,14 +73,9 @@ jobs:
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: |
-            ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
-            ghcr.io/${{ github.repository }}
+            mintplexlabs/anythingllm
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
-            type=ref,event=tag
-            type=ref,event=pr
-
+            type=raw,value=lancedb_revert
 
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v5

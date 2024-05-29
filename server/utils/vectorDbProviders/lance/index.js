@@ -7,9 +7,8 @@ const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
 
 const LanceDb = {
-  uri: `${
-    !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
-  }lancedb`,
+  uri: `${!!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
+    }lancedb`,
   name: "LanceDb",
   connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
@@ -74,8 +73,7 @@ const LanceDb = {
       .execute();
 
     response.forEach((item) => {
-      if (this.distanceToSimilarity(item._distance) < similarityThreshold)
-        return;
+      if (this.distanceToSimilarity(item.score) < similarityThreshold) return;
       const { vector: _, ...rest } = item;
       if (filterIdentifiers.includes(sourceIdentifier(rest))) {
         console.log(
@@ -85,11 +83,8 @@ const LanceDb = {
       }
 
       result.contextTexts.push(rest.text);
-      result.sourceDocuments.push({
-        ...rest,
-        score: this.distanceToSimilarity(item._distance),
-      });
-      result.scores.push(this.distanceToSimilarity(item._distance));
+      result.sourceDocuments.push(rest);
+      result.scores.push(this.distanceToSimilarity(item.score));
     });
 
     return result;
@@ -323,7 +318,7 @@ const LanceDb = {
   curateSources: function (sources = []) {
     const documents = [];
     for (const source of sources) {
-      const { text, vector: _v, _distance: _d, ...rest } = source;
+      const { text, vector: _v, score: _s, ...rest } = source;
       const metadata = rest.hasOwnProperty("metadata") ? rest.metadata : rest;
       if (Object.keys(metadata).length > 0) {
         documents.push({
