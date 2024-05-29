@@ -1,7 +1,17 @@
 const WATCH_DIRECTORY = require("path").resolve(__dirname, "../hotdir");
 
 const ACCEPTED_MIMES = {
-  "text/plain": [".txt", ".md", ".org", ".adoc", ".rst"],
+  "text/plain": [
+    ".txt",
+    ".md",
+    ".org",
+    ".adoc",
+    ".rst",
+    ".r",
+    ".py",
+    ".ts",
+    ".js",
+  ],
   "text/html": [".html"],
 
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
@@ -31,6 +41,10 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".org": "./convert/asTxt.js",
   ".adoc": "./convert/asTxt.js",
   ".rst": "./convert/asTxt.js",
+  ".r": "./convert/asTxt.js",
+  ".py": "./convert/asTxt.js",
+  ".ts": "./convert/asTxt.js",
+  ".js": "./convert/asTxt.js",
 
   ".html": "./convert/asTxt.js",
   ".pdf": "./convert/asPDF.js",
