@@ -6,7 +6,7 @@ Assumptions: you have git/github desktop, docker and know a bit how to navigate 
 
 If you haven't done so already clone this repo
 
-Create an `.env` file in this folder with the following content
+Create an `.env` file in docker folder  with the following content
 
 ```.env
 SERVER_PORT=3001
@@ -26,7 +26,7 @@ DISABLE_TELEMETRY='true'
 
 
 
-Create a .models folder here
+Create a .models in "docker" folder here
 
 Download the rocket model from here: [https://huggingface.co/TheBloke/rocket-3B-GGUF/resolve/main/rocket-3b.Q4_K_M.gguf?download=true](https://huggingface.co/TheBloke/rocket-3B-GGUF/resolve/main/rocket-3b.Q4_K_M.gguf?download=true)
 
@@ -36,7 +36,7 @@ Move the model file to the .models folder
 
 Make sure you have disconnected from any VPN to avoid connection issues for the next step
 
-In a command prompt navigate to this folder
+In a command prompt navigate to docker folder
 
 Once here, execute the following command:
 
@@ -50,6 +50,11 @@ Once everything is loaded you can navigate on your browser to: [http://localhost
 
 The Anything-LLM application is already pre-configured in this repo for ease of use. The next steps are to create a workspace, upload some **short documents** there, then add them to the workspace. You can follow additional guidance through the [main page](https://github.com/ypadilla-arch/anything-llm). After this step you can chat with your documents in the chat interface.
 
+execute the following command to stopping/removing the docker containers:
+
+```shell
+docker compose down
+```
 **NOTE: When querrying the model, it's helpful to use keywords that appear within the document, this way it gets fed related data and provides a response other than *"I don't know"*.**
 
 **NOTE 2: It may take a up to 5 minutes to get a response if your computer is not fast enough. After 5 minutes it's likely that the request timed out and you'll have to try again. This is why we have a container preloading the model with some modifications to accelerate the processing.**
