@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { FullScreenLoader } from "@/components/Preloader";
 import Sidebar from "@/components/Sidebar";
 import UserMenu from "@/components/UserMenu";
+import FileDetails from "@/pages/InsightBotUpload/InsightBotFileDetails";
 import axios from "axios";
 import { isMobile } from "react-device-detect";
 import InsightBotFileUpload from "./InsightBotUploadComponent"; // Ensure the correct import path
@@ -15,10 +16,22 @@ export default function InsightBotUpload() {
   const [promptTemplates, setPromptTemplates] = useState([""]);
   const [currentStep, setCurrentStep] = useState(1);
   const [affectedFiles, setAffectedFiles] = useState([]);
+  const [fileDetails, setFileDetails] = useState([]); // New state for file details
+  const [totalTokens, setTotalTokens] = useState(0); // New state for total tokens
 
   const fetchKeys = async (force = false) => {
-    // Implement the logic to fetch keys or other necessary data after file upload
     console.log("Fetching keys...", force);
+    try {
+      const response = await axios.get("http://localhost:5000/list_files_upload");
+      const { files, total_tokens } = response.data;
+
+      setFileDetails(files);
+      setTotalTokens(total_tokens);
+      console.log("File details:", files);
+      console.log("Total tokens:", total_tokens);
+    } catch (error) {
+      console.error("Error fetching file details:", error);
+    }
   };
 
   const handleSetLoading = (loading) => {
@@ -39,24 +52,25 @@ export default function InsightBotUpload() {
     setPromptTemplates(newPromptTemplates);
   };
 
-  const sendRequest = async (promptTemplate, previousFolder, outputFolder) => {
+  const sendRequest = async (promptTemplate, previousFolder, outputFolder, isFirstRun) => {
     setIsLoading(true);
     setLoadingMessage(`Processing: ${promptTemplate}`);
     try {
       const response = await axios.post(
         "http://localhost:5000/convert_and_enrich",
         {
-          folder_path: "./extracted",
+          folder_path: "./public/extracted",
           previous_folder: previousFolder,
           output_folder: outputFolder,
           state_file: "./file_state.json",
           prompt_template: promptTemplate,
-          affected_files: affectedFiles.length > 0 ? affectedFiles : undefined,
+          is_local: false,
+          affected_files: isFirstRun ? undefined : affectedFiles,
         }
       );
 
       const newAffected = response.data.affected_files.map((path) =>
-        path.replace("./extracted", "./step-1/docs")
+        path.replace("./extracted", `${outputFolder}/docs`)
       );
       console.log("newAffected", newAffected);
       setAffectedFiles(newAffected);
@@ -70,19 +84,16 @@ export default function InsightBotUpload() {
   };
 
   const handleStartProcessing = async () => {
-    let previousFolder = "./docs";
-    let outputFolder = "./step-1";
+    let previousFolder = "./public/initial-docs";
+    let outputFolder = "./public/step-1";
+    let isFirstRun = true;
 
     for (let i = 0; i < promptTemplates.length; i++) {
-      const response = await sendRequest(
-        promptTemplates[i],
-        previousFolder,
-        outputFolder
-      );
-      console.log("response", response);
+      await sendRequest(promptTemplates[i], previousFolder, outputFolder, isFirstRun);
+      isFirstRun = false;
       previousFolder = outputFolder;
-      outputFolder = `./step-${currentStep + 1}`;
-      setCurrentStep(currentStep + 1);
+      outputFolder = `./public/step-${i + 2}`; // Ensure unique folder path for each step
+      setCurrentStep((prevStep) => prevStep + 1);
     }
   };
 
@@ -132,6 +143,8 @@ export default function InsightBotUpload() {
             >
               Start Processing
             </button>
+            <FileDetails fileDetails={fileDetails} totalTokens={totalTokens} />
+            <p className="text-white">{promptTemplates[0]}</p>
           </div>
         </div>
       </div>
