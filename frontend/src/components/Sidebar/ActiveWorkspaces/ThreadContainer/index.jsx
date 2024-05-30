@@ -22,11 +22,17 @@ export default function ThreadContainer({ workspace }) {
     fetchThreads();
   }, [workspace.slug]);
 
-  // Enable toggling of meta-key (ctrl on win and cmd/fn on others)
+  // Enable toggling of bulk-deletion by holding meta-key (ctrl on win and cmd/fn on others)
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (["Control", "Meta"].includes(event.key)) {
-        setCtrlPressed((prev) => !prev);
+        setCtrlPressed(true);
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      if (["Control", "Meta"].includes(event.key)) {
+        setCtrlPressed(false);
         // when toggling, unset bulk progress so
         // previously marked threads that were never deleted
         // come back to life.
@@ -37,9 +43,13 @@ export default function ThreadContainer({ workspace }) {
         );
       }
     };
+
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
 
@@ -56,7 +66,6 @@ export default function ThreadContainer({ workspace }) {
     const slugs = threads.filter((t) => t.deleted === true).map((t) => t.slug);
     await Workspace.threads.deleteBulk(workspace.slug, slugs);
     setThreads((prev) => prev.filter((t) => !t.deleted));
-    setCtrlPressed(false);
   };
 
   function removeThread(threadId) {
@@ -89,6 +98,7 @@ export default function ThreadContainer({ workspace }) {
   )
     ? threads.findIndex((thread) => thread?.slug === threadSlug) + 1
     : 0;
+
   return (
     <div className="flex flex-col" role="list" aria-label="Threads">
       <ThreadItem

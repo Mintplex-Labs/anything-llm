@@ -29,6 +29,7 @@ async function streamChatWithForEmbed(
 
   const uuid = uuidv4();
   const LLMConnector = getLLMProvider({
+    provider: embed?.workspace?.chatProvider,
     model: chatModel ?? embed.workspace?.chatModel,
   });
   const VectorDb = getVectorDbClass();

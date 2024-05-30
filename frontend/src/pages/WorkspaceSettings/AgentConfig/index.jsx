@@ -5,6 +5,7 @@ import { castToType } from "@/utils/types";
 import { useEffect, useRef, useState } from "react";
 import AgentLLMSelection from "./AgentLLMSelection";
 import AgentWebSearchSelection from "./WebSearchSelection";
+import AgentSQLConnectorSelection from "./SQLConnectorSelection";
 import GenericSkill from "./GenericSkill";
 import Admin from "@/models/admin";
 import * as Skeleton from "react-loading-skeleton";
@@ -204,6 +205,12 @@ function AvailableAgentSkills({ skills, settings, toggleAgentSkill }) {
           settings={settings}
           toggleSkill={toggleAgentSkill}
           enabled={skills.includes("web-browsing")}
+        />
+        <AgentSQLConnectorSelection
+          skill="sql-agent"
+          settings={settings}
+          toggleSkill={toggleAgentSkill}
+          enabled={skills.includes("sql-agent")}
         />
       </div>
     </div>

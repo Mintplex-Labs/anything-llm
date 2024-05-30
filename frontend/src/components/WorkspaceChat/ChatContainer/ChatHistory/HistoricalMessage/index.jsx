@@ -29,9 +29,7 @@ const HistoricalMessage = ({
         role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
       }`}
     >
-      <div
-        className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
-      >
+      <div className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}>
         <div className="flex gap-x-5">
           <ProfileImage role={role} workspace={workspace} />
           {error ? (
@@ -57,7 +55,7 @@ const HistoricalMessage = ({
           <div className="flex gap-x-5">
             <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden" />
             <Actions
-              message={DOMPurify.sanitize(message)}
+              message={message}
               feedbackScore={feedbackScore}
               chatId={chatId}
               slug={workspace?.slug}

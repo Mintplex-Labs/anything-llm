@@ -329,7 +329,7 @@ const SidebarOptions = ({ user = null }) => (
     <Option
       href={paths.settings.embedSetup()}
       childLinks={[paths.settings.embedChats()]}
-      btnText="Embedded Chat"
+      btnText="Chat Embed Widgets"
       icon={<CodeBlock className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -338,7 +338,7 @@ const SidebarOptions = ({ user = null }) => (
         <>
           <Option
             href={paths.settings.embedChats()}
-            btnText="Embedded Chat History"
+            btnText="Chat Embed History"
             icon={<Barcode className="h-5 w-5 flex-shrink-0" />}
             user={user}
             flex={true}

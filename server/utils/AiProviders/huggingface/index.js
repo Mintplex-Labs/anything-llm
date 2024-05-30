@@ -1,5 +1,4 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
-const { OpenAiEmbedder } = require("../../EmbeddingEngines/openAi");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
@@ -26,11 +25,7 @@ class HuggingFaceLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      console.warn(
-        "No embedding provider defined for HuggingFaceLLM - falling back to Native for embedding!"
-      );
-    this.embedder = !embedder ? new OpenAiEmbedder() : new NativeEmbedder();
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.2;
   }
 

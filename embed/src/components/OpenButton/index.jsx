@@ -23,6 +23,7 @@ export default function OpenButton({ settings, isOpen, toggleOpen }) {
     : CHAT_ICONS.plus;
   return (
     <button
+      id="anything-llm-embed-chat-button"
       onClick={toggleOpen}
       className={`flex items-center justify-center p-4 rounded-full bg-[${settings.buttonColor}] text-white text-2xl`}
       aria-label="Toggle Menu"

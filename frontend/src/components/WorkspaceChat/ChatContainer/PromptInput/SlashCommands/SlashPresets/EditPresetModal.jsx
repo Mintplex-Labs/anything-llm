@@ -31,10 +31,7 @@ export default function EditPresetModal({
   };
 
   const handleDelete = async () => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this preset?"
-    );
-    if (!confirmDelete) return;
+    if (!window.confirm("Are you sure you want to delete this preset?")) return;
 
     setDeleting(true);
     await onDelete(preset.id);

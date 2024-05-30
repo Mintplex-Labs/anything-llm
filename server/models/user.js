@@ -10,6 +10,20 @@ const User = {
     "role",
     "suspended",
   ],
+  validations: {
+    username: (newValue = "") => {
+      try {
+        if (String(newValue).length > 100)
+          throw new Error("Username cannot be longer than 100 characters");
+        if (String(newValue).length < 2)
+          throw new Error("Username must be at least 2 characters");
+        return String(newValue);
+      } catch (e) {
+        throw new Error(e.message);
+      }
+    },
+  },
+
   // validations for the above writable fields.
   castColumnValue: function (key, value) {
     switch (key) {
@@ -19,6 +33,12 @@ const User = {
         return String(value);
     }
   },
+
+  filterFields: function (user = {}) {
+    const { password, ...rest } = user;
+    return { ...rest };
+  },
+
   create: async function ({ username, password, role = "default" }) {
     const passwordCheck = this.checkPasswordComplexity(password);
     if (!passwordCheck.checkedOK) {
@@ -30,12 +50,12 @@ const User = {
       const hashedPassword = bcrypt.hashSync(password, 10);
       const user = await prisma.users.create({
         data: {
-          username,
+          username: this.validations.username(username),
           password: hashedPassword,
-          role,
+          role: String(role),
         },
       });
-      return { user, error: null };
+      return { user: this.filterFields(user), error: null };
     } catch (error) {
       console.error("FAILED TO CREATE USER.", error.message);
       return { user: null, error: error.message };
@@ -84,7 +104,13 @@ const User = {
       // and force-casts to the proper type;
       Object.entries(updates).forEach(([key, value]) => {
         if (this.writable.includes(key)) {
-          updates[key] = this.castColumnValue(key, value);
+          if (this.validations.hasOwnProperty(key)) {
+            updates[key] = this.validations[key](
+              this.castColumnValue(key, value)
+            );
+          } else {
+            updates[key] = this.castColumnValue(key, value);
+          }
           return;
         }
         delete updates[key];
@@ -144,6 +170,17 @@ const User = {
   get: async function (clause = {}) {
     try {
       const user = await prisma.users.findFirst({ where: clause });
+      return user ? this.filterFields({ ...user }) : null;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  },
+
+  // Returns user object with all fields
+  _get: async function (clause = {}) {
+    try {
+      const user = await prisma.users.findFirst({ where: clause });
       return user ? { ...user } : null;
     } catch (error) {
       console.error(error.message);
@@ -177,7 +214,7 @@ const User = {
         where: clause,
         ...(limit !== null ? { take: limit } : {}),
       });
-      return users;
+      return users.map((usr) => this.filterFields(usr));
     } catch (error) {
       console.error(error.message);
       return [];

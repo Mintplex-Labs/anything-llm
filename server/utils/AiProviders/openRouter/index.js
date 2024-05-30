@@ -36,7 +36,7 @@ class OpenRouterLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    this.embedder = !embedder ? new NativeEmbedder() : embedder;
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
 
     if (!fs.existsSync(cacheFolder))
@@ -142,7 +142,7 @@ class OpenRouterLLM {
         temperature,
       })
       .catch((e) => {
-        throw new Error(e.response.data.error.message);
+        throw new Error(e.message);
       });
 
     if (!result.hasOwnProperty("choices") || result.choices.length === 0)

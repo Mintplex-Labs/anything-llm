@@ -2,9 +2,10 @@ const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
 const InheritMultiple = require("./helpers/classes.js");
 const UnTooled = require("./helpers/untooled.js");
+const { toValidNumber } = require("../../../http/index.js");
 
 /**
- * The provider for the Generic OpenAI provider.
+ * The agent provider for the Generic OpenAI provider.
  * Since we cannot promise the generic provider even supports tool calling
  * which is nearly 100% likely it does not, we can just wrap it in untooled
  * which often is far better anyway.
@@ -24,7 +25,9 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
     this._client = client;
     this.model = model;
     this.verbose = true;
-    this.maxTokens = process.env.GENERIC_OPEN_AI_MAX_TOKENS ?? 1024;
+    this.maxTokens = process.env.GENERIC_OPEN_AI_MAX_TOKENS
+      ? toValidNumber(process.env.GENERIC_OPEN_AI_MAX_TOKENS, 1024)
+      : 1024;
   }
 
   get client() {
@@ -94,6 +97,10 @@ class GenericOpenAiProvider extends InheritMultiple([Provider, UnTooled]) {
         completion = response.choices[0].message;
       }
 
+      // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
+      // from calling the exact same function over and over in a loop within a single chat exchange
+      // _but_ we should enable it to call previously used tools in a new chat interaction.
+      this.deduplicator.reset("runs");
       return {
         result: completion.content,
         cost: 0,

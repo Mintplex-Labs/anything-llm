@@ -1,3 +1,4 @@
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -16,8 +17,12 @@ class GeminiLLM {
     this.gemini = genAI.getGenerativeModel(
       { model: this.model },
       {
-        // Gemini-1.5-pro is only available on the v1beta API.
-        apiVersion: this.model === "gemini-1.5-pro-latest" ? "v1beta" : "v1",
+        // Gemini-1.5-pro and Gemini-1.5-flash are only available on the v1beta API.
+        apiVersion:
+          this.model === "gemini-1.5-pro-latest" ||
+          this.model === "gemini-1.5-flash-latest"
+            ? "v1beta"
+            : "v1",
       }
     );
     this.limits = {
@@ -26,12 +31,9 @@ class GeminiLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      throw new Error(
-        "INVALID GEMINI LLM SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Gemini as your LLM."
-      );
-    this.embedder = embedder;
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7; // not used for Gemini
+    this.safetyThreshold = this.#fetchSafetyThreshold();
   }
 
   #appendContext(contextTexts = []) {
@@ -46,6 +48,41 @@ class GeminiLLM {
     );
   }
 
+  // BLOCK_NONE can be a special candidate for some fields
+  // https://cloud.google.com/vertex-ai/generative-ai/docs/multimodal/configure-safety-attributes#how_to_remove_automated_response_blocking_for_select_safety_attributes
+  // so if you are wondering why BLOCK_NONE still failed, the link above will explain why.
+  #fetchSafetyThreshold() {
+    const threshold =
+      process.env.GEMINI_SAFETY_SETTING ?? "BLOCK_MEDIUM_AND_ABOVE";
+    const safetyThresholds = [
+      "BLOCK_NONE",
+      "BLOCK_ONLY_HIGH",
+      "BLOCK_MEDIUM_AND_ABOVE",
+      "BLOCK_LOW_AND_ABOVE",
+    ];
+    return safetyThresholds.includes(threshold)
+      ? threshold
+      : "BLOCK_MEDIUM_AND_ABOVE";
+  }
+
+  #safetySettings() {
+    return [
+      {
+        category: "HARM_CATEGORY_HATE_SPEECH",
+        threshold: this.safetyThreshold,
+      },
+      {
+        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        threshold: this.safetyThreshold,
+      },
+      { category: "HARM_CATEGORY_HARASSMENT", threshold: this.safetyThreshold },
+      {
+        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+        threshold: this.safetyThreshold,
+      },
+    ];
+  }
+
   streamingEnabled() {
     return "streamGetChatCompletion" in this;
   }
@@ -54,6 +91,10 @@ class GeminiLLM {
     switch (this.model) {
       case "gemini-pro":
         return 30_720;
+      case "gemini-1.0-pro":
+        return 30_720;
+      case "gemini-1.5-flash-latest":
+        return 1_048_576;
       case "gemini-1.5-pro-latest":
         return 1_048_576;
       default:
@@ -62,7 +103,12 @@ class GeminiLLM {
   }
 
   isValidChatCompletionModel(modelName = "") {
-    const validModels = ["gemini-pro", "gemini-1.5-pro-latest"];
+    const validModels = [
+      "gemini-pro",
+      "gemini-1.0-pro",
+      "gemini-1.5-pro-latest",
+      "gemini-1.5-flash-latest",
+    ];
     return validModels.includes(modelName);
   }
 
@@ -146,6 +192,7 @@ class GeminiLLM {
     )?.content;
     const chatThread = this.gemini.startChat({
       history: this.formatMessages(messages),
+      safetySettings: this.#safetySettings(),
     });
     const result = await chatThread.sendMessage(prompt);
     const response = result.response;
@@ -167,6 +214,7 @@ class GeminiLLM {
     )?.content;
     const chatThread = this.gemini.startChat({
       history: this.formatMessages(messages),
+      safetySettings: this.#safetySettings(),
     });
     const responseStream = await chatThread.sendMessageStream(prompt);
     if (!responseStream.stream)

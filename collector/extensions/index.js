@@ -1,5 +1,6 @@
 const { verifyPayloadIntegrity } = require("../middleware/verifyIntegrity");
 const { reqBody } = require("../utils/http");
+const { validURL } = require("../utils/url");
 
 function extensions(app) {
   if (!app) return;
@@ -81,6 +82,25 @@ function extensions(app) {
             author: null,
           },
         });
+      }
+      return;
+    }
+  );
+
+  app.post(
+    "/ext/website-depth",
+    [verifyPayloadIntegrity],
+    async function (request, response) {
+      try {
+        const websiteDepth = require("../utils/extensions/WebsiteDepth");
+        const { url, depth = 1, maxLinks = 20 } = reqBody(request);
+        if (!validURL(url)) return { success: false, reason: "Not a valid URL." };
+
+        const scrapedData = await websiteDepth(url, depth, maxLinks);
+        response.status(200).json({ success: true, data: scrapedData });
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({ success: false, reason: e.message });
       }
       return;
     }
