@@ -5,6 +5,9 @@ import { FullScreenLoader } from "@/components/Preloader";
 import Sidebar from "@/components/Sidebar";
 import UserMenu from "@/components/UserMenu";
 import FileDetails from "@/pages/InsightBotUpload/InsightBotFileDetails";
+import {
+  Plus
+} from "@phosphor-icons/react";
 import axios from "axios";
 import { isMobile } from "react-device-detect";
 import InsightBotFileUpload from "./InsightBotUploadComponent"; // Ensure the correct import path
@@ -106,45 +109,65 @@ export default function InsightBotUpload() {
     <UserMenu>
       <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
         {!isMobile && <Sidebar />}
-        <div className="flex-grow p-4">
+        <div className="flex-grow p-4 overflow-y-auto">
           {isLoading && (
             <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
               <div className="text-white text-lg">{loadingMessage}</div>
             </div>
           )}
+          <h2 className="text-white text-4xl mt-4 font-bold">Upload Your ZIP File</h2>
+          <p className="text-white mt-4  font-light italic">
+            Please upload your ZIP file containing the necessary documents.
+          </p>
+          <p className="text-white mb-4 font-light">
+            <b>Tip</b>: Always use your original files to enrich.
+          </p>
           <InsightBotFileUpload
             fetchKeys={fetchKeys}
             setLoading={handleSetLoading}
             setLoadingMessage={handleSetLoadingMessage}
           />
-          <div className="mt-4">
+          <div className="mt-8">
+            <FileDetails
+              fileDetails={fileDetails}
+              totalTokens={totalTokens}
+            />
+          </div>
+
+          <div className="mt-8">
+            <h2 className='text-white font-semibold text-2xl'>Add Prompt Templates</h2>
+            <p className='text-white font-light mb-4'>Add new prompt templates and start processing to enrich your files using advanced AI.</p>
             {promptTemplates.map((prompt, index) => (
-              <div key={index} className="mb-2 flex items-center">
-                <input
-                  type="text"
+              <div key={index} className="mb-2">
+                <label className="block text-white mb-1" htmlFor={`prompt-${index}`}>
+                  Prompt Template {index + 1}
+                </label>
+                <textarea
+                  id={`prompt-${index}`}
                   value={prompt}
                   onChange={(e) =>
                     handlePromptTemplateChange(index, e.target.value)
                   }
-                  className="flex-grow p-2 border border-gray-300 rounded"
+                  className="w-full md:w-3/5 lg:w-9/12 p-2 border text-white border-slate-400 bg-black bg-opacity-20 rounded resize-none"
                   placeholder="Enter prompt template"
+                  rows="4"
                 />
               </div>
             ))}
-            <button
-              onClick={handleAddPromptTemplate}
-              className="mt-2 p-2 bg-blue-500 text-white rounded"
-            >
-              Add new prompt template
-            </button>
-            <button
-              onClick={handleStartProcessing}
-              className="mt-2 p-2 bg-green-500 text-white rounded"
-            >
-              Start Processing
-            </button>
-            <FileDetails fileDetails={fileDetails} totalTokens={totalTokens} />
-            <p className="text-white">{promptTemplates[0]}</p>
+            <div className="w-full md:w-3/5 lg:w-9/12 flex columns-2 justify-between">
+              <button
+                onClick={handleAddPromptTemplate}
+                className="flex items-center justify-center p-4 rounded bg-blue-500 text-white"
+              >
+                <Plus />New Prompt
+              </button>
+              <button
+                onClick={handleStartProcessing}
+                className="flex items-center justify-center p-4 rounded bg-green-500 text-white"
+              >
+                Start Processing
+              </button>
+            </div>
           </div>
         </div>
       </div>
