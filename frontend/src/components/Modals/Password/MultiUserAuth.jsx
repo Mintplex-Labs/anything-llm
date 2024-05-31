@@ -81,13 +81,13 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
       <div className="flex items-center md:p-12 md:px-0 px-6 mt-12 md:mt-0 space-x-2 border-gray-600 w-full flex-col gap-y-8">
         <button
           type="submit"
-          className="md:text-[#FF5757] md:bg-transparent md:w-[300px] text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#FF5757] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#FF5757] bg-[#FF5757] focus:z-10 w-full"
+          className="md:text-[#46C8FF] md:bg-transparent md:w-[300px] text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#46C8FF] bg-[#46C8FF] focus:z-10 w-full"
         >
           Reset Password
         </button>
         <button
           type="button"
-          className="text-white text-sm flex gap-x-1 hover:text-[#FF5757] hover:underline -mb-8"
+          className="text-white text-sm flex gap-x-1 hover:text-[#46C8FF] hover:underline -mb-8"
           onClick={() => setShowRecoveryForm(false)}
         >
           Back to Login
@@ -150,7 +150,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
       <div className="flex items-center md:p-12 md:px-0 px-6 mt-12 md:mt-0 space-x-2 border-gray-600 w-full flex-col gap-y-8">
         <button
           type="submit"
-          className="md:text-[#FF5757] md:bg-transparent md:w-[300px] text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#FF5757] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#FF5757] bg-[#FF5757] focus:z-10 w-full"
+          className="md:text-[#46C8FF] md:bg-transparent md:w-[300px] text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#46C8FF] bg-[#46C8FF] focus:z-10 w-full"
         >
           Reset Password
         </button>
@@ -168,6 +168,7 @@ export default function MultiUserAuth() {
   const [token, setToken] = useState(null);
   const [showRecoveryForm, setShowRecoveryForm] = useState(false);
   const [showResetPasswordForm, setShowResetPasswordForm] = useState(false);
+  const [customAppName, setCustomAppName] = useState(null);
 
   const {
     isOpen: isRecoveryCodeModalOpen,
@@ -250,6 +251,15 @@ export default function MultiUserAuth() {
     }
   }, [downloadComplete, user, token]);
 
+  useEffect(() => {
+    const fetchCustomAppName = async () => {
+      const { appName } = await System.fetchCustomAppName();
+      setCustomAppName(appName || "");
+      setLoading(false);
+    };
+    fetchCustomAppName();
+  }, []);
+
   if (showRecoveryForm) {
     return (
       <RecoveryForm
@@ -271,12 +281,12 @@ export default function MultiUserAuth() {
                 <h3 className="text-md md:text-2xl font-bold text-white text-center white-space-nowrap hidden md:block">
                   Welcome to
                 </h3>
-                <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#FF5757] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
-                  ChatLTT
+                <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
+                  {customAppName || "AnythingLLM"}
                 </p>
               </div>
               <p className="text-sm text-white/90 text-center">
-                Sign in to your ChatLTT account.
+                Sign in to your {customAppName || "AnythingLLM"} account.
               </p>
             </div>
           </div>
@@ -309,13 +319,13 @@ export default function MultiUserAuth() {
             <button
               disabled={loading}
               type="submit"
-              className="md:text-[#FF5757] md:bg-transparent text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#FF5757] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#FF5757] bg-[#FF5757] focus:z-10 w-full"
+              className="md:text-[#46C8FF] md:bg-transparent text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#46C8FF] bg-[#46C8FF] focus:z-10 w-full"
             >
               {loading ? "Validating..." : "Login"}
             </button>
             <button
               type="button"
-              className="text-white text-sm flex gap-x-1 hover:text-[#FF5757] hover:underline"
+              className="text-white text-sm flex gap-x-1 hover:text-[#46C8FF] hover:underline"
               onClick={handleResetPassword}
             >
               Forgot password?<b>Reset</b>

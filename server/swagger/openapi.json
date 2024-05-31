@@ -2,8 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "version": "1.0.0",
-    "title": "ChatLTT Developer API",
-    "description": "API endpoints that enable programmatic reading, writing, and updating of your ChatLTT instance. UI supplied by Swagger.io."
+    "title": "AnythingLLM Developer API",
+    "description": "API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io."
   },
   "servers": [
     {
@@ -17,15 +17,7 @@
           "Authentication"
         ],
         "description": "Verify the attached Authentication header contains a valid API token.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Valid auth token was found.",
@@ -64,15 +56,7 @@
           "Admin"
         ],
         "description": "Check to see if the instance is in multi-user-mode first. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -111,15 +95,7 @@
           "Admin"
         ],
         "description": "Check to see if the instance is in multi-user-mode first. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -169,15 +145,7 @@
           "Admin"
         ],
         "description": "Create a new user with username and password. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -250,13 +218,6 @@
               "type": "string"
             },
             "description": "id of the user in the database."
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -326,13 +287,6 @@
               "type": "string"
             },
             "description": "id of the user in the database."
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -380,15 +334,7 @@
           "Admin"
         ],
         "description": "List all existing invitations to instance regardless of status. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -440,15 +386,7 @@
           "Admin"
         ],
         "description": "Create a new invite code for someone to use to register with instance. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -523,13 +461,6 @@
               "type": "string"
             },
             "description": "id of the invite in the database."
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -586,13 +517,6 @@
               "type": "string"
             },
             "description": "id of the workspace in the database."
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -657,15 +581,7 @@
           "Admin"
         ],
         "description": "All chats in the system ordered by most recent. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -720,15 +636,7 @@
           "Admin"
         ],
         "description": "Show all multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -775,15 +683,7 @@
           "Admin"
         ],
         "description": "Update multi-user preferences for instance. Methods are disabled until multi user mode is enabled via the UI.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -842,16 +742,8 @@
         "tags": [
           "Documents"
         ],
-        "description": "Upload a new file to ChatLTT to be parsed and prepared for embedding.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "description": "Upload a new file to AnythingLLM to be parsed and prepared for embedding.",
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -926,16 +818,8 @@
         "tags": [
           "Documents"
         ],
-        "description": "Upload a valid URL for ChatLTT to scrape and prepare for embedding.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "description": "Upload a valid URL for AnythingLLM to scrape and prepare for embedding.",
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -957,7 +841,7 @@
                         "chunkSource": "https:useanything.com.html",
                         "published": "1/16/2024, 3:46:33 PM",
                         "wordCount": 252,
-                        "pageContent": "ChatLTT is the best....",
+                        "pageContent": "AnythingLLM is the best....",
                         "token_count_estimate": 447,
                         "location": "custom-documents/url-useanything_com-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
                       }
@@ -995,7 +879,7 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "link": "https://ChatLTT.com"
+                  "link": "https://useanything.com"
                 }
               }
             }
@@ -1009,15 +893,7 @@
           "Documents"
         ],
         "description": "Upload a file by specifying its raw text content and metadata values without having to upload a file.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1039,7 +915,7 @@
                         "chunkSource": "no chunk source specified",
                         "published": "1/16/2024, 3:46:33 PM",
                         "wordCount": 252,
-                        "pageContent": "ChatLTT is the best....",
+                        "pageContent": "AnythingLLM is the best....",
                         "token_count_estimate": 447,
                         "location": "custom-documents/raw-my-doc-text-c530dbe6-bff1-4b9e-b87f-710d539d20bc.json"
                       }
@@ -1080,7 +956,7 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "textContent": "This is the raw text that will be saved as a document in ChatLTT.",
+                  "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
                   "metadata": {
                     "keyOne": "valueOne",
                     "keyTwo": "valueTwo",
@@ -1099,15 +975,7 @@
           "Documents"
         ],
         "description": "List of all locally-stored documents in instance",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1162,15 +1030,7 @@
           "Documents"
         ],
         "description": "Check available filetypes and MIMEs that can be uploaded.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1232,15 +1092,7 @@
           "Documents"
         ],
         "description": "Get the known available metadata schema for when doing a raw-text upload and the acceptable type of value for each key.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1286,7 +1138,7 @@
         "tags": [
           "Documents"
         ],
-        "description": "Get a single document by its unique ChatLTT document name",
+        "description": "Get a single document by its unique AnythingLLM document name",
         "parameters": [
           {
             "name": "docName",
@@ -1296,13 +1148,6 @@
               "type": "string"
             },
             "description": "Unique document name to find (name in /documents)"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1362,15 +1207,7 @@
           "Documents"
         ],
         "description": "Create a new folder inside the documents storage directory.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1428,15 +1265,7 @@
           "Documents"
         ],
         "description": "Move files within the documents storage directory.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1498,16 +1327,8 @@
         "tags": [
           "Workspaces"
         ],
-        "description": "Create a new chatltt hub",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "description": "Create a new workspace",
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1558,7 +1379,7 @@
           "content": {
             "application/json": {
               "example": {
-                "name": "My New ChatLTT Hub"
+                "name": "My New Workspace"
               }
             }
           }
@@ -1571,15 +1392,7 @@
           "Workspaces"
         ],
         "description": "List all current workspaces",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -1641,13 +1454,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1708,13 +1514,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to delete"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1750,7 +1549,7 @@
         "tags": [
           "Workspaces"
         ],
-        "description": "Update Hub settings by its unique slug.",
+        "description": "Update workspace settings by its unique slug.",
         "parameters": [
           {
             "name": "slug",
@@ -1760,13 +1559,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1823,7 +1615,7 @@
           "content": {
             "application/json": {
               "example": {
-                "name": "Updated Hub's Name",
+                "name": "Updated Workspace Name",
                 "openAiTemp": 0.2,
                 "openAiHistory": 20,
                 "openAiPrompt": "Respond to all inquires and questions in binary - do not respond in any other format."
@@ -1838,7 +1630,7 @@
         "tags": [
           "Workspaces"
         ],
-        "description": "Get a Hub's chats regardless of user by its unique slug.",
+        "description": "Get a workspaces chats regardless of user by its unique slug.",
         "parameters": [
           {
             "name": "slug",
@@ -1847,14 +1639,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Unique slug of Hub's to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
+            "description": "Unique slug of workspace to find"
           }
         ],
         "responses": {
@@ -1868,12 +1653,12 @@
                     "history": [
                       {
                         "role": "user",
-                        "content": "What is ChatLTT?",
+                        "content": "What is AnythingLLM?",
                         "sentAt": 1692851630
                       },
                       {
                         "role": "assistant",
-                        "content": "ChatLTT is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                        "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
                         "sources": [
                           {
                             "source": "object about source document and snippets used"
@@ -1915,7 +1700,7 @@
         "tags": [
           "Workspaces"
         ],
-        "description": "Add or remove documents from a Hub by its unique slug.",
+        "description": "Add or remove documents from a workspace by its unique slug.",
         "parameters": [
           {
             "name": "slug",
@@ -1924,14 +1709,7 @@
             "schema": {
               "type": "string"
             },
-            "description": "Unique slug of Hub to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
+            "description": "Unique slug of workspace to find"
           }
         ],
         "responses": {
@@ -1944,7 +1722,7 @@
                   "example": {
                     "workspace": {
                       "id": 79,
-                      "name": "My Hub",
+                      "name": "My workspace",
                       "slug": "my-workspace-123",
                       "createdAt": "2023-08-17 00:45:03",
                       "openAiTemp": null,
@@ -2015,13 +1793,6 @@
               "type": "string"
             },
             "description": "Unique slug of workspace to find"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -2068,19 +1839,12 @@
         "tags": [
           "Workspaces"
         ],
-        "description": "Execute a chat with a Hub",
+        "description": "Execute a chat with a workspace",
         "parameters": [
           {
             "name": "slug",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -2133,13 +1897,13 @@
           }
         },
         "requestBody": {
-          "description": "Send a prompt to the Hub and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.",
+          "description": "Send a prompt to the workspace and the type of conversation (query or chat).<br/><b>Query:</b> Will not use LLM unless there are relevant sources from vectorDB & does not recall chat history.<br/><b>Chat:</b> Uses LLM general knowledge w/custom embeddings to produce output, uses rolling chat history.",
           "required": true,
           "type": "object",
           "content": {
             "application/json": {
               "example": {
-                "message": "What is ChatLTT?",
+                "message": "What is AnythingLLM?",
                 "mode": "query | chat"
               }
             }
@@ -2158,13 +1922,6 @@
             "name": "slug",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -2238,7 +1995,7 @@
           "content": {
             "application/json": {
               "example": {
-                "message": "What is ChatLTT?",
+                "message": "What is AnythingLLM?",
                 "mode": "query | chat"
               }
             }
@@ -2252,6 +2009,7 @@
           "System Settings"
         ],
         "description": "Dump all settings to file storage",
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -2283,15 +2041,7 @@
           "System Settings"
         ],
         "description": "Get all current system settings that are defined.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -2339,15 +2089,7 @@
           "System Settings"
         ],
         "description": "Number of all vectors in connected vector database",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -2389,15 +2131,7 @@
           "System Settings"
         ],
         "description": "Update a system setting or preference.",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK",
@@ -2457,13 +2191,6 @@
         "description": "Export all of the chats from the system in a known format. Output depends on the type sent. Will be send with the correct header for the output.",
         "parameters": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "type",
             "in": "query",
             "description": "Export format jsonl, json, csv, jsonAlpaca",
@@ -2483,11 +2210,11 @@
                   "example": [
                     {
                       "role": "user",
-                      "content": "What is ChatLTT?"
+                      "content": "What is AnythinglLM?"
                     },
                     {
                       "role": "assistant",
-                      "content": "ChatLTT is a knowledge graph and vector database management system built using NodeJS express server. It provides an interface for handling all interactions, including vectorDB management and LLM (Language Model) interactions."
+                      "content": "AnythingLLM is a knowledge graph and vector database management system built using NodeJS express server. It provides an interface for handling all interactions, including vectorDB management and LLM (Language Model) interactions."
                     }
                   ]
                 }

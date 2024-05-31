@@ -144,9 +144,9 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 |----------------------------------------|----:|-----|---------------|------------|
 | [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway                                             |
-| --------------------------------------------------- |
-| [![Deploy on Railway][railway-btn]][railway-deploy] |
+| Railway  |  RepoCloud |
+| --- | --- |
+| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
@@ -235,3 +235,5 @@ This project is [MIT](./LICENSE) licensed.
 [render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
 [railway-btn]: https://railway.app/button.svg
 [railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn
+[repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg
+[repocloud-deploy]: https://repocloud.io/details/?app_id=276

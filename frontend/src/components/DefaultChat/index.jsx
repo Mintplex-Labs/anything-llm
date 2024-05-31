@@ -43,7 +43,7 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR} md:mt-0 mt-[40px]`}
       >
         <div
-          className={`pt-10 pb-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`pt-10 pb-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
             <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
@@ -51,25 +51,260 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              Hey there! I'm your AI companion, here to lend a hand and assist you however I can. Just a heads up, 
-              I might not always get things perfect, so I apologize in advance for any slip-ups. If I give you any wrong info,
-              feel free to reach out to my creator with your feedback.<br /><br />
-              To get the most out of our chats, start conversations with the Hubs in the sidebar. Each Hub has its own 
-              specialized training data, which helps me be more knowledgeable about specific topics.<br /><br />
-              So, who am I exactly? Well, I'm your friendly AI chat bot, and you can think of me as having a home in 
-              data centers. My main spot is in Germany, but my creator might move me around to places like the US, Canada, 
-              Australia, and beyond. Don't worry, though—our chats are totally private, and nothing leaves this server. 
-              Unlike some other big players out there who use your data to train themselves, I never do that. Once this 
-              server is gone, any memory of our conversations is history. <br /><br />
-              I rely on NVIDIA GPUs to power my brain, so if I'm not lightning-fast, just hang in there with me. Even 
-              AI needs a bit of time to mull things over, right?
+              Welcome to AnythingLLM, AnythingLLM is an open-source AI tool by
+              Mintplex Labs that turns anything into a trained chatbot you can
+              query and chat with. AnythingLLM is a BYOK (bring-your-own-keys)
+              software so there is no subscription, fee, or charges for this
+              software outside of the services you want to use with it.
             </span>
           </div>
         </div>
       </div>
     </React.Fragment>,
 
-             
+    <React.Fragment>
+      <div
+        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
+      >
+        <div
+          className={`pb-4 pt-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
+        >
+          <div className="flex gap-x-5">
+            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+
+            <span
+              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+            >
+              AnythingLLM is the easiest way to put powerful AI products like
+              OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services
+              together in a neat package with no fuss to increase your
+              productivity by 100x.
+            </span>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>,
+
+    <React.Fragment>
+      <div
+        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
+      >
+        <div
+          className={`pt-2 pb-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
+        >
+          <div className="flex gap-x-5">
+            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <div>
+              <span
+                className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+              >
+                AnythingLLM can run totally locally on your machine with little
+                overhead you wont even notice it's there! No GPU needed. Cloud
+                and on-premises installation is available as well.
+                <br />
+                The AI tooling ecosystem gets more powerful everyday.
+                AnythingLLM makes it easy to use.
+              </span>
+              <a
+                href={paths.github()}
+                target="_blank"
+                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              >
+                <GitMerge className="h-4 w-4" />
+                <p>Create an issue on Github</p>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>,
+
+    <React.Fragment>
+      <div
+        className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
+      >
+        <div
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
+        >
+          <div className="flex gap-x-5">
+            <Jazzicon
+              size={36}
+              user={{ uid: userFromStorage()?.username }}
+              role={"user"}
+            />
+
+            <span
+              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+            >
+              How do I get started?!
+            </span>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>,
+
+    <React.Fragment>
+      <div
+        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
+      >
+        <div
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
+        >
+          <div className="flex gap-x-5">
+            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <div>
+              <span
+                className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+              >
+                It's simple. All collections are organized into buckets we call{" "}
+                "Workspaces". Workspaces are buckets of files, documents,
+                images, PDFs, and other files which will be transformed into
+                something LLM's can understand and use in conversation.
+                <br />
+                <br />
+                You can add and remove files at anytime.
+              </span>
+
+              {(!user || user?.role !== "default") && (
+                <button
+                  onClick={showNewWsModal}
+                  className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                >
+                  <Plus className="h-4 w-4" />
+                  <p>Create your first workspace</p>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>,
+
+    <React.Fragment>
+      <div
+        className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
+      >
+        <div
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
+        >
+          <div className="flex gap-x-5">
+            <Jazzicon
+              size={36}
+              user={{ uid: userFromStorage()?.username }}
+              role={"user"}
+            />
+
+            <span
+              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+            >
+              Is this like an AI dropbox or something? What about chatting? It
+              is a chatbot isn't it?
+            </span>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>,
+
+    <React.Fragment>
+      <div
+        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
+      >
+        <div
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
+        >
+          <div className="flex gap-x-5">
+            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+
+            <span
+              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+            >
+              AnythingLLM is more than a smarter Dropbox.
+              <br />
+              <br />
+              AnythingLLM offers two ways of talking with your data:
+              <br />
+              <br />
+              <i>Query:</i> Your chats will return data or inferences found with
+              the documents in your workspace it has access to. Adding more
+              documents to the Workspace make it smarter!
+              <br />
+              <br />
+              <i>Conversational:</i> Your documents + your on-going chat history
+              both contribute to the LLM knowledge at the same time. Great for
+              appending real-time text-based info or corrections and
+              misunderstandings the LLM might have.
+              <br />
+              <br />
+              You can toggle between either mode{" "}
+              <i>in the middle of chatting!</i>
+            </span>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>,
+
+    <React.Fragment>
+      <div
+        className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
+      >
+        <div
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
+        >
+          <div className="flex gap-x-5">
+            <Jazzicon
+              size={36}
+              user={{ uid: userFromStorage()?.username }}
+              role={"user"}
+            />
+
+            <span
+              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+            >
+              Wow, this sounds amazing, let me try it out already!
+            </span>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>,
+
+    <React.Fragment>
+      <div
+        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
+      >
+        <div
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
+        >
+          <div className="flex gap-x-5">
+            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <div>
+              <span
+                className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
+              >
+                Have Fun!
+              </span>
+
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
+                <a
+                  href={paths.github()}
+                  target="_blank"
+                  className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                >
+                  <GithubLogo className="h-4 w-4" />
+                  <p>Star on GitHub</p>
+                </a>
+                <a
+                  href={paths.mailToMintplex()}
+                  className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+                >
+                  <EnvelopeSimple className="h-4 w-4" />
+                  <p>Contact Mintplex Labs</p>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </React.Fragment>,
   ];
 
   useEffect(() => {

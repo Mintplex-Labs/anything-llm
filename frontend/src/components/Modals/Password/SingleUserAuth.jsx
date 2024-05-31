@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import System from "../../../models/system";
 import { AUTH_TOKEN } from "../../../utils/constants";
-import useLogo from "../../../hooks/useLogo";
 import paths from "../../../utils/paths";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
@@ -10,10 +9,10 @@ import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
 export default function SingleUserAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { logo: _initLogo } = useLogo();
   const [recoveryCodes, setRecoveryCodes] = useState([]);
   const [downloadComplete, setDownloadComplete] = useState(false);
   const [token, setToken] = useState(null);
+  const [customAppName, setCustomAppName] = useState(null);
 
   const {
     isOpen: isRecoveryCodeModalOpen,
@@ -57,6 +56,15 @@ export default function SingleUserAuth() {
     }
   }, [downloadComplete, token]);
 
+  useEffect(() => {
+    const fetchCustomAppName = async () => {
+      const { appName } = await System.fetchCustomAppName();
+      setCustomAppName(appName || "");
+      setLoading(false);
+    };
+    fetchCustomAppName();
+  }, []);
+
   return (
     <>
       <form onSubmit={handleLogin}>
@@ -67,12 +75,12 @@ export default function SingleUserAuth() {
                 <h3 className="text-md md:text-2xl font-bold text-white text-center white-space-nowrap hidden md:block">
                   Welcome to
                 </h3>
-                <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#FF5757] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
-                  ChatLTT
+                <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
+                  {customAppName || "AnythingLLM"}
                 </p>
               </div>
               <p className="text-sm text-white/90 text-center">
-                Sign in to your ChatLTT instance.
+                Sign in to your {customAppName || "AnythingLLM"} instance.
               </p>
             </div>
           </div>
@@ -96,7 +104,7 @@ export default function SingleUserAuth() {
             <button
               disabled={loading}
               type="submit"
-              className="md:text-[#FF5757] md:bg-transparent text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#FF5757] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#FF5757] bg-[#FF5757] focus:z-10 w-full"
+              className="md:text-[#46C8FF] md:bg-transparent text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#46C8FF] bg-[#46C8FF] focus:z-10 w-full"
             >
               {loading ? "Validating..." : "Login"}
             </button>
