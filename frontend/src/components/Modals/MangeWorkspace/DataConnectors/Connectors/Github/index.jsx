@@ -153,7 +153,7 @@ export default function GithubOptions() {
             {loading && (
               <p className="text-xs text-white/50">
                 Once complete, all files will be available for embedding into
-                workspaces in the document picker.
+                ChatLTT Hub in the document picker.
               </p>
             )}
           </div>

@@ -18,7 +18,7 @@ export default function NewWorkspaceModal({ closeModal }) {
       <div className="relative bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-600">
           <h3 className="text-xl font-semibold text-white">
-            Create new workspace
+            Create new ChatLTT Hub
           </h3>
           <button
             onClick={closeModal}
@@ -37,7 +37,7 @@ export default function NewWorkspaceModal({ closeModal }) {
                   htmlFor="name"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  Workspace name
+                  ChatLTT Hub name
                 </label>
                 <input
                   name="name"
@@ -68,7 +68,7 @@ export default function NewWorkspaceModal({ closeModal }) {
               type="submit"
               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
-              Create workspace
+              Create hub
             </button>
           </div>
         </form>

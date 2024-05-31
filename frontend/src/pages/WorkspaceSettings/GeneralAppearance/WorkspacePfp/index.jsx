@@ -49,7 +49,7 @@ export default function WorkspacePfp({ workspace, slug }) {
       <div className="flex flex-col">
         <label className="block input-label">Assistant Profile Image</label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          Customize the profile image of the assistant for this workspace.
+          Customize the profile image of the assistant for this Hub.
         </p>
       </div>
       <div className="flex flex-col md:flex-row items-center gap-8">
@@ -72,7 +72,7 @@ export default function WorkspacePfp({ workspace, slug }) {
               <div className="flex flex-col items-center justify-center p-3">
                 <Plus className="w-8 h-8 text-white/80 m-2" />
                 <span className="text-white text-opacity-80 text-xs font-semibold">
-                  Workspace Image
+                  Hub Image
                 </span>
                 <span className="text-white text-opacity-60 text-xs">
                   800 x 800
@@ -86,7 +86,7 @@ export default function WorkspacePfp({ workspace, slug }) {
               onClick={handleRemovePfp}
               className="mt-3 text-white text-opacity-60 text-sm font-medium hover:underline"
             >
-              Remove Workspace Image
+              Remove Hub Image
             </button>
           )}
         </div>
