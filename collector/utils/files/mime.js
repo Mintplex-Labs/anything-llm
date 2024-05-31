@@ -35,6 +35,7 @@ class MimeDetector {
           "js",
           "lua",
           "pas",
+          "r",
         ],
       },
       true
