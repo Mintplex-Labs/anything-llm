@@ -120,7 +120,7 @@ function workspaceEndpoints(app) {
           .status(500)
           .json({
             success: false,
-            error: `Python processing API is not online. Document ${originalname} will not be processed automatically.`,
+            error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
           })
           .end();
         return;
@@ -160,7 +160,7 @@ function workspaceEndpoints(app) {
           .status(500)
           .json({
             success: false,
-            error: `Python processing API is not online. Link ${link} will not be processed automatically.`,
+            error: `Document processing API is not online. Link ${link} will not be processed automatically.`,
           })
           .end();
         return;
@@ -218,8 +218,8 @@ function workspaceEndpoints(app) {
           message:
             failedToEmbed.length > 0
               ? `${failedToEmbed.length} documents failed to add.\n\n${errors
-                  .map((msg) => `${msg}`)
-                  .join("\n\n")}`
+                .map((msg) => `${msg}`)
+                .join("\n\n")}`
               : null,
         });
       } catch (e) {

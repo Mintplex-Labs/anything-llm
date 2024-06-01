@@ -89,7 +89,7 @@ function apiDocumentEndpoints(app) {
             .status(500)
             .json({
               success: false,
-              error: `Python processing API is not online. Document ${originalname} will not be processed automatically.`,
+              error: `Document processing API is not online. Document ${originalname} will not be processed automatically.`,
             })
             .end();
           return;
