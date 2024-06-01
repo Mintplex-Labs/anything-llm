@@ -282,11 +282,11 @@ export default function MultiUserAuth() {
                   Welcome to
                 </h3>
                 <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
-                  {customAppName || "AnythingLLM"}
+                  {customAppName || "ChatLTT"}
                 </p>
               </div>
               <p className="text-sm text-white/90 text-center">
-                Please Sign in to your {customAppName || "AnythingLLM"} account.
+                Please Sign in to your {customAppName || "ChatLTT"} account.
               </p>
             </div>
           </div>
