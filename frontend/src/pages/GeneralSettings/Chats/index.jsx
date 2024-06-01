@@ -128,7 +128,7 @@ export default function WorkspaceChats() {
                 <button
                   ref={openMenuButton}
                   onClick={toggleMenu}
-                  className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-[#46C8FF] hover:text-white text-xs font-semibold hover:bg-[#2C2F36] shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                  className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-[#FF5757] hover:text-white text-xs font-semibold hover:bg-[#2C2F36] shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                 >
                   <Download size={18} weight="bold" />
                   Export
