@@ -123,7 +123,7 @@ Some cool features of AnythingLLM
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)
 - [Weaviate](https://weaviate.io)
-- [QDrant](https://qdrant.tech)
+- [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
 
