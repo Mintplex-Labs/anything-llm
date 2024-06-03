@@ -23,6 +23,7 @@ class MimeDetector {
       {
         "text/plain": [
           "ts",
+          "tsx",
           "py",
           "opts",
           "lock",
