@@ -106,7 +106,7 @@ const Chroma = {
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
-      .getCollection({ name: namespace })
+      .getOrCreateCollection({ name: namespace })
       .catch(() => null);
     if (!collection) return null;
 
@@ -152,6 +152,8 @@ const Chroma = {
           name: namespace,
           metadata: { "hnsw:space": "cosine" },
         });
+
+        console.log("collection", collection);
         const { chunks } = cacheResult;
         const documentVectors = [];
 

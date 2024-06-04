@@ -384,6 +384,11 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@huggingface/jinja@^0.1.0":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@huggingface/jinja/-/jinja-0.1.3.tgz#202cc080bcca92cb7c89e179a084a598cbfe35e0"
+  integrity sha512-9KsiorsdIK8+7VmlamAT7Uh90zxAhC/SeKaKc80v58JhtPYuwaJpmR/ST7XAUxrHAFqHTCoTH5aJnJDwSL6xIQ==
+
 "@huggingface/jinja@^0.2.2":
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/@huggingface/jinja/-/jinja-0.2.2.tgz#faeb205a9d6995089bef52655ddd8245d3190627"
@@ -1898,7 +1903,18 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-chromadb@^1.5.2:
+chromadb-default-embed@^2.13.2:
+  version "2.13.2"
+  resolved "https://registry.yarnpkg.com/chromadb-default-embed/-/chromadb-default-embed-2.13.2.tgz#8c49ec4599672dfccc2aad09fc8ca3a819ddb272"
+  integrity sha512-mhqo5rLjkF2KkxAV0WS82vNIXWpVMzvz5y5ayIB2FxcebUbEBNlcRh6XSSqYChWMfJ9us1ZzLQU8RXqsy3sKaA==
+  dependencies:
+    "@huggingface/jinja" "^0.1.0"
+    onnxruntime-web "1.14.0"
+    sharp "^0.32.0"
+  optionalDependencies:
+    onnxruntime-node "1.14.0"
+
+chromadb@^1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/chromadb/-/chromadb-1.8.1.tgz#d2563a67c650187b5d79f171c46b2a1abbb4f056"
   integrity sha512-NpbYydbg4Uqt/9BXKgkZXn0fqpsh2Z1yjhkhKH+rcHMoq0pwI18BFSU2QU7Fk/ZypwGefW2AvqyE/3ZJIgy4QA==
