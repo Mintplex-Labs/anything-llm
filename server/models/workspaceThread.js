@@ -8,7 +8,7 @@ const WorkspaceThread = {
     try {
       const thread = await prisma.workspace_threads.create({
         data: {
-          name: "New thread",
+          name: "Thread",
           slug: uuidv4(),
           user_id: userId ? Number(userId) : null,
           workspace_id: workspace.id,
