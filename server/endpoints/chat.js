@@ -15,6 +15,8 @@ const {
   validWorkspaceSlug,
 } = require("../utils/middleware/validWorkspace");
 const { writeResponseChunk } = require("../utils/helpers/chat/responses");
+const generateThreadTitle = require("../utils/threadNames");
+const { WorkspaceThread } = require("../models/workspaceThread");
 
 function chatEndpoints(app) {
   if (!app) return;
@@ -196,6 +198,34 @@ function chatEndpoints(app) {
           user,
           thread
         );
+
+        // Check if first message in thread
+        const chatCount = await WorkspaceChats.count({
+          workspaceId: workspace.id,
+          user_id: user?.id || null,
+          thread_id: thread.id,
+        });
+
+        // Generate thread name
+        if (chatCount === 1) {
+          try {
+            const generatedTitle = await generateThreadTitle(message);
+            if (generatedTitle) {
+              const { thread: updatedThread } = await WorkspaceThread.update(
+                thread,
+                {
+                  name: generatedTitle,
+                }
+              );
+              if (!updatedThread) {
+                console.log("Failed to update thread name");
+              }
+            }
+          } catch (e) {
+            console.log("Error generating thread title:", e);
+          }
+        }
+
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
