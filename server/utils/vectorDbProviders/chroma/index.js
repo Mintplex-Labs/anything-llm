@@ -6,6 +6,9 @@ const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { parseAuthHeader } = require("../../http");
 const { sourceIdentifier } = require("../../chats");
+const COLLECTION_REGEX = new RegExp(
+  /^(?!\d+\.\d+\.\d+\.\d+$)(?!.*\.\.)(?=^[a-zA-Z0-9][a-zA-Z0-9_-]{1,61}[a-zA-Z0-9]$).{3,63}$/
+);
 
 const Chroma = {
   name: "Chroma",
@@ -18,19 +21,38 @@ const Chroma = {
   // We need to enforce these rules by normalizing the collection names
   // before communicating with the Chroma DB.
   normalize: function (inputString) {
-    let normalized = inputString.replace(/[^a-zA-Z0-9_-]/g, "_");
-    if (!/^[a-zA-Z0-9]/.test(normalized)) {
-      normalized = `anythingllm_${normalized}`;
+    if (COLLECTION_REGEX.test(inputString)) return inputString;
+    let normalized = inputString.replace(/[^a-zA-Z0-9_-]/g, "-");
+
+    // Replace consecutive periods with a single period (if any)
+    normalized = normalized.replace(/\.\.+/g, ".");
+
+    // Ensure the name doesn't start with a non-alphanumeric character
+    if (normalized[0] && !/^[a-zA-Z0-9]$/.test(normalized[0])) {
+      normalized = "anythingllm-" + normalized.slice(1);
     }
-    if (!/[a-zA-Z0-9]$/.test(normalized)) {
-      normalized = `${normalized}_anythingllm`;
+
+    // Ensure the name doesn't end with a non-alphanumeric character
+    if (
+      normalized[normalized.length - 1] &&
+      !/^[a-zA-Z0-9]$/.test(normalized[normalized.length - 1])
+    ) {
+      normalized = normalized.slice(0, -1);
     }
+
+    // Ensure the length is between 3 and 63 characters
     if (normalized.length < 3) {
-      normalized = `anythingllm_${normalized}`;
+      normalized = `anythingllm-${normalized}`;
     } else if (normalized.length > 63) {
-      normalized = normalized.slice(0, 63);
+      // Recheck the norm'd name if sliced since its ending can still be invalid.
+      normalized = this.normalize(normalized.slice(0, 63));
     }
-    normalized = normalized.replace(/\.{2,}/g, "_");
+
+    // Ensure the name is not an IPv4 address
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(normalized)) {
+      normalized = "-" + normalized.slice(1);
+    }
+
     return normalized;
   },
   connect: async function () {
