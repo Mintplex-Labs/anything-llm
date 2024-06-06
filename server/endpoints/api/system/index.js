@@ -211,7 +211,7 @@ function apiSystemEndpoints(app) {
     [validApiKey],
     async (request, response) => {
       /*
-      #swagger.tags = ['System']
+      #swagger.tags = ['System Settings']
       #swagger.description = 'Permanently remove documents from the system.'
       #swagger.requestBody = {
         description: 'Array of document names to be removed permanently.',
