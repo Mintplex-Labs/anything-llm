@@ -1,5 +1,5 @@
 function getVectorDbClass() {
-  const vectorSelection = process.env.VECTOR_DB || "pinecone";
+  const vectorSelection = process.env.VECTOR_DB || "lancedb";
   switch (vectorSelection) {
     case "pinecone":
       const { Pinecone } = require("../vectorDbProviders/pinecone");
@@ -30,58 +30,77 @@ function getVectorDbClass() {
   }
 }
 
-function getLLMProvider(modelPreference = null) {
-  const vectorSelection = process.env.LLM_PROVIDER || "openai";
+function getLLMProvider({ provider = null, model = null } = {}) {
+  const LLMSelection = provider ?? process.env.LLM_PROVIDER ?? "openai";
   const embedder = getEmbeddingEngineSelection();
-  switch (vectorSelection) {
+
+  switch (LLMSelection) {
     case "openai":
       const { OpenAiLLM } = require("../AiProviders/openAi");
-      return new OpenAiLLM(embedder, modelPreference);
+      return new OpenAiLLM(embedder, model);
     case "azure":
       const { AzureOpenAiLLM } = require("../AiProviders/azureOpenAi");
-      return new AzureOpenAiLLM(embedder, modelPreference);
+      return new AzureOpenAiLLM(embedder, model);
     case "anthropic":
       const { AnthropicLLM } = require("../AiProviders/anthropic");
-      return new AnthropicLLM(embedder, modelPreference);
+      return new AnthropicLLM(embedder, model);
     case "gemini":
       const { GeminiLLM } = require("../AiProviders/gemini");
-      return new GeminiLLM(embedder, modelPreference);
+      return new GeminiLLM(embedder, model);
     case "lmstudio":
       const { LMStudioLLM } = require("../AiProviders/lmStudio");
-      return new LMStudioLLM(embedder, modelPreference);
+      return new LMStudioLLM(embedder, model);
     case "localai":
       const { LocalAiLLM } = require("../AiProviders/localAi");
-      return new LocalAiLLM(embedder, modelPreference);
+      return new LocalAiLLM(embedder, model);
     case "ollama":
       const { OllamaAILLM } = require("../AiProviders/ollama");
-      return new OllamaAILLM(embedder, modelPreference);
+      return new OllamaAILLM(embedder, model);
     case "togetherai":
       const { TogetherAiLLM } = require("../AiProviders/togetherAi");
-      return new TogetherAiLLM(embedder, modelPreference);
+      return new TogetherAiLLM(embedder, model);
     case "perplexity":
       const { PerplexityLLM } = require("../AiProviders/perplexity");
-      return new PerplexityLLM(embedder, modelPreference);
+      return new PerplexityLLM(embedder, model);
     case "openrouter":
       const { OpenRouterLLM } = require("../AiProviders/openRouter");
-      return new OpenRouterLLM(embedder, modelPreference);
+      return new OpenRouterLLM(embedder, model);
     case "mistral":
       const { MistralLLM } = require("../AiProviders/mistral");
-      return new MistralLLM(embedder, modelPreference);
+      return new MistralLLM(embedder, model);
     case "native":
       const { NativeLLM } = require("../AiProviders/native");
-      return new NativeLLM(embedder, modelPreference);
+      return new NativeLLM(embedder, model);
     case "huggingface":
       const { HuggingFaceLLM } = require("../AiProviders/huggingface");
-      return new HuggingFaceLLM(embedder, modelPreference);
+      return new HuggingFaceLLM(embedder, model);
     case "groq":
       const { GroqLLM } = require("../AiProviders/groq");
-      return new GroqLLM(embedder, modelPreference);
+      return new GroqLLM(embedder, model);
+    case "koboldcpp":
+      const { KoboldCPPLLM } = require("../AiProviders/koboldCPP");
+      return new KoboldCPPLLM(embedder, model);
+    case "textgenwebui":
+      const { TextGenWebUILLM } = require("../AiProviders/textGenWebUI");
+      return new TextGenWebUILLM(embedder, model);
+    case "cohere":
+      const { CohereLLM } = require("../AiProviders/cohere");
+      return new CohereLLM(embedder, model);
+    case "litellm":
+      const { LiteLLM } = require("../AiProviders/liteLLM");
+      return new LiteLLM(embedder, model);
+    case "generic-openai":
+      const { GenericOpenAiLLM } = require("../AiProviders/genericOpenAi");
+      return new GenericOpenAiLLM(embedder, model);
     default:
-      throw new Error("ENV: No LLM_PROVIDER value found in environment!");
+      throw new Error(
+        `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
+      );
   }
 }
 
 function getEmbeddingEngineSelection() {
+  const { NativeEmbedder } = require("../EmbeddingEngines/native");
   const engineSelection = process.env.EMBEDDING_ENGINE;
   switch (engineSelection) {
     case "openai":
@@ -99,11 +118,21 @@ function getEmbeddingEngineSelection() {
       const { OllamaEmbedder } = require("../EmbeddingEngines/ollama");
       return new OllamaEmbedder();
     case "native":
-      const { NativeEmbedder } = require("../EmbeddingEngines/native");
-      console.log("\x1b[34m[INFO]\x1b[0m Using Native Embedder");
       return new NativeEmbedder();
+    case "lmstudio":
+      const { LMStudioEmbedder } = require("../EmbeddingEngines/lmstudio");
+      return new LMStudioEmbedder();
+    case "cohere":
+      const { CohereEmbedder } = require("../EmbeddingEngines/cohere");
+      return new CohereEmbedder();
+    case "voyageai":
+      const { VoyageAiEmbedder } = require("../EmbeddingEngines/voyageAi");
+      return new VoyageAiEmbedder();
+    case "litellm":
+      const { LiteLLMEmbedder } = require("../EmbeddingEngines/liteLLM");
+      return new LiteLLMEmbedder();
     default:
-      return null;
+      return new NativeEmbedder();
   }
 }
 

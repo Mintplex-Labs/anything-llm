@@ -3,9 +3,6 @@ import { useState } from "react";
 import { isMobile } from "react-device-detect";
 import Home from "./Home";
 import LLMPreference from "./LLMPreference";
-import EmbeddingPreference from "./EmbeddingPreference";
-import VectorDatabaseConnection from "./VectorDatabaseConnection";
-import CustomLogo from "./CustomLogo";
 import UserSetup from "./UserSetup";
 import DataHandling from "./DataHandling";
 import Survey from "./Survey";
@@ -14,9 +11,6 @@ import CreateWorkspace from "./CreateWorkspace";
 const OnboardingSteps = {
   home: Home,
   "llm-preference": LLMPreference,
-  "embedding-preference": EmbeddingPreference,
-  "vector-database": VectorDatabaseConnection,
-  "custom-logo": CustomLogo,
   "user-setup": UserSetup,
   "data-handling": DataHandling,
   survey: Survey,
@@ -100,6 +94,7 @@ export function OnboardingLayout({ children }) {
             disabled={backBtn.disabled}
             onClick={backBtn.onClick}
             className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+            aria-label="Back"
           >
             <ArrowLeft
               className="text-white group-hover:text-black group-disabled:text-gray-500"
@@ -127,6 +122,7 @@ export function OnboardingLayout({ children }) {
             disabled={forwardBtn.disabled}
             onClick={forwardBtn.onClick}
             className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+            aria-label="Continue"
           >
             <ArrowRight
               className="text-white group-hover:text-black group-disabled:text-gray-500"

@@ -6,6 +6,7 @@ const System = {
   cacheKeys: {
     footerIcons: "anythingllm_footer_links",
     supportEmail: "anythingllm_support_email",
+    customAppName: "anythingllm_custom_app_name",
   },
   ping: async function () {
     return await fetch(`${API_BASE}/ping`)
@@ -77,6 +78,43 @@ const System = {
         return { valid: false, message: e.message };
       });
   },
+  recoverAccount: async function (username, recoveryCodes) {
+    return await fetch(`${API_BASE}/system/recover-account`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ username, recoveryCodes }),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || "Error recovering account.");
+        }
+        return data;
+      })
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+  resetPassword: async function (token, newPassword, confirmPassword) {
+    return await fetch(`${API_BASE}/system/reset-password`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ token, newPassword, confirmPassword }),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || "Error resetting password.");
+        }
+        return data;
+      })
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+
   checkDocumentProcessorOnline: async () => {
     return await fetch(`${API_BASE}/system/document-processing-status`, {
       headers: baseHeaders(),
@@ -268,19 +306,58 @@ const System = {
     );
     return { email: supportEmail, error: null };
   },
+
+  fetchCustomAppName: async function () {
+    const cache = window.localStorage.getItem(this.cacheKeys.customAppName);
+    const { appName, lastFetched } = cache
+      ? safeJsonParse(cache, { appName: "", lastFetched: 0 })
+      : { appName: "", lastFetched: 0 };
+
+    if (!!appName && Date.now() - lastFetched < 3_600_000)
+      return { appName: appName, error: null };
+
+    const { customAppName, error } = await fetch(
+      `${API_BASE}/system/custom-app-name`,
+      {
+        method: "GET",
+        cache: "no-cache",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.log(e);
+        return { customAppName: "", error: e.message };
+      });
+
+    if (!customAppName || !!error) {
+      window.localStorage.removeItem(this.cacheKeys.customAppName);
+      return { appName: "", error: null };
+    }
+
+    window.localStorage.setItem(
+      this.cacheKeys.customAppName,
+      JSON.stringify({ appName: customAppName, lastFetched: Date.now() })
+    );
+    return { appName: customAppName, error: null };
+  },
   fetchLogo: async function () {
     return await fetch(`${API_BASE}/system/logo`, {
       method: "GET",
       cache: "no-cache",
     })
-      .then((res) => {
-        if (res.ok && res.status !== 204) return res.blob();
+      .then(async (res) => {
+        if (res.ok && res.status !== 204) {
+          const isCustomLogo = res.headers.get("X-Is-Custom-Logo") === "true";
+          const blob = await res.blob();
+          const logoURL = URL.createObjectURL(blob);
+          return { isCustomLogo, logoURL };
+        }
         throw new Error("Failed to fetch logo!");
       })
-      .then((blob) => URL.createObjectURL(blob))
       .catch((e) => {
         console.log(e);
-        return null;
+        return { isCustomLogo: false, logoURL: null };
       });
   },
   fetchPfp: async function (id) {
@@ -295,7 +372,7 @@ const System = {
       })
       .then((blob) => (blob ? URL.createObjectURL(blob) : null))
       .catch((e) => {
-        console.log(e);
+        // console.log(e);
         return null;
       });
   },
@@ -530,6 +607,74 @@ const System = {
       });
   },
   dataConnectors: DataConnector,
+
+  getSlashCommandPresets: async function () {
+    return await fetch(`${API_BASE}/system/slash-command-presets`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not fetch slash command presets.");
+        return res.json();
+      })
+      .then((res) => res.presets)
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+
+  createSlashCommandPreset: async function (presetData) {
+    return await fetch(`${API_BASE}/system/slash-command-presets`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(presetData),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not create slash command preset.");
+        return res.json();
+      })
+      .then((res) => {
+        return { preset: res.preset, error: null };
+      })
+      .catch((e) => {
+        console.error(e);
+        return { preset: null, error: e.message };
+      });
+  },
+
+  updateSlashCommandPreset: async function (presetId, presetData) {
+    return await fetch(`${API_BASE}/system/slash-command-presets/${presetId}`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(presetData),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not update slash command preset.");
+        return res.json();
+      })
+      .then((res) => {
+        return { preset: res.preset, error: null };
+      })
+      .catch((e) => {
+        return { preset: null, error: "Failed to update this command." };
+      });
+  },
+
+  deleteSlashCommandPreset: async function (presetId) {
+    return await fetch(`${API_BASE}/system/slash-command-presets/${presetId}`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not delete slash command preset.");
+        return true;
+      })
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
 };
 
 export default System;

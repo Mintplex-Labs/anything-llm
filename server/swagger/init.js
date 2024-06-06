@@ -40,6 +40,28 @@ const endpointsFiles = [
 
 swaggerAutogen(outputFile, endpointsFiles, doc)
   .then(({ data }) => {
+
+    // Remove Authorization parameters from arguments.
+    for (const path of Object.keys(data.paths)) {
+      if (data.paths[path].hasOwnProperty('get')) {
+        let parameters = data.paths[path].get?.parameters || [];
+        parameters = parameters.filter((arg) => arg.name !== 'Authorization');
+        data.paths[path].get.parameters = parameters;
+      }
+
+      if (data.paths[path].hasOwnProperty('post')) {
+        let parameters = data.paths[path].post?.parameters || [];
+        parameters = parameters.filter((arg) => arg.name !== 'Authorization');
+        data.paths[path].post.parameters = parameters;
+      }
+
+      if (data.paths[path].hasOwnProperty('delete')) {
+        let parameters = data.paths[path].delete?.parameters || [];
+        parameters = parameters.filter((arg) => arg.name !== 'Authorization');
+        data.paths[path].delete.parameters = parameters;
+      }
+    }
+
     const openApiSpec = {
       ...data,
       servers: [{

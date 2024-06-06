@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="text/javascript">
+      window.buttonEl;
+      window.outputEl;
+
+      function handleListen() {
+        const socket = new WebSocket("ws://localhost:3000/ws");
+        window.buttonEl.setAttribute("hidden", "true");
+
+        socket.addEventListener("message", (event) => {
+          try {
+            const data = JSON.parse(event.data);
+
+            if (!data.hasOwnProperty("type")) {
+              window.outputEl.innerHTML += `<p>${data.from} says to ${data.to}:  ${data.content}<p></br></br>`;
+              return;
+            }
+
+            // Handle async input loops
+            if (data?.type === "WAITING_ON_INPUT") {
+              // Put in time as hack to now have the prompt block DOM update.
+              setTimeout(() => {
+                console.log(
+                  "We are waiting for feedback from the socket. Will timeout in 30s..."
+                );
+                const feedback = window.prompt(
+                  "We are waiting for feedback from the socket. Will timeout in 30s..."
+                );
+                !!feedback
+                  ? socket.send(
+                      JSON.stringify({ type: "awaitingFeedback", feedback })
+                    )
+                  : socket.send(
+                      JSON.stringify({
+                        type: "awaitingFeedback",
+                        feedback: "exit",
+                      })
+                    );
+                return;
+              }, 800);
+            }
+          } catch (e) {
+            console.error("Failed to parse data");
+          }
+        });
+
+        socket.addEventListener("close", (event) => {
+          window.outputEl.innerHTML = `<p>Socket connection closed. Test is complete.<p></br></br>`;
+          window.buttonEl.removeAttribute("hidden");
+        });
+      }
+
+      window.addEventListener("load", function () {
+        window.buttonEl = document.getElementById("listen");
+        window.outputEl = document.getElementById("output");
+        window.buttonEl.addEventListener("click", handleListen);
+      });
+    </script>
+  </head>
+
+  <body>
+    <button type="button" id="listen">Open websocket connection chat</button>
+    <div id="output"></div>
+  </body>
+</html>

@@ -21,7 +21,23 @@ class MimeDetector {
     // which has had this extension far before TS was invented. So need to force re-map this MIME map.
     this.lib.define(
       {
-        "text/plain": ["ts", "py", "opts", "lock", "jsonl"],
+        "text/plain": [
+          "ts",
+          "tsx",
+          "py",
+          "opts",
+          "lock",
+          "jsonl",
+          "qml",
+          "sh",
+          "c",
+          "cs",
+          "h",
+          "js",
+          "lua",
+          "pas",
+          "r",
+        ],
       },
       true
     );

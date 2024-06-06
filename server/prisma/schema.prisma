@@ -41,6 +41,7 @@ model invites {
   code          String   @unique
   status        String   @default("pending")
   claimedBy     Int?
+  workspaceIds  String?
   createdAt     DateTime @default(now())
   createdBy     Int
   lastUpdatedAt DateTime @default(now())
@@ -55,19 +56,45 @@ model system_settings {
 }
 
 model users {
-  id              Int                 @id @default(autoincrement())
-  username        String?             @unique
-  password        String
-  pfpFilename     String?
-  role            String              @default("default")
-  suspended       Int                 @default(0)
-  createdAt       DateTime            @default(now())
-  lastUpdatedAt   DateTime            @default(now())
-  workspace_chats workspace_chats[]
-  workspace_users workspace_users[]
-  embed_configs   embed_configs[]
-  embed_chats     embed_chats[]
-  threads         workspace_threads[]
+  id                          Int                           @id @default(autoincrement())
+  username                    String?                       @unique
+  password                    String
+  pfpFilename                 String?
+  role                        String                        @default("default")
+  suspended                   Int                           @default(0)
+  seen_recovery_codes         Boolean?                      @default(false)
+  createdAt                   DateTime                      @default(now())
+  lastUpdatedAt               DateTime                      @default(now())
+  workspace_chats             workspace_chats[]
+  workspace_users             workspace_users[]
+  embed_configs               embed_configs[]
+  embed_chats                 embed_chats[]
+  threads                     workspace_threads[]
+  recovery_codes              recovery_codes[]
+  password_reset_tokens       password_reset_tokens[]
+  workspace_agent_invocations workspace_agent_invocations[]
+  slash_command_presets       slash_command_presets[]
+}
+
+model recovery_codes {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  code_hash String
+  createdAt DateTime @default(now())
+  user      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model password_reset_tokens {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
 }
 
 model document_vectors {
@@ -97,15 +124,20 @@ model workspaces {
   lastUpdatedAt                DateTime                       @default(now())
   openAiPrompt                 String?
   similarityThreshold          Float?                         @default(0.25)
+  chatProvider                 String?
   chatModel                    String?
   topN                         Int?                           @default(4)
   chatMode                     String?                        @default("chat")
-  pfpFilename     String?
+  pfpFilename                  String?
+  agentProvider                String?
+  agentModel                   String?
+  queryRefusalResponse         String?
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]
   embed_configs                embed_configs[]
   threads                      workspace_threads[]
+  workspace_agent_invocations  workspace_agent_invocations[]
 }
 
 model workspace_threads {
@@ -147,6 +179,22 @@ model workspace_chats {
   lastUpdatedAt DateTime @default(now())
   feedbackScore Boolean?
   users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model workspace_agent_invocations {
+  id            Int        @id @default(autoincrement())
+  uuid          String     @unique
+  prompt        String // Contains agent invocation to parse + option additional text for seed.
+  closed        Boolean    @default(false)
+  user_id       Int?
+  thread_id     Int? // No relation to prevent whole table migration
+  workspace_id  Int
+  createdAt     DateTime   @default(now())
+  lastUpdatedAt DateTime   @default(now())
+  user          users?     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace     workspaces @relation(fields: [workspace_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([uuid])
 }
 
 model workspace_users {
@@ -212,4 +260,18 @@ model event_logs {
   occurredAt DateTime @default(now())
 
   @@index([event])
+}
+
+model slash_command_presets {
+  id            Int      @id @default(autoincrement())
+  command       String
+  prompt        String
+  description   String
+  uid           Int      @default(0) // 0 is null user
+  userId        Int?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+  user          users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([uid, command])
 }

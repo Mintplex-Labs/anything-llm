@@ -73,10 +73,7 @@ function apiAdminEndpoints(app) {
         return;
       }
 
-      const users = (await User.where()).map((user) => {
-        const { password, ...rest } = user;
-        return rest;
-      });
+      const users = await User.where();
       response.status(200).json({ users });
     } catch (e) {
       console.error(e);
@@ -323,6 +320,18 @@ function apiAdminEndpoints(app) {
     /*
     #swagger.tags = ['Admin']
     #swagger.description = 'Create a new invite code for someone to use to register with instance. Methods are disabled until multi user mode is enabled via the UI.'
+    #swagger.requestBody = {
+        description: 'Request body for creation parameters of the invitation',
+        required: false,
+        type: 'object',
+        content: {
+          "application/json": {
+            example: {
+              workspaceIds: [1,2,45],
+            }
+          }
+        }
+      }
     #swagger.responses[200] = {
       content: {
         "application/json": {
@@ -355,7 +364,10 @@ function apiAdminEndpoints(app) {
         return;
       }
 
-      const { invite, error } = await Invite.create();
+      const body = reqBody(request);
+      const { invite, error } = await Invite.create({
+        workspaceIds: body?.workspaceIds ?? [],
+      });
       response.status(200).json({ invite, error });
     } catch (e) {
       console.error(e);

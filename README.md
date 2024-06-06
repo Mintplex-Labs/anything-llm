@@ -4,9 +4,13 @@
   <a href="https://useanything.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
 
+<div align='center'>
+<a href="https://trendshift.io/repositories/2415" target="_blank"><img src="https://trendshift.io/api/badge/repositories/2415" alt="Mintplex-Labs%2Fanything-llm | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+</div>
+
 <p align="center">
-    <b>AnythingLLM: A private ChatGPT to chat with <i>anything!</i></b>. <br />
-    An efficient, customizable, and open-source enterprise-ready document chatbot solution.
+    <b>AnythingLLM:</b> The all-in-one AI app you were looking for.<br />
+    Chat with your docs, use AI Agents, hyper-configurable, multi-user, & no fustrating set up required.
 </p>
 
 <p align="center">
@@ -25,7 +29,11 @@
 </p>
 
 <p align="center">
-👉 AnythingLLM for desktop is in <b>public beta</b>! <a href="https://useanything.com/download" target="_blank"> Download Now</a>
+  <b>English</b> · <a href='./locales/README.zh-CN.md'>简体中文</a> · <a href='./locales/README.ja-JP.md'>日本語</a>
+</p>
+
+<p align="center">
+👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://useanything.com/download" target="_blank"> Download Now</a>
 </p>
 
 A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use as well as supporting multi-user management and permissions.
@@ -48,7 +56,8 @@ AnythingLLM divides your documents into objects called `workspaces`. A Workspace
 Some cool features of AnythingLLM
 
 - **Multi-user instance support and permissioning**
-- **_New_** [Custom Embeddable Chat widget for your website](./embed/README.md)
+- Agents inside your workspace (browse the web, run code, etc)
+- [Custom Embeddable Chat widget for your website](./embed/README.md)
 - Multiple document type support (PDF, TXT, DOCX, etc)
 - Manage documents in your vector database from a simple UI
 - Two chat modes `conversation` and `query`. Conversation retains previous questions and amendments. Query is simple QA against your documents
@@ -58,15 +67,17 @@ Some cool features of AnythingLLM
 - Extremely efficient cost-saving measures for managing very large documents. You'll never pay to embed a massive document or transcript more than once. 90% more cost effective than other document chatbot solutions.
 - Full Developer API for custom integrations!
 
-### Supported LLMs, Embedders, and Vector Databases
+### Supported LLMs, Embedder Models, Speech models, and Vector Databases
 
-**Supported LLMs:**
+**Language Learning Models:**
 
 - [Any open-source llama.cpp compatible model](/server/storage/models/README.md#text-generation-llm-selection)
 - [OpenAI](https://openai.com)
+- [OpenAI (Generic)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-- [Anthropic ClaudeV2](https://www.anthropic.com/)
+- [Anthropic](https://www.anthropic.com/)
 - [Google Gemini Pro](https://ai.google.dev/)
+- [Hugging Face (chat models)](https://huggingface.co/)
 - [Ollama (chat models)](https://ollama.ai/)
 - [LM Studio (all models)](https://lmstudio.ai)
 - [LocalAi (all models)](https://localai.io/)
@@ -74,24 +85,45 @@ Some cool features of AnythingLLM
 - [Perplexity (chat models)](https://www.perplexity.ai/)
 - [OpenRouter (chat models)](https://openrouter.ai/)
 - [Mistral](https://mistral.ai/)
+- [Groq](https://groq.com/)
+- [Cohere](https://cohere.com/)
+- [KoboldCPP](https://github.com/LostRuins/koboldcpp)
+- [LiteLLM](https://github.com/BerriAI/litellm)
+- [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
 
-**Supported Embedding models:**
+**Embedder models:**
 
 - [AnythingLLM Native Embedder](/server/storage/models/README.md) (default)
 - [OpenAI](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-- [LM Studio (all)](https://lmstudio.ai)
 - [LocalAi (all)](https://localai.io/)
 - [Ollama (all)](https://ollama.ai/)
+- [LM Studio (all)](https://lmstudio.ai)
+- [Cohere](https://cohere.com/)
 
-**Supported Vector Databases:**
+**Audio Transcription models:**
+
+- [AnythingLLM Built-in](https://github.com/Mintplex-Labs/anything-llm/tree/master/server/storage/models#audiovideo-transcription) (default)
+- [OpenAI](https://openai.com/)
+
+**TTS (text-to-speech) support:**
+
+- Native Browser Built-in (default)
+- [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
+- [ElevenLabs](https://elevenlabs.io/)
+
+**STT (speech-to-text) support:**
+
+- Native Browser Built-in (default)
+
+**Vector Databases:**
 
 - [LanceDB](https://github.com/lancedb/lancedb) (default)
 - [Astra DB](https://www.datastax.com/products/datastax-astra)
 - [Pinecone](https://pinecone.io)
 - [Chroma](https://trychroma.com)
 - [Weaviate](https://weaviate.io)
-- [QDrant](https://qdrant.tech)
+- [Qdrant](https://qdrant.tech)
 - [Milvus](https://milvus.io)
 - [Zilliz](https://zilliz.com)
 
@@ -101,19 +133,20 @@ This monorepo consists of three main sections:
 
 - `frontend`: A viteJS + React frontend that you can run to easily create and manage all your content the LLM can use.
 - `server`: A NodeJS express server to handle all the interactions and do all the vectorDB management and LLM interactions.
-- `docker`: Docker instructions and build process + information for building from source.
 - `collector`: NodeJS express server that process and parses documents from the UI.
+- `docker`: Docker instructions and build process + information for building from source.
+- `embed`: Code specifically for generation of the [embed widget](./embed/README.md).
 
 ## 🛳 Self Hosting
 
 Mintplex Labs & the community maintain a number of deployment methods, scripts, and templates that you can use to run AnythingLLM locally. Refer to the table below to read how to deploy on your preferred environment or to automatically deploy.
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----:|-----|---------------|------------|
-| [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][aws-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
+| [![Deploy on Docker][docker-btn]][docker-deploy] | [![Deploy on AWS][aws-btn]][aws-deploy] | [![Deploy on GCP][gcp-btn]][gcp-deploy] | [![Deploy on DigitalOcean][do-btn]][do-deploy] | [![Deploy on Render.com][render-btn]][render-deploy] |
 
-| Railway                                             |
-| --------------------------------------------------- |
-| [![Deploy on Railway][railway-btn]][railway-deploy] |
+| Railway  |  RepoCloud |
+| --- | --- |
+| [![Deploy on Railway][railway-btn]][railway-deploy] | [![Deploy on RepoCloud][repocloud-btn]][repocloud-deploy] |
 
 [or set up a production AnythingLLM instance without Docker →](./BARE_METAL.md)
 
@@ -135,12 +168,12 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 - create PR with branch name format of `<issue number>-<short name>`
 - yee haw let's merge
 
-<details>
-<summary><kbd>Telemetry for AnythingLLM</kbd></summary>
-
-## Telemetry
+## Telemetry & Privacy
 
 AnythingLLM by Mintplex Labs Inc contains a telemetry feature that collects anonymous usage information.
+
+<details>
+<summary><kbd>More about Telemetry & Privacy for AnythingLLM</kbd></summary>
 
 ### Why?
 
@@ -148,23 +181,21 @@ We use this information to help us understand how AnythingLLM is used, to help u
 
 ### Opting out
 
-Set `DISABLE_TELEMETRY` in your server or docker .env settings to "true" to opt out of telemetry.
-
-```
-DISABLE_TELEMETRY="true"
-```
+Set `DISABLE_TELEMETRY` in your server or docker .env settings to "true" to opt out of telemetry. You can also do this in-app by going to the sidebar > `Privacy` and disabling telemetry.
 
 ### What do you explicitly track?
 
 We will only track usage details that help us make product and roadmap decisions, specifically:
 
-- Version of your installation
+- Typ of your installation (Docker or Desktop)
 - When a document is added or removed. No information _about_ the document. Just that the event occurred. This gives us an idea of use.
 - Type of vector database in use. Let's us know which vector database provider is the most used to prioritize changes when updates arrive for that provider.
 - Type of LLM in use. Let's us know the most popular choice and prioritize changes when updates arrive for that provider.
 - Chat is sent. This is the most regular "event" and gives us an idea of the daily-activity of this project across all installations. Again, only the event is sent - we have no information on the nature or content of the chat itself.
 
 You can verify these claims by finding all locations `Telemetry.sendTelemetry` is called. Additionally these events are written to the output log so you can also see the specific data which was sent - if enabled. No IP or other identifying information is collected. The Telemetry provider is [PostHog](https://posthog.com/) - an open-source telemetry collection service.
+
+[View all telemetry events in source code](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
 
 </details>
 
@@ -181,7 +212,7 @@ You can verify these claims by finding all locations `Telemetry.sendTelemetry` i
 
 ---
 
-Copyright © 2023 [Mintplex Labs][profile-link]. <br />
+Copyright © 2024 [Mintplex Labs][profile-link]. <br />
 This project is [MIT](./LICENSE) licensed.
 
 <!-- LINK GROUP -->
@@ -204,3 +235,5 @@ This project is [MIT](./LICENSE) licensed.
 [render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
 [railway-btn]: https://railway.app/button.svg
 [railway-deploy]: https://railway.app/template/HNSCS1?referralCode=WFgJkn
+[repocloud-btn]: https://d16t0pc4846x52.cloudfront.net/deploylobe.svg
+[repocloud-deploy]: https://repocloud.io/details/?app_id=276

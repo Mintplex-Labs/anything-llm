@@ -19,6 +19,8 @@ const HistoricalMessage = ({
   error = false,
   feedbackScore = null,
   chatId = null,
+  isLastMessage = false,
+  regenerateMessage,
 }) => {
   return (
     <div
@@ -27,9 +29,7 @@ const HistoricalMessage = ({
         role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
       }`}
     >
-      <div
-        className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
-      >
+      <div className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}>
         <div className="flex gap-x-5">
           <ProfileImage role={role} workspace={workspace} />
           {error ? (
@@ -44,7 +44,7 @@ const HistoricalMessage = ({
             </div>
           ) : (
             <span
-              className={`flex flex-col gap-y-1 mt-2`}
+              className={`flex flex-col gap-y-1`}
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(renderMarkdown(message)),
               }}
@@ -55,10 +55,12 @@ const HistoricalMessage = ({
           <div className="flex gap-x-5">
             <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden" />
             <Actions
-              message={DOMPurify.sanitize(message)}
+              message={message}
               feedbackScore={feedbackScore}
               chatId={chatId}
               slug={workspace?.slug}
+              isLastMessage={isLastMessage}
+              regenerateMessage={regenerateMessage}
             />
           </div>
         )}
@@ -92,4 +94,17 @@ function ProfileImage({ role, workspace }) {
   );
 }
 
-export default memo(HistoricalMessage);
+export default memo(
+  HistoricalMessage,
+  // Skip re-render the historical message:
+  // if the content is the exact same AND (not streaming)
+  // the lastMessage status is the same (regen icon)
+  // and the chatID matches between renders. (feedback icons)
+  (prevProps, nextProps) => {
+    return (
+      prevProps.message === nextProps.message &&
+      prevProps.isLastMessage === nextProps.isLastMessage &&
+      prevProps.chatId === nextProps.chatId
+    );
+  }
+);

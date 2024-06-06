@@ -1,15 +1,15 @@
 const { Telemetry } = require("../../../models/telemetry");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
-const { setupMulter } = require("../../../utils/files/multer");
+const { handleFileUpload } = require("../../../utils/files/multer");
 const {
   viewLocalFiles,
   findDocumentInDocuments,
   normalizePath,
+  isWithin,
 } = require("../../../utils/files");
 const { reqBody } = require("../../../utils/http");
 const { EventLogs } = require("../../../models/eventLogs");
 const { CollectorApi } = require("../../../utils/collectorApi");
-const { handleUploads } = setupMulter();
 const fs = require("fs");
 const path = require("path");
 const { Document } = require("../../../models/documents");
@@ -23,8 +23,7 @@ function apiDocumentEndpoints(app) {
 
   app.post(
     "/v1/document/upload",
-    [validApiKey],
-    handleUploads.single("file"),
+    [validApiKey, handleFileUpload],
     async (request, response) => {
       /*
     #swagger.tags = ['Documents']
@@ -605,6 +604,8 @@ function apiDocumentEndpoints(app) {
       try {
         const { name } = reqBody(request);
         const storagePath = path.join(documentsPath, normalizePath(name));
+        if (!isWithin(path.resolve(documentsPath), path.resolve(storagePath)))
+          throw new Error("Invalid path name");
 
         if (fs.existsSync(storagePath)) {
           response.status(500).json({

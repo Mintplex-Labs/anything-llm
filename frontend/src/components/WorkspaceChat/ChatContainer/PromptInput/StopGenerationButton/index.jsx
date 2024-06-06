@@ -14,6 +14,7 @@ export default function StopGenerationButton() {
         data-tooltip-id="stop-generation-button"
         data-tooltip-content="Stop generating response"
         className="border-none text-white/60 cursor-pointer group"
+        aria-label="Stop generating"
       >
         <svg
           width="28"
@@ -27,7 +28,7 @@ export default function StopGenerationButton() {
             cx="10"
             cy="10.562"
             r="9"
-            stroke-width="2"
+            strokeWidth="2"
           />
           <rect
             className="group-hover:fill-[#46C8FF] fill-white"

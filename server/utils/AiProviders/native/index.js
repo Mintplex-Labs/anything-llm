@@ -1,15 +1,14 @@
 const fs = require("fs");
 const path = require("path");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
-const { chatPrompt } = require("../../chats");
 const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 
-// Docs: https://api.js.langchain.com/classes/chat_models_llama_cpp.ChatLlamaCpp.html
+// Docs: https://js.langchain.com/docs/integrations/chat/llama_cpp
 const ChatLlamaCpp = (...args) =>
-  import("langchain/chat_models/llama_cpp").then(
+  import("@langchain/community/chat_models/llama_cpp").then(
     ({ ChatLlamaCpp }) => new ChatLlamaCpp(...args)
   );
 
@@ -24,7 +23,7 @@ class NativeLLM {
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
-    this.embedder = embedder || new NativeEmbedder();
+    this.embedder = embedder ?? new NativeEmbedder();
     this.cacheDir = path.resolve(
       process.env.STORAGE_DIR
         ? path.resolve(process.env.STORAGE_DIR, "models", "downloaded")
@@ -64,7 +63,7 @@ class NativeLLM {
       HumanMessage,
       SystemMessage,
       AIMessage,
-    } = require("langchain/schema");
+    } = require("@langchain/core/messages");
     const langchainChats = [];
     const roleToMessageMap = {
       system: SystemMessage,
@@ -94,7 +93,7 @@ class NativeLLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   // Ensure the user set a value for the token limit
@@ -121,45 +120,6 @@ class NativeLLM {
   async isSafe(_input = "") {
     // Not implemented so must be stubbed
     return { safe: true, reasons: [] };
-  }
-
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    try {
-      const messages = await this.compressMessages(
-        {
-          systemPrompt: chatPrompt(workspace),
-          userPrompt: prompt,
-          chatHistory,
-        },
-        rawHistory
-      );
-
-      const model = await this.#llamaClient({
-        temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-      });
-      const response = await model.call(messages);
-      return response.content;
-    } catch (error) {
-      throw new Error(
-        `NativeLLM::createChatCompletion failed with: ${error.message}`
-      );
-    }
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    const model = await this.#llamaClient({
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-    });
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-    const responseStream = await model.stream(messages);
-    return responseStream;
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {

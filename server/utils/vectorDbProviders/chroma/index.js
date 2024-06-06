@@ -1,13 +1,11 @@
 const { ChromaClient } = require("chromadb");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
+const { TextSplitter } = require("../../TextSplitter");
+const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
-const {
-  toChunks,
-  getLLMProvider,
-  getEmbeddingEngineSelection,
-} = require("../../helpers");
+const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { parseAuthHeader } = require("../../http");
+const { sourceIdentifier } = require("../../chats");
 
 const Chroma = {
   name: "Chroma",
@@ -69,7 +67,8 @@ const Chroma = {
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN = 4
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const collection = await client.getCollection({ name: namespace });
     const result = {
@@ -88,6 +87,15 @@ const Chroma = {
         similarityThreshold
       )
         return;
+
+      if (
+        filterIdentifiers.includes(sourceIdentifier(response.metadatas[0][i]))
+      ) {
+        console.log(
+          "Chroma: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
       result.contextTexts.push(response.documents[0][i]);
       result.sourceDocuments.push(response.metadatas[0][i]);
       result.scores.push(this.distanceToSimilarity(response.distances[0][i]));
@@ -180,18 +188,29 @@ const Chroma = {
       // We have to do this manually as opposed to using LangChains `Chroma.fromDocuments`
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
-      const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize:
-          getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1_000,
-        chunkOverlap: 20,
+      const EmbedderEngine = getEmbeddingEngineSelection();
+      const textSplitter = new TextSplitter({
+        chunkSize: TextSplitter.determineMaxChunkSize(
+          await SystemSettings.getValueOrFallback({
+            label: "text_splitter_chunk_size",
+          }),
+          EmbedderEngine?.embeddingMaxChunkLength
+        ),
+        chunkOverlap: await SystemSettings.getValueOrFallback(
+          { label: "text_splitter_chunk_overlap" },
+          20
+        ),
+        chunkHeaderMeta: {
+          sourceDocument: metadata?.title,
+          published: metadata?.published || "unknown",
+        },
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
-      const LLMConnector = getLLMProvider();
       const documentVectors = [];
       const vectors = [];
-      const vectorValues = await LLMConnector.embedChunks(textChunks);
+      const vectorValues = await EmbedderEngine.embedChunks(textChunks);
       const submission = {
         ids: [],
         embeddings: [],
@@ -274,6 +293,7 @@ const Chroma = {
     LLMConnector = null,
     similarityThreshold = 0.25,
     topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -293,7 +313,8 @@ const Chroma = {
       namespace,
       queryVector,
       similarityThreshold,
-      topN
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {

@@ -3,6 +3,8 @@ process.env.NODE_ENV === "development"
   : require("dotenv").config();
 const JWT = require("jsonwebtoken");
 const { User } = require("../../models/user");
+const { jsonrepair } = require("jsonrepair");
+const extract = require("extract-json-from-string");
 
 function reqBody(request) {
   return typeof request.body === "string"
@@ -61,6 +63,39 @@ function parseAuthHeader(headerValue = null, apiKey = null) {
   return { [headerValue]: apiKey };
 }
 
+function safeJsonParse(jsonString, fallback = null) {
+  try {
+    return JSON.parse(jsonString);
+  } catch {}
+
+  if (jsonString?.startsWith("[") || jsonString?.startsWith("{")) {
+    try {
+      const repairedJson = jsonrepair(jsonString);
+      return JSON.parse(repairedJson);
+    } catch {}
+  }
+
+  try {
+    return extract(jsonString)[0];
+  } catch {}
+
+  return fallback;
+}
+
+function isValidUrl(urlString = "") {
+  try {
+    const url = new URL(urlString);
+    if (!["http:", "https:"].includes(url.protocol)) return false;
+    return true;
+  } catch (e) {}
+  return false;
+}
+
+function toValidNumber(number = null, fallback = null) {
+  if (isNaN(Number(number))) return fallback;
+  return Number(number);
+}
+
 module.exports = {
   reqBody,
   multiUserMode,
@@ -69,4 +104,7 @@ module.exports = {
   decodeJWT,
   userFromSession,
   parseAuthHeader,
+  safeJsonParse,
+  isValidUrl,
+  toValidNumber,
 };

@@ -9,6 +9,59 @@ function clientAbortedHandler(resolve, fullText) {
   return;
 }
 
+function handleDefaultStreamResponseV2(response, stream, responseProps) {
+  const { uuid = uuidv4(), sources = [] } = responseProps;
+
+  return new Promise(async (resolve) => {
+    let fullText = "";
+
+    // Establish listener to early-abort a streaming response
+    // in case things go sideways or the user does not like the response.
+    // We preserve the generated text but continue as if chat was completed
+    // to preserve previously generated content.
+    const handleAbort = () => clientAbortedHandler(resolve, fullText);
+    response.on("close", handleAbort);
+
+    for await (const chunk of stream) {
+      const message = chunk?.choices?.[0];
+      const token = message?.delta?.content;
+
+      if (token) {
+        fullText += token;
+        writeResponseChunk(response, {
+          uuid,
+          sources: [],
+          type: "textResponseChunk",
+          textResponse: token,
+          close: false,
+          error: false,
+        });
+      }
+
+      // LocalAi returns '' and others return null on chunks - the last chunk is not "" or null.
+      // Either way, the key `finish_reason` must be present to determine ending chunk.
+      if (
+        message?.hasOwnProperty("finish_reason") && // Got valid message and it is an object with finish_reason
+        message.finish_reason !== "" &&
+        message.finish_reason !== null
+      ) {
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "textResponseChunk",
+          textResponse: "",
+          close: true,
+          error: false,
+        });
+        response.removeListener("close", handleAbort);
+        resolve(fullText);
+        break; // Break streaming when a valid finish_reason is first encountered
+      }
+    }
+  });
+}
+
+// TODO: Fully remove - deprecated.
 // The default way to handle a stream response. Functions best with OpenAI.
 // Currently used for LMStudio, LocalAI, Mistral API, and OpenAI
 function handleDefaultStreamResponse(response, stream, responseProps) {
@@ -123,6 +176,7 @@ function convertToChatHistory(history = []) {
         sentAt: moment(createdAt).unix(),
       },
       {
+        type: data?.type || "chart",
         role: "assistant",
         content: data.text,
         sources: data.sources || [],
@@ -155,6 +209,7 @@ function writeResponseChunk(response, data) {
 }
 
 module.exports = {
+  handleDefaultStreamResponseV2,
   handleDefaultStreamResponse,
   convertToChatHistory,
   convertToPromptHistory,

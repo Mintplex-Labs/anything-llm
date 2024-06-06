@@ -6,15 +6,51 @@ import ManageWorkspace from "../../../Modals/MangeWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import useUser from "@/hooks/useUser";
+import Chartable from "./Chartable";
 
-export default function ChatHistory({ history = [], workspace, sendCommand }) {
+export default function ChatHistory({
+  history = [],
+  workspace,
+  sendCommand,
+  regenerateAssistantMessage,
+}) {
   const { user } = useUser();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
   const chatHistoryRef = useRef(null);
+  const [textSize, setTextSize] = useState("normal");
+
+  const getTextSizeClass = (size) => {
+    switch (size) {
+      case "small":
+        return "text-[12px]";
+      case "large":
+        return "text-[18px]";
+      default:
+        return "text-[14px]";
+    }
+  };
 
   useEffect(() => {
-    scrollToBottom();
+    const storedTextSize = window.localStorage.getItem("anythingllm_text_size");
+    if (storedTextSize) {
+      setTextSize(getTextSizeClass(storedTextSize));
+    }
+
+    const handleTextSizeChange = (event) => {
+      const size = event.detail;
+      setTextSize(getTextSizeClass(size));
+    };
+
+    window.addEventListener("textSizeChange", handleTextSizeChange);
+
+    return () => {
+      window.removeEventListener("textSizeChange", handleTextSizeChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottom) scrollToBottom();
   }, [history]);
 
   const handleScroll = () => {
@@ -91,13 +127,23 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
 
   return (
     <div
-      className="markdown text-white/80 font-light text-sm h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll"
+      className={`markdown text-white/80 font-light ${textSize} h-full md:h-[83%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll`}
       id="chat-history"
       ref={chatHistoryRef}
     >
       {history.map((props, index) => {
         const isLastBotReply =
           index === history.length - 1 && props.role === "assistant";
+
+        if (props?.type === "statusResponse" && !!props.content) {
+          return <StatusResponse key={props.uuid} props={props} />;
+        }
+
+        if (props.type === "rechartVisualize" && !!props.content) {
+          return (
+            <Chartable key={props.uuid} workspace={workspace} props={props} />
+          );
+        }
 
         if (isLastBotReply && props.animate) {
           return (
@@ -124,6 +170,8 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
             feedbackScore={props.feedbackScore}
             chatId={props.chatId}
             error={props.error}
+            regenerateMessage={regenerateAssistantMessage}
+            isLastMessage={isLastBotReply}
           />
         );
       })}
@@ -143,6 +191,22 @@ export default function ChatHistory({ history = [], workspace, sendCommand }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function StatusResponse({ props }) {
+  return (
+    <div className="flex justify-center items-end w-full">
+      <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
+        <div className="flex gap-x-5">
+          <span
+            className={`text-xs inline-block p-2 rounded-lg text-white/60 font-mono whitespace-pre-line`}
+          >
+            {props.content}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

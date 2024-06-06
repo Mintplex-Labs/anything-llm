@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
-const { chatPrompt } = require("./index");
+const { chatPrompt, sourceIdentifier } = require("./index");
 const { EmbedChats } = require("../../models/embedChats");
 const {
   convertToPromptHistory,
@@ -28,7 +28,10 @@ async function streamChatWithForEmbed(
     embed.workspace.openAiTemp = parseFloat(temperatureOverride);
 
   const uuid = uuidv4();
-  const LLMConnector = getLLMProvider(chatModel ?? embed.workspace?.chatModel);
+  const LLMConnector = getLLMProvider({
+    provider: embed?.workspace?.chatProvider,
+    model: chatModel ?? embed.workspace?.chatModel,
+  });
   const VectorDb = getVectorDbClass();
   const { safe, reasons = [] } = await LLMConnector.isSafe(message);
   if (!safe) {
@@ -67,6 +70,7 @@ async function streamChatWithForEmbed(
   let completeText;
   let contextTexts = [];
   let sources = [];
+  let pinnedDocIdentifiers = [];
   const { rawHistory, chatHistory } = await recentEmbedChatHistory(
     sessionId,
     embed,
@@ -74,16 +78,16 @@ async function streamChatWithForEmbed(
     chatMode
   );
 
-  // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
-  // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
+  // See stream.js comment for more information on this implementation.
   await new DocumentManager({
     workspace: embed.workspace,
-    maxTokens: LLMConnector.limits.system,
+    maxTokens: LLMConnector.promptWindowLimit(),
   })
     .pinnedDocs()
     .then((pinnedDocs) => {
       pinnedDocs.forEach((doc) => {
         const { pageContent, ...metadata } = doc;
+        pinnedDocIdentifiers.push(sourceIdentifier(doc));
         contextTexts.push(doc.pageContent);
         sources.push({
           text:
@@ -102,6 +106,7 @@ async function streamChatWithForEmbed(
           LLMConnector,
           similarityThreshold: embed.workspace?.similarityThreshold,
           topN: embed.workspace?.topN,
+          filterIdentifiers: pinnedDocIdentifiers,
         })
       : {
           contextTexts: [],
@@ -127,11 +132,16 @@ async function streamChatWithForEmbed(
 
   // If in query mode and no sources are found, do not
   // let the LLM try to hallucinate a response or use general knowledge
-  if (chatMode === "query" && sources.length === 0) {
+  if (
+    chatMode === "query" &&
+    sources.length === 0 &&
+    pinnedDocIdentifiers.length === 0
+  ) {
     writeResponseChunk(response, {
       id: uuid,
       type: "textResponse",
       textResponse:
+        embed.workspace?.queryRefusalResponse ??
         "There is no relevant information in this workspace to answer your query.",
       sources: [],
       close: true,

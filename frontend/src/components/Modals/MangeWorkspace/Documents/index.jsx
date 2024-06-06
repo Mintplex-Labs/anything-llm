@@ -80,7 +80,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
   }
 
   useEffect(() => {
-    fetchKeys();
+    fetchKeys(true);
   }, []);
 
   const updateWorkspace = async (e) => {

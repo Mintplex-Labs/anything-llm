@@ -64,10 +64,14 @@ const Admin = {
         return [];
       });
   },
-  newInvite: async () => {
+  newInvite: async ({ role = null, workspaceIds = null }) => {
     return await fetch(`${API_BASE}/admin/invite/new`, {
-      method: "GET",
+      method: "POST",
       headers: baseHeaders(),
+      body: JSON.stringify({
+        role,
+        workspaceIds,
+      }),
     })
       .then((res) => res.json())
       .catch((e) => {
@@ -95,6 +99,18 @@ const Admin = {
     })
       .then((res) => res.json())
       .then((res) => res?.workspaces || [])
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+  workspaceUsers: async (workspaceId) => {
+    return await fetch(`${API_BASE}/admin/workspaces/${workspaceId}/users`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .then((res) => res?.users || [])
       .catch((e) => {
         console.error(e);
         return [];

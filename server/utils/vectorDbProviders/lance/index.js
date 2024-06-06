@@ -1,13 +1,10 @@
 const lancedb = require("vectordb");
-const {
-  toChunks,
-  getLLMProvider,
-  getEmbeddingEngineSelection,
-} = require("../../helpers");
-const { OpenAIEmbeddings } = require("langchain/embeddings/openai");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
+const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
+const { TextSplitter } = require("../../TextSplitter");
+const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
+const { sourceIdentifier } = require("../../chats");
 
 const LanceDb = {
   uri: `${
@@ -55,15 +52,13 @@ const LanceDb = {
     const table = await client.openTable(_namespace);
     return (await table.countRows()) || 0;
   },
-  embedder: function () {
-    return new OpenAIEmbeddings({ openAIApiKey: process.env.OPEN_AI_KEY });
-  },
   similarityResponse: async function (
     client,
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN = 4
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const collection = await client.openTable(namespace);
     const result = {
@@ -79,11 +74,22 @@ const LanceDb = {
       .execute();
 
     response.forEach((item) => {
-      if (this.distanceToSimilarity(item.score) < similarityThreshold) return;
+      if (this.distanceToSimilarity(item._distance) < similarityThreshold)
+        return;
       const { vector: _, ...rest } = item;
+      if (filterIdentifiers.includes(sourceIdentifier(rest))) {
+        console.log(
+          "LanceDB: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
+
       result.contextTexts.push(rest.text);
-      result.sourceDocuments.push(rest);
-      result.scores.push(this.distanceToSimilarity(item.score));
+      result.sourceDocuments.push({
+        ...rest,
+        score: this.distanceToSimilarity(item._distance),
+      });
+      result.scores.push(this.distanceToSimilarity(item._distance));
     });
 
     return result;
@@ -180,19 +186,30 @@ const LanceDb = {
       // We have to do this manually as opposed to using LangChains `xyz.fromDocuments`
       // because we then cannot atomically control our namespace to granularly find/remove documents
       // from vectordb.
-      const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize:
-          getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1_000,
-        chunkOverlap: 20,
+      const EmbedderEngine = getEmbeddingEngineSelection();
+      const textSplitter = new TextSplitter({
+        chunkSize: TextSplitter.determineMaxChunkSize(
+          await SystemSettings.getValueOrFallback({
+            label: "text_splitter_chunk_size",
+          }),
+          EmbedderEngine?.embeddingMaxChunkLength
+        ),
+        chunkOverlap: await SystemSettings.getValueOrFallback(
+          { label: "text_splitter_chunk_overlap" },
+          20
+        ),
+        chunkHeaderMeta: {
+          sourceDocument: metadata?.title,
+          published: metadata?.published || "unknown",
+        },
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
-      const LLMConnector = getLLMProvider();
       const documentVectors = [];
       const vectors = [];
       const submissions = [];
-      const vectorValues = await LLMConnector.embedChunks(textChunks);
+      const vectorValues = await EmbedderEngine.embedChunks(textChunks);
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
@@ -242,6 +259,7 @@ const LanceDb = {
     LLMConnector = null,
     similarityThreshold = 0.25,
     topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -261,7 +279,8 @@ const LanceDb = {
       namespace,
       queryVector,
       similarityThreshold,
-      topN
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
@@ -304,7 +323,7 @@ const LanceDb = {
   curateSources: function (sources = []) {
     const documents = [];
     for (const source of sources) {
-      const { text, vector: _v, score: _s, ...rest } = source;
+      const { text, vector: _v, _distance: _d, ...rest } = source;
       const metadata = rest.hasOwnProperty("metadata") ? rest.metadata : rest;
       if (Object.keys(metadata).length > 0) {
         documents.push({

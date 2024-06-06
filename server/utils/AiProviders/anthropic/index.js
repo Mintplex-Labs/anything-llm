@@ -1,9 +1,10 @@
 const { v4 } = require("uuid");
-const { chatPrompt } = require("../../chats");
 const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
     if (!process.env.ANTHROPIC_API_KEY)
@@ -23,17 +24,12 @@ class AnthropicLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      throw new Error(
-        "INVALID ANTHROPIC SETUP. No embedding engine has been set. Go to instance settings and set up an embedding interface to use Anthropic as your LLM."
-      );
-    this.embedder = embedder;
-    this.answerKey = v4().split("-")[0];
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   promptWindowLimit() {
@@ -110,35 +106,10 @@ class AnthropicLLM {
     }
   }
 
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.isValidChatCompletionModel(this.model))
-      throw new Error(
-        `Anthropic chat: ${this.model} is not valid for chat completion!`
-      );
-
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-
-    const streamRequest = await this.anthropic.messages.stream({
-      model: this.model,
-      max_tokens: 4096,
-      system: messages[0].content, // Strip out the system message
-      messages: messages.slice(1), // Pop off the system message
-      temperature: Number(workspace?.openAiTemp ?? this.defaultTemp),
-    });
-    return streamRequest;
-  }
-
   async streamGetChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!this.isValidChatCompletionModel(this.model))
       throw new Error(
-        `OpenAI chat: ${this.model} is not valid for chat completion!`
+        `Anthropic chat: ${this.model} is not valid for chat completion!`
       );
 
     const streamRequest = await this.anthropic.messages.stream({
@@ -162,6 +133,28 @@ class AnthropicLLM {
       // to preserve previously generated content.
       const handleAbort = () => clientAbortedHandler(resolve, fullText);
       response.on("close", handleAbort);
+
+      stream.on("error", (event) => {
+        const parseErrorMsg = (event) => {
+          const error = event?.error?.error;
+          if (!!error)
+            return `Anthropic Error:${error?.type || "unknown"} ${
+              error?.message || "unknown error."
+            }`;
+          return event.message;
+        };
+
+        writeResponseChunk(response, {
+          uuid,
+          sources: [],
+          type: "abort",
+          textResponse: null,
+          close: true,
+          error: parseErrorMsg(event),
+        });
+        response.removeListener("close", handleAbort);
+        resolve(fullText);
+      });
 
       stream.on("streamEvent", (message) => {
         const data = message;

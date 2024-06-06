@@ -3,11 +3,13 @@ const { DocumentManager } = require("../DocumentManager");
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { writeResponseChunk } = require("../helpers/chat/responses");
+const { grepAgents } = require("./agents");
 const {
   grepCommand,
   VALID_COMMANDS,
   chatPrompt,
   recentChatHistory,
+  sourceIdentifier,
 } = require("./index");
 
 const VALID_CHAT_MODE = ["chat", "query"];
@@ -21,10 +23,10 @@ async function streamChatWithWorkspace(
   thread = null
 ) {
   const uuid = uuidv4();
-  const command = grepCommand(message);
+  const updatedMessage = await grepCommand(message, user);
 
-  if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
-    const data = await VALID_COMMANDS[command](
+  if (Object.keys(VALID_COMMANDS).includes(updatedMessage)) {
+    const data = await VALID_COMMANDS[updatedMessage](
       workspace,
       message,
       uuid,
@@ -35,7 +37,21 @@ async function streamChatWithWorkspace(
     return;
   }
 
-  const LLMConnector = getLLMProvider(workspace?.chatModel);
+  // If is agent enabled chat we will exit this flow early.
+  const isAgentChat = await grepAgents({
+    uuid,
+    response,
+    message,
+    user,
+    workspace,
+    thread,
+  });
+  if (isAgentChat) return;
+
+  const LLMConnector = getLLMProvider({
+    provider: workspace?.chatProvider,
+    model: workspace?.chatModel,
+  });
   const VectorDb = getVectorDbClass();
   const { safe, reasons = [] } = await LLMConnector.isSafe(message);
   if (!safe) {
@@ -63,6 +79,7 @@ async function streamChatWithWorkspace(
       id: uuid,
       type: "textResponse",
       textResponse:
+        workspace?.queryRefusalResponse ??
         "There is no relevant information in this workspace to answer your query.",
       sources: [],
       close: true,
@@ -77,24 +94,29 @@ async function streamChatWithWorkspace(
   let completeText;
   let contextTexts = [];
   let sources = [];
+  let pinnedDocIdentifiers = [];
   const { rawHistory, chatHistory } = await recentChatHistory({
     user,
     workspace,
     thread,
     messageLimit,
-    chatMode,
   });
 
   // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
   // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
+  // However we limit the maximum of appended context to 80% of its overall size, mostly because if it expands beyond this
+  // it will undergo prompt compression anyway to make it work. If there is so much pinned that the context here is bigger than
+  // what the model can support - it would get compressed anyway and that really is not the point of pinning. It is really best
+  // suited for high-context models.
   await new DocumentManager({
     workspace,
-    maxTokens: LLMConnector.limits.system,
+    maxTokens: LLMConnector.promptWindowLimit(),
   })
     .pinnedDocs()
     .then((pinnedDocs) => {
       pinnedDocs.forEach((doc) => {
         const { pageContent, ...metadata } = doc;
+        pinnedDocIdentifiers.push(sourceIdentifier(doc));
         contextTexts.push(doc.pageContent);
         sources.push({
           text:
@@ -113,6 +135,7 @@ async function streamChatWithWorkspace(
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
+          filterIdentifiers: pinnedDocIdentifiers,
         })
       : {
           contextTexts: [],
@@ -133,16 +156,32 @@ async function streamChatWithWorkspace(
     return;
   }
 
-  contextTexts = [...contextTexts, ...vectorSearchResults.contextTexts];
+  const { fillSourceWindow } = require("../helpers/chat");
+  const filledSources = fillSourceWindow({
+    nDocs: workspace?.topN || 4,
+    searchResults: vectorSearchResults.sources,
+    history: rawHistory,
+    filterIdentifiers: pinnedDocIdentifiers,
+  });
+
+  // Why does contextTexts get all the info, but sources only get current search?
+  // This is to give the ability of the LLM to "comprehend" a contextual response without
+  // populating the Citations under a response with documents the user "thinks" are irrelevant
+  // due to how we manage backfilling of the context to keep chats with the LLM more correct in responses.
+  // If a past citation was used to answer the question - that is visible in the history so it logically makes sense
+  // and does not appear to the user that a new response used information that is otherwise irrelevant for a given prompt.
+  // TLDR; reduces GitHub issues for "LLM citing document that has no answer in it" while keep answers highly accurate.
+  contextTexts = [...contextTexts, ...filledSources.contextTexts];
   sources = [...sources, ...vectorSearchResults.sources];
 
-  // If in query mode and no sources are found, do not
+  // If in query mode and no context chunks are found from search, backfill, or pins -  do not
   // let the LLM try to hallucinate a response or use general knowledge and exit early
-  if (chatMode === "query" && sources.length === 0) {
+  if (chatMode === "query" && contextTexts.length === 0) {
     writeResponseChunk(response, {
       id: uuid,
       type: "textResponse",
       textResponse:
+        workspace?.queryRefusalResponse ??
         "There is no relevant information in this workspace to answer your query.",
       sources: [],
       close: true,
@@ -156,7 +195,7 @@ async function streamChatWithWorkspace(
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt: chatPrompt(workspace),
-      userPrompt: message,
+      userPrompt: updatedMessage,
       contextTexts,
       chatHistory,
     },
@@ -190,20 +229,30 @@ async function streamChatWithWorkspace(
     });
   }
 
-  const { chat } = await WorkspaceChats.new({
-    workspaceId: workspace.id,
-    prompt: message,
-    response: { text: completeText, sources, type: chatMode },
-    threadId: thread?.id || null,
-    user,
-  });
+  if (completeText?.length > 0) {
+    const { chat } = await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: { text: completeText, sources, type: chatMode },
+      threadId: thread?.id || null,
+      user,
+    });
+
+    writeResponseChunk(response, {
+      uuid,
+      type: "finalizeResponseStream",
+      close: true,
+      error: false,
+      chatId: chat.id,
+    });
+    return;
+  }
 
   writeResponseChunk(response, {
     uuid,
     type: "finalizeResponseStream",
     close: true,
     error: false,
-    chatId: chat.id,
   });
   return;
 }

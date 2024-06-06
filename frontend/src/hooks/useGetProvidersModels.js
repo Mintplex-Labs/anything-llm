@@ -2,17 +2,20 @@ import System from "@/models/system";
 import { useEffect, useState } from "react";
 
 // Providers which cannot use this feature for workspace<>model selection
-export const DISABLED_PROVIDERS = ["azure", "lmstudio"];
+export const DISABLED_PROVIDERS = [
+  "azure",
+  "lmstudio",
+  "native",
+  "textgenwebui",
+];
 const PROVIDER_DEFAULT_MODELS = {
-  openai: [
-    "gpt-3.5-turbo",
-    "gpt-3.5-turbo-1106",
-    "gpt-4",
-    "gpt-4-turbo-preview",
-    "gpt-4-1106-preview",
-    "gpt-4-32k",
+  openai: [],
+  gemini: [
+    "gemini-pro",
+    "gemini-1.0-pro",
+    "gemini-1.5-pro-latest",
+    "gemini-1.5-flash-latest",
   ],
-  gemini: ["gemini-pro"],
   anthropic: [
     "claude-instant-1.2",
     "claude-2.0",
@@ -26,8 +29,22 @@ const PROVIDER_DEFAULT_MODELS = {
   localai: [],
   ollama: [],
   togetherai: [],
-  groq: ["llama2-70b-4096", "mixtral-8x7b-32768"],
+  groq: [
+    "mixtral-8x7b-32768",
+    "llama3-8b-8192",
+    "llama3-70b-8192",
+    "gemma-7b-it",
+  ],
   native: [],
+  cohere: [
+    "command-r",
+    "command-r-plus",
+    "command",
+    "command-light",
+    "command-nightly",
+    "command-light-nightly",
+  ],
+  textgenwebui: [],
 };
 
 // For togetherAi, which has a large model list - we subgroup the options
@@ -41,6 +58,7 @@ function groupModels(models) {
   }, {});
 }
 
+const groupedProviders = ["togetherai", "openai", "openrouter"];
 export default function useGetProviderModels(provider = null) {
   const [defaultModels, setDefaultModels] = useState([]);
   const [customModels, setCustomModels] = useState([]);
@@ -50,9 +68,16 @@ export default function useGetProviderModels(provider = null) {
     async function fetchProviderModels() {
       if (!provider) return;
       const { models = [] } = await System.customModels(provider);
-      if (PROVIDER_DEFAULT_MODELS.hasOwnProperty(provider))
+      if (
+        PROVIDER_DEFAULT_MODELS.hasOwnProperty(provider) &&
+        !groupedProviders.includes(provider)
+      ) {
         setDefaultModels(PROVIDER_DEFAULT_MODELS[provider]);
-      provider === "togetherai"
+      } else {
+        setDefaultModels([]);
+      }
+
+      groupedProviders.includes(provider)
         ? setCustomModels(groupModels(models))
         : setCustomModels(models);
       setLoading(false);

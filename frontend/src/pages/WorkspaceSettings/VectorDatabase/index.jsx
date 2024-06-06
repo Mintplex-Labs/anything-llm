@@ -5,6 +5,8 @@ import { useRef, useState } from "react";
 import VectorDBIdentifier from "./VectorDBIdentifier";
 import MaxContextSnippets from "./MaxContextSnippets";
 import DocumentSimilarityThreshold from "./DocumentSimilarityThreshold";
+import ResetDatabase from "./ResetDatabase";
+import VectorCount from "./VectorCount";
 
 export default function VectorDatabase({ workspace }) {
   const [hasChanges, setHasChanges] = useState(false);
@@ -37,12 +39,16 @@ export default function VectorDatabase({ workspace }) {
       onSubmit={handleUpdate}
       className="w-1/2 flex flex-col gap-y-6"
     >
-      <VectorDBIdentifier workspace={workspace} />
+      <div className="flex items-start gap-x-5">
+        <VectorDBIdentifier workspace={workspace} />
+        <VectorCount reload={true} workspace={workspace} />
+      </div>
       <MaxContextSnippets workspace={workspace} setHasChanges={setHasChanges} />
       <DocumentSimilarityThreshold
         workspace={workspace}
         setHasChanges={setHasChanges}
       />
+      <ResetDatabase workspace={workspace} />
       {hasChanges && (
         <button
           type="submit"

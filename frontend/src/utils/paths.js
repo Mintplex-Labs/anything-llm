@@ -4,8 +4,8 @@ export default {
   home: () => {
     return "/";
   },
-  login: () => {
-    return "/login";
+  login: (noTry = false) => {
+    return `/login${noTry ? "?nt=1" : ""}`;
   },
   onboarding: {
     home: () => {
@@ -22,9 +22,6 @@ export default {
     },
     vectorDatabase: () => {
       return "/onboarding/vector-database";
-    },
-    customLogo: () => {
-      return "/onboarding/custom-logo";
     },
     userSetup: () => {
       return "/onboarding/user-setup";
@@ -65,6 +62,12 @@ export default {
       vectorDatabase: (slug) => {
         return `/workspace/${slug}/settings/vector-database`;
       },
+      members: (slug) => {
+        return `/workspace/${slug}/settings/members`;
+      },
+      agentConfig: (slug) => {
+        return `/workspace/${slug}/settings/agent-config`;
+      },
     },
     thread: (wsSlug, threadSlug) => {
       return `/workspace/${wsSlug}/t/${threadSlug}`;
@@ -95,6 +98,13 @@ export default {
     transcriptionPreference: () => {
       return "/settings/transcription-preference";
     },
+    audioPreference: () => {
+      return "/settings/audio-preference";
+    },
+    embedder: {
+      modelPreference: () => "/settings/embedding-preference",
+      chunkingPreference: () => "/settings/text-splitter-preference",
+    },
     embeddingPreference: () => {
       return "/settings/embedding-preference";
     },
@@ -121,17 +131,6 @@ export default {
     },
     embedChats: () => {
       return `/settings/embed-chats`;
-    },
-    dataConnectors: {
-      list: () => {
-        return "/settings/data-connectors";
-      },
-      github: () => {
-        return "/settings/data-connectors/github";
-      },
-      youtubeTranscript: () => {
-        return "/settings/data-connectors/youtube-transcript";
-      },
     },
   },
 };

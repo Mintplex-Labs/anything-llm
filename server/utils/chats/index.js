@@ -4,14 +4,28 @@ const { resetMemory } = require("./commands/reset");
 const { getVectorDbClass, getLLMProvider } = require("../helpers");
 const { convertToPromptHistory } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
+const { SlashCommandPresets } = require("../../models/slashCommandsPresets");
 
 const VALID_COMMANDS = {
   "/reset": resetMemory,
 };
 
-function grepCommand(message) {
+async function grepCommand(message, user = null) {
+  const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
   const availableCommands = Object.keys(VALID_COMMANDS);
 
+  // Check if the message starts with any preset command
+  const foundPreset = userPresets.find((p) => message.startsWith(p.command));
+  if (!!foundPreset) {
+    // Replace the preset command with the corresponding prompt
+    const updatedMessage = message.replace(
+      foundPreset.command,
+      foundPreset.prompt
+    );
+    return updatedMessage;
+  }
+
+  // Check if the message starts with any built-in command
   for (let i = 0; i < availableCommands.length; i++) {
     const cmd = availableCommands[i];
     const re = new RegExp(`^(${cmd})`, "i");
@@ -20,7 +34,7 @@ function grepCommand(message) {
     }
   }
 
-  return null;
+  return message;
 }
 
 async function chatWithWorkspace(
@@ -31,13 +45,16 @@ async function chatWithWorkspace(
   thread = null
 ) {
   const uuid = uuidv4();
-  const command = grepCommand(message);
+  const updatedMessage = await grepCommand(message, user);
 
-  if (!!command && Object.keys(VALID_COMMANDS).includes(command)) {
-    return await VALID_COMMANDS[command](workspace, message, uuid, user);
+  if (Object.keys(VALID_COMMANDS).includes(updatedMessage)) {
+    return await VALID_COMMANDS[updatedMessage](workspace, message, uuid, user);
   }
 
-  const LLMConnector = getLLMProvider(workspace?.chatModel);
+  const LLMConnector = getLLMProvider({
+    provider: workspace?.chatProvider,
+    model: workspace?.chatModel,
+  });
   const VectorDb = getVectorDbClass();
   const { safe, reasons = [] } = await LLMConnector.isSafe(message);
   if (!safe) {
@@ -67,6 +84,7 @@ async function chatWithWorkspace(
       close: true,
       error: null,
       textResponse:
+        workspace?.queryRefusalResponse ??
         "There is no relevant information in this workspace to answer your query.",
     };
   }
@@ -76,6 +94,7 @@ async function chatWithWorkspace(
   // 2. Chatting in "query" mode and has at least 1 embedding
   let contextTexts = [];
   let sources = [];
+  let pinnedDocIdentifiers = [];
   const { rawHistory, chatHistory } = await recentChatHistory({
     user,
     workspace,
@@ -84,16 +103,16 @@ async function chatWithWorkspace(
     chatMode,
   });
 
-  // Look for pinned documents and see if the user decided to use this feature. We will also do a vector search
-  // as pinning is a supplemental tool but it should be used with caution since it can easily blow up a context window.
+  // See stream.js comment for more information on this implementation.
   await new DocumentManager({
     workspace,
-    maxTokens: LLMConnector.limits.system,
+    maxTokens: LLMConnector.promptWindowLimit(),
   })
     .pinnedDocs()
     .then((pinnedDocs) => {
       pinnedDocs.forEach((doc) => {
         const { pageContent, ...metadata } = doc;
+        pinnedDocIdentifiers.push(sourceIdentifier(doc));
         contextTexts.push(doc.pageContent);
         sources.push({
           text:
@@ -112,6 +131,7 @@ async function chatWithWorkspace(
           LLMConnector,
           similarityThreshold: workspace?.similarityThreshold,
           topN: workspace?.topN,
+          filterIdentifiers: pinnedDocIdentifiers,
         })
       : {
           contextTexts: [],
@@ -131,12 +151,27 @@ async function chatWithWorkspace(
     };
   }
 
-  contextTexts = [...contextTexts, ...vectorSearchResults.contextTexts];
+  const { fillSourceWindow } = require("../helpers/chat");
+  const filledSources = fillSourceWindow({
+    nDocs: workspace?.topN || 4,
+    searchResults: vectorSearchResults.sources,
+    history: rawHistory,
+    filterIdentifiers: pinnedDocIdentifiers,
+  });
+
+  // Why does contextTexts get all the info, but sources only get current search?
+  // This is to give the ability of the LLM to "comprehend" a contextual response without
+  // populating the Citations under a response with documents the user "thinks" are irrelevant
+  // due to how we manage backfilling of the context to keep chats with the LLM more correct in responses.
+  // If a past citation was used to answer the question - that is visible in the history so it logically makes sense
+  // and does not appear to the user that a new response used information that is otherwise irrelevant for a given prompt.
+  // TLDR; reduces GitHub issues for "LLM citing document that has no answer in it" while keep answers highly accurate.
+  contextTexts = [...contextTexts, ...filledSources.contextTexts];
   sources = [...sources, ...vectorSearchResults.sources];
 
-  // If in query mode and no sources are found, do not
+  // If in query mode and no context chunks are found from search, backfill, or pins -  do not
   // let the LLM try to hallucinate a response or use general knowledge and exit early
-  if (chatMode === "query" && sources.length === 0) {
+  if (chatMode === "query" && contextTexts.length === 0) {
     return {
       id: uuid,
       type: "textResponse",
@@ -144,6 +179,7 @@ async function chatWithWorkspace(
       close: true,
       error: null,
       textResponse:
+        workspace?.queryRefusalResponse ??
         "There is no relevant information in this workspace to answer your query.",
     };
   }
@@ -153,7 +189,7 @@ async function chatWithWorkspace(
   const messages = await LLMConnector.compressMessages(
     {
       systemPrompt: chatPrompt(workspace),
-      userPrompt: message,
+      userPrompt: updatedMessage,
       contextTexts,
       chatHistory,
     },
@@ -199,9 +235,7 @@ async function recentChatHistory({
   workspace,
   thread = null,
   messageLimit = 20,
-  chatMode = null,
 }) {
-  if (chatMode === "query") return { rawHistory: [], chatHistory: [] };
   const rawHistory = (
     await WorkspaceChats.where(
       {
@@ -224,7 +258,18 @@ function chatPrompt(workspace) {
   );
 }
 
+// We use this util function to deduplicate sources from similarity searching
+// if the document is already pinned.
+// Eg: You pin a csv, if we RAG + full-text that you will get the same data
+// points both in the full-text and possibly from RAG - result in bad results
+// even if the LLM was not even going to hallucinate.
+function sourceIdentifier(sourceDocument) {
+  if (!sourceDocument?.title || !sourceDocument?.published) return uuidv4();
+  return `title:${sourceDocument.title}-timestamp:${sourceDocument.published}`;
+}
+
 module.exports = {
+  sourceIdentifier,
   recentChatHistory,
   chatWithWorkspace,
   chatPrompt,

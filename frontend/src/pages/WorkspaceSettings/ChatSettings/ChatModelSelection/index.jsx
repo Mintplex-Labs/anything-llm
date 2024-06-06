@@ -3,21 +3,20 @@ import useGetProviderModels, {
 } from "@/hooks/useGetProvidersModels";
 
 export default function ChatModelSelection({
-  settings,
+  provider,
   workspace,
   setHasChanges,
 }) {
-  const { defaultModels, customModels, loading } = useGetProviderModels(
-    settings?.LLMProvider
-  );
-  if (DISABLED_PROVIDERS.includes(settings?.LLMProvider)) return null;
+  const { defaultModels, customModels, loading } =
+    useGetProviderModels(provider);
+  if (DISABLED_PROVIDERS.includes(provider)) return null;
 
   if (loading) {
     return (
       <div>
         <div className="flex flex-col">
           <label htmlFor="name" className="block input-label">
-            Chat model
+            Workspace Chat model
           </label>
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
             The specific chat model that will be used for this workspace. If
@@ -42,8 +41,7 @@ export default function ChatModelSelection({
     <div>
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Chat model{" "}
-          <span className="font-normal">({settings?.LLMProvider})</span>
+          Workspace Chat model
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
           The specific chat model that will be used for this workspace. If
@@ -59,9 +57,6 @@ export default function ChatModelSelection({
         }}
         className="bg-zinc-900 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
       >
-        <option disabled={true} selected={workspace?.chatModel === null}>
-          System default
-        </option>
         {defaultModels.length > 0 && (
           <optgroup label="General models">
             {defaultModels.map((model) => {

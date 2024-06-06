@@ -8,13 +8,16 @@ const { User } = require("../models/user");
 const { DocumentVectors } = require("../models/vectors");
 const { Workspace } = require("../models/workspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
-const { getVectorDbClass } = require("../utils/helpers");
+const {
+  getVectorDbClass,
+  getEmbeddingEngineSelection,
+} = require("../utils/helpers");
 const {
   validRoleSelection,
   canModifyAdmin,
   validCanModify,
 } = require("../utils/helpers/admin");
-const { reqBody, userFromSession } = require("../utils/http");
+const { reqBody, userFromSession, safeJsonParse } = require("../utils/http");
 const {
   strictMultiUserRoleValid,
   flexUserRoleValid,
@@ -30,10 +33,7 @@ function adminEndpoints(app) {
     [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (_request, response) => {
       try {
-        const users = (await User.where()).map((user) => {
-          const { password, ...rest } = user;
-          return rest;
-        });
+        const users = await User.where();
         response.status(200).json({ users });
       } catch (e) {
         console.error(e);
@@ -165,13 +165,18 @@ function adminEndpoints(app) {
     }
   );
 
-  app.get(
+  app.post(
     "/admin/invite/new",
     [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { invite, error } = await Invite.create(user.id);
+        const body = reqBody(request);
+        const { invite, error } = await Invite.create({
+          createdByUserId: user.id,
+          workspaceIds: body?.workspaceIds || [],
+        });
+
         await EventLogs.logEvent(
           "invite_created",
           {
@@ -215,6 +220,21 @@ function adminEndpoints(app) {
       try {
         const workspaces = await Workspace.whereWithUsers();
         response.status(200).json({ workspaces });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/admin/workspaces/:workspaceId/users",
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { workspaceId } = request.params;
+        const users = await Workspace.workspaceUsers(workspaceId);
+        response.status(200).json({ users });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
@@ -291,6 +311,7 @@ function adminEndpoints(app) {
     }
   );
 
+  // TODO: Allow specification of which props to get instead of returning all of them all the time.
   app.get(
     "/admin/system-preferences",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
@@ -312,6 +333,30 @@ function adminEndpoints(app) {
             JSON.stringify([]),
           support_email:
             (await SystemSettings.get({ label: "support_email" }))?.value ||
+            null,
+          text_splitter_chunk_size:
+            (await SystemSettings.get({ label: "text_splitter_chunk_size" }))
+              ?.value ||
+            getEmbeddingEngineSelection()?.embeddingMaxChunkLength ||
+            null,
+          text_splitter_chunk_overlap:
+            (await SystemSettings.get({ label: "text_splitter_chunk_overlap" }))
+              ?.value || null,
+          max_embed_chunk_size:
+            getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1000,
+          agent_search_provider:
+            (await SystemSettings.get({ label: "agent_search_provider" }))
+              ?.value || null,
+          agent_sql_connections:
+            await SystemSettings.brief.agent_sql_connections(),
+          default_agent_skills:
+            safeJsonParse(
+              (await SystemSettings.get({ label: "default_agent_skills" }))
+                ?.value,
+              []
+            ) || [],
+          custom_app_name:
+            (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
             null,
         };
         response.status(200).json({ settings });

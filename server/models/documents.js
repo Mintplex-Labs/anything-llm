@@ -114,7 +114,7 @@ const Document = {
     await Telemetry.sendTelemetry("documents_embedded_in_workspace", {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-      VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+      VectorDbSelection: process.env.VECTOR_DB || "lancedb",
     });
     await EventLogs.logEvent(
       "workspace_documents_added",
@@ -157,7 +157,7 @@ const Document = {
     await Telemetry.sendTelemetry("documents_removed_in_workspace", {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
-      VectorDbSelection: process.env.VECTOR_DB || "pinecone",
+      VectorDbSelection: process.env.VECTOR_DB || "lancedb",
     });
     await EventLogs.logEvent(
       "workspace_documents_removed",
@@ -201,6 +201,15 @@ const Document = {
       console.error(error.message);
       return { document: null, message: error.message };
     }
+  },
+  content: async function (docId) {
+    if (!docId) throw new Error("No workspace docId provided!");
+    const document = await this.get({ docId: String(docId) });
+    if (!document) throw new Error(`Could not find a document by id ${docId}`);
+
+    const { fileData } = require("../utils/files");
+    const data = await fileData(document.docpath);
+    return { title: data.title, content: data.pageContent };
   },
 };
 

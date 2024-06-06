@@ -17,6 +17,6 @@ const scriptSettings = Object.assign(
 );
 export const embedderSettings = {
   settings: scriptSettings,
-  USER_BACKGROUND_COLOR: `bg-[${scriptSettings?.userBgColor ?? "#2C2F35"}]`,
-  AI_BACKGROUND_COLOR: `bg-[${scriptSettings?.assistantBgColor ?? "#2563eb"}]`,
+  USER_STYLES: `bg-[${scriptSettings?.userBgColor ?? "#3DBEF5"}] text-white rounded-t-[18px] rounded-bl-[18px] rounded-br-[4px] mx-[20px]`,
+  ASSISTANT_STYLES: `bg-[${scriptSettings?.assistantBgColor ?? "#FFFFFF"}] text-[#222628] rounded-t-[18px] rounded-br-[18px] rounded-bl-[4px] mr-[37px] ml-[9px]`,
 };

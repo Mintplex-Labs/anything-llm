@@ -4,14 +4,12 @@ const {
   IndexType,
   MilvusClient,
 } = require("@zilliz/milvus2-sdk-node");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
+const { TextSplitter } = require("../../TextSplitter");
+const { SystemSettings } = require("../../../models/systemSettings");
 const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
-const {
-  toChunks,
-  getLLMProvider,
-  getEmbeddingEngineSelection,
-} = require("../../helpers");
+const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
+const { sourceIdentifier } = require("../../chats");
 
 // Zilliz is basically a copy of Milvus DB class with a different constructor
 // to connect to the cloud
@@ -20,8 +18,12 @@ const Zilliz = {
   // Milvus/Zilliz only allows letters, numbers, and underscores in collection names
   // so we need to enforce that by re-normalizing the names when communicating with
   // the DB.
+  // If the first char of the collection is not an underscore or letter the collection name will be invalid.
   normalize: function (inputString) {
-    return inputString.replace(/[^a-zA-Z0-9_]/g, "_");
+    let normalized = inputString.replace(/[^a-zA-Z0-9_]/g, "_");
+    if (new RegExp(/^[a-zA-Z_]/).test(normalized.slice(0, 1)))
+      normalized = `anythingllm_${normalized}`;
+    return normalized;
   },
   connect: async function () {
     if (process.env.VECTOR_DB !== "zilliz")
@@ -179,18 +181,29 @@ const Zilliz = {
         return { vectorized: true, error: null };
       }
 
-      const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize:
-          getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1_000,
-        chunkOverlap: 20,
+      const EmbedderEngine = getEmbeddingEngineSelection();
+      const textSplitter = new TextSplitter({
+        chunkSize: TextSplitter.determineMaxChunkSize(
+          await SystemSettings.getValueOrFallback({
+            label: "text_splitter_chunk_size",
+          }),
+          EmbedderEngine?.embeddingMaxChunkLength
+        ),
+        chunkOverlap: await SystemSettings.getValueOrFallback(
+          { label: "text_splitter_chunk_overlap" },
+          20
+        ),
+        chunkHeaderMeta: {
+          sourceDocument: metadata?.title,
+          published: metadata?.published || "unknown",
+        },
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
       console.log("Chunks created from document:", textChunks.length);
-      const LLMConnector = getLLMProvider();
       const documentVectors = [];
       const vectors = [];
-      const vectorValues = await LLMConnector.embedChunks(textChunks);
+      const vectorValues = await EmbedderEngine.embedChunks(textChunks);
 
       if (!!vectorValues && vectorValues.length > 0) {
         for (const [i, vector] of vectorValues.entries()) {
@@ -277,6 +290,7 @@ const Zilliz = {
     LLMConnector = null,
     similarityThreshold = 0.25,
     topN = 4,
+    filterIdentifiers = [],
   }) {
     if (!namespace || !input || !LLMConnector)
       throw new Error("Invalid request to performSimilaritySearch.");
@@ -296,7 +310,8 @@ const Zilliz = {
       namespace,
       queryVector,
       similarityThreshold,
-      topN
+      topN,
+      filterIdentifiers
     );
 
     const sources = sourceDocuments.map((metadata, i) => {
@@ -313,7 +328,8 @@ const Zilliz = {
     namespace,
     queryVector,
     similarityThreshold = 0.25,
-    topN = 4
+    topN = 4,
+    filterIdentifiers = []
   ) {
     const result = {
       contextTexts: [],
@@ -327,6 +343,12 @@ const Zilliz = {
     });
     response.results.forEach((match) => {
       if (match.score < similarityThreshold) return;
+      if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
+        console.log(
+          "Zilliz: A source was filtered from context as it's parent document is pinned."
+        );
+        return;
+      }
       result.contextTexts.push(match.metadata.text);
       result.sourceDocuments.push(match);
       result.scores.push(match.score);

@@ -1,7 +1,7 @@
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
-const { viewLocalFiles, normalizePath } = require("../utils/files");
+const { viewLocalFiles, normalizePath, isWithin } = require("../utils/files");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../utils/helpers");
 const { updateENV, dumpENV } = require("../utils/helpers/updateENV");
@@ -12,13 +12,11 @@ const {
   multiUserMode,
   queryParams,
 } = require("../utils/http");
-const { setupLogoUploads, setupPfpUploads } = require("../utils/files/multer");
+const { handleAssetUpload, handlePfpUpload } = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
 const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const { handleLogoUploads } = setupLogoUploads();
-const { handlePfpUploads } = setupPfpUploads();
 const fs = require("fs");
 const path = require("path");
 const {
@@ -38,6 +36,7 @@ const { WorkspaceChats } = require("../models/workspaceChats");
 const {
   flexUserRoleValid,
   ROLES,
+  isMultiUserSetup,
 } = require("../utils/middleware/multiUserProtected");
 const { fetchPfp, determinePfpFilepath } = require("../utils/files/pfp");
 const {
@@ -46,6 +45,12 @@ const {
 } = require("../utils/helpers/chat/convertTo");
 const { EventLogs } = require("../models/eventLogs");
 const { CollectorApi } = require("../utils/collectorApi");
+const {
+  recoverAccount,
+  resetPassword,
+  generateRecoveryCodes,
+} = require("../utils/PasswordRecovery");
+const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -55,10 +60,6 @@ function systemEndpoints(app) {
   });
 
   app.get("/migrate", async (_, response) => {
-    const execSync = require("child_process").execSync;
-    execSync("npx prisma migrate deploy --schema=./prisma/schema.prisma", {
-      stdio: "inherit",
-    });
     response.sendStatus(200);
   });
 
@@ -109,7 +110,7 @@ function systemEndpoints(app) {
 
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-        const existingUser = await User.get({ username });
+        const existingUser = await User._get({ username: String(username) });
 
         if (!existingUser) {
           await EventLogs.logEvent(
@@ -129,7 +130,7 @@ function systemEndpoints(app) {
           return;
         }
 
-        if (!bcrypt.compareSync(password, existingUser.password)) {
+        if (!bcrypt.compareSync(String(password), existingUser.password)) {
           await EventLogs.logEvent(
             "failed_login_invalid_password",
             {
@@ -180,9 +181,27 @@ function systemEndpoints(app) {
           existingUser?.id
         );
 
+        // Check if the user has seen the recovery codes
+        if (!existingUser.seen_recovery_codes) {
+          const plainTextCodes = await generateRecoveryCodes(existingUser.id);
+
+          // Return recovery codes to frontend
+          response.status(200).json({
+            valid: true,
+            user: User.filterFields(existingUser),
+            token: makeJWT(
+              { id: existingUser.id, username: existingUser.username },
+              "30d"
+            ),
+            message: null,
+            recoveryCodes: plainTextCodes,
+          });
+          return;
+        }
+
         response.status(200).json({
           valid: true,
-          user: existingUser,
+          user: User.filterFields(existingUser),
           token: makeJWT(
             { id: existingUser.id, username: existingUser.username },
             "30d"
@@ -226,6 +245,55 @@ function systemEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.post(
+    "/system/recover-account",
+    [isMultiUserSetup],
+    async (request, response) => {
+      try {
+        const { username, recoveryCodes } = reqBody(request);
+        const { success, resetToken, error } = await recoverAccount(
+          username,
+          recoveryCodes
+        );
+
+        if (success) {
+          response.status(200).json({ success, resetToken });
+        } else {
+          response.status(400).json({ success, message: error });
+        }
+      } catch (error) {
+        console.error("Error recovering account:", error);
+        response
+          .status(500)
+          .json({ success: false, message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/reset-password",
+    [isMultiUserSetup],
+    async (request, response) => {
+      try {
+        const { token, newPassword, confirmPassword } = reqBody(request);
+        const { success, message, error } = await resetPassword(
+          token,
+          newPassword,
+          confirmPassword
+        );
+
+        if (success) {
+          response.status(200).json({ success, message });
+        } else {
+          response.status(400).json({ success, error });
+        }
+      } catch (error) {
+        console.error("Error resetting password:", error);
+        response.status(500).json({ success: false, message: error.message });
+      }
+    }
+  );
 
   app.get(
     "/system/system-vectors",
@@ -368,14 +436,22 @@ function systemEndpoints(app) {
           return;
         }
 
+        let error = null;
         const { usePassword, newPassword } = reqBody(request);
-        const { error } = await updateENV(
-          {
-            AuthToken: usePassword ? newPassword : "",
-            JWTSecret: usePassword ? v4() : "",
-          },
-          true
-        );
+        if (!usePassword) {
+          // Password is being disabled so directly unset everything to bypass validation.
+          process.env.AUTH_TOKEN = "";
+          process.env.JWT_SECRET = "";
+        } else {
+          error = await updateENV(
+            {
+              AuthToken: newPassword,
+              JWTSecret: v4(),
+            },
+            true
+          )?.error;
+        }
+
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ success: !error, error });
       } catch (e) {
@@ -390,9 +466,7 @@ function systemEndpoints(app) {
     [validatedRequest],
     async (request, response) => {
       try {
-        const { username, password } = reqBody(request);
-        const multiUserModeEnabled = await SystemSettings.isMultiUserMode();
-        if (multiUserModeEnabled) {
+        if (response.locals.multiUserMode) {
           response.status(200).json({
             success: false,
             error: "Multi-user mode is already enabled.",
@@ -400,12 +474,13 @@ function systemEndpoints(app) {
           return;
         }
 
+        const { username, password } = reqBody(request);
         const { user, error } = await User.create({
           username,
           password,
           role: ROLES.admin,
         });
-        await SystemSettings.updateSettings({
+        await SystemSettings._updateSettings({
           multi_user_mode: true,
           users_can_delete_workspaces: false,
           limit_user_messages: false,
@@ -414,7 +489,6 @@ function systemEndpoints(app) {
 
         await updateENV(
           {
-            AuthToken: "",
             JWTSecret: process.env.JWT_SECRET || v4(),
           },
           true
@@ -427,7 +501,7 @@ function systemEndpoints(app) {
         response.status(200).json({ success: !!user, error });
       } catch (e) {
         await User.delete({});
-        await SystemSettings.updateSettings({
+        await SystemSettings._updateSettings({
           multi_user_mode: false,
         });
 
@@ -452,17 +526,24 @@ function systemEndpoints(app) {
       const defaultFilename = getDefaultFilename();
       const logoPath = await determineLogoFilepath(defaultFilename);
       const { found, buffer, size, mime } = fetchLogo(logoPath);
+
       if (!found) {
         response.sendStatus(204).end();
         return;
       }
 
+      const currentLogoFilename = await SystemSettings.currentLogoFilename();
       response.writeHead(200, {
+        "Access-Control-Expose-Headers":
+          "Content-Disposition,X-Is-Custom-Logo,Content-Type,Content-Length",
         "Content-Type": mime || "image/png",
         "Content-Disposition": `attachment; filename=${path.basename(
           logoPath
         )}`,
         "Content-Length": size,
+        "X-Is-Custom-Logo":
+          currentLogoFilename !== null &&
+          currentLogoFilename !== defaultFilename,
       });
       response.end(Buffer.from(buffer, "base64"));
       return;
@@ -495,6 +576,22 @@ function systemEndpoints(app) {
       response.status(200).json({ supportEmail: supportEmail });
     } catch (error) {
       console.error("Error fetching support email:", error);
+      response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // No middleware protection in order to get this on the login page
+  app.get("/system/custom-app-name", async (_, response) => {
+    try {
+      const customAppName =
+        (
+          await SystemSettings.get({
+            label: "custom_app_name",
+          })
+        )?.value ?? null;
+      response.status(200).json({ customAppName: customAppName });
+    } catch (error) {
+      console.error("Error fetching custom app name:", error);
       response.status(500).json({ message: "Internal server error" });
     }
   });
@@ -536,8 +633,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/upload-pfp",
-    [validatedRequest, flexUserRoleValid([ROLES.all])],
-    handlePfpUploads.single("file"),
+    [validatedRequest, flexUserRoleValid([ROLES.all]), handlePfpUpload],
     async function (request, response) {
       try {
         const user = await userFromSession(request, response);
@@ -549,11 +645,13 @@ function systemEndpoints(app) {
         const userRecord = await User.get({ id: user.id });
         const oldPfpFilename = userRecord.pfpFilename;
         if (oldPfpFilename) {
+          const storagePath = path.join(__dirname, "../storage/assets/pfp");
           const oldPfpPath = path.join(
-            __dirname,
-            `../storage/assets/pfp/${normalizePath(userRecord.pfpFilename)}`
+            storagePath,
+            normalizePath(userRecord.pfpFilename)
           );
-
+          if (!isWithin(path.resolve(storagePath), path.resolve(oldPfpPath)))
+            throw new Error("Invalid path name");
           if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
         }
 
@@ -582,13 +680,14 @@ function systemEndpoints(app) {
         const userRecord = await User.get({ id: user.id });
         const oldPfpFilename = userRecord.pfpFilename;
 
-        console.log("oldPfpFilename", oldPfpFilename);
         if (oldPfpFilename) {
+          const storagePath = path.join(__dirname, "../storage/assets/pfp");
           const oldPfpPath = path.join(
-            __dirname,
-            `../storage/assets/pfp/${normalizePath(oldPfpFilename)}`
+            storagePath,
+            normalizePath(oldPfpFilename)
           );
-
+          if (!isWithin(path.resolve(storagePath), path.resolve(oldPfpPath)))
+            throw new Error("Invalid path name");
           if (fs.existsSync(oldPfpPath)) fs.unlinkSync(oldPfpPath);
         }
 
@@ -610,10 +709,13 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/upload-logo",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    handleLogoUploads.single("logo"),
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      handleAssetUpload,
+    ],
     async (request, response) => {
-      if (!request.file || !request.file.originalname) {
+      if (!request?.file || !request?.file.originalname) {
         return response.status(400).json({ message: "No logo file provided." });
       }
 
@@ -628,7 +730,7 @@ function systemEndpoints(app) {
         const existingLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(existingLogoFilename);
 
-        const { success, error } = await SystemSettings.updateSettings({
+        const { success, error } = await SystemSettings._updateSettings({
           logo_filename: newFilename,
         });
 
@@ -662,7 +764,7 @@ function systemEndpoints(app) {
       try {
         const currentLogoFilename = await SystemSettings.currentLogoFilename();
         await removeCustomLogo(currentLogoFilename);
-        const { success, error } = await SystemSettings.updateSettings({
+        const { success, error } = await SystemSettings._updateSettings({
           logo_filename: LOGO_FILENAME,
         });
 
@@ -845,7 +947,7 @@ function systemEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin])],
     async (request, response) => {
       try {
-        const { offset = 0, limit = 20 } = reqBody(request);
+        const { offset = 0, limit = 10 } = reqBody(request);
         const logs = await EventLogs.whereWithData({}, limit, offset * limit, {
           id: "desc",
         });
@@ -908,7 +1010,9 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
-        await WorkspaceChats.delete({ id: Number(id) });
+        Number(id) === -1
+          ? await WorkspaceChats.delete({}, true)
+          : await WorkspaceChats.delete({ id: Number(id) });
         response.json({ success: true, error: null });
       } catch (e) {
         console.error(e);
@@ -956,10 +1060,10 @@ function systemEndpoints(app) {
 
       const updates = {};
       if (username) {
-        updates.username = username;
+        updates.username = User.validations.username(String(username));
       }
       if (password) {
-        updates.password = password;
+        updates.password = String(password);
       }
 
       if (Object.keys(updates).length === 0) {
@@ -976,6 +1080,111 @@ function systemEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
+  app.get(
+    "/system/slash-command-presets",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
+        response.status(200).json({ presets: userPresets });
+      } catch (error) {
+        console.error("Error fetching slash command presets:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/slash-command-presets",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { command, prompt, description } = reqBody(request);
+        const presetData = {
+          command: SlashCommandPresets.formatCommand(String(command)),
+          prompt: String(prompt),
+          description: String(description),
+        };
+
+        const preset = await SlashCommandPresets.create(user?.id, presetData);
+        if (!preset) {
+          return response
+            .status(500)
+            .json({ message: "Failed to create preset" });
+        }
+        response.status(201).json({ preset });
+      } catch (error) {
+        console.error("Error creating slash command preset:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/slash-command-presets/:slashCommandId",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { slashCommandId } = request.params;
+        const { command, prompt, description } = reqBody(request);
+
+        // Valid user running owns the preset if user session is valid.
+        const ownsPreset = await SlashCommandPresets.get({
+          userId: user?.id ?? null,
+          id: Number(slashCommandId),
+        });
+        if (!ownsPreset)
+          return response.status(404).json({ message: "Preset not found" });
+
+        const updates = {
+          command: SlashCommandPresets.formatCommand(String(command)),
+          prompt: String(prompt),
+          description: String(description),
+        };
+
+        const preset = await SlashCommandPresets.update(
+          Number(slashCommandId),
+          updates
+        );
+        if (!preset) return response.sendStatus(422);
+        response.status(200).json({ preset: { ...ownsPreset, ...updates } });
+      } catch (error) {
+        console.error("Error updating slash command preset:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.delete(
+    "/system/slash-command-presets/:slashCommandId",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { slashCommandId } = request.params;
+        const user = await userFromSession(request, response);
+
+        // Valid user running owns the preset if user session is valid.
+        const ownsPreset = await SlashCommandPresets.get({
+          userId: user?.id ?? null,
+          id: Number(slashCommandId),
+        });
+        if (!ownsPreset)
+          return response
+            .status(403)
+            .json({ message: "Failed to delete preset" });
+
+        await SlashCommandPresets.delete(Number(slashCommandId));
+        response.sendStatus(204);
+      } catch (error) {
+        console.error("Error deleting slash command preset:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
 }
 
 module.exports = { systemEndpoints };
