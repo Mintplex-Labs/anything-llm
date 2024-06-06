@@ -158,18 +158,18 @@ function EmbeddingModelTooltip() {
       <Warning
         size={14}
         className="ml-1 text-orange-500 cursor-pointer"
-        data-tooltip-id="access-token-tooltip"
+        data-tooltip-id="model-tooltip"
         data-tooltip-place="right"
       />
       <Tooltip
         delayHide={300}
-        id="access-token-tooltip"
+        id="model-tooltip"
         className="max-w-xs"
         clickable={true}
       >
         <p className="text-sm">
-          Be sure to select a valid embedding model. Chat models will cause
-          embedding to fail. See{" "}
+          Be sure to select a valid embedding model. Chat models are not
+          embedding models. See{" "}
           <a
             href="https://litellm.vercel.app/docs/embedding/supported_embedding"
             target="_blank"
