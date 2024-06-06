@@ -301,6 +301,13 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: VoyageAiLogo,
   },
+  litellm: {
+    name: "LiteLLM",
+    description: [
+      "Your document text is only accessible on the server running LiteLLM and to the providers you configured in LiteLLM.",
+    ],
+    logo: LiteLLMLogo,
+  },
 };
 
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {
