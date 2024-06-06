@@ -1,0 +1,26 @@
+import { Warning } from "@phosphor-icons/react";
+
+export default function ContextualSaveBar({ onSave, onCancel }) {
+  return (
+    <div className="fixed bottom-0 left-0 right-0 h-14 bg-[#18181B] flex items-center justify-end px-4">
+      <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-x-2">
+        <Warning size={18} className="text-white" />
+        <p className="text-white font-medium text-xs">Unsaved Changes</p>
+      </div>
+      <div className="flex items-center gap-x-2">
+        <button
+          className="text-white font-medium text-sm px-[10px] py-[6px] rounded-md bg-white/5 hover:bg-white/10"
+          onClick={onCancel}
+        >
+          Cancel
+        </button>
+        <button
+          className="text-[#222628] font-medium text-sm px-[10px] py-[6px] rounded-md bg-[#46C8FF] hover:bg-[#3DB5E8]"
+          onClick={onSave}
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -8,6 +8,7 @@ import AgentWebSearchSelection from "./WebSearchSelection";
 import AgentSQLConnectorSelection from "./SQLConnectorSelection";
 import GenericSkill from "./GenericSkill";
 import { CaretRight, Robot } from "@phosphor-icons/react";
+import ContextualSaveBar from "@/components/ContextualSaveBar";
 
 const defaultSkills = {
   "rag-memory": {
@@ -133,7 +134,7 @@ export default function AdminAgents() {
                   }`}
                   onClick={() => setSelectedSkill(skill)}
                 >
-                  <div className="text-sm">{settings.title}</div>
+                  <div className="text-sm font-light">{settings.title}</div>
                   <CaretRight
                     size={14}
                     weight="bold"
@@ -160,7 +161,7 @@ export default function AdminAgents() {
                     }`}
                     onClick={() => setSelectedSkill(skill)}
                   >
-                    <div className="text-sm">{settings.title}</div>
+                    <div className="text-sm font-light">{settings.title}</div>
                     <div className="flex items-center gap-x-2">
                       <div className="text-sm text-white/60 font-medium">
                         {settings.enabled ? "On" : "Off"}
@@ -201,6 +202,12 @@ export default function AdminAgents() {
             </div>
           </div>
         </div>
+        {hasChanges && (
+          <ContextualSaveBar
+            onSave={handleSubmit}
+            onCancel={() => setHasChanges(false)}
+          />
+        )}
       </div>
     </div>
   );
