@@ -399,6 +399,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_SERPER_DEV_KEY",
     checks: [],
   },
+  AgentBingSearchApiKey: {
+    envKey: "AGENT_BING_SEARCH_API_KEY",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
@@ -528,6 +532,7 @@ function supportedTranscriptionProvider(input = "") {
 function validGeminiModel(input = "") {
   const validModels = [
     "gemini-pro",
+    "gemini-1.0-pro",
     "gemini-1.5-pro-latest",
     "gemini-1.5-flash-latest",
   ];
@@ -572,6 +577,7 @@ function supportedEmbeddingModel(input = "") {
     "lmstudio",
     "cohere",
     "voyageai",
+    "litellm",
   ];
   return supported.includes(input)
     ? null
@@ -762,6 +768,7 @@ async function dumpENV() {
     "AGENT_GSE_CTX",
     "AGENT_GSE_KEY",
     "AGENT_SERPER_DEV_KEY",
+    "AGENT_BING_SEARCH_API_KEY",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

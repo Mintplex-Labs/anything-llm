@@ -65,6 +65,9 @@ const webBrowsing = {
               case "serper-dot-dev":
                 engine = "_serperDotDev";
                 break;
+              case "bing-search":
+                engine = "_bingWebSearch";
+                break;
               default:
                 engine = "_googleSearchEngine";
             }
@@ -171,6 +174,49 @@ const webBrowsing = {
             if (data.length === 0)
               return `No information was found online for the search query.`;
             return JSON.stringify(data);
+          },
+          _bingWebSearch: async function (query) {
+            if (!process.env.AGENT_BING_SEARCH_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use Bing Web Search because the user has not defined the required API key.\nVisit: https://portal.azure.com/ to create the API key.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            const searchURL = new URL(
+              "https://api.bing.microsoft.com/v7.0/search"
+            );
+            searchURL.searchParams.append("q", query);
+
+            this.super.introspect(
+              `${this.caller}: Using Bing Web Search to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const searchResponse = await fetch(searchURL, {
+              headers: {
+                "Ocp-Apim-Subscription-Key":
+                  process.env.AGENT_BING_SEARCH_API_KEY,
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                const searchResults = data.webPages?.value || [];
+                return searchResults.map((result) => ({
+                  title: result.name,
+                  link: result.url,
+                  snippet: result.snippet,
+                }));
+              })
+              .catch((e) => {
+                console.log(e);
+                return [];
+              });
+
+            if (searchResponse.length === 0)
+              return `No information was found online for the search query.`;
+            return JSON.stringify(searchResponse);
           },
         });
       },
