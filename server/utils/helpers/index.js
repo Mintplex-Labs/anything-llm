@@ -128,6 +128,9 @@ function getEmbeddingEngineSelection() {
     case "voyageai":
       const { VoyageAiEmbedder } = require("../EmbeddingEngines/voyageAi");
       return new VoyageAiEmbedder();
+    case "litellm":
+      const { LiteLLMEmbedder } = require("../EmbeddingEngines/liteLLM");
+      return new LiteLLMEmbedder();
     default:
       return new NativeEmbedder();
   }
