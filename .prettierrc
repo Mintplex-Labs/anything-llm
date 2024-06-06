@@ -17,7 +17,7 @@
       }
     },
     {
-      "files": "*.config.js",
+      "files": ["*.config.js"],
       "options": {
         "semi": false,
         "parser": "flow",

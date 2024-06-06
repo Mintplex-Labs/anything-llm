@@ -108,13 +108,10 @@ export default function handleChat(
   } else if (type === "finalizeResponseStream") {
     const chatIdx = _chatHistory.findIndex((chat) => chat.uuid === uuid);
     if (chatIdx !== -1) {
-      const existingHistory = { ..._chatHistory[chatIdx] };
-      const updatedHistory = {
-        ...existingHistory,
-        chatId, // finalize response stream only has some specific keys for data. we are explicitly listing them here.
-      };
-      _chatHistory[chatIdx] = updatedHistory;
+      _chatHistory[chatIdx - 1] = { ..._chatHistory[chatIdx - 1], chatId }; // update prompt with chatID
+      _chatHistory[chatIdx] = { ..._chatHistory[chatIdx], chatId }; // update response with chatID
     }
+
     setChatHistory([..._chatHistory]);
     setLoadingResponse(false);
   } else if (type === "stopGeneration") {

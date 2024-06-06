@@ -22,7 +22,7 @@
     // Terraform support
     "ghcr.io/devcontainers/features/terraform:1": {},
     // Just a wrap to install needed packages
-    "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+    "ghcr.io/devcontainers-contrib/features/apt-packages:1": {
       // Dependencies copied from ../docker/Dockerfile plus some dev stuff
       "packages": [
         "build-essential",
