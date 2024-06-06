@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "NODE_ENV=development nodemon --ignore documents --ignore vector-cache --ignore storage --ignore swagger --trace-warnings index.js",
     "start": "NODE_ENV=production node index.js",
-    "lint": "yarn prettier --write ./endpoints ./models ./utils index.js",
+    "lint": "yarn prettier --ignore-path ../.prettierignore --write ./endpoints ./models ./utils index.js",
     "swagger": "node ./swagger/init.js",
     "sqlite:migrate": "cd ./utils/prisma && node migrateFromSqlite.js"
   },
