@@ -116,7 +116,7 @@ export default function SettingsSidebar() {
                   </div>
                 </div>
               </div>
-              <div className="absolute bottom-6 left-0 right-0 pt-2 bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
+              <div className="absolute bottom-2 left-0 right-0 pt-2 bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
                 <Footer />
               </div>
             </div>

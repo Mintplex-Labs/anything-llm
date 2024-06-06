@@ -175,7 +175,7 @@ export function SidebarMobileHeader() {
                   <ActiveWorkspaces />
                 </div>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
+              <div className="z-99 absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
                 <Footer />
               </div>
             </div>
