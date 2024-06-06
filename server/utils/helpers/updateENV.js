@@ -577,6 +577,7 @@ function supportedEmbeddingModel(input = "") {
     "lmstudio",
     "cohere",
     "voyageai",
+    "litellm",
   ];
   return supported.includes(input)
     ? null

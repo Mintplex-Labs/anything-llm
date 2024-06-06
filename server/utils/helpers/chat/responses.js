@@ -174,6 +174,7 @@ function convertToChatHistory(history = []) {
         role: "user",
         content: prompt,
         sentAt: moment(createdAt).unix(),
+        chatId: id,
       },
       {
         type: data?.type || "chart",
