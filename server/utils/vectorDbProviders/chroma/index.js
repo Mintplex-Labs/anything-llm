@@ -6,9 +6,55 @@ const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { parseAuthHeader } = require("../../http");
 const { sourceIdentifier } = require("../../chats");
+const COLLECTION_REGEX = new RegExp(
+  /^(?!\d+\.\d+\.\d+\.\d+$)(?!.*\.\.)(?=^[a-zA-Z0-9][a-zA-Z0-9_-]{1,61}[a-zA-Z0-9]$).{3,63}$/
+);
 
 const Chroma = {
   name: "Chroma",
+  // Chroma DB has specific requirements for collection names:
+  // (1) Must contain 3-63 characters
+  // (2) Must start and end with an alphanumeric character
+  // (3) Can only contain alphanumeric characters, underscores, or hyphens
+  // (4) Cannot contain two consecutive periods (..)
+  // (5) Cannot be a valid IPv4 address
+  // We need to enforce these rules by normalizing the collection names
+  // before communicating with the Chroma DB.
+  normalize: function (inputString) {
+    if (COLLECTION_REGEX.test(inputString)) return inputString;
+    let normalized = inputString.replace(/[^a-zA-Z0-9_-]/g, "-");
+
+    // Replace consecutive periods with a single period (if any)
+    normalized = normalized.replace(/\.\.+/g, ".");
+
+    // Ensure the name doesn't start with a non-alphanumeric character
+    if (normalized[0] && !/^[a-zA-Z0-9]$/.test(normalized[0])) {
+      normalized = "anythingllm-" + normalized.slice(1);
+    }
+
+    // Ensure the name doesn't end with a non-alphanumeric character
+    if (
+      normalized[normalized.length - 1] &&
+      !/^[a-zA-Z0-9]$/.test(normalized[normalized.length - 1])
+    ) {
+      normalized = normalized.slice(0, -1);
+    }
+
+    // Ensure the length is between 3 and 63 characters
+    if (normalized.length < 3) {
+      normalized = `anythingllm-${normalized}`;
+    } else if (normalized.length > 63) {
+      // Recheck the norm'd name if sliced since its ending can still be invalid.
+      normalized = this.normalize(normalized.slice(0, 63));
+    }
+
+    // Ensure the name is not an IPv4 address
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(normalized)) {
+      normalized = "-" + normalized.slice(1);
+    }
+
+    return normalized;
+  },
   connect: async function () {
     if (process.env.VECTOR_DB !== "chroma")
       throw new Error("Chroma::Invalid ENV settings");
@@ -59,7 +105,7 @@ const Chroma = {
   },
   namespaceCount: async function (_namespace = null) {
     const { client } = await this.connect();
-    const namespace = await this.namespace(client, _namespace);
+    const namespace = await this.namespace(client, this.normalize(_namespace));
     return namespace?.vectorCount || 0;
   },
   similarityResponse: async function (
@@ -70,7 +116,9 @@ const Chroma = {
     topN = 4,
     filterIdentifiers = []
   ) {
-    const collection = await client.getCollection({ name: namespace });
+    const collection = await client.getCollection({
+      name: this.normalize(namespace),
+    });
     const result = {
       contextTexts: [],
       sourceDocuments: [],
@@ -106,7 +154,7 @@ const Chroma = {
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
-      .getCollection({ name: namespace })
+      .getCollection({ name: this.normalize(namespace) })
       .catch(() => null);
     if (!collection) return null;
 
@@ -118,12 +166,12 @@ const Chroma = {
   hasNamespace: async function (namespace = null) {
     if (!namespace) return false;
     const { client } = await this.connect();
-    return await this.namespaceExists(client, namespace);
+    return await this.namespaceExists(client, this.normalize(namespace));
   },
   namespaceExists: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client
-      .getCollection({ name: namespace })
+      .getCollection({ name: this.normalize(namespace) })
       .catch((e) => {
         console.error("ChromaDB::namespaceExists", e.message);
         return null;
@@ -131,7 +179,7 @@ const Chroma = {
     return !!collection;
   },
   deleteVectorsInNamespace: async function (client, namespace = null) {
-    await client.deleteCollection({ name: namespace });
+    await client.deleteCollection({ name: this.normalize(namespace) });
     return true;
   },
   addDocumentToNamespace: async function (
@@ -149,7 +197,7 @@ const Chroma = {
       if (cacheResult.exists) {
         const { client } = await this.connect();
         const collection = await client.getOrCreateCollection({
-          name: namespace,
+          name: this.normalize(namespace),
           metadata: { "hnsw:space": "cosine" },
         });
         const { chunks } = cacheResult;
@@ -245,7 +293,7 @@ const Chroma = {
 
       const { client } = await this.connect();
       const collection = await client.getOrCreateCollection({
-        name: namespace,
+        name: this.normalize(namespace),
         metadata: { "hnsw:space": "cosine" },
       });
 
@@ -274,7 +322,7 @@ const Chroma = {
     const { client } = await this.connect();
     if (!(await this.namespaceExists(client, namespace))) return;
     const collection = await client.getCollection({
-      name: namespace,
+      name: this.normalize(namespace),
     });
 
     const knownDocuments = await DocumentVectors.where({ docId });
@@ -299,7 +347,7 @@ const Chroma = {
       throw new Error("Invalid request to performSimilaritySearch.");
 
     const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace))) {
+    if (!(await this.namespaceExists(client, this.normalize(namespace)))) {
       return {
         contextTexts: [],
         sources: [],
@@ -330,9 +378,9 @@ const Chroma = {
     const { namespace = null } = reqBody;
     if (!namespace) throw new Error("namespace required");
     const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace)))
+    if (!(await this.namespaceExists(client, this.normalize(namespace))))
       throw new Error("Namespace by that name does not exist.");
-    const stats = await this.namespace(client, namespace);
+    const stats = await this.namespace(client, this.normalize(namespace));
     return stats
       ? stats
       : { message: "No stats were able to be fetched from DB for namespace" };
@@ -340,11 +388,11 @@ const Chroma = {
   "delete-namespace": async function (reqBody = {}) {
     const { namespace = null } = reqBody;
     const { client } = await this.connect();
-    if (!(await this.namespaceExists(client, namespace)))
+    if (!(await this.namespaceExists(client, this.normalize(namespace))))
       throw new Error("Namespace by that name does not exist.");
 
-    const details = await this.namespace(client, namespace);
-    await this.deleteVectorsInNamespace(client, namespace);
+    const details = await this.namespace(client, this.normalize(namespace));
+    await this.deleteVectorsInNamespace(client, this.normalize(namespace));
     return {
       message: `Namespace ${namespace} was deleted along with ${details?.vectorCount} vectors.`,
     };
