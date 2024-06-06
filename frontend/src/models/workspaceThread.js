@@ -163,6 +163,51 @@ const WorkspaceThread = {
       }
     );
   },
+  _deleteEditedChats: async function (
+    workspaceSlug = "",
+    threadSlug = "",
+    startingId
+  ) {
+    return await fetch(
+      `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/delete-edited-chats`,
+      {
+        method: "DELETE",
+        headers: baseHeaders(),
+        body: JSON.stringify({ startingId }),
+      }
+    )
+      .then((res) => {
+        if (res.ok) return true;
+        throw new Error("Failed to delete chats.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return false;
+      });
+  },
+  _updateChatResponse: async function (
+    workspaceSlug = "",
+    threadSlug = "",
+    chatId,
+    newText
+  ) {
+    return await fetch(
+      `${API_BASE}/workspace/${workspaceSlug}/thread/${threadSlug}/update-chat`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ chatId, newText }),
+      }
+    )
+      .then((res) => {
+        if (res.ok) return true;
+        throw new Error("Failed to update chat.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return false;
+      });
+  },
 };
 
 export default WorkspaceThread;

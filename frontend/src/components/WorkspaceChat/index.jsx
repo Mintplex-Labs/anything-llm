@@ -22,6 +22,7 @@ export default function WorkspaceChat({ loading, workspace }) {
       const chatHistory = threadSlug
         ? await Workspace.threads.chatHistory(workspace.slug, threadSlug)
         : await Workspace.chatHistory(workspace.slug);
+
       setHistory(chatHistory);
       setLoadingHistory(false);
     }
