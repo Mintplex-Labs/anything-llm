@@ -13,7 +13,7 @@ import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../Sidebar";
 import ChatBubble from "../ChatBubble";
 import System from "@/models/system";
-import Jazzicon from "../UserIcon";
+import UserIcon from "../UserIcon";
 import { userFromStorage } from "@/utils/request";
 import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import useUser from "@/hooks/useUser";
@@ -46,7 +46,7 @@ export default function DefaultChatContainer() {
           className={`pt-10 pb-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon user={{ uid: "system" }} role={"assistant"} />
 
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -70,7 +70,7 @@ export default function DefaultChatContainer() {
           className={`pb-4 pt-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon user={{ uid: "system" }} role={"assistant"} />
 
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -93,7 +93,7 @@ export default function DefaultChatContainer() {
           className={`pt-2 pb-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon user={{ uid: "system" }} role={"assistant"} />
             <div>
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -127,8 +127,7 @@ export default function DefaultChatContainer() {
           className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon
-              size={36}
+            <UserIcon
               user={{ uid: userFromStorage()?.username }}
               role={"user"}
             />
@@ -151,7 +150,7 @@ export default function DefaultChatContainer() {
           className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon user={{ uid: "system" }} role={"assistant"} />
             <div>
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -188,8 +187,7 @@ export default function DefaultChatContainer() {
           className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon
-              size={36}
+            <UserIcon
               user={{ uid: userFromStorage()?.username }}
               role={"user"}
             />
@@ -213,7 +211,7 @@ export default function DefaultChatContainer() {
           className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon user={{ uid: "system" }} role={"assistant"} />
 
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -251,8 +249,7 @@ export default function DefaultChatContainer() {
           className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon
-              size={36}
+            <UserIcon
               user={{ uid: userFromStorage()?.username }}
               role={"user"}
             />
@@ -275,7 +272,7 @@ export default function DefaultChatContainer() {
           className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon user={{ uid: "system" }} role={"assistant"} />
             <div>
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}

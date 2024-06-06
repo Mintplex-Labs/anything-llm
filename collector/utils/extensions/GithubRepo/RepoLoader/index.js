@@ -14,7 +14,11 @@ class RepoLoader {
   #validGithubUrl() {
     const UrlPattern = require("url-pattern");
     const pattern = new UrlPattern(
-      "https\\://github.com/(:author)/(:project(*))"
+      "https\\://github.com/(:author)/(:project(*))",
+      {
+        // fixes project names with special characters (.github)
+        segmentValueCharset: "a-zA-Z0-9-._~%/+",
+      }
     );
     const match = pattern.match(this.repo);
     if (!match) return false;
