@@ -8,7 +8,7 @@ import useUser from "../../../hooks/useUser";
 import DocumentSettings from "./Documents";
 import DataConnectors from "./DataConnectors";
 
-const noop = () => {};
+const noop = () => { };
 const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const { slug } = useParams();
   const { user } = useUser();
@@ -105,21 +105,19 @@ const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
       <div className="gap-x-2 flex justify-center -mt-[68px] mb-10 bg-sidebar-button p-1 rounded-xl shadow border-2 border-slate-300/10 w-fit">
         <button
           onClick={() => setSelectedTab("documents")}
-          className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
-            selectedTab === "documents"
+          className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${selectedTab === "documents"
               ? "bg-switch-selected shadow-md font-bold"
               : "bg-sidebar-button text-white/20 font-medium hover:text-white"
-          }`}
+            }`}
         >
           Documents
         </button>
         <button
           onClick={() => setSelectedTab("dataConnectors")}
-          className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
-            selectedTab === "dataConnectors"
+          className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${selectedTab === "dataConnectors"
               ? "bg-switch-selected shadow-md font-bold"
               : "bg-sidebar-button text-white/20 font-medium hover:text-white"
-          }`}
+            }`}
         >
           Data Connectors
         </button>
