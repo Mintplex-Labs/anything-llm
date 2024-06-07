@@ -13,6 +13,26 @@ export default function ThreadContainer({ workspace }) {
   const [ctrlPressed, setCtrlPressed] = useState(false);
 
   useEffect(() => {
+    const chatHandler = (event) => {
+      const { threadSlug, newName } = event.detail;
+      setThreads((prevThreads) =>
+        prevThreads.map((thread) => {
+          if (thread.slug === threadSlug) {
+            return { ...thread, name: newName };
+          }
+          return thread;
+        })
+      );
+    };
+
+    window.addEventListener("renameThread", chatHandler);
+
+    return () => {
+      window.removeEventListener("renameThread", chatHandler);
+    };
+  }, []);
+
+  useEffect(() => {
     async function fetchThreads() {
       if (!workspace.slug) return;
       const { threads } = await Workspace.threads.all(workspace.slug);

@@ -12,6 +12,7 @@ import handleSocketResponse, {
   AGENT_SESSION_END,
   AGENT_SESSION_START,
 } from "@/utils/chat/agent";
+import truncate from "truncate";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -38,6 +39,18 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!message || message === "") return false;
+
+    // If first message and it is a thread
+    // and message is not blank/whitespace,
+    // then send event to rename the thread
+    if (threadSlug && chatHistory.length === 0 && message.trim().length > 0) {
+      const truncatedName = truncate(message, 22);
+      window.dispatchEvent(
+        new CustomEvent("renameThread", {
+          detail: { threadSlug, newName: truncatedName },
+        })
+      );
+    }
 
     const prevChatHistory = [
       ...chatHistory,

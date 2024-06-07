@@ -15,8 +15,8 @@ const {
   validWorkspaceSlug,
 } = require("../utils/middleware/validWorkspace");
 const { writeResponseChunk } = require("../utils/helpers/chat/responses");
-const generateThreadTitle = require("../utils/threadNames");
 const { WorkspaceThread } = require("../models/workspaceThread");
+const truncate = require("truncate");
 
 function chatEndpoints(app) {
   if (!app) return;
@@ -206,20 +206,17 @@ function chatEndpoints(app) {
           thread_id: thread.id,
         });
 
-        // Generate thread name
+        // Set thread title to truncated message
         if (chatCount === 1) {
           try {
-            const generatedTitle = await generateThreadTitle(message);
-            if (generatedTitle) {
-              const { thread: updatedThread } = await WorkspaceThread.update(
-                thread,
-                {
-                  name: generatedTitle,
-                }
-              );
-              if (!updatedThread) {
-                console.log("Failed to update thread name");
+            const { thread: updatedThread } = await WorkspaceThread.update(
+              thread,
+              {
+                name: truncate(message, 22),
               }
+            );
+            if (!updatedThread) {
+              console.log("Failed to update thread name");
             }
           } catch (e) {
             console.log("Error generating thread title:", e);
