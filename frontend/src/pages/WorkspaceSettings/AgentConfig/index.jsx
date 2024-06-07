@@ -100,6 +100,7 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
           skills={agentSkills}
           toggleAgentSkill={toggleAgentSkill}
           settings={settings}
+          setHasChanges={setHasChanges}
         />
         {hasChanges && (
           <button
@@ -143,7 +144,7 @@ function LoadingSkeleton() {
   );
 }
 
-function AvailableAgentSkills({ skills, settings, toggleAgentSkill }) {
+function AvailableAgentSkills({ skills, settings, toggleAgentSkill, setHasChanges }) {
   return (
     <div>
       <div className="flex flex-col mb-8">
@@ -211,6 +212,7 @@ function AvailableAgentSkills({ skills, settings, toggleAgentSkill }) {
           settings={settings}
           toggleSkill={toggleAgentSkill}
           enabled={skills.includes("sql-agent")}
+          setHasChanges={setHasChanges}
         />
       </div>
     </div>
