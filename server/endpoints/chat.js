@@ -199,29 +199,12 @@ function chatEndpoints(app) {
           thread
         );
 
-        // Check if first message in thread
-        const chatCount = await WorkspaceChats.count({
-          workspaceId: workspace.id,
-          user_id: user?.id || null,
-          thread_id: thread.id,
+        await WorkspaceThread.autoRenameThread({
+          thread,
+          workspace,
+          user,
+          newName: truncate(message, 22),
         });
-
-        // Set thread title to truncated message
-        if (chatCount === 1) {
-          try {
-            const { thread: updatedThread } = await WorkspaceThread.update(
-              thread,
-              {
-                name: truncate(message, 22),
-              }
-            );
-            if (!updatedThread) {
-              console.log("Failed to update thread name");
-            }
-          } catch (e) {
-            console.log("Error generating thread title:", e);
-          }
-        }
 
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
