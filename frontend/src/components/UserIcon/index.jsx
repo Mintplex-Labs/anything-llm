@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import JAZZ from "@metamask/jazzicon";
 import usePfp from "../../hooks/usePfp";
 
-export default function Jazzicon({ size = 10, user, role }) {
+export default function UserIcon({ size = 36, user, role }) {
   const { pfp } = usePfp();
   const divRef = useRef(null);
   const seed = user?.uid

@@ -17,8 +17,12 @@ class GeminiLLM {
     this.gemini = genAI.getGenerativeModel(
       { model: this.model },
       {
-        // Gemini-1.5-pro is only available on the v1beta API.
-        apiVersion: this.model === "gemini-1.5-pro-latest" ? "v1beta" : "v1",
+        // Gemini-1.5-pro and Gemini-1.5-flash are only available on the v1beta API.
+        apiVersion:
+          this.model === "gemini-1.5-pro-latest" ||
+          this.model === "gemini-1.5-flash-latest"
+            ? "v1beta"
+            : "v1",
       }
     );
     this.limits = {
@@ -87,6 +91,10 @@ class GeminiLLM {
     switch (this.model) {
       case "gemini-pro":
         return 30_720;
+      case "gemini-1.0-pro":
+        return 30_720;
+      case "gemini-1.5-flash-latest":
+        return 1_048_576;
       case "gemini-1.5-pro-latest":
         return 1_048_576;
       default:
@@ -95,7 +103,12 @@ class GeminiLLM {
   }
 
   isValidChatCompletionModel(modelName = "") {
-    const validModels = ["gemini-pro", "gemini-1.5-pro-latest"];
+    const validModels = [
+      "gemini-pro",
+      "gemini-1.0-pro",
+      "gemini-1.5-pro-latest",
+      "gemini-1.5-flash-latest",
+    ];
     return validModels.includes(modelName);
   }
 

@@ -2,7 +2,6 @@ import useLogo from "@/hooks/useLogo";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useRef, useState } from "react";
-import AnythingLLM from "@/media/logo/anything-llm.png";
 import { Plus } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
@@ -37,7 +36,7 @@ export default function CustomLogo() {
       return;
     }
 
-    const logoURL = await System.fetchLogo();
+    const { logoURL } = await System.fetchLogo();
     _setLogo(logoURL);
 
     showToast("Image uploaded successfully.", "success");
@@ -52,13 +51,13 @@ export default function CustomLogo() {
     if (!success) {
       console.error("Failed to remove logo:", error);
       showToast(`Failed to remove logo: ${error}`, "error");
-      const logoURL = await System.fetchLogo();
+      const { logoURL } = await System.fetchLogo();
       setLogo(logoURL);
       setIsDefaultLogo(false);
       return;
     }
 
-    const logoURL = await System.fetchLogo();
+    const { logoURL } = await System.fetchLogo();
     _setLogo(logoURL);
 
     showToast("Image successfully removed.", "success");

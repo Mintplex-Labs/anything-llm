@@ -240,6 +240,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
           history={chatHistory}
           workspace={workspace}
           sendCommand={sendCommand}
+          updateHistory={setChatHistory}
           regenerateAssistantMessage={regenerateAssistantMessage}
         />
         <PromptInput

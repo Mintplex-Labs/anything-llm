@@ -368,7 +368,7 @@ export function Chartable({ props, workspace }) {
   if (!!props.chatId) {
     return (
       <div className="flex justify-center items-end w-full">
-        <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
+        <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
           <div className="flex gap-x-5">
             <WorkspaceProfileImage workspace={workspace} />
             <div className="relative w-full">
@@ -389,7 +389,7 @@ export function Chartable({ props, workspace }) {
 
   return (
     <div className="flex justify-center items-end w-full">
-      <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
+      <div className="py-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="relative w-full">
           <DownloadGraph onClick={handleDownload} />
           <div ref={ref}>{renderChart()}</div>

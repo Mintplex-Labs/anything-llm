@@ -40,7 +40,10 @@ const TRANSLATIONS = {
       "forgot-pass": "Forgot password",
       reset: "Reset",
     },
-    "sign-in": "Sign in to your AnythingLLM account.",
+    "sign-in": {
+      start: "Sign in to your",
+      end: "account.",
+    },
   },
 
   // Workspace Settings menu items

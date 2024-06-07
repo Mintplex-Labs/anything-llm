@@ -41,7 +41,10 @@ const TRANSLATIONS = {
       "forgot-pass": "忘记密码",
       reset: "重置",
     },
-    "sign-in": "登录",
+    "sign-in": {
+      start: null,
+      end: null,
+    },
   },
 
   // Workspace Settings menu items
