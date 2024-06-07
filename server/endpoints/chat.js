@@ -15,6 +15,8 @@ const {
   validWorkspaceSlug,
 } = require("../utils/middleware/validWorkspace");
 const { writeResponseChunk } = require("../utils/helpers/chat/responses");
+const { WorkspaceThread } = require("../models/workspaceThread");
+const truncate = require("truncate");
 
 function chatEndpoints(app) {
   if (!app) return;
@@ -196,6 +198,14 @@ function chatEndpoints(app) {
           user,
           thread
         );
+
+        await WorkspaceThread.autoRenameThread({
+          thread,
+          workspace,
+          user,
+          newName: truncate(message, 22),
+        });
+
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
