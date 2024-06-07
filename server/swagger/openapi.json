@@ -2251,7 +2251,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Documents removed successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2302,19 +2302,6 @@
                   }
                 }
               }
-            }
-          }
-        }
-      }
-    },
-    "components": {
-      "schemas": {
-        "InvalidAPIKey": {
-          "type": "object",
-          "properties": {
-            "error": {
-              "type": "string",
-              "example": "Invalid API Key"
             }
           }
         }
