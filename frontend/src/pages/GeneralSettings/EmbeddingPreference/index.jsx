@@ -11,6 +11,7 @@ import OllamaLogo from "@/media/llmprovider/ollama.png";
 import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
+import LiteLLMLogo from "@/media/llmprovider/litellm.png";
 
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
@@ -22,6 +23,7 @@ import OllamaEmbeddingOptions from "@/components/EmbeddingSelection/OllamaOption
 import LMStudioEmbeddingOptions from "@/components/EmbeddingSelection/LMStudioOptions";
 import CohereEmbeddingOptions from "@/components/EmbeddingSelection/CohereOptions";
 import VoyageAiOptions from "@/components/EmbeddingSelection/VoyageAiOptions";
+import LiteLLMOptions from "@/components/EmbeddingSelection/LiteLLMOptions";
 
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -87,6 +89,13 @@ const EMBEDDERS = [
     logo: VoyageAiLogo,
     options: (settings) => <VoyageAiOptions settings={settings} />,
     description: "Run powerful embedding models from Voyage AI.",
+  },
+  {
+    name: "LiteLLM",
+    value: "litellm",
+    logo: LiteLLMLogo,
+    options: (settings) => <LiteLLMOptions settings={settings} />,
+    description: "Run powerful embedding models from LiteLLM.",
   },
 ];
 

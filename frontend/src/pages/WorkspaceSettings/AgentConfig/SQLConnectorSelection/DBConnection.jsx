@@ -9,7 +9,7 @@ export const DB_LOGOS = {
   "sql-server": MSSQLLogo,
 };
 
-export default function DBConnection({ connection, onRemove }) {
+export default function DBConnection({ connection, onRemove, setHasChanges }) {
   const { database_id, engine } = connection;
   function removeConfirmation() {
     if (
@@ -20,6 +20,7 @@ export default function DBConnection({ connection, onRemove }) {
       return false;
     }
     onRemove(database_id);
+    setHasChanges(true);
   }
 
   return (

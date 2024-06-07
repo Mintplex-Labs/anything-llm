@@ -32,34 +32,34 @@ export default function Sidebar() {
         <img
           src={logo}
           alt="Logo"
-          className="rounded max-h-[24px]"
-          style={{ objectFit: "contain" }}
+          className="rounded max-h-[24px] object-contain"
         />
       </Link>
       <div
         ref={sidebarRef}
-        style={{ height: "calc(100% - 76px)" }}
-        className="relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px]"
+        className="relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-76px)]"
       >
         <div className="flex flex-col h-full overflow-x-hidden">
           <div className="flex-grow flex flex-col min-w-[235px]">
-            <div className="flex flex-col gap-y-2 pb-8 overflow-y-scroll no-scroll">
-              <div className="flex gap-x-2 items-center justify-between">
-                {(!user || user?.role !== "default") && (
-                  <button
-                    onClick={showNewWsModal}
-                    className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
-                  >
-                    <Plus size={18} weight="bold" />
-                    <p className="text-sidebar text-sm font-semibold">
-                      New Workspace
-                    </p>
-                  </button>
-                )}
+            <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
+              <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
+                <div className="flex gap-x-2 items-center justify-between">
+                  {(!user || user?.role !== "default") && (
+                    <button
+                      onClick={showNewWsModal}
+                      className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                    >
+                      <Plus size={18} weight="bold" />
+                      <p className="text-sidebar text-sm font-semibold">
+                        New Workspace
+                      </p>
+                    </button>
+                  )}
+                </div>
+                <ActiveWorkspaces />
               </div>
-              <ActiveWorkspaces />
             </div>
-            <div className="flex flex-col flex-grow justify-end mb-2">
+            <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-30">
               <Footer />
             </div>
           </div>
@@ -156,12 +156,9 @@ export function SidebarMobileHeader() {
             </div>
 
             {/* Primary Body */}
-            <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-hidden ">
+            <div className="h-full flex flex-col w-full justify-between pt-4 ">
               <div className="h-auto md:sidebar-items">
-                <div
-                  style={{ height: "calc(100vw - -3rem)" }}
-                  className=" flex flex-col gap-y-4 pb-8 overflow-y-scroll no-scroll"
-                >
+                <div className=" flex flex-col gap-y-4 overflow-y-scroll no-scroll pb-[60px]">
                   <div className="flex gap-x-2 items-center justify-between">
                     {(!user || user?.role !== "default") && (
                       <button
@@ -178,7 +175,7 @@ export function SidebarMobileHeader() {
                   <ActiveWorkspaces />
                 </div>
               </div>
-              <div>
+              <div className="z-99 absolute bottom-0 left-0 right-0 pt-2 pb-6 rounded-br-[26px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md">
                 <Footer />
               </div>
             </div>
