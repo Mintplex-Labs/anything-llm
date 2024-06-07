@@ -1,8 +1,8 @@
 import HistoricalMessage from "./HistoricalMessage";
 import PromptReply from "./PromptReply";
 import { useEffect, useRef, useState } from "react";
-import { useManageWorkspaceModal } from "../../../Modals/MangeWorkspace";
-import ManageWorkspace from "../../../Modals/MangeWorkspace";
+import { useManageWorkspaceModal } from "../../../Modals/ManageWorkspace";
+import ManageWorkspace from "../../../Modals/ManageWorkspace";
 import { ArrowDown } from "@phosphor-icons/react";
 import debounce from "lodash.debounce";
 import useUser from "@/hooks/useUser";
