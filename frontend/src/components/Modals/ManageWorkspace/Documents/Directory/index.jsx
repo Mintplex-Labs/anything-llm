@@ -12,6 +12,7 @@ import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import NewFolderModal from "./NewFolderModal";
 import debounce from "lodash.debounce";
+import { filterFileSearchResults } from "./utils";
 
 function Directory({
   files,
@@ -30,7 +31,6 @@ function Directory({
   const [amountSelected, setAmountSelected] = useState(0);
   const [showFolderSelection, setShowFolderSelection] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
   const {
     isOpen: isFolderModalOpen,
     openModal: openFolderModal,
@@ -166,34 +166,12 @@ function Directory({
     setLoading(false);
   };
 
-  const filterFiles = (item) => {
-    if (item.type === "folder") {
-      return (
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.items.some((file) =>
-          file.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
-    } else {
-      return item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    }
-  };
-
-  const debouncedSearch = debounce((value) => {
-    setSearchTerm(value);
-    setIsSearching(false);
-  }, 500);
-
-  const handleSearch = (e) => {
+  const handleSearch = debounce((e) => {
     const searchValue = e.target.value;
     setSearchTerm(searchValue);
-    setIsSearching(true);
-    debouncedSearch(searchValue);
-  };
+  }, 500);
 
-  const filteredFiles =
-    files && files.items ? files.items.filter((item) => filterFiles(item)) : [];
-
+  const filteredFiles = filterFileSearchResults(files, searchTerm);
   return (
     <div className="px-8 pb-8">
       <div className="flex flex-col gap-y-6">
@@ -201,10 +179,10 @@ function Directory({
           <h3 className="text-white text-base font-bold">My Documents</h3>
           <div className="relative">
             <input
-              type="text"
-              placeholder="Search"
+              type="search"
+              placeholder="Search for document"
               onChange={handleSearch}
-              className="bg-zinc-900 text-white placeholder-white/80 text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px]"
+              className="search-input bg-zinc-900 text-white placeholder-white/40 text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px]"
             />
             <MagnifyingGlass
               size={14}
@@ -237,10 +215,6 @@ function Directory({
                 <p className="text-white/80 text-sm font-semibold animate-pulse text-center w-1/3">
                   {loadingMessage}
                 </p>
-              </div>
-            ) : isSearching && searchTerm !== "" ? (
-              <div className="w-full h-full flex items-center justify-center">
-                <PreLoader />
               </div>
             ) : filteredFiles.length > 0 ? (
               filteredFiles.map(
