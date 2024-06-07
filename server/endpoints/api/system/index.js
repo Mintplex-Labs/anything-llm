@@ -206,6 +206,69 @@ function apiSystemEndpoints(app) {
       }
     }
   );
+  app.delete(
+    "/v1/system/remove-documents",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['System Settings']
+      #swagger.description = 'Permanently remove documents from the system.'
+      #swagger.requestBody = {
+        description: 'Array of document names to be removed permanently.',
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              properties: {
+                names: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  },
+                  example: [
+                    "custom-documents/file.txt-fc4beeeb-e436-454d-8bb4-e5b8979cb48f.json"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        description: 'Documents removed successfully.',
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                success: true,
+                message: 'Documents removed successfully'
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        description: 'Forbidden',
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      #swagger.responses[500] = {
+        description: 'Internal Server Error'
+      }
+      */
+      try {
+        const { names } = reqBody(request);
+        for await (const name of names) await purgeDocument(name);
+        response.status(200).json({ success: true, message: 'Documents removed successfully' }).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
 }
 
 module.exports = { apiSystemEndpoints };
