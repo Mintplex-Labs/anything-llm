@@ -144,7 +144,12 @@ function LoadingSkeleton() {
   );
 }
 
-function AvailableAgentSkills({ skills, settings, toggleAgentSkill, setHasChanges }) {
+function AvailableAgentSkills({
+  skills,
+  settings,
+  toggleAgentSkill,
+  setHasChanges,
+}) {
   return (
     <div>
       <div className="flex flex-col mb-8">
