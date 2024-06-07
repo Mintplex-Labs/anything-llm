@@ -30,6 +30,7 @@ import LanceDbLogo from "@/assets/vectordbs/lancedb.png";
 import WeaviateLogo from "@/assets/vectordbs/weaviate.png";
 import QDrantLogo from "@/assets/vectordbs/qdrant.png";
 import MilvusLogo from "@/assets/vectordbs/milvus.png";
+import VoyageAiLogo from "@/assets/embeddingprovider/voyageai.png";
 
 import paths from "@/utils/paths";
 import { useNavigate } from "react-router-dom";
@@ -293,6 +294,20 @@ export const EMBEDDING_ENGINE_PRIVACY = {
       "Data is shared according to the terms of service of cohere.com and your localities privacy laws.",
     ],
     logo: CohereLogo,
+  },
+  voyageai: {
+    name: "Voyage AI",
+    description: [
+      "Data sent to Voyage AI's servers is shared according to the terms of service of voyageai.com.",
+    ],
+    logo: VoyageAiLogo,
+  },
+  litellm: {
+    name: "LiteLLM",
+    description: [
+      "Your document text is only accessible on the server running LiteLLM and to the providers you configured in LiteLLM.",
+    ],
+    logo: LiteLLMLogo,
   },
 };
 

@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Warning } from "@phosphor-icons/react";
-import Jazzicon from "../../../../UserIcon";
-import renderMarkdown from "../../../../../utils/chat/markdown";
+import UserIcon from "../../../../UserIcon";
+import renderMarkdown from "@/utils/chat/markdown";
 import Citations from "../Citation";
 
 const PromptReply = ({
@@ -21,7 +21,7 @@ const PromptReply = ({
       <div
         className={`flex justify-center items-end w-full ${assistantBackgroundColor}`}
       >
-        <div className="py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
+        <div className="py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
           <div className="flex gap-x-5">
             <WorkspaceProfileImage workspace={workspace} />
             <div className="mt-3 ml-5 dot-falling"></div>
@@ -36,7 +36,7 @@ const PromptReply = ({
       <div
         className={`flex justify-center items-end w-full ${assistantBackgroundColor}`}
       >
-        <div className="py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
+        <div className="py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
           <div className="flex gap-x-5">
             <WorkspaceProfileImage workspace={workspace} />
             <span
@@ -57,7 +57,7 @@ const PromptReply = ({
       key={uuid}
       className={`flex justify-center items-end w-full ${assistantBackgroundColor}`}
     >
-      <div className="py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col">
+      <div className="py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
         <div className="flex gap-x-5">
           <WorkspaceProfileImage workspace={workspace} />
           <span
@@ -84,7 +84,7 @@ export function WorkspaceProfileImage({ workspace }) {
     );
   }
 
-  return <Jazzicon size={36} user={{ uid: workspace.slug }} role="assistant" />;
+  return <UserIcon user={{ uid: workspace.slug }} role="assistant" />;
 }
 
 export default memo(PromptReply);

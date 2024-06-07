@@ -8,7 +8,7 @@ const WorkspaceThread = {
     try {
       const thread = await prisma.workspace_threads.create({
         data: {
-          name: "New thread",
+          name: "Thread",
           slug: uuidv4(),
           user_id: userId ? Number(userId) : null,
           workspace_id: workspace.id,
@@ -83,6 +83,25 @@ const WorkspaceThread = {
       console.error(error.message);
       return [];
     }
+  },
+
+  // Will fire on first message (included or not) for a thread and rename the thread with the newName prop.
+  autoRenameThread: async function ({
+    workspace = null,
+    thread = null,
+    user = null,
+    newName = null,
+  }) {
+    if (!workspace || !thread || !newName) return false;
+    const { WorkspaceChats } = require("./workspaceChats");
+    const chatCount = await WorkspaceChats.count({
+      workspaceId: workspace.id,
+      user_id: user?.id || null,
+      thread_id: thread.id,
+    });
+    if (chatCount !== 1) return false;
+    await this.update(thread, { name: newName });
+    return true;
   },
 };
 

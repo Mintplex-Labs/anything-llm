@@ -107,7 +107,7 @@ function systemEndpoints(app) {
 
       if (await SystemSettings.isMultiUserMode()) {
         const { username, password } = reqBody(request);
-        const existingUser = await User.get({ username: String(username) });
+        const existingUser = await User._get({ username: String(username) });
 
         if (!existingUser) {
           await EventLogs.logEvent(
@@ -185,7 +185,7 @@ function systemEndpoints(app) {
           // Return recovery codes to frontend
           response.status(200).json({
             valid: true,
-            user: existingUser,
+            user: User.filterFields(existingUser),
             token: makeJWT(
               { id: existingUser.id, username: existingUser.username },
               "30d"
@@ -198,7 +198,7 @@ function systemEndpoints(app) {
 
         response.status(200).json({
           valid: true,
-          user: existingUser,
+          user: User.filterFields(existingUser),
           token: makeJWT(
             { id: existingUser.id, username: existingUser.username },
             "30d"
@@ -433,14 +433,22 @@ function systemEndpoints(app) {
           return;
         }
 
+        let error = null;
         const { usePassword, newPassword } = reqBody(request);
-        const { error } = await updateENV(
-          {
-            AuthToken: usePassword ? newPassword : "",
-            JWTSecret: usePassword ? v4() : "",
-          },
-          true
-        );
+        if (!usePassword) {
+          // Password is being disabled so directly unset everything to bypass validation.
+          process.env.AUTH_TOKEN = "";
+          process.env.JWT_SECRET = "";
+        } else {
+          error = await updateENV(
+            {
+              AuthToken: newPassword,
+              JWTSecret: v4(),
+            },
+            true
+          )?.error;
+        }
+
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ success: !error, error });
       } catch (e) {
@@ -515,17 +523,24 @@ function systemEndpoints(app) {
       const defaultFilename = getDefaultFilename();
       const logoPath = await determineLogoFilepath(defaultFilename);
       const { found, buffer, size, mime } = fetchLogo(logoPath);
+
       if (!found) {
         response.sendStatus(204).end();
         return;
       }
 
+      const currentLogoFilename = await SystemSettings.currentLogoFilename();
       response.writeHead(200, {
+        "Access-Control-Expose-Headers":
+          "Content-Disposition,X-Is-Custom-Logo,Content-Type,Content-Length",
         "Content-Type": mime || "image/png",
         "Content-Disposition": `attachment; filename=${path.basename(
           logoPath
         )}`,
         "Content-Length": size,
+        "X-Is-Custom-Logo":
+          currentLogoFilename !== null &&
+          currentLogoFilename !== defaultFilename,
       });
       response.end(Buffer.from(buffer, "base64"));
       return;
@@ -850,7 +865,9 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { id } = request.params;
-        await WorkspaceChats.delete({ id: Number(id) });
+        Number(id) === -1
+          ? await WorkspaceChats.delete({}, true)
+          : await WorkspaceChats.delete({ id: Number(id) });
         response.json({ success: true, error: null });
       } catch (e) {
         console.error(e);

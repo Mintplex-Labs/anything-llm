@@ -4,11 +4,16 @@ import { memo, useEffect, useState } from "react";
 import FolderRow from "./FolderRow";
 import System from "@/models/system";
 import { refocusApplication } from "@/ipc/node-api";
-import { Plus, Trash } from "@phosphor-icons/react";
+import { MagnifyingGlass, Plus, Trash } from "@phosphor-icons/react";
 import Document from "@/models/document";
 import showToast from "@/utils/toast";
 import FolderSelectionPopup from "./FolderSelectionPopup";
 import MoveToFolderIcon from "./MoveToFolderIcon";
+import { useModal } from "@/hooks/useModal";
+import ModalWrapper from "@/components/ModalWrapper";
+import NewFolderModal from "./NewFolderModal";
+import debounce from "lodash.debounce";
+import { filterFileSearchResults } from "./utils";
 
 function Directory({
   files,
@@ -25,9 +30,13 @@ function Directory({
   loadingMessage,
 }) {
   const [amountSelected, setAmountSelected] = useState(0);
-  const [newFolderName, setNewFolderName] = useState("");
-  const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   const [showFolderSelection, setShowFolderSelection] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const {
+    isOpen: isFolderModalOpen,
+    openModal: openFolderModal,
+    closeModal: closeFolderModal,
+  } = useModal();
 
   useEffect(() => {
     setAmountSelected(Object.keys(selectedItems).length);
@@ -124,32 +133,6 @@ function Directory({
     return !!selectedItems[id];
   };
 
-  const createNewFolder = () => {
-    setShowNewFolderInput(true);
-  };
-
-  const confirmNewFolder = async () => {
-    if (newFolderName.trim() !== "") {
-      const newFolder = {
-        name: newFolderName,
-        type: "folder",
-        items: [],
-      };
-
-      // If folder failed to create - silently fail.
-      const { success } = await Document.createFolder(newFolderName);
-      if (success) {
-        setFiles({
-          ...files,
-          items: [...files.items, newFolder],
-        });
-      }
-
-      setNewFolderName("");
-      setShowNewFolderInput(false);
-    }
-  };
-
   const moveToFolder = async (folder) => {
     const toMove = [];
     for (const itemId of Object.keys(selectedItems)) {
@@ -186,40 +169,39 @@ function Directory({
     setLoading(false);
   };
 
+  const handleSearch = debounce((e) => {
+    const searchValue = e.target.value;
+    setSearchTerm(searchValue);
+  }, 500);
+
+  const filteredFiles = filterFileSearchResults(files, searchTerm);
   return (
     <div className="px-8 pb-8">
       <div className="flex flex-col gap-y-6">
         <div className="flex items-center justify-between w-[560px] px-5 relative">
           <h3 className="text-white text-base font-bold">My Documents</h3>
-          {showNewFolderInput ? (
-            <div className="flex items-center gap-x-2 z-50">
-              <input
-                type="text"
-                placeholder="Folder name"
-                value={newFolderName}
-                onChange={(e) => setNewFolderName(e.target.value)}
-                className="border-none bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-[150px] h-[32px]"
-              />
-              <div className="flex gap-x-2">
-                <button
-                  onClick={confirmNewFolder}
-                  className="border-none text-sky-400 rounded-md text-sm font-bold hover:text-sky-500"
-                >
-                  Create
-                </button>
-              </div>
+          <div className="relative">
+            <input
+              type="search"
+              placeholder="Search for document"
+              onChange={handleSearch}
+              className="search-input border-none bg-zinc-900 text-white placeholder-white/40 text-sm rounded-lg pl-9 pr-2.5 py-2 w-[250px] h-[32px]"
+            />
+            <MagnifyingGlass
+              size={14}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white"
+              weight="bold"
+            />
+          </div>
+          <button
+            className="border-none flex items-center gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-[#222628]/60"
+            onClick={openFolderModal}
+          >
+            <Plus size={18} weight="bold" color="#D3D4D4" />
+            <div className="text-[#D3D4D4] text-xs font-bold leading-[18px]">
+              New Folder
             </div>
-          ) : (
-            <button
-              className="border-none flex items-center gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-[#222628]/60"
-              onClick={createNewFolder}
-            >
-              <Plus size={18} weight="bold" color="#D3D4D4" />
-              <div className="text-[#D3D4D4] text-xs font-bold leading-[18px]">
-                New Folder
-              </div>
-            </button>
-          )}
+          </button>
         </div>
 
         <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl overflow-hidden">
@@ -237,8 +219,8 @@ function Directory({
                   {loadingMessage}
                 </p>
               </div>
-            ) : files.items ? (
-              files.items.map(
+            ) : filteredFiles.length > 0 ? (
+              filteredFiles.map(
                 (item, index) =>
                   item.type === "folder" && (
                     <FolderRow
@@ -305,6 +287,7 @@ function Directory({
             </div>
           )}
         </div>
+
         <UploadFile
           workspace={workspace}
           fetchKeys={fetchKeys}
@@ -312,6 +295,14 @@ function Directory({
           setLoadingMessage={setLoadingMessage}
         />
       </div>
+
+      <ModalWrapper isOpen={isFolderModalOpen}>
+        <NewFolderModal
+          closeModal={closeFolderModal}
+          files={files}
+          setFiles={setFiles}
+        />
+      </ModalWrapper>
     </div>
   );
 }

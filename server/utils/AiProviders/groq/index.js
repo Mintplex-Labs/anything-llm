@@ -20,7 +20,7 @@ class GroqLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    this.embedder = !embedder ? new NativeEmbedder() : embedder;
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
   }
 
@@ -103,7 +103,7 @@ class GroqLLM {
         temperature,
       })
       .catch((e) => {
-        throw new Error(e.response.data.error.message);
+        throw new Error(e.message);
       });
 
     if (!result.hasOwnProperty("choices") || result.choices.length === 0)

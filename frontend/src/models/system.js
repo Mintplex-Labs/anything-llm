@@ -15,6 +15,7 @@ const System = {
     footerIcons: "anythingllm_footer_links",
     supportEmail: "anythingllm_support_email",
     remoteVersion: "anythingllm_remote_version",
+    customAppName: "anythingllm_custom_app_name",
   },
   ping: async function () {
     return await fetch(`${API_BASE()}/ping`)
@@ -299,23 +300,58 @@ const System = {
     );
     return { email: supportEmail, error: null };
   },
+
+  fetchCustomAppName: async function () {
+    const cache = window.localStorage.getItem(this.cacheKeys.customAppName);
+    const { appName, lastFetched } = cache
+      ? safeJsonParse(cache, { appName: "", lastFetched: 0 })
+      : { appName: "", lastFetched: 0 };
+
+    if (!!appName && Date.now() - lastFetched < 3_600_000)
+      return { appName: appName, error: null };
+
+    const { customAppName, error } = await fetch(
+      `${API_BASE()}/system/custom-app-name`,
+      {
+        method: "GET",
+        cache: "no-cache",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .catch((e) => {
+        console.log(e);
+        return { customAppName: "", error: e.message };
+      });
+
+    if (!customAppName || !!error) {
+      window.localStorage.removeItem(this.cacheKeys.customAppName);
+      return { appName: "", error: null };
+    }
+
+    window.localStorage.setItem(
+      this.cacheKeys.customAppName,
+      JSON.stringify({ appName: customAppName, lastFetched: Date.now() })
+    );
+    return { appName: customAppName, error: null };
+  },
   fetchLogo: async function () {
     return await fetch(`${API_BASE()}/system/logo`, {
       method: "GET",
       cache: "no-cache",
     })
-      .then((res) => {
-        if (res.status === 204) return null;
-        if (res.ok) return res.blob();
+      .then(async (res) => {
+        if (res.ok && res.status !== 204) {
+          const isCustomLogo = res.headers.get("X-Is-Custom-Logo") === "true";
+          const blob = await res.blob();
+          const logoURL = URL.createObjectURL(blob);
+          return { isCustomLogo, logoURL };
+        }
         throw new Error("Failed to fetch logo!");
-      })
-      .then((blob) => {
-        if (!blob) return null;
-        return URL.createObjectURL(blob);
       })
       .catch((e) => {
         console.log(e);
-        return null;
+        return { isCustomLogo: false, logoURL: null };
       });
   },
   isDefaultLogo: async function () {

@@ -11,6 +11,7 @@ import AvailableAgentsButton, {
   useAvailableAgents,
 } from "./AgentMenu";
 import TextSizeButton from "./TextSizeMenu";
+import { Tooltip } from "react-tooltip";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 export default function PromptInput({
@@ -133,14 +134,25 @@ export default function PromptInput({
               {buttonDisabled ? (
                 <StopGenerationButton />
               ) : (
-                <button
-                  ref={formRef}
-                  type="submit"
-                  className="border-none inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
-                >
-                  <PaperPlaneRight className="w-7 h-7 my-3" weight="fill" />
-                  <span className="sr-only">Send message</span>
-                </button>
+                <>
+                  <button
+                    ref={formRef}
+                    type="submit"
+                    className="border-none inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
+                    data-tooltip-id="send-prompt"
+                    data-tooltip-content="Send prompt message to workspace"
+                    aria-label="Send prompt message to workspace"
+                  >
+                    <PaperPlaneRight className="w-7 h-7 my-3" weight="fill" />
+                    <span className="sr-only">Send message</span>
+                  </button>
+                  <Tooltip
+                    id="send-prompt"
+                    place="bottom"
+                    delayShow={300}
+                    className="tooltip !text-xs z-99"
+                  />
+                </>
               )}
             </div>
             <div className="flex justify-between py-3.5">

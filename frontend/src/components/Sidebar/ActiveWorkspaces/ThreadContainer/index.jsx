@@ -13,6 +13,26 @@ export default function ThreadContainer({ workspace }) {
   const [ctrlPressed, setCtrlPressed] = useState(false);
 
   useEffect(() => {
+    const chatHandler = (event) => {
+      const { threadSlug, newName } = event.detail;
+      setThreads((prevThreads) =>
+        prevThreads.map((thread) => {
+          if (thread.slug === threadSlug) {
+            return { ...thread, name: newName };
+          }
+          return thread;
+        })
+      );
+    };
+
+    window.addEventListener("renameThread", chatHandler);
+
+    return () => {
+      window.removeEventListener("renameThread", chatHandler);
+    };
+  }, []);
+
+  useEffect(() => {
     async function fetchThreads() {
       if (!workspace.slug) return;
       const { threads } = await Workspace.threads.all(workspace.slug);
@@ -21,6 +41,37 @@ export default function ThreadContainer({ workspace }) {
     }
     fetchThreads();
   }, [workspace.slug]);
+
+  // Enable toggling of bulk-deletion by holding meta-key (ctrl on win and cmd/fn on others)
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (["Control", "Meta"].includes(event.key)) {
+        setCtrlPressed(true);
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      if (["Control", "Meta"].includes(event.key)) {
+        setCtrlPressed(false);
+        // when toggling, unset bulk progress so
+        // previously marked threads that were never deleted
+        // come back to life.
+        setThreads((prev) =>
+          prev.map((t) => {
+            return { ...t, deleted: false };
+          })
+        );
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
 
   function addThread(newThread) {
     setThreads((prev) => [...prev, newThread]);
@@ -34,26 +85,6 @@ export default function ThreadContainer({ workspace }) {
       })
     );
   }
-  // Enable toggling of meta-key (ctrl on win and cmd/fn on others)
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (["Control", "Meta"].includes(event.key)) {
-        setCtrlPressed((prev) => !prev);
-        // when toggling, unset bulk progress so
-        // previously marked threads that were never deleted
-        // come back to life.
-        setThreads((prev) =>
-          prev.map((t) => {
-            return { ...t, deleted: false };
-          })
-        );
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
 
   const toggleForDeletion = (id) => {
     setThreads((prev) =>
@@ -68,7 +99,6 @@ export default function ThreadContainer({ workspace }) {
     const slugs = threads.filter((t) => t.deleted === true).map((t) => t.slug);
     await Workspace.threads.deleteBulk(workspace.slug, slugs);
     setThreads((prev) => prev.filter((t) => !t.deleted));
-    setCtrlPressed(false);
   };
 
   function removeThread(threadId) {
@@ -101,6 +131,7 @@ export default function ThreadContainer({ workspace }) {
   )
     ? threads.findIndex((thread) => thread?.slug === threadSlug) + 1
     : 0;
+
   return (
     <div className="flex flex-col" role="list" aria-label="Threads">
       <ThreadItem

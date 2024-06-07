@@ -5,20 +5,17 @@ import {
   EnvelopeSimple,
   Plus,
 } from "@phosphor-icons/react";
+import { Link } from "react-router-dom";
 
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
 import paths from "../../utils/paths";
 import ChatBubble from "../ChatBubble";
-import System from "../../models/system";
-import Jazzicon from "../UserIcon";
-import {
-  AI_BACKGROUND_COLOR,
-  USER_BACKGROUND_COLOR,
-} from "../../utils/constants";
-import { Link } from "react-router-dom";
-import { userFromStorage } from "../../utils/request";
+import System from "@/models/system";
+import UserIcon from "../UserIcon";
+import { userFromStorage } from "@/utils/request";
+import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 
 export default function DefaultChatContainer() {
   const [mockMsgs, setMockMessages] = useState([]);
@@ -44,10 +41,10 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR} md:mt-0 mt-[40px]`}
       >
         <div
-          className={`pt-10 pb-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`pt-10 pb-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon user={{ uid: "system" }} role={"assistant"} />
 
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -68,10 +65,10 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
-          className={`pb-4 pt-2 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`pb-4 pt-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon user={{ uid: "system" }} role={"assistant"} />
 
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -91,10 +88,10 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
-          className={`pt-2 pb-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`pt-2 pb-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon user={{ uid: "system" }} role={"assistant"} />
             <div>
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -125,11 +122,10 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon
-              size={36}
+            <UserIcon
               user={{ uid: userFromStorage()?.username }}
               role={"user"}
             />
@@ -149,10 +145,10 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon user={{ uid: "system" }} role={"assistant"} />
             <div>
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -183,11 +179,10 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon
-              size={36}
+            <UserIcon
               user={{ uid: userFromStorage()?.username }}
               role={"user"}
             />
@@ -208,10 +203,10 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon user={{ uid: "system" }} role={"assistant"} />
 
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -246,11 +241,10 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon
-              size={36}
+            <UserIcon
               user={{ uid: userFromStorage()?.username }}
               role={"user"}
             />
@@ -270,10 +264,10 @@ export default function DefaultChatContainer() {
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
         <div
-          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[800px] flex-col`}
+          className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <Jazzicon size={36} user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon user={{ uid: "system" }} role={"assistant"} />
             <div>
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}

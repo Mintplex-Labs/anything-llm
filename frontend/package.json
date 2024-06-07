@@ -7,7 +7,7 @@
     "start": "vite --open",
     "dev": "NODE_ENV=development vite --debug --host=0.0.0.0",
     "build": "vite build",
-    "lint": "yarn prettier --write ./src",
+    "lint": "yarn prettier --ignore-path ../.prettierignore --write ./src",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,6 +19,7 @@
     "file-saver": "^2.0.5",
     "he": "^1.2.0",
     "highlight.js": "^11.9.0",
+    "js-levenshtein": "^1.1.6",
     "lodash.debounce": "^4.0.8",
     "markdown-it": "^13.0.1",
     "pluralize": "^8.0.0",

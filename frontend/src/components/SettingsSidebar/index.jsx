@@ -38,22 +38,21 @@ export default function SettingsSidebar() {
       </Link>
       <div
         ref={sidebarRef}
-        style={{ height: "calc(100% - 76px)" }}
-        className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px]"
+        className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-76px)]"
       >
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
           <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
             Instance Settings
           </div>
-          <div className="relative h-full flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
+          <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
             <div className="h-auto sidebar-items">
-              <div className="flex flex-col gap-y-2 h-full pb-8 overflow-y-scroll no-scroll">
+              <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
                 <SidebarOptions user={user} />
               </div>
             </div>
-            <div className="mb-2">
-              <Footer />
-            </div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-50">
+            <Footer />
           </div>
         </div>
       </div>

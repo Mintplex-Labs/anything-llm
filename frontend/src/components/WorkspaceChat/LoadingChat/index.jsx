@@ -12,7 +12,7 @@ export default function LoadingChat() {
         highlightColor={highlightColor}
         baseColor={baseColor}
         count={1}
-        className="max-w-full md:max-w-[75%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex justify-start"
       />
       <Skeleton.default
@@ -21,7 +21,7 @@ export default function LoadingChat() {
         baseColor={baseColor}
         highlightColor={highlightColor}
         count={1}
-        className="max-w-full md:max-w-[75%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex justify-end"
       />
       <Skeleton.default
@@ -30,7 +30,7 @@ export default function LoadingChat() {
         baseColor={baseColor}
         highlightColor={highlightColor}
         count={1}
-        className="max-w-full md:max-w-[75%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex justify-start"
       />
       <Skeleton.default
@@ -39,7 +39,7 @@ export default function LoadingChat() {
         baseColor={baseColor}
         highlightColor={highlightColor}
         count={1}
-        className="max-w-full md:max-w-[75%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex justify-end"
       />
       <Skeleton.default
@@ -48,7 +48,7 @@ export default function LoadingChat() {
         baseColor={baseColor}
         highlightColor={highlightColor}
         count={1}
-        className="max-w-full md:max-w-[75%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
+        className="max-w-full md:max-w-[80%] p-4 rounded-b-2xl rounded-tr-2xl rounded-tl-sm mt-6"
         containerClassName="flex justify-start"
       />
     </div>

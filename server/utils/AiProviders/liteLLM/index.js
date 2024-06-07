@@ -1,7 +1,6 @@
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
-  writeResponseChunk,
-  clientAbortedHandler,
+  handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 
 class LiteLLM {
@@ -26,11 +25,7 @@ class LiteLLM {
       user: this.promptWindowLimit() * 0.7,
     };
 
-    if (!embedder)
-      console.warn(
-        "No embedding provider defined for LiteLLM - falling back to NativeEmbedder for embedding!"
-      );
-    this.embedder = !embedder ? new NativeEmbedder() : embedder;
+    this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
   }
@@ -97,7 +92,7 @@ class LiteLLM {
         max_tokens: parseInt(this.maxTokens), // LiteLLM requires int
       })
       .catch((e) => {
-        throw new Error(e.response.data.error.message);
+        throw new Error(e.message);
       });
 
     if (!result.hasOwnProperty("choices") || result.choices.length === 0)
@@ -117,45 +112,7 @@ class LiteLLM {
   }
 
   handleStream(response, stream, responseProps) {
-    const { uuid = uuidv4(), sources = [] } = responseProps;
-
-    return new Promise(async (resolve) => {
-      let fullText = "";
-
-      const handleAbort = () => clientAbortedHandler(resolve, fullText);
-      response.on("close", handleAbort);
-
-      for await (const chunk of stream) {
-        const message = chunk?.choices?.[0];
-        const token = message?.delta?.content;
-
-        if (token) {
-          fullText += token;
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: token,
-            close: false,
-            error: false,
-          });
-        }
-
-        // LiteLLM does not give a finish reason in stream until the final chunk
-        if (message.finish_reason || message.finish_reason === "stop") {
-          writeResponseChunk(response, {
-            uuid,
-            sources,
-            type: "textResponseChunk",
-            textResponse: "",
-            close: true,
-            error: false,
-          });
-          response.removeListener("close", handleAbort);
-          resolve(fullText);
-        }
-      }
-    });
+    return handleDefaultStreamResponseV2(response, stream, responseProps);
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

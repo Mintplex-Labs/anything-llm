@@ -41,7 +41,12 @@ app.use(
   })
 );
 
-require("express-ws")(app);
+if (!!process.env.ENABLE_HTTPS) {
+  bootSSL(app, process.env.SERVER_PORT || 3001);
+} else {
+  require("express-ws")(app); // load WebSockets in non-SSL mode.
+}
+
 app.use("/api", apiRouter);
 systemEndpoints(apiRouter);
 extensionEndpoints(apiRouter);

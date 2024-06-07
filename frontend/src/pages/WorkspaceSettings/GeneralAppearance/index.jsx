@@ -2,7 +2,6 @@ import Workspace from "@/models/workspace";
 import { castToType } from "@/utils/types";
 import showToast from "@/utils/toast";
 import { useEffect, useRef, useState } from "react";
-import VectorCount from "./VectorCount";
 import WorkspaceName from "./WorkspaceName";
 import DeleteWorkspace from "./DeleteWorkspace";
 import WorkspacePfp from "./WorkspacePfp";
@@ -50,7 +49,6 @@ export default function GeneralInfo({ slug }) {
         onSubmit={handleUpdate}
         className="w-1/2 flex flex-col gap-y-6"
       >
-        <VectorCount reload={true} workspace={workspace} />
         <WorkspaceName
           key={workspace.slug}
           workspace={workspace}

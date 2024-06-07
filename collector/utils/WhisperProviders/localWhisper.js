@@ -1,19 +1,23 @@
 const fs = require("fs");
 const path = require("path");
 const { v4 } = require("uuid");
+const defaultWhisper = "Xenova/whisper-small"; // Model Card: https://huggingface.co/Xenova/whisper-small
+const fileSize = {
+  "Xenova/whisper-small": "250mb",
+  "Xenova/whisper-large": "1.56GB",
+};
 
 class LocalWhisper {
-  constructor() {
-    // Model Card: https://huggingface.co/Xenova/whisper-small
-    this.model = "Xenova/whisper-small";
+  constructor({ options }) {
+    this.model = options?.WhisperModelPref ?? defaultWhisper;
+    this.fileSize = fileSize[this.model];
     this.cacheDir = path.resolve(
       process.env.STORAGE_DIR
         ? path.resolve(process.env.STORAGE_DIR, `models`)
         : path.resolve(__dirname, `../../../server/storage/models`)
     );
 
-    this.modelPath = path.resolve(this.cacheDir, "Xenova", "whisper-small");
-
+    this.modelPath = path.resolve(this.cacheDir, ...this.model.split("/"));
     // Make directory when it does not exist in existing installations
     if (!fs.existsSync(this.cacheDir))
       fs.mkdirSync(this.cacheDir, { recursive: true });
@@ -104,7 +108,7 @@ class LocalWhisper {
   async client() {
     if (!fs.existsSync(this.modelPath)) {
       this.#log(
-        `The native whisper model has never been run and will be downloaded right now. Subsequent runs will be faster. (~250MB)`
+        `The native whisper model has never been run and will be downloaded right now. Subsequent runs will be faster. (~${this.fileSize})`
       );
     }
 

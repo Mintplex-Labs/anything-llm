@@ -6,8 +6,9 @@ import useQuery from "../../../hooks/useQuery";
 import ChatRow from "./ChatRow";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
-import { CaretDown, Download } from "@phosphor-icons/react";
+import { CaretDown, Download, Trash } from "@phosphor-icons/react";
 import { saveAs } from "file-saver";
+import { refocusApplication } from "@/ipc/node-api";
 
 const exportOptions = {
   csv: {
@@ -48,6 +49,12 @@ export default function WorkspaceChats() {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef();
   const openMenuButton = useRef();
+  const query = useQuery();
+  const [loading, setLoading] = useState(true);
+  const [chats, setChats] = useState([]);
+  const [offset, setOffset] = useState(Number(query.get("offset") || 0));
+  const [canNext, setCanNext] = useState(false);
+
   const handleDumpChats = async (exportType) => {
     const chats = await System.exportChats(exportType);
     if (!!chats) {
@@ -59,6 +66,22 @@ export default function WorkspaceChats() {
     } else {
       showToast("Failed to export chats.", "error");
     }
+  };
+
+  const handleClearAllChats = async () => {
+    if (
+      !window.confirm(
+        `Are you sure you want to clear all chats?\n\nThis action is irreversible.`
+      )
+    ) {
+      refocusApplication();
+      return false;
+    }
+
+    refocusApplication();
+    await System.deleteChat(-1);
+    setChats([]);
+    showToast("Cleared all chats.", "success");
   };
 
   const toggleMenu = () => {
@@ -82,6 +105,16 @@ export default function WorkspaceChats() {
     };
   }, []);
 
+  useEffect(() => {
+    async function fetchChats() {
+      const { chats: _chats, hasPages = false } = await System.chats(offset);
+      setChats(_chats);
+      setCanNext(hasPages);
+      setLoading(false);
+    }
+    fetchChats();
+  }, [offset]);
+
   return (
     <div
       style={{ height: "calc(100vh - 40px)" }}
@@ -99,7 +132,7 @@ export default function WorkspaceChats() {
                 <button
                   ref={openMenuButton}
                   onClick={toggleMenu}
-                  className="flex items-center gap-x-2 px-4 py-2 rounded-lg bg-[#2C2F36] text-white text-sm hover:bg-[#3D4147] shadow-md border border-[#3D4147]"
+                  className="border-none flex items-center gap-x-2 px-4 py-1 rounded-lg bg-[#46C8FF] hover:text-white text-xs font-semibold hover:bg-[#2C2F36] shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                 >
                   <Download size={18} weight="bold" />
                   Export
@@ -127,26 +160,43 @@ export default function WorkspaceChats() {
                   </div>
                 </div>
               </div>
+              {chats.length > 0 && (
+                <button
+                  onClick={handleClearAllChats}
+                  className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-white/40 text-white/40 rounded-lg bg-transparent hover:text-white text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                >
+                  <Trash size={18} weight="bold" />
+                  Clear Chats
+                </button>
+              )}
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
               These are all the recorded chats and messages that have been sent
               by users ordered by their creation date.
             </p>
           </div>
-          <ChatsContainer />
+          <ChatsContainer
+            loading={loading}
+            chats={chats}
+            setChats={setChats}
+            offset={offset}
+            setOffset={setOffset}
+            canNext={canNext}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-function ChatsContainer() {
-  const query = useQuery();
-  const [loading, setLoading] = useState(true);
-  const [chats, setChats] = useState([]);
-  const [offset, setOffset] = useState(Number(query.get("offset") || 0));
-  const [canNext, setCanNext] = useState(false);
-
+function ChatsContainer({
+  loading,
+  chats,
+  setChats,
+  offset,
+  setOffset,
+  canNext,
+}) {
   const handlePrevious = () => {
     setOffset(Math.max(offset - 1, 0));
   };
@@ -154,19 +204,10 @@ function ChatsContainer() {
     setOffset(offset + 1);
   };
 
-  const handleDeleteChat = (chatId) => {
+  const handleDeleteChat = async (chatId) => {
+    await System.deleteChat(chatId);
     setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
   };
-
-  useEffect(() => {
-    async function fetchChats() {
-      const { chats: _chats, hasPages = false } = await System.chats(offset);
-      setChats(_chats);
-      setCanNext(hasPages);
-      setLoading(false);
-    }
-    fetchChats();
-  }, [offset]);
 
   if (loading) {
     return (

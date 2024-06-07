@@ -20,19 +20,23 @@ export default function ChatTemperatureSettings({
           LLM Temperature
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          This setting controls how &quot;random&quot; or dynamic your chat
-          responses will be.
+          This setting controls how &quot;creative&quot; your LLM responses will
+          be.
           <br />
-          The higher the number (1.0 maximum) the more random and incoherent.
+          The higher the number the more creative. For some models this can lead
+          to incoherent responses when set too high.
           <br />
-          <i>Recommended: {defaults.temp}</i>
+          <br />
+          <i>
+            Most LLMs have various acceptable ranges of valid values. Consult
+            your LLM provider for that information.
+          </i>
         </p>
       </div>
       <input
         name="openAiTemp"
         type="number"
         min={0.0}
-        max={1.0}
         step={0.1}
         onWheel={(e) => e.target.blur()}
         defaultValue={workspace?.openAiTemp ?? defaults.temp}

@@ -3,6 +3,7 @@ import Sidebar from "@/components/SettingsSidebar";
 // import SupportEmail from "./SupportEmail";
 // import CustomLogo from "./CustomLogo";
 import CustomMessages from "./CustomMessages";
+// import CustomAppName from "./CustomAppName";
 
 export default function Appearance() {
   return (
@@ -24,6 +25,7 @@ export default function Appearance() {
             </p>
           </div>
           {/* <CustomLogo /> */}
+          {/* <CustomAppName /> */}
           <CustomMessages />
           {/* <FooterCustomization />
           <SupportEmail /> */}

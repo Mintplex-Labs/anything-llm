@@ -815,3 +815,7 @@ does not extend the close button beyond the viewport. */
 .bg-fullscreen-loader {
   background: linear-gradient(#3d4147, #2c2f35);
 }
+
+.search-input::-webkit-search-cancel-button {
+  filter: grayscale(100%) invert(1) brightness(100) opacity(0.5);
+}
