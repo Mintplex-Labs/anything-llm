@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
+import System from "@/models/system";
 import showToast from "@/utils/toast";
-import CTAButton from "@/components/lib/CTAButton";
 import AgentWebSearchSelection from "./WebSearchSelection";
 import AgentSQLConnectorSelection from "./SQLConnectorSelection";
 import GenericSkill from "./GenericSkill";
@@ -37,28 +37,30 @@ const configurableSkills = {
   "web-search": {
     title: "Web Search",
     component: AgentWebSearchSelection,
-    enabled: true,
+    enabled: false,
+    skill: "web-search",
   },
   "sql-connector": {
     title: "SQL Connector",
     component: AgentSQLConnectorSelection,
-    enabled: true,
+    enabled: false,
+    skill: "sql-connector",
   },
   "create-chart": {
     title: "Generate charts",
     description:
       "Enable the default agent to generate various types of charts from data provided or given in chat.",
-    skill: "create-chart",
     component: GenericSkill,
-    enabled: true,
+    enabled: false,
+    skill: "create-chart",
   },
   "save-file": {
     title: "Generate & save files to browser",
     description:
       "Enable the default agent to generate and write to files that save and can be downloaded in your browser.",
-    skill: "save-file-to-browser",
     component: GenericSkill,
-    enabled: true,
+    enabled: false,
+    skill: "save-file-to-browser",
   },
 };
 
@@ -69,36 +71,59 @@ export default function AdminAgents() {
   const [selectedSkill, setSelectedSkill] = useState("");
   const [agentSkills, setAgentSkills] = useState([]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    await Admin.updateSystemPreferences({
-      ...settings,
-      default_agent_skills: agentSkills,
-    });
-    setSaving(false);
-    setHasChanges(false);
-    showToast("System preferences updated successfully.", "success");
-  };
-
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await Admin.systemPreferences();
       setSettings(_settings?.settings ?? {});
-      console.log("default_agent_skills", _settings?.settings);
       setAgentSkills(_settings?.settings?.default_agent_skills ?? []);
     }
     fetchSettings();
   }, []);
 
-  function toggleAgentSkill(skillName = "") {
+  const toggleAgentSkill = (skillName) => {
     setAgentSkills((prev) => {
-      setHasChanges(true);
-      return prev.includes(skillName)
+      const updatedSkills = prev.includes(skillName)
         ? prev.filter((name) => name !== skillName)
         : [...prev, skillName];
+      setHasChanges(true);
+      return updatedSkills;
     });
-  }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+
+    const data = {
+      system: {},
+      env: {},
+    };
+
+    for (var [key, value] of Object.entries(settings)) {
+      if (key.startsWith("system::")) {
+        const [_, label] = key.split("system::");
+        data.system[label] = String(value);
+        continue;
+      }
+
+      if (key.startsWith("env::")) {
+        const [_, label] = key.split("env::");
+        data.env[label] = String(value);
+        continue;
+      }
+    }
+
+    data.system.default_agent_skills = agentSkills;
+
+    console.log(data);
+
+    await Admin.updateSystemPreferences(data.system);
+    await System.updateSystem(data.env);
+
+    setSaving(false);
+    setHasChanges(false);
+    showToast("System preferences updated successfully.", "success");
+  };
 
   const SelectedSkillComponent =
     configurableSkills[selectedSkill]?.component ||
@@ -164,9 +189,8 @@ export default function AdminAgents() {
                     <div className="text-sm font-light">{settings.title}</div>
                     <div className="flex items-center gap-x-2">
                       <div className="text-sm text-white/60 font-medium">
-                        {settings.enabled ? "On" : "Off"}
+                        {agentSkills.includes(settings.skill) ? "On" : "Off"}
                       </div>
-
                       <CaretRight
                         size={14}
                         weight="bold"
@@ -184,7 +208,7 @@ export default function AdminAgents() {
             <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
               {SelectedSkillComponent ? (
                 <SelectedSkillComponent
-                  skill={selectedSkill}
+                  skill={configurableSkills[selectedSkill]?.skill}
                   settings={settings}
                   toggleSkill={toggleAgentSkill}
                   enabled={agentSkills.includes(
