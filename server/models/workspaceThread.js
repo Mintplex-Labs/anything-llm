@@ -2,13 +2,14 @@ const prisma = require("../utils/prisma");
 const { v4: uuidv4 } = require("uuid");
 
 const WorkspaceThread = {
+  defaultName: "Thread",
   writable: ["name"],
 
   new: async function (workspace, userId = null) {
     try {
       const thread = await prisma.workspace_threads.create({
         data: {
-          name: "Thread",
+          name: this.defaultName,
           slug: uuidv4(),
           user_id: userId ? Number(userId) : null,
           workspace_id: workspace.id,
@@ -91,16 +92,23 @@ const WorkspaceThread = {
     thread = null,
     user = null,
     newName = null,
+    onRename = null,
   }) {
     if (!workspace || !thread || !newName) return false;
+    if (thread.name !== this.defaultName) return false; // don't rename if already named.
+
     const { WorkspaceChats } = require("./workspaceChats");
     const chatCount = await WorkspaceChats.count({
       workspaceId: workspace.id,
       user_id: user?.id || null,
       thread_id: thread.id,
     });
-    if (chatCount !== 1) return false;
-    await this.update(thread, { name: newName });
+    if (chatCount !== 1) return { renamed: false, thread };
+    const { thread: updatedThread } = await this.update(thread, {
+      name: newName,
+    });
+
+    onRename?.(updatedThread);
     return true;
   },
 };
