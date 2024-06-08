@@ -1,3 +1,4 @@
+import { THREAD_RENAME_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 export const ABORT_STREAM_EVENT = "abort-chat-stream";
 
 // For handling of chat responses in the frontend by their various types.
@@ -135,6 +136,21 @@ export default function handleChat(
   if (action === "reset_chat") {
     // Chat was reset, keep reset message and clear everything else.
     setChatHistory([_chatHistory.pop()]);
+  }
+
+  // If thread was updated automatically based on chat prompt
+  // then we can handle the updating of the thread here.
+  if (action === "rename_thread") {
+    if (!!chatResult?.thread?.slug && chatResult.thread.name) {
+      window.dispatchEvent(
+        new CustomEvent(THREAD_RENAME_EVENT, {
+          detail: {
+            threadSlug: chatResult.thread.slug,
+            newName: chatResult.thread.name,
+          },
+        })
+      );
+    }
   }
 }
 

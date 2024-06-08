@@ -199,11 +199,21 @@ function chatEndpoints(app) {
           thread
         );
 
+        // If thread was renamed emit event to frontend via special `action` response.
         await WorkspaceThread.autoRenameThread({
           thread,
           workspace,
           user,
           newName: truncate(message, 22),
+          onRename: (thread) => {
+            writeResponseChunk(response, {
+              action: "rename_thread",
+              thread: {
+                slug: thread.slug,
+                name: thread.name,
+              },
+            });
+          },
         });
 
         await Telemetry.sendTelemetry("sent_chat", {
