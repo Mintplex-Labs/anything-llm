@@ -773,7 +773,7 @@ async function dumpENV() {
     "AGENT_GSE_KEY",
     "AGENT_SERPER_DEV_KEY",
     "AGENT_BING_SEARCH_API_KEY",
-    "AGENT_SERPLY_API_KEY"
+    "AGENT_SERPLY_API_KEY",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

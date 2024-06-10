@@ -71,9 +71,12 @@ const SystemSettings = {
       try {
         if (update === "none") return null;
         if (
-          !["google-search-engine", "serper-dot-dev", "bing-search", "serply-engine"].includes(
-            update
-          )
+          ![
+            "google-search-engine",
+            "serper-dot-dev",
+            "bing-search",
+            "serply-engine",
+          ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
         return String(update);

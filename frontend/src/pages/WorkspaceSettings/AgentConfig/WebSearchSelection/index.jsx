@@ -3,14 +3,14 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import GoogleSearchIcon from "./icons/google.png";
 import SerperDotDevIcon from "./icons/serper.png";
 import BingSearchIcon from "./icons/bing.png";
-import SerplySearchIcon from "./icons/serply.png"
+import SerplySearchIcon from "./icons/serply.png";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import SearchProviderItem from "./SearchProviderItem";
 import {
   SerperDotDevOptions,
   GoogleSearchOptions,
   BingSearchOptions,
-  SerplySearchOptions
+  SerplySearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
