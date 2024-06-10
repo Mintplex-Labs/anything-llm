@@ -86,6 +86,49 @@ mintplexlabs/anythingllm;
 
 </td>
 </tr>
+<tr>
+  <td> Docker Compose</td>
+  <td>
+    
+      version: '3.8'
+      services:
+        anythingllm:
+          image: mintplexlabs/anythingllm
+          container_name: anythingllm
+          ports:
+          - "3001:3001"
+          cap_add:
+            - SYS_ADMIN
+          environment:
+          # Adjust for your environemnt
+            - STORAGE_DIR=/app/server/storage
+            - JWT_SECRET="make this a large list of random numbers and letters 20+"
+            - LLM_PROVIDER=ollama
+            - OLLAMA_BASE_PATH=http://127.0.0.1:11434
+            - OLLAMA_MODEL_PREF=llama2
+            - OLLAMA_MODEL_TOKEN_LIMIT=4096
+            - EMBEDDING_ENGINE=ollama
+            - EMBEDDING_BASE_PATH=http://127.0.0.1:11434
+            - EMBEDDING_MODEL_PREF=nomic-embed-text:latest
+            - EMBEDDING_MODEL_MAX_CHUNK_LENGTH=8192
+            - VECTOR_DB=lancedb
+            - WHISPER_PROVIDER=local
+            - TTS_PROVIDER=native
+            - PASSWORDMINCHAR=8
+            - AGENT_SERPER_DEV_KEY="SERPER DEV API KEY"
+          volumes:
+            - anythingllm_storage:/app/server/storage
+          restart: always
+
+      volumes:
+        anythingllm_storage:
+          driver: local
+          driver_opts:
+            type: none
+            o: bind
+            device: /path/on/local/disk
+  </td>
+</tr>
 </table>
 
 Go to `http://localhost:3001` and you are now using AnythingLLM! All your data and progress will persist between
