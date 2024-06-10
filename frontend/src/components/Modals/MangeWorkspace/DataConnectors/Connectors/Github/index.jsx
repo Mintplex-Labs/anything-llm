@@ -153,7 +153,7 @@ export default function GithubOptions() {
             {loading && (
               <p className="text-xs text-white/50">
                 Once complete, all files will be available for embedding into
-                ChatLTT Hub in the document picker.
+                workspaces in the document picker.
               </p>
             )}
           </div>
@@ -290,7 +290,7 @@ function PATTooltip({ accessToken }) {
           >
             Personal Access Token
           </a>
-          , the  API may limit the number of files that can be collected
+          , the GitHub API may limit the number of files that can be collected
           due to rate limits. You can{" "}
           <a
             href="https://github.com/settings/personal-access-tokens/new"
