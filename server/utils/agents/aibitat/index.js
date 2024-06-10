@@ -41,6 +41,7 @@ class AIbitat {
       ...rest,
     };
     this.provider = this.defaultProvider.provider;
+    this.model = this.defaultProvider.model;
   }
 
   /**
