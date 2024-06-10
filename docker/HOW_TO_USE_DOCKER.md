@@ -89,7 +89,6 @@ mintplexlabs/anythingllm;
 <tr>
   <td> Docker Compose</td>
   <td>
-
       version: '3.8'
       services:
         anythingllm:
