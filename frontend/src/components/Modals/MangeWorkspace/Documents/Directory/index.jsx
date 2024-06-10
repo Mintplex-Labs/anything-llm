@@ -36,7 +36,7 @@ function Directory({
     event.stopPropagation();
     if (
       !window.confirm(
-        "Are you sure you want to delete these files and folders?\nThis will remove the files from the system and remove them from any existing workspaces automatically.\nThis action is not reversible."
+        "Are you sure you want to delete these files and folders?\nThis will remove the files from the system and remove them from any existing hub automatically.\nThis action is not reversible."
       )
     ) {
       return false;
