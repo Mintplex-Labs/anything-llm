@@ -170,7 +170,7 @@ const RemoveItemFromWorkspace = ({ item, onClick }) => {
     <div>
       <ArrowUUpLeft
         data-tooltip-id={`remove-${item.id}`}
-        data-tooltip-content="Remove document from this Hub"
+        data-tooltip-content="Remove document from this Chatltt Hub"
         onClick={onClick}
         className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
       />
