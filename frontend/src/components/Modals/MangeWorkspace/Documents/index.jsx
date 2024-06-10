@@ -142,7 +142,7 @@ export default function DocumentSettings({ workspace, systemSettings }) {
       }
     });
 
-    // Do not do cost estimation unless the embedding engine is OpenAi.
+    // Do not do cost estimation unless the embedding engine OpenAi.
     if (systemSettings?.EmbeddingEngine === "openai") {
       const COST_PER_TOKEN =
         MODEL_COSTS[
