@@ -59,7 +59,7 @@ export default function ConfluenceOptions() {
                     <p className="font-bold text-white">Confluence Page URL</p>
                   </label>
                   <p className="text-xs font-normal text-white/50">
-                    URL of a page in the Confluence space..
+                    URL of a page in the Confluence space.
                   </p>
                 </div>
                 <input
@@ -153,7 +153,7 @@ export default function ConfluenceOptions() {
             {loading && (
               <p className="text-xs text-white/50">
                 Once complete, all pages will be available for embedding into
-                ChatLTT Hub.
+                workspaces.
               </p>
             )}
           </div>
