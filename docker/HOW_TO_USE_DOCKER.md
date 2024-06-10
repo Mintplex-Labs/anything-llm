@@ -89,7 +89,6 @@ mintplexlabs/anythingllm;
 <tr>
   <td> Docker Compose</td>
   <td>
-    
       version: '3.8'
       services:
         anythingllm:
@@ -116,6 +115,7 @@ mintplexlabs/anythingllm;
             - TTS_PROVIDER=native
             - PASSWORDMINCHAR=8
             - AGENT_SERPER_DEV_KEY="SERPER DEV API KEY"
+            - AGENT_SERPLY_API_KEY="Serply.io API KEY"
           volumes:
             - anythingllm_storage:/app/server/storage
           restart: always
