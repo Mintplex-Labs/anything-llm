@@ -290,7 +290,7 @@ function PATTooltip({ accessToken }) {
           >
             Personal Access Token
           </a>
-          , the GitHub API may limit the number of files that can be collected
+          , the  API may limit the number of files that can be collected
           due to rate limits. You can{" "}
           <a
             href="https://github.com/settings/personal-access-tokens/new"
