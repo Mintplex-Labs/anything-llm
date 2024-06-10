@@ -26,7 +26,7 @@ export default function WorkspaceFileRow({
     setLoading(true);
 
     try {
-      setLoadingMessage(`Removing file from this hub`);
+      setLoadingMessage(`Removing file from workspace`);
       await Workspace.modifyEmbeddings(workspace.slug, {
         adds: [],
         deletes: [`${folderName}/${item.name}`],
@@ -170,7 +170,7 @@ const RemoveItemFromWorkspace = ({ item, onClick }) => {
     <div>
       <ArrowUUpLeft
         data-tooltip-id={`remove-${item.id}`}
-        data-tooltip-content="Remove document from this Chatltt Hub"
+        data-tooltip-content="Remove document from workspace"
         onClick={onClick}
         className="text-base font-bold w-4 h-4 ml-2 flex-shrink-0 cursor-pointer"
       />
