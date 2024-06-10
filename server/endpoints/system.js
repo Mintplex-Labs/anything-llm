@@ -1107,7 +1107,6 @@ function systemEndpoints(app) {
     async (request, response) => {
       try {
         const { action = "open" } = request.params;
-        console.log({ supporter_interest: action });
         await Telemetry.sendTelemetry("supporter_interest", { action });
         response.status(200).json({ success: true });
       } catch (error) {
