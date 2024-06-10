@@ -147,3 +147,38 @@ export function BingSearchOptions({ settings }) {
     </>
   );
 }
+
+export function SerplySearchOptions({ settings }) {
+  return (
+    <>
+      <p className="text-sm text-white/60 my-2">
+        You can get a free API key{" "}
+        <a
+          href="https://serply.io"
+          target="_blank"
+          rel="noreferrer"
+          className="text-blue-300 underline"
+        >
+          from Serply.io.
+        </a>
+      </p>
+      <div className="flex gap-x-4">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-4">
+            API Key
+          </label>
+          <input
+            type="password"
+            name="env::AgentSerplyApiKey"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            placeholder="Serply API Key"
+            defaultValue={settings?.AgentSerplyApiKey ? "*".repeat(20) : ""}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
