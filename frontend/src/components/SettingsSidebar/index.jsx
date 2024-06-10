@@ -154,7 +154,7 @@ export default function SettingsSidebar() {
               </div>
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-50">
+          <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
             <Footer />
           </div>
         </div>
