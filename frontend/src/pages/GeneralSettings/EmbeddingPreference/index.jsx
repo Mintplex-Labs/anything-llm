@@ -38,7 +38,7 @@ const EMBEDDERS = [
     logo: AnythingLLMIcon,
     options: (settings) => <NativeEmbeddingOptions settings={settings} />,
     description:
-      "Use the built-in embedding provider for AnythingLLM. Zero setup!",
+      "Use the built-in embedding provider for ChatLTT. Zero setup!",
   },
   {
     name: "OpenAI",
@@ -233,7 +233,7 @@ export default function GeneralEmbeddingPreference() {
                   <br />
                   Embedding is the process of turning text into vectors. These
                   credentials are required to turn your files and prompts into a
-                  format which AnythingLLM can use to process.
+                  format which ChatLTT can use to process.
                 </p>
               </div>
               <div className="w-full justify-end flex">
@@ -257,7 +257,7 @@ export default function GeneralEmbeddingPreference() {
                   />
                 )}
                 {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-[#18181B] rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#46C8FF] z-20">
+                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-[#18181B] rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#FF5757] z-20">
                     <div className="w-full flex flex-col gap-y-1">
                       <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-[#18181B]">
                         <MagnifyingGlass
@@ -301,7 +301,7 @@ export default function GeneralEmbeddingPreference() {
                   </div>
                 ) : (
                   <button
-                    className="w-full max-w-[640px] h-[64px] bg-[#18181B] rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-[#46C8FF] transition-all duration-300"
+                    className="w-full max-w-[640px] h-[64px] bg-[#18181B] rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-[#FF5757] transition-all duration-300"
                     type="button"
                     onClick={() => setSearchMenuOpen(true)}
                   >

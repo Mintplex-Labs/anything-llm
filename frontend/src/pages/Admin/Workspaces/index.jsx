@@ -25,17 +25,17 @@ export default function AdminWorkspaces() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-white">
-                Instance Workspaces
+                ChatLTT Hub's
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              These are all the workspaces that exist on this instance. Removing
-              a workspace will delete all of it's associated chats and settings.
+              These are all the hub's that exist on this instance. Removing
+              a hub will delete all of it's associated chats and settings.
             </p>
           </div>
           <div className="w-full justify-end flex">
             <CTAButton onClick={openModal} className="mt-3 mr-0 -mb-14 z-10">
-              <BookOpen className="h-4 w-4" weight="bold" /> New Workspace
+              <BookOpen className="h-4 w-4" weight="bold" /> New ChatLTT Hub
             </CTAButton>
           </div>
           <WorkspacesContainer />

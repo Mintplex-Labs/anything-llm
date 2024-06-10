@@ -122,13 +122,13 @@ export default function WorkspaceChats() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="flex gap-x-4 items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                Workspace Chats
+                ChatLTT Hub Chats
               </p>
               <div className="relative">
                 <button
                   ref={openMenuButton}
                   onClick={toggleMenu}
-                  className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-[#46C8FF] hover:text-white text-xs font-semibold hover:bg-[#2C2F36] shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                  className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-[#FF5757] hover:text-white text-xs font-semibold hover:bg-[#2C2F36] shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                 >
                   <Download size={18} weight="bold" />
                   Export
@@ -231,7 +231,7 @@ function ChatsContainer({
               Sent By
             </th>
             <th scope="col" className="px-6 py-3">
-              Workspace
+              ChatLTT Hub
             </th>
             <th scope="col" className="px-6 py-3">
               Prompt

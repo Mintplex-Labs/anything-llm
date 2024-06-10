@@ -110,7 +110,7 @@ export default function GeneralVectorDatabase() {
       logo: LanceDbLogo,
       options: <LanceDBOptions />,
       description:
-        "100% local vector DB that runs on the same instance as AnythingLLM.",
+        "100% local vector DB that runs on the same instance as ChatLTT.",
     },
     {
       name: "Chroma",
@@ -199,7 +199,7 @@ export default function GeneralVectorDatabase() {
                 </div>
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
                   These are the credentials and settings for how your
-                  AnythingLLM instance will function. It's important these keys
+                  ChatLTT instance will function. It's important these keys
                   are current and correct.
                 </p>
               </div>
@@ -224,7 +224,7 @@ export default function GeneralVectorDatabase() {
                   />
                 )}
                 {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-[#18181B] rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#46C8FF] z-20">
+                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-[#18181B] rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#FF5757] z-20">
                     <div className="w-full flex flex-col gap-y-1">
                       <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-[#18181B]">
                         <MagnifyingGlass
@@ -268,7 +268,7 @@ export default function GeneralVectorDatabase() {
                   </div>
                 ) : (
                   <button
-                    className="w-full max-w-[640px] h-[64px] bg-[#18181B] rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-[#46C8FF] transition-all duration-300"
+                    className="w-full max-w-[640px] h-[64px] bg-[#18181B] rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-[#FF5757] transition-all duration-300"
                     type="button"
                     onClick={() => setSearchMenuOpen(true)}
                   >
