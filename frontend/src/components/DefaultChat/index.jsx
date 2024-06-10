@@ -51,7 +51,7 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              Welcome to ChatLTT. To get started, click on the left menu on desktop or the menu icon on mobile and select the Wordspace assigned to you.
+              Welcome to ChatLTT. To get started, click on the left menu on desktop or the menu icon on mobile and select the Hub assigned to you.
             
             </span>
           </div>
