@@ -90,11 +90,13 @@ const webScraping = {
               );
               this.controller.abort();
             });
-            return summarizeContent(
-              this.super.provider,
-              this.controller.signal,
-              content
-            );
+
+            return summarizeContent({
+              provider: this.super.provider,
+              model: this.super.model,
+              controllerSignal: this.controller.signal,
+              content,
+            });
           },
         });
       },
