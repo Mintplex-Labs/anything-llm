@@ -25,6 +25,7 @@ import ScrapeWebsitesImage from "@/media/agents/scrape-websites.png";
 import GenerateChartsImage from "@/media/agents/generate-charts.png";
 import GenerateSaveImages from "@/media/agents/generate-save-files.png";
 import { FullScreenLoader } from "@/components/Preloader";
+import DefaultBadge from "./DefaultBadge";
 
 const defaultSkills = {
   "rag-memory": {
@@ -53,15 +54,15 @@ const defaultSkills = {
 };
 
 const configurableSkills = {
-  "web-search": {
+  "web-browsing": {
     title: "Web Search",
     component: AgentWebSearchSelection,
-    skill: "web-search",
+    skill: "web-browsing",
   },
-  "sql-connector": {
+  "sql-agent": {
     title: "SQL Connector",
     component: AgentSQLConnectorSelection,
-    skill: "sql-connector",
+    skill: "sql-agent",
   },
   "create-chart": {
     title: "Generate charts",
@@ -225,11 +226,14 @@ export default function AdminAgents() {
                   onClick={() => setSelectedSkill(skill)}
                 >
                   <div className="text-sm font-light">{settings.title}</div>
-                  <CaretRight
-                    size={14}
-                    weight="bold"
-                    className="text-white/80"
-                  />
+                  <div className="flex items-center gap-x-2">
+                    <DefaultBadge title={skill} />
+                    <CaretRight
+                      size={14}
+                      weight="bold"
+                      className="text-white/80"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
