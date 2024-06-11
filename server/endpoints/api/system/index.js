@@ -1,5 +1,6 @@
 const { EventLogs } = require("../../../models/eventLogs");
 const { SystemSettings } = require("../../../models/systemSettings");
+const { purgeDocument } = require("../../../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../../../utils/helpers");
 const {
   prepareWorkspaceChatsForExport,
