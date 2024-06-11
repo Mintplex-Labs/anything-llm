@@ -9,7 +9,6 @@ import showToast from "@/utils/toast";
 import FolderSelectionPopup from "./FolderSelectionPopup";
 import MoveToFolderIcon from "./MoveToFolderIcon";
 import { useModal } from "@/hooks/useModal";
-import ModalWrapper from "@/components/ModalWrapper";
 import NewFolderModal from "./NewFolderModal";
 import debounce from "lodash.debounce";
 import { filterFileSearchResults } from "./utils";
@@ -191,7 +190,7 @@ function Directory({
             />
           </div>
           <button
-            className="flex items-center gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-[#222628]/60"
+            className="flex items-center gap-x-2 cursor-pointer px-[14px] py-[7px] -mr-[14px] rounded-lg hover:bg-[#222628]/60 z-20 relative"
             onClick={openFolderModal}
           >
             <Plus size={18} weight="bold" color="#D3D4D4" />
@@ -292,14 +291,15 @@ function Directory({
           setLoadingMessage={setLoadingMessage}
         />
       </div>
-
-      <ModalWrapper isOpen={isFolderModalOpen}>
-        <NewFolderModal
-          closeModal={closeFolderModal}
-          files={files}
-          setFiles={setFiles}
-        />
-      </ModalWrapper>
+      {isFolderModalOpen && (
+        <div className="bg-black/60 backdrop-blur-sm fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center z-30">
+          <NewFolderModal
+            closeModal={closeFolderModal}
+            files={files}
+            setFiles={setFiles}
+          />
+        </div>
+      )}
     </div>
   );
 }
