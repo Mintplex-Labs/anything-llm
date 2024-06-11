@@ -27,7 +27,6 @@ export default function ThreadItem({
   const { slug } = useParams();
   const optionsContainer = useRef(null);
   const [showOptions, setShowOptions] = useState(false);
-  const [name, setName] = useState(thread.name);
   const linkTo = !thread.slug
     ? paths.workspace.chat(slug)
     : paths.workspace.thread(slug, thread.slug);
@@ -97,7 +96,7 @@ export default function ThreadItem({
                 isActive ? "font-medium text-white" : "text-slate-400"
               }`}
             >
-              {truncate(name, 25)}
+              {truncate(thread.name, 25)}
             </p>
           </a>
         )}
@@ -133,7 +132,6 @@ export default function ThreadItem({
                 workspace={workspace}
                 thread={thread}
                 onRemove={onRemove}
-                onRename={setName}
                 close={() => setShowOptions(false)}
               />
             )}
@@ -144,14 +142,7 @@ export default function ThreadItem({
   );
 }
 
-function OptionsMenu({
-  containerRef,
-  workspace,
-  thread,
-  onRename,
-  onRemove,
-  close,
-}) {
+function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
   const menuRef = useRef(null);
 
   // Ref menu options
@@ -208,7 +199,7 @@ function OptionsMenu({
       return;
     }
 
-    onRename(name);
+    thread.name = name;
     close();
   };
 
