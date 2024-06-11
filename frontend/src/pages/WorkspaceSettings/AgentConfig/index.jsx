@@ -4,9 +4,6 @@ import showToast from "@/utils/toast";
 import { castToType } from "@/utils/types";
 import { useEffect, useRef, useState } from "react";
 import AgentLLMSelection from "./AgentLLMSelection";
-import AgentWebSearchSelection from "./WebSearchSelection";
-import AgentSQLConnectorSelection from "./SQLConnectorSelection";
-import GenericSkill from "./GenericSkill";
 import Admin from "@/models/admin";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -18,7 +15,6 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [agentSkills, setAgentSkills] = useState([]);
 
   const navigate = useNavigate();
 
@@ -28,7 +24,6 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
       const _settings = await System.keys();
       const _preferences = await Admin.systemPreferences();
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
-      setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
       setLoading(false);
     }
     fetchSettings();
@@ -76,14 +71,6 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
     setSaving(false);
     setHasChanges(false);
   };
-
-  function toggleAgentSkill(skillName = "") {
-    setAgentSkills((prev) => {
-      return prev.includes(skillName)
-        ? prev.filter((name) => name !== skillName)
-        : [...prev, skillName];
-    });
-  }
 
   if (!workspace || loading) return <LoadingSkeleton />;
   return (
@@ -158,78 +145,3 @@ function LoadingSkeleton() {
     </div>
   );
 }
-
-// TODO: remove
-// function AvailableAgentSkills({ skills, settings, toggleAgentSkill }) {
-//   return (
-//     <div>
-//       <div className="flex flex-col mb-8">
-//         <div className="flex w-full justify-between items-center">
-//           <label htmlFor="name" className="text-white text-md font-semibold">
-//             Default agent skills
-//           </label>
-//         </div>
-//         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-//           Improve the natural abilities of the default agent with these
-//           pre-built skills. This set up applies to all workspaces.
-//         </p>
-//       </div>
-//       <input
-//         name="system::default_agent_skills"
-//         type="hidden"
-//         value={skills.join(",")}
-//       />
-//       <div className="flex flex-col gap-y-3">
-//         <GenericSkill
-//           title="RAG & long-term memory"
-//           description='Allow the agent to leverage your local documents to answer a query or ask the agent to "remember" pieces of content for long-term memory retrieval.'
-//           settings={settings}
-//           enabled={true}
-//           disabled={true}
-//         />
-//         <GenericSkill
-//           title="View & summarize documents"
-//           description="Allow the agent to list and summarize the content of workspace files currently embedded."
-//           settings={settings}
-//           enabled={true}
-//           disabled={true}
-//         />
-//         <GenericSkill
-//           title="Scrape websites"
-//           description="Allow the agent to visit and scrape the content of websites."
-//           settings={settings}
-//           enabled={true}
-//           disabled={true}
-//         />
-//         <GenericSkill
-//           title="Generate charts"
-//           description="Enable the default agent to generate various types of charts from data provided or given in chat."
-//           skill="create-chart"
-//           settings={settings}
-//           toggleSkill={toggleAgentSkill}
-//           enabled={skills.includes("create-chart")}
-//         />
-//         <GenericSkill
-//           title="Generate & save files to browser"
-//           description="Enable the default agent to generate and write to files that save and can be downloaded in your browser."
-//           skill="save-file-to-browser"
-//           settings={settings}
-//           toggleSkill={toggleAgentSkill}
-//           enabled={skills.includes("save-file-to-browser")}
-//         />
-//         <AgentWebSearchSelection
-//           skill="web-browsing"
-//           settings={settings}
-//           toggleSkill={toggleAgentSkill}
-//           enabled={skills.includes("web-browsing")}
-//         />
-//         <AgentSQLConnectorSelection
-//           skill="sql-agent"
-//           settings={settings}
-//           toggleSkill={toggleAgentSkill}
-//           enabled={skills.includes("sql-agent")}
-//         />
-//       </div>
-//     </div>
-//   );
-// }
