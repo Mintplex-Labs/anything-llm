@@ -3,6 +3,7 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import GoogleSearchIcon from "./icons/google.png";
 import SerperDotDevIcon from "./icons/serper.png";
 import BingSearchIcon from "./icons/bing.png";
+import SerplySearchIcon from "./icons/serply.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -15,6 +16,7 @@ import {
   SerperDotDevOptions,
   GoogleSearchOptions,
   BingSearchOptions,
+  SerplySearchOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -49,6 +51,14 @@ const SEARCH_PROVIDERS = [
     options: (settings) => <BingSearchOptions settings={settings} />,
     description:
       "Web search powered by the Bing Search API. Free for 1000 queries per month.",
+  },
+  {
+    name: "Serply.io",
+    value: "serply-engine",
+    logo: SerplySearchIcon,
+    options: (settings) => <SerplySearchOptions settings={settings} />,
+    description:
+      "Serply.io web-search. Free account with a 100 calls/month forever.",
   },
 ];
 
