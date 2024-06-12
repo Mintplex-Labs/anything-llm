@@ -103,8 +103,11 @@ const EMBEDDERS = [
     name: "Generic OpenAI",
     value: "generic-openai",
     logo: GenericOpenAiLogo,
-    options: (settings) => <GenericOpenAiEmbeddingOptions settings={settings} />,
-    description: "Run powerful embedding models from OpenAI.",},
+    options: (settings) => (
+      <GenericOpenAiEmbeddingOptions settings={settings} />
+    ),
+    description: "Run powerful embedding models from OpenAI.",
+  },
 ];
 
 export default function GeneralEmbeddingPreference() {
