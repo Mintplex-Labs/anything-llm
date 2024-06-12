@@ -9,13 +9,13 @@ export default function ContextualSaveBar({ onSave, onCancel }) {
       </div>
       <div className="flex items-center gap-x-2">
         <button
-          className="text-white font-medium text-sm px-[10px] py-[6px] rounded-md bg-white/5 hover:bg-white/10"
+          className="border-none text-white font-medium text-sm px-[10px] py-[6px] rounded-md bg-white/5 hover:bg-white/10"
           onClick={onCancel}
         >
           Cancel
         </button>
         <button
-          className="text-[#222628] font-medium text-sm px-[10px] py-[6px] rounded-md bg-[#46C8FF] hover:bg-[#3DB5E8]"
+          className="border-none text-[#222628] font-medium text-sm px-[10px] py-[6px] rounded-md bg-[#46C8FF] hover:bg-[#3DB5E8]"
           onClick={onSave}
         >
           Save
