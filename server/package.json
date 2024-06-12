@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "NODE_ENV=development nodemon --ignore documents --ignore vector-cache --ignore storage --ignore swagger --trace-warnings index.js",
     "start": "NODE_ENV=production node index.js",
-    "lint": "yarn prettier --write ./endpoints ./models ./utils index.js",
+    "lint": "yarn prettier --ignore-path ../.prettierignore --write ./endpoints ./models ./utils index.js",
     "swagger": "node ./swagger/init.js",
     "sqlite:migrate": "cd ./utils/prisma && node migrateFromSqlite.js"
   },
@@ -32,7 +32,7 @@
     "@langchain/textsplitters": "0.0.0",
     "@pinecone-database/pinecone": "^2.0.1",
     "@prisma/client": "5.3.1",
-    "@qdrant/js-client-rest": "^1.4.0",
+    "@qdrant/js-client-rest": "^1.9.0",
     "@xenova/transformers": "^2.14.0",
     "@zilliz/milvus2-sdk-node": "^2.3.5",
     "archiver": "^5.3.1",
@@ -75,6 +75,7 @@
     "sqlite3": "^5.1.6",
     "swagger-autogen": "^2.23.5",
     "swagger-ui-express": "^5.0.0",
+    "truncate": "^3.0.0",
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",

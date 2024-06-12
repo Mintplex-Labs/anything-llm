@@ -380,7 +380,6 @@ function workspaceEndpoints(app) {
         const history = multiUserMode(response)
           ? await WorkspaceChats.forWorkspaceByUser(workspace.id, user.id)
           : await WorkspaceChats.forWorkspace(workspace.id);
-
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
         console.log(e.message, e);
@@ -410,6 +409,67 @@ function workspaceEndpoints(app) {
           id: { in: chatIds.map((id) => Number(id)) },
           user_id: user?.id ?? null,
           workspaceId: workspace.id,
+        });
+
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/workspace/:slug/delete-edited-chats",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const { startingId } = reqBody(request);
+        const user = await userFromSession(request, response);
+        const workspace = response.locals.workspace;
+
+        await WorkspaceChats.delete({
+          workspaceId: workspace.id,
+          thread_id: null,
+          user_id: user?.id,
+          id: { gte: Number(startingId) },
+        });
+
+        response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/update-chat",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const { chatId, newText = null } = reqBody(request);
+        if (!newText || !String(newText).trim())
+          throw new Error("Cannot save empty response");
+
+        const user = await userFromSession(request, response);
+        const workspace = response.locals.workspace;
+        const existingChat = await WorkspaceChats.get({
+          workspaceId: workspace.id,
+          thread_id: null,
+          user_id: user?.id,
+          id: Number(chatId),
+        });
+        if (!existingChat) throw new Error("Invalid chat.");
+
+        const chatResponse = safeJsonParse(existingChat.response, null);
+        if (!chatResponse) throw new Error("Failed to parse chat response");
+
+        await WorkspaceChats._update(existingChat.id, {
+          response: JSON.stringify({
+            ...chatResponse,
+            text: String(newText),
+          }),
         });
 
         response.sendStatus(200).end();

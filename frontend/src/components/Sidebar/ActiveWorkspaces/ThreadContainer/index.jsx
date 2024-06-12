@@ -5,12 +5,33 @@ import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
+export const THREAD_RENAME_EVENT = "renameThread";
 
 export default function ThreadContainer({ workspace }) {
   const { threadSlug = null } = useParams();
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ctrlPressed, setCtrlPressed] = useState(false);
+
+  useEffect(() => {
+    const chatHandler = (event) => {
+      const { threadSlug, newName } = event.detail;
+      setThreads((prevThreads) =>
+        prevThreads.map((thread) => {
+          if (thread.slug === threadSlug) {
+            return { ...thread, name: newName };
+          }
+          return thread;
+        })
+      );
+    };
+
+    window.addEventListener(THREAD_RENAME_EVENT, chatHandler);
+
+    return () => {
+      window.removeEventListener(THREAD_RENAME_EVENT, chatHandler);
+    };
+  }, []);
 
   useEffect(() => {
     async function fetchThreads() {

@@ -154,11 +154,12 @@ const docSummarizer = {
                 this.controller.abort();
               });
 
-              return await summarizeContent(
-                this.super.provider,
-                this.controller.signal,
-                document.content
-              );
+              return await summarizeContent({
+                provider: this.super.provider,
+                model: this.super.model,
+                controllerSignal: this.controller.signal,
+                content: document.content,
+              });
             } catch (error) {
               this.super.handlerProps.log(
                 `document-summarizer.summarizeDoc raised an error. ${error.message}`

@@ -95,7 +95,7 @@ const QDrant = {
     return {
       name: namespace,
       ...collection,
-      vectorCount: collection.vectors_count,
+      vectorCount: (await client.count(namespace, { exact: true })).count,
     };
   },
   hasNamespace: async function (namespace = null) {
