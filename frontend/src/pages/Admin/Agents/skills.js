@@ -42,15 +42,14 @@ export const defaultSkills = {
 };
 
 export const configurableSkills = {
-  "web-browsing": {
-    title: "Web Search",
-    component: AgentWebSearchSelection,
-    skill: "web-browsing",
-  },
-  "sql-agent": {
-    title: "SQL Connector",
-    component: AgentSQLConnectorSelection,
-    skill: "sql-agent",
+  "save-file": {
+    title: "Generate & save files to browser",
+    description:
+      "Enable the default agent to generate and write to files that can be saved to your computer.",
+    component: GenericSkillPanel,
+    skill: "save-file-to-browser",
+    icon: FileMagnifyingGlass,
+    image: GenerateSaveImages,
   },
   "create-chart": {
     title: "Generate charts",
@@ -61,13 +60,14 @@ export const configurableSkills = {
     icon: ChartBar,
     image: GenerateChartsImage,
   },
-  "save-file": {
-    title: "Generate & save files to browser",
-    description:
-      "Enable the default agent to generate and write to files that save and can be downloaded in your browser.",
-    component: GenericSkillPanel,
-    skill: "save-file-to-browser",
-    icon: FileMagnifyingGlass,
-    image: GenerateSaveImages,
+  "web-browsing": {
+    title: "Web Search",
+    component: AgentWebSearchSelection,
+    skill: "web-browsing",
+  },
+  "sql-agent": {
+    title: "SQL Connector",
+    component: AgentSQLConnectorSelection,
+    skill: "sql-agent",
   },
 };
