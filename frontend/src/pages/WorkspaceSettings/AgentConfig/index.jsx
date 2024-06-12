@@ -88,13 +88,11 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
         />
         {!hasChanges && (
           <div className="flex flex-col gap-y-4">
-            <button onClick={() => navigate(paths.settings.agentSkills())}>
-              <div
-                type="button"
-                className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              >
-                Configure Agent Skills
-              </div>
+            <button
+              className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              onClick={() => navigate(paths.settings.agentSkills())}
+            >
+              Configure Agent Skills
             </button>
             <p className="text-white text-opacity-60 text-xs font-medium">
               Customize and enhance the default agent's capabilities by enabling
