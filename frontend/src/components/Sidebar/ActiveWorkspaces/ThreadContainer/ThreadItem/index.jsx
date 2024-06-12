@@ -282,7 +282,7 @@ function RenameThreadModal({ isOpen, hideModal, onRename, workspace, thread }) {
   };
 
   return (
-    <ModalWrapper isOpen={isOpen}>
+    <ModalWrapper isOpen={isOpen} noPortal={true}>
       <div className="relative w-[500px] max-h-full">
         <div className="relative bg-modal-gradient rounded-lg shadow-md border-2 border-accent">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-white/10">
