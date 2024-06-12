@@ -117,6 +117,9 @@ export default {
     appearance: () => {
       return "/settings/appearance";
     },
+    agentSkills: () => {
+      return "/settings/agents";
+    },
     apiKeys: () => {
       return "/settings/api-keys";
     },

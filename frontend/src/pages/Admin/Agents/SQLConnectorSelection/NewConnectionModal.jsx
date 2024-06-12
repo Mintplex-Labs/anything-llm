@@ -74,8 +74,8 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
   // to the parent container form so we don't have nested forms.
   return createPortal(
     <ModalWrapper isOpen={isOpen}>
-      <div className="relative w-1/3 max-h-full ">
-        <div className="relative bg-main-gradient rounded-xl shadow-[0_4px_14px_rgba(0,0,0,0.25)] max-h-[90vh] overflow-y-scroll no-scroll">
+      <div className="relative w-1/3 max-h-full mt-8">
+        <div className="relative bg-main-gradient rounded-xl shadow-[0_4px_14px_rgba(0,0,0,0.25)] max-h-[85vh] overflow-y-scroll no-scroll">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
             <h3 className="text-xl font-semibold text-white">
               New SQL Connection
