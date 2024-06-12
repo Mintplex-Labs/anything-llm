@@ -145,7 +145,9 @@ class AgentHandler {
         break;
 
       default:
-        throw new Error("No provider found to power agent cluster.");
+        throw new Error(
+          "No workspace agent provider set. Please set your agent provider in the workspace's settings"
+        );
     }
   }
 
