@@ -742,3 +742,7 @@ does not extend the close button beyond the viewport. */
     opacity: 0;
   }
 }
+
+.search-input::-webkit-search-cancel-button {
+  filter: grayscale(100%) invert(1) brightness(100) opacity(0.5);
+}

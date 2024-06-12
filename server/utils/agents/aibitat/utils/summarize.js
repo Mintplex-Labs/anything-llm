@@ -3,26 +3,27 @@ const { PromptTemplate } = require("@langchain/core/prompts");
 const { RecursiveCharacterTextSplitter } = require("@langchain/textsplitters");
 const Provider = require("../providers/ai-provider");
 /**
- * Summarize content using OpenAI's GPT-3.5 model.
- *
- * @param self The context of the caller function
- * @param content The content to summarize.
- * @returns The summarized content.
+ * @typedef {Object} LCSummarizationConfig
+ * @property {string} provider The LLM to use for summarization (inherited)
+ * @property {string} model The LLM Model to use for summarization (inherited)
+ * @property {AbortController['signal']} controllerSignal Abort controller to stop recursive summarization
+ * @property {string} content The text content of the text to summarize
  */
 
-const SUMMARY_MODEL = {
-  anthropic: "claude-3-opus-20240229", // 200,000 tokens
-  openai: "gpt-4o", // 128,000 tokens
-};
-
-async function summarizeContent(
+/**
+ * Summarize content using LLM LC-Chain call
+ * @param {LCSummarizationConfig} The LLM to use for summarization (inherited)
+ * @returns {Promise<string>} The summarized content.
+ */
+async function summarizeContent({
   provider = "openai",
+  model = null,
   controllerSignal,
-  content
-) {
+  content,
+}) {
   const llm = Provider.LangChainChatModel(provider, {
     temperature: 0,
-    modelName: SUMMARY_MODEL[provider],
+    model: model,
   });
 
   const textSplitter = new RecursiveCharacterTextSplitter({

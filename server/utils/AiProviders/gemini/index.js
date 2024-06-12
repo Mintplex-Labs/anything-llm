@@ -91,6 +91,10 @@ class GeminiLLM {
     switch (this.model) {
       case "gemini-pro":
         return 30_720;
+      case "gemini-1.0-pro":
+        return 30_720;
+      case "gemini-1.5-flash-latest":
+        return 1_048_576;
       case "gemini-1.5-pro-latest":
         return 1_048_576;
       default:
@@ -101,6 +105,7 @@ class GeminiLLM {
   isValidChatCompletionModel(modelName = "") {
     const validModels = [
       "gemini-pro",
+      "gemini-1.0-pro",
       "gemini-1.5-pro-latest",
       "gemini-1.5-flash-latest",
     ];

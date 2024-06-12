@@ -9,6 +9,7 @@ export default function AgentSQLConnectorSelection({
   settings,
   toggleSkill,
   enabled = false,
+  setHasChanges,
 }) {
   const { isOpen, openModal, closeModal } = useModal();
   const [connections, setConnections] = useState(
@@ -72,6 +73,7 @@ export default function AgentSQLConnectorSelection({
                           })
                         );
                       }}
+                      setHasChanges={setHasChanges}
                     />
                   ))}
                 <button
