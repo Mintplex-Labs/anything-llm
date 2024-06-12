@@ -15,10 +15,9 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-
   const navigate = useNavigate();
-
   const formEl = useRef(null);
+
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await System.keys();

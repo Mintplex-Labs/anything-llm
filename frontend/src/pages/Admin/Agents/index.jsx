@@ -4,92 +4,19 @@ import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
-import AgentWebSearchSelection from "./WebSearchSelection";
-import AgentSQLConnectorSelection from "./SQLConnectorSelection";
-import GenericSkill from "./GenericSkill";
-import DefaultSkill from "./DefaultSkill";
-import {
-  CaretRight,
-  Robot,
-  Brain,
-  File,
-  Browser,
-  ChartBar,
-  FileMagnifyingGlass,
-} from "@phosphor-icons/react";
+import { CaretRight, Robot } from "@phosphor-icons/react";
 import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { castToType } from "@/utils/types";
-import RAGImage from "@/media/agents/rag-memory.png";
-import SummarizeImage from "@/media/agents/view-summarize.png";
-import ScrapeWebsitesImage from "@/media/agents/scrape-websites.png";
-import GenerateChartsImage from "@/media/agents/generate-charts.png";
-import GenerateSaveImages from "@/media/agents/generate-save-files.png";
 import { FullScreenLoader } from "@/components/Preloader";
-import DefaultBadge from "./DefaultBadge";
+import { defaultSkills, configurableSkills } from "./skills";
+import { DefaultBadge } from "./Badges/default";
 
-const defaultSkills = {
-  "rag-memory": {
-    title: "RAG & long-term memory",
-    description:
-      'Allow the agent to leverage your local documents to answer a query or ask the agent to "remember" pieces of content for long-term memory retrieval.',
-    component: DefaultSkill,
-    icon: Brain,
-    image: RAGImage,
-  },
-  "view-summarize": {
-    title: "View & summarize documents",
-    description:
-      "Allow the agent to list and summarize the content of workspace files currently embedded.",
-    component: DefaultSkill,
-    icon: File,
-    image: SummarizeImage,
-  },
-  "scrape-websites": {
-    title: "Scrape websites",
-    description: "Allow the agent to visit and scrape the content of websites.",
-    component: DefaultSkill,
-    icon: Browser,
-    image: ScrapeWebsitesImage,
-  },
-};
-
-const configurableSkills = {
-  "web-browsing": {
-    title: "Web Search",
-    component: AgentWebSearchSelection,
-    skill: "web-browsing",
-  },
-  "sql-agent": {
-    title: "SQL Connector",
-    component: AgentSQLConnectorSelection,
-    skill: "sql-agent",
-  },
-  "create-chart": {
-    title: "Generate charts",
-    description:
-      "Enable the default agent to generate various types of charts from data provided or given in chat.",
-    component: GenericSkill,
-    skill: "create-chart",
-    icon: ChartBar,
-    image: GenerateChartsImage,
-  },
-  "save-file": {
-    title: "Generate & save files to browser",
-    description:
-      "Enable the default agent to generate and write to files that save and can be downloaded in your browser.",
-    component: GenericSkill,
-    skill: "save-file-to-browser",
-    icon: FileMagnifyingGlass,
-    image: GenerateSaveImages,
-  },
-};
 export default function AdminAgents() {
   const [hasChanges, setHasChanges] = useState(false);
   const [settings, setSettings] = useState({});
   const [selectedSkill, setSelectedSkill] = useState("");
   const [agentSkills, setAgentSkills] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const formEl = useRef(null);
 
   // Alert user if they try to leave the page with unsaved changes
@@ -128,7 +55,6 @@ export default function AdminAgents() {
   };
 
   const handleSubmit = async (e) => {
-    setLoading(true);
     e.preventDefault();
     const data = {
       workspace: {},
@@ -160,12 +86,14 @@ export default function AdminAgents() {
       const _preferences = await Admin.systemPreferences();
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
       setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
-      setLoading(false);
+      showToast(`Agent preferences saved successfully.`, "success", {
+        clear: true,
+      });
+    } else {
+      showToast(`Agent preferences failed to save.`, "error", { clear: true });
     }
 
-    setLoading(false);
     setHasChanges(false);
-    showToast(`Agent preferences saved successfully.`, "success");
   };
 
   const SelectedSkillComponent =
@@ -198,81 +126,36 @@ export default function AdminAgents() {
           ref={formEl}
           className="flex-1 flex gap-x-6 p-4 mt-10"
         >
+          <input
+            name="system::default_agent_skills"
+            type="hidden"
+            value={agentSkills.join(",")}
+          />
+
           {/* Skill settings nav */}
           <div className="flex flex-col gap-y-[18px]">
             <div className="text-white flex items-center gap-x-2">
               <Robot size={24} />
               <p className="text-lg font-medium">Agent Skills</p>
             </div>
-            {/* Default skills */}
-            <div className="bg-white/5 text-white min-w-[360px] w-fit rounded-xl">
-              <input
-                name="system::default_agent_skills"
-                type="hidden"
-                value={agentSkills.join(",")}
-              />
-              {Object.entries(defaultSkills).map(([skill, settings], index) => (
-                <div
-                  key={skill}
-                  className={`py-3 px-4 flex items-center justify-between ${
-                    index === 0 ? "rounded-t-xl" : ""
-                  } ${
-                    index === Object.keys(defaultSkills).length - 1
-                      ? "rounded-b-xl"
-                      : "border-b border-white/10"
-                  } cursor-pointer transition-all duration-300  hover:bg-white/5 ${
-                    selectedSkill === skill ? "bg-white/10" : ""
-                  }`}
-                  onClick={() => setSelectedSkill(skill)}
-                >
-                  <div className="text-sm font-light">{settings.title}</div>
-                  <div className="flex items-center gap-x-2">
-                    <DefaultBadge title={skill} />
-                    <CaretRight
-                      size={14}
-                      weight="bold"
-                      className="text-white/80"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
 
+            {/* Default skills list */}
+            <SkillList
+              isDefault={true}
+              skills={defaultSkills}
+              selectedSkill={selectedSkill}
+              handleClick={setSelectedSkill}
+            />
             {/* Configurable skills */}
-            <div className="bg-white/5 text-white min-w-[360px] w-fit rounded-xl">
-              {Object.entries(configurableSkills).map(
-                ([skill, settings], index) => (
-                  <div
-                    key={skill}
-                    className={`py-3 px-4 flex items-center justify-between ${
-                      index === 0 ? "rounded-t-xl" : ""
-                    } ${
-                      index === Object.keys(configurableSkills).length - 1
-                        ? "rounded-b-xl"
-                        : "border-b border-white/10"
-                    } transition-all duration-300 cursor-pointer hover:bg-white/5 ${
-                      selectedSkill === skill ? "bg-white/10" : ""
-                    }`}
-                    onClick={() => setSelectedSkill(skill)}
-                  >
-                    <div className="text-sm font-light">{settings.title}</div>
-                    <div className="flex items-center gap-x-2">
-                      <div className="text-sm text-white/60 font-medium">
-                        {agentSkills.includes(settings.skill) ? "On" : "Off"}
-                      </div>
-                      <CaretRight
-                        size={14}
-                        weight="bold"
-                        className="text-white/80"
-                      />
-                    </div>
-                  </div>
-                )
-              )}
-            </div>
+            <SkillList
+              skills={configurableSkills}
+              selectedSkill={selectedSkill}
+              handleClick={setSelectedSkill}
+              activeSkills={agentSkills}
+            />
           </div>
 
-          {/* Selected agent skill */}
+          {/* Selected agent skill setting panel */}
           <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
             <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
               {SelectedSkillComponent ? (
@@ -296,13 +179,54 @@ export default function AdminAgents() {
             </div>
           </div>
         </form>
-        {hasChanges && (
-          <ContextualSaveBar
-            onSave={handleSubmit}
-            onCancel={() => setHasChanges(false)}
-          />
-        )}
+        <ContextualSaveBar
+          showing={hasChanges}
+          onSave={handleSubmit}
+          onCancel={() => setHasChanges(false)}
+        />
       </div>
+    </div>
+  );
+}
+
+function SkillList({
+  isDefault = false,
+  skills = [],
+  selectedSkill = null,
+  handleClick = null,
+  activeSkills = [],
+}) {
+  if (skills.length === 0) return null;
+
+  return (
+    <div className="bg-white/5 text-white min-w-[360px] w-fit rounded-xl">
+      {Object.entries(skills).map(([skill, settings], index) => (
+        <div
+          key={skill}
+          className={`py-3 px-4 flex items-center justify-between ${
+            index === 0 ? "rounded-t-xl" : ""
+          } ${
+            index === Object.keys(skills).length - 1
+              ? "rounded-b-xl"
+              : "border-b border-white/10"
+          } cursor-pointer transition-all duration-300  hover:bg-white/5 ${
+            selectedSkill === skill ? "bg-white/10" : ""
+          }`}
+          onClick={() => handleClick?.(skill)}
+        >
+          <div className="text-sm font-light">{settings.title}</div>
+          <div className="flex items-center gap-x-2">
+            {isDefault ? (
+              <DefaultBadge title={skill} />
+            ) : (
+              <div className="text-sm text-white/60 font-medium">
+                {activeSkills.includes(skill) ? "On" : "Off"}
+              </div>
+            )}
+            <CaretRight size={14} weight="bold" className="text-white/80" />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
