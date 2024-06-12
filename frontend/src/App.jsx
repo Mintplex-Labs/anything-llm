@@ -25,6 +25,7 @@ import EmbeddingTextSplitterPreference from "./pages/GeneralSettings/EmbeddingTe
 import GeneralVectorDatabase from "./pages/GeneralSettings/VectorDatabase";
 import OnboardingFlow from "./pages/OnboardingFlow";
 import AdminLogs from "./pages/Admin/Logging";
+import AdminAgents from "./pages/Admin/Agents";
 import WorkspaceSettings from "./pages/WorkspaceSettings";
 import PrivacyAndData from "./pages/GeneralSettings/PrivacyAndData";
 
@@ -83,6 +84,10 @@ export default function App() {
                 <Route
                   path="/settings/vector-database"
                   element={<AdminRoute Component={GeneralVectorDatabase} />}
+                />
+                <Route
+                  path="/settings/agents"
+                  element={<AdminRoute Component={AdminAgents} />}
                 />
 
                 {/* Manager */}
