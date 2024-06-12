@@ -21,6 +21,7 @@ const WEBSOCKET_BAIL_COMMANDS = [
   "/stop",
   "halt",
   "/halt",
+  "/reset", // Will not reset but will bail. Powerusers always do this and the LLM responds.
 ];
 const websocket = {
   name: "websocket",
