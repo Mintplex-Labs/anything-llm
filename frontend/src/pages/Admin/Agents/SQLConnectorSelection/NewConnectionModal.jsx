@@ -74,7 +74,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
   // to the parent container form so we don't have nested forms.
   return createPortal(
     <ModalWrapper isOpen={isOpen}>
-      <div className="relative w-1/3 max-h-full mt-8">
+      <div className="relative w-full md:w-1/3 max-w-2xl max-h-full md:mt-8">
         <div className="relative bg-main-gradient rounded-xl shadow-[0_4px_14px_rgba(0,0,0,0.25)] max-h-[85vh] overflow-y-scroll no-scroll">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
             <h3 className="text-xl font-semibold text-white">
@@ -114,7 +114,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 <label className="text-white text-sm font-semibold block my-4">
                   Select your SQL engine
                 </label>
-                <div className="flex w-full flex-wrap gap-x-4">
+                <div className="grid md:grid-cols-4 gap-4 grid-cols-2">
                   <DBEngine
                     provider="postgresql"
                     active={engine === "postgresql"}
@@ -148,8 +148,8 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 />
               </div>
 
-              <div className="flex gap-x-2">
-                <div className="flex flex-col w-60">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="flex flex-col">
                   <label className="text-white text-sm font-semibold block mb-4">
                     Database user
                   </label>
@@ -163,7 +163,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                     spellCheck={false}
                   />
                 </div>
-                <div className="flex flex-col w-60">
+                <div className="flex flex-col">
                   <label className="text-white text-sm font-semibold block mb-4">
                     Database user password
                   </label>
@@ -179,8 +179,8 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 </div>
               </div>
 
-              <div className="flex gap-x-2">
-                <div className="flex flex-col w-full">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div className="sm:col-span-2">
                   <label className="text-white text-sm font-semibold block mb-4">
                     Server endpoint
                   </label>
@@ -194,7 +194,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                     spellCheck={false}
                   />
                 </div>
-                <div className="flex flex-col w-30">
+                <div>
                   <label className="text-white text-sm font-semibold block mb-4">
                     Port
                   </label>
@@ -210,7 +210,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 </div>
               </div>
 
-              <div className="flex flex-col w-60">
+              <div className="flex flex-col">
                 <label className="text-white text-sm font-semibold block mb-4">
                   Database
                 </label>
@@ -264,7 +264,7 @@ function DBEngine({ provider, active, onClick }) {
       <img
         src={DB_LOGOS[provider]}
         className="h-[100px] rounded-md"
-        alt="PostgreSQL"
+        alt={provider}
       />
     </button>
   );

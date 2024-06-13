@@ -106,6 +106,77 @@ export default function AdminAgents() {
       </div>
     );
   }
+
+  return (
+    <SkillLayout
+      hasChanges={hasChanges}
+      handleCancel={() => setHasChanges(false)}
+      handleSubmit={handleSubmit}
+    >
+      <form
+        onSubmit={handleSubmit}
+        onChange={() => setHasChanges(true)}
+        ref={formEl}
+        className="flex-1 flex gap-x-6 p-4 mt-10"
+      >
+        <input
+          name="system::default_agent_skills"
+          type="hidden"
+          value={agentSkills.join(",")}
+        />
+
+        {/* Skill settings nav */}
+        <div className="flex flex-col gap-y-[18px]">
+          <div className="text-white flex items-center gap-x-2">
+            <Robot size={24} />
+            <p className="text-lg font-medium">Agent Skills</p>
+          </div>
+
+          {/* Default skills list */}
+          <SkillList
+            isDefault={true}
+            skills={defaultSkills}
+            selectedSkill={selectedSkill}
+            handleClick={setSelectedSkill}
+          />
+          {/* Configurable skills */}
+          <SkillList
+            skills={configurableSkills}
+            selectedSkill={selectedSkill}
+            handleClick={setSelectedSkill}
+            activeSkills={agentSkills}
+          />
+        </div>
+
+        {/* Selected agent skill setting panel */}
+        <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
+          <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
+            {SelectedSkillComponent ? (
+              <SelectedSkillComponent
+                skill={configurableSkills[selectedSkill]?.skill}
+                settings={settings}
+                toggleSkill={toggleAgentSkill}
+                enabled={agentSkills.includes(
+                  configurableSkills[selectedSkill]?.skill
+                )}
+                setHasChanges={setHasChanges}
+                {...(configurableSkills[selectedSkill] ||
+                  defaultSkills[selectedSkill])}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-white/60">
+                <Robot size={40} />
+                <p className="font-medium">Select an agent skill</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </form>
+    </SkillLayout>
+  );
+}
+
+function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
   return (
     <div
       id="workspace-agent-settings-container"
@@ -114,69 +185,11 @@ export default function AdminAgents() {
     >
       <Sidebar />
       <div className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] w-full h-[93vh] overflow-y-scroll">
-        <form
-          onSubmit={handleSubmit}
-          onChange={() => setHasChanges(true)}
-          ref={formEl}
-          className="flex-1 flex gap-x-6 p-4 mt-10"
-        >
-          <input
-            name="system::default_agent_skills"
-            type="hidden"
-            value={agentSkills.join(",")}
-          />
-
-          {/* Skill settings nav */}
-          <div className="flex flex-col gap-y-[18px]">
-            <div className="text-white flex items-center gap-x-2">
-              <Robot size={24} />
-              <p className="text-lg font-medium">Agent Skills</p>
-            </div>
-
-            {/* Default skills list */}
-            <SkillList
-              isDefault={true}
-              skills={defaultSkills}
-              selectedSkill={selectedSkill}
-              handleClick={setSelectedSkill}
-            />
-            {/* Configurable skills */}
-            <SkillList
-              skills={configurableSkills}
-              selectedSkill={selectedSkill}
-              handleClick={setSelectedSkill}
-              activeSkills={agentSkills}
-            />
-          </div>
-
-          {/* Selected agent skill setting panel */}
-          <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-            <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
-              {SelectedSkillComponent ? (
-                <SelectedSkillComponent
-                  skill={configurableSkills[selectedSkill]?.skill}
-                  settings={settings}
-                  toggleSkill={toggleAgentSkill}
-                  enabled={agentSkills.includes(
-                    configurableSkills[selectedSkill]?.skill
-                  )}
-                  setHasChanges={setHasChanges}
-                  {...(configurableSkills[selectedSkill] ||
-                    defaultSkills[selectedSkill])}
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-white/60">
-                  <Robot size={40} />
-                  <p className="font-medium">Select an agent skill</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </form>
+        {children}
         <ContextualSaveBar
           showing={hasChanges}
           onSave={handleSubmit}
-          onCancel={() => setHasChanges(false)}
+          onCancel={handleCancel}
         />
       </div>
     </div>
@@ -193,7 +206,7 @@ function SkillList({
   if (skills.length === 0) return null;
 
   return (
-    <div className="bg-white/5 text-white min-w-[360px] w-fit rounded-xl">
+    <div className="bg-white/5 text-white rounded-xl min-w-[360px] w-fit">
       {Object.entries(skills).map(([skill, settings], index) => (
         <div
           key={skill}
