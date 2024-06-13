@@ -4,6 +4,7 @@ const { apiAuthEndpoints } = require("./auth");
 const { apiDocumentEndpoints } = require("./document");
 const { apiSystemEndpoints } = require("./system");
 const { apiWorkspaceEndpoints } = require("./workspace");
+const { apiWorkspaceThreadEndpoints } = require("./workspaceThread");
 
 // All endpoints must be documented and pass through the validApiKey Middleware.
 // How to JSDoc an endpoint
@@ -16,6 +17,7 @@ function developerEndpoints(app, router) {
   apiSystemEndpoints(router);
   apiWorkspaceEndpoints(router);
   apiDocumentEndpoints(router);
+  apiWorkspaceThreadEndpoints(router);
 }
 
 module.exports = { developerEndpoints };
