@@ -136,10 +136,7 @@ export default function AdminAgents() {
             />
 
             {/* Skill settings nav */}
-            <div
-              hidden={showSkillModal}
-              className="flex flex-col gap-y-[18px]"
-            >
+            <div hidden={showSkillModal} className="flex flex-col gap-y-[18px]">
               <div className="text-white flex items-center gap-x-2">
                 <Robot size={24} />
                 <p className="text-lg font-medium">Agent Skills</p>
