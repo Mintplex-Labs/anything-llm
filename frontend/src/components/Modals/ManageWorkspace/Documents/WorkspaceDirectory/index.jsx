@@ -145,7 +145,7 @@ const PinAlert = memo(() => {
   }, []);
 
   return (
-    <ModalWrapper isOpen={showAlert}>
+    <ModalWrapper isOpen={showAlert} noPortal={true}>
       <div className="relative w-full max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 rounded-t border-gray-500/50">
