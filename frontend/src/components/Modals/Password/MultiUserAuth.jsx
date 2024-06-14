@@ -334,7 +334,7 @@ export default function MultiUserAuth() {
         </div>
       </form>
 
-      <ModalWrapper isOpen={isRecoveryCodeModalOpen}>
+      <ModalWrapper isOpen={isRecoveryCodeModalOpen} noPortal={true}>
         <RecoveryCodeModal
           recoveryCodes={recoveryCodes}
           onDownloadComplete={handleDownloadComplete}
