@@ -292,6 +292,25 @@ const Workspace = {
         return false;
       });
   },
+  setWatchStatusForDocument: async function (slug, docPath, watchStatus) {
+    return fetch(`${API_BASE}/workspace/${slug}/update-watch-status`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ docPath, watchStatus }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(
+            res.statusText || "Error setting watch status for document."
+          );
+        }
+        return true;
+      })
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
   ttsMessage: async function (slug, chatId) {
     return await fetch(`${API_BASE}/workspace/${slug}/tts/${chatId}`, {
       method: "GET",

@@ -1,6 +1,7 @@
 const path = require("path");
 const Graceful = require("@ladjs/graceful");
 const Bree = require("bree");
+const { SystemSettings } = require("../../models/systemSettings");
 
 class BackgroundService {
   name = "BackgroundWorkerService";
@@ -13,17 +14,7 @@ class BackgroundService {
       return BackgroundService._instance;
     }
 
-    this.#log("Service starting...");
     this.logger = this.getLogger();
-    this.bree = new Bree({
-      logger: this.logger,
-      root: this.#root,
-      jobs: this.jobs(),
-      errorHandler: this.onError,
-      workerMessageHandler: this.onWorkerMessageHandler,
-    });
-    new Graceful({ brees: [this.bree], logger: this.logger }).listen();
-    this.bree.start();
     BackgroundService._instance = this;
   }
 
@@ -31,13 +22,47 @@ class BackgroundService {
     console.log(`\x1b[36m[${this.name}]\x1b[0m ${text}`, ...args);
   }
 
+  async boot() {
+    const featureEnabled =
+      (await SystemSettings.get({ label: "experimental_live_file_sync" }))
+        ?.value === "enabled";
+    if (!featureEnabled) {
+      this.#log("Feature is not enabled and will not be started.");
+      return;
+    }
+
+    this.#log("Starting...");
+    this.bree = new Bree({
+      logger: this.logger,
+      root: this.#root,
+      jobs: this.jobs(),
+      errorHandler: this.onError,
+      workerMessageHandler: this.onWorkerMessageHandler,
+    });
+    this.graceful = new Graceful({ brees: [this.bree], logger: this.logger });
+    this.graceful.listen();
+    this.bree.start();
+    this.#log("Service started");
+  }
+
+  async stop() {
+    this.#log("Stopping...");
+    if (!!this.graceful && !!this.bree) {
+      this.graceful.stopBree(this.bree, 0);
+      this.graceful.exit(0);
+    }
+    this.bree = null;
+    this.graceful = null;
+    this.#log("Service stopped");
+  }
+
   jobs() {
     return [
       // Job for auto-sync of documents
       {
-        name: "live-sync",
-        timeout: false,
-        interval: "1hr",
+        name: "sync-watched-documents",
+        timeout: 0, //false, // set to zero and save to execute instantly.
+        interval: "4hrs",
       },
     ];
   }
