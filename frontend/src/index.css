@@ -616,7 +616,7 @@ dialog::backdrop {
 }
 
 .file-row:nth-child(even) {
-  @apply bg-[#1C1E21];
+  @apply bg-dark-highlight;
 }
 
 .file-row:nth-child(odd) {

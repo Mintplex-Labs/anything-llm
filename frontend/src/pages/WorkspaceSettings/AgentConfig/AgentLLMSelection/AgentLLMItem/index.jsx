@@ -55,7 +55,7 @@ export default function WorkspaceLLM({
           />
           <div className="flex flex-col">
             <div className="text-sm font-semibold text-white">{name}</div>
-            <div className="mt-1 text-xs text-[#D2D5DB]">{description}</div>
+            <div className="mt-1 text-xs text-description">{description}</div>
           </div>
         </div>
       </div>
@@ -137,7 +137,7 @@ function SetupProvider({
               <button
                 type="submit"
                 form="provider-form"
-                className="border-none text-xs px-2 py-1 font-semibold rounded-lg bg-[#46C8FF] hover:bg-[#2C2F36] border-2 border-transparent hover:border-[#46C8FF] hover:text-white h-[32px] w-fit -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+                className="border-none text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-[#46C8FF] hover:text-white h-[32px] w-fit -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
               >
                 Save {LLMOption.name} settings
               </button>
