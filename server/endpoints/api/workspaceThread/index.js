@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const { WorkspaceThread } = require("../../../models/workspaceThread");
 const { Workspace } = require("../../../models/workspace");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
-const { reqBody } = require("../../../utils/http");
+const { reqBody, multiUserMode } = require("../../../utils/http");
 const { chatWithWorkspace } = require("../../../utils/chats");
 const {
   streamChatWithWorkspace,
@@ -10,7 +10,11 @@ const {
 } = require("../../../utils/chats/stream");
 const { Telemetry } = require("../../../models/telemetry");
 const { EventLogs } = require("../../../models/eventLogs");
-const { writeResponseChunk } = require("../../../utils/helpers/chat/responses");
+const {
+  writeResponseChunk,
+  convertToChatHistory,
+} = require("../../../utils/helpers/chat/responses");
+const { WorkspaceChats } = require("../../../models/workspaceChats");
 
 function apiWorkspaceThreadEndpoints(app) {
   if (!app) return;
@@ -20,41 +24,54 @@ function apiWorkspaceThreadEndpoints(app) {
     [validApiKey],
     async (request, response) => {
       /*
-    #swagger.tags = ['Workspace Threads']
-    #swagger.description = 'Create a new workspace thread'
-    #swagger.parameters['slug'] = {
-        in: 'path',
-        description: 'Unique slug of workspace',
-        required: true,
-        type: 'string'
-    }
-    #swagger.responses[200] = {
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
+      #swagger.tags = ['Workspace Threads']
+      #swagger.description = 'Create a new workspace thread'
+      #swagger.parameters['slug'] = {
+          in: 'path',
+          description: 'Unique slug of workspace',
+          required: true,
+          type: 'string'
+      }
+      #swagger.requestBody = {
+        description: 'Optional userId associated with the thread',
+        required: false,
+        type: 'object',
+        content: {
+          "application/json": {
             example: {
-              thread: {
-                "id": 1,
-                "name": "Thread",
-                "slug": "thread-uuid",
-                "user_id": 1,
-                "workspace_id": 1
-              },
-              message: null
+              userId: 1
             }
           }
         }
       }
-    }
-    #swagger.responses[403] = {
-      schema: {
-        "$ref": "#/definitions/InvalidAPIKey"
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                thread: {
+                  "id": 1,
+                  "name": "Thread",
+                  "slug": "thread-uuid",
+                  "user_id": 1,
+                  "workspace_id": 1
+                },
+                message: null
+              }
+            }
+          }
+        }
       }
-    }
-    */
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
       try {
         const { slug } = request.params;
+        const { userId } = reqBody(request);
         const workspace = await Workspace.get({ slug });
 
         if (!workspace) {
@@ -62,8 +79,104 @@ function apiWorkspaceThreadEndpoints(app) {
           return;
         }
 
-        const { thread, message } = await WorkspaceThread.new(workspace);
+        const { thread, message } = await WorkspaceThread.new(
+          workspace,
+          userId ? Number(userId) : null
+        );
+
+        await Telemetry.sendTelemetry("workspace_thread_created", {
+          multiUserMode: multiUserMode(response),
+          LLMSelection: process.env.LLM_PROVIDER || "openai",
+          Embedder: process.env.EMBEDDING_ENGINE || "inherit",
+          VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+        });
+        await EventLogs.logEvent("api_workspace_thread_created", {
+          workspaceName: workspace?.name || "Unknown Workspace",
+        });
         response.status(200).json({ thread, message });
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/v1/workspace/:slug/thread/:threadSlug/update",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Workspace Threads']
+      #swagger.description = 'Update thread name by its unique slug.'
+      #swagger.path = '/v1/workspace/{slug}/thread/{threadSlug}/update'
+      #swagger.parameters['slug'] = {
+          in: 'path',
+          description: 'Unique slug of workspace',
+          required: true,
+          type: 'string'
+      }
+      #swagger.parameters['threadSlug'] = {
+          in: 'path',
+          description: 'Unique slug of thread',
+          required: true,
+          type: 'string'
+      }
+      #swagger.requestBody = {
+        description: 'JSON object containing new name to update the thread.',
+        required: true,
+        type: 'object',
+        content: {
+          "application/json": {
+            example: {
+              "name": 'Updated Thread Name'
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                thread: {
+                  "id": 1,
+                  "name": "Updated Thread Name",
+                  "slug": "thread-uuid",
+                  "user_id": 1,
+                  "workspace_id": 1
+                },
+                message: null,
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
+      try {
+        const { slug, threadSlug } = request.params;
+        const { name } = reqBody(request);
+        const workspace = await Workspace.get({ slug });
+        const thread = await WorkspaceThread.get({
+          slug: threadSlug,
+          workspace_id: workspace.id,
+        });
+
+        if (!workspace || !thread) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const { thread: updatedThread, message } = await WorkspaceThread.update(
+          thread,
+          { name }
+        );
+        response.status(200).json({ thread: updatedThread, message });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
@@ -113,6 +226,85 @@ function apiWorkspaceThreadEndpoints(app) {
           workspace_id: workspace.id,
         });
         response.sendStatus(200).end();
+      } catch (e) {
+        console.log(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/v1/workspace/:slug/thread/:threadSlug/chats",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['Workspace Threads']
+      #swagger.description = 'Get chats for a workspace thread'
+      #swagger.parameters['slug'] = {
+          in: 'path',
+          description: 'Unique slug of workspace',
+          required: true,
+          type: 'string'
+      }
+      #swagger.parameters['threadSlug'] = {
+          in: 'path',
+          description: 'Unique slug of thread',
+          required: true,
+          type: 'string'
+      }
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                history: [
+                  {
+                    "role": "user",
+                    "content": "What is AnythingLLM?",
+                    "sentAt": 1692851630
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "AnythingLLM is a platform that allows you to convert notes, PDFs, and other source materials into a chatbot. It ensures privacy, cites its answers, and allows multiple people to interact with the same documents simultaneously. It is particularly useful for businesses to enhance the visibility and readability of various written communications such as SOPs, contracts, and sales calls. You can try it out with a free trial to see if it meets your business needs.",
+                    "sources": [{"source": "object about source document and snippets used"}]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
+      try {
+        const { slug, threadSlug } = request.params;
+        const workspace = await Workspace.get({ slug });
+        const thread = await WorkspaceThread.get({
+          slug: threadSlug,
+          workspace_id: workspace.id,
+        });
+
+        if (!workspace || !thread) {
+          response.sendStatus(400).end();
+          return;
+        }
+
+        const history = await WorkspaceChats.where(
+          {
+            workspaceId: workspace.id,
+            thread_id: thread.id,
+            include: true,
+          },
+          null,
+          { id: "asc" }
+        );
+
+        response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
