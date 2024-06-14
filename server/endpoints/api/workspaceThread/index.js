@@ -15,6 +15,7 @@ const {
   convertToChatHistory,
 } = require("../../../utils/helpers/chat/responses");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
+const { User } = require("../../../models/user");
 
 function apiWorkspaceThreadEndpoints(app) {
   if (!app) return;
@@ -317,59 +318,60 @@ function apiWorkspaceThreadEndpoints(app) {
     [validApiKey],
     async (request, response) => {
       /*
-    #swagger.tags = ['Workspace Threads']
-    #swagger.description = 'Chat with a workspace thread'
-    #swagger.parameters['slug'] = {
-        in: 'path',
-        description: 'Unique slug of workspace',
-        required: true,
-        type: 'string'
-    }
-    #swagger.parameters['threadSlug'] = {
-        in: 'path',
-        description: 'Unique slug of thread',
-        required: true,
-        type: 'string'
-    }
-    #swagger.requestBody = {
-      description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).',
-      required: true,
-      type: 'object',
-      content: {
-        "application/json": {
-          example: {
-            message: "What is AnythingLLM?",
-            mode: "query | chat"
-          }
-        }
+      #swagger.tags = ['Workspace Threads']
+      #swagger.description = 'Chat with a workspace thread'
+      #swagger.parameters['slug'] = {
+          in: 'path',
+          description: 'Unique slug of workspace',
+          required: true,
+          type: 'string'
       }
-    }
-    #swagger.responses[200] = {
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
+      #swagger.parameters['threadSlug'] = {
+          in: 'path',
+          description: 'Unique slug of thread',
+          required: true,
+          type: 'string'
+      }
+      #swagger.requestBody = {
+        description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).',
+        required: true,
+        type: 'object',
+        content: {
+          "application/json": {
             example: {
-              id: 'chat-uuid',
-              type: "abort | textResponse",
-              textResponse: "Response to your query",
-              sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM."}],
-              close: true,
-              error: "null | text string of the failure mode."
+              message: "What is AnythingLLM?",
+              mode: "query | chat",
+              userId: 1
             }
           }
         }
       }
-    }
-    #swagger.responses[403] = {
-      schema: {
-        "$ref": "#/definitions/InvalidAPIKey"
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                id: 'chat-uuid',
+                type: "abort | textResponse",
+                textResponse: "Response to your query",
+                sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM."}],
+                close: true,
+                error: "null | text string of the failure mode."
+              }
+            }
+          }
+        }
       }
-    }
-    */
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      */
       try {
         const { slug, threadSlug } = request.params;
-        const { message, mode = "query" } = reqBody(request);
+        const { message, mode = "query", userId } = reqBody(request);
         const workspace = await Workspace.get({ slug });
         const thread = await WorkspaceThread.get({
           slug: threadSlug,
@@ -402,11 +404,12 @@ function apiWorkspaceThreadEndpoints(app) {
           return;
         }
 
+        const user = userId ? await User.get({ id: Number(userId) }) : null;
         const result = await chatWithWorkspace(
           workspace,
           message,
           mode,
-          null,
+          user,
           thread
         );
         await Telemetry.sendTelemetry("sent_chat", {
@@ -418,6 +421,7 @@ function apiWorkspaceThreadEndpoints(app) {
           workspaceName: workspace?.name,
           chatModel: workspace?.chatModel || "System Default",
           threadName: thread?.name,
+          userId: user?.id,
         });
         response.status(200).json({ ...result });
       } catch (e) {
@@ -439,77 +443,78 @@ function apiWorkspaceThreadEndpoints(app) {
     [validApiKey],
     async (request, response) => {
       /*
-    #swagger.tags = ['Workspace Threads']
-    #swagger.description = 'Stream chat with a workspace thread'
-    #swagger.parameters['slug'] = {
-        in: 'path',
-        description: 'Unique slug of workspace',
+      #swagger.tags = ['Workspace Threads']
+      #swagger.description = 'Stream chat with a workspace thread'
+      #swagger.parameters['slug'] = {
+          in: 'path',
+          description: 'Unique slug of workspace',
+          required: true,
+          type: 'string'
+      }
+      #swagger.parameters['threadSlug'] = {
+          in: 'path',
+          description: 'Unique slug of thread',
+          required: true,
+          type: 'string'
+      }
+      #swagger.requestBody = {
+        description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).',
         required: true,
-        type: 'string'
-    }
-    #swagger.parameters['threadSlug'] = {
-        in: 'path',
-        description: 'Unique slug of thread',
-        required: true,
-        type: 'string'
-    }
-    #swagger.requestBody = {
-      description: 'Send a prompt to the workspace thread and the type of conversation (query or chat).',
-      required: true,
-      type: 'object',
-      content: {
-        "application/json": {
-          example: {
-            message: "What is AnythingLLM?",
-            mode: "query | chat"
+        type: 'object',
+        content: {
+          "application/json": {
+            example: {
+              message: "What is AnythingLLM?",
+              mode: "query | chat",
+              userId: 1
+            }
           }
         }
       }
-    }
-    #swagger.responses[200] = {
-      content: {
-        "text/event-stream": {
-          schema: {
-            type: 'array',
-            example: [
-              {
-                id: 'uuid-123',
-                type: "abort | textResponseChunk",
-                textResponse: "First chunk",
-                sources: [],
-                close: false,
-                error: "null | text string of the failure mode."
-              },
-              {
-                id: 'uuid-123',
-                type: "abort | textResponseChunk",
-                textResponse: "chunk two",
-                sources: [],
-                close: false,
-                error: "null | text string of the failure mode."
-              },
-              {
-                id: 'uuid-123',
-                type: "abort | textResponseChunk",
-                textResponse: "final chunk of LLM output!",
-                sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."}],
-                close: true,
-                error: "null | text string of the failure mode."
-              }
-            ]
+      #swagger.responses[200] = {
+        content: {
+          "text/event-stream": {
+            schema: {
+              type: 'array',
+              example: [
+                {
+                  id: 'uuid-123',
+                  type: "abort | textResponseChunk",
+                  textResponse: "First chunk",
+                  sources: [],
+                  close: false,
+                  error: "null | text string of the failure mode."
+                },
+                {
+                  id: 'uuid-123',
+                  type: "abort | textResponseChunk",
+                  textResponse: "chunk two",
+                  sources: [],
+                  close: false,
+                  error: "null | text string of the failure mode."
+                },
+                {
+                  id: 'uuid-123',
+                  type: "abort | textResponseChunk",
+                  textResponse: "final chunk of LLM output!",
+                  sources: [{title: "anythingllm.txt", chunk: "This is a context chunk used in the answer of the prompt by the LLM. This will only return in the final chunk."}],
+                  close: true,
+                  error: "null | text string of the failure mode."
+                }
+              ]
+            }
           }
         }
       }
-    }
-    #swagger.responses[403] = {
-      schema: {
-        "$ref": "#/definitions/InvalidAPIKey"
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
       }
-    }
-    */
+      */
       try {
         const { slug, threadSlug } = request.params;
-        const { message, mode = "query" } = reqBody(request);
+        const { message, mode = "query", userId } = reqBody(request);
         const workspace = await Workspace.get({ slug });
         const thread = await WorkspaceThread.get({
           slug: threadSlug,
@@ -542,6 +547,8 @@ function apiWorkspaceThreadEndpoints(app) {
           return;
         }
 
+        const user = userId ? await User.get({ id: Number(userId) }) : null;
+
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Content-Type", "text/event-stream");
         response.setHeader("Access-Control-Allow-Origin", "*");
@@ -553,7 +560,7 @@ function apiWorkspaceThreadEndpoints(app) {
           workspace,
           message,
           mode,
-          null,
+          user,
           thread
         );
         await Telemetry.sendTelemetry("sent_chat", {
@@ -565,6 +572,7 @@ function apiWorkspaceThreadEndpoints(app) {
           workspaceName: workspace?.name,
           chatModel: workspace?.chatModel || "System Default",
           threadName: thread?.name,
+          userId: user?.id,
         });
         response.end();
       } catch (e) {
