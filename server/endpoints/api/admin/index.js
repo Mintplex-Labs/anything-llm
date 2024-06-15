@@ -426,7 +426,60 @@ function apiAdminEndpoints(app) {
       }
     }
   );
+  app.get(
+    "/v1/admin/workspaces/:workspaceId/users", 
+    [validApiKey], 
+    async (request, response) => {
+    /*
+      #swagger.tags = ['Admin']
+      #swagger.path = '/v1/admin/workspaces/{workspaceId}/users'
+      #swagger.parameters['workspaceId'] = {
+        in: 'path',
+        description: 'id of the workspace.',
+        required: true,
+        type: 'string'
+      }
+      #swagger.description = 'Retrieve a list of users with permissions to access the specified workspace.'
+      #swagger.responses[200] = {
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                users: [
+                  {"userId": 1, "role": "admin"},
+                  {"userId": 2, "role": "member"}
+                ]
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+       #swagger.responses[401] = {
+        description: "Instance is not in Multi-User mode. Method denied",
+      }
+      */
+      
+      try {
+        if (!multiUserMode(response)) {
+          response.sendStatus(401).end();
+          return;
+        }
 
+        const workspaceId = request.params.workspaceId;
+        const users = await Workspace.workspaceUsers(workspaceId);
+        
+        response.status(200).json({ users });
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+  });
   app.post(
     "/v1/admin/workspaces/:workspaceId/update-users",
     [validApiKey],
@@ -494,7 +547,6 @@ function apiAdminEndpoints(app) {
       }
     }
   );
-
   app.post(
     "/v1/admin/workspace-chats",
     [validApiKey],
