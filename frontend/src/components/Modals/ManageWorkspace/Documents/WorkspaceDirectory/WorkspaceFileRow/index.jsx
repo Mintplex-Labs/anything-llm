@@ -1,4 +1,4 @@
-import { memo, useState, useRef } from "react";
+import { memo, useState } from "react";
 import {
   formatDate,
   getFileExtension,
@@ -19,9 +19,6 @@ export default function WorkspaceFileRow({
   hasChanges,
   movedItems,
 }) {
-  const [showTooltip, setShowTooltip] = useState(false);
-  const timeoutRef = useRef(null);
-
   const onRemoveClick = async () => {
     setLoading(true);
 
@@ -40,29 +37,17 @@ export default function WorkspaceFileRow({
     setLoading(false);
   };
 
-  const handleMouseEnter = () => {
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      setShowTooltip(true);
-    }, 500);
-  };
-
-  const handleMouseLeave = () => {
-    clearTimeout(timeoutRef.current);
-    setShowTooltip(false);
-  };
-
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
-
   return (
     <div
       className={`items-center text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer ${
         isMovedItem ? "bg-green-800/40" : "file-row"
       }`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
-      <div className="col-span-10 flex gap-x-[4px] items-center relative">
+      <div
+        data-tooltip-id={`directory-item-${item.url}`}
+        className="col-span-10 w-fit flex gap-x-[4px] items-center relative"
+      >
         <File
           className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] ml-3"
           weight="fill"
@@ -70,19 +55,6 @@ export default function WorkspaceFileRow({
         <p className="whitespace-nowrap overflow-hidden text-ellipsis">
           {middleTruncate(item.title, 60)}
         </p>
-        {showTooltip && (
-          <div className="absolute left-0 top-full mt-2 p-2 bg-white text-black rounded shadow-lg z-10">
-            <p className="font-bold">{item.title}</p>
-            <div className="flex mt-1 gap-x-2">
-              <p className="text-xs">
-                Date: <b>{formatDate(item?.published)}</b>
-              </p>
-              <p className="text-xs uppercase">
-                Type: <b>{getFileExtension(item.url)}</b>
-              </p>
-            </div>
-          </div>
-        )}
       </div>
       <div className="col-span-2 flex justify-end items-center">
         {hasChanges ? (
@@ -98,6 +70,24 @@ export default function WorkspaceFileRow({
           </div>
         )}
       </div>
+      <Tooltip
+        id={`directory-item-${item.url}`}
+        place="bottom"
+        delayShow={800}
+        className="tooltip invert z-99"
+      >
+        <div className="text-xs ">
+          <p className="text-white">{item.title}</p>
+          <div className="flex mt-1 gap-x-2">
+            <p className="">
+              Date: <b>{formatDate(item?.published)}</b>
+            </p>
+            <p className="">
+              Type: <b>{getFileExtension(item.url).toUpperCase()}</b>
+            </p>
+          </div>
+        </div>
+      </Tooltip>
     </div>
   );
 }
