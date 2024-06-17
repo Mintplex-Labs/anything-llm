@@ -66,7 +66,7 @@ export function Chartable({ props, workspace }) {
   const chartType = content?.type?.toLowerCase();
   const data =
     typeof content.dataset === "string"
-      ? safeJsonParse(content.dataset, null)
+      ? safeJsonParse(content.dataset, [])
       : content.dataset;
   const value = data.length > 0 ? Object.keys(data[0])[1] : "value";
   const title = content?.title;

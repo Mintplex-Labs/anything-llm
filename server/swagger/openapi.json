@@ -502,10 +502,12 @@
         }
       }
     },
-    "/v1/admin/workspaces/:workspaceId/users": {
+    "/v1/admin/workspaces/{workspaceId}/users": {
       "get": {
-        "tags": ["Admin"],
-        "description": "Retrieve a list of users for the given workspace.",
+        "tags": [
+          "Admin"
+        ],
+        "description": "Retrieve a list of users with permissions to access the specified workspace.",
         "parameters": [
           {
             "name": "workspaceId",
@@ -514,25 +516,44 @@
             "schema": {
               "type": "string"
             },
-            "description": "The ID of the workspace whose users are to be retrieved."
+            "description": "id of the workspace."
           }
         ],
         "responses": {
           "200": {
-            "description": "OK, successful operation. Returns a list of user IDs for the given workspace.",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {"type": "string"}
+                  "type": "object",
+                  "example": {
+                    "users": [
+                      {
+                        "userId": 1,
+                        "role": "admin"
+                      },
+                      {
+                        "userId": 2,
+                        "role": "member"
+                      }
+                    ]
+                  }
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized, not authorized to access resources in multi-user mode.",
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
+          "403": {
+            "description": "Forbidden",
             "content": {
               "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
                 "schema": {
                   "$ref": "#/components/schemas/InvalidAPIKey"
                 }
@@ -540,17 +561,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {"type": "string"}
-                  }
-                }
-              }
-            }
+            "description": "Internal Server Error"
           }
         }
       }

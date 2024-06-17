@@ -427,10 +427,10 @@ function apiAdminEndpoints(app) {
     }
   );
   app.get(
-    "/v1/admin/workspaces/:workspaceId/users", 
-    [validApiKey], 
+    "/v1/admin/workspaces/:workspaceId/users",
+    [validApiKey],
     async (request, response) => {
-    /*
+      /*
       #swagger.tags = ['Admin']
       #swagger.path = '/v1/admin/workspaces/{workspaceId}/users'
       #swagger.parameters['workspaceId'] = {
@@ -464,7 +464,7 @@ function apiAdminEndpoints(app) {
         description: "Instance is not in Multi-User mode. Method denied",
       }
       */
-      
+
       try {
         if (!multiUserMode(response)) {
           response.sendStatus(401).end();
@@ -473,13 +473,14 @@ function apiAdminEndpoints(app) {
 
         const workspaceId = request.params.workspaceId;
         const users = await Workspace.workspaceUsers(workspaceId);
-        
+
         response.status(200).json({ users });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();
       }
-  });
+    }
+  );
   app.post(
     "/v1/admin/workspaces/:workspaceId/update-users",
     [validApiKey],
