@@ -1,6 +1,7 @@
 const { User } = require("../../../models/user");
 const { multiUserMode } = require("../../../utils/http");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
+
 function apiUserManagementEndpoints(app) {
   if (!app) return;
 
@@ -37,16 +38,16 @@ function apiUserManagementEndpoints(app) {
       }
     }
      #swagger.responses[401] = {
-      description: "Instance is not in Multi-User mode. Method denied",
+      description: "Instance is not in Multi-User mode. Permission denied.",
     }
       */
     try {
-      if (!multiUserMode(response)) {
-        response.sendStatus(401).end();
-        return;
-      }
-      const users = await User.where();
+      if (!multiUserMode(response))
+        return response
+          .status(401)
+          .send("Instance is not in Multi-User mode. Permission denied.");
 
+      const users = await User.where();
       const filteredUsers = users.map((user) => ({
         id: user.id,
         username: user.username,
