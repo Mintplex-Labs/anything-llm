@@ -31,8 +31,6 @@ function WorkspaceDirectory({
         <div className="relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5">
           <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8">
             <p className="col-span-5">Name</p>
-            <p className="col-span-3">Date</p>
-            <p className="col-span-2">Kind</p>
             <p className="col-span-2" />
           </div>
           <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
@@ -61,8 +59,6 @@ function WorkspaceDirectory({
         >
           <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 bg-zinc-900 sticky top-0 z-10">
             <p className="col-span-5">Name</p>
-            <p className="col-span-3">Date</p>
-            <p className="col-span-2">Kind</p>
             <p className="col-span-2" />
           </div>
           <div className="w-full h-full flex flex-col z-0">
