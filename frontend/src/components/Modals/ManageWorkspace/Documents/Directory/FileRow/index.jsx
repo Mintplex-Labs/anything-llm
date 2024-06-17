@@ -1,34 +1,36 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   formatDate,
   getFileExtension,
   middleTruncate,
 } from "@/utils/directories";
 import { File } from "@phosphor-icons/react";
-import debounce from "lodash.debounce";
 
 export default function FileRow({ item, selected, toggleSelection }) {
   const [showTooltip, setShowTooltip] = useState(false);
+  const timeoutRef = useRef(null);
 
-  const handleShowTooltip = () => {
-    setShowTooltip(true);
+  const handleMouseEnter = () => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setShowTooltip(true);
+    }, 800);
   };
 
-  const handleHideTooltip = () => {
+  const handleMouseLeave = () => {
+    clearTimeout(timeoutRef.current);
     setShowTooltip(false);
   };
-
-  const handleMouseEnter = debounce(handleShowTooltip, 500);
-  const handleMouseLeave = debounce(handleHideTooltip, 500);
-
   return (
     <tr
       onClick={() => toggleSelection(item)}
       className={`text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer file-row ${
         selected ? "selected" : ""
       }`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      <div className="pl-2 col-span-6 flex gap-x-[4px] items-center">
+      <div className="col-span-10 flex gap-x-[4px] items-center relative">
         <div
           className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
           role="checkbox"
@@ -41,28 +43,24 @@ export default function FileRow({ item, selected, toggleSelection }) {
           className="shrink-0 text-base font-bold w-4 h-4 mr-[3px]"
           weight="fill"
         />
-        <div
-          className="relative"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <p className="whitespace-nowrap overflow-hidden max-w-[165px] text-ellipsis">
-            {middleTruncate(item.title, 17)}
-          </p>
-          {showTooltip && (
-            <div className="absolute left-0 bg-white text-black p-1.5 rounded shadow-lg whitespace-nowrap">
-              {item.title}
+        <p className="whitespace-nowrap overflow-hidden text-ellipsis">
+          {middleTruncate(item.title, 60)}
+        </p>
+        {showTooltip && (
+          <div className="absolute left-0 top-full mt-2 p-2 bg-white text-black rounded shadow-lg z-10 max-w-[560px]">
+            <p className="font-bold">{item.title}</p>
+            <div className="flex mt-1 gap-x-2">
+              <p className="text-xs">
+                Date: <b>{formatDate(item?.published)}</b>
+              </p>
+              <p className="text-xs uppercase">
+                Type: <b>{getFileExtension(item.url)}</b>
+              </p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-      <p className="col-span-3 pl-3.5 whitespace-nowrap">
-        {formatDate(item?.published)}
-      </p>
-      <p className="col-span-2 pl-2 uppercase overflow-x-hidden">
-        {getFileExtension(item.url)}
-      </p>
-      <div className="-col-span-2 flex justify-end items-center">
+      <div className="col-span-2 flex justify-end items-center">
         {item?.cached && (
           <div className="bg-white/10 rounded-3xl">
             <p className="text-xs px-2 py-0.5">Cached</p>
