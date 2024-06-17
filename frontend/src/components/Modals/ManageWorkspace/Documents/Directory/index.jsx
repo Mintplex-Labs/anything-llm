@@ -256,9 +256,9 @@ function Directory({
                       onClick={() =>
                         setShowFolderSelection(!showFolderSelection)
                       }
-                      className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:bg-neutral-800/80 flex justify-center items-center group"
+                      className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-dark-text hover:bg-neutral-800/80 flex justify-center items-center group"
                     >
-                      <MoveToFolderIcon className="text-[#222628] group-hover:text-white" />
+                      <MoveToFolderIcon className="text-dark-text group-hover:text-white" />
                     </button>
                     {showFolderSelection && (
                       <FolderSelectionPopup
@@ -272,7 +272,7 @@ function Directory({
                   </div>
                   <button
                     onClick={deleteFiles}
-                    className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-[#222628] hover:text-white hover:bg-neutral-800/80 flex justify-center items-center"
+                    className="border-none text-sm font-semibold bg-white h-[32px] w-[32px] rounded-lg text-dark-text hover:text-white hover:bg-neutral-800/80 flex justify-center items-center"
                   >
                     <Trash size={18} weight="bold" />
                   </button>

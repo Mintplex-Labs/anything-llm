@@ -37,7 +37,7 @@ export function OnboardingLayout({ children }) {
 
   if (isMobile) {
     return (
-      <div className="w-screen h-screen overflow-y-auto bg-[#2C2F35] overflow-hidden">
+      <div className="w-screen h-screen overflow-y-auto bg-mobile-onboarding overflow-hidden">
         <div className="flex flex-col">
           <div className="w-full relative py-10 px-2">
             <div className="flex flex-col w-fit mx-auto gap-y-1 mb-[55px]">
@@ -87,7 +87,7 @@ export function OnboardingLayout({ children }) {
   }
 
   return (
-    <div className="w-screen overflow-y-auto bg-[#2C2F35] md:bg-main-gradient flex justify-center overflow-hidden">
+    <div className="w-screen overflow-y-auto bg-mobile-onboarding md:bg-main-gradient flex justify-center overflow-hidden">
       <div className="flex w-1/5 h-screen justify-center items-center">
         {backBtn.showing && (
           <button
