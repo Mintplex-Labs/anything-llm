@@ -2374,7 +2374,7 @@
     "/v1/users": {
       "get": {
         "tags": [
-          "Users"
+          "User Management"
         ],
         "description": "List all users",
         "parameters": [],

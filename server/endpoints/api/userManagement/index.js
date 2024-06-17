@@ -6,7 +6,7 @@ function apiUserManagementEndpoints(app) {
 
   app.get("/v1/users", [validApiKey], async (request, response) => {
     /*
-      #swagger.tags = ['Users']
+      #swagger.tags = ['User Management']
       #swagger.description = 'List all users'
       #swagger.responses[200] = {
         content: {
