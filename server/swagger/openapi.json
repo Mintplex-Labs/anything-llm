@@ -502,6 +502,59 @@
         }
       }
     },
+    "/v1/admin/workspaces/:workspaceId/users": {
+      "get": {
+        "tags": ["Admin"],
+        "description": "Retrieve a list of users for the given workspace.",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the workspace whose users are to be retrieved."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK, successful operation. Returns a list of user IDs for the given workspace.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, not authorized to access resources in multi-user mode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/admin/workspaces/{workspaceId}/update-users": {
       "post": {
         "tags": [
