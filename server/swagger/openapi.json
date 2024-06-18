@@ -530,11 +530,15 @@
                     "users": [
                       {
                         "userId": 1,
-                        "role": "admin"
+                        "username" : "user_1",
+                        "role": "admin",
+                        "lastUpdatedAt" : "2024-06-10T12:37:52.128Z"
                       },
                       {
                         "userId": 2,
-                        "role": "member"
+                        "username" : "user_2",
+                        "role": "member",
+                        "lastUpdatedAt" : "2024-06-12T19:10:07.529Z"
                       }
                     ]
                   }
