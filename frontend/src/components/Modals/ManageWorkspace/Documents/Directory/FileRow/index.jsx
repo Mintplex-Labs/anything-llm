@@ -1,26 +1,13 @@
-import { useState } from "react";
+import React from "react";
 import {
   formatDate,
   getFileExtension,
   middleTruncate,
 } from "@/utils/directories";
 import { File } from "@phosphor-icons/react";
-import debounce from "lodash.debounce";
+import { Tooltip } from "react-tooltip";
 
 export default function FileRow({ item, selected, toggleSelection }) {
-  const [showTooltip, setShowTooltip] = useState(false);
-
-  const handleShowTooltip = () => {
-    setShowTooltip(true);
-  };
-
-  const handleHideTooltip = () => {
-    setShowTooltip(false);
-  };
-
-  const handleMouseEnter = debounce(handleShowTooltip, 500);
-  const handleMouseLeave = debounce(handleHideTooltip, 500);
-
   return (
     <tr
       onClick={() => toggleSelection(item)}
@@ -28,7 +15,10 @@ export default function FileRow({ item, selected, toggleSelection }) {
         selected ? "selected" : ""
       }`}
     >
-      <div className="pl-2 col-span-6 flex gap-x-[4px] items-center">
+      <div
+        data-tooltip-id={`directory-item-${item.url}`}
+        className="col-span-10 w-fit flex gap-x-[4px] items-center relative"
+      >
         <div
           className="shrink-0 w-3 h-3 rounded border-[1px] border-white flex justify-center items-center cursor-pointer"
           role="checkbox"
@@ -41,34 +31,35 @@ export default function FileRow({ item, selected, toggleSelection }) {
           className="shrink-0 text-base font-bold w-4 h-4 mr-[3px]"
           weight="fill"
         />
-        <div
-          className="relative"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <p className="whitespace-nowrap overflow-hidden max-w-[165px] text-ellipsis">
-            {middleTruncate(item.title, 17)}
-          </p>
-          {showTooltip && (
-            <div className="absolute left-0 bg-white text-black p-1.5 rounded shadow-lg whitespace-nowrap">
-              {item.title}
-            </div>
-          )}
-        </div>
+        <p className="whitespace-nowrap overflow-hidden text-ellipsis">
+          {middleTruncate(item.title, 60)}
+        </p>
       </div>
-      <p className="col-span-3 pl-3.5 whitespace-nowrap">
-        {formatDate(item?.published)}
-      </p>
-      <p className="col-span-2 pl-2 uppercase overflow-x-hidden">
-        {getFileExtension(item.url)}
-      </p>
-      <div className="-col-span-2 flex justify-end items-center">
+      <div className="col-span-2 flex justify-end items-center">
         {item?.cached && (
           <div className="bg-white/10 rounded-3xl">
             <p className="text-xs px-2 py-0.5">Cached</p>
           </div>
         )}
       </div>
+      <Tooltip
+        id={`directory-item-${item.url}`}
+        place="bottom"
+        delayShow={800}
+        className="tooltip invert z-99"
+      >
+        <div className="text-xs ">
+          <p className="text-white">{item.title}</p>
+          <div className="flex mt-1 gap-x-2">
+            <p className="">
+              Date: <b>{formatDate(item?.published)}</b>
+            </p>
+            <p className="">
+              Type: <b>{getFileExtension(item.url).toUpperCase()}</b>
+            </p>
+          </div>
+        </div>
+      </Tooltip>
     </tr>
   );
 }

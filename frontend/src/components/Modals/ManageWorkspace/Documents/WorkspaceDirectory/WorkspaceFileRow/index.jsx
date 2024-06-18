@@ -6,9 +6,8 @@ import {
 } from "@/utils/directories";
 import { ArrowUUpLeft, File, PushPin } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
-import debounce from "lodash.debounce";
-import { Tooltip } from "react-tooltip";
 import showToast from "@/utils/toast";
+import { Tooltip } from "react-tooltip";
 
 export default function WorkspaceFileRow({
   item,
@@ -20,8 +19,6 @@ export default function WorkspaceFileRow({
   hasChanges,
   movedItems,
 }) {
-  const [showTooltip, setShowTooltip] = useState(false);
-
   const onRemoveClick = async () => {
     setLoading(true);
 
@@ -40,62 +37,57 @@ export default function WorkspaceFileRow({
     setLoading(false);
   };
 
-  const handleShowTooltip = () => {
-    setShowTooltip(true);
-  };
-
-  const handleHideTooltip = () => {
-    setShowTooltip(false);
-  };
-
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
-  const handleMouseEnter = debounce(handleShowTooltip, 500);
-  const handleMouseLeave = debounce(handleHideTooltip, 500);
   return (
     <div
-      className={`items-center text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer
-          ${isMovedItem ? "bg-green-800/40" : "file-row"}`}
+      className={`items-center text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer ${
+        isMovedItem ? "bg-green-800/40" : "file-row"
+      }`}
     >
-      <div className="col-span-5 flex gap-x-[4px] items-center">
+      <div
+        data-tooltip-id={`directory-item-${item.url}`}
+        className="col-span-10 w-fit flex gap-x-[4px] items-center relative"
+      >
         <File
-          className="text-base font-bold w-4 h-4 ml-3 mr-[3px]"
+          className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] ml-3"
           weight="fill"
         />
-        <div
-          className="relative"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <p className="whitespace-nowrap overflow-hidden max-w-[165px] text-ellipsis">
-            {middleTruncate(item.title, 17)}
-          </p>
-          {showTooltip && (
-            <div className="absolute left-0 bg-white text-black p-1.5 rounded shadow-lg whitespace-nowrap">
-              {item.title}
-            </div>
-          )}
-        </div>
+        <p className="whitespace-nowrap overflow-hidden text-ellipsis">
+          {middleTruncate(item.title, 60)}
+        </p>
       </div>
-      <p className="col-span-3 pl-3.5 whitespace-nowrap">
-        {formatDate(item?.published)}
-      </p>
-      <p className="col-span-2 pl-2 uppercase overflow-x-hidden">
-        {getFileExtension(item.url)}
-      </p>
-      <div className="col-span-2 flex justify-center items-center">
+      <div className="col-span-2 flex justify-end items-center">
         {hasChanges ? (
           <div className="w-4 h-4 ml-2 flex-shrink-0" />
         ) : (
           <div className="flex gap-x-2 items-center">
             <PinItemToWorkspace
               workspace={workspace}
-              docPath={`${folderName}/${item.name}`} // how to find documents during pin/unpin
+              docPath={`${folderName}/${item.name}`}
               item={item}
             />
             <RemoveItemFromWorkspace item={item} onClick={onRemoveClick} />
           </div>
         )}
       </div>
+      <Tooltip
+        id={`directory-item-${item.url}`}
+        place="bottom"
+        delayShow={800}
+        className="tooltip invert z-99"
+      >
+        <div className="text-xs ">
+          <p className="text-white">{item.title}</p>
+          <div className="flex mt-1 gap-x-2">
+            <p className="">
+              Date: <b>{formatDate(item?.published)}</b>
+            </p>
+            <p className="">
+              Type: <b>{getFileExtension(item.url).toUpperCase()}</b>
+            </p>
+          </div>
+        </div>
+      </Tooltip>
     </div>
   );
 }
