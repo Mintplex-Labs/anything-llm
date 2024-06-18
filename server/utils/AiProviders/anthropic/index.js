@@ -4,6 +4,7 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const logger = require("../../logging");
 
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -101,7 +102,9 @@ class AnthropicLLM {
 
       return response.content[0].text;
     } catch (error) {
-      console.log(error);
+      logger.error(error, {
+        origin: "AnthropicLLM",
+      });
       return error;
     }
   }

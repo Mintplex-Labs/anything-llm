@@ -80,7 +80,8 @@
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",
     "vectordb": "0.4.11",
-    "weaviate-ts-client": "^1.4.0"
+    "weaviate-ts-client": "^1.4.0",
+    "winston": "^3.13.0"
   },
   "devDependencies": {
     "@inquirer/prompts": "^4.3.1",

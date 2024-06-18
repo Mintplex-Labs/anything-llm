@@ -10,6 +10,7 @@ const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const logger = require("../../../utils/logging");
 
 // Zilliz is basically a copy of Milvus DB class with a different constructor
 // to connect to the cloud
@@ -81,7 +82,10 @@ const Zilliz = {
     const { value } = await client
       .hasCollection({ collection_name: this.normalize(namespace) })
       .catch((e) => {
-        console.error("Zilliz::namespaceExists", e.message);
+        logger.error("Zilliz::namespaceExists", {
+          origin: "Zilliz",
+          error: e.message,
+        });
         return { value: false };
       });
     return value;
@@ -146,7 +150,10 @@ const Zilliz = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      logger.info("Adding new vectorized document into namespace", {
+        origin: "Zilliz",
+        namespace,
+      });
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
@@ -200,7 +207,10 @@ const Zilliz = {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Chunks created from document:", textChunks.length);
+      logger.info(`Chunks created from document: ${textChunks.length}`, {
+        origin: "Zilliz",
+        count: textChunks.length,
+      });
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -230,7 +240,9 @@ const Zilliz = {
         const { client } = await this.connect();
         await this.getOrCreateCollection(client, namespace, vectorDimension);
 
-        console.log("Inserting vectorized chunks into Zilliz.");
+        logger.info("Inserting vectorized chunks into Zilliz.", {
+          origin: "Zilliz",
+        });
         for (const chunk of toChunks(vectors, 100)) {
           chunks.push(chunk);
           const insertResult = await client.insert({
@@ -257,7 +269,10 @@ const Zilliz = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      logger.error("addDocumentToNamespace", {
+        origin: "Zilliz",
+        error: e.message,
+      });
       return { vectorized: false, error: e.message };
     }
   },
@@ -344,8 +359,9 @@ const Zilliz = {
     response.results.forEach((match) => {
       if (match.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
-        console.log(
-          "Zilliz: A source was filtered from context as it's parent document is pinned."
+        logger.info(
+          "Zilliz: A source was filtered from context as it's parent document is pinned.",
+          { origin: "Zilliz" }
         );
         return;
       }

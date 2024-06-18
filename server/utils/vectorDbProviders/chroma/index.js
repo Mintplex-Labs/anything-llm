@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { parseAuthHeader } = require("../../http");
 const { sourceIdentifier } = require("../../chats");
+const logger = require("../../../utils/logging");
 const COLLECTION_REGEX = new RegExp(
   /^(?!\d+\.\d+\.\d+\.\d+$)(?!.*\.\.)(?=^[a-zA-Z0-9][a-zA-Z0-9_-]{1,61}[a-zA-Z0-9]$).{3,63}$/
 );
@@ -139,8 +140,9 @@ const Chroma = {
       if (
         filterIdentifiers.includes(sourceIdentifier(response.metadatas[0][i]))
       ) {
-        console.log(
-          "Chroma: A source was filtered from context as it's parent document is pinned."
+        logger.info(
+          "Chroma: A source was filtered from context as it's parent document is pinned.",
+          { origin: "Chroma" }
         );
         return;
       }
@@ -173,7 +175,10 @@ const Chroma = {
     const collection = await client
       .getCollection({ name: this.normalize(namespace) })
       .catch((e) => {
-        console.error("ChromaDB::namespaceExists", e.message);
+        logger.error("ChromaDB::namespaceExists", {
+          origin: "Chroma",
+          error: e.message,
+        });
         return null;
       });
     return !!collection;
@@ -192,7 +197,10 @@ const Chroma = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      logger.info("Adding new vectorized document into namespace", {
+        origin: "Chroma",
+        namespace,
+      });
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
@@ -255,7 +263,10 @@ const Chroma = {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Chunks created from document:", textChunks.length);
+      logger.info(`Chunks created from document: ${textChunks.length}`, {
+        origin: "Chroma",
+        count: textChunks.length,
+      });
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -300,7 +311,9 @@ const Chroma = {
       if (vectors.length > 0) {
         const chunks = [];
 
-        console.log("Inserting vectorized chunks into Chroma collection.");
+        logger.info("Inserting vectorized chunks into Chroma collection.", {
+          origin: "Chroma",
+        });
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
         const additionResult = await collection.add(submission);
@@ -313,7 +326,10 @@ const Chroma = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      logger.error("addDocumentToNamespace", {
+        origin: "Chroma",
+        error: e.message,
+      });
       return { vectorized: false, error: e.message };
     }
   },

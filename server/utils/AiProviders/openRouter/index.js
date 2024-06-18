@@ -7,6 +7,7 @@ const {
 const fs = require("fs");
 const path = require("path");
 const { safeJsonParse } = require("../../http");
+const logger = require("../../logging");
 const cacheFolder = path.resolve(
   process.env.STORAGE_DIR
     ? path.resolve(process.env.STORAGE_DIR, "models", "openrouter")
@@ -45,10 +46,6 @@ class OpenRouterLLM {
     this.cacheAtPath = path.resolve(cacheFolder, ".cached_at");
   }
 
-  log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
-  }
-
   // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)
   // from the current date. If it is, then we will refetch the API so that all the models are up
   // to date.
@@ -68,9 +65,11 @@ class OpenRouterLLM {
   async #syncModels() {
     if (fs.existsSync(this.cacheModelPath) && !this.#cacheIsStale())
       return false;
-
-    this.log(
-      "Model cache is not present or stale. Fetching from OpenRouter API."
+    logger.info(
+      "Model cache is not present or stale. Fetching from OpenRouter API.",
+      {
+        origin: "OpenRouterLLM",
+      }
     );
     await fetchOpenRouterModels();
     return;
@@ -193,8 +192,9 @@ class OpenRouterLLM {
         const now = Number(new Date());
         const diffMs = now - lastChunkTime;
         if (diffMs >= timeoutThresholdMs) {
-          console.log(
-            `OpenRouter stream did not self-close and has been stale for >${timeoutThresholdMs}ms. Closing response stream.`
+          logger.info(
+            `OpenRouter stream did not self-close and has been stale for >${timeoutThresholdMs}ms. Closing response stream.`,
+            { origin: "OpenRouterLLM" }
           );
           writeResponseChunk(response, {
             uuid,
@@ -300,7 +300,7 @@ async function fetchOpenRouterModels() {
       return models;
     })
     .catch((e) => {
-      console.error(e);
+      logger.error(e, { origin: "OpenRouterLLM" });
       return {};
     });
 }

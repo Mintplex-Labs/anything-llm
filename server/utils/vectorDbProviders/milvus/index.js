@@ -10,6 +10,7 @@ const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const logger = require("../../../utils/logging");
 
 const Milvus = {
   name: "Milvus",
@@ -80,7 +81,10 @@ const Milvus = {
     const { value } = await client
       .hasCollection({ collection_name: this.normalize(namespace) })
       .catch((e) => {
-        console.error("MilvusDB::namespaceExists", e.message);
+        logger.error("MilvusDB::namespaceExists", {
+          origin: "Milvus",
+          error: e.message,
+        });
         return { value: false };
       });
     return value;
@@ -145,7 +149,10 @@ const Milvus = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      logger.info("Adding new vectorized document into namespace", {
+        origin: "Milvus",
+        namespace,
+      });
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
@@ -199,7 +206,10 @@ const Milvus = {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Chunks created from document:", textChunks.length);
+      logger.info(`Chunks created from document: ${textChunks.length}`, {
+        origin: "Milvus",
+        count: textChunks.length,
+      });
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -229,7 +239,9 @@ const Milvus = {
         const { client } = await this.connect();
         await this.getOrCreateCollection(client, namespace, vectorDimension);
 
-        console.log("Inserting vectorized chunks into Milvus.");
+        logger.info("Inserting vectorized chunks into Milvus.", {
+          origin: "Milvus",
+        });
         for (const chunk of toChunks(vectors, 100)) {
           chunks.push(chunk);
           const insertResult = await client.insert({
@@ -256,7 +268,10 @@ const Milvus = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      logger.error("addDocumentToNamespace", {
+        origin: "Milvus",
+        error: e.message,
+      });
       return { vectorized: false, error: e.message };
     }
   },
@@ -343,8 +358,9 @@ const Milvus = {
     response.results.forEach((match) => {
       if (match.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
-        console.log(
-          "Milvus: A source was filtered from context as it's parent document is pinned."
+        logger.info(
+          "Milvus: A source was filtered from context as it's parent document is pinned.",
+          { origin: "Milvus" }
         );
         return;
       }

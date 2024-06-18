@@ -5,6 +5,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const logger = require("../../../utils/logging");
 
 const QDrant = {
   name: "QDrant",
@@ -71,8 +72,9 @@ const QDrant = {
     responses.forEach((response) => {
       if (response.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(response?.payload))) {
-        console.log(
-          "QDrant: A source was filtered from context as it's parent document is pinned."
+        logger.info(
+          "QDrant: A source was filtered from context as it's parent document is pinned.",
+          { origin: "QDrant" }
         );
         return;
       }
@@ -106,7 +108,10 @@ const QDrant = {
   namespaceExists: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client.getCollection(namespace).catch((e) => {
-      console.error("QDrant::namespaceExists", e.message);
+      logger.error("QDrant::namespaceExists", {
+        origin: "QDrant",
+        error: e.message,
+      });
       return null;
     });
     return !!collection;
@@ -144,8 +149,10 @@ const QDrant = {
       let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
-
-      console.log("Adding new vectorized document into namespace", namespace);
+      logger.info("Adding new vectorized document into namespace", {
+        origin: "QDrant",
+        namespace,
+      });
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
@@ -183,8 +190,9 @@ const QDrant = {
               submission.vectors.push(chunk.vector);
               submission.payloads.push(payload);
             } else {
-              console.error(
-                "The 'id' property is not defined in chunk.payload - it will be omitted from being inserted in QDrant collection."
+              logger.error(
+                "The 'id' property is not defined in chunk.payload - it will be omitted from being inserted in QDrant collection.",
+                { origin: "QDrant" }
               );
             }
           });
@@ -224,7 +232,10 @@ const QDrant = {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Chunks created from document:", textChunks.length);
+      logger.info(`Chunks created from document: ${textChunks.length}`, {
+        origin: "QDrant",
+        count: textChunks.length,
+      });
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -273,7 +284,9 @@ const QDrant = {
       if (vectors.length > 0) {
         const chunks = [];
 
-        console.log("Inserting vectorized chunks into QDrant collection.");
+        logger.info("Inserting vectorized chunks into QDrant collection.", {
+          origin: "QDrant",
+        });
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
         const additionResult = await client.upsert(namespace, {
@@ -293,7 +306,10 @@ const QDrant = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      logger.error("addDocumentToNamespace", {
+        origin: "QDrant",
+        error: e.message,
+      });
       return { vectorized: false, error: e.message };
     }
   },
