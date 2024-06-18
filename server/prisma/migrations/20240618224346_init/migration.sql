@@ -19,7 +19,7 @@ CREATE TABLE "document_sync_executions" (
     "status" TEXT NOT NULL DEFAULT 'unknown',
     "result" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "document_sync_executions_queueId_fkey" FOREIGN KEY ("queueId") REFERENCES "document_sync_queues" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "document_sync_executions_queueId_fkey" FOREIGN KEY ("queueId") REFERENCES "document_sync_queues" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateIndex

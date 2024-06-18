@@ -295,5 +295,5 @@ model document_sync_executions {
   status    String               @default("unknown")
   result    String?
   createdAt DateTime             @default(now())
-  queue     document_sync_queues @relation(fields: [queueId], references: [id])
+  queue     document_sync_queues @relation(fields: [queueId], references: [id], onDelete: Cascade)
 }
