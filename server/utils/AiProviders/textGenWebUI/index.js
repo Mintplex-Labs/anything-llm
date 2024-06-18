@@ -2,6 +2,7 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
+const logger = require("../../logging");
 
 class TextGenWebUILLM {
   constructor(embedder = null) {
@@ -25,6 +26,9 @@ class TextGenWebUILLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    logger.info(`Inference API: ${this.basePath} Model: ${this.model}`, {
+      origin: "TextGenWebUILLM",
+    });
   }
 
   #appendContext(contextTexts = []) {

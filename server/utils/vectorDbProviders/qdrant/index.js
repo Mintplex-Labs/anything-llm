@@ -73,7 +73,7 @@ const QDrant = {
       if (response.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(response?.payload))) {
         logger.info(
-          "QDrant: A source was filtered from context as it's parent document is pinned.",
+          "A source was filtered from context as it's parent document is pinned.",
           { origin: "QDrant" }
         );
         return;
@@ -108,9 +108,8 @@ const QDrant = {
   namespaceExists: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client.getCollection(namespace).catch((e) => {
-      logger.error("QDrant::namespaceExists", {
+      logger.error(`namespaceExists:: ${e.message}`, {
         origin: "QDrant",
-        error: e.message,
       });
       return null;
     });
@@ -149,10 +148,12 @@ const QDrant = {
       let vectorDimension = null;
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
-      logger.info("Adding new vectorized document into namespace", {
-        origin: "QDrant",
-        namespace,
-      });
+      logger.info(
+        `Adding new vectorized document into namespace: ${namespace}`,
+        {
+          origin: "QDrant",
+        }
+      );
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
@@ -234,7 +235,6 @@ const QDrant = {
 
       logger.info(`Chunks created from document: ${textChunks.length}`, {
         origin: "QDrant",
-        count: textChunks.length,
       });
       const documentVectors = [];
       const vectors = [];
@@ -306,9 +306,8 @@ const QDrant = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      logger.error("addDocumentToNamespace", {
+      logger.error(`addDocumentToNamespace:: ${e.message}`, {
         origin: "QDrant",
-        error: e.message,
       });
       return { vectorized: false, error: e.message };
     }

@@ -54,9 +54,8 @@ const Weaviate = {
         response?.data?.Aggregate?.[camelCase(namespace)]?.[0]?.meta?.count || 0
       );
     } catch (e) {
-      logger.error(`Weaviate:namespaceCountWithClient`, {
+      logger.error(`namespaceCountWithClient:: ${e.message}`, {
         origin: "Weaviate",
-        error: e.message,
       });
       return 0;
     }
@@ -74,9 +73,8 @@ const Weaviate = {
         response?.data?.Aggregate?.[camelCase(namespace)]?.[0]?.meta?.count || 0
       );
     } catch (e) {
-      logger.error(`Weaviate:namespaceCountWithClient`, {
+      logger.error(`namespaceCountWithClient:: ${e.message}`, {
         origin: "Weaviate",
-        error: e.message,
       });
       return 0;
     }
@@ -134,7 +132,7 @@ const Weaviate = {
       const { classes = [] } = await client.schema.getter().do();
       return classes.map((classObj) => classObj.class);
     } catch (e) {
-      logger.error("Weaviate::AllNamespace", { origin: "Weaviate", error: e });
+      logger.error(`allNamespaces:: ${e.message}`, { origin: "Weaviate" });
       return [];
     }
   },
@@ -199,10 +197,12 @@ const Weaviate = {
       } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      logger.info("Adding new vectorized document into namespace", {
-        origin: "Weaviate",
-        namespace,
-      });
+      logger.info(
+        `Adding new vectorized document into namespace: ${namespace}`,
+        {
+          origin: "Weaviate",
+        }
+      );
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
@@ -245,9 +245,8 @@ const Weaviate = {
           const { success: additionResult, errors = [] } =
             await this.addVectors(client, vectors);
           if (!additionResult) {
-            logger.error("Weaviate::addVectors failed to insert", {
+            logger.error(`addVectors failed to insert: ${errors.join(",")}`, {
               origin: "Weaviate",
-              errors,
             });
             throw new Error("Error embedding into Weaviate");
           }
@@ -282,7 +281,6 @@ const Weaviate = {
 
       logger.info(`Chunks created from document: ${textChunks.length}`, {
         origin: "Weaviate",
-        count: textChunks.length,
       });
       const documentVectors = [];
       const vectors = [];
@@ -346,9 +344,8 @@ const Weaviate = {
           vectors
         );
         if (!additionResult) {
-          logger.error("Weaviate::addVectors failed to insert", {
+          logger.error(`addVectors failed to insert: ${errors.join(",")}`, {
             origin: "Weaviate",
-            errors,
           });
           throw new Error("Error embedding into Weaviate");
         }
@@ -358,9 +355,8 @@ const Weaviate = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      logger.error("addDocumentToNamespace", {
+      logger.error(`addDocumentToNamespace:: ${e.message}`, {
         origin: "Weaviate",
-        error: e.message,
       });
       return { vectorized: false, error: e.message };
     }

@@ -141,7 +141,7 @@ const Chroma = {
         filterIdentifiers.includes(sourceIdentifier(response.metadatas[0][i]))
       ) {
         logger.info(
-          "Chroma: A source was filtered from context as it's parent document is pinned.",
+          "A source was filtered from context as it's parent document is pinned.",
           { origin: "Chroma" }
         );
         return;
@@ -175,9 +175,8 @@ const Chroma = {
     const collection = await client
       .getCollection({ name: this.normalize(namespace) })
       .catch((e) => {
-        logger.error("ChromaDB::namespaceExists", {
+        logger.error(`namespaceExists:: ${e.message}`, {
           origin: "Chroma",
-          error: e.message,
         });
         return null;
       });
@@ -197,10 +196,12 @@ const Chroma = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      logger.info("Adding new vectorized document into namespace", {
-        origin: "Chroma",
-        namespace,
-      });
+      logger.info(
+        `Adding new vectorized document into namespace: ${namespace}`,
+        {
+          origin: "Chroma",
+        }
+      );
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
@@ -265,7 +266,6 @@ const Chroma = {
 
       logger.info(`Chunks created from document: ${textChunks.length}`, {
         origin: "Chroma",
-        count: textChunks.length,
       });
       const documentVectors = [];
       const vectors = [];
@@ -326,9 +326,8 @@ const Chroma = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      logger.error("addDocumentToNamespace", {
+      logger.error(`addDocumentToNamespace:: ${e.message}`, {
         origin: "Chroma",
-        error: e.message,
       });
       return { vectorized: false, error: e.message };
     }

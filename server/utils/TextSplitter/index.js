@@ -82,8 +82,6 @@ class RecursiveSplitter {
       `Will split with chunk size of ${chunkSize} and overlap of ${chunkOverlap}`,
       {
         origin: "RecursiveSplitter",
-        chunkSize,
-        chunkOverlap,
       }
     );
     this.chunkHeader = chunkHeader;

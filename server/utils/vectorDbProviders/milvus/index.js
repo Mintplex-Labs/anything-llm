@@ -81,9 +81,8 @@ const Milvus = {
     const { value } = await client
       .hasCollection({ collection_name: this.normalize(namespace) })
       .catch((e) => {
-        logger.error("MilvusDB::namespaceExists", {
+        logger.error(`namespaceExists:: ${e.message}`, {
           origin: "Milvus",
-          error: e.message,
         });
         return { value: false };
       });
@@ -149,10 +148,12 @@ const Milvus = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      logger.info("Adding new vectorized document into namespace", {
-        origin: "Milvus",
-        namespace,
-      });
+      logger.info(
+        `Adding new vectorized document into namespace: ${namespace}`,
+        {
+          origin: "Milvus",
+        }
+      );
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
@@ -208,7 +209,6 @@ const Milvus = {
 
       logger.info(`Chunks created from document: ${textChunks.length}`, {
         origin: "Milvus",
-        count: textChunks.length,
       });
       const documentVectors = [];
       const vectors = [];
@@ -268,9 +268,8 @@ const Milvus = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      logger.error("addDocumentToNamespace", {
+      logger.error(`addDocumentToNamespace:: ${e.message}`, {
         origin: "Milvus",
-        error: e.message,
       });
       return { vectorized: false, error: e.message };
     }
@@ -359,7 +358,7 @@ const Milvus = {
       if (match.score < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(match.metadata))) {
         logger.info(
-          "Milvus: A source was filtered from context as it's parent document is pinned.",
+          "A source was filtered from context as it's parent document is pinned.",
           { origin: "Milvus" }
         );
         return;

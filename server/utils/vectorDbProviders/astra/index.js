@@ -54,9 +54,8 @@ const AstraDB = {
     if (!(await this.isRealCollection(collection))) return null;
 
     const count = await collection.countDocuments().catch((e) => {
-      logger.error("Astra::namespaceExists", {
+      logger.error(`namespaceExists:: ${e.message}`, {
         origin: "AstraDB",
-        error: e.message,
       });
       return null;
     });
@@ -114,7 +113,6 @@ const AstraDB = {
 
       logger.info("Adding new vectorized document into namespace", {
         origin: "AstraDB",
-        namespace,
       });
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
@@ -173,7 +171,6 @@ const AstraDB = {
 
       logger.info(`Chunks created from document: ${textChunks.length}`, {
         origin: "AstraDB",
-        count: textChunks.length,
       });
       const documentVectors = [];
       const vectors = [];
@@ -232,9 +229,8 @@ const AstraDB = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      logger.error("addDocumentToNamespace", {
+      logger.error(`addDocumentToNamespace:: ${e.message}`, {
         origin: "AstraDB",
-        error: e.message,
       });
       return { vectorized: false, error: e.message };
     }
@@ -332,7 +328,7 @@ const AstraDB = {
       if (response.$similarity < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(response.metadata))) {
         logger.info(
-          "AstraDB: A source was filtered from context as it's parent document is pinned.",
+          "A source was filtered from context as it's parent document is pinned.",
           { origin: "AstraDB" }
         );
         return;
@@ -365,7 +361,7 @@ const AstraDB = {
       const collections = resp ? JSON.parse(resp)?.status?.collections : [];
       return collections;
     } catch (e) {
-      logger.error("Astra::AllNamespace", { origin: "AstraDB", error: e });
+      logger.error(`allNamespace:: ${e.message}`, { origin: "AstraDB" });
       return [];
     }
   },

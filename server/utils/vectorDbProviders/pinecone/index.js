@@ -105,10 +105,12 @@ const PineconeDB = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      logger.info("Adding new vectorized document into namespace", {
-        origin: "Pinecone",
-        namespace,
-      });
+      logger.info(
+        `Adding new vectorized document into namespace: ${namespace}`,
+        {
+          origin: "Pinecone",
+        }
+      );
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { pineconeIndex } = await this.connect();
@@ -157,7 +159,6 @@ const PineconeDB = {
 
       logger.info(`Chunks created from document: ${textChunks.length}`, {
         origin: "Pinecone",
-        count: textChunks.length,
       });
       const documentVectors = [];
       const vectors = [];
@@ -200,9 +201,8 @@ const PineconeDB = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      logger.error("addDocumentToNamespace", {
+      logger.error(`addDocumentToNamespace:: ${e.message}`, {
         origin: "Pinecone",
-        error: e.message,
       });
       return { vectorized: false, error: e.message };
     }

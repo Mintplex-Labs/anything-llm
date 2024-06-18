@@ -82,9 +82,8 @@ const Zilliz = {
     const { value } = await client
       .hasCollection({ collection_name: this.normalize(namespace) })
       .catch((e) => {
-        logger.error("Zilliz::namespaceExists", {
+        logger.error(`namespaceExists:: ${e.message}}`, {
           origin: "Zilliz",
-          error: e.message,
         });
         return { value: false };
       });
@@ -150,10 +149,12 @@ const Zilliz = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      logger.info("Adding new vectorized document into namespace", {
-        origin: "Zilliz",
-        namespace,
-      });
+      logger.info(
+        `Adding new vectorized document into namespace: ${namespace}`,
+        {
+          origin: "Zilliz",
+        }
+      );
       const cacheResult = await cachedVectorInformation(fullFilePath);
       if (cacheResult.exists) {
         const { client } = await this.connect();
@@ -209,7 +210,6 @@ const Zilliz = {
 
       logger.info(`Chunks created from document: ${textChunks.length}`, {
         origin: "Zilliz",
-        count: textChunks.length,
       });
       const documentVectors = [];
       const vectors = [];
@@ -269,9 +269,8 @@ const Zilliz = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      logger.error("addDocumentToNamespace", {
+      logger.error(`addDocumentToNamespace:: ${e.message}`, {
         origin: "Zilliz",
-        error: e.message,
       });
       return { vectorized: false, error: e.message };
     }
