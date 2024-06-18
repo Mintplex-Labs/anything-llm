@@ -4,6 +4,7 @@ const prisma = require("../utils/prisma");
 const { Telemetry } = require("./telemetry");
 const { EventLogs } = require("./eventLogs");
 const { safeJsonParse } = require("../utils/http");
+const { DocumentSyncQueue } = require("./documentSyncQueue.js");
 
 const Document = {
   writable: ["pinned", "watched", "lastUpdatedAt"],
