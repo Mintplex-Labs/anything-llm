@@ -1,7 +1,6 @@
 const path = require("path");
 const Graceful = require("@ladjs/graceful");
 const Bree = require("bree");
-const { SystemSettings } = require("../../models/systemSettings");
 
 class BackgroundService {
   name = "BackgroundWorkerService";
@@ -23,10 +22,8 @@ class BackgroundService {
   }
 
   async boot() {
-    const featureEnabled =
-      (await SystemSettings.get({ label: "experimental_live_file_sync" }))
-        ?.value === "enabled";
-    if (!featureEnabled) {
+    const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
+    if (!(await DocumentSyncQueue.enabled())) {
       this.#log("Feature is not enabled and will not be started.");
       return;
     }
@@ -47,10 +44,7 @@ class BackgroundService {
 
   async stop() {
     this.#log("Stopping...");
-    if (!!this.graceful && !!this.bree) {
-      this.graceful.stopBree(this.bree, 0);
-      this.graceful.exit(0);
-    }
+    if (!!this.graceful && !!this.bree) this.graceful.stopBree(this.bree, 0);
     this.bree = null;
     this.graceful = null;
     this.#log("Service stopped");

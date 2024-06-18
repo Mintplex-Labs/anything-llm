@@ -1,4 +1,6 @@
+const { BackgroundService } = require("../utils/BackgroundWorkers");
 const prisma = require("../utils/prisma");
+const { SystemSettings } = require("./systemSettings");
 const { Telemetry } = require("./telemetry");
 
 /**
@@ -6,9 +8,26 @@ const { Telemetry } = require("./telemetry");
  */
 
 const DocumentSyncQueue = {
+  featureKey: "experimental_live_file_sync",
   validFileTypes: ["link"], // update the validFileTypes when doing this
   defaultStaleAfter: 604800000,
   writable: [],
+
+  bootWorkers: function () {
+    new BackgroundService().boot();
+  },
+
+  killWorkers: function () {
+    new BackgroundService().stop();
+  },
+
+  /** Check is the Document Sync/Watch feature is enabled and can be used. */
+  enabled: async function () {
+    return (
+      (await SystemSettings.get({ label: this.featureKey }))?.value ===
+      "enabled"
+    );
+  },
 
   /**
    * @param {import("@prisma/client").document_sync_queues} queueRecord - queue record to calculate for

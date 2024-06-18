@@ -23,6 +23,7 @@ import {
   SplitVertical,
   Microphone,
   Robot,
+  Flask,
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
@@ -379,6 +380,14 @@ const SidebarOptions = ({ user = null }) => (
       href={paths.settings.privacy()}
       btnText="Privacy & Data"
       icon={<EyeSlash className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin"]}
+    />
+    <Option
+      href={paths.settings.experimental()}
+      btnText="Experimental Features"
+      icon={<Flask className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
       allowedRole={["admin"]}

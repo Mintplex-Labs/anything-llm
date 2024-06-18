@@ -9,6 +9,7 @@ import Workspace from "@/models/workspace";
 import debounce from "lodash.debounce";
 import { Tooltip } from "react-tooltip";
 import showToast from "@/utils/toast";
+import System from "@/models/system";
 
 export default function WorkspaceFileRow({
   item,
@@ -178,11 +179,12 @@ const WatchForChanges = memo(({ workspace, docPath, item }) => {
   const updateWatchStatus = async () => {
     try {
       if (!watched) window.dispatchEvent(watchEvent);
-      const success = await Workspace.setWatchStatusForDocument(
-        workspace.slug,
-        docPath,
-        !watched
-      );
+      const success =
+        await System.experimentalFeatures.liveSync.setWatchStatusForDocument(
+          workspace.slug,
+          docPath,
+          !watched
+        );
 
       if (!success) {
         showToast(

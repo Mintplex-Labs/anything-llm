@@ -26,7 +26,7 @@ async function fileData(filePath = null) {
 
 async function viewLocalFiles() {
   if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
-
+  const liveSyncAvailable = await DocumentSyncQueue.enabled();
   const directory = {
     name: "documents",
     type: "folder",
@@ -55,10 +55,12 @@ async function viewLocalFiles() {
           docpath: cachefilename,
           pinned: true,
         });
-        const watchedInWorkspaces = await Document.getOnlyWorkspaceIds({
-          docpath: cachefilename,
-          watched: true,
-        });
+        const watchedInWorkspaces = liveSyncAvailable
+          ? await Document.getOnlyWorkspaceIds({
+              docpath: cachefilename,
+              watched: true,
+            })
+          : [];
 
         subdocs.items.push({
           name: subfile,
@@ -66,7 +68,9 @@ async function viewLocalFiles() {
           ...metadata,
           cached: await cachedVectorInformation(cachefilename, true),
           pinnedWorkspaces: pinnedInWorkspaces,
-          canWatch: DocumentSyncQueue.canWatch(metadata),
+          canWatch: liveSyncAvailable
+            ? DocumentSyncQueue.canWatch(metadata)
+            : false,
           // Is file watched in any workspace since sync updates all workspaces where file is referenced
           watched: watchedInWorkspaces.length !== 0,
         });
