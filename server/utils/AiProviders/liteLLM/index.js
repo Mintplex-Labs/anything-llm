@@ -29,7 +29,7 @@ class LiteLLM {
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
     logger.info(`Inference API: ${this.basePath} Model: ${this.model}`, {
-      origin: "GenericOpenAiLLM",
+      origin: "LiteLLM",
     });
   }
 
