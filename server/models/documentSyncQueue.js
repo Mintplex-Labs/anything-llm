@@ -4,12 +4,12 @@ const { SystemSettings } = require("./systemSettings");
 const { Telemetry } = require("./telemetry");
 
 /**
- * @typedef {('link')} validFileType
+ * @typedef {('link'|'youtube')} validFileType
  */
 
 const DocumentSyncQueue = {
   featureKey: "experimental_live_file_sync",
-  validFileTypes: ["link"], // update the validFileTypes when doing this
+  validFileTypes: ["link", "youtube"], // update the validFileTypes when doing this
   defaultStaleAfter: 604800000,
   writable: [],
 
@@ -36,9 +36,10 @@ const DocumentSyncQueue = {
     return new Date(Number(new Date()) + queueRecord.staleAfterMs);
   },
 
-  canWatch: function ({ chunkSource = null } = {}) {
-    // If is web-link material
-    if (chunkSource.startsWith("link://")) return true;
+  canWatch: function ({ title, chunkSource = null } = {}) {
+    if (chunkSource.startsWith("link://") && title.endsWith(".html"))
+      return true; // If is web-link material
+    if (chunkSource.startsWith("youtube://")) return true; // If is a youtube link
     return false;
   },
 

@@ -1,9 +1,31 @@
 const { verifyPayloadIntegrity } = require("../middleware/verifyIntegrity");
 const { reqBody } = require("../utils/http");
 const { validURL } = require("../utils/url");
+const { resyncLink, resyncYouTube } = require("./resync");
 
 function extensions(app) {
   if (!app) return;
+
+  app.post(
+    "/ext/resync-source-document",
+    [verifyPayloadIntegrity],
+    async function (request, response) {
+      try {
+        const { type, options } = reqBody(request);
+        if (type === 'link') return await resyncLink({ link: options.link }, response);
+        if (type === 'youtube') return await resyncYouTube({ link: options.link }, response);
+        throw new Error(`Type "${type}" is not a valid type to sync.`);
+      } catch (e) {
+        console.error(e);
+        response.status(200).json({
+          success: false,
+          content: null,
+          reason: e.message || "A processing error occurred.",
+        });
+      }
+      return;
+    }
+  )
 
   app.post(
     "/ext/github-repo",
@@ -67,7 +89,7 @@ function extensions(app) {
     [verifyPayloadIntegrity],
     async function (request, response) {
       try {
-        const loadYouTubeTranscript = require("../utils/extensions/YoutubeTranscript");
+        const { loadYouTubeTranscript } = require("../utils/extensions/YoutubeTranscript");
         const { success, reason, data } = await loadYouTubeTranscript(
           reqBody(request)
         );

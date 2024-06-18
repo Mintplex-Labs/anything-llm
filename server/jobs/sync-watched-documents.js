@@ -34,7 +34,26 @@ const { getVectorDbClass } = require('../utils/helpers/index.js');
       }
 
       if (type === 'link') {
-        const response = await collector.getLinkContent(source);
+        const response = await collector.forwardExtensionRequest({
+          endpoint: "/ext/resync-source-document",
+          method: "POST",
+          body: JSON.stringify({
+            type,
+            options: { link: source }
+          })
+        });
+        newContent = response?.content;
+      }
+
+      if (type === 'youtube') {
+        const response = await collector.forwardExtensionRequest({
+          endpoint: "/ext/resync-source-document",
+          method: "POST",
+          body: JSON.stringify({
+            type,
+            options: { link: source }
+          })
+        });
         newContent = response?.content;
       }
 
