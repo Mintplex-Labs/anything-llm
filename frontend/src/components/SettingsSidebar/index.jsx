@@ -22,6 +22,7 @@ import {
   EyeSlash,
   SplitVertical,
   Microphone,
+  Robot,
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
@@ -156,7 +157,7 @@ export default function SettingsSidebar() {
               </div>
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-50">
+          <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
             <Footer />
           </div>
         </div>
@@ -256,6 +257,15 @@ const SidebarOptions = ({ user = null, t }) => (
       href={paths.settings.chats()}
       btnText={t("settings.workspace-chats")}
       icon={<ChatCenteredText className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin", "manager"]}
+    />
+
+    <Option
+      href={paths.settings.agentSkills()}
+      btnText="Agent Skills"
+      icon={<Robot className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
       allowedRole={["admin", "manager"]}

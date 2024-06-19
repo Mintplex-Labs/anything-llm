@@ -9,7 +9,7 @@ export const DB_LOGOS = {
   "sql-server": MSSQLLogo,
 };
 
-export default function DBConnection({ connection, onRemove }) {
+export default function DBConnection({ connection, onRemove, setHasChanges }) {
   const { database_id, engine } = connection;
   function removeConfirmation() {
     if (
@@ -20,6 +20,7 @@ export default function DBConnection({ connection, onRemove }) {
       return false;
     }
     onRemove(database_id);
+    setHasChanges(true);
   }
 
   return (
@@ -32,7 +33,7 @@ export default function DBConnection({ connection, onRemove }) {
       <div className="flex w-full items-center justify-between">
         <div className="flex flex-col">
           <div className="text-sm font-semibold text-white">{database_id}</div>
-          <div className="mt-1 text-xs text-[#D2D5DB]">{engine}</div>
+          <div className="mt-1 text-xs text-description">{engine}</div>
         </div>
         <button
           type="button"

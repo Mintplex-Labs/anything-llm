@@ -23,6 +23,7 @@ const AdminInvites = lazy(() => import("@/pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
 const AdminSystem = lazy(() => import("@/pages/Admin/System"));
 const AdminLogs = lazy(() => import("@/pages/Admin/Logging"));
+const AdminAgents = lazy(() => import("@/pages/Admin/Agents"));
 const GeneralChats = lazy(() => import("@/pages/GeneralSettings/Chats"));
 const GeneralAppearance = lazy(
   () => import("@/pages/GeneralSettings/Appearance")
@@ -112,6 +113,10 @@ export default function App() {
                   element={<AdminRoute Component={GeneralVectorDatabase} />}
                 />
                 <Route
+                  path="/settings/agents"
+                  element={<AdminRoute Component={AdminAgents} />}
+                />
+                <Route
                   path="/settings/event-logs"
                   element={<AdminRoute Component={AdminLogs} />}
                 />
@@ -164,8 +169,8 @@ export default function App() {
                 <Route path="/onboarding" element={<OnboardingFlow />} />
                 <Route path="/onboarding/:step" element={<OnboardingFlow />} />
               </Routes>
-              <ToastContainer />
             </I18nextProvider>
+            <ToastContainer />
           </PfpProvider>
         </LogoProvider>
       </ContextWrapper>

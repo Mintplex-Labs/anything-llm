@@ -21,6 +21,7 @@
     "highlight.js": "^11.9.0",
     "i18next": "^23.11.3",
     "i18next-browser-languagedetector": "^7.2.1",
+    "js-levenshtein": "^1.1.6",
     "lodash.debounce": "^4.0.8",
     "markdown-it": "^13.0.1",
     "pluralize": "^8.0.0",

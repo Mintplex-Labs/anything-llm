@@ -616,7 +616,7 @@ dialog::backdrop {
 }
 
 .file-row:nth-child(even) {
-  @apply bg-[#1C1E21];
+  @apply bg-dark-highlight;
 }
 
 .file-row:nth-child(odd) {
@@ -741,4 +741,8 @@ does not extend the close button beyond the viewport. */
   100% {
     opacity: 0;
   }
+}
+
+.search-input::-webkit-search-cancel-button {
+  filter: grayscale(100%) invert(1) brightness(100) opacity(0.5);
 }

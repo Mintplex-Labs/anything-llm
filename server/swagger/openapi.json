@@ -502,6 +502,70 @@
         }
       }
     },
+    "/v1/admin/workspaces/{workspaceId}/users": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "description": "Retrieve a list of users with permissions to access the specified workspace.",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "id of the workspace."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "users": [
+                      {
+                        "userId": 1,
+                        "role": "admin"
+                      },
+                      {
+                        "userId": 2,
+                        "role": "member"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/v1/admin/workspaces/{workspaceId}/update-users": {
       "post": {
         "tags": [
@@ -2303,6 +2367,62 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/v1/users": {
+      "get": {
+        "tags": [
+          "User Management"
+        ],
+        "description": "List all users",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "users": [
+                      {
+                        "id": 1,
+                        "username": "john_doe",
+                        "role": "admin"
+                      },
+                      {
+                        "id": 2,
+                        "username": "jane_smith",
+                        "role": "default"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Permission denied."
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }

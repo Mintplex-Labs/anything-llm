@@ -4,28 +4,23 @@ import showToast from "@/utils/toast";
 import { castToType } from "@/utils/types";
 import { useEffect, useRef, useState } from "react";
 import AgentLLMSelection from "./AgentLLMSelection";
-import AgentWebSearchSelection from "./WebSearchSelection";
-import AgentSQLConnectorSelection from "./SQLConnectorSelection";
-import GenericSkill from "./GenericSkill";
 import Admin from "@/models/admin";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { useTranslation } from "react-i18next";
+import paths from "@/utils/paths";
 
 export default function WorkspaceAgentConfiguration({ workspace }) {
   const [settings, setSettings] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [agentSkills, setAgentSkills] = useState([]);
-
   const formEl = useRef(null);
+
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await System.keys();
       const _preferences = await Admin.systemPreferences();
       setSettings({ ..._settings, preferences: _preferences.settings } ?? {});
-      setAgentSkills(_preferences.settings?.default_agent_skills ?? []);
       setLoading(false);
     }
     fetchSettings();
@@ -74,14 +69,6 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
     setHasChanges(false);
   };
 
-  function toggleAgentSkill(skillName = "") {
-    setAgentSkills((prev) => {
-      return prev.includes(skillName)
-        ? prev.filter((name) => name !== skillName)
-        : [...prev, skillName];
-    });
-  }
-
   if (!workspace || loading) return <LoadingSkeleton />;
   return (
     <div id="workspace-agent-settings-container">
@@ -97,11 +84,21 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
           workspace={workspace}
           setHasChanges={setHasChanges}
         />
-        <AvailableAgentSkills
-          skills={agentSkills}
-          toggleAgentSkill={toggleAgentSkill}
-          settings={settings}
-        />
+        {!hasChanges && (
+          <div className="flex flex-col gap-y-4">
+            <a
+              className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              href={paths.settings.agentSkills()}
+            >
+              Configure Agent Skills
+            </a>
+            <p className="text-white text-opacity-60 text-xs font-medium">
+              Customize and enhance the default agent's capabilities by enabling
+              or disabling specific skills. These settings will be applied
+              across all workspaces.
+            </p>
+          </div>
+        )}
         {hasChanges && (
           <button
             type="submit"
@@ -138,80 +135,6 @@ function LoadingSkeleton() {
           highlightColor="#4c4948"
           enableAnimation={true}
           containerClassName="flex flex-col gap-y-1 mt-4"
-        />
-      </div>
-    </div>
-  );
-}
-
-function AvailableAgentSkills({ skills, settings, toggleAgentSkill }) {
-  const { t } = useTranslation();
-  return (
-    <div>
-      <div className="flex flex-col mb-8">
-        <div className="flex w-full justify-between items-center">
-          <label htmlFor="name" className="text-white text-md font-semibold">
-            {t("agent.skill.title")}
-          </label>
-        </div>
-        <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          {t("agent.skill.description")}
-        </p>
-      </div>
-      <input
-        name="system::default_agent_skills"
-        type="hidden"
-        value={skills.join(",")}
-      />
-      <div className="flex flex-col gap-y-3">
-        <GenericSkill
-          title={t("agent.skill.rag.title")}
-          description={t("agent.skill.rag.description")}
-          settings={settings}
-          enabled={true}
-          disabled={true}
-        />
-        <GenericSkill
-          title={t("agent.skill.view.title")}
-          description={t("agent.skill.view.description")}
-          settings={settings}
-          enabled={true}
-          disabled={true}
-        />
-        <GenericSkill
-          title={t("agent.skill.scrape.title")}
-          description={t("agent.skill.scrape.description")}
-          settings={settings}
-          enabled={true}
-          disabled={true}
-        />
-        <GenericSkill
-          title={t("agent.skill.generate.title")}
-          description={t("agent.skill.generate.description")}
-          skill="create-chart"
-          settings={settings}
-          toggleSkill={toggleAgentSkill}
-          enabled={skills.includes("create-chart")}
-        />
-        <GenericSkill
-          title={t("agent.skill.save.title")}
-          description={t("agent.skill.save.description")}
-          skill="save-file-to-browser"
-          settings={settings}
-          toggleSkill={toggleAgentSkill}
-          enabled={skills.includes("save-file-to-browser")}
-        />
-        <AgentWebSearchSelection
-          skill="web-browsing"
-          settings={settings}
-          toggleSkill={toggleAgentSkill}
-          enabled={skills.includes("web-browsing")}
-        />
-        <AgentSQLConnectorSelection
-          skill="sql-agent"
-          settings={settings}
-          toggleSkill={toggleAgentSkill}
-          enabled={skills.includes("sql-agent")}
         />
       </div>
     </div>

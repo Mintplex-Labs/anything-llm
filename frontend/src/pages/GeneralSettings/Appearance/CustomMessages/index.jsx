@@ -64,7 +64,7 @@ export default function CustomMessages() {
           {t("appearance.message.description")}
         </p>
       </div>
-      <div className="mt-3 flex flex-col gap-y-6 bg-[#1C1E21] rounded-lg pr-[31px] pl-[12px] pt-4 max-w-[700px]">
+      <div className="mt-3 flex flex-col gap-y-6 bg-dark-highlight rounded-lg pr-[31px] pl-[12px] pt-4 max-w-[700px]">
         {messages.map((message, index) => (
           <div key={index} className="flex flex-col gap-y-2">
             {message.user && (

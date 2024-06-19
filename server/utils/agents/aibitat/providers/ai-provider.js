@@ -2,8 +2,19 @@
  * A service that provides an AI client to create a completion.
  */
 
+/**
+ * @typedef {Object} LangChainModelConfig
+ * @property {(string|null)} baseURL - Override the default base URL process.env for this provider
+ * @property {(string|null)} apiKey - Override the default process.env for this provider
+ * @property {(number|null)} temperature - Override the default temperature
+ * @property {(string|null)} model -  Overrides model used for provider.
+ */
+
 const { ChatOpenAI } = require("@langchain/openai");
 const { ChatAnthropic } = require("@langchain/anthropic");
+const { ChatOllama } = require("@langchain/community/chat_models/ollama");
+const { toValidNumber } = require("../../../http");
+
 const DEFAULT_WORKSPACE_PROMPT =
   "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
 
@@ -27,8 +38,15 @@ class Provider {
     return this._client;
   }
 
+  /**
+   *
+   * @param {string} provider - the string key of the provider LLM being loaded.
+   * @param {LangChainModelConfig} config - Config to be used to override default connection object.
+   * @returns
+   */
   static LangChainChatModel(provider = "openai", config = {}) {
     switch (provider) {
+      // Cloud models
       case "openai":
         return new ChatOpenAI({
           apiKey: process.env.OPEN_AI_KEY,
@@ -39,11 +57,108 @@ class Provider {
           apiKey: process.env.ANTHROPIC_API_KEY,
           ...config,
         });
-      default:
+      case "groq":
         return new ChatOpenAI({
-          apiKey: process.env.OPEN_AI_KEY,
+          configuration: {
+            baseURL: "https://api.groq.com/openai/v1",
+          },
+          apiKey: process.env.GROQ_API_KEY,
           ...config,
         });
+      case "mistral":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.mistral.ai/v1",
+          },
+          apiKey: process.env.MISTRAL_API_KEY ?? null,
+          ...config,
+        });
+      case "openrouter":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://openrouter.ai/api/v1",
+            defaultHeaders: {
+              "HTTP-Referer": "https://useanything.com",
+              "X-Title": "AnythingLLM",
+            },
+          },
+          apiKey: process.env.OPENROUTER_API_KEY ?? null,
+          ...config,
+        });
+      case "perplexity":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.perplexity.ai",
+          },
+          apiKey: process.env.PERPLEXITY_API_KEY ?? null,
+          ...config,
+        });
+      case "togetherai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: "https://api.together.xyz/v1",
+          },
+          apiKey: process.env.TOGETHER_AI_API_KEY ?? null,
+          ...config,
+        });
+      case "generic-openai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.GENERIC_OPEN_AI_BASE_PATH,
+          },
+          apiKey: process.env.GENERIC_OPEN_AI_API_KEY,
+          maxTokens: toValidNumber(
+            process.env.GENERIC_OPEN_AI_MAX_TOKENS,
+            1024
+          ),
+          ...config,
+        });
+
+      // OSS Model Runners
+      // case "anythingllm_ollama":
+      //   return new ChatOllama({
+      //     baseUrl: process.env.PLACEHOLDER,
+      //     ...config,
+      //   });
+      case "ollama":
+        return new ChatOllama({
+          baseUrl: process.env.OLLAMA_BASE_PATH,
+          ...config,
+        });
+      case "lmstudio":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.LMSTUDIO_BASE_PATH?.replace(/\/+$/, ""),
+          },
+          apiKey: "not-used", // Needs to be specified or else will assume OpenAI
+          ...config,
+        });
+      case "koboldcpp":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.KOBOLD_CPP_BASE_PATH,
+          },
+          apiKey: "not-used",
+          ...config,
+        });
+      case "localai":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.LOCAL_AI_BASE_PATH,
+          },
+          apiKey: process.env.LOCAL_AI_API_KEY ?? "not-used",
+          ...config,
+        });
+      case "textgenwebui":
+        return new ChatOpenAI({
+          configuration: {
+            baseURL: process.env.TEXT_GEN_WEB_UI_BASE_PATH,
+          },
+          apiKey: process.env.TEXT_GEN_WEB_UI_API_KEY ?? "not-used",
+          ...config,
+        });
+      default:
+        throw new Error(`Unsupported provider ${provider} for this task.`);
     }
   }
 
