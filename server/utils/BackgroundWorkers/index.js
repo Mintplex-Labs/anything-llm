@@ -53,10 +53,10 @@ class BackgroundService {
   jobs() {
     return [
       // Job for auto-sync of documents
+      // https://github.com/breejs/bree
       {
         name: "sync-watched-documents",
-        timeout: 0, //false, // set to zero and save to execute instantly.
-        interval: "4hrs",
+        interval: "1hr",
       },
     ];
   }
