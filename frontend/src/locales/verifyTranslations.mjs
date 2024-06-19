@@ -1,4 +1,11 @@
 import { resources } from "./resources.js";
+const languageNames = new Intl.DisplayNames(Object.keys(resources), {
+  type: "language",
+});
+
+function langDisplayName(lang) {
+  return languageNames.of(lang);
+}
 
 function compareStructures(lang, a, b, subdir = null) {
   //if a and b aren't the same type, they can't be equal
@@ -74,7 +81,7 @@ console.log(
 );
 for (const [lang, translations] of Object.entries(TRANSLATIONS)) {
   const passed = compareStructures(lang, translations, PRIMARY);
-  console.log(`${lang}: ${passed ? "✅" : "❌"}`);
+  console.log(`${langDisplayName(lang)} (${lang}): ${passed ? "✅" : "❌"}`);
   !passed && failed.push(lang);
 }
 

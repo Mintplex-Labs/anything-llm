@@ -11,16 +11,22 @@
 // and the language file you are working on.
 
 import English from "./en/common.js";
+import Spanish from "./es/common.js";
+import French from "./fr/common.js";
 import Mandarin from "./zh/common.js";
 
 export const defaultNS = "common";
 export const resources = {
   en: {
-    name: "English",
     common: English,
   },
   zh: {
-    name: "Mandarin",
     common: Mandarin,
+  },
+  es: {
+    common: Spanish,
+  },
+  fr: {
+    common: French,
   },
 };
