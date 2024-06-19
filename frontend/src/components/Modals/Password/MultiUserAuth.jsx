@@ -299,7 +299,7 @@ export default function MultiUserAuth() {
                 <input
                   name="username"
                   type="text"
-                  placeholder="Username"
+                  placeholder={t("login.multi-user.placeholder-username")}
                   className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required={true}
                   autoComplete="off"
@@ -309,7 +309,7 @@ export default function MultiUserAuth() {
                 <input
                   name="password"
                   type="password"
-                  placeholder="Password"
+                  placeholder={t("login.multi-user.placeholder-password")}
                   className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required={true}
                   autoComplete="off"
@@ -324,7 +324,7 @@ export default function MultiUserAuth() {
               type="submit"
               className="md:text-[#46C8FF] md:bg-transparent text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#46C8FF] bg-[#46C8FF] focus:z-10 w-full"
             >
-              {loading ? "Validating..." : "Login"}
+              {loading ? "Validating..." : t("login.multi-user.login")}
             </button>
             <button
               type="button"

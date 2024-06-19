@@ -38,12 +38,16 @@ const TRANSLATIONS = {
   login: {
     "multi-user": {
       welcome: "欢迎！",
+      "placeholder-username": "请输入用户名",
+      "placeholder-password": "请输入密码",
+      login: "登录",
+      Validating: "登录",
       "forgot-pass": "忘记密码",
       reset: "重置",
     },
     "sign-in": {
-      start: null,
-      end: null,
+      start: "登录你的",
+      end: "账户",
     },
   },
 
