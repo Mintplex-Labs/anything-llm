@@ -18,6 +18,7 @@ const {
 } = require("../utils/middleware/validWorkspace");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
+const logger = require("../utils/logger");
 
 function workspaceThreadEndpoints(app) {
   if (!app) return;
@@ -53,7 +54,7 @@ function workspaceThreadEndpoints(app) {
         );
         response.status(200).json({ thread, message });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspace/:slug/thread/new" });
         response.sendStatus(500).end();
       }
     }
@@ -72,7 +73,7 @@ function workspaceThreadEndpoints(app) {
         });
         response.status(200).json({ threads });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspace/:slug/threads" });
         response.sendStatus(500).end();
       }
     }
@@ -91,7 +92,9 @@ function workspaceThreadEndpoints(app) {
         await WorkspaceThread.delete({ id: thread.id });
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, {
+          origin: "/workspace/:slug/thread/:threadSlug",
+        });
         response.sendStatus(500).end();
       }
     }
@@ -114,7 +117,9 @@ function workspaceThreadEndpoints(app) {
         });
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, {
+          origin: "/workspace/:slug/thread-bulk-delete",
+        });
         response.sendStatus(500).end();
       }
     }
@@ -145,7 +150,9 @@ function workspaceThreadEndpoints(app) {
 
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, {
+          origin: "/workspace/:slug/thread/:threadSlug/chats",
+        });
         response.sendStatus(500).end();
       }
     }
@@ -168,7 +175,9 @@ function workspaceThreadEndpoints(app) {
         );
         response.status(200).json({ thread, message });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, {
+          origin: "/workspace/:slug/thread/:threadSlug/update",
+        });
         response.sendStatus(500).end();
       }
     }
@@ -197,7 +206,9 @@ function workspaceThreadEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, {
+          origin: "/workspace/:slug/thread/:threadSlug/delete-edited-chats",
+        });
         response.sendStatus(500).end();
       }
     }
@@ -239,7 +250,9 @@ function workspaceThreadEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, {
+          origin: "/workspace/:slug/thread/:threadSlug/update-chat",
+        });
         response.sendStatus(500).end();
       }
     }
