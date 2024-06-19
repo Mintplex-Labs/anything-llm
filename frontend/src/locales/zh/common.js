@@ -31,7 +31,7 @@ const TRANSLATIONS = {
     "embed-chats": "嵌入式对话历史",
     security: "用户与安全",
     "event-logs": "事件日志",
-    privacy: "隐私与数据",
+    // privacy: "隐私与数据",
   },
 
   // Page Definitions
