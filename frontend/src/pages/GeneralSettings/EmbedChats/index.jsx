@@ -6,9 +6,11 @@ import "react-loading-skeleton/dist/skeleton.css";
 import useQuery from "@/hooks/useQuery";
 import ChatRow from "./ChatRow";
 import Embed from "@/models/embed";
+import { useTranslation } from "react-i18next";
 
 export default function EmbedChats() {
   // TODO [FEAT]: Add export of embed chats
+  const { t } = useTranslation();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
@@ -20,12 +22,11 @@ export default function EmbedChats() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="flex gap-x-4 items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                Embed Chats
+                {t("embed-chats.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              These are all the recorded chats and messages from any embed that
-              you have published.
+              {t("embed-chats.description")}
             </p>
           </div>
           <ChatsContainer />
@@ -41,6 +42,7 @@ function ChatsContainer() {
   const [chats, setChats] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
+  const { t } = useTranslation();
 
   const handlePrevious = () => {
     setOffset(Math.max(offset - 1, 0));
@@ -83,19 +85,19 @@ function ChatsContainer() {
         <thead className="text-white text-opacity-80 text-sm font-bold uppercase border-white border-b border-opacity-60">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
-              Embed
+              {t("embed-chats.table.embed")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Sender
+              {t("embed-chats.table.sender")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Message
+              {t("embed-chats.table.message")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Response
+              {t("embed-chats.table.response")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Sent At
+              {t("embed-chats.table.at")}
             </th>
             <th scope="col" className="px-6 py-3 rounded-tr-lg">
               {" "}
@@ -116,14 +118,14 @@ function ChatsContainer() {
           disabled={offset === 0}
         >
           {" "}
-          Previous Page
+          {t("common.previous")}
         </button>
         <button
           onClick={handleNext}
           className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
           disabled={!canNext}
         >
-          Next Page
+          {t("common.next")}
         </button>
       </div>
     </>

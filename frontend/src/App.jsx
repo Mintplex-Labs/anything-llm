@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
+import { I18nextProvider } from "react-i18next";
 import { ContextWrapper } from "@/AuthContext";
 import PrivateRoute, {
   AdminRoute,
@@ -9,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "@/pages/Login";
 import OnboardingFlow from "@/pages/OnboardingFlow";
+import i18n from "./i18n";
 
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
@@ -61,109 +63,113 @@ export default function App() {
       <ContextWrapper>
         <LogoProvider>
           <PfpProvider>
-            <Routes>
-              <Route path="/" element={<PrivateRoute Component={Main} />} />
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/workspace/:slug/settings/:tab"
-                element={<ManagerRoute Component={WorkspaceSettings} />}
-              />
-              <Route
-                path="/workspace/:slug"
-                element={<PrivateRoute Component={WorkspaceChat} />}
-              />
-              <Route
-                path="/workspace/:slug/t/:threadSlug"
-                element={<PrivateRoute Component={WorkspaceChat} />}
-              />
-              <Route path="/accept-invite/:code" element={<InvitePage />} />
+            <I18nextProvider i18n={i18n}>
+              <Routes>
+                <Route path="/" element={<PrivateRoute Component={Main} />} />
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/workspace/:slug/settings/:tab"
+                  element={<ManagerRoute Component={WorkspaceSettings} />}
+                />
+                <Route
+                  path="/workspace/:slug"
+                  element={<PrivateRoute Component={WorkspaceChat} />}
+                />
+                <Route
+                  path="/workspace/:slug/t/:threadSlug"
+                  element={<PrivateRoute Component={WorkspaceChat} />}
+                />
+                <Route path="/accept-invite/:code" element={<InvitePage />} />
 
-              {/* Admin */}
-              <Route
-                path="/settings/llm-preference"
-                element={<AdminRoute Component={GeneralLLMPreference} />}
-              />
-              <Route
-                path="/settings/transcription-preference"
-                element={
-                  <AdminRoute Component={GeneralTranscriptionPreference} />
-                }
-              />
-              <Route
-                path="/settings/audio-preference"
-                element={<AdminRoute Component={GeneralAudioPreference} />}
-              />
-              <Route
-                path="/settings/embedding-preference"
-                element={<AdminRoute Component={GeneralEmbeddingPreference} />}
-              />
-              <Route
-                path="/settings/text-splitter-preference"
-                element={
-                  <AdminRoute Component={EmbeddingTextSplitterPreference} />
-                }
-              />
-              <Route
-                path="/settings/vector-database"
-                element={<AdminRoute Component={GeneralVectorDatabase} />}
-              />
-              <Route
-                path="/settings/agents"
-                element={<AdminRoute Component={AdminAgents} />}
-              />
-              <Route
-                path="/settings/event-logs"
-                element={<AdminRoute Component={AdminLogs} />}
-              />
-              <Route
-                path="/settings/embed-config"
-                element={<AdminRoute Component={EmbedConfigSetup} />}
-              />
-              <Route
-                path="/settings/embed-chats"
-                element={<AdminRoute Component={EmbedChats} />}
-              />
-              {/* Manager */}
-              <Route
-                path="/settings/security"
-                element={<ManagerRoute Component={GeneralSecurity} />}
-              />
-              <Route
-                path="/settings/privacy"
-                element={<AdminRoute Component={PrivacyAndData} />}
-              />
-              <Route
-                path="/settings/appearance"
-                element={<ManagerRoute Component={GeneralAppearance} />}
-              />
-              <Route
-                path="/settings/api-keys"
-                element={<AdminRoute Component={GeneralApiKeys} />}
-              />
-              <Route
-                path="/settings/workspace-chats"
-                element={<ManagerRoute Component={GeneralChats} />}
-              />
-              <Route
-                path="/settings/system-preferences"
-                element={<ManagerRoute Component={AdminSystem} />}
-              />
-              <Route
-                path="/settings/invites"
-                element={<ManagerRoute Component={AdminInvites} />}
-              />
-              <Route
-                path="/settings/users"
-                element={<ManagerRoute Component={AdminUsers} />}
-              />
-              <Route
-                path="/settings/workspaces"
-                element={<ManagerRoute Component={AdminWorkspaces} />}
-              />
-              {/* Onboarding Flow */}
-              <Route path="/onboarding" element={<OnboardingFlow />} />
-              <Route path="/onboarding/:step" element={<OnboardingFlow />} />
-            </Routes>
+                {/* Admin */}
+                <Route
+                  path="/settings/llm-preference"
+                  element={<AdminRoute Component={GeneralLLMPreference} />}
+                />
+                <Route
+                  path="/settings/transcription-preference"
+                  element={
+                    <AdminRoute Component={GeneralTranscriptionPreference} />
+                  }
+                />
+                <Route
+                  path="/settings/audio-preference"
+                  element={<AdminRoute Component={GeneralAudioPreference} />}
+                />
+                <Route
+                  path="/settings/embedding-preference"
+                  element={
+                    <AdminRoute Component={GeneralEmbeddingPreference} />
+                  }
+                />
+                <Route
+                  path="/settings/text-splitter-preference"
+                  element={
+                    <AdminRoute Component={EmbeddingTextSplitterPreference} />
+                  }
+                />
+                <Route
+                  path="/settings/vector-database"
+                  element={<AdminRoute Component={GeneralVectorDatabase} />}
+                />
+                <Route
+                  path="/settings/agents"
+                  element={<AdminRoute Component={AdminAgents} />}
+                />
+                <Route
+                  path="/settings/event-logs"
+                  element={<AdminRoute Component={AdminLogs} />}
+                />
+                <Route
+                  path="/settings/embed-config"
+                  element={<AdminRoute Component={EmbedConfigSetup} />}
+                />
+                <Route
+                  path="/settings/embed-chats"
+                  element={<AdminRoute Component={EmbedChats} />}
+                />
+                {/* Manager */}
+                <Route
+                  path="/settings/security"
+                  element={<ManagerRoute Component={GeneralSecurity} />}
+                />
+                <Route
+                  path="/settings/privacy"
+                  element={<AdminRoute Component={PrivacyAndData} />}
+                />
+                <Route
+                  path="/settings/appearance"
+                  element={<ManagerRoute Component={GeneralAppearance} />}
+                />
+                <Route
+                  path="/settings/api-keys"
+                  element={<AdminRoute Component={GeneralApiKeys} />}
+                />
+                <Route
+                  path="/settings/workspace-chats"
+                  element={<ManagerRoute Component={GeneralChats} />}
+                />
+                <Route
+                  path="/settings/system-preferences"
+                  element={<ManagerRoute Component={AdminSystem} />}
+                />
+                <Route
+                  path="/settings/invites"
+                  element={<ManagerRoute Component={AdminInvites} />}
+                />
+                <Route
+                  path="/settings/users"
+                  element={<ManagerRoute Component={AdminUsers} />}
+                />
+                <Route
+                  path="/settings/workspaces"
+                  element={<ManagerRoute Component={AdminWorkspaces} />}
+                />
+                {/* Onboarding Flow */}
+                <Route path="/onboarding" element={<OnboardingFlow />} />
+                <Route path="/onboarding/:step" element={<OnboardingFlow />} />
+              </Routes>
+            </I18nextProvider>
             <ToastContainer />
           </PfpProvider>
         </LogoProvider>

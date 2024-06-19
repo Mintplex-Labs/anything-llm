@@ -30,6 +30,7 @@ import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { useModal } from "@/hooks/useModal";
 import ModalWrapper from "@/components/ModalWrapper";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next";
 
 const EMBEDDERS = [
   {
@@ -112,6 +113,7 @@ export default function GeneralEmbeddingPreference() {
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const { isOpen, openModal, closeModal } = useModal();
+  const { t } = useTranslation();
 
   function embedderModelChanged(formEl) {
     try {
@@ -223,17 +225,13 @@ export default function GeneralEmbeddingPreference() {
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">
                   <p className="text-lg leading-6 font-bold text-white">
-                    Embedding Preference
+                    {t("embedding.title")}
                   </p>
                 </div>
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-                  When using an LLM that does not natively support an embedding
-                  engine - you may need to additionally specify credentials to
-                  for embedding text.
+                  {t("embedding.desc-start")}
                   <br />
-                  Embedding is the process of turning text into vectors. These
-                  credentials are required to turn your files and prompts into a
-                  format which AnythingLLM can use to process.
+                  {t("embedding.desc-end")}
                 </p>
               </div>
               <div className="w-full justify-end flex">
@@ -242,12 +240,12 @@ export default function GeneralEmbeddingPreference() {
                     onClick={() => handleSubmit()}
                     className="mt-3 mr-0 -mb-14 z-10"
                   >
-                    {saving ? "Saving..." : "Save changes"}
+                    {saving ? t("common.saving") : t("common.save")}
                   </CTAButton>
                 )}
               </div>
               <div className="text-base font-bold text-white mt-6 mb-4">
-                Embedding Provider
+                {t("embedding.provider.title")}
               </div>
               <div className="relative">
                 {searchMenuOpen && (

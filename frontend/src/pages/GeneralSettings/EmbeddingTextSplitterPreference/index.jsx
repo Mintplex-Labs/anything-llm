@@ -6,6 +6,7 @@ import CTAButton from "@/components/lib/CTAButton";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
 import { nFormatter, numberWithCommas } from "@/utils/numbers";
+import { useTranslation } from "react-i18next";
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -17,6 +18,7 @@ export default function EmbeddingTextSplitterPreference() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,25 +88,22 @@ export default function EmbeddingTextSplitterPreference() {
               <div className="w-full flex flex-col gap-y-1 pb-4 border-white border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">
                   <p className="text-lg leading-6 font-bold text-white">
-                    Text splitting & Chunking Preferences
+                    {t("text.title")}
                   </p>
                 </div>
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-                  Sometimes, you may want to change the default way that new
-                  documents are split and chunked before being inserted into
-                  your vector database. <br />
-                  You should only modify this setting if you understand how text
-                  splitting works and it's side effects.
+                  {t("text.desc-start")} <br />
+                  {t("text.desc-end")}
                 </p>
                 <p className="text-xs leading-[18px] font-semibold text-white/80">
-                  Changes here will only apply to{" "}
-                  <i>newly embedded documents</i>, not existing documents.
+                  {t("text.warn-start")} <i>{t("text.warn-center")}</i>
+                  {t("text.warn-end")}
                 </p>
               </div>
               <div className="w-full justify-end flex">
                 {hasChanges && (
                   <CTAButton className="mt-3 mr-0 -mb-14 z-10">
-                    {saving ? "Saving..." : "Save changes"}
+                    {saving ? t("common.saving") : t("common.save")}
                   </CTAButton>
                 )}
               </div>
@@ -113,11 +112,10 @@ export default function EmbeddingTextSplitterPreference() {
                 <div className="flex flex-col max-w-[300px]">
                   <div className="flex flex-col gap-y-2 mb-4">
                     <label className="text-white text-sm font-semibold block">
-                      Text Chunk Size
+                      {t("text.size.title")}
                     </label>
                     <p className="text-xs text-white/60">
-                      This is the maximum length of characters that can be
-                      present in a single vector.
+                      {t("text.size.description")}
                     </p>
                   </div>
                   <input
@@ -137,7 +135,7 @@ export default function EmbeddingTextSplitterPreference() {
                     autoComplete="off"
                   />
                   <p className="text-xs text-white/40">
-                    Embed model maximum length is{" "}
+                    {t("text.size.recommend")}{" "}
                     {numberWithCommas(settings?.max_embed_chunk_size || 1000)}.
                   </p>
                 </div>
@@ -147,11 +145,10 @@ export default function EmbeddingTextSplitterPreference() {
                 <div className="flex flex-col max-w-[300px]">
                   <div className="flex flex-col gap-y-2 mb-4">
                     <label className="text-white text-sm font-semibold block">
-                      Text Chunk Overlap
+                      {t("text.overlap.title")}
                     </label>
                     <p className="text-xs text-white/60">
-                      This is the maximum overlap of characters that occurs
-                      during chunking between two adjacent text chunks.
+                      {t("text.overlap.description")}
                     </p>
                   </div>
                   <input
