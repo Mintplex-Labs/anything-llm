@@ -128,7 +128,7 @@ export default function WorkspaceChats() {
                 <button
                   ref={openMenuButton}
                   onClick={toggleMenu}
-                  className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-[#46C8FF] hover:text-white text-xs font-semibold hover:bg-[#2C2F36] shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                  className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:text-white text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                 >
                   <Download size={18} weight="bold" />
                   Export
@@ -138,7 +138,7 @@ export default function WorkspaceChats() {
                   ref={menuRef}
                   className={`${
                     showMenu ? "slide-down" : "slide-up hidden"
-                  } z-20 w-fit rounded-lg absolute top-full right-0 bg-[#2C2F36] mt-2 shadow-md`}
+                  } z-20 w-fit rounded-lg absolute top-full right-0 bg-secondary mt-2 shadow-md`}
                 >
                   <div className="py-2">
                     {Object.entries(exportOptions).map(([key, data]) => (

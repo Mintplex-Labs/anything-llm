@@ -56,7 +56,7 @@ export default function NewIconForm({ icon, url, onSave, onRemove }) {
     <form onSubmit={handleSubmit} className="flex items-center gap-x-1.5">
       <div className="relative" ref={dropdownRef}>
         <div
-          className="h-[34px] w-[34px] bg-[#1C1E21] rounded-full flex items-center justify-center cursor-pointer"
+          className="h-[34px] w-[34px] bg-dark-highlight rounded-full flex items-center justify-center cursor-pointer"
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
           {React.createElement(ICON_COMPONENTS[selectedIcon] || Plus, {
@@ -70,7 +70,7 @@ export default function NewIconForm({ icon, url, onSave, onRemove }) {
               <button
                 key={iconName}
                 type="button"
-                className="flex justify-center items-center border border-transparent hover:bg-[#1C1E21] hover:border-slate-100 rounded-full p-2"
+                className="flex justify-center items-center border border-transparent hover:bg-dark-highlight hover:border-slate-100 rounded-full p-2"
                 onClick={() => handleIconChange(iconName)}
               >
                 {React.createElement(ICON_COMPONENTS[iconName], {
