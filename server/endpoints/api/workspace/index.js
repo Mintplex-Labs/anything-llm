@@ -17,6 +17,7 @@ const {
   convertToChatHistory,
   writeResponseChunk,
 } = require("../../../utils/helpers/chat/responses");
+const logger = require("../../../utils/logger");
 
 function apiWorkspaceEndpoints(app) {
   if (!app) return;
@@ -79,7 +80,7 @@ function apiWorkspaceEndpoints(app) {
       });
       response.status(200).json({ workspace, message });
     } catch (e) {
-      console.log(e.message, e);
+      logger.error(e.message, { origin: "/v1/workspace/new" });
       response.sendStatus(500).end();
     }
   });
@@ -121,7 +122,7 @@ function apiWorkspaceEndpoints(app) {
       const workspaces = await Workspace.where();
       response.status(200).json({ workspaces });
     } catch (e) {
-      console.log(e.message, e);
+      logger.error(e.message, { origin: "/v1/workspaces" });
       response.sendStatus(500).end();
     }
   });
@@ -170,7 +171,7 @@ function apiWorkspaceEndpoints(app) {
       const workspace = await Workspace.get({ slug });
       response.status(200).json({ workspace });
     } catch (e) {
-      console.log(e.message, e);
+      logger.error(e.message, { origin: "/v1/workspace/:slug" });
       response.sendStatus(500).end();
     }
   });
@@ -221,7 +222,7 @@ function apiWorkspaceEndpoints(app) {
         }
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/workspace/:slug" });
         response.sendStatus(500).end();
       }
     }
@@ -301,7 +302,7 @@ function apiWorkspaceEndpoints(app) {
         );
         response.status(200).json({ workspace, message });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/workspace/:slug/update" });
         response.sendStatus(500).end();
       }
     }
@@ -362,7 +363,7 @@ function apiWorkspaceEndpoints(app) {
         const history = await WorkspaceChats.forWorkspace(workspace.id);
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/workspace/:slug/chats" });
         response.sendStatus(500).end();
       }
     }
@@ -441,7 +442,9 @@ function apiWorkspaceEndpoints(app) {
         });
         response.status(200).json({ workspace: updatedWorkspace });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, {
+          origin: "/v1/workspace/:slug/update-embeddings",
+        });
         response.sendStatus(500).end();
       }
     }
@@ -603,7 +606,7 @@ function apiWorkspaceEndpoints(app) {
         });
         response.status(200).json({ ...result });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/workspace/:slug/chat" });
         response.status(500).json({
           id: uuidv4(),
           type: "abort",
@@ -726,7 +729,7 @@ function apiWorkspaceEndpoints(app) {
         });
         response.end();
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/workspace/:slug/stream-chat" });
         writeResponseChunk(response, {
           id: uuidv4(),
           type: "abort",

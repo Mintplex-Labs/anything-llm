@@ -1,5 +1,6 @@
 const { User } = require("../../../models/user");
 const { multiUserMode } = require("../../../utils/http");
+const logger = require("../../../utils/logger");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 
 function apiUserManagementEndpoints(app) {
@@ -55,7 +56,7 @@ function apiUserManagementEndpoints(app) {
       }));
       response.status(200).json({ users: filteredUsers });
     } catch (e) {
-      console.log(e.message, e);
+      logger.error(e.message, { origin: "/v1/users" });
       response.sendStatus(500).end();
     }
   });

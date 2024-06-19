@@ -8,6 +8,7 @@ const {
 } = require("../../../utils/helpers/chat/convertTo");
 const { dumpENV, updateENV } = require("../../../utils/helpers/updateENV");
 const { reqBody } = require("../../../utils/http");
+const logger = require("../../../utils/logger");
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 
 function apiSystemEndpoints(app) {
@@ -29,7 +30,7 @@ function apiSystemEndpoints(app) {
       await dumpENV();
       response.sendStatus(200).end();
     } catch (e) {
-      console.log(e.message, e);
+      logger.error(e.message, { origin: "/v1/system/env-dump" });
       response.sendStatus(500).end();
     }
   });
@@ -66,7 +67,7 @@ function apiSystemEndpoints(app) {
       const settings = await SystemSettings.currentSettings();
       response.status(200).json({ settings });
     } catch (e) {
-      console.log(e.message, e);
+      logger.error(e.message, { origin: "/v1/system" });
       response.sendStatus(500).end();
     }
   });
@@ -98,7 +99,7 @@ function apiSystemEndpoints(app) {
       const vectorCount = await VectorDb.totalVectors();
       response.status(200).json({ vectorCount });
     } catch (e) {
-      console.log(e.message, e);
+      logger.error(e.message, { origin: "/v1/system/vector-count" });
       response.sendStatus(500).end();
     }
   });
@@ -148,7 +149,7 @@ function apiSystemEndpoints(app) {
         if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/system/update-env" });
         response.sendStatus(500).end();
       }
     }
@@ -202,7 +203,7 @@ function apiSystemEndpoints(app) {
         response.setHeader("Content-Type", contentType);
         response.status(200).send(data);
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/system/export-chats" });
         response.sendStatus(500).end();
       }
     }
@@ -268,7 +269,7 @@ function apiSystemEndpoints(app) {
           .json({ success: true, message: "Documents removed successfully" })
           .end();
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/system/remove-documents" });
         response.sendStatus(500).end();
       }
     }
