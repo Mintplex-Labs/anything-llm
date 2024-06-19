@@ -250,7 +250,7 @@ const TRANSLATIONS = {
       title: "自定义图标",
       description: "上传您的自定义图标，让您的聊天机器人成为您的。",
       add: "添加自定义图标",
-      recommended: "建议尺寸：800 x 200",
+      recommend: "建议尺寸：800 x 200",
       remove: "移除",
       replace: "替换",
     },
