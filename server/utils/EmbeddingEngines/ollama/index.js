@@ -1,5 +1,5 @@
 const { maximumChunkLength } = require("../../helpers");
-const logger = require("../../logging");
+const logger = require("../../logger");
 
 class OllamaEmbedder {
   constructor() {

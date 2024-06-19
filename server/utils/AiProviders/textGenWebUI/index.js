@@ -2,7 +2,7 @@ const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
-const logger = require("../../logging");
+const logger = require("../../logger");
 
 class TextGenWebUILLM {
   constructor(embedder = null) {

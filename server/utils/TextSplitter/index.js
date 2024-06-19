@@ -1,4 +1,4 @@
-const logger = require("../../utils/logging");
+const logger = require("../logger");
 
 function isNullOrNaN(value) {
   if (value === null) return true;

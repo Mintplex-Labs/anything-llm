@@ -3,7 +3,7 @@ const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const { toValidNumber } = require("../../http");
-const logger = require("../../logging");
+const logger = require("../../logger");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {

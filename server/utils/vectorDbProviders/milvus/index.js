@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require("uuid");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
-const logger = require("../../../utils/logging");
+const logger = require("../../logger");
 
 const Milvus = {
   name: "Milvus",

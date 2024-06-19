@@ -5,7 +5,7 @@ const { SystemSettings } = require("../../../models/systemSettings");
 const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
-const logger = require("../../../utils/logging");
+const logger = require("../../logger");
 
 const LanceDb = {
   uri: `${

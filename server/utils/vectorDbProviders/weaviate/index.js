@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { camelCase } = require("../../helpers/camelcase");
 const { sourceIdentifier } = require("../../chats");
-const logger = require("../../../utils/logging");
+const logger = require("../../logger");
 
 const Weaviate = {
   name: "Weaviate",

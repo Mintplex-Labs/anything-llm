@@ -4,7 +4,7 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
-const logger = require("../../logging");
+const logger = require("../../logger");
 
 class AnthropicLLM {
   constructor(embedder = null, modelPreference = null) {

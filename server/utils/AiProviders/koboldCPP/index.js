@@ -4,7 +4,7 @@ const {
   writeResponseChunk,
 } = require("../../helpers/chat/responses");
 const { v4: uuidv4 } = require("uuid");
-const logger = require("../../logging");
+const logger = require("../../logger");
 
 class KoboldCPPLLM {
   constructor(embedder = null, modelPreference = null) {

@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const { toChunks } = require("../../helpers");
 const { v4 } = require("uuid");
-const logger = require("../../logging");
+const logger = require("../../logger");
 
 class NativeEmbedder {
   // This is a folder that Mintplex Labs hosts for those who cannot capture the HF model download
