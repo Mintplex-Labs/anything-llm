@@ -5,6 +5,8 @@ import { memo, useEffect, useState } from "react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { Eye, PushPin } from "@phosphor-icons/react";
 import { SEEN_DOC_PIN_ALERT, SEEN_WATCH_ALERT } from "@/utils/constants";
+import paths from "@/utils/paths";
+import { Link } from "react-router-dom";
 
 function WorkspaceDirectory({
   workspace,
@@ -226,12 +228,19 @@ const DocumentWatchAlert = memo(() => {
               content in every workspace where this file is managed.
             </p>
             <p>
-              This currently is supported for online content and will not apply
-              to locally or uploaded documents.
+              This feature currently supports online-based content and will not
+              be available for manually uploaded documents.
             </p>
             <p>
               You can manage what documents are watched and force-refresh
-              documents from the <b>File manager</b> admin view.
+              documents from the{" "}
+              <Link
+                to={paths.experimental.liveDocumentSync.manage()}
+                className="text-blue-600 underline"
+              >
+                File manager
+              </Link>{" "}
+              admin view.
             </p>
           </div>
 

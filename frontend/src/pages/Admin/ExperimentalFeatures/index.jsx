@@ -111,12 +111,13 @@ function FeatureVerification({ children }) {
                       limited to, the following possibilities.
                     </p>
                     <ul className="list-disc ml-6 text-sm font-mono">
-                      <li>Loss of data specific to feature.</li>
+                      <li>Loss of data.</li>
                       <li>Change in quality of results.</li>
                       <li>Increased storage.</li>
+                      <li>Increased resource consumption.</li>
                       <li>
-                        Increased cost of any connected cloud LLM or embedding
-                        provider if defined.
+                        Increased cost or use of any connected LLM or embedding
+                        provider.
                       </li>
                       <li>Potential bugs or issues using AnythingLLM.</li>
                     </ul>
