@@ -38,7 +38,35 @@ async function resyncYouTube({ link }, response) {
   }
 }
 
+/**
+ * Fetches the content of a specific confluence page via its chunkSource. 
+ * Returns the content as a text string of the page in question and only that page.
+ */
+async function resyncConfluence({ chunkSource }, response) {
+  if (!chunkSource) throw new Error('Invalid source property provided');
+  try {
+    const source = new URL(chunkSource);
+    const { fetchConfluencePage } = require("../../utils/extensions/Confluence");
+    const { success, reason, content } = await fetchConfluencePage({
+      pageUrl: `https:${source.pathname}`, // need to add back the real protocol
+      baseUrl: source.searchParams.get('baseUrl'),
+      accessToken: source.searchParams.get('token'),
+      username: source.searchParams.get('username'),
+    });
+
+    if (!success) throw new Error(`Failed to get Confluence page content. ${reason}`);
+    response.status(200).json({ success, content });
+  } catch (e) {
+    console.error(e);
+    response.status(200).json({
+      success: false,
+      content: null,
+    });
+  }
+}
+
 module.exports = {
-  resyncLink,
-  resyncYouTube
+  link: resyncLink,
+  youtube: resyncYouTube,
+  confluence: resyncConfluence
 }

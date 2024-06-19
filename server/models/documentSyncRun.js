@@ -54,11 +54,12 @@ const DocumentSyncRun = {
     }
   },
 
-  count: async function (clause = {}, limit = null) {
+  count: async function (clause = {}, limit = null, orderBy = {}) {
     try {
       const count = await prisma.document_sync_executions.count({
         where: clause,
         ...(limit !== null ? { take: limit } : {}),
+        ...(orderBy !== null ? { orderBy } : {}),
       });
       return count;
     } catch (error) {
