@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const prisma = require("../utils/prisma");
 
 const EventLogs = {
@@ -11,13 +12,10 @@ const EventLogs = {
           occurredAt: new Date(),
         },
       });
-      console.log(`\x1b[32m[Event Logged]\x1b[0m - ${event}`);
+      logger.info(`[Event Logged] - ${event}`, { origin: "EventLogs" });
       return { eventLog, message: null };
     } catch (error) {
-      console.error(
-        `\x1b[31m[Event Logging Failed]\x1b[0m - ${event}`,
-        error.message
-      );
+      logger.error(error.message, { origin: "EventLogs" });
       return { eventLog: null, message: error.message };
     }
   },

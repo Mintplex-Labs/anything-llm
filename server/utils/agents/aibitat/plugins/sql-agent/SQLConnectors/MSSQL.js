@@ -1,5 +1,6 @@
 const mssql = require("mssql");
 const UrlPattern = require("url-pattern");
+const logger = require("../../../../../logger");
 
 class MSSQLConnector {
   #connected = false;
@@ -69,7 +70,7 @@ class MSSQLConnector {
       result.rows = query.recordset;
       result.count = query.rowsAffected.reduce((sum, a) => sum + a, 0);
     } catch (err) {
-      console.log(this.constructor.name, err);
+      logger.error(err.message, { origin: "MSSQLConnector.runQuery" });
       result.error = err.message;
     } finally {
       await this._client.close();

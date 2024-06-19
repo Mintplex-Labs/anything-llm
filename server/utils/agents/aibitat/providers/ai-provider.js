@@ -14,6 +14,7 @@ const { ChatOpenAI } = require("@langchain/openai");
 const { ChatAnthropic } = require("@langchain/anthropic");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber } = require("../../../http");
+const logger = require("../../../logger");
 
 const DEFAULT_WORKSPACE_PROMPT =
   "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
@@ -28,10 +29,9 @@ class Provider {
   }
 
   providerLog(text, ...args) {
-    console.log(
-      `\x1b[36m[AgentLLM${this?.model ? ` - ${this.model}` : ""}]\x1b[0m ${text}`,
-      ...args
-    );
+    logger.info(`${this?.model ? ` - ${this.model}` : ""} ${text} ${args}`, {
+      origin: "AgentLLM",
+    });
   }
 
   get client() {

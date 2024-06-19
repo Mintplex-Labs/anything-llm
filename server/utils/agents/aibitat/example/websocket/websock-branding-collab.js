@@ -3,7 +3,6 @@
 // Scraping is enabled, but search requires AGENT_GSE_* keys.
 
 const express = require("express");
-const chalk = require("chalk");
 const AIbitat = require("../../index.js");
 const {
   websocket,
@@ -11,6 +10,7 @@ const {
   webScraping,
 } = require("../../plugins/index.js");
 const path = require("path");
+const logger = require("../../../../logger/index.js");
 const port = 3000;
 const app = express();
 require("express-ws")(app);
@@ -31,11 +31,13 @@ app.ws("/ws", function (ws, _response) {
     });
 
     ws.on("close", function () {
-      console.log("Socket killed");
+      logger.info("Socket killed", { origin: "websock-branding-collab.js" });
       return;
     });
 
-    console.log("Socket online and waiting...");
+    logger.info("Socket online and waiting...", {
+      origin: "websock-branding-collab.js",
+    });
     runAIbitat(ws).catch((error) => {
       ws.send(
         JSON.stringify({
@@ -53,11 +55,15 @@ app.all("*", function (_, response) {
 });
 
 app.listen(port, () => {
-  console.log(`Testing HTTP/WSS server listening at http://localhost:${port}`);
+  logger.info(`Testing HTTP/WSS server listening at http://localhost:${port}`, {
+    origin: "websock-branding-collab.js",
+  });
 });
 
 async function runAIbitat(socket) {
-  console.log(chalk.blue("Booting AIbitat class & starting agent(s)"));
+  logger.info("Booting AIbitat class & starting agent(s)", {
+    origin: "websock-branding-collab.js",
+  });
 
   const aibitat = new AIbitat({
     provider: "openai",
@@ -68,19 +74,19 @@ async function runAIbitat(socket) {
     .use(webScraping.plugin())
     .agent("creativeDirector", {
       role: `You are a Creative Director. Your role is overseeing the entire branding project, ensuring
-       the client's brief is met, and maintaining consistency across all brand elements, developing the 
+       the client's brief is met, and maintaining consistency across all brand elements, developing the
        brand strategy, guiding the visual and conceptual direction, and providing overall creative leadership.`,
     })
     .agent("marketResearcher", {
-      role: `You do competitive market analysis via searching on the internet and learning about 
-      comparative products and services. You can search by using keywords and phrases that you think will lead 
+      role: `You do competitive market analysis via searching on the internet and learning about
+      comparative products and services. You can search by using keywords and phrases that you think will lead
       to competitor research that can help find the unique angle and market of the idea.`,
       functions: ["web-browsing"],
     })
     .agent("PM", {
-      role: `You are the Project Coordinator. Your role is overseeing the project's progress, timeline, 
-      and budget. Ensure effective communication and coordination among team members, client, and stakeholders. 
-      Your tasks include planning and scheduling project milestones, tracking tasks, and managing any 
+      role: `You are the Project Coordinator. Your role is overseeing the project's progress, timeline,
+      and budget. Ensure effective communication and coordination among team members, client, and stakeholders.
+      Your tasks include planning and scheduling project milestones, tracking tasks, and managing any
       risks or issues that arise.`,
       interrupt: "ALWAYS",
     })
@@ -93,8 +99,8 @@ async function runAIbitat(socket) {
   await aibitat.start({
     from: "PM",
     to: "<b>#branding</b>",
-    content: `I have an idea for a muslim focused meetup called Chai & Vibes. 
-    I want to focus on professionals that are muslim and are in their 18-30 year old range who live in big cities. 
+    content: `I have an idea for a muslim focused meetup called Chai & Vibes.
+    I want to focus on professionals that are muslim and are in their 18-30 year old range who live in big cities.
     Does anything like this exist? How can we differentiate?`,
   });
 }

@@ -7,6 +7,7 @@ const {
   writeResponseChunk,
 } = require("../helpers/chat/responses");
 const { DocumentManager } = require("../DocumentManager");
+const logger = require("../logger");
 
 async function streamChatWithForEmbed(
   response,
@@ -165,8 +166,11 @@ async function streamChatWithForEmbed(
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
-    console.log(
-      `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
+    logger.info(
+      `Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`,
+      {
+        origin: "streamChatWithForEmbed",
+      }
     );
     completeText = await LLMConnector.getChatCompletion(messages, {
       temperature: embed.workspace?.openAiTemp ?? LLMConnector.defaultTemp,

@@ -6,6 +6,7 @@ const {
 const { WorkspaceChats } = require("../../models/workspaceChats");
 const { safeJsonParse } = require("../http");
 const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
+const logger = require("../logger");
 
 class AgentHandler {
   #invocationUUID;
@@ -21,11 +22,13 @@ class AgentHandler {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[AgentHandler]\x1b[0m ${text}`, ...args);
+    logger.info(text, { origin: "AgentHandler", ...args });
   }
 
   closeAlert() {
-    this.log(`End ${this.#invocationUUID}::${this.provider}:${this.model}`);
+    logger.info(`End ${this.#invocationUUID}::${this.provider}:${this.model}`, {
+      origin: "AgentHandler",
+    });
   }
 
   async #chatHistory(limit = 10) {
@@ -62,7 +65,7 @@ class AgentHandler {
       });
       return agentHistory;
     } catch (e) {
-      this.log("Error loading chat history", e.message);
+      logger.error(e.message, { origin: "AgentHandler#chatHistory" });
       return [];
     }
   }
@@ -186,7 +189,12 @@ class AgentHandler {
     this.provider = this.invocation.workspace.agentProvider || "openai";
     this.model =
       this.invocation.workspace.agentModel || this.#providerDefault();
-    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
+    logger.info(
+      `Start ${this.#invocationUUID}::${this.provider}:${this.model}`,
+      {
+        origin: "AgentHandler#providerSetupAndCheck",
+      }
+    );
     this.#checkSetup();
   }
 
@@ -206,8 +214,9 @@ class AgentHandler {
         definition.required &&
         (!args.hasOwnProperty(param) || args[param] === null)
       ) {
-        this.log(
-          `'${param}' required parameter for '${pluginName}' plugin is missing. Plugin may not function or crash agent.`
+        logger.info(
+          `'${param}' required parameter for '${pluginName}' plugin is missing. Plugin may not function or crash agent.`,
+          { origin: "AgentHandler#parseCallOptions" }
         );
         continue;
       }
@@ -224,8 +233,9 @@ class AgentHandler {
       if (name.includes("#")) {
         const [parent, childPluginName] = name.split("#");
         if (!AgentPlugins.hasOwnProperty(parent)) {
-          this.log(
-            `${parent} is not a valid plugin. Skipping inclusion to agent cluster.`
+          logger.info(
+            `${parent} is not a valid plugin. Skipping inclusion to agent cluster.`,
+            { origin: "AgentHandler#attachPlugins" }
           );
           continue;
         }
@@ -234,8 +244,9 @@ class AgentHandler {
           (child) => child.name === childPluginName
         );
         if (!childPlugin) {
-          this.log(
-            `${parent} does not have child plugin named ${childPluginName}. Skipping inclusion to agent cluster.`
+          logger.info(
+            `${parent} does not have child plugin named ${childPluginName}. Skipping inclusion to agent cluster.`,
+            { origin: "AgentHandler#attachPlugins" }
           );
           continue;
         }
@@ -246,16 +257,18 @@ class AgentHandler {
           name
         );
         this.aibitat.use(childPlugin.plugin(callOpts));
-        this.log(
-          `Attached ${parent}:${childPluginName} plugin to Agent cluster`
+        logger.info(
+          `Attached ${parent}:${childPluginName} plugin to Agent cluster`,
+          { origin: "AgentHandler#attachPlugins" }
         );
         continue;
       }
 
       // Load single-stage plugin.
       if (!AgentPlugins.hasOwnProperty(name)) {
-        this.log(
-          `${name} is not a valid plugin. Skipping inclusion to agent cluster.`
+        logger.info(
+          `${name} is not a valid plugin. Skipping inclusion to agent cluster.`,
+          { origin: "AgentHandler#attachPlugins" }
         );
         continue;
       }
@@ -266,13 +279,17 @@ class AgentHandler {
       );
       const AIbitatPlugin = AgentPlugins[name];
       this.aibitat.use(AIbitatPlugin.plugin(callOpts));
-      this.log(`Attached ${name} plugin to Agent cluster`);
+      logger.info(`Attached ${name} plugin to Agent cluster`, {
+        origin: "AgentHandler#attachPlugins",
+      });
     }
   }
 
   async #loadAgents() {
     // Default User agent and workspace agent
-    this.log(`Attaching user and default agent to Agent cluster.`);
+    logger.info(`Attaching user and default agent to Agent cluster.`, {
+      origin: "AgentHandler#loadAgents",
+    });
     this.aibitat.agent(USER_AGENT.name, await USER_AGENT.getDefinition());
     this.aibitat.agent(
       WORKSPACE_AGENT.name,
@@ -307,7 +324,12 @@ class AgentHandler {
     });
 
     // Attach standard websocket plugin for frontend communication.
-    this.log(`Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`);
+    logger.info(
+      `Attached ${AgentPlugins.websocket.name} plugin to Agent cluster`,
+      {
+        origin: "AgentHandler#createAIbitat",
+      }
+    );
     this.aibitat.use(
       AgentPlugins.websocket.plugin({
         socket: args.socket,
@@ -317,8 +339,11 @@ class AgentHandler {
     );
 
     // Attach standard chat-history plugin for message storage.
-    this.log(
-      `Attached ${AgentPlugins.chatHistory.name} plugin to Agent cluster`
+    logger.info(
+      `Attached ${AgentPlugins.chatHistory.name} plugin to Agent cluster`,
+      {
+        origin: "AgentHandler#createAIbitat",
+      }
     );
     this.aibitat.use(AgentPlugins.chatHistory.plugin());
 

@@ -3,7 +3,6 @@
 // Scraping is enabled, but search requires AGENT_GSE_* keys.
 
 const express = require("express");
-const chalk = require("chalk");
 const AIbitat = require("../../index.js");
 const {
   websocket,
@@ -11,6 +10,7 @@ const {
   webScraping,
 } = require("../../plugins/index.js");
 const path = require("path");
+const logger = require("../../../../logger/index.js");
 const port = 3000;
 const app = express();
 require("express-ws")(app);
@@ -31,11 +31,13 @@ app.ws("/ws", function (ws, _response) {
     });
 
     ws.on("close", function () {
-      console.log("Socket killed");
+      logger.info("Socket killed", { origin: "websock-multi-turn-chat.js" });
       return;
     });
 
-    console.log("Socket online and waiting...");
+    logger.info("Socket online and waiting...", {
+      origin: "websock-multi-turn-chat.js",
+    });
     runAIbitat(ws).catch((error) => {
       ws.send(
         JSON.stringify({
@@ -53,7 +55,9 @@ app.all("*", function (_, response) {
 });
 
 app.listen(port, () => {
-  console.log(`Testing HTTP/WSS server listening at http://localhost:${port}`);
+  logger.info(`Testing HTTP/WSS server listening at http://localhost:${port}`, {
+    origin: "websock-multi-turn-chat.js",
+  });
 });
 
 const Agent = {
@@ -66,7 +70,9 @@ async function runAIbitat(socket) {
     throw new Error(
       "This example requires a valid OPEN_AI_KEY in the env.development file"
     );
-  console.log(chalk.blue("Booting AIbitat class & starting agent(s)"));
+  logger.info("Booting AIbitat class & starting agent(s)", {
+    origin: "websock-multi-turn-chat.js",
+  });
   const aibitat = new AIbitat({
     provider: "openai",
     model: "gpt-4o",

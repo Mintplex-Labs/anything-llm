@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const logger = require("../logger");
 const keyPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/comkey`)
@@ -30,7 +31,7 @@ class CommunicationKey {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[CommunicationKey]\x1b[0m ${text}`, ...args);
+    logger.info(`${text} ${args}`, { origin: "CommunicationKey" });
   }
 
   #readPrivateKey() {

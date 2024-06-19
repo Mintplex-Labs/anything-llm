@@ -1,5 +1,6 @@
 const { v4 } = require("uuid");
 const { SystemSettings } = require("./systemSettings");
+const logger = require("../utils/logger");
 
 const Telemetry = {
   // Write-only key. It can't read events or any of your other data, so it's safe to use in public apps.
@@ -49,11 +50,10 @@ const Telemetry = {
       // Silence some events to keep logs from being too messy in production
       // eg: Tool calls from agents spamming the logs.
       if (!silent) {
-        console.log(`\x1b[32m[TELEMETRY SENT]\x1b[0m`, {
-          event,
-          distinctId,
-          properties,
-        });
+        logger.info(
+          `${event} - ${distinctId} - ${JSON.stringify(properties)}`,
+          { origin: "Telemetry" }
+        );
       }
 
       client.capture({

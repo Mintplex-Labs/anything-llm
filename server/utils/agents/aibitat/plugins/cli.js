@@ -2,6 +2,7 @@
 const { input } = require("@inquirer/prompts");
 const chalk = require("chalk");
 const { RetryError } = require("../error");
+const logger = require("../../../logger");
 
 /**
  * Command-line Interface plugin. It prints the messages on the console and asks for feedback
@@ -19,9 +20,13 @@ const cli = {
         let printing = [];
 
         aibitat.onError(async (error) => {
-          console.error(chalk.red(`   error: ${error?.message}`));
+          logger.error(chalk.red(`   error: ${error?.message}`), {
+            origin: "cli.js",
+          });
           if (error instanceof RetryError) {
-            console.error(chalk.red(`   retrying in 60 seconds...`));
+            logger.error(chalk.red(`   retrying in 60 seconds...`), {
+              origin: "cli.js",
+            });
             setTimeout(() => {
               aibitat.retry();
             }, 60000);
@@ -30,8 +35,7 @@ const cli = {
         });
 
         aibitat.onStart(() => {
-          console.log();
-          console.log("🚀 starting chat ...\n");
+          logger.info("🚀 starting chat ...\n", { origin: "cli.js" });
           printing = [Promise.resolve()];
         });
 
@@ -46,17 +50,17 @@ const cli = {
 
         aibitat.onTerminate(async () => {
           await Promise.all(printing);
-          console.log("🚀 chat finished");
+          logger.info("🚀 chat finished", { origin: "cli.js" });
         });
 
         aibitat.onInterrupt(async (node) => {
           await Promise.all(printing);
           const feedback = await this.askForFeedback(node);
           // Add an extra line after the message
-          console.log();
+          logger.info("", { origin: "cli.js" });
 
           if (feedback === "exit") {
-            console.log("🚀 chat finished");
+            logger.info("🚀 chat finished", { origin: "cli.js" });
             return process.exit(0);
           }
 
@@ -80,10 +84,10 @@ const cli = {
         )} ${replying}:`;
 
         if (!simulateStream) {
-          console.log(reference);
-          console.log(message.content);
+          logger.info(reference, { origin: "cli.js" });
+          logger.info(message.content, { origin: "cli.js" });
           // Add an extra line after the message
-          console.log();
+          logger.info("", { origin: "cli.js" });
           return;
         }
 
@@ -114,8 +118,8 @@ const cli = {
         }
 
         // Add an extra line after the message
-        console.log();
-        console.log();
+        logger.info("", { origin: "cli.js" });
+        logger.info("", { origin: "cli.js" });
       },
 
       /**
