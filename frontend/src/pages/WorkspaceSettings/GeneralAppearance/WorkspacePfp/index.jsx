@@ -2,10 +2,11 @@ import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import { Plus } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function WorkspacePfp({ workspace, slug }) {
   const [pfp, setPfp] = useState(null);
-
+  const { t } = useTranslation();
   useEffect(() => {
     async function fetchWorkspace() {
       const pfpUrl = await Workspace.fetchPfp(slug);
@@ -47,9 +48,9 @@ export default function WorkspacePfp({ workspace, slug }) {
   return (
     <div className="mt-6">
       <div className="flex flex-col">
-        <label className="block input-label">Assistant Profile Image</label>
+        <label className="block input-label">{t("general.pfp.title")}</label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          Customize the profile image of the assistant for this workspace.
+          {t("general.pfp.description")}
         </p>
       </div>
       <div className="flex flex-col md:flex-row items-center gap-8">
@@ -72,7 +73,7 @@ export default function WorkspacePfp({ workspace, slug }) {
               <div className="flex flex-col items-center justify-center p-3">
                 <Plus className="w-8 h-8 text-white/80 m-2" />
                 <span className="text-white text-opacity-80 text-xs font-semibold">
-                  Workspace Image
+                  {t("general.pfp.image")}
                 </span>
                 <span className="text-white text-opacity-60 text-xs">
                   800 x 800
@@ -86,7 +87,7 @@ export default function WorkspacePfp({ workspace, slug }) {
               onClick={handleRemovePfp}
               className="mt-3 text-white text-opacity-60 text-sm font-medium hover:underline"
             >
-              Remove Workspace Image
+              {t("general.pfp.remove")}
             </button>
           )}
         </div>

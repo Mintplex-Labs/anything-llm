@@ -1,16 +1,19 @@
 import { chatQueryRefusalResponse } from "@/utils/chat";
-
+import { useTranslation } from "react-i18next";
 export default function ChatQueryRefusalResponse({ workspace, setHasChanges }) {
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Query mode refusal response
+          {t("chat.refusal.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          When in <code className="bg-zinc-900 p-0.5 rounded-sm">query</code>{" "}
-          mode, you may want to return a custom refusal response when no context
-          is found.
+          {t("chat.refusal.desc-start")}{" "}
+          <code className="bg-zinc-900 p-0.5 rounded-sm">
+            {t("chat.refusal.query")}
+          </code>{" "}
+          {t("chat.refusal.desc-end")}
         </p>
       </div>
       <textarea
