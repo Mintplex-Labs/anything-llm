@@ -74,8 +74,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-         images: |
-            ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
+         images: mintplexlabs/anythingllm
           tags: |
             type=raw,value=beta.live-document-sync
           # images: |
