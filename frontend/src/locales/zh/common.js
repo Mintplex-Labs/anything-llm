@@ -41,7 +41,7 @@ const TRANSLATIONS = {
       "placeholder-username": "请输入用户名",
       "placeholder-password": "请输入密码",
       login: "登录",
-      Validating: "登录",
+      validating: "登录",
       "forgot-pass": "忘记密码",
       reset: "重置",
     },
