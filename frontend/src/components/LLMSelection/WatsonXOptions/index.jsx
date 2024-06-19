@@ -1,4 +1,4 @@
-export default function AzureAiOptions({ settings }) {
+export default function WatsonXOptions({ settings }) {
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4">
@@ -8,7 +8,7 @@ export default function AzureAiOptions({ settings }) {
           </label>
           <input
             type="url"
-            name="AzureOpenAiEndpoint"
+            name="WatsonXEndpoint"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="https://my-azure.openai.azure.com"
             defaultValue={settings?.AzureOpenAiEndpoint}
@@ -26,7 +26,7 @@ export default function AzureAiOptions({ settings }) {
             type="password"
             name="AzureOpenAiKey"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="Azure OpenAI API Key"
+            placeholder="IBM watsonx.ai API Key"
             defaultValue={settings?.AzureOpenAiKey ? "*".repeat(20) : ""}
             required={true}
             autoComplete="off"
