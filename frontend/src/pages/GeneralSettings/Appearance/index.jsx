@@ -6,6 +6,7 @@ import CustomLogo from "./CustomLogo";
 import CustomMessages from "./CustomMessages";
 import { useTranslation } from "react-i18next";
 import CustomAppName from "./CustomAppName";
+import LanguagePreference from "./LanguagePreference";
 
 export default function Appearance() {
   const { t } = useTranslation();
@@ -27,6 +28,7 @@ export default function Appearance() {
               {t("appearance.description")}
             </p>
           </div>
+          <LanguagePreference />
           <CustomLogo />
           <CustomAppName />
           <CustomMessages />

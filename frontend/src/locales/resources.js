@@ -16,9 +16,11 @@ import Mandarin from "./zh/common.js";
 export const defaultNS = "common";
 export const resources = {
   en: {
+    name: "English",
     common: English,
   },
   zh: {
+    name: "Mandarin",
     common: Mandarin,
   },
 };

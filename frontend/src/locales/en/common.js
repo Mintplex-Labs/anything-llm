@@ -264,7 +264,7 @@ const TRANSLATIONS = {
       title: "Customize Logo",
       description: "Upload your custom logo to make your chatbot yours.",
       add: "Add a custom logo",
-      recommend: "Recommended size: 800 x 200",
+      recommended: "Recommended size: 800 x 200",
       remove: "Remove",
       replace: "Replace",
     },
