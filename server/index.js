@@ -22,6 +22,7 @@ const { bootHTTP, bootSSL } = require("./utils/boot");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const { documentEndpoints } = require("./endpoints/document");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
+const logger = require("./utils/logger");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -104,7 +105,7 @@ if (process.env.NODE_ENV !== "development") {
       }
       return;
     } catch (e) {
-      console.log(e.message, e);
+      logger.error(e.message, { origin: "/v/:command" });
       response.sendStatus(500).end();
     }
   });
