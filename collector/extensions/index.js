@@ -1,9 +1,30 @@
 const { verifyPayloadIntegrity } = require("../middleware/verifyIntegrity");
 const { reqBody } = require("../utils/http");
 const { validURL } = require("../utils/url");
+const RESYNC_METHODS = require("./resync");
 
 function extensions(app) {
   if (!app) return;
+
+  app.post(
+    "/ext/resync-source-document",
+    [verifyPayloadIntegrity],
+    async function (request, response) {
+      try {
+        const { type, options } = reqBody(request);
+        if (!RESYNC_METHODS.hasOwnProperty(type)) throw new Error(`Type "${type}" is not a valid type to sync.`);
+        return await RESYNC_METHODS[type](options, response);
+      } catch (e) {
+        console.error(e);
+        response.status(200).json({
+          success: false,
+          content: null,
+          reason: e.message || "A processing error occurred.",
+        });
+      }
+      return;
+    }
+  )
 
   app.post(
     "/ext/github-repo",
@@ -67,7 +88,7 @@ function extensions(app) {
     [verifyPayloadIntegrity],
     async function (request, response) {
       try {
-        const loadYouTubeTranscript = require("../utils/extensions/YoutubeTranscript");
+        const { loadYouTubeTranscript } = require("../utils/extensions/YoutubeTranscript");
         const { success, reason, data } = await loadYouTubeTranscript(
           reqBody(request)
         );
@@ -111,7 +132,7 @@ function extensions(app) {
     [verifyPayloadIntegrity],
     async function (request, response) {
       try {
-        const loadConfluence = require("../utils/extensions/Confluence");
+        const { loadConfluence } = require("../utils/extensions/Confluence");
         const { success, reason, data } = await loadConfluence(
           reqBody(request)
         );

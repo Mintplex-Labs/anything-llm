@@ -4,11 +4,9 @@ const prisma = require("../utils/prisma");
 const { Telemetry } = require("./telemetry");
 const { EventLogs } = require("./eventLogs");
 const { safeJsonParse } = require("../utils/http");
-const { DocumentSyncQueue } = require("./documentSyncQueue.js");
 
 const Document = {
   writable: ["pinned", "watched", "lastUpdatedAt"],
-
   /**
    * @param {import("@prisma/client").workspace_documents} document - Document PrismaRecord
    * @returns {{
@@ -27,7 +25,7 @@ const Document = {
       metadata.chunkSource.slice(0, idx),
       metadata.chunkSource.slice(idx + 3),
     ];
-    return { metadata, type, source };
+    return { metadata, type, source: this._stripSource(source, type) };
   },
 
   forWorkspace: async function (workspaceId = null) {
@@ -256,6 +254,17 @@ const Document = {
     const { fileData } = require("../utils/files");
     const data = await fileData(docPath);
     return { title: data.title, content: data.pageContent };
+  },
+
+  // Some data sources have encoded params in them we don't want to log - so strip those details.
+  _stripSource: function (sourceString, type) {
+    if (type === "confluence") {
+      const _src = new URL(sourceString);
+      _src.search = ""; // remove all search params that are encoded for resync.
+      return _src.toString();
+    }
+
+    return sourceString;
   },
 };
 

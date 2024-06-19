@@ -4,6 +4,7 @@ const { CollectorApi } = require('../utils/collectorApi');
 const { fileData } = require("../utils/files");
 const { log, conclude, updateSourceDocument } = require('./helpers/index.js');
 const { getVectorDbClass } = require('../utils/helpers/index.js');
+const { DocumentSyncRun } = require('../models/documentSyncRun.js');
 
 (async () => {
   try {
@@ -34,12 +35,51 @@ const { getVectorDbClass } = require('../utils/helpers/index.js');
       }
 
       if (type === 'link') {
-        const response = await collector.getLinkContent(source);
+        const response = await collector.forwardExtensionRequest({
+          endpoint: "/ext/resync-source-document",
+          method: "POST",
+          body: JSON.stringify({
+            type,
+            options: { link: source }
+          })
+        });
+        newContent = response?.content;
+      }
+
+      if (type === 'youtube') {
+        const response = await collector.forwardExtensionRequest({
+          endpoint: "/ext/resync-source-document",
+          method: "POST",
+          body: JSON.stringify({
+            type,
+            options: { link: source }
+          })
+        });
+        newContent = response?.content;
+      }
+
+      if (type === 'confluence') {
+        const response = await collector.forwardExtensionRequest({
+          endpoint: "/ext/resync-source-document",
+          method: "POST",
+          body: JSON.stringify({
+            type,
+            options: { chunkSource: metadata.chunkSource }
+          })
+        });
         newContent = response?.content;
       }
 
       if (!newContent) {
-        log(`Failed to get a new content response from collector for source ${source}. Skipping, but will retry next worker interval.`);
+        // Check if the last "x" runs were all failures (not exits!). If so - remove the job entirely since it is broken.
+        const failedRunCount = (await DocumentSyncRun.where({ queueId: queue.id }, DocumentSyncQueue.maxRepeatFailures, { createdAt: 'desc' })).filter((run) => run.status === 'failed').length;
+        if (failedRunCount >= DocumentSyncQueue.maxRepeatFailures) {
+          log(`Document ${document.filename} has failed to refresh ${failedRunCount} times continuously and will now be removed from the watched document set.`)
+          await DocumentSyncQueue.unwatch(document);
+          continue;
+        }
+
+        log(`Failed to get a new content response from collector for source ${source}. Skipping, but will retry next worker interval. Attempt ${failedRunCount === 0 ? 1 : failedRunCount}/${DocumentSyncQueue.maxRepeatFailures}`);
         await DocumentSyncQueue.saveRun(queue.id, 'failed', { filename: document.filename, workspacesModified: [], reason: 'No content found.' })
         continue;
       }
