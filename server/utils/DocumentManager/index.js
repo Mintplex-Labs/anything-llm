@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const logger = require("../logger");
 
 const documentsPath =
   process.env.NODE_ENV === "development"
@@ -14,7 +15,7 @@ class DocumentManager {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[DocumentManager]\x1b[0m ${text}`, ...args);
+    logger.info(`${text} ${args}`, { origin: "DocumentManager" });
   }
 
   async pinnedDocuments() {

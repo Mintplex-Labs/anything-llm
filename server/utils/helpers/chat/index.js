@@ -1,5 +1,6 @@
 const { sourceIdentifier } = require("../../chats");
 const { safeJsonParse } = require("../../http");
+const logger = require("../../logger");
 const { TokenManager } = require("../tiktoken");
 const { convertToPromptHistory } = require("./responses");
 
@@ -21,7 +22,7 @@ You may think: "Doesn't this result in massive data loss?" - yes & no.
 Under the use cases we expect the tool to be used, which is mostly chatting with documents, we are able to use this approach with minimal blowback
 on the quality of responses.
 
-We accomplish this by taking a rate-limit approach that is proportional to the model capacity. Since we support more than openAI models, this needs to 
+We accomplish this by taking a rate-limit approach that is proportional to the model capacity. Since we support more than openAI models, this needs to
 be generic and reliance on a "better summary" model just is not a luxury we can afford. The added latency overhead during prompting is also unacceptable.
 In general:
   system: at best 15% of token capacity
@@ -37,7 +38,7 @@ we handle overflows by taking an aggressive path for two main cases.
 2. Context window is exceeded in regular use.
 - We do not touch prompt since it is very likely to be <70% of window.
 - We check system prompt is not outrageous - if it is we cannonball it and keep context if present.
-- We check a sliding window of history, only allowing up to 15% of the history to pass through if it fits, with a 
+- We check a sliding window of history, only allowing up to 15% of the history to pass through if it fits, with a
 preference for recent history if we can cannonball to fit it, otherwise it is omitted.
 
 We end up with a rather large prompt that fits through a given window with a lot of room for response in most use-cases.
@@ -337,10 +338,11 @@ function cannonball({
     truncText +
     tokenManager.bytesFromTokens(rightChunks);
 
-  console.log(
+  logger.info(
     `Cannonball results ${initialInputSize} -> ${tokenManager.countFromString(
       truncatedText
-    )} tokens.`
+    )} tokens.`,
+    { origin: "cannonball" }
   );
   return truncatedText;
 }
@@ -395,7 +397,7 @@ function fillSourceWindow({
   }
 
   const log = (text, ...args) => {
-    console.log(`\x1b[36m[fillSourceWindow]\x1b[0m ${text}`, ...args);
+    logger.info(`${text} ${args}`, { origin: "fillSourceWindow" });
   };
 
   log(

@@ -1,5 +1,6 @@
 const mysql = require("mysql2/promise");
 const UrlPattern = require("url-pattern");
+const logger = require("../../../../../logger");
 
 class MySQLConnector {
   #connected = false;
@@ -39,7 +40,7 @@ class MySQLConnector {
       result.rows = query;
       result.count = query?.length;
     } catch (err) {
-      console.log(this.constructor.name, err);
+      logger.error(err.message, { origin: this.constructor.name });
       result.error = err.message;
     } finally {
       await this._client.end();

@@ -11,6 +11,8 @@ const {
   recentChatHistory,
   sourceIdentifier,
 } = require("./index");
+const chalk = require("chalk");
+const logger = require("../logger");
 
 const VALID_CHAT_MODE = ["chat", "query"];
 
@@ -205,8 +207,13 @@ async function streamChatWithWorkspace(
   // If streaming is not explicitly enabled for connector
   // we do regular waiting of a response and send a single chunk.
   if (LLMConnector.streamingEnabled() !== true) {
-    console.log(
-      `\x1b[31m[STREAMING DISABLED]\x1b[0m Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
+    logger.info(
+      chalk.yellow(
+        `Streaming is not available for ${LLMConnector.constructor.name}. Will use regular chat method.`
+      ),
+      {
+        origin: "streamChatWithWorkspace",
+      }
     );
     completeText = await LLMConnector.getChatCompletion(messages, {
       temperature: workspace?.openAiTemp ?? LLMConnector.defaultTemp,

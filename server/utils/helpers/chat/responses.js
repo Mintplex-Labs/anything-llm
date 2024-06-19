@@ -1,9 +1,16 @@
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
+const logger = require("../../logger");
+const chalk = require("chalk");
 
 function clientAbortedHandler(resolve, fullText) {
-  console.log(
-    "\x1b[43m\x1b[34m[STREAM ABORTED]\x1b[0m Client requested to abort stream. Exiting LLM stream handler early."
+  logger.info(
+    chalk.red(
+      "Client requested to abort stream. Exiting LLM stream handler early.",
+      {
+        origin: "STREAM ABORTED",
+      }
+    )
   );
   resolve(fullText);
   return;

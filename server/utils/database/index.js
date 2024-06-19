@@ -1,5 +1,7 @@
+const chalk = require("chalk");
 const { getGitVersion } = require("../../endpoints/utils");
 const { Telemetry } = require("../../models/telemetry");
+const logger = require("../logger");
 
 function checkColumnTemplate(tablename = null, column = null) {
   if (!tablename || !column)
@@ -35,7 +37,9 @@ async function checkForMigrations(model, db) {
 
   if (toMigrate.length === 0) return;
 
-  console.log(`Running ${toMigrate.length} migrations`, toMigrate);
+  logger.info(`Running ${toMigrate.length} migrations ${toMigrate}`, {
+    origin: "checkForMigrations",
+  });
   await db.exec(toMigrate.join(";\n"));
   return;
 }
@@ -48,9 +52,9 @@ async function checkForMigrations(model, db) {
 async function validateTablePragmas(force = false) {
   try {
     if (process.env.NODE_ENV !== "development" && force === false) {
-      console.log(
-        `\x1b[34m[MIGRATIONS STUBBED]\x1b[0m Please ping /migrate once server starts to run migrations`
-      );
+      logger.info("Please ping /migrate once server starts to run migrations", {
+        origin: "MIGRATIONS STUBBED",
+      });
       return;
     }
     const { SystemSettings } = require("../../models/systemSettings");
@@ -86,21 +90,31 @@ async function validateTablePragmas(force = false) {
 // You can see all Telemetry events by ctrl+f `Telemetry.sendEvent` calls to verify this claim.
 async function setupTelemetry() {
   if (process.env.DISABLE_TELEMETRY === "true") {
-    console.log(
-      `\x1b[31m[TELEMETRY DISABLED]\x1b[0m Telemetry is marked as disabled - no events will send. Telemetry helps Mintplex Labs Inc improve AnythingLLM.`
+    logger.info(
+      chalk.red(
+        "Telemetry is marked as disabled - no events will send. Telemetry helps Mintplex Labs Inc improve AnythingLLM."
+      ),
+      {
+        origin: "TELEMETRY DISABLED",
+      }
     );
     return true;
   }
 
   if (Telemetry.isDev()) {
-    console.log(
-      `\x1b[33m[TELEMETRY STUBBED]\x1b[0m Anonymous Telemetry stubbed in development.`
-    );
+    logger.info(chalk.yellow("Anonymous Telemetry stubbed in development."), {
+      origin: "TELEMETRY STUBBED",
+    });
     return;
   }
 
-  console.log(
-    `\x1b[32m[TELEMETRY ENABLED]\x1b[0m Anonymous Telemetry enabled. Telemetry helps Mintplex Labs Inc improve AnythingLLM.`
+  logger.info(
+    chalk.green(
+      "Anonymous Telemetry enabled. Telemetry helps Mintplex Labs Inc improve AnythingLLM."
+    ),
+    {
+      origin: "TELEMETRY ENABLED",
+    }
   );
   await Telemetry.findOrCreateId();
   await Telemetry.sendTelemetry("server_boot", {
