@@ -56,6 +56,7 @@ class BackgroundService {
       // https://github.com/breejs/bree
       {
         name: "sync-watched-documents",
+        timeout: 0,
         interval: "1hr",
       },
     ];

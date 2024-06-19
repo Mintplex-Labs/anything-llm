@@ -258,7 +258,7 @@ const Document = {
 
   // Some data sources have encoded params in them we don't want to log - so strip those details.
   _stripSource: function (sourceString, type) {
-    if (type === "confluence") {
+    if (["confluence", "github"].includes(type)) {
       const _src = new URL(sourceString);
       _src.search = ""; // remove all search params that are encoded for resync.
       return _src.toString();

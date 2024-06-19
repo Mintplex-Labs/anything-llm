@@ -31,7 +31,7 @@ function extensions(app) {
     [verifyPayloadIntegrity],
     async function (request, response) {
       try {
-        const loadGithubRepo = require("../utils/extensions/GithubRepo");
+        const { loadGithubRepo } = require("../utils/extensions/GithubRepo");
         const { success, reason, data } = await loadGithubRepo(
           reqBody(request)
         );
