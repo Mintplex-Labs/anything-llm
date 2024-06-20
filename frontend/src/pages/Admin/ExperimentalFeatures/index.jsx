@@ -4,7 +4,6 @@ import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import { FullScreenLoader } from "@/components/Preloader";
 import { CaretRight, Flask } from "@phosphor-icons/react";
-import ContextualSaveBar from "@/components/ContextualSaveBar";
 import { configurableFeatures } from "./features";
 import ModalWrapper from "@/components/ModalWrapper";
 import paths from "@/utils/paths";
@@ -99,7 +98,6 @@ function FeatureLayout({ children }) {
         className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex"
       >
         {children}
-        <ContextualSaveBar showing={false} />
       </div>
     </div>
   );
