@@ -10,6 +10,7 @@
 // to a specific language file as this will break the other languages. Any new keys should be added to english
 // and the language file you are working on.
 
+import Russian from "./ru/common.js";
 import English from "./en/common.js";
 import Spanish from "./es/common.js";
 import French from "./fr/common.js";
@@ -17,6 +18,9 @@ import Mandarin from "./zh/common.js";
 
 export const defaultNS = "common";
 export const resources = {
+  ru: {
+    common: Russian,
+  },
   en: {
     common: English,
   },
