@@ -76,6 +76,7 @@ const SystemSettings = {
             "serper-dot-dev",
             "bing-search",
             "serply-engine",
+            "searxng-engine",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -176,10 +177,11 @@ const SystemSettings = {
       // Agent Settings & Configs
       // --------------------------------------------------------
       AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
-      AgentGoogleSearchEngineKey: process.env.AGENT_GSE_KEY || null,
-      AgentSerperApiKey: process.env.AGENT_SERPER_DEV_KEY || null,
-      AgentBingSearchApiKey: process.env.AGENT_BING_SEARCH_API_KEY || null,
-      AgentSerplyApiKey: process.env.AGENT_SERPLY_API_KEY || null,
+      AgentGoogleSearchEngineKey: !!process.env.AGENT_GSE_KEY || null,
+      AgentSerperApiKey: !!process.env.AGENT_SERPER_DEV_KEY || null,
+      AgentBingSearchApiKey: !!process.env.AGENT_BING_SEARCH_API_KEY || null,
+      AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
+      AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
     };
   },
 
