@@ -69,7 +69,7 @@ export default function LiveSyncToggle({ enabled = false }) {
       </div>
       <div className="w-full flex flex-col gap-2 my-2">
         <a
-          href="https://docs.useanything.com/"
+          href="https://docs.useanything.com/beta-preview/active-features/live-document-sync"
           target="_blank"
           className="text-sm text-white rounded-full hover:underline flex items-center gap-x-2"
         >

@@ -7,8 +7,6 @@ import System from "@/models/system";
 import DocumentSyncQueueRow from "./DocumentSyncQueueRow";
 
 export default function LiveDocumentSyncManager() {
-  // const { isOpen, openModal, closeModal } = useModal();
-
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
@@ -31,9 +29,6 @@ export default function LiveDocumentSyncManager() {
           </div>
           <WatchedDocumentsContainer />
         </div>
-        {/* <ModalWrapper isOpen={isOpen}>
-          <NewWorkspaceModal closeModal={closeModal} />
-        </ModalWrapper> */}
       </div>
     </div>
   );
