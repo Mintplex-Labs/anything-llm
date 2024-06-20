@@ -6,6 +6,7 @@ import showToast from "@/utils/toast";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
+import { useTranslation } from "react-i18next";
 
 const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
   const [username, setUsername] = useState("");
@@ -81,13 +82,13 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
       <div className="flex items-center md:p-12 md:px-0 px-6 mt-12 md:mt-0 space-x-2 border-gray-600 w-full flex-col gap-y-8">
         <button
           type="submit"
-          className="md:text-[#46C8FF] md:bg-transparent md:w-[300px] text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#46C8FF] bg-[#46C8FF] focus:z-10 w-full"
+          className="md:text-primary-button md:bg-transparent md:w-[300px] text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
         >
           Reset Password
         </button>
         <button
           type="button"
-          className="text-white text-sm flex gap-x-1 hover:text-[#46C8FF] hover:underline -mb-8"
+          className="text-white text-sm flex gap-x-1 hover:text-primary-button hover:underline -mb-8"
           onClick={() => setShowRecoveryForm(false)}
         >
           Back to Login
@@ -150,7 +151,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
       <div className="flex items-center md:p-12 md:px-0 px-6 mt-12 md:mt-0 space-x-2 border-gray-600 w-full flex-col gap-y-8">
         <button
           type="submit"
-          className="md:text-[#46C8FF] md:bg-transparent md:w-[300px] text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#46C8FF] bg-[#46C8FF] focus:z-10 w-full"
+          className="md:text-primary-button md:bg-transparent md:w-[300px] text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
         >
           Reset Password
         </button>
@@ -160,6 +161,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
 };
 
 export default function MultiUserAuth() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [recoveryCodes, setRecoveryCodes] = useState([]);
@@ -279,14 +281,15 @@ export default function MultiUserAuth() {
             <div className="flex items-center flex-col gap-y-4">
               <div className="flex gap-x-1">
                 <h3 className="text-md md:text-2xl font-bold text-white text-center white-space-nowrap hidden md:block">
-                  Welcome to
+                  {t("login.multi-user.welcome")}
                 </h3>
                 <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
                   {customAppName || "AnythingLLM"}
                 </p>
               </div>
               <p className="text-sm text-white/90 text-center">
-                Sign in to your {customAppName || "AnythingLLM"} account.
+                {t("login.sign-in.start")} {customAppName || "AnythingLLM"}{" "}
+                {t("login.sign-in.end")}
               </p>
             </div>
           </div>
@@ -296,7 +299,7 @@ export default function MultiUserAuth() {
                 <input
                   name="username"
                   type="text"
-                  placeholder="Username"
+                  placeholder={t("login.multi-user.placeholder-username")}
                   className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required={true}
                   autoComplete="off"
@@ -306,7 +309,7 @@ export default function MultiUserAuth() {
                 <input
                   name="password"
                   type="password"
-                  placeholder="Password"
+                  placeholder={t("login.multi-user.placeholder-password")}
                   className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
                   required={true}
                   autoComplete="off"
@@ -319,22 +322,25 @@ export default function MultiUserAuth() {
             <button
               disabled={loading}
               type="submit"
-              className="md:text-[#46C8FF] md:bg-transparent text-[#222628] text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-[#46C8FF] bg-[#46C8FF] focus:z-10 w-full"
+              className="md:text-primary-button md:bg-transparent text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-[#46C8FF] md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
             >
-              {loading ? "Validating..." : "Login"}
+              {loading
+                ? t("login.multi-user.validating")
+                : t("login.multi-user.login")}
             </button>
             <button
               type="button"
-              className="text-white text-sm flex gap-x-1 hover:text-[#46C8FF] hover:underline"
+              className="text-white text-sm flex gap-x-1 hover:text-primary-button hover:underline"
               onClick={handleResetPassword}
             >
-              Forgot password?<b>Reset</b>
+              {t("login.multi-user.forgot-pass")}?
+              <b>{t("login.multi-user.reset")}</b>
             </button>
           </div>
         </div>
       </form>
 
-      <ModalWrapper isOpen={isRecoveryCodeModalOpen}>
+      <ModalWrapper isOpen={isRecoveryCodeModalOpen} noPortal={true}>
         <RecoveryCodeModal
           recoveryCodes={recoveryCodes}
           onDownloadComplete={handleDownloadComplete}

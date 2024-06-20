@@ -3,6 +3,7 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useRef, useState } from "react";
 import { Plus } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 export default function CustomLogo() {
   const { logo: _initLogo, setLogo: _setLogo } = useLogo();
@@ -65,15 +66,16 @@ export default function CustomLogo() {
   const triggerFileInputClick = () => {
     fileInputRef.current?.click();
   };
+  const { t } = useTranslation();
 
   return (
     <div className="mt-6 mb-8">
       <div className="flex flex-col gap-y-1">
         <h2 className="text-base leading-6 font-bold text-white">
-          Custom Logo
+          {t("appearance.logo.title")}
         </h2>
         <p className="text-xs leading-[18px] font-base text-white/60">
-          Upload your custom logo to make your chatbot yours.
+          {t("appearance.logo.description")}
         </p>
       </div>
       {isDefaultLogo ? (
@@ -99,10 +101,10 @@ export default function CustomLogo() {
                     <Plus className="w-6 h-6 text-black/80 m-2" />
                   </div>
                   <div className="text-white text-opacity-80 text-sm font-semibold py-1">
-                    Add a custom logo
+                    {t("appearance.logo.add")}
                   </div>
                   <div className="text-white text-opacity-60 text-xs font-medium py-1">
-                    Recommended size: 800 x 200
+                    {t("appearance.logo.recommended")}
                   </div>
                 </div>
               </div>
@@ -123,7 +125,7 @@ export default function CustomLogo() {
                 onClick={triggerFileInputClick}
                 className="text-white text-base font-medium hover:text-opacity-60 mx-2"
               >
-                Replace
+                {t("appearance.logo.replace")}
               </button>
 
               <input
@@ -138,7 +140,7 @@ export default function CustomLogo() {
                 onClick={handleRemoveLogo}
                 className="text-white text-base font-medium hover:text-opacity-60 mx-2"
               >
-                Remove
+                {t("appearance.logo.remove")}
               </button>
             </div>
           </div>

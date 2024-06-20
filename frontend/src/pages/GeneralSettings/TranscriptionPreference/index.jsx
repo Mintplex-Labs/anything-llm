@@ -11,6 +11,7 @@ import NativeTranscriptionOptions from "@/components/TranscriptionSelection/Nati
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next";
 
 const PROVIDERS = [
   {
@@ -39,6 +40,7 @@ export default function TranscriptionModelPreference() {
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -118,14 +120,11 @@ export default function TranscriptionModelPreference() {
               <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
                 <div className="flex gap-x-4 items-center">
                   <p className="text-lg leading-6 font-bold text-white">
-                    Transcription Model Preference
+                    {t("transcription.title")}
                   </p>
                 </div>
                 <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-                  These are the credentials and settings for your preferred
-                  transcription model provider. Its important these keys are
-                  current and correct or else media files and audio will not
-                  transcribe.
+                  {t("transcription.description")}
                 </p>
               </div>
               <div className="w-full justify-end flex">
@@ -139,7 +138,7 @@ export default function TranscriptionModelPreference() {
                 )}
               </div>
               <div className="text-base font-bold text-white mt-6 mb-4">
-                Transcription Provider
+                {t("transcription.provider")}
               </div>
               <div className="relative">
                 {searchMenuOpen && (
@@ -149,9 +148,9 @@ export default function TranscriptionModelPreference() {
                   />
                 )}
                 {searchMenuOpen ? (
-                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-[#18181B] rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#46C8FF] z-20">
+                  <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-dark-input rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#46C8FF] z-20">
                     <div className="w-full flex flex-col gap-y-1">
-                      <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-[#18181B]">
+                      <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-dark-input">
                         <MagnifyingGlass
                           size={20}
                           weight="bold"
@@ -172,7 +171,7 @@ export default function TranscriptionModelPreference() {
                         <X
                           size={20}
                           weight="bold"
-                          className="cursor-pointer text-white hover:text-[#9CA3AF]"
+                          className="cursor-pointer text-white hover:text-x-button"
                           onClick={handleXButton}
                         />
                       </div>
@@ -193,7 +192,7 @@ export default function TranscriptionModelPreference() {
                   </div>
                 ) : (
                   <button
-                    className="w-full max-w-[640px] h-[64px] bg-[#18181B] rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-[#46C8FF] transition-all duration-300"
+                    className="w-full max-w-[640px] h-[64px] bg-dark-input rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-[#46C8FF] transition-all duration-300"
                     type="button"
                     onClick={() => setSearchMenuOpen(true)}
                   >
@@ -207,7 +206,7 @@ export default function TranscriptionModelPreference() {
                         <div className="text-sm font-semibold text-white">
                           {selectedProviderObject.name}
                         </div>
-                        <div className="mt-1 text-xs text-[#D2D5DB]">
+                        <div className="mt-1 text-xs text-description">
                           {selectedProviderObject.description}
                         </div>
                       </div>

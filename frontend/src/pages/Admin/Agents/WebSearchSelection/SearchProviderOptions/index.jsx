@@ -182,3 +182,25 @@ export function SerplySearchOptions({ settings }) {
     </>
   );
 }
+
+export function SearXNGOptions({ settings }) {
+  return (
+    <div className="flex gap-x-4">
+      <div className="flex flex-col w-60">
+        <label className="text-white text-sm font-semibold block mb-4">
+          SearXNG API base URL
+        </label>
+        <input
+          type="url"
+          name="env::AgentSearXNGApiUrl"
+          className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          placeholder="SearXNG API Key"
+          defaultValue={settings?.AgentSearXNGApiUrl}
+          required={true}
+          autoComplete="off"
+          spellCheck={false}
+        />
+      </div>
+    </div>
+  );
+}

@@ -8,14 +8,12 @@ import Admin from "@/models/admin";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import paths from "@/utils/paths";
-import { useNavigate } from "react-router-dom";
 
 export default function WorkspaceAgentConfiguration({ workspace }) {
   const [settings, setSettings] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
   const formEl = useRef(null);
 
   useEffect(() => {
@@ -88,14 +86,12 @@ export default function WorkspaceAgentConfiguration({ workspace }) {
         />
         {!hasChanges && (
           <div className="flex flex-col gap-y-4">
-            <button onClick={() => navigate(paths.settings.agentSkills())}>
-              <div
-                type="button"
-                className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              >
-                Configure Agent Skills
-              </div>
-            </button>
+            <a
+              className="w-fit transition-all duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+              href={paths.settings.agentSkills()}
+            >
+              Configure Agent Skills
+            </a>
             <p className="text-white text-opacity-60 text-xs font-medium">
               Customize and enhance the default agent's capabilities by enabling
               or disabling specific skills. These settings will be applied

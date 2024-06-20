@@ -1,0 +1,37 @@
+# This Github action is for validation of all languages which translations are offered for
+# in the locales folder in `frontend/src`. All languages are compared to the EN translation
+# schema since that is the fallback language setting. This workflow will run on all PRs that
+# modify any files in the translation directory
+name: Verify translations files
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "frontend/src/locales/**.js"
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Run verifyTranslations.mjs script
+        run: |
+          cd frontend/src/locales
+          node verifyTranslations.mjs
+
+      - name: Fail job on error
+        if: failure()
+        run: exit 1

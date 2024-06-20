@@ -413,6 +413,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_SERPLY_API_KEY",
     checks: [],
   },
+  AgentSearXNGApiUrl: {
+    envKey: "AGENT_SEARXNG_API_URL",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
@@ -571,6 +575,7 @@ function validAnthropicModel(input = "") {
     "claude-3-opus-20240229",
     "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
+    "claude-3-5-sonnet-20240620",
   ];
   return validModels.includes(input)
     ? null

@@ -33,7 +33,7 @@ export default function DBConnection({ connection, onRemove, setHasChanges }) {
       <div className="flex w-full items-center justify-between">
         <div className="flex flex-col">
           <div className="text-sm font-semibold text-white">{database_id}</div>
-          <div className="mt-1 text-xs text-[#D2D5DB]">{engine}</div>
+          <div className="mt-1 text-xs text-description">{engine}</div>
         </div>
         <button
           type="button"
