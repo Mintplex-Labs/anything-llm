@@ -87,15 +87,15 @@ async function streamChatWithWorkspace(
       error: null,
     });
     await WorkspaceChats.new({
-      include: false,
       workspaceId: workspace.id,
       prompt: message,
       response: {
         text: textResponse,
-        sources,
+        sources: [],
         type: chatMode,
       },
       threadId: thread?.id || null,
+      include: false,
       user,
     });
     return;
@@ -203,15 +203,15 @@ async function streamChatWithWorkspace(
     });
 
     await WorkspaceChats.new({
-      include: false,
       workspaceId: workspace.id,
       prompt: message,
       response: {
         text: textResponse,
-        sources,
+        sources: [],
         type: chatMode,
       },
       threadId: thread?.id || null,
+      include: false,
       user,
     });
     return;

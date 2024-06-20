@@ -82,7 +82,6 @@ async function chatWithWorkspace(
       "There is no relevant information in this workspace to answer your query.";
 
     await WorkspaceChats.new({
-      include: false,
       workspaceId: workspace.id,
       prompt: message,
       response: {
@@ -91,6 +90,7 @@ async function chatWithWorkspace(
         type: chatMode,
       },
       threadId: thread?.id || null,
+      include: false,
       user,
     });
 
@@ -192,7 +192,6 @@ async function chatWithWorkspace(
       "There is no relevant information in this workspace to answer your query.";
 
     await WorkspaceChats.new({
-      include: false,
       workspaceId: workspace.id,
       prompt: message,
       response: {
@@ -201,6 +200,7 @@ async function chatWithWorkspace(
         type: chatMode,
       },
       threadId: thread?.id || null,
+      include: false,
       user,
     });
 
