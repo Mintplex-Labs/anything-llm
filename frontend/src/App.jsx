@@ -14,6 +14,7 @@ import i18n from "./i18n";
 
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
+import { FullScreenLoader } from "./components/Preloader";
 
 const Main = lazy(() => import("@/pages/Main"));
 const InvitePage = lazy(() => import("@/pages/Invite"));
@@ -59,7 +60,7 @@ const PrivacyAndData = lazy(
 
 export default function App() {
   return (
-    <Suspense fallback={<div />}>
+    <Suspense fallback={<FullScreenLoader />}>
       <ContextWrapper>
         <LogoProvider>
           <PfpProvider>
