@@ -62,7 +62,7 @@ export default function LiveSyncToggle({ enabled = false }) {
             is referenced in at the same time of update.
           </p>
           <p className="text-white/80 text-xs rounded-lg w-96 italic">
-            this feature only applies to web-based content. eg: Links,
+            this feature only applies to web-based content. eg: Websites,
             Confluence, YouTube, and Github files.
           </p>
         </div>
