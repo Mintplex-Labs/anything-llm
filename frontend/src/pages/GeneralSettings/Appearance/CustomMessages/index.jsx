@@ -3,10 +3,12 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { Plus } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function CustomMessages() {
   const [hasChanges, setHasChanges] = useState(false);
   const [messages, setMessages] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchMessages() {
@@ -20,12 +22,12 @@ export default function CustomMessages() {
     if (type === "user") {
       setMessages([
         ...messages,
-        { user: "Double click to edit...", response: "" },
+        { user: t("appearance.message.double-click"), response: "" },
       ]);
     } else {
       setMessages([
         ...messages,
-        { user: "", response: "Double click to edit..." },
+        { user: "", response: t("appearance.message.double-click") },
       ]);
     }
   };
@@ -56,10 +58,10 @@ export default function CustomMessages() {
     <div className="mb-8">
       <div className="flex flex-col gap-y-1">
         <h2 className="text-base leading-6 font-bold text-white">
-          Custom Messages
+          {t("appearance.message.title")}
         </h2>
         <p className="text-xs leading-[18px] font-base text-white/60">
-          Customize the automatic messages displayed to your users.
+          {t("appearance.message.description")}
         </p>
       </div>
       <div className="mt-3 flex flex-col gap-y-6 bg-dark-highlight rounded-lg pr-[31px] pl-[12px] pt-4 max-w-[700px]">
@@ -93,8 +95,11 @@ export default function CustomMessages() {
             <div className="flex items-center justify-start text-sm font-normal -ml-2">
               <Plus className="m-2" size={16} weight="bold" />
               <span className="leading-5">
-                New <span className="font-bold italic mr-1">system</span>{" "}
-                message
+                {t("appearance.message.new")}{" "}
+                <span className="font-bold italic mr-1">
+                  {t("appearance.message.system")}
+                </span>{" "}
+                {t("appearance.message.message")}
               </span>
             </div>
           </button>
@@ -105,7 +110,11 @@ export default function CustomMessages() {
             <div className="flex items-center justify-start text-sm font-normal">
               <Plus className="m-2" size={16} weight="bold" />
               <span className="leading-5">
-                New <span className="font-bold italic mr-1">user</span> message
+                {t("appearance.message.new")}{" "}
+                <span className="font-bold italic mr-1">
+                  {t("appearance.message.user")}
+                </span>{" "}
+                {t("appearance.message.message")}
               </span>
             </div>
           </button>
@@ -117,7 +126,7 @@ export default function CustomMessages() {
             className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             onClick={handleMessageSave}
           >
-            Save Messages
+            {t("appearance.message.save")}
           </button>
         </div>
       )}

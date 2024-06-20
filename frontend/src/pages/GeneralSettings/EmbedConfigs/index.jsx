@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
 import * as Skeleton from "react-loading-skeleton";
@@ -13,7 +14,7 @@ import CTAButton from "@/components/lib/CTAButton";
 
 export default function EmbedConfigs() {
   const { isOpen, openModal, closeModal } = useModal();
-
+  const { t } = useTranslation();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />
@@ -25,18 +26,17 @@ export default function EmbedConfigs() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-white">
-                Embeddable Chat Widgets
+                {t("embeddable.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              Embeddable chat widgets are public facing chat interfaces that are
-              tied to a single workspace. These allow you to build workspaces
-              that then you can publish to the world.
+              {t("embeddable.description")}
             </p>
           </div>
           <div className="w-full justify-end flex">
             <CTAButton onClick={openModal} className="mt-3 mr-0 -mb-14 z-10">
-              <CodeBlock className="h-4 w-4" weight="bold" /> Create embed
+              <CodeBlock className="h-4 w-4" weight="bold" />{" "}
+              {t("embeddable.create")}
             </CTAButton>
           </div>
           <EmbedContainer />
@@ -52,6 +52,7 @@ export default function EmbedConfigs() {
 function EmbedContainer() {
   const [loading, setLoading] = useState(true);
   const [embeds, setEmbeds] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchUsers() {
@@ -81,13 +82,13 @@ function EmbedContainer() {
       <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
         <tr>
           <th scope="col" className="px-6 py-3 rounded-tl-lg">
-            Workspace
+            {t("embeddable.table.workspace")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Sent Chats
+            {t("embeddable.table.chats")}
           </th>
           <th scope="col" className="px-6 py-3">
-            Active Domains
+            {t("embeddable.table.Active")}
           </th>
           <th scope="col" className="px-6 py-3 rounded-tr-lg">
             {" "}
