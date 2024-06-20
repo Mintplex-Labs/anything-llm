@@ -9,7 +9,7 @@ i18next
   .use(LanguageDetector)
   .init({
     fallbackLng: "en",
-    debug: true,
+    debug: import.meta.env.DEV,
     defaultNS,
     resources,
     lowerCaseLng: true,
