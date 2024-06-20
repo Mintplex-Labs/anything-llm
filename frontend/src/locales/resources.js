@@ -10,17 +10,18 @@
 // to a specific language file as this will break the other languages. Any new keys should be added to english
 // and the language file you are working on.
 
-import Russian from "./ru/common.js";
+// Contributor Notice: If you are adding a translation you MUST locally run `yarn verify:translations` from the root prior to PR.
+// please do not submit PR's without first verifying this test passes as it will tell you about missing keys or values
+// from the primary dictionary.
+
 import English from "./en/common.js";
 import Spanish from "./es/common.js";
 import French from "./fr/common.js";
 import Mandarin from "./zh/common.js";
+import Russian from "./ru/common.js";
 
 export const defaultNS = "common";
 export const resources = {
-  ru: {
-    common: Russian,
-  },
   en: {
     common: English,
   },
@@ -32,5 +33,8 @@ export const resources = {
   },
   fr: {
     common: French,
+  },
+  ru: {
+    common: Russian,
   },
 };

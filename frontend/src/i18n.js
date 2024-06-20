@@ -6,11 +6,10 @@ import { defaultNS, resources } from "./locales/resources";
 i18next
   // https://github.com/i18next/i18next-browser-languageDetector/blob/9efebe6ca0271c3797bc09b84babf1ba2d9b4dbb/src/index.js#L11
   .use(initReactI18next) // Initialize i18n for React
-  .use(LanguageDetector) // Initialize i18n for React
+  .use(LanguageDetector)
   .init({
-    lng: window.navigator.language || "ru",
-    fallbackLng: "ru",
-    debug: true,
+    fallbackLng: "en",
+    debug: import.meta.env.DEV,
     defaultNS,
     resources,
     lowerCaseLng: true,
