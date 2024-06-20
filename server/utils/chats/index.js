@@ -77,15 +77,30 @@ async function chatWithWorkspace(
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
+    const textResponse =
+      workspace?.queryRefusalResponse ??
+      "There is no relevant information in this workspace to answer your query.";
+
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: {
+        text: textResponse,
+        sources: [],
+        type: chatMode,
+      },
+      threadId: thread?.id || null,
+      include: false,
+      user,
+    });
+
     return {
       id: uuid,
       type: "textResponse",
       sources: [],
       close: true,
       error: null,
-      textResponse:
-        workspace?.queryRefusalResponse ??
-        "There is no relevant information in this workspace to answer your query.",
+      textResponse,
     };
   }
 
@@ -172,15 +187,30 @@ async function chatWithWorkspace(
   // If in query mode and no context chunks are found from search, backfill, or pins -  do not
   // let the LLM try to hallucinate a response or use general knowledge and exit early
   if (chatMode === "query" && contextTexts.length === 0) {
+    const textResponse =
+      workspace?.queryRefusalResponse ??
+      "There is no relevant information in this workspace to answer your query.";
+
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: {
+        text: textResponse,
+        sources: [],
+        type: chatMode,
+      },
+      threadId: thread?.id || null,
+      include: false,
+      user,
+    });
+
     return {
       id: uuid,
       type: "textResponse",
       sources: [],
       close: true,
       error: null,
-      textResponse:
-        workspace?.queryRefusalResponse ??
-        "There is no relevant information in this workspace to answer your query.",
+      textResponse,
     };
   }
 
