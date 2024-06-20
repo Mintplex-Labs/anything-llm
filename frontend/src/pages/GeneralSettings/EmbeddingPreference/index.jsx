@@ -106,7 +106,7 @@ const EMBEDDERS = [
     options: (settings) => (
       <GenericOpenAiEmbeddingOptions settings={settings} />
     ),
-    description: "Run powerful embedding models from OpenAI.",
+    description: "Run embedding models from any OpenAI compatible API service.",
   },
 ];
 
