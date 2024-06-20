@@ -31,6 +31,7 @@ import { isMobile } from "react-device-detect";
 import Footer from "../Footer";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import showToast from "@/utils/toast";
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
@@ -386,13 +387,64 @@ const SidebarOptions = ({ user = null, t }) => (
       flex={true}
       allowedRole={["admin"]}
     />
-    <Option
-      href={paths.settings.experimental()}
-      btnText="Experimental Features"
-      icon={<Flask className="h-5 w-5 flex-shrink-0" />}
-      user={user}
-      flex={true}
-      allowedRole={["admin"]}
-    />
+    <HoldToReveal>
+      <Option
+        href={paths.settings.experimental()}
+        btnText="Experimental Features"
+        icon={<Flask className="h-5 w-5 flex-shrink-0" />}
+        user={user}
+        flex={true}
+        allowedRole={["admin"]}
+      />
+    </HoldToReveal>
   </>
 );
+
+function HoldToReveal({ children }) {
+  let timeout;
+  const [showing, setShowing] = useState(
+    window.localStorage.getItem(
+      "anythingllm_experimental_feature_preview_unlocked"
+    )
+  );
+
+  useEffect(() => {
+    const onPress = (e) => {
+      if (!["Control", "Meta"].includes(e.key)) return;
+      timeout = setTimeout(() => {
+        setShowing(true);
+        showToast("Experimental feature previews unlocked!");
+        window.localStorage.setItem(
+          "anythingllm_experimental_feature_preview_unlocked",
+          "enabled"
+        );
+        window.removeEventListener("keypress", onPress);
+        window.removeEventListener("keyup", onRelease);
+        clearTimeout(timeout);
+      }, 3_000);
+    };
+    const onRelease = (e) => {
+      if (!["Control", "Meta"].includes(e.key)) return;
+      if (showing) {
+        window.removeEventListener("keypress", onPress);
+        window.removeEventListener("keyup", onRelease);
+        clearTimeout(timeout);
+        return;
+      }
+      clearTimeout(timeout);
+    };
+
+    if (!showing) {
+      console.log("ATTACHING");
+      window.addEventListener("keydown", onPress);
+      window.addEventListener("keyup", onRelease);
+    }
+    return () => {
+      window.removeEventListener("keydown", onPress);
+      window.removeEventListener("keyup", onRelease);
+    };
+  }, []);
+
+  if (!showing) return null;
+  return children;
+}
