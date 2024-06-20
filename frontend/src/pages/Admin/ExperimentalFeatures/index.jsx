@@ -1,16 +1,21 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
 import { isMobile } from "react-device-detect";
-import PreLoader from "@/components/Preloader";
+import Admin from "@/models/admin";
+import { FullScreenLoader } from "@/components/Preloader";
+import { CaretRight, Flask } from "@phosphor-icons/react";
+import ContextualSaveBar from "@/components/ContextualSaveBar";
+import { configurableFeatures } from "./features";
 import ModalWrapper from "@/components/ModalWrapper";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
-import LiveSyncToggle from "./Features/LiveSync/toggle";
-import Admin from "@/models/admin";
 
 export default function ExperimentalFeatures() {
   const [featureFlags, setFeatureFlags] = useState({});
   const [loading, setLoading] = useState(true);
+  const [selectedFeature, setSelectedFeature] = useState(
+    "experimental_live_file_sync"
+  );
 
   useEffect(() => {
     async function fetchSettings() {
@@ -22,44 +27,134 @@ export default function ExperimentalFeatures() {
     fetchSettings();
   }, []);
 
+  const refresh = async () => {
+    const { settings } = await Admin.systemPreferences();
+    setFeatureFlags(settings?.feature_flags ?? {});
+  };
+
+  if (loading) {
+    return (
+      <div
+        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex justify-center items-center"
+      >
+        <FullScreenLoader />
+      </div>
+    );
+  }
+
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+    <FeatureLayout>
+      <div className="flex-1 flex gap-x-6 p-4 mt-10">
+        {/* Feature settings nav */}
+        <div className="flex flex-col gap-y-[18px]">
+          <div className="text-white flex items-center gap-x-2">
+            <Flask size={24} />
+            <p className="text-lg font-medium">Experimental Features</p>
+          </div>
+          {/* Feature list */}
+          <FeatureList
+            features={configurableFeatures}
+            selectedFeature={selectedFeature}
+            handleClick={setSelectedFeature}
+            activeFeatures={Object.keys(featureFlags).filter(
+              (flag) => featureFlags[flag]
+            )}
+          />
+        </div>
+
+        {/* Selected feature setting panel */}
+        <FeatureVerification>
+          <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
+            <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
+              {selectedFeature ? (
+                <SelectedFeatureComponent
+                  feature={configurableFeatures[selectedFeature]}
+                  settings={featureFlags}
+                  refresh={refresh}
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-white/60">
+                  <Flask size={40} />
+                  <p className="font-medium">Select an experimental feature</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </FeatureVerification>
+      </div>
+    </FeatureLayout>
+  );
+}
+
+function FeatureLayout({ children }) {
+  return (
+    <div
+      id="workspace-feature-settings-container"
+      className="w-screen h-screen overflow-hidden bg-sidebar flex md:mt-0 mt-6"
+    >
       <Sidebar />
       <div
         style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll"
+        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex"
       >
-        <div className="flex flex-col w-full px-1 md:pl-6 md:pr-[50px] md:py-6 py-16">
-          <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
-            <div className="items-center flex gap-x-4">
-              <p className="text-lg leading-6 font-bold text-white">
-                Experimental Features
-              </p>
-            </div>
-            <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              Enable and access experimental features of AnythingLLM. Features
-              here may change, move, or no longer exist at any time and support
-              for them is not guaranteed. While a feature is in preview it can
-              only be managed via this page.
-            </p>
-          </div>
-          {loading ? (
-            <div className="h-1/2 transition-all duration-500 relative md:ml-[2px] md:mr-[8px] md:my-[16px] md:rounded-[26px] p-[18px] h-full overflow-y-scroll">
-              <div className="w-full h-full flex justify-center items-center">
-                <PreLoader />
-              </div>
-            </div>
-          ) : (
-            <FeatureVerification>
-              <LiveSyncToggle
-                enabled={featureFlags?.experimental_live_file_sync}
-              />
-            </FeatureVerification>
-          )}
-        </div>
+        {children}
+        <ContextualSaveBar showing={false} />
       </div>
     </div>
   );
+}
+
+function FeatureList({
+  features = [],
+  selectedFeature = null,
+  handleClick = null,
+  activeFeatures = [],
+}) {
+  if (Object.keys(features).length === 0) return null;
+
+  return (
+    <div
+      className={`bg-white/5 text-white rounded-xl ${
+        isMobile ? "w-full" : "min-w-[360px] w-fit"
+      }`}
+    >
+      {Object.entries(features).map(([feature, settings], index) => (
+        <div
+          key={feature}
+          className={`py-3 px-4 flex items-center justify-between ${
+            index === 0 ? "rounded-t-xl" : ""
+          } ${
+            index === Object.keys(features).length - 1
+              ? "rounded-b-xl"
+              : "border-b border-white/10"
+          } cursor-pointer transition-all duration-300  hover:bg-white/5 ${
+            selectedFeature === feature ? "bg-white/10" : ""
+          }`}
+          onClick={() => handleClick?.(feature)}
+        >
+          <div className="text-sm font-light">{settings.title}</div>
+          <div className="flex items-center gap-x-2">
+            <div className="text-sm text-white/60 font-medium">
+              {activeFeatures.includes(settings.key) ? "On" : "Off"}
+            </div>
+            <CaretRight size={14} weight="bold" className="text-white/80" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SelectedFeatureComponent({ feature, settings, refresh }) {
+  const Component = feature?.component;
+  return Component ? (
+    <Component
+      enabled={settings[feature.key]}
+      feature={feature.key}
+      onToggle={refresh}
+    />
+  ) : null;
 }
 
 function FeatureVerification({ children }) {
