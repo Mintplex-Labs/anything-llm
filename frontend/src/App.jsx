@@ -69,7 +69,7 @@ export default function App() {
                 <Route path="/login" element={<Login />} />
                 <Route
                   path="/workspace/:slug/settings/:tab"
-                  element={<ManagerRoute Component={WorkspaceSettings} />}
+                  element={<PrivateRoute Component={WorkspaceSettings} />}
                 />
                 <Route
                   path="/workspace/:slug"

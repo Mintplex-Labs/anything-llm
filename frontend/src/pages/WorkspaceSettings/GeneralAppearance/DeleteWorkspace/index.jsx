@@ -4,6 +4,7 @@ import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
 import System from "@/models/system";
 import { useTranslation } from "react-i18next";
+import showToast from "@/utils/toast";
 
 export default function DeleteWorkspace({ workspace }) {
   const { slug } = useParams();

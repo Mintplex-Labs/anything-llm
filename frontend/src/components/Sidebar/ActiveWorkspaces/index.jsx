@@ -25,6 +25,7 @@ export default function ActiveWorkspaces() {
   const { user } = useUser();
   const isInWorkspaceSettings = !!useMatch("/workspace/:slug/settings/:tab");
 
+  console.log(user?.role);
   useEffect(() => {
     async function getWorkspaces() {
       const workspaces = await Workspace.all();

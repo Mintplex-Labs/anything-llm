@@ -6,6 +6,7 @@ import WorkspaceName from "./WorkspaceName";
 import SuggestedChatMessages from "./SuggestedChatMessages";
 import DeleteWorkspace from "./DeleteWorkspace";
 import WorkspacePfp from "./WorkspacePfp";
+import useUser from "@/hooks/useUser";
 
 export default function GeneralInfo({ slug }) {
   const [workspace, setWorkspace] = useState(null);
@@ -13,6 +14,7 @@ export default function GeneralInfo({ slug }) {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const formEl = useRef(null);
+  const { user } = useUser();
 
   useEffect(() => {
     async function fetchWorkspace() {
@@ -43,6 +45,13 @@ export default function GeneralInfo({ slug }) {
   };
 
   if (!workspace || loading) return null;
+  if (user?.role === "default") {
+    return (
+      <>
+        <DeleteWorkspace workspace={workspace} />
+      </>
+    );
+  }
   return (
     <>
       <form
