@@ -391,7 +391,7 @@ async function genericOpenAiModels(basePath = null) {
   const models = await fetch(`${url}/models`)
     .then((res) => {
       if (!res.ok)
-        throw new Error(`Could not reach Vllm server! ${res.status}`);
+        throw new Error(`Could not reach generic OpenAi server! ${res.status}`);
       return res.json();
     })
     .then((data) => data?.data || [])
