@@ -149,6 +149,8 @@ const SystemSettings = {
       EmbeddingModelPref: process.env.EMBEDDING_MODEL_PREF,
       EmbeddingModelMaxChunkLength:
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
+      GenericOpenAiEmbeddingApiKey:
+        !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
