@@ -760,6 +760,9 @@ function dumpENV() {
     // and are either managed or manually set ENV key:values.
     "STORAGE_DIR",
     "SERVER_PORT",
+    // For persistent data encryption
+    "SIG_KEY",
+    "SIG_SALT",
     // Password Schema Keys if present.
     "PASSWORDMINCHAR",
     "PASSWORDMAXCHAR",

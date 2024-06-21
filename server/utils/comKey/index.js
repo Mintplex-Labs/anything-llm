@@ -73,6 +73,14 @@ class CommunicationKey {
       .sign("RSA-SHA256", Buffer.from(textData), this.#readPrivateKey())
       .toString("hex");
   }
+
+  // Use the rolling priv-key to encrypt arbitrary data that is text
+  // returns the encrypted content as a base64 string.
+  encrypt(textData = "") {
+    return crypto
+      .privateEncrypt(this.#readPrivateKey(), Buffer.from(textData, "utf-8"))
+      .toString("base64");
+  }
 }
 
 module.exports = { CommunicationKey };

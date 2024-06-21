@@ -153,7 +153,8 @@ const LanceDb = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null
+    fullFilePath = null,
+    skipCache = false
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -161,25 +162,27 @@ const LanceDb = {
       if (!pageContent || pageContent.length == 0) return false;
 
       console.log("Adding new vectorized document into namespace", namespace);
-      const cacheResult = await cachedVectorInformation(fullFilePath);
-      if (cacheResult.exists) {
-        const { client } = await this.connect();
-        const { chunks } = cacheResult;
-        const documentVectors = [];
-        const submissions = [];
+      if (!skipCache) {
+        const cacheResult = await cachedVectorInformation(fullFilePath);
+        if (cacheResult.exists) {
+          const { client } = await this.connect();
+          const { chunks } = cacheResult;
+          const documentVectors = [];
+          const submissions = [];
 
-        for (const chunk of chunks) {
-          chunk.forEach((chunk) => {
-            const id = uuidv4();
-            const { id: _id, ...metadata } = chunk.metadata;
-            documentVectors.push({ docId, vectorId: id });
-            submissions.push({ id: id, vector: chunk.values, ...metadata });
-          });
+          for (const chunk of chunks) {
+            chunk.forEach((chunk) => {
+              const id = uuidv4();
+              const { id: _id, ...metadata } = chunk.metadata;
+              documentVectors.push({ docId, vectorId: id });
+              submissions.push({ id: id, vector: chunk.values, ...metadata });
+            });
+          }
+
+          await this.updateOrCreateCollection(client, submissions, namespace);
+          await DocumentVectors.bulkInsert(documentVectors);
+          return { vectorized: true, error: null };
         }
-
-        await this.updateOrCreateCollection(client, submissions, namespace);
-        await DocumentVectors.bulkInsert(documentVectors);
-        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.

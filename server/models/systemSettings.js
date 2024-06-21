@@ -28,6 +28,9 @@ const SystemSettings = {
     "default_agent_skills",
     "agent_sql_connections",
     "custom_app_name",
+
+    // beta feature flags
+    "experimental_live_file_sync",
   ],
   validations: {
     footer_data: (updates) => {
@@ -113,6 +116,12 @@ const SystemSettings = {
         console.error(`Failed to merge connections`);
         return JSON.stringify(existingConnections ?? []);
       }
+    },
+    experimental_live_file_sync: (update) => {
+      if (typeof update === "boolean")
+        return update === true ? "enabled" : "disabled";
+      if (!["enabled", "disabled"].includes(update)) return "disabled";
+      return String(update);
     },
   },
   currentSettings: async function () {
@@ -458,6 +467,13 @@ const SystemSettings = {
         return rest;
       });
     },
+  },
+  getFeatureFlags: async function () {
+    return {
+      experimental_live_file_sync:
+        (await SystemSettings.get({ label: "experimental_live_file_sync" }))
+          ?.value === "enabled",
+    };
   },
 };
 

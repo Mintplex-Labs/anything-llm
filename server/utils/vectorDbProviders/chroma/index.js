@@ -185,7 +185,8 @@ const Chroma = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null
+    fullFilePath = null,
+    skipCache = false
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -193,43 +194,45 @@ const Chroma = {
       if (!pageContent || pageContent.length == 0) return false;
 
       console.log("Adding new vectorized document into namespace", namespace);
-      const cacheResult = await cachedVectorInformation(fullFilePath);
-      if (cacheResult.exists) {
-        const { client } = await this.connect();
-        const collection = await client.getOrCreateCollection({
-          name: this.normalize(namespace),
-          metadata: { "hnsw:space": "cosine" },
-        });
-        const { chunks } = cacheResult;
-        const documentVectors = [];
-
-        for (const chunk of chunks) {
-          const submission = {
-            ids: [],
-            embeddings: [],
-            metadatas: [],
-            documents: [],
-          };
-
-          // Before sending to Chroma and saving the records to our db
-          // we need to assign the id of each chunk that is stored in the cached file.
-          chunk.forEach((chunk) => {
-            const id = uuidv4();
-            const { id: _id, ...metadata } = chunk.metadata;
-            documentVectors.push({ docId, vectorId: id });
-            submission.ids.push(id);
-            submission.embeddings.push(chunk.values);
-            submission.metadatas.push(metadata);
-            submission.documents.push(metadata.text);
+      if (skipCache) {
+        const cacheResult = await cachedVectorInformation(fullFilePath);
+        if (cacheResult.exists) {
+          const { client } = await this.connect();
+          const collection = await client.getOrCreateCollection({
+            name: this.normalize(namespace),
+            metadata: { "hnsw:space": "cosine" },
           });
+          const { chunks } = cacheResult;
+          const documentVectors = [];
 
-          const additionResult = await collection.add(submission);
-          if (!additionResult)
-            throw new Error("Error embedding into ChromaDB", additionResult);
+          for (const chunk of chunks) {
+            const submission = {
+              ids: [],
+              embeddings: [],
+              metadatas: [],
+              documents: [],
+            };
+
+            // Before sending to Chroma and saving the records to our db
+            // we need to assign the id of each chunk that is stored in the cached file.
+            chunk.forEach((chunk) => {
+              const id = uuidv4();
+              const { id: _id, ...metadata } = chunk.metadata;
+              documentVectors.push({ docId, vectorId: id });
+              submission.ids.push(id);
+              submission.embeddings.push(chunk.values);
+              submission.metadatas.push(metadata);
+              submission.documents.push(metadata.text);
+            });
+
+            const additionResult = await collection.add(submission);
+            if (!additionResult)
+              throw new Error("Error embedding into ChromaDB", additionResult);
+          }
+
+          await DocumentVectors.bulkInsert(documentVectors);
+          return { vectorized: true, error: null };
         }
-
-        await DocumentVectors.bulkInsert(documentVectors);
-        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.

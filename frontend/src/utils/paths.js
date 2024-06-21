@@ -135,5 +135,13 @@ export default {
     embedChats: () => {
       return `/settings/embed-chats`;
     },
+    experimental: () => {
+      return `/settings/beta-features`;
+    },
+  },
+  experimental: {
+    liveDocumentSync: {
+      manage: () => `/settings/beta-features/live-document-sync/manage`,
+    },
   },
 };
