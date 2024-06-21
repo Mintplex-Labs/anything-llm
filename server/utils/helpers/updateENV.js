@@ -407,6 +407,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_SERPLY_API_KEY",
     checks: [],
   },
+  AgentSearXNGApiUrl: {
+    envKey: "AGENT_SEARXNG_API_URL",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
