@@ -9,7 +9,13 @@ const {
   ConfluencePagesLoader,
 } = require("langchain/document_loaders/web/confluence");
 
-async function loadConfluence({ pageUrl, username, accessToken }) {
+/**
+ * Load Confluence documents from a spaceID and Confluence credentials
+ * @param {object} args - forwarded request body params
+ * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
+ * @returns
+ */
+async function loadConfluence({ pageUrl, username, accessToken }, response) {
   if (!pageUrl || !username || !accessToken) {
     return {
       success: false,
@@ -79,7 +85,10 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
       docAuthor: subdomain,
       description: doc.metadata.title,
       docSource: `${subdomain} Confluence`,
-      chunkSource: `confluence://${doc.metadata.url}?baseUrl=${baseUrl}&token=${accessToken}&username=${username}`,
+      chunkSource: generateChunkSource(
+        { doc, baseUrl, accessToken, username },
+        response.locals.encryptionWorker
+      ),
       published: new Date().toLocaleString(),
       wordCount: doc.pageContent.split(" ").length,
       pageContent: doc.pageContent,
@@ -269,6 +278,28 @@ function validSpaceUrl(spaceUrl = "") {
 
   // No match
   return { valid: false, result: null };
+}
+
+/**
+ * Generate the full chunkSource for a specific Confluence page so that we can resync it later.
+ * This data is encrypted into a single `payload` query param so we can replay credentials later
+ * since this was encrypted with the systems persistent password and salt.
+ * @param {object} chunkSourceInformation
+ * @param {import("../../EncryptionWorker").EncryptionWorker} encryptionWorker
+ * @returns {string}
+ */
+function generateChunkSource(
+  { doc, baseUrl, accessToken, username },
+  encryptionWorker
+) {
+  const payload = {
+    baseUrl,
+    token: accessToken,
+    username,
+  };
+  return `confluence://${doc.metadata.url}?payload=${encryptionWorker.encrypt(
+    JSON.stringify(payload)
+  )}`;
 }
 
 module.exports = {

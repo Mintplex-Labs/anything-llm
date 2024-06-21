@@ -6,7 +6,13 @@ const { v4 } = require("uuid");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 
-async function loadGithubRepo(args) {
+/**
+ * Load in a Github Repo recursively or just the top level if no PAT is provided
+ * @param {object} args - forwarded request body params
+ * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
+ * @returns
+ */
+async function loadGithubRepo(args, response) {
   const repo = new RepoLoader(args);
   await repo.init();
 
@@ -52,7 +58,11 @@ async function loadGithubRepo(args) {
       docAuthor: repo.author,
       description: "No description found.",
       docSource: doc.metadata.source,
-      chunkSource: generateChunkSource(repo, doc),
+      chunkSource: generateChunkSource(
+        repo,
+        doc,
+        response.locals.encryptionWorker
+      ),
       published: new Date().toLocaleString(),
       wordCount: doc.pageContent.split(" ").length,
       pageContent: doc.pageContent,
@@ -126,29 +136,24 @@ async function fetchGithubFile({
 
 /**
  * Generate the full chunkSource for a specific file so that we can resync it later.
- * Will fallback to a baseURL that will fail to resync
+ * This data is encrypted into a single `payload` query param so we can replay credentials later
+ * since this was encrypted with the systems persistent password and salt.
  * @param {RepoLoader} repo
  * @param {import("@langchain/core/documents").Document} doc
+ * @param {import("../../EncryptionWorker").EncryptionWorker} encryptionWorker
  * @returns {string}
  */
-function generateChunkSource(repo, doc) {
-  const baseUrl = `github://${repo.repo}`;
-  try {
-    // Why string concat? If using URL it will escape the https:// in the string and break the URL
-    // while appending search params
-    let ghUrl = `${baseUrl}`;
-    ghUrl += `?owner=${encodeURIComponent(repo.author)}`;
-    ghUrl += `&repo=${encodeURIComponent(repo.project)}`;
-    ghUrl += `&branch=${encodeURIComponent(repo.branch)}`;
-    ghUrl += `&path=${encodeURIComponent(doc.metadata.source)}`;
-    ghUrl += !!repo.accessToken
-      ? `&pat=${encodeURIComponent(repo.accessToken)}`
-      : "";
-    return ghUrl;
-  } catch (e) {
-    console.error("generateChunkSource", e);
-    return baseUrl;
-  }
+function generateChunkSource(repo, doc, encryptionWorker) {
+  const payload = {
+    owner: repo.author,
+    project: repo.project,
+    branch: repo.branch,
+    path: doc.metadata.source,
+    pat: !!repo.accessToken ? repo.accessToken : null,
+  };
+  return `github://${repo.repo}?payload=${encryptionWorker.encrypt(
+    JSON.stringify(payload)
+  )}`;
 }
 
 module.exports = { loadGithubRepo, fetchGithubFile };

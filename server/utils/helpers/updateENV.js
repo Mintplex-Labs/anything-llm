@@ -748,7 +748,7 @@ async function logChangesToEventLog(newValues = {}, userId = null) {
   return;
 }
 
-async function dumpENV() {
+function dumpENV() {
   const fs = require("fs");
   const path = require("path");
 
@@ -757,6 +757,9 @@ async function dumpENV() {
     ...Object.values(KEY_MAPPING).map((values) => values.envKey),
     "STORAGE_DIR",
     "SERVER_PORT",
+    // For persistent data encryption
+    "SIG_KEY",
+    "SIG_SALT",
     // Password Schema Keys if present.
     "PASSWORDMINCHAR",
     "PASSWORDMAXCHAR",

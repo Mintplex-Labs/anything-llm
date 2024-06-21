@@ -1,4 +1,5 @@
 const { Telemetry } = require("../../models/telemetry");
+const { EncryptionManager } = require("../EncryptionManager");
 const { CommunicationKey } = require("../comKey");
 const setupTelemetry = require("../telemetry");
 
@@ -18,6 +19,7 @@ function bootSSL(app, port = 3001) {
       .listen(port, async () => {
         await setupTelemetry();
         new CommunicationKey(true);
+        new EncryptionManager();
         console.log(`Primary server in HTTPS mode listening on port ${port}`);
       })
       .on("error", catchSigTerms);
@@ -45,6 +47,7 @@ function bootHTTP(app, port = 3001) {
     .listen(port, async () => {
       await setupTelemetry();
       new CommunicationKey(true);
+      new EncryptionManager();
       console.log(`Primary server in HTTP mode listening on port ${port}`);
     })
     .on("error", catchSigTerms);

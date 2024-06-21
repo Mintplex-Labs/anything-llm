@@ -1,3 +1,4 @@
+const { setDataSigner } = require("../middleware/setDataSigner");
 const { verifyPayloadIntegrity } = require("../middleware/verifyIntegrity");
 const { reqBody } = require("../utils/http");
 const { validURL } = require("../utils/url");
@@ -8,7 +9,7 @@ function extensions(app) {
 
   app.post(
     "/ext/resync-source-document",
-    [verifyPayloadIntegrity],
+    [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {
       try {
         const { type, options } = reqBody(request);
@@ -28,12 +29,13 @@ function extensions(app) {
 
   app.post(
     "/ext/github-repo",
-    [verifyPayloadIntegrity],
+    [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {
       try {
         const { loadGithubRepo } = require("../utils/extensions/GithubRepo");
         const { success, reason, data } = await loadGithubRepo(
-          reqBody(request)
+          reqBody(request),
+          response,
         );
         response.status(200).json({
           success,
@@ -129,12 +131,13 @@ function extensions(app) {
 
   app.post(
     "/ext/confluence",
-    [verifyPayloadIntegrity],
+    [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {
       try {
         const { loadConfluence } = require("../utils/extensions/Confluence");
         const { success, reason, data } = await loadConfluence(
-          reqBody(request)
+          reqBody(request),
+          response
         );
         response.status(200).json({ success, reason, data });
       } catch (e) {
