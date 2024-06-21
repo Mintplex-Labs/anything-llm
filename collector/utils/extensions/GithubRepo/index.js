@@ -6,7 +6,13 @@ const { v4 } = require("uuid");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 
-async function loadGithubRepo(args) {
+/**
+ * Load in a Github Repo recursively or just the top level if no PAT is provided
+ * @param {object} args - forwarded request body params
+ * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
+ * @returns
+ */
+async function loadGithubRepo(args, response) {
   const repo = new RepoLoader(args);
   await repo.init();
 
@@ -52,7 +58,11 @@ async function loadGithubRepo(args) {
       docAuthor: repo.author,
       description: "No description found.",
       docSource: doc.metadata.source,
-      chunkSource: `link://${doc.metadata.repository}/blob/${doc.metadata.branch}/${doc.metadata.source}`,
+      chunkSource: generateChunkSource(
+        repo,
+        doc,
+        response.locals.encryptionWorker
+      ),
       published: new Date().toLocaleString(),
       wordCount: doc.pageContent.split(" ").length,
       pageContent: doc.pageContent,
@@ -81,4 +91,69 @@ async function loadGithubRepo(args) {
   };
 }
 
-module.exports = loadGithubRepo;
+/**
+ * Gets the page content from a specific source file in a give Github Repo, not all items in a repo.
+ * @returns
+ */
+async function fetchGithubFile({
+  repoUrl,
+  branch,
+  accessToken = null,
+  sourceFilePath,
+}) {
+  const repo = new RepoLoader({
+    repo: repoUrl,
+    branch,
+    accessToken,
+  });
+  await repo.init();
+
+  if (!repo.ready)
+    return {
+      success: false,
+      content: null,
+      reason: "Could not prepare Github repo for loading! Check URL or PAT.",
+    };
+
+  console.log(
+    `-- Working Github ${repo.author}/${repo.project}:${repo.branch} file:${sourceFilePath} --`
+  );
+  const fileContent = await repo.fetchSingleFile(sourceFilePath);
+  if (!fileContent) {
+    return {
+      success: false,
+      reason: "Target file returned a null content response.",
+      content: null,
+    };
+  }
+
+  return {
+    success: true,
+    reason: null,
+    content: fileContent,
+  };
+}
+
+/**
+ * Generate the full chunkSource for a specific file so that we can resync it later.
+ * This data is encrypted into a single `payload` query param so we can replay credentials later
+ * since this was encrypted with the systems persistent password and salt.
+ * @param {RepoLoader} repo
+ * @param {import("@langchain/core/documents").Document} doc
+ * @param {import("../../EncryptionWorker").EncryptionWorker} encryptionWorker
+ * @returns {string}
+ */
+function generateChunkSource(repo, doc, encryptionWorker) {
+  const payload = {
+    owner: repo.author,
+    project: repo.project,
+    branch: repo.branch,
+    path: doc.metadata.source,
+    pat: !!repo.accessToken ? repo.accessToken : null,
+  };
+  return `github://${repo.repo}?payload=${encryptionWorker.encrypt(
+    JSON.stringify(payload)
+  )}`;
+}
+
+module.exports = { loadGithubRepo, fetchGithubFile };

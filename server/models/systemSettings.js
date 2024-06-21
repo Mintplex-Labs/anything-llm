@@ -28,6 +28,9 @@ const SystemSettings = {
     "default_agent_skills",
     "agent_sql_connections",
     "custom_app_name",
+
+    // beta feature flags
+    "experimental_live_file_sync",
   ],
   validations: {
     footer_data: (updates) => {
@@ -76,6 +79,7 @@ const SystemSettings = {
             "serper-dot-dev",
             "bing-search",
             "serply-engine",
+            "searxng-engine",
           ].includes(update)
         )
           throw new Error("Invalid SERP provider.");
@@ -112,6 +116,12 @@ const SystemSettings = {
         console.error(`Failed to merge connections`);
         return JSON.stringify(existingConnections ?? []);
       }
+    },
+    experimental_live_file_sync: (update) => {
+      if (typeof update === "boolean")
+        return update === true ? "enabled" : "disabled";
+      if (!["enabled", "disabled"].includes(update)) return "disabled";
+      return String(update);
     },
   },
   currentSettings: async function () {
@@ -176,10 +186,11 @@ const SystemSettings = {
       // Agent Settings & Configs
       // --------------------------------------------------------
       AgentGoogleSearchEngineId: process.env.AGENT_GSE_CTX || null,
-      AgentGoogleSearchEngineKey: process.env.AGENT_GSE_KEY || null,
-      AgentSerperApiKey: process.env.AGENT_SERPER_DEV_KEY || null,
-      AgentBingSearchApiKey: process.env.AGENT_BING_SEARCH_API_KEY || null,
-      AgentSerplyApiKey: process.env.AGENT_SERPLY_API_KEY || null,
+      AgentGoogleSearchEngineKey: !!process.env.AGENT_GSE_KEY || null,
+      AgentSerperApiKey: !!process.env.AGENT_SERPER_DEV_KEY || null,
+      AgentBingSearchApiKey: !!process.env.AGENT_BING_SEARCH_API_KEY || null,
+      AgentSerplyApiKey: !!process.env.AGENT_SERPLY_API_KEY || null,
+      AgentSearXNGApiUrl: process.env.AGENT_SEARXNG_API_URL || null,
     };
   },
 
@@ -456,6 +467,13 @@ const SystemSettings = {
         return rest;
       });
     },
+  },
+  getFeatureFlags: async function () {
+    return {
+      experimental_live_file_sync:
+        (await SystemSettings.get({ label: "experimental_live_file_sync" }))
+          ?.value === "enabled",
+    };
   },
 };
 

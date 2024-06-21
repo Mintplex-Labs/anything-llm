@@ -26,7 +26,7 @@ function apiSystemEndpoints(app) {
     try {
       if (process.env.NODE_ENV !== "production")
         return response.sendStatus(200).end();
-      await dumpENV();
+      dumpENV();
       response.sendStatus(200).end();
     } catch (e) {
       console.log(e.message, e);
@@ -145,7 +145,6 @@ function apiSystemEndpoints(app) {
       try {
         const body = reqBody(request);
         const { newValues, error } = await updateENV(body);
-        if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
         console.log(e.message, e);

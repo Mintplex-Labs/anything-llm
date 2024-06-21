@@ -1,6 +1,7 @@
 import { API_BASE, AUTH_TIMESTAMP, fullApiUrl } from "@/utils/constants";
 import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
+import LiveDocumentSync from "./experimental/liveSync";
 
 const System = {
   cacheKeys: {
@@ -674,6 +675,9 @@ const System = {
         console.error(e);
         return false;
       });
+  },
+  experimentalFeatures: {
+    liveSync: LiveDocumentSync,
   },
 };
 

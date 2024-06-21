@@ -9,12 +9,16 @@ function langDisplayName(lang) {
 
 function compareStructures(lang, a, b, subdir = null) {
   //if a and b aren't the same type, they can't be equal
-  if (typeof a !== typeof b) {
+  if (typeof a !== typeof b && a !== null && b !== null) {
     console.log("Invalid type comparison", [
       {
         lang,
         a: typeof a,
         b: typeof b,
+        values: {
+          a,
+          b,
+        },
         ...(!!subdir ? { subdir } : {}),
       },
     ]);

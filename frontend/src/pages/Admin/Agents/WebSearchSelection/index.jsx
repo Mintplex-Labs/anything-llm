@@ -4,6 +4,7 @@ import GoogleSearchIcon from "./icons/google.png";
 import SerperDotDevIcon from "./icons/serper.png";
 import BingSearchIcon from "./icons/bing.png";
 import SerplySearchIcon from "./icons/serply.png";
+import SearXNGSearchIcon from "./icons/searxng.png";
 import {
   CaretUpDown,
   MagnifyingGlass,
@@ -17,6 +18,7 @@ import {
   GoogleSearchOptions,
   BingSearchOptions,
   SerplySearchOptions,
+  SearXNGOptions,
 } from "./SearchProviderOptions";
 
 const SEARCH_PROVIDERS = [
@@ -59,6 +61,14 @@ const SEARCH_PROVIDERS = [
     options: (settings) => <SerplySearchOptions settings={settings} />,
     description:
       "Serply.io web-search. Free account with a 100 calls/month forever.",
+  },
+  {
+    name: "SearXNG",
+    value: "searxng-engine",
+    logo: SearXNGSearchIcon,
+    options: (settings) => <SearXNGOptions settings={settings} />,
+    description:
+      "Free, open-source, internet meta-search engine with no tracking.",
   },
 ];
 

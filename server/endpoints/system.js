@@ -66,7 +66,7 @@ function systemEndpoints(app) {
   app.get("/env-dump", async (_, response) => {
     if (process.env.NODE_ENV !== "production")
       return response.sendStatus(200).end();
-    await dumpENV();
+    dumpENV();
     response.sendStatus(200).end();
   });
 
@@ -416,7 +416,6 @@ function systemEndpoints(app) {
           false,
           response?.locals?.user?.id
         );
-        if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
         console.log(e.message, e);
@@ -451,8 +450,6 @@ function systemEndpoints(app) {
             true
           )?.error;
         }
-
-        if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ success: !error, error });
       } catch (e) {
         console.log(e.message, e);
@@ -493,7 +490,6 @@ function systemEndpoints(app) {
           },
           true
         );
-        if (process.env.NODE_ENV === "production") await dumpENV();
         await Telemetry.sendTelemetry("enabled_multi_user_mode", {
           multiUserMode: true,
         });
