@@ -2,8 +2,8 @@ const { EncryptionWorker } = require("../utils/EncryptionWorker");
 const { CommunicationKey } = require("../utils/comKey");
 
 /** 
- * @typedef ResponseWithSigner
- * @property {import("express").Response['locals'] & {encryptionWorker: EncryptionWorker}} locals
+ * Express Response Object interface with defined encryptionWorker attached to locals property.
+ * @typedef {import("express").Response & import("express").Response['locals'] & {encryptionWorker: EncryptionWorker} } ResponseWithSigner
 */
 
 // You can use this middleware to assign the EncryptionWorker to the response locals

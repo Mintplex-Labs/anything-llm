@@ -2,6 +2,8 @@ const { getLinkText } = require("../../processLink");
 
 /**
  * Fetches the content of a raw link. Returns the content as a text string of the link in question.
+ * @param {object} data - metadata from document (eg: link) 
+ * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
 async function resyncLink({ link }, response) {
   if (!link) throw new Error('Invalid link provided');
@@ -22,6 +24,8 @@ async function resyncLink({ link }, response) {
  * Fetches the content of a YouTube link. Returns the content as a text string of the video in question.
  * We offer this as there may be some videos where a transcription could be manually edited after initial scraping
  * but in general - transcriptions often never change.
+ * @param {object} data - metadata from document (eg: link) 
+ * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
 async function resyncYouTube({ link }, response) {
   if (!link) throw new Error('Invalid link provided');
