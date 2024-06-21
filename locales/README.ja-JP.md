@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://useanything.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://useanything.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="DataPrism 360 logo"></a>
 </p>
 
 <div align='center'>
@@ -9,7 +9,7 @@
 </div>
 
 <p align="center">
-    <b>AnythingLLM:</b> あなたが探していたオールインワンAIアプリ。<br />
+    <b>DataPrism 360:</b> あなたが探していたオールインワンAIアプリ。<br />
     ドキュメントとチャットし、AIエージェントを使用し、高度にカスタマイズ可能で、複数ユーザー対応、面倒な設定は不要です。
 </p>
 

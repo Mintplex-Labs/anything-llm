@@ -1,6 +1,6 @@
-# AnythingLLM Development Container Setup
+# DataPrism 360 Development Container Setup
 
-Welcome to the AnythingLLM development container configuration, designed to create a seamless and feature-rich development environment for this project.
+Welcome to the DataPrism 360 development container configuration, designed to create a seamless and feature-rich development environment for this project.
 
 <center><h1><b>PLEASE READ THIS</b></h1></center>
 

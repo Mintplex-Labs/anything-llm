@@ -7,7 +7,7 @@ import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
 import { useTranslation } from "react-i18next";
 
-export default function SingleUserAuth() {
+export default function SingleUserAuth({ logo }) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -71,6 +71,7 @@ export default function SingleUserAuth() {
     <>
       <form onSubmit={handleLogin}>
         <div className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-12 py-12 -mt-36 md:-mt-10">
+          {logo}
           <div className="flex items-start justify-between pt-11 pb-9 rounded-t">
             <div className="flex items-center flex-col gap-y-4">
               <div className="flex gap-x-1">
@@ -78,11 +79,11 @@ export default function SingleUserAuth() {
                   {t("login.multi-user.welcome")}
                 </h3>
                 <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
-                  {customAppName || "AnythingLLM"}
+                  {customAppName || "DataPrism 360"}
                 </p>
               </div>
               <p className="text-sm text-white/90 text-center">
-                {t("login.sign-in.start")} {customAppName || "AnythingLLM"}{" "}
+                {t("login.sign-in.start")} {customAppName || "DataPrism 360"}{" "}
                 {t("login.sign-in.end")}
               </p>
             </div>

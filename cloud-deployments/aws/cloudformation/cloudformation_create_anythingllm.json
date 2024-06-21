@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Create a stack that runs AnythingLLM on a single instance",
+  "Description": "Create a stack that runs DataPrism 360 on a single instance",
   "Parameters": {
     "InstanceType": {
       "Description": "EC2 instance type",
@@ -94,7 +94,7 @@
                 "echo \"Container ID: $(sudo docker ps --latest --quiet)\"\n",
                 "export ONLINE=$(curl -Is http://localhost:3001/api/ping | head -n 1|cut -d$' ' -f2)\n",
                 "echo \"Health check: $ONLINE\"\n",
-                "echo \"Setup complete! AnythingLLM instance is now online!\"\n",
+                "echo \"Setup complete! DataPrism 360 instance is now online!\"\n",
                 "\n",
                 "--//--\n"
               ]
@@ -106,7 +106,7 @@
     "AnythingLLMInstanceSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "AnythingLLM Instance Security Group",
+        "GroupDescription": "DataPrism 360 Instance Security Group",
         "SecurityGroupIngress": [
           {
             "IpProtocol": "tcp",
@@ -132,7 +132,7 @@
   },
   "Outputs": {
     "ServerIp": {
-      "Description": "IP address of the AnythingLLM instance",
+      "Description": "IP address of the DataPrism 360 instance",
       "Value": {
         "Fn::GetAtt": [
           "AnythingLLMInstance",
@@ -141,7 +141,7 @@
       }
     },
     "ServerURL": {
-      "Description": "URL of the AnythingLLM server",
+      "Description": "URL of the DataPrism 360 server",
       "Value": {
         "Fn::Join": [
           "",

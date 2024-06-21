@@ -6,7 +6,7 @@ ARG ARG_UID=1000
 ARG ARG_GID=1000
 
 FROM base AS build-arm64
-RUN echo "Preparing build of AnythingLLM image for arm64 architecture"
+RUN echo "Preparing build of DataPrism 360 image for arm64 architecture"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -64,7 +64,7 @@ RUN echo "Done running arm64 specific installtion steps"
 
 # amd64-specific stage
 FROM base AS build-amd64
-RUN echo "Preparing build of AnythingLLM image for non-ARM architecture"
+RUN echo "Preparing build of DataPrism 360 image for non-ARM architecture"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -107,7 +107,7 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
 
 # hadolint ignore=DL3006
 FROM build-${TARGETARCH} AS build
-RUN echo "Running common build flow of AnythingLLM image for all architectures"
+RUN echo "Running common build flow of DataPrism 360 image for all architectures"
 
 USER anythingllm
 WORKDIR /app

@@ -2,8 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "version": "1.0.0",
-    "title": "AnythingLLM Developer API",
-    "description": "API endpoints that enable programmatic reading, writing, and updating of your AnythingLLM instance. UI supplied by Swagger.io."
+    "title": "DataPrism 360 Developer API",
+    "description": "API endpoints that enable programmatic reading, writing, and updating of your DataPrism 360 instance. UI supplied by Swagger.io."
   },
   "servers": [
     {

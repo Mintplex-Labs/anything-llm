@@ -15,7 +15,7 @@ export default function LanguagePreference() {
           Display Language
         </h2>
         <p className="text-xs leading-[18px] font-base text-white/60">
-          Select the preferred language to render AnythingLLM's UI in, when
+          Select the preferred language to render DataPrism 360's UI in, when
           applicable.
         </p>
       </div>

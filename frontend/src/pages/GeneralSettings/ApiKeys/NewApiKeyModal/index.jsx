@@ -65,7 +65,7 @@ export default function NewApiKeyModal({ closeModal }) {
               )}
               <p className="text-white text-xs md:text-sm">
                 Once created the API key can be used to programmatically access
-                and configure this AnythingLLM instance.
+                and configure this DataPrism 360 instance.
               </p>
               <a
                 href={paths.apiDocs()}

@@ -1,4 +1,4 @@
-// Looking for a language to translate AnythingLLM to?
+// Looking for a language to translate DataPrism 360 to?
 // Create a `common.js` file in the language's ISO code https://www.w3.org/International/O-charset-lang.html
 // eg: Spanish => es/common.js
 // eg: French => fr/common.js

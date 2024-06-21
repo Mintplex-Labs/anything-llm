@@ -8,7 +8,7 @@ import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
 import { useTranslation } from "react-i18next";
 
-const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
+const RecoveryForm = ({ onSubmit, setShowRecoveryForm, logo }) => {
   const [username, setUsername] = useState("");
   const [recoveryCodeInputs, setRecoveryCodeInputs] = useState(
     Array(2).fill("")
@@ -31,8 +31,9 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-8 px-0 py-4 w-full md:w-fit mt-10 md:mt-0"
+      className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-12 px-0 py-12 w-full md:w-fit mt-10 md:mt-0"
     >
+      {logo}
       <div className="flex items-start justify-between pt-11 pb-9 w-screen md:w-full md:px-12 px-6 ">
         <div className="flex flex-col gap-y-4 w-full">
           <h3 className="text-4xl md:text-lg font-bold text-white text-center md:text-left">
@@ -98,7 +99,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
   );
 };
 
-const ResetPasswordForm = ({ onSubmit }) => {
+const ResetPasswordForm = ({ onSubmit, logo }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -112,6 +113,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
       onSubmit={handleSubmit}
       className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-12 px-0 py-4 w-full md:w-fit -mt-24 md:-mt-28"
     >
+      {logo}
       <div className="flex items-start justify-between pt-11 pb-9 w-screen md:w-full md:px-12 px-6">
         <div className="flex flex-col gap-y-4 w-full">
           <h3 className="text-4xl md:text-2xl font-bold text-white text-center md:text-left">
@@ -160,7 +162,7 @@ const ResetPasswordForm = ({ onSubmit }) => {
   );
 };
 
-export default function MultiUserAuth() {
+export default function MultiUserAuth({ logo }) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -265,6 +267,7 @@ export default function MultiUserAuth() {
   if (showRecoveryForm) {
     return (
       <RecoveryForm
+        logo={logo}
         onSubmit={handleRecoverySubmit}
         setShowRecoveryForm={setShowRecoveryForm}
       />
@@ -272,11 +275,12 @@ export default function MultiUserAuth() {
   }
 
   if (showResetPasswordForm)
-    return <ResetPasswordForm onSubmit={handleResetSubmit} />;
+    return <ResetPasswordForm logo={logo} onSubmit={handleResetSubmit} />;
   return (
     <>
       <form onSubmit={handleLogin}>
         <div className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-12 py-12 -mt-4 md:mt-0">
+          {logo}
           <div className="flex items-start justify-between pt-11 pb-9 rounded-t">
             <div className="flex items-center flex-col gap-y-4">
               <div className="flex gap-x-1">
@@ -284,11 +288,11 @@ export default function MultiUserAuth() {
                   {t("login.multi-user.welcome")}
                 </h3>
                 <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
-                  {customAppName || "AnythingLLM"}
+                  {customAppName || "DataPrism 360"}
                 </p>
               </div>
               <p className="text-sm text-white/90 text-center">
-                {t("login.sign-in.start")} {customAppName || "AnythingLLM"}{" "}
+                {t("login.sign-in.start")} {customAppName || "DataPrism 360"}{" "}
                 {t("login.sign-in.end")}
               </p>
             </div>

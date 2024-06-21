@@ -11,6 +11,8 @@ import Footer from "../Footer";
 import SettingsButton from "../SettingsButton";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
+import SaalLogoDark from './../../media/logo/saal_logo_dark.png';
+
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -26,7 +28,11 @@ export default function Sidebar() {
     <div>
       <Link
         to={paths.home()}
-        className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
+        className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px]"
+        style={{
+          marginTop: "26px",
+          marginBottom: "18px",
+        }}
         aria-label="Home"
       >
         <img
@@ -37,7 +43,11 @@ export default function Sidebar() {
       </Link>
       <div
         ref={sidebarRef}
-        className="relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-76px)]"
+        style={{
+          marginTop: "26px",
+          marginBottom: "16px",
+        }}
+        className="relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-88px)]"
       >
         <div className="flex flex-col h-full overflow-x-hidden">
           <div className="flex-grow flex flex-col min-w-[235px]">
@@ -61,6 +71,10 @@ export default function Sidebar() {
             </div>
             <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
               <Footer />
+              <div className="whitespace-pre-line text-white align-center justify-center font-normal text-xs flex">
+                <>Powerer by:&nbsp;</>
+                <img style={{ height: "12px" }} src={SaalLogoDark} alt="logo" />
+              </div>
             </div>
           </div>
         </div>

@@ -1,25 +1,25 @@
-# AnythingLLM Embedded Chat Widget
+# DataPrism 360 Embedded Chat Widget
 
 > [!WARNING]
-> The use of the AnythingLLM embed is currently in beta. Please request a feature or
+> The use of the DataPrism 360 embed is currently in beta. Please request a feature or
 > report a bug via a Github Issue if you have any issues.
 
 > [!WARNING]
-> The core AnythingLLM team publishes a pre-built version of the script that is bundled
+> The core DataPrism 360 team publishes a pre-built version of the script that is bundled
 > with the main application. You can find it at the frontend URL `/embed/anythingllm-chat-widget.min.js`.
 > You should only be working in this repo if you are wanting to build your own custom embed.
 
-This folder of AnythingLLM contains the source code for how the embedded version of AnythingLLM works to provide a public facing interface of your workspace.
+This folder of DataPrism 360 contains the source code for how the embedded version of DataPrism 360 works to provide a public facing interface of your workspace.
 
-The AnythingLLM Embedded chat widget allows you to expose a workspace and its embedded knowledge base as a chat bubble via a `<script>` or `<iframe>` element that you can embed in a website or HTML.
+The DataPrism 360 Embedded chat widget allows you to expose a workspace and its embedded knowledge base as a chat bubble via a `<script>` or `<iframe>` element that you can embed in a website or HTML.
 
 ### Security
 
-- Users will _not_ be able to view or read context snippets like they can in the core AnythingLLM application
+- Users will _not_ be able to view or read context snippets like they can in the core DataPrism 360 application
 - Users are assigned a random session ID that they use to persist a chat session.
 - **Recommended** You can limit both the number of chats an embedding can process **and** per-session.
 
-_by using the AnythingLLM embedded chat widget you are responsible for securing and configuration of the embed as to not allow excessive chat model abuse of your instance_
+_by using the DataPrism 360 embedded chat widget you are responsible for securing and configuration of the embed as to not allow excessive chat model abuse of your instance_
 
 ### Developer Setup
 
@@ -57,9 +57,9 @@ REQUIRED data attributes:
 
 - `data-prompt` — Override the chat window with a custom system prompt. This is not visible to the user. If undefined it will use the embeds attached workspace system prompt.
 
-- `data-model` — Override the chat model used for responses. This must be a valid model string for your AnythingLLM LLM provider. If unset it will use the embeds attached workspace model selection or the system setting.
+- `data-model` — Override the chat model used for responses. This must be a valid model string for your DataPrism 360 LLM provider. If unset it will use the embeds attached workspace model selection or the system setting.
 
-- `data-temperature` — Override the chat model temperature. This must be a valid value for your AnythingLLM LLM provider. If unset it will use the embeds attached workspace model temperature or the system setting.
+- `data-temperature` — Override the chat model temperature. This must be a valid value for your DataPrism 360 LLM provider. If unset it will use the embeds attached workspace model temperature or the system setting.
 
 **Style Overrides**
 
@@ -83,7 +83,7 @@ REQUIRED data attributes:
 
 - `data-position` - Adjust the positioning of the embed chat widget and open chat button. Default `bottom-right`. Options are `bottom-right`, `bottom-left`, `top-right`, `top-left`.
 
-- `data-assistant-name` - Set the chat assistant name that appears above each chat message. Default `AnythingLLM Chat Assistant`
+- `data-assistant-name` - Set the chat assistant name that appears above each chat message. Default `DataPrism 360 Chat Assistant`
 
 - `data-assistant-icon` - Set the icon of the chat assistant.
 

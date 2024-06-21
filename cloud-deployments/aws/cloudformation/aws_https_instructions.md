@@ -13,7 +13,7 @@ Instructions for manual https configuration after generating and running the aws
 
 ## Step 2: Configure DNS A record to resolve to the previously assigned EC2 instance via EIP 
 These instructions assume that you already have a top-level domain configured and are using a subdomain 
-to access AnythingLLM.
+to access DataPrism 360.
 1. Follow AWS instructions on routing traffic to EC2 instance here: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-ec2-instance.html 
 
 ## Step 3: Install and enable nginx
@@ -57,7 +57,7 @@ These instructions are for CLI configuration and assume you are logged in to EC2
 ```
 3. Enter ':wq' to save the changes to the nginx default config
 
-## Step 7: Create simple http proxy configuration for AnythingLLM 
+## Step 7: Create simple http proxy configuration for DataPrism 360 
 These instructions are for CLI configuration and assume you are logged in to EC2 instance as the ec2-user.
 1. $sudo vi /etc/nginx/conf.d/anything.conf
 2. Add the following configuration ensuring that you add your FQDN:.
@@ -97,7 +97,7 @@ server {
 These instructions are for CLI configuration and assume you are logged in to EC2 instance as the ec2-user.
 1. $sudo nginx -t
 2. $sudo systemctl restart nginx
-3. Navigate to http://FQDN in a browser and you should be proxied to the AnythingLLM web UI.
+3. Navigate to http://FQDN in a browser and you should be proxied to the DataPrism 360 web UI.
 
 ## Step 9: Generate/install cert
 These instructions are for CLI configuration and assume you are logged in to EC2 instance as the ec2-user.
@@ -112,7 +112,7 @@ These instructions are for CLI configuration and assume you are logged in to EC2
 ## Step 10: Test Cert installation
 1. $sudo cat /etc/nginx/conf.d/anything.conf
 Your should see a completely updated configuration that includes https/443 and a redirect configuration for http/80. 
-2. Navigate to https://FQDN in a browser and you should be proxied to the AnythingLLM web UI.
+2. Navigate to https://FQDN in a browser and you should be proxied to the DataPrism 360 web UI.
 
 ## Step 11: (Optional) Remove temporary Inbound Traffic Rule for Security Group to certbot DNS verification
 1. Follow AWS instructions on deleting inbound rule (http port 80 0.0.0.0/0) for EC2 security group here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/working-with-security-groups.html#deleting-security-group-rule

@@ -1,4 +1,4 @@
-# AnythingLLM Storage
+# DataPrism 360 Storage
 
 This folder is for the local or disk storage of ready-to-embed documents, vector-cached embeddings, and the disk-storage of LanceDB and the local SQLite database.
 
@@ -16,7 +16,7 @@ and a file named exactly `anythingllm.db`
   - Create a `anythingllm.db` empty file in this directory. Thats all. No need to reboot the server or anything. If your permissions are correct this should not ever occur since the server will create the file if it does not exist automatically.
 
 - Docker Instance
-  - Get your AnythingLLM docker container id with `docker ps -a`. The container must be running to execute the next commands.
+  - Get your DataPrism 360 docker container id with `docker ps -a`. The container must be running to execute the next commands.
   - Run `docker container exec -u 0 -t <ANYTHINGLLM DOCKER CONTAINER ID> mkdir -p /app/server/storage /app/server/storage/documents /app/server/storage/vector-cache /app/server/storage/lancedb`
   - Run `docker container exec -u 0 -t <ANYTHINGLLM DOCKER CONTAINER ID> touch /app/server/storage/anythingllm.db`
   - Run `docker container exec -u 0 -t <ANYTHINGLLM DOCKER CONTAINER ID> chown -R anythingllm:anythingllm /app/collector /app/server`

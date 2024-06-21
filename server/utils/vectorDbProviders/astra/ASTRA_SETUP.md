@@ -1,4 +1,4 @@
-# How to setup Astra Vector Database for AnythingLLM
+# How to setup Astra Vector Database for DataPrism 360
 
 [Official Astra DB Docs](https://docs.datastax.com/en/astra/astra-db-vector/get-started/quickstart.html) for reference.
 
