@@ -723,7 +723,7 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   }
 
   await logChangesToEventLog(newValues, userId);
-  if (process.env.NODE_ENV === "production") await dumpENV();
+  if (process.env.NODE_ENV === "production") dumpENV();
   return { newValues, error: error?.length > 0 ? error : false };
 }
 
@@ -749,7 +749,7 @@ async function logChangesToEventLog(newValues = {}, userId = null) {
   return;
 }
 
-async function dumpENV() {
+function dumpENV() {
   const fs = require("fs");
   const path = require("path");
 

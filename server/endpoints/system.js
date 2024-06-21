@@ -66,7 +66,7 @@ function systemEndpoints(app) {
   app.get("/env-dump", async (_, response) => {
     if (process.env.NODE_ENV !== "production")
       return response.sendStatus(200).end();
-    await dumpENV();
+    dumpENV();
     response.sendStatus(200).end();
   });
 
