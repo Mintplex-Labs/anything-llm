@@ -86,7 +86,8 @@ const TRANSLATIONS = {
     },
     delete: {
       title: "Delete Workspace",
-      description: "Delete this workspace and all of its data.",
+      description:
+        "Delete this workspace and all of its data. This will delete the workspace for all users.",
       delete: "Delete Workspace",
       deleting: "Deleting Workspace...",
       "confirm-start": "You are about to delete your entire",
