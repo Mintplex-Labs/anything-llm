@@ -1,10 +1,19 @@
+import { useEffect, useState } from "react";
+import System from "@/models/system";
+
 export default function GenericOpenAiOptions({ settings }) {
+  const [basePathValue, setBasePathValue] = useState(
+    settings?.GenericOpenAiBasePath
+  );
+
+  const [basePath, setBasePath] = useState(settings?.GenericOpenAiBasePath);
+
   return (
     <div className="flex flex-col gap-y-4">
       <div className="flex gap-4 flex-wrap">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
-            Base URL
+            generic OpenAi Base URL
           </label>
           <input
             type="url"
@@ -15,6 +24,8 @@ export default function GenericOpenAiOptions({ settings }) {
             required={true}
             autoComplete="off"
             spellCheck={false}
+            onChange={(e) => setBasePathValue(e.target.value)}
+            onBlur={() => setBasePath(basePathValue)}
           />
         </div>
         <div className="flex flex-col w-60">
@@ -32,20 +43,14 @@ export default function GenericOpenAiOptions({ settings }) {
             spellCheck={false}
           />
         </div>
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Chat Model Name
-          </label>
-          <input
-            type="text"
-            name="GenericOpenAiModelPref"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="Model id used for chat requests"
-            defaultValue={settings?.GenericOpenAiModelPref}
-            required={true}
-            autoComplete="off"
-          />
-        </div>
+        {!settings?.credentialsOnly && (
+          <>
+            <GenericOpenAiModelSelection
+              settings={settings}
+              basePath={basePath}
+            />
+          </>
+        )}
       </div>
       <div className="flex gap-x-4 flex-wrap">
         <div className="flex flex-col w-60">
@@ -80,6 +85,80 @@ export default function GenericOpenAiOptions({ settings }) {
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+function GenericOpenAiModelSelection({ settings, basePath = null }) {
+  const [customModels, setCustomModels] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function findCustomModels() {
+      if (!basePath) {
+        setCustomModels([]);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      const { models } = await System.customModels(
+        "generic-openai",
+        null,
+        basePath
+      );
+      setCustomModels(models || []);
+      setLoading(false);
+    }
+    findCustomModels();
+  }, [basePath]);
+
+  if (loading || customModels.length == 0) {
+    return (
+      <div className="flex flex-col w-60">
+        <label className="text-white text-sm font-semibold block mb-4">
+          Chat Model Selection
+        </label>
+        <select
+          name="GenericOpenAiModelPref"
+          disabled={true}
+          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        >
+          <option disabled={true} selected={true}>
+            {basePath
+              ? "-- loading available models --"
+              : "-- waiting for URL --"}
+          </option>
+        </select>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col w-60">
+      <label className="text-white text-sm font-semibold block mb-4">
+        Chat Model Selection
+      </label>
+      <select
+        name="GenericOpenAiLLMModelPref"
+        required={true}
+        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+      >
+        {customModels.length > 0 && (
+          <optgroup label="Your loaded models">
+            {customModels.map((model) => {
+              return (
+                <option
+                  key={model.id}
+                  value={model.id}
+                  selected={settings.GenericOpenAiModelPref === model.id}
+                >
+                  {model.id}
+                </option>
+              );
+            })}
+          </optgroup>
+        )}
+      </select>
     </div>
   );
 }

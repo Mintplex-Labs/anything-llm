@@ -84,7 +84,7 @@ function OllamaLLMModelSelection({ settings, basePath = null }) {
           className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            {!!basePath
+            {basePath
               ? "-- loading available models --"
               : "-- waiting for URL --"}
           </option>
