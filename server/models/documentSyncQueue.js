@@ -40,10 +40,10 @@ const DocumentSyncQueue = {
 
   canWatch: function ({ title, chunkSource = null } = {}) {
     if (chunkSource.startsWith("link://") && title.endsWith(".html"))
-      return true; // If is web-link material
+      return true; // If is web-link material (prior to feature most chunkSources were links://)
     if (chunkSource.startsWith("youtube://")) return true; // If is a youtube link
     if (chunkSource.startsWith("confluence://")) return true; // If is a confluence document link
-    if (chunkSource.startsWith("github://")) return true; // If is a confluence document link
+    if (chunkSource.startsWith("github://")) return true; // If is a Github file reference
     return false;
   },
 

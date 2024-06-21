@@ -22,7 +22,6 @@ const { bootHTTP, bootSSL } = require("./utils/boot");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const { documentEndpoints } = require("./endpoints/document");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
-const { BackgroundService } = require("./utils/BackgroundWorkers");
 const { experimentalEndpoints } = require("./endpoints/experimental");
 const app = express();
 const apiRouter = express.Router();
@@ -120,4 +119,3 @@ app.all("*", function (_, response) {
 // In non-https mode we need to boot at the end since the server has not yet
 // started and is `.listen`ing.
 if (!process.env.ENABLE_HTTPS) bootHTTP(app, process.env.SERVER_PORT || 3001);
-new BackgroundService().boot();

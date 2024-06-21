@@ -38,7 +38,9 @@ function liveSyncEndpoints(app) {
           experimental_live_file_sync: newStatus,
         });
         if (newStatus === "enabled") {
-          await Telemetry.sendTelemetry("experimental_feature_enabled");
+          await Telemetry.sendTelemetry("experimental_feature_enabled", {
+            feature: "live_file_sync",
+          });
           await EventLogs.logEvent("experimental_feature_enabled", {
             feature: "live_file_sync",
           });
@@ -86,6 +88,7 @@ function liveSyncEndpoints(app) {
       validatedRequest,
       flexUserRoleValid([ROLES.admin, ROLES.manager]),
       validWorkspaceSlug,
+      featureFlagEnabled(DocumentSyncQueue.featureKey),
     ],
     async (request, response) => {
       try {

@@ -60,7 +60,7 @@ const { DocumentSyncRun } = require('../models/documentSyncRun.js');
 
       if (!newContent) {
         // Check if the last "x" runs were all failures (not exits!). If so - remove the job entirely since it is broken.
-        const failedRunCount = (await DocumentSyncRun.where({ queueId: queue.id }, DocumentSyncQueue.maxRepeatFailures, { createdAt: 'desc' })).filter((run) => run.status === 'failed').length;
+        const failedRunCount = (await DocumentSyncRun.where({ queueId: queue.id }, DocumentSyncQueue.maxRepeatFailures, { createdAt: 'desc' })).filter((run) => run.status === DocumentSyncRun.statuses.failed).length;
         if (failedRunCount >= DocumentSyncQueue.maxRepeatFailures) {
           log(`Document ${document.filename} has failed to refresh ${failedRunCount} times continuously and will now be removed from the watched document set.`)
           await DocumentSyncQueue.unwatch(document);
@@ -68,7 +68,7 @@ const { DocumentSyncRun } = require('../models/documentSyncRun.js');
         }
 
         log(`Failed to get a new content response from collector for source ${source}. Skipping, but will retry next worker interval. Attempt ${failedRunCount === 0 ? 1 : failedRunCount}/${DocumentSyncQueue.maxRepeatFailures}`);
-        await DocumentSyncQueue.saveRun(queue.id, 'failed', { filename: document.filename, workspacesModified: [], reason: 'No content found.' })
+        await DocumentSyncQueue.saveRun(queue.id, DocumentSyncRun.statuses.failed, { filename: document.filename, workspacesModified: [], reason: 'No content found.' })
         continue;
       }
 
@@ -83,7 +83,7 @@ const { DocumentSyncRun } = require('../models/documentSyncRun.js');
             nextSyncAt: nextSync.toISOString(),
           }
         );
-        await DocumentSyncQueue.saveRun(queue.id, 'exited', { filename: document.filename, workspacesModified: [], reason: 'Content unchanged.' })
+        await DocumentSyncQueue.saveRun(queue.id, DocumentSyncRun.statuses.exited, { filename: document.filename, workspacesModified: [], reason: 'Content unchanged.' })
         continue;
       }
 
@@ -142,7 +142,7 @@ const { DocumentSyncRun } = require('../models/documentSyncRun.js');
           nextSyncAt: nextRefresh.toISOString(),
         }
       );
-      await DocumentSyncQueue.saveRun(queue.id, 'success', { filename: document.filename, workspacesModified })
+      await DocumentSyncQueue.saveRun(queue.id, DocumentSyncRun.statuses.success, { filename: document.filename, workspacesModified })
     }
   } catch (e) {
     console.error(e)

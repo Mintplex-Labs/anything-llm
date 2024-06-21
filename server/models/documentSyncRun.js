@@ -1,13 +1,19 @@
 const prisma = require("../utils/prisma");
 const DocumentSyncRun = {
-  statuses: ["unknown", "exited", "failed", "success"],
+  statuses: {
+    unknown: "unknown",
+    exited: "exited",
+    failed: "failed",
+    success: "success",
+  },
 
   save: async function (queueId = null, status = null, result = {}) {
     try {
-      if (!this.statuses.includes(status))
+      if (!this.statuses.hasOwnProperty(status))
         throw new Error(
           `DocumentSyncRun status ${status} is not a valid status.`
         );
+
       const run = await prisma.document_sync_executions.create({
         data: {
           queueId: Number(queueId),

@@ -400,7 +400,7 @@ const SidebarOptions = ({ user = null, t }) => (
   </>
 );
 
-function HoldToReveal({ children }) {
+function HoldToReveal({ children, holdForMs = 3_000 }) {
   let timeout;
   const [showing, setShowing] = useState(
     window.localStorage.getItem(
@@ -421,7 +421,7 @@ function HoldToReveal({ children }) {
         window.removeEventListener("keypress", onPress);
         window.removeEventListener("keyup", onRelease);
         clearTimeout(timeout);
-      }, 3_000);
+      }, holdForMs);
     };
     const onRelease = (e) => {
       if (!["Control", "Meta"].includes(e.key)) return;
@@ -435,7 +435,6 @@ function HoldToReveal({ children }) {
     };
 
     if (!showing) {
-      console.log("ATTACHING");
       window.addEventListener("keydown", onPress);
       window.addEventListener("keyup", onRelease);
     }
