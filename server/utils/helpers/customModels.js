@@ -387,11 +387,10 @@ async function genericOpenAiModels(basePath = null) {
   } catch {
     return { models: [], error: "Not a valid URL." };
   }
-  console.log(url);
   const models = await fetch(`${url}/models`)
     .then((res) => {
       if (!res.ok)
-        throw new Error(`Could not reach generic OpenAi server! ${res.status}`);
+        throw new Error(`Could not reach generic OpenAI server! ${res.status}`);
       return res.json();
     })
     .then((data) => data?.data || [])
