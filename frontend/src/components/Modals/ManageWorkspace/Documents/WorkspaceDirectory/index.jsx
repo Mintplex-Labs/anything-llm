@@ -232,8 +232,7 @@ const DocumentWatchAlert = memo(() => {
               be available for manually uploaded documents.
             </p>
             <p>
-              You can manage what documents are watched and force-refresh
-              documents from the{" "}
+              You can manage what documents are watched from the{" "}
               <Link
                 to={paths.experimental.liveDocumentSync.manage()}
                 className="text-blue-600 underline"
