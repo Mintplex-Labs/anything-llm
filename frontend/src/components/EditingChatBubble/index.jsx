@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 export default function EditingChatBubble({
   message,
@@ -11,11 +12,12 @@ export default function EditingChatBubble({
   const [isEditing, setIsEditing] = useState(false);
   const [tempMessage, setTempMessage] = useState(message[type]);
   const isUser = type === "user";
+  const { t } = useTranslation();
 
   return (
     <div>
       <p className={`text-xs text-[#D3D4D4] ${isUser ? "text-right" : ""}`}>
-        {isUser ? "User" : "AnythingLLM Chat Assistant"}
+        {isUser ? t("common.user") : t("appearance.message.assistant")}
       </p>
       <div
         className={`relative flex w-full mt-2 items-start ${

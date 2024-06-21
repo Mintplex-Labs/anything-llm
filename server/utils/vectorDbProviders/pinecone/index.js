@@ -98,7 +98,8 @@ const PineconeDB = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null
+    fullFilePath = null,
+    skipCache = false
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -111,26 +112,28 @@ const PineconeDB = {
           origin: "Pinecone",
         }
       );
-      const cacheResult = await cachedVectorInformation(fullFilePath);
-      if (cacheResult.exists) {
-        const { pineconeIndex } = await this.connect();
-        const pineconeNamespace = pineconeIndex.namespace(namespace);
-        const { chunks } = cacheResult;
-        const documentVectors = [];
+      if (!skipCache) {
+        const cacheResult = await cachedVectorInformation(fullFilePath);
+        if (cacheResult.exists) {
+          const { pineconeIndex } = await this.connect();
+          const pineconeNamespace = pineconeIndex.namespace(namespace);
+          const { chunks } = cacheResult;
+          const documentVectors = [];
 
-        for (const chunk of chunks) {
-          // Before sending to Pinecone and saving the records to our db
-          // we need to assign the id of each chunk that is stored in the cached file.
-          const newChunks = chunk.map((chunk) => {
-            const id = uuidv4();
-            documentVectors.push({ docId, vectorId: id });
-            return { ...chunk, id };
-          });
-          await pineconeNamespace.upsert([...newChunks]);
+          for (const chunk of chunks) {
+            // Before sending to Pinecone and saving the records to our db
+            // we need to assign the id of each chunk that is stored in the cached file.
+            const newChunks = chunk.map((chunk) => {
+              const id = uuidv4();
+              documentVectors.push({ docId, vectorId: id });
+              return { ...chunk, id };
+            });
+            await pineconeNamespace.upsert([...newChunks]);
+          }
+
+          await DocumentVectors.bulkInsert(documentVectors);
+          return { vectorized: true, error: null };
         }
-
-        await DocumentVectors.bulkInsert(documentVectors);
-        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.

@@ -103,7 +103,8 @@ const AstraDB = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null
+    fullFilePath = null,
+    skipCache = false
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -114,40 +115,42 @@ const AstraDB = {
       logger.info("Adding new vectorized document into namespace", {
         origin: "AstraDB",
       });
-      const cacheResult = await cachedVectorInformation(fullFilePath);
-      if (cacheResult.exists) {
-        const { client } = await this.connect();
-        const { chunks } = cacheResult;
-        const documentVectors = [];
-        vectorDimension = chunks[0][0].values.length || null;
+      if (!skipCache) {
+        const cacheResult = await cachedVectorInformation(fullFilePath);
+        if (cacheResult.exists) {
+          const { client } = await this.connect();
+          const { chunks } = cacheResult;
+          const documentVectors = [];
+          vectorDimension = chunks[0][0].values.length || null;
 
-        const collection = await this.getOrCreateCollection(
-          client,
-          namespace,
-          vectorDimension
-        );
-        if (!(await this.isRealCollection(collection)))
-          throw new Error("Failed to create new AstraDB collection!", {
+          const collection = await this.getOrCreateCollection(
+            client,
             namespace,
-          });
+            vectorDimension
+          );
+          if (!(await this.isRealCollection(collection)))
+            throw new Error("Failed to create new AstraDB collection!", {
+              namespace,
+            });
 
-        for (const chunk of chunks) {
-          // Before sending to Astra and saving the records to our db
-          // we need to assign the id of each chunk that is stored in the cached file.
-          const newChunks = chunk.map((chunk) => {
-            const _id = uuidv4();
-            documentVectors.push({ docId, vectorId: _id });
-            return {
-              _id: _id,
-              $vector: chunk.values,
-              metadata: chunk.metadata || {},
-            };
-          });
+          for (const chunk of chunks) {
+            // Before sending to Astra and saving the records to our db
+            // we need to assign the id of each chunk that is stored in the cached file.
+            const newChunks = chunk.map((chunk) => {
+              const _id = uuidv4();
+              documentVectors.push({ docId, vectorId: _id });
+              return {
+                _id: _id,
+                $vector: chunk.values,
+                metadata: chunk.metadata || {},
+              };
+            });
 
-          await collection.insertMany(newChunks);
+            await collection.insertMany(newChunks);
+          }
+          await DocumentVectors.bulkInsert(documentVectors);
+          return { vectorized: true, error: null };
         }
-        await DocumentVectors.bulkInsert(documentVectors);
-        return { vectorized: true, error: null };
       }
 
       const EmbedderEngine = getEmbeddingEngineSelection();

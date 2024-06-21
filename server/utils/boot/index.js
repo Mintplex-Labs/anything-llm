@@ -1,5 +1,7 @@
 const chalk = require("chalk");
 const { Telemetry } = require("../../models/telemetry");
+const { BackgroundService } = require("../BackgroundWorkers");
+const { EncryptionManager } = require("../EncryptionManager");
 const { CommunicationKey } = require("../comKey");
 const logger = require("../logger");
 const setupTelemetry = require("../telemetry");
@@ -21,6 +23,8 @@ function bootSSL(app, port = 3001) {
       .listen(port, async () => {
         await setupTelemetry();
         new CommunicationKey(true);
+        new EncryptionManager();
+        new BackgroundService().boot();
         logger.info(`Primary server in HTTPS mode listening on port ${port}`, {
           origin: "bootSSL",
         });
@@ -47,6 +51,8 @@ function bootHTTP(app, port = 3001) {
     .listen(port, async () => {
       await setupTelemetry();
       new CommunicationKey(true);
+      new EncryptionManager();
+      new BackgroundService().boot();
       logger.info(`Primary server in HTTP mode listening on port ${port}`, {
         origin: "bootHTTP",
       });

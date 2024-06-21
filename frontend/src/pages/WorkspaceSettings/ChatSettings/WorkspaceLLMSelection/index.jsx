@@ -4,6 +4,7 @@ import WorkspaceLLMItem from "./WorkspaceLLMItem";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import ChatModelSelection from "../ChatModelSelection";
+import { useTranslation } from "react-i18next";
 
 // Some providers can only be associated with a single model.
 // In that case there is no selection to be made so we can just move on.
@@ -34,7 +35,7 @@ export default function WorkspaceLLMSelection({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
-
+  const { t } = useTranslation();
   function updateLLMChoice(selection) {
     setSearchQuery("");
     setSelectedLLM(selection);
@@ -63,11 +64,10 @@ export default function WorkspaceLLMSelection({
     <div className="border-b border-white/40 pb-8">
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Workspace LLM Provider
+          {t("chat.llm.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          The specific LLM provider & model that will be used for this
-          workspace. By default, it uses the system LLM provider and settings.
+          {t("chat.llm.description")}
         </p>
       </div>
 
@@ -92,7 +92,7 @@ export default function WorkspaceLLMSelection({
                   type="text"
                   name="llm-search"
                   autoComplete="off"
-                  placeholder="Search all LLM providers"
+                  placeholder={t("chat.llm.search")}
                   className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:border-white text-white placeholder:text-white placeholder:font-medium"
                   onChange={(e) => setSearchQuery(e.target.value)}
                   ref={searchInputRef}

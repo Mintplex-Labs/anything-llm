@@ -221,6 +221,12 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // Generic OpenAI Embedding Settings
+  GenericOpenAiEmbeddingApiKey: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_API_KEY",
+    checks: [],
+  },
+
   // Vector Database Selection Settings
   VectorDB: {
     envKey: "VECTOR_DB",
@@ -407,6 +413,10 @@ const KEY_MAPPING = {
     envKey: "AGENT_SERPLY_API_KEY",
     checks: [],
   },
+  AgentSearXNGApiUrl: {
+    envKey: "AGENT_SEARXNG_API_URL",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
@@ -565,6 +575,7 @@ function validAnthropicModel(input = "") {
     "claude-3-opus-20240229",
     "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
+    "claude-3-5-sonnet-20240620",
   ];
   return validModels.includes(input)
     ? null
@@ -582,6 +593,7 @@ function supportedEmbeddingModel(input = "") {
     "cohere",
     "voyageai",
     "litellm",
+    "generic-openai",
   ];
   return supported.includes(input)
     ? null
@@ -718,6 +730,7 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   }
 
   await logChangesToEventLog(newValues, userId);
+  if (process.env.NODE_ENV === "production") dumpENV();
   return { newValues, error: error?.length > 0 ? error : false };
 }
 
@@ -743,15 +756,20 @@ async function logChangesToEventLog(newValues = {}, userId = null) {
   return;
 }
 
-async function dumpENV() {
+function dumpENV() {
   const fs = require("fs");
   const path = require("path");
 
   const frozenEnvs = {};
   const protectedKeys = [
     ...Object.values(KEY_MAPPING).map((values) => values.envKey),
+    // Manually Add Keys here which are not already defined in KEY_MAPPING
+    // and are either managed or manually set ENV key:values.
     "STORAGE_DIR",
     "SERVER_PORT",
+    // For persistent data encryption
+    "SIG_KEY",
+    "SIG_SALT",
     // Password Schema Keys if present.
     "PASSWORDMINCHAR",
     "PASSWORDMAXCHAR",
@@ -764,16 +782,6 @@ async function dumpENV() {
     "ENABLE_HTTPS",
     "HTTPS_CERT_PATH",
     "HTTPS_KEY_PATH",
-    // DISABLED TELEMETRY
-    "DISABLE_TELEMETRY",
-
-    // Agent Integrations
-    // Search engine integrations
-    "AGENT_GSE_CTX",
-    "AGENT_GSE_KEY",
-    "AGENT_SERPER_DEV_KEY",
-    "AGENT_BING_SEARCH_API_KEY",
-    "AGENT_SERPLY_API_KEY",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

@@ -5,8 +5,10 @@ import paths from "../../../utils/paths";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
+import { useTranslation } from "react-i18next";
 
 export default function SingleUserAuth() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [recoveryCodes, setRecoveryCodes] = useState([]);
@@ -73,14 +75,15 @@ export default function SingleUserAuth() {
             <div className="flex items-center flex-col gap-y-4">
               <div className="flex gap-x-1">
                 <h3 className="text-md md:text-2xl font-bold text-white text-center white-space-nowrap hidden md:block">
-                  Welcome to
+                  {t("login.multi-user.welcome")}
                 </h3>
                 <p className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-[#75D6FF] via-[#FFFFFF] to-[#FFFFFF] bg-clip-text text-transparent">
                   {customAppName || "AnythingLLM"}
                 </p>
               </div>
               <p className="text-sm text-white/90 text-center">
-                Sign in to your {customAppName || "AnythingLLM"} instance.
+                {t("login.sign-in.start")} {customAppName || "AnythingLLM"}{" "}
+                {t("login.sign-in.end")}
               </p>
             </div>
           </div>

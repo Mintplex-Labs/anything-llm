@@ -358,6 +358,7 @@ function adminEndpoints(app) {
           custom_app_name:
             (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
             null,
+          feature_flags: (await SystemSettings.getFeatureFlags()) || {},
         };
         response.status(200).json({ settings });
       } catch (e) {

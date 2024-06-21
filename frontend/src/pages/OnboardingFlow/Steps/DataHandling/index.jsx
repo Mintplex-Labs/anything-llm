@@ -308,6 +308,13 @@ export const EMBEDDING_ENGINE_PRIVACY = {
     ],
     logo: LiteLLMLogo,
   },
+  "generic-openai": {
+    name: "Generic OpenAI compatible service",
+    description: [
+      "Data is shared according to the terms of service applicable with your generic endpoint provider.",
+    ],
+    logo: GenericOpenAiLogo,
+  },
 };
 
 export default function DataHandling({ setHeader, setForwardBtn, setBackBtn }) {

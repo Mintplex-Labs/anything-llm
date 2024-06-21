@@ -9,6 +9,7 @@ import showToast from "@/utils/toast";
 import System from "@/models/system";
 import { CaretDown, Download, Trash } from "@phosphor-icons/react";
 import { saveAs } from "file-saver";
+import { useTranslation } from "react-i18next";
 
 const exportOptions = {
   csv: {
@@ -54,6 +55,7 @@ export default function WorkspaceChats() {
   const [chats, setChats] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
+  const { t } = useTranslation();
 
   const handleDumpChats = async (exportType) => {
     const chats = await System.exportChats(exportType);
@@ -122,7 +124,7 @@ export default function WorkspaceChats() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="flex gap-x-4 items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                Workspace Chats
+                {t("recorded.title")}
               </p>
               <div className="relative">
                 <button
@@ -131,7 +133,7 @@ export default function WorkspaceChats() {
                   className="flex items-center gap-x-2 px-4 py-1 rounded-lg bg-primary-button hover:text-white text-xs font-semibold hover:bg-secondary shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                 >
                   <Download size={18} weight="bold" />
-                  Export
+                  {t("recorded.export")}
                   <CaretDown size={18} weight="bold" />
                 </button>
                 <div
@@ -167,8 +169,7 @@ export default function WorkspaceChats() {
               )}
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              These are all the recorded chats and messages that have been sent
-              by users ordered by their creation date.
+              {t("recorded.description")}
             </p>
           </div>
           <ChatsContainer
@@ -178,6 +179,7 @@ export default function WorkspaceChats() {
             offset={offset}
             setOffset={setOffset}
             canNext={canNext}
+            t={t}
           />
         </div>
       </div>
@@ -192,6 +194,7 @@ function ChatsContainer({
   offset,
   setOffset,
   canNext,
+  t,
 }) {
   const handlePrevious = () => {
     setOffset(Math.max(offset - 1, 0));
@@ -225,22 +228,22 @@ function ChatsContainer({
         <thead className="text-white text-opacity-80 text-xs leading-[18px] font-bold uppercase border-white border-b border-opacity-60">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
-              Id
+              {t("recorded.table.id")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Sent By
+              {t("recorded.table.by")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Workspace
+              {t("recorded.table.workspace")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Prompt
+              {t("recorded.table.prompt")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Response
+              {t("recorded.table.response")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Sent At
+              {t("recorded.table.at")}
             </th>
             <th scope="col" className="px-6 py-3 rounded-tr-lg">
               {" "}

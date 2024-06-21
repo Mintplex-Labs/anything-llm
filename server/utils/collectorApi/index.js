@@ -1,10 +1,11 @@
+const { EncryptionManager } = require("../EncryptionManager");
+
 // When running locally will occupy the 0.0.0.0 hostname space but when deployed inside
 // of docker this endpoint is not exposed so it is only on the Docker instances internal network
 // so no additional security is needed on the endpoint directly. Auth is done however by the express
 // middleware prior to leaving the node-side of the application so that is good enough >:)
 
 const logger = require("../logger");
-
 class CollectorApi {
   constructor() {
     const { CommunicationKey } = require("../comKey");
@@ -56,6 +57,9 @@ class CollectorApi {
       headers: {
         "Content-Type": "application/json",
         "X-Integrity": this.comkey.sign(data),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
       },
       body: data,
     })
@@ -79,6 +83,9 @@ class CollectorApi {
       headers: {
         "Content-Type": "application/json",
         "X-Integrity": this.comkey.sign(data),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
       },
       body: data,
     })
@@ -100,6 +107,9 @@ class CollectorApi {
       headers: {
         "Content-Type": "application/json",
         "X-Integrity": this.comkey.sign(data),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
       },
       body: data,
     })
@@ -124,6 +134,9 @@ class CollectorApi {
       headers: {
         "Content-Type": "application/json",
         "X-Integrity": this.comkey.sign(body),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
       },
     })
       .then((res) => {
@@ -146,6 +159,9 @@ class CollectorApi {
       headers: {
         "Content-Type": "application/json",
         "X-Integrity": this.comkey.sign(data),
+        "X-Payload-Signer": this.comkey.encrypt(
+          new EncryptionManager().xPayload
+        ),
       },
       body: data,
     })

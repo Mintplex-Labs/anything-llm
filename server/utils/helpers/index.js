@@ -131,6 +131,11 @@ function getEmbeddingEngineSelection() {
     case "litellm":
       const { LiteLLMEmbedder } = require("../EmbeddingEngines/liteLLM");
       return new LiteLLMEmbedder();
+    case "generic-openai":
+      const {
+        GenericOpenAiEmbedder,
+      } = require("../EmbeddingEngines/genericOpenAi");
+      return new GenericOpenAiEmbedder();
     default:
       return new NativeEmbedder();
   }

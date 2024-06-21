@@ -140,7 +140,8 @@ const Milvus = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null
+    fullFilePath = null,
+    skipCache = false
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -154,38 +155,40 @@ const Milvus = {
           origin: "Milvus",
         }
       );
-      const cacheResult = await cachedVectorInformation(fullFilePath);
-      if (cacheResult.exists) {
-        const { client } = await this.connect();
-        const { chunks } = cacheResult;
-        const documentVectors = [];
-        vectorDimension = chunks[0][0].values.length || null;
+      if (skipCache) {
+        const cacheResult = await cachedVectorInformation(fullFilePath);
+        if (cacheResult.exists) {
+          const { client } = await this.connect();
+          const { chunks } = cacheResult;
+          const documentVectors = [];
+          vectorDimension = chunks[0][0].values.length || null;
 
-        await this.getOrCreateCollection(client, namespace, vectorDimension);
-        for (const chunk of chunks) {
-          // Before sending to Pinecone and saving the records to our db
-          // we need to assign the id of each chunk that is stored in the cached file.
-          const newChunks = chunk.map((chunk) => {
-            const id = uuidv4();
-            documentVectors.push({ docId, vectorId: id });
-            return { id, vector: chunk.values, metadata: chunk.metadata };
-          });
-          const insertResult = await client.insert({
-            collection_name: this.normalize(namespace),
-            data: newChunks,
-          });
+          await this.getOrCreateCollection(client, namespace, vectorDimension);
+          for (const chunk of chunks) {
+            // Before sending to Pinecone and saving the records to our db
+            // we need to assign the id of each chunk that is stored in the cached file.
+            const newChunks = chunk.map((chunk) => {
+              const id = uuidv4();
+              documentVectors.push({ docId, vectorId: id });
+              return { id, vector: chunk.values, metadata: chunk.metadata };
+            });
+            const insertResult = await client.insert({
+              collection_name: this.normalize(namespace),
+              data: newChunks,
+            });
 
-          if (insertResult?.status.error_code !== "Success") {
-            throw new Error(
-              `Error embedding into Milvus! Reason:${insertResult?.status.reason}`
-            );
+            if (insertResult?.status.error_code !== "Success") {
+              throw new Error(
+                `Error embedding into Milvus! Reason:${insertResult?.status.reason}`
+              );
+            }
           }
+          await DocumentVectors.bulkInsert(documentVectors);
+          await client.flushSync({
+            collection_names: [this.normalize(namespace)],
+          });
+          return { vectorized: true, error: null };
         }
-        await DocumentVectors.bulkInsert(documentVectors);
-        await client.flushSync({
-          collection_names: [this.normalize(namespace)],
-        });
-        return { vectorized: true, error: null };
       }
 
       const EmbedderEngine = getEmbeddingEngineSelection();
