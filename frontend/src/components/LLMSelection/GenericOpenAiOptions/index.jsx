@@ -1,4 +1,13 @@
+import { useEffect, useState } from "react";
+import System from "@/models/system";
+
 export default function GenericOpenAiOptions({ settings }) {
+  const [basePathValue, setBasePathValue] = useState(
+    settings?.GenericOpenAiBasePath
+  );
+
+  const [basePath, setBasePath] = useState(settings?.GenericOpenAiBasePath);
+
   return (
     <div className="flex flex-col gap-y-4">
       <div className="flex gap-4 flex-wrap">
@@ -15,6 +24,8 @@ export default function GenericOpenAiOptions({ settings }) {
             required={true}
             autoComplete="off"
             spellCheck={false}
+            onChange={(e) => setBasePathValue(e.target.value)}
+            onBlur={() => setBasePath(basePathValue)}
           />
         </div>
         <div className="flex flex-col w-60">
@@ -32,25 +43,20 @@ export default function GenericOpenAiOptions({ settings }) {
             spellCheck={false}
           />
         </div>
-
-        {!settings?.credentialsOnly && (
-          <>
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-4">
-                Chat Model Name
-              </label>
-              <input
-                type="text"
-                name="GenericOpenAiModelPref"
-                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                placeholder="Model id used for chat requests"
-                defaultValue={settings?.GenericOpenAiModelPref}
-                required={true}
-                autoComplete="off"
-              />
-            </div>
-          </>
-        )}
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-4">
+            Chat Model Name
+          </label>
+          <input
+            type="text"
+            name="GenericOpenAiModelPref"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            placeholder="Model id used for chat requests"
+            defaultValue={settings?.GenericOpenAiModelPref}
+            required={true}
+            autoComplete="off"
+          />
+        </div>
       </div>
       <div className="flex gap-x-4 flex-wrap">
         <div className="flex flex-col w-60">
