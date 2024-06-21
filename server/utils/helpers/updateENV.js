@@ -719,6 +719,7 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   }
 
   await logChangesToEventLog(newValues, userId);
+  if (process.env.NODE_ENV === "production") await dumpENV();
   return { newValues, error: error?.length > 0 ? error : false };
 }
 
@@ -751,6 +752,8 @@ async function dumpENV() {
   const frozenEnvs = {};
   const protectedKeys = [
     ...Object.values(KEY_MAPPING).map((values) => values.envKey),
+    // Manually Add Keys here which are not already defined in KEY_MAPPING
+    // and are either managed or manually set ENV key:values.
     "STORAGE_DIR",
     "SERVER_PORT",
     // Password Schema Keys if present.
@@ -765,16 +768,6 @@ async function dumpENV() {
     "ENABLE_HTTPS",
     "HTTPS_CERT_PATH",
     "HTTPS_KEY_PATH",
-    // DISABLED TELEMETRY
-    "DISABLE_TELEMETRY",
-
-    // Agent Integrations
-    // Search engine integrations
-    "AGENT_GSE_CTX",
-    "AGENT_GSE_KEY",
-    "AGENT_SERPER_DEV_KEY",
-    "AGENT_BING_SEARCH_API_KEY",
-    "AGENT_SERPLY_API_KEY",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.
