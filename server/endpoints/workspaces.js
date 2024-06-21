@@ -11,6 +11,7 @@ const { Workspace } = require("../models/workspace");
 const { Document } = require("../models/documents");
 const { DocumentVectors } = require("../models/vectors");
 const { WorkspaceChats } = require("../models/workspaceChats");
+const { SystemSettings } = require("../models/systemSettings");
 const { getVectorDbClass } = require("../utils/helpers");
 const { handleFileUpload, handlePfpUpload } = require("../utils/files/multer");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
@@ -242,7 +243,7 @@ function workspaceEndpoints(app) {
 
   app.delete(
     "/workspace/:slug",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const { slug = "" } = request.params;
@@ -252,7 +253,16 @@ function workspaceEndpoints(app) {
           ? await Workspace.getWithUser(user, { slug })
           : await Workspace.get({ slug });
 
-        if (!workspace) {
+        const canDelete = await SystemSettings.canDeleteWorkspaces();
+        // if workspace is not found
+        // or (user is not an admin or manager and not in multi-user mode
+        // and users_can_delete_workspaces setting is false)
+        if (
+          !workspace ||
+          (!canDelete &&
+            ![ROLES.admin, ROLES.manager].includes(user?.role) &&
+            multiUserMode(response))
+        ) {
           response.sendStatus(400).end();
           return;
         }

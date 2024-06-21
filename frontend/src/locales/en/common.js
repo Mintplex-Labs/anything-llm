@@ -85,6 +85,8 @@ const TRANSLATIONS = {
       remove: "Remove Workspace Image",
     },
     delete: {
+      title: "Delete Workspace",
+      description: "Delete this workspace and all of its data.",
       delete: "Delete Workspace",
       deleting: "Deleting Workspace...",
       "confirm-start": "You are about to delete your entire",

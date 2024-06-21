@@ -46,7 +46,7 @@ export default function WorkspacePfp({ workspace, slug }) {
   };
 
   return (
-    <div className="mt-6">
+    <div className="mt-6 mb-10">
       <div className="flex flex-col">
         <label className="block input-label">{t("general.pfp.title")}</label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Workspace from "@/models/workspace";
+import System from "@/models/system";
 import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../Modals/ManageWorkspace";
@@ -21,19 +22,22 @@ export default function ActiveWorkspaces() {
   const [hoverStates, setHoverStates] = useState({});
   const [gearHover, setGearHover] = useState({});
   const [uploadHover, setUploadHover] = useState({});
+  const [canDelete, setCanDelete] = useState(false);
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const { user } = useUser();
   const isInWorkspaceSettings = !!useMatch("/workspace/:slug/settings/:tab");
 
-  console.log(user?.role);
   useEffect(() => {
     async function getWorkspaces() {
       const workspaces = await Workspace.all();
+      const canDelete = await System.getCanDeleteWorkspaces();
+      setCanDelete(canDelete);
       setLoading(false);
       setWorkspaces(workspaces);
     }
     getWorkspaces();
   }, []);
+
   const handleMouseEnter = useCallback((workspaceId) => {
     setHoverStates((prev) => ({ ...prev, [workspaceId]: true }));
   }, []);
@@ -120,35 +124,36 @@ export default function ActiveWorkspaces() {
                     </p>
                   </div>
                   {(isActive || isHovered || gearHover[workspace.id]) &&
-                  user?.role !== "default" ? (
+                  (user?.role !== "default" || canDelete) ? (
                     <div className="flex items-center gap-x-[2px]">
                       <div
                         className={`flex hover:bg-[#646768] p-[2px] rounded-[4px] text-[#A7A8A9] hover:text-white ${
                           uploadHover[workspace.id] ? "bg-[#646768]" : ""
                         }`}
                       >
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setSelectedWs(workspace);
-                            showModal();
-                          }}
-                          onMouseEnter={() =>
-                            handleUploadMouseEnter(workspace.id)
-                          }
-                          onMouseLeave={() =>
-                            handleUploadMouseLeave(workspace.id)
-                          }
-                          className="rounded-md flex items-center justify-center ml-auto"
-                        >
-                          <UploadSimple
-                            className="h-[20px] w-[20px]"
-                            weight="bold"
-                          />
-                        </button>
+                        {user?.role !== "default" && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setSelectedWs(workspace);
+                              showModal();
+                            }}
+                            onMouseEnter={() =>
+                              handleUploadMouseEnter(workspace.id)
+                            }
+                            onMouseLeave={() =>
+                              handleUploadMouseLeave(workspace.id)
+                            }
+                            className="rounded-md flex items-center justify-center ml-auto"
+                          >
+                            <UploadSimple
+                              className="h-[20px] w-[20px]"
+                              weight="bold"
+                            />
+                          </button>
+                        )}
                       </div>
-
                       <Link
                         type="button"
                         to={
