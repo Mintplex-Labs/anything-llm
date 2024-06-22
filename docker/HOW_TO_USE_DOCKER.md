@@ -1,4 +1,4 @@
-# How to use Dockerized Anything LLM
+# How to use Dockerized ChatLTT
 
 Use the Dockerized version of AnythingLLM for a much faster and complete startup of AnythingLLM.
 
