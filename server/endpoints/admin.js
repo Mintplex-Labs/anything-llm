@@ -319,9 +319,6 @@ function adminEndpoints(app) {
       try {
         const embedder = getEmbeddingEngineSelection();
         const settings = {
-          users_can_delete_workspaces:
-            (await SystemSettings.get({ label: "users_can_delete_workspaces" }))
-              ?.value === "true",
           limit_user_messages:
             (await SystemSettings.get({ label: "limit_user_messages" }))
               ?.value === "true",
