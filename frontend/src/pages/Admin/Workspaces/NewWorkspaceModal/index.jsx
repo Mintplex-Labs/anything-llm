@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { X } from "@phosphor-icons/react";
 import Admin from "@/models/admin";
+import { useTranslation } from "react-i18next";
 
 export default function NewWorkspaceModal({ closeModal }) {
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
   const handleCreate = async (e) => {
     setError(null);
     e.preventDefault();
@@ -18,7 +20,7 @@ export default function NewWorkspaceModal({ closeModal }) {
       <div className="relative bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-600">
           <h3 className="text-xl font-semibold text-white">
-            Create new ChatLTT Hub
+            Create new workspace
           </h3>
           <button
             onClick={closeModal}
@@ -37,7 +39,7 @@ export default function NewWorkspaceModal({ closeModal }) {
                   htmlFor="name"
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  ChatLTT Hub name
+                  {t("common.workspaces-name")}
                 </label>
                 <input
                   name="name"
@@ -68,7 +70,7 @@ export default function NewWorkspaceModal({ closeModal }) {
               type="submit"
               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
-              Create hub
+              Create workspace
             </button>
           </div>
         </form>
