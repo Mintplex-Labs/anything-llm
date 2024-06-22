@@ -131,7 +131,7 @@ function normalizePath(filepath = "") {
 
 function sanitizeFileName(fileName) {
   if (!fileName) return fileName;
-  return fileName.replace(/[<>:"\/\\|?*]/g, "_");
+  return fileName.replace(/[<>:"\/\\|?*]/g, "");
 }
 
 module.exports = {
