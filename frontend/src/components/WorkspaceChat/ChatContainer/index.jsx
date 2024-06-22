@@ -12,6 +12,9 @@ import handleSocketResponse, {
   AGENT_SESSION_END,
   AGENT_SESSION_START,
 } from "@/utils/chat/agent";
+import LegalDisclaimerModal from "../../Modals/LegalDisclaimerModal";
+import ModalWrapper from "@/components/ModalWrapper";
+import { useModal } from "@/hooks/useModal";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -20,6 +23,12 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   const [chatHistory, setChatHistory] = useState(knownHistory);
   const [socketId, setSocketId] = useState(null);
   const [websocket, setWebsocket] = useState(null);
+
+  const {
+    isOpen: isLegalDisclaimerModalOpen,
+    openModal: openLegalDisclaimerModal,
+    closeModal: closeLegalDisclaimerModal,
+  } = useModal();
 
   // Maintain state of message from whatever is in PromptInput
   const handleMessageChange = (event) => {
@@ -228,11 +237,27 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     handleWSS();
   }, [socketId]);
 
+  useEffect(() => {
+    const hasAcceptedLegalDisclaimer = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("hasAcceptedLegalDisclaimer="))
+      ?.split("=")[1] === "true";
+
+    !hasAcceptedLegalDisclaimer && setTimeout(() => {
+      openLegalDisclaimerModal();
+      document.cookie = `hasAcceptedLegalDisclaimer=true; max-age=86400; path=/;`;
+    }, 1000)
+  }, []);
+
   return (
     <div
       style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
       className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-2 border-outline"
     >
+      <ModalWrapper isOpen={isLegalDisclaimerModalOpen} noPortal={true}>
+        <LegalDisclaimerModal 
+          onClose={closeLegalDisclaimerModal} />
+      </ModalWrapper>
       {isMobile && <SidebarMobileHeader />}
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
         <ChatHistory
