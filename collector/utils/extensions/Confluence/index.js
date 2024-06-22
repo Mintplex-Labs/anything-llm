@@ -7,7 +7,7 @@ const { writeToServerDocuments, sanitizeFileName } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const {
   ConfluencePagesLoader,
-} = require("@langchain/community/document_loaders/web/confluence");
+} = require("langchain/document_loaders/web/confluence");
 
 async function loadConfluence({ pageUrl, username, accessToken }) {
   if (!pageUrl || !username || !accessToken) {
