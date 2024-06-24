@@ -11,7 +11,7 @@ function extensionEndpoints(app) {
 
   app.post(
     "/ext/github/branches",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const responseFromProcessor =
@@ -30,7 +30,7 @@ function extensionEndpoints(app) {
 
   app.post(
     "/ext/github/repo",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const responseFromProcessor =
@@ -52,7 +52,7 @@ function extensionEndpoints(app) {
 
   app.post(
     "/ext/youtube/transcript",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const responseFromProcessor =
@@ -74,7 +74,7 @@ function extensionEndpoints(app) {
 
   app.post(
     "/ext/confluence",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const responseFromProcessor =
@@ -95,7 +95,7 @@ function extensionEndpoints(app) {
   );
   app.post(
     "/ext/website-depth",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const responseFromProcessor =

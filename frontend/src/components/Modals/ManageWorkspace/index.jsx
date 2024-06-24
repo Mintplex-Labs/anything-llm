@@ -131,8 +131,11 @@ export function useManageWorkspaceModal() {
   const { user } = useUser();
   const [showing, setShowing] = useState(false);
 
-  const showModal = () => {
+  const showModal = (workspace) => {
     if (user?.role !== "default") {
+      setShowing(true);
+    }
+    if (workspace?.isOwner) {
       setShowing(true);
     }
   };
