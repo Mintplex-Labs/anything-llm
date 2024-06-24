@@ -24,6 +24,7 @@
     "js-levenshtein": "^1.1.6",
     "lodash.debounce": "^4.0.8",
     "markdown-it": "^13.0.1",
+    "moment": "^2.30.1",
     "pluralize": "^8.0.0",
     "react": "^18.2.0",
     "react-device-detect": "^2.2.2",
