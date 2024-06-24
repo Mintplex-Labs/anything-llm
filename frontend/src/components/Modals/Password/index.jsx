@@ -8,7 +8,7 @@ import {
   AUTH_TIMESTAMP,
 } from "../../../utils/constants";
 import useLogo from "../../../hooks/useLogo";
-import illustration from "@/media/illustrations/login-illustration.svg";
+import illustration from "@/media/illustrations/login-illustration.png";
 
 export default function PasswordModal({ mode = "single" }) {
   const { loginLogo } = useLogo();
@@ -22,7 +22,7 @@ export default function PasswordModal({ mode = "single" }) {
   );
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-[#25272C] flex flex-col md:flex-row items-center justify-center">
+    <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-[#24272C] flex flex-col md:flex-row items-center justify-center">
       <div
         style={{
           background: `
@@ -37,7 +37,8 @@ export default function PasswordModal({ mode = "single" }) {
       />
       <div className="hidden md:flex md:w-1/2 md:h-full md:items-center md:justify-center">
         <img
-          className="w-full h-full object-contain z-50"
+          // className="w-full h-full object-contain z-50"
+          className="w-full h-full z-50"
           src={illustration}
           alt="login illustration"
         />

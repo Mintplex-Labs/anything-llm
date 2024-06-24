@@ -71,8 +71,8 @@ export default function Sidebar() {
             </div>
             <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
               <Footer />
-              <div className="whitespace-pre-line text-white align-center justify-center font-normal text-xs flex">
-                <>Powerer by:&nbsp;</>
+              <div style={{ display: 'flex', alignItems: 'center' }} className="whitespace-pre-line text-white align-center justify-center font-normal text-xs flex">
+                <>Powered by:&nbsp;</>
                 <img style={{ height: "12px" }} src={SaalLogoDark} alt="logo" />
               </div>
             </div>

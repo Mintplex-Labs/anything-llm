@@ -3,6 +3,7 @@ import { Warning } from "@phosphor-icons/react";
 import UserIcon from "../../../../UserIcon";
 import renderMarkdown from "@/utils/chat/markdown";
 import Citations from "../Citation";
+import AssistantLogo from '@/media/logo/assistant.png' 
 
 const PromptReply = ({
   uuid,
@@ -84,7 +85,7 @@ export function WorkspaceProfileImage({ workspace }) {
     );
   }
 
-  return <UserIcon user={{ uid: workspace.slug }} role="assistant" />;
+  return <UserIcon logo={AssistantLogo} user={{ uid: workspace.slug }} role="assistant" />;
 }
 
 export default memo(PromptReply);

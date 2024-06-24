@@ -64,6 +64,12 @@ a {
   animation-delay: 500ms;
 }
 
+.w-screen > div:nth-child(2) {
+  height: calc(100% - 90px) !important;
+  margin-top: 70px;
+  margin-bottom: 16px;
+}
+
 @keyframes message {
   0% {
     max-height: 100%;

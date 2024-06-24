@@ -30,6 +30,8 @@ import { isMobile } from "react-device-detect";
 import Footer from "../Footer";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import SaalLogoDark from './../../media/logo/saal_logo_dark.png';
+
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
@@ -133,6 +135,10 @@ export default function SettingsSidebar() {
     <div>
       <Link
         to={paths.home()}
+        style={{
+          marginTop: '26px',
+          marginBottom: '18px'
+        }}
         className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
       >
         <img
@@ -144,7 +150,11 @@ export default function SettingsSidebar() {
       </Link>
       <div
         ref={sidebarRef}
-        className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-76px)]"
+        style={{
+          marginTop: "26px",
+          marginBottom: "16px",
+        }}
+        className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-92px)]"
       >
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
           <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
@@ -159,6 +169,10 @@ export default function SettingsSidebar() {
           </div>
           <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
             <Footer />
+            <div style={{ display: 'flex', alignItems: 'center' }} className="whitespace-pre-line text-white align-center justify-center font-normal text-xs flex">
+              <>Powered by:&nbsp;</>
+              <img style={{ height: "12px" }} src={SaalLogoDark} alt="logo" />
+            </div>
           </div>
         </div>
       </div>

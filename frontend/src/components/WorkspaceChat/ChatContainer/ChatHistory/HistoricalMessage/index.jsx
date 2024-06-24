@@ -3,6 +3,8 @@ import { Warning } from "@phosphor-icons/react";
 import UserIcon from "../../../../UserIcon";
 import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
+import AssistantLogo from '@/media/logo/assistant.png'
+import UserLogo from '@/media/logo/user.png'
 import { userFromStorage } from "@/utils/request";
 import Citations from "../Citation";
 import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
@@ -115,12 +117,13 @@ function ProfileImage({ role, workspace }) {
       </div>
     );
   }
-
+  console.log('role>>>', role);
   return (
     <UserIcon
       user={{
         uid: role === "user" ? userFromStorage()?.username : workspace.slug,
       }}
+      logo={role === "assistant" ? AssistantLogo : role === "user" ? UserLogo : null}
       role={role}
     />
   );
