@@ -4,7 +4,7 @@ export default function GenericOpenAiOptions({ settings }) {
       <div className="flex gap-4 flex-wrap">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
-            Base URL
+            Generic OpenAi Base URL
           </label>
           <input
             type="url"
@@ -32,20 +32,25 @@ export default function GenericOpenAiOptions({ settings }) {
             spellCheck={false}
           />
         </div>
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Chat Model Name
-          </label>
-          <input
-            type="text"
-            name="GenericOpenAiModelPref"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="Model id used for chat requests"
-            defaultValue={settings?.GenericOpenAiModelPref}
-            required={true}
-            autoComplete="off"
-          />
-        </div>
+
+        {!settings?.credentialsOnly && (
+          <>
+            <div className="flex flex-col w-60">
+              <label className="text-white text-sm font-semibold block mb-4">
+                Chat Model Name
+              </label>
+              <input
+                type="text"
+                name="GenericOpenAiModelPref"
+                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                placeholder="Model id used for chat requests"
+                defaultValue={settings?.GenericOpenAiModelPref}
+                required={true}
+                autoComplete="off"
+              />
+            </div>
+          </>
+        )}
       </div>
       <div className="flex gap-x-4 flex-wrap">
         <div className="flex flex-col w-60">
