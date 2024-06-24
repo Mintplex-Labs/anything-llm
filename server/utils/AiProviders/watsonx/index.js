@@ -4,7 +4,7 @@ const {
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
 
-class AzureOpenAiLLM {
+class WatsonxLLM {
   constructor(embedder = null, _modelPreference = null) {
     const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
@@ -165,5 +165,5 @@ class AzureOpenAiLLM {
 }
 
 module.exports = {
-  AzureOpenAiLLM,
+  WatsonxLLM,
 };

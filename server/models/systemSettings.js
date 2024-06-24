@@ -441,6 +441,14 @@ const SystemSettings = {
 
       // VoyageAi API Keys
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
+
+      //Watsonx.ai API Keys
+      WatsonxEndpoint: process.env.WATSONX_AI_ENDPOINT,
+      IBMIAMKey: !!process.env.IBM_IAM_API_KEY,
+      WatsonxProjectID: process.env.WATSONX_AI_PROJECT_ID,
+      WatsonxModel: process.env.WATSONX_AI_MODEL,
+      WatsonxEmbeddingModelPref: process.env.WATSONX_EMBEDDING_MODEL_PREF,
+      WatsonxGuardRailsEnabled: process.env.WATSONX_GUARD_RAILS_ENABLED
     };
   },
 

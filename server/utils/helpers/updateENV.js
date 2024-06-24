@@ -221,6 +221,33 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // Watsonx.ai Settings
+
+  WatsonxEndpoint: {
+    envKey: "WATSONX_AI_ENDPOINT",
+    checks: [isNotEmpty, validWatsonxURL],
+  },
+  WatsonxProjectID: {
+    envKey: "WATSONX_AI_PROJECT_ID",
+    checks: [isNotEmpty],
+  },
+  IBMIAMKey: {
+    envKey: "IBM_IAM_API_KEY",
+    checks: [isNotEmpty],
+  },
+  WatsonxModel: {
+    envKey: "WATSONX_AI_MODEL",
+    checks: [isNotEmpty],
+  },
+  WatsonxEmbeddingModelPref: {
+    envKey: "WATSONX_EMBEDDING_MODEL_PREF",
+    checks: [isNotEmpty],
+  },
+  WatsonxGuardRailsEnabled: {
+    envKey: "WATSONX_GUARD_RAILS_ENABLED",
+    checks: [isNotEmpty],
+  },
+
   // Vector Database Selection Settings
   VectorDB: {
     envKey: "VECTOR_DB",
@@ -522,6 +549,7 @@ function supportedLLM(input = "") {
     "cohere",
     "litellm",
     "generic-openai",
+    "watsonx",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -615,6 +643,17 @@ function validAzureURL(input = "") {
     new URL(input);
     if (!input.includes("openai.azure.com") && !input.includes("microsoft.com"))
       return "Valid Azure endpoints must contain openai.azure.com OR microsoft.com";
+    return null;
+  } catch {
+    return "Not a valid URL";
+  }
+}
+
+function validWatsonxURL(input = "") {
+  try {
+    new URL(input);
+    if (!input.includes("ml.cloud.ibm.com"))
+      return "Valid Watsonx endpoints must contain ml.cloud.ibm.com";
     return null;
   } catch {
     return "Not a valid URL";

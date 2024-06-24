@@ -1,17 +1,20 @@
-export default function AzureAiOptions({ settings }) {
+import { useState } from "react";
+
+export default function WatsonxOptions({ settings }) {
+  const [GuardRailsEnabled, setGuardRailsEnabled] = useState(settings?.WatsonxGuardRailsEnabled || false);
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
-            Azure Service Endpoint
+            Watsonx.ai Endpoint
           </label>
           <input
             type="url"
-            name="AzureOpenAiEndpoint"
+            name="WatsonxEndpoint"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="https://my-azure.openai.azure.com"
-            defaultValue={settings?.AzureOpenAiEndpoint}
+            placeholder="https://eu-de.ml.cloud.ibm.com"
+            defaultValue={settings?.WatsonxEndpoint}
             required={true}
             autoComplete="off"
             spellCheck={false}
@@ -24,10 +27,10 @@ export default function AzureAiOptions({ settings }) {
           </label>
           <input
             type="password"
-            name="AzureOpenAiKey"
+            name="IBMIAMKey"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="Azure OpenAI API Key"
-            defaultValue={settings?.AzureOpenAiKey ? "*".repeat(20) : ""}
+            placeholder="IBM IAM API Key"
+            defaultValue={settings?.IBMIAMKey ? "*".repeat(20) : ""}
             required={true}
             autoComplete="off"
             spellCheck={false}
@@ -36,14 +39,14 @@ export default function AzureAiOptions({ settings }) {
 
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
-            Chat Deployment Name
+            Project ID
           </label>
           <input
             type="text"
-            name="AzureOpenAiModelPref"
+            name="WatsonxProjectID"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="Azure OpenAI chat model deployment name"
-            defaultValue={settings?.AzureOpenAiModelPref}
+            placeholder="Watsonx.ai Project ID"
+            defaultValue={settings?.WatsonxProjectID}
             required={true}
             autoComplete="off"
             spellCheck={false}
@@ -54,19 +57,25 @@ export default function AzureAiOptions({ settings }) {
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
-            Chat Model Token Limit
+            Chat Model
           </label>
           <select
-            name="AzureOpenAiTokenLimit"
-            defaultValue={settings?.AzureOpenAiTokenLimit || 4096}
+            name="WatsonxModel"
+            defaultValue={settings?.WatsonxModel || "ibm/granite-20b-multilingual"}
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             required={true}
           >
-            <option value={4096}>4,096 (gpt-3.5-turbo)</option>
-            <option value={16384}>16,384 (gpt-3.5-16k)</option>
-            <option value={8192}>8,192 (gpt-4)</option>
-            <option value={32768}>32,768 (gpt-4-32k)</option>
-            <option value={128000}>128,000 (gpt-4-turbo)</option>
+            <option value={"granite-13b-chat-v2"}>granite-13b-chat-v2 </option>
+            <option value={"jais-13b-chat"}>jais-13b-chat </option>
+            <option value={"merlinite-7b"}>merlinite-7b </option>
+            <option value={"granite-13b-instruct-v2"}>granite-13b-instruct-v2</option>
+            <option value={"ibm/granite-20b-multilingual"}>granite-20b-multilingual</option>
+            <option value={"llama-2-13b-chat"}>llama-2-13b-chat</option>
+            <option value={"llama-2-70b-chat"}>llama-2-70b-chat</option>
+            <option value={"llama-3-70b-instruct"}>llama-3-70b-instruct</option>
+            <option value={"llama-3-8b-instruct"}>llama-3-8b-instruct </option>
+            <option value={"mixtral-8x7b-instruct-v01"}>mixtral-8x7b-instruct-v01</option>
+            <option value={"allam-1-13b-instruct"}>allam-1-13b-instruct</option>
           </select>
         </div>
 
@@ -76,16 +85,33 @@ export default function AzureAiOptions({ settings }) {
           </label>
           <input
             type="text"
-            name="AzureOpenAiEmbeddingModelPref"
+            name="WatsonxEmbeddingModelPref"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="Azure OpenAI embedding model deployment name"
-            defaultValue={settings?.AzureOpenAiEmbeddingModelPref}
+            placeholder="Watsonx embedding model deployment name"
+            defaultValue={settings?.WatsonxEmbeddingModelPref || "baai/bge-large-en-v1"}
             required={true}
             autoComplete="off"
             spellCheck={false}
           />
         </div>
-        <div className="flex-flex-col w-60"></div>
+        <div className="flex-flex-col w-60"><label className="text-white text-sm font-semibold block mb-4">
+            Enable GuardRails
+          </label>
+            <label className="relative inline-flex cursor-pointer items-center">
+                <input
+                  type="checkbox"
+                  onClick={() => setGuardRailsEnabled(!GuardRailsEnabled)}
+                  checked={GuardRailsEnabled}
+                  className="peer sr-only pointer-events-none"
+                  defaultChecked={settings?.WatsonxGuardRailsEnabled || GuardRailsEnabled}
+                  name="WatsonxGuardRailsEnabled"
+                  //required={true}
+                />
+                <div
+                  className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"
+                ></div>
+          </label>
+        </div>
       </div>
     </div>
   );

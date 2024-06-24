@@ -22,6 +22,7 @@ import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
+import WatsonxLogo from "@/media/llmprovider/watsonx.png"
 import PreLoader from "@/components/Preloader";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -42,6 +43,7 @@ import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
 import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
+import WatsonxOptions from "@/components/LLMSelection/WatsonxOptions"
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -219,6 +221,15 @@ export const AVAILABLE_LLM_PROVIDERS = [
       "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
     requiredConfig: [],
   },
+  {
+    name: "Watsonx.ai",
+    value: "watsonx",
+    logo: WatsonxLogo,
+    options: (settings) => <WatsonxOptions settings={settings} />,
+    description:
+      "Run Open Source Models on watsonx.ai",
+    requiredConfig: [],
+  },
 ];
 
 export default function GeneralLLMPreference() {
@@ -238,8 +249,10 @@ export default function GeneralLLMPreference() {
     const form = e.target;
     const data = { LLMProvider: selectedLLM };
     const formData = new FormData(form);
+    
 
     for (var [key, value] of formData.entries()) data[key] = value;
+    console.log(data)
     const { error } = await System.updateSystem(data);
     setSaving(true);
 
