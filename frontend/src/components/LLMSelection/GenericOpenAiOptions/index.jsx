@@ -13,7 +13,7 @@ export default function GenericOpenAiOptions({ settings }) {
       <div className="flex gap-4 flex-wrap">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-4">
-            generic OpenAi Base URL
+            Generic OpenAi Base URL
           </label>
           <input
             type="url"
