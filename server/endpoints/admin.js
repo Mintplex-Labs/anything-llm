@@ -248,10 +248,10 @@ function adminEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { name } = reqBody(request);
+        const { name, userId } = reqBody(request);
         const { workspace, message: error } = await Workspace.new(
           name,
-          user.id
+          userId || user.id
         );
         response.status(200).json({ workspace, error });
       } catch (e) {
@@ -314,7 +314,7 @@ function adminEndpoints(app) {
   // TODO: Allow specification of which props to get instead of returning all of them all the time.
   app.get(
     "/admin/system-preferences",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (_, response) => {
       try {
         const embedder = getEmbeddingEngineSelection();
@@ -369,7 +369,7 @@ function adminEndpoints(app) {
 
   app.post(
     "/admin/system-preferences",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const updates = reqBody(request);
