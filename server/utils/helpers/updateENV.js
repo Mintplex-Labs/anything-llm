@@ -221,6 +221,12 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // Generic OpenAI Embedding Settings
+  GenericOpenAiEmbeddingApiKey: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_API_KEY",
+    checks: [],
+  },
+
   // Vector Database Selection Settings
   VectorDB: {
     envKey: "VECTOR_DB",
@@ -587,6 +593,7 @@ function supportedEmbeddingModel(input = "") {
     "cohere",
     "voyageai",
     "litellm",
+    "generic-openai",
   ];
   return supported.includes(input)
     ? null

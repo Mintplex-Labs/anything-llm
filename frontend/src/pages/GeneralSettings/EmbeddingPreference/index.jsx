@@ -12,6 +12,7 @@ import LMStudioLogo from "@/media/llmprovider/lmstudio.png";
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import VoyageAiLogo from "@/media/embeddingprovider/voyageai.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
+import GenericOpenAiLogo from "@/media/llmprovider/generic-openai.png";
 
 import PreLoader from "@/components/Preloader";
 import ChangeWarningModal from "@/components/ChangeWarning";
@@ -24,6 +25,7 @@ import LMStudioEmbeddingOptions from "@/components/EmbeddingSelection/LMStudioOp
 import CohereEmbeddingOptions from "@/components/EmbeddingSelection/CohereOptions";
 import VoyageAiOptions from "@/components/EmbeddingSelection/VoyageAiOptions";
 import LiteLLMOptions from "@/components/EmbeddingSelection/LiteLLMOptions";
+import GenericOpenAiEmbeddingOptions from "@/components/EmbeddingSelection/GenericOpenAiOptions";
 
 import EmbedderItem from "@/components/EmbeddingSelection/EmbedderItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -97,6 +99,15 @@ const EMBEDDERS = [
     logo: LiteLLMLogo,
     options: (settings) => <LiteLLMOptions settings={settings} />,
     description: "Run powerful embedding models from LiteLLM.",
+  },
+  {
+    name: "Generic OpenAI",
+    value: "generic-openai",
+    logo: GenericOpenAiLogo,
+    options: (settings) => (
+      <GenericOpenAiEmbeddingOptions settings={settings} />
+    ),
+    description: "Run embedding models from any OpenAI compatible API service.",
   },
 ];
 
