@@ -45,7 +45,9 @@ export default function OllamaEmbeddingOptions({ settings }) {
         setBasePathValue(detectedUrl);
         setLoading(false);
         if (!firstLoad)
-          showToast("Ollama URL detected successfully!", "success");
+          showToast("Ollama URL detected successfully!", "success", {
+            clear: true,
+          });
         return;
       }
     }
@@ -53,7 +55,10 @@ export default function OllamaEmbeddingOptions({ settings }) {
     setLoading(false);
     showToast(
       "Couldn't automatically detect Ollama. Ollama may not be setup properly. Please enter the URL manually or try again.",
-      "info"
+      "info",
+      {
+        clear: true,
+      }
     );
   };
 

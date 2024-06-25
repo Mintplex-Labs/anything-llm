@@ -47,7 +47,9 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
         setBasePathValue(detectedUrl);
         setLoading(false);
         if (!firstLoad)
-          showToast("LM Studio URL detected successfully!", "success");
+          showToast("LM Studio URL detected successfully!", "success", {
+            clear: true,
+          });
         return;
       }
     }
@@ -55,7 +57,10 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
     setLoading(false);
     showToast(
       "Couldn't automatically detect LM Studio. LM Studio may not be running. Please enter the URL manually or try again.",
-      "info"
+      "info",
+      {
+        clear: true,
+      }
     );
   };
 
