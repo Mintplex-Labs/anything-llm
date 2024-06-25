@@ -297,7 +297,7 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/system-vectors",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const query = queryParams(request);
@@ -315,7 +315,7 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/remove-document",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const { name } = reqBody(request);
@@ -330,7 +330,7 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/remove-documents",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const { names } = reqBody(request);
@@ -345,7 +345,7 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/remove-folder",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const { name } = reqBody(request);
@@ -360,7 +360,8 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/local-files",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    // [validatedRequest, flexUserRoleValid([ROLES.all])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (_, response) => {
       try {
         const localFiles = await viewLocalFiles();
@@ -711,7 +712,7 @@ function systemEndpoints(app) {
     "/system/upload-logo",
     [
       validatedRequest,
-      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      flexUserRoleValid([ROLES.all]),
       handleAssetUpload,
     ],
     async (request, response) => {
@@ -759,7 +760,7 @@ function systemEndpoints(app) {
 
   app.get(
     "/system/remove-logo",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (_request, response) => {
       try {
         const currentLogoFilename = await SystemSettings.currentLogoFilename();
@@ -825,7 +826,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/set-welcome-messages",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const { messages = [] } = reqBody(request);
@@ -983,7 +984,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/workspace-chats",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const { offset = 0, limit = 20 } = reqBody(request);
@@ -1006,7 +1007,7 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/workspace-chats/:id",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const { id } = request.params;

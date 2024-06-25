@@ -183,7 +183,7 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
       </div>
       <div className="mt-2 gap-y-3 flex flex-col">
         <label
-          className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
+          className={`radio-button transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
             chatMode === "chat" ? "border-white border-opacity-40" : ""
           } hover:border-white/60`}
         >
@@ -205,7 +205,7 @@ export const ChatModeSelection = ({ defaultValue = null }) => {
           </div>
         </label>
         <label
-          className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
+          className={`radio-button transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
             chatMode === "query" ? "border-white border-opacity-40" : ""
           } hover:border-white/60`}
         >

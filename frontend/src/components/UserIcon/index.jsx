@@ -24,7 +24,7 @@ export default function UserIcon({ size = 36, user, role, logo }) {
           <img
             src={logo}
             alt="logo"
-            className="absolute top-0 left-0 w-full h-full object-cover rounded-full bg-black"
+            className="absolute top-0 left-0 w-full h-full object-cover rounded-full"
           />
         )
         : <div ref={divRef} />

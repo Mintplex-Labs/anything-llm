@@ -116,7 +116,7 @@ export default function SettingsSidebar() {
               {/* Primary Body */}
               <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll">
                 <div className="h-auto md:sidebar-items md:dark:sidebar-items">
-                  <div className="flex flex-col gap-y-4 pb-[60px] overflow-y-scroll no-scroll">
+                  <div className="flex flex-col gap-y-4 pb-[80px] overflow-y-scroll no-scroll">
                     <SidebarOptions user={user} t={t} />
                   </div>
                 </div>
@@ -137,7 +137,8 @@ export default function SettingsSidebar() {
         to={paths.home()}
         style={{
           marginTop: '26px',
-          marginBottom: '18px'
+          marginBottom: '18px',
+          marginLeft: '16px'
         }}
         className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
       >
@@ -158,12 +159,19 @@ export default function SettingsSidebar() {
         className="transition-all duration-500 relative m-[16px] rounded-[8px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-92px)]"
       >
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
-          <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
+          <div
+            className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2"
+            style={{
+              borderBottom: '1px solid #e3e3e3',
+              paddingBottom: '16px',
+              marginBottom: '6px'
+            }}
+          >
             {t("settings.title")}
           </div>
           <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
             <div className="h-auto sidebar-items">
-              <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
+              <div className="flex flex-col gap-y-2 pb-[80px] overflow-y-scroll no-scroll">
                 <SidebarOptions user={user} t={t} />
               </div>
             </div>
@@ -217,6 +225,7 @@ const Option = ({
           transition-all duration-[200ms]
           flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] justify-start items-center
           hover:bg-workspace-item-selected-gradient hover:text-white hover:font-medium
+          bg-menu-item-gradient
           ${
             isActive
               ? "bg-menu-item-selected-gradient font-medium border-outline text-white"

@@ -21,7 +21,7 @@ export default function AgentSQLConnectorSelection({
       <div className="p-2">
         <div className="flex flex-col gap-y-[18px] max-w-[500px]">
           <div className="flex items-center gap-x-2">
-            <Database size={24} color="white" weight="bold" />
+            <Database size={24} color="currentColor" weight="bold" />
             <label htmlFor="name" className="text-white text-md font-bold">
               SQL Agent
             </label>

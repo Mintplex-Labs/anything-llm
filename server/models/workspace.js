@@ -42,7 +42,7 @@ const Workspace = {
 
     try {
       const workspace = await prisma.workspaces.create({
-        data: { name, slug },
+        data: { name, slug, createdBy: creatorId },
       });
 
       // If created with a user then we need to create the relationship as well.
@@ -196,7 +196,10 @@ const Workspace = {
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
       });
-      return workspaces;
+      return workspaces.map((workspace) => ({
+        ...workspace,
+        isOwner: workspace.createdBy === user.id,
+      }));
     } catch (error) {
       console.error(error.message);
       return [];

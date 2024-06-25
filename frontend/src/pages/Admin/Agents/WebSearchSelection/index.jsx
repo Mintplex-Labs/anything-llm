@@ -110,7 +110,7 @@ export default function AgentWebSearchSelection({
     <div className="p-2">
       <div className="flex flex-col gap-y-[18px] max-w-[500px]">
         <div className="flex items-center gap-x-2">
-          <ListMagnifyingGlass size={24} color="white" weight="bold" />
+          <ListMagnifyingGlass size={24} color="currentColor" weight="bold" />
           <label htmlFor="name" className="text-white text-md font-bold">
             Live web search and browsing
           </label>

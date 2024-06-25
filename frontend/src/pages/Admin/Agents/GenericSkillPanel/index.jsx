@@ -17,7 +17,7 @@ export default function GenericSkillPanel({
           {icon &&
             React.createElement(icon, {
               size: 24,
-              color: "white",
+              color: "currentColor",
               weight: "bold",
             })}
           <label htmlFor="name" className="text-white text-md font-bold">

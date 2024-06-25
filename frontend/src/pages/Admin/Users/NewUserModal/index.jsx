@@ -14,6 +14,7 @@ export default function NewUserModal({ closeModal }) {
     const form = new FormData(e.target);
     for (var [key, value] of form.entries()) data[key] = value;
     const { user, error } = await Admin.newUser(data);
+    await Admin.newWorkspace("My Workspace", user.id);
     if (!!user) window.location.reload();
     setError(error);
   };

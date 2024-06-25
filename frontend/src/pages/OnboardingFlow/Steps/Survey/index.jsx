@@ -135,7 +135,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
           </label>
           <div className="mt-2 gap-y-3 flex flex-col">
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
+              className={`radio-button transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
                 selectedOption === "job" ? "border-white border-opacity-40" : ""
               } hover:border-white/60`}
             >
@@ -157,7 +157,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
               </div>
             </label>
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
+              className={`radio-button transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
                 selectedOption === "personal"
                   ? "border-white border-opacity-40"
                   : ""
@@ -181,7 +181,7 @@ export default function Survey({ setHeader, setForwardBtn, setBackBtn }) {
               </div>
             </label>
             <label
-              className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
+              className={`radio-button transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
                 selectedOption === "other"
                   ? "border-white border-opacity-40"
                   : ""

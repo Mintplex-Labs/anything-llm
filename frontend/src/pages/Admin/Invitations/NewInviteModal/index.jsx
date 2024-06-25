@@ -165,7 +165,7 @@ function WorkspaceOption({ workspace, selected, toggleSelection }) {
     <button
       type="button"
       onClick={() => toggleSelection(workspace.id)}
-      className={`transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
+      className={`radio-button transition-all duration-300 w-full h-11 p-2.5 bg-white/10 rounded-lg flex justify-start items-center gap-2.5 cursor-pointer border border-transparent ${
         selected ? "border-white border-opacity-40" : "border-none "
       } hover:border-white/60`}
     >

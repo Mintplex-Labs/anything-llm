@@ -54,7 +54,12 @@ export default function UserButton() {
 
   if (mode === null) return null;
   return (
-    <div className="absolute top-3 right-4 md:top-5 md:right-10 w-fit h-fit z-99">
+    <div
+      className="absolute top-3 right-4 md:top-5 md:right-10 w-fit h-fit z-99"
+      style={{
+        right: '16px'
+      }}
+    >
       <button
         ref={buttonRef}
         onClick={() => setShowMenu(!showMenu)}
