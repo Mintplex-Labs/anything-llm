@@ -2,87 +2,27 @@ import { useEffect, useState } from "react";
 import { Info, CaretDown, CaretUp } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import System from "@/models/system";
-import showToast from "@/utils/toast";
 import PreLoader from "@/components/Preloader";
 import { LMSTUDIO_COMMON_URLS } from "@/utils/constants";
+import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 
 export default function LMStudioOptions({ settings, showAlert = false }) {
-  const [loading, setLoading] = useState(false);
-  const [basePathValue, setBasePathValue] = useState(
-    settings?.LMStudioBasePath || ""
-  );
-  const [basePath, setBasePath] = useState(settings?.LMStudioBasePath || "");
-  const [autoDetectAttempted, setAutoDetectAttempted] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(true);
+  const {
+    autoDetecting: loading,
+    basePath,
+    basePathValue,
+    showAdvancedControls,
+    setShowAdvancedControls,
+    handleAutoDetectClick,
+  } = useProviderEndpointAutoDiscovery({
+    provider: "lmstudio",
+    initialBasePath: settings?.LMStudioBasePath,
+    ENDPOINTS: LMSTUDIO_COMMON_URLS,
+  });
+
   const [maxTokens, setMaxTokens] = useState(
     settings?.LMStudioTokenLimit || 4096
   );
-
-  useEffect(() => {
-    if (!settings?.LMStudioBasePath && !autoDetectAttempted) {
-      autoDetectBasePath(true);
-    }
-  }, [settings?.LMStudioBasePath, autoDetectAttempted]);
-
-  const autoDetectBasePath = async (firstLoad = false) => {
-    setLoading(true);
-    setAutoDetectAttempted(true);
-
-    const checkUrl = async (url) => {
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Timeout")), 2000)
-      );
-
-      const fetchPromise = System.customModels("lmstudio", null, url);
-
-      try {
-        const { models } = await Promise.race([fetchPromise, timeoutPromise]);
-        return models && models.length > 0 ? url : null;
-      } catch (error) {
-        console.error(`Failed to connect to ${url}:`, error);
-        return null;
-      }
-    };
-
-    for (const url of LMSTUDIO_COMMON_URLS) {
-      const detectedUrl = await checkUrl(url);
-      if (detectedUrl) {
-        setBasePath(detectedUrl);
-        setBasePathValue(detectedUrl);
-        setLoading(false);
-        if (!firstLoad)
-          showToast("LM Studio URL detected successfully!", "success", {
-            clear: true,
-          });
-        setShowAdvanced(false);
-        return;
-      }
-    }
-
-    setLoading(false);
-    setShowAdvanced(true);
-    showToast(
-      "Couldn't automatically detect LM Studio. LM Studio may not be running. Please enter the URL manually or try again.",
-      "info",
-      {
-        clear: true,
-      }
-    );
-  };
-
-  const handleAutoDetectClick = (e) => {
-    e.preventDefault();
-    autoDetectBasePath();
-  };
-
-  const handleBasePathChange = (e) => {
-    const value = e.target.value;
-    setBasePathValue(value);
-  };
-
-  const handleBasePathBlur = () => {
-    setBasePath(basePathValue);
-  };
 
   const handleMaxTokensChange = (e) => {
     setMaxTokens(Number(e.target.value));
@@ -108,7 +48,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
         </div>
       )}
       <div className="w-full flex items-start gap-4">
-        <LMStudioModelSelection settings={settings} basePath={basePath} />
+        <LMStudioModelSelection settings={settings} basePath={basePath.value} />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-2">
             Max Tokens
@@ -135,19 +75,20 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
         <button
           onClick={(e) => {
             e.preventDefault();
-            setShowAdvanced(!showAdvanced);
+            setShowAdvancedControls(!showAdvancedControls);
           }}
           className="text-white hover:text-white/70 flex items-center text-sm"
         >
-          {showAdvanced ? "Hide" : "Show"} Advanced Options
-          {showAdvanced ? (
+          {showAdvancedControls ? "Hide" : "Show"} Manual Endpoint Input
+          {showAdvancedControls ? (
             <CaretUp size={14} className="ml-1" />
           ) : (
             <CaretDown size={14} className="ml-1" />
           )}
         </button>
       </div>
-      {showAdvanced && (
+
+      <div hidden={!showAdvancedControls}>
         <div className="w-full flex items-start gap-4 mt-4">
           <div className="flex flex-col w-60">
             <div className="flex justify-between items-center mb-2">
@@ -157,12 +98,16 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
               {loading ? (
                 <PreLoader size="6" />
               ) : (
-                <button
-                  onClick={handleAutoDetectClick}
-                  className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
-                >
-                  Auto-Detect
-                </button>
+                <>
+                  {!basePathValue.value && (
+                    <button
+                      onClick={handleAutoDetectClick}
+                      className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+                    >
+                      Auto-Detect
+                    </button>
+                  )}
+                </>
               )}
             </div>
             <input
@@ -170,20 +115,19 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
               name="LMStudioBasePath"
               className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
               placeholder="http://localhost:1234/v1"
-              value={basePathValue}
+              value={basePathValue.value}
               required={true}
               autoComplete="off"
               spellCheck={false}
-              onChange={handleBasePathChange}
-              onBlur={handleBasePathBlur}
+              onChange={basePath.onChange}
+              onBlur={basePath.onBlur}
             />
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-              Enter the URL where LM Studio is running. Click "Auto-Detect" if
-              you're not sure.
+              Enter the URL where LM Studio is running.
             </p>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
