@@ -12,7 +12,7 @@ export default function OllamaLLMOptions({ settings }) {
   );
   const [basePath, setBasePath] = useState(settings?.OllamaLLMBasePath || "");
   const [autoDetectAttempted, setAutoDetectAttempted] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(true);
   const [maxTokens, setMaxTokens] = useState(
     settings?.OllamaLLMTokenLimit || 4096
   );
@@ -53,6 +53,7 @@ export default function OllamaLLMOptions({ settings }) {
           showToast("Ollama URL detected successfully!", "success", {
             clear: true,
           });
+        setShowAdvanced(false);
         return;
       }
     }
