@@ -2907,6 +2907,235 @@
           }
         }
       }
+    },
+    "/v1/openai/models": {
+      "get": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "Get all available \"models\" which are workspaces you can use for chatting.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "models": [
+                      {
+                        "name": "Sample workspace",
+                        "model": "sample-workspace",
+                        "llm": {
+                          "provider": "ollama",
+                          "model": "llama3:8b"
+                        }
+                      },
+                      {
+                        "name": "Second workspace",
+                        "model": "workspace-2",
+                        "llm": {
+                          "provider": "openai",
+                          "model": "gpt-3.5-turbo"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/openai/chat/completions": {
+      "post": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "Execute a chat with a workspace with OpenAI compatibility. Supports streaming as well. Model must be a workspace slug from /models.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "Send a prompt to the workspace with full use of documents as if sending a chat in AnythingLLM. Only supports some values of OpenAI API. See example below.",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "messages": [
+                  {
+                    "role": "system",
+                    "content": "You are a helpful assistant"
+                  },
+                  {
+                    "role": "user",
+                    "content": "What is AnythingLLM?"
+                  },
+                  {
+                    "role": "assistant",
+                    "content": "AnythingLLM is...."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Follow up question..."
+                  }
+                ],
+                "model": "sample-workspace",
+                "stream": true,
+                "temperature": 0.7
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/openai/embeddings": {
+      "post": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "Get the embeddings of any arbitrary text string. This will use the embedder provider set in the system. Please ensure the token length of each string fits within the context of your embedder model.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "description": "The input string(s) to be embedded. If the text is too long for the embedder model context, it will fail to embed. The vector and associated chunk metadata will be returned in the array order provided",
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "input": [
+                  "This is my first string to embed",
+                  "This is my second string to embed"
+                ],
+                "model": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/openai/vector_stores": {
+      "get": {
+        "tags": [
+          "OpenAI Compatible Endpoints"
+        ],
+        "description": "List all the vector database collections connected to AnythingLLM. These are essentially workspaces but return their unique vector db identifier - this is the same as the workspace slug.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "data": [
+                      {
+                        "id": "slug-here",
+                        "object": "vector_store",
+                        "name": "My workspace",
+                        "file_counts": {
+                          "total": 3
+                        },
+                        "provider": "LanceDB"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   },
   "components": {
