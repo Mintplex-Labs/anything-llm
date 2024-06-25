@@ -82,6 +82,9 @@ const TRANSLATIONS = {
       remove: "Eliminar imagen del espacio de trabajo",
     },
     delete: {
+      title: "Eliminar Espacio de Trabajo",
+      description:
+        "Eliminar este espacio de trabajo y todos sus datos. Esto eliminará el espacio de trabajo para todos los usuarios.",
       delete: "Eliminar espacio de trabajo",
       deleting: "Eliminando espacio de trabajo...",
       "confirm-start": "Estás a punto de eliminar tu",

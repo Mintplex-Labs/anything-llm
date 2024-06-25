@@ -420,22 +420,6 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  getCanDeleteWorkspaces: async function () {
-    return await fetch(`${API_BASE}/system/can-delete-workspaces`, {
-      method: "GET",
-      cache: "no-cache",
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Could not fetch can delete workspaces.");
-        return res.json();
-      })
-      .then((res) => res?.canDelete)
-      .catch((e) => {
-        console.error(e);
-        return false;
-      });
-  },
   getWelcomeMessages: async function () {
     return await fetch(`${API_BASE}/system/welcome-messages`, {
       method: "GET",
