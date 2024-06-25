@@ -3,7 +3,7 @@ const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
 const UrlPattern = require("url-pattern");
-const { writeToServerDocuments } = require("../../files");
+const { writeToServerDocuments, sanitizeFileName } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const {
   ConfluencePagesLoader,
@@ -98,11 +98,11 @@ async function loadConfluence({ pageUrl, username, accessToken }, response) {
     console.log(
       `[Confluence Loader]: Saving ${doc.metadata.title} to ${outFolder}`
     );
-    writeToServerDocuments(
-      data,
-      `${slugify(doc.metadata.title)}-${data.id}`,
-      outFolderPath
+
+    const fileName = sanitizeFileName(
+      `${slugify(doc.metadata.title)}-${data.id}`
     );
+    writeToServerDocuments(data, fileName, outFolderPath);
   });
 
   return {
