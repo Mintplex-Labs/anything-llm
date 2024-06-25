@@ -84,6 +84,8 @@ const TRANSLATIONS = {
       remove: "移除工作区图像",
     },
     delete: {
+      title: "删除工作区",
+      description: "删除此工作区及其所有数据。这将删除所有用户的工作区。",
       delete: "删除工作区",
       deleting: "正在删除工作区...",
       "confirm-start": "您即将删除整个",

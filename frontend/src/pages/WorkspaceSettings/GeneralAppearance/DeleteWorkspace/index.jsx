@@ -1,22 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Workspace from "@/models/workspace";
 import paths from "@/utils/paths";
-import System from "@/models/system";
 import { useTranslation } from "react-i18next";
+import showToast from "@/utils/toast";
 
 export default function DeleteWorkspace({ workspace }) {
   const { slug } = useParams();
   const [deleting, setDeleting] = useState(false);
-  const [canDelete, setCanDelete] = useState(false);
   const { t } = useTranslation();
-  useEffect(() => {
-    async function fetchKeys() {
-      const canDelete = await System.getCanDeleteWorkspaces();
-      setCanDelete(canDelete);
-    }
-    fetchKeys();
-  }, [workspace?.slug]);
 
   const deleteWorkspace = async () => {
     if (
@@ -40,16 +32,20 @@ export default function DeleteWorkspace({ workspace }) {
       ? (window.location = paths.home())
       : window.location.reload();
   };
-
-  if (!canDelete) return null;
   return (
-    <button
-      disabled={deleting}
-      onClick={deleteWorkspace}
-      type="button"
-      className="w-60 mt-[40px] transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-red-500/25 text-red-200 hover:text-white hover:bg-red-600 disabled:bg-red-600 disabled:text-red-200 disabled:animate-pulse"
-    >
-      {deleting ? t("general.delete.deleting") : t("general.delete.delete")}
-    </button>
+    <div className="flex flex-col mt-10">
+      <label className="block input-label">{t("general.delete.title")}</label>
+      <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
+        {t("general.delete.description")}
+      </p>
+      <button
+        disabled={deleting}
+        onClick={deleteWorkspace}
+        type="button"
+        className="w-60 mt-4 transition-all duration-300 border border-transparent rounded-lg whitespace-nowrap text-sm px-5 py-2.5 focus:z-10 bg-red-500/25 text-red-200 hover:text-white hover:bg-red-600 disabled:bg-red-600 disabled:text-red-200 disabled:animate-pulse"
+      >
+        {deleting ? t("general.delete.deleting") : t("general.delete.delete")}
+      </button>
+    </div>
   );
 }
