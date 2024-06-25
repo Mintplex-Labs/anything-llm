@@ -37,6 +37,7 @@ const endpointsFiles = [
   "../endpoints/api/system/index.js",
   "../endpoints/api/workspaceThread/index.js",
   "../endpoints/api/userManagement/index.js",
+  "../endpoints/api/openai/index.js",
 ];
 
 swaggerAutogen(outputFile, endpointsFiles, doc).then(({ data }) => {
