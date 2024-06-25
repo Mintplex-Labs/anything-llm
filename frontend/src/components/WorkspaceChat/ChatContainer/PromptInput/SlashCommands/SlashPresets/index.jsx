@@ -104,7 +104,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
         className="w-full hover:cursor-pointer hover:bg-zinc-700 px-2 py-1 rounded-xl flex flex-col justify-start"
       >
         <div className="w-full flex-row flex pointer-events-none items-center gap-2">
-          <Plus size={24} weight="fill" fill="white" />
+          <Plus size={24} weight="fill" fill="rgba(0, 0, 0, 0.6)" />
           <div className="text-white text-sm font-medium">Add New Preset </div>
         </div>
       </button>

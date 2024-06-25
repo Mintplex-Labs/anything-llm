@@ -120,7 +120,7 @@ export default function CustomLogo() {
               className="w-full h-full object-cover border-2 border-white/20 border-dashed p-1 rounded-2xl"
             />
 
-            <div className="absolute w-80 top-0 left-0 right-0 bottom-0 flex flex-col gap-y-3 justify-center items-center rounded-2xl mt-3 bg-black bg-opacity-80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out border-2 border-transparent hover:border-white">
+            <div className="uploaded-logo absolute w-80 top-0 left-0 right-0 bottom-0 flex flex-col gap-y-3 justify-center items-center rounded-2xl mt-3 bg-black bg-opacity-80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out border-2 border-transparent hover:border-white">
               <button
                 onClick={triggerFileInputClick}
                 className="text-white text-base font-medium hover:text-opacity-60 mx-2"

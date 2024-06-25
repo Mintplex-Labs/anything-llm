@@ -710,11 +710,7 @@ function systemEndpoints(app) {
 
   app.post(
     "/system/upload-logo",
-    [
-      validatedRequest,
-      flexUserRoleValid([ROLES.all]),
-      handleAssetUpload,
-    ],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), handleAssetUpload],
     async (request, response) => {
       if (!request?.file || !request?.file.originalname) {
         return response.status(400).json({ message: "No logo file provided." });

@@ -133,7 +133,7 @@ export default function ChatHistory({
 
   if (history.length === 0) {
     return (
-      <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
+      <div className="flex flex-col h-full md:mt-0 md:pb-40 w-full justify-end items-center" style={{ paddingBottom: '20rem' }}>
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
           <p className="text-white/60 text-lg font-base py-4">
             Welcome to your new workspace.
@@ -173,7 +173,7 @@ export default function ChatHistory({
     <div
       className={`markdown text-white/80 font-light ${textSize} h-full md:h-[57%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll`}
       style={{
-        paddingBottom: '0px'
+        paddingBottom: "0px",
       }}
       id="chat-history"
       ref={chatHistoryRef}

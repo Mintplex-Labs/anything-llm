@@ -47,8 +47,8 @@ export default function Footer() {
 
   if (!Array.isArray(footerData) || footerData.length === 0) {
     return (
-      <div className="flex justify-center mb-2">
-        <div className="flex" style={{ width: '100%', padding: '0px 6px' }}>
+      <div className="flex justify-center mb-2" style={{ flexDirection: 'column' }}>
+        <div className="flex" style={{ width: "100%", padding: "0px 6px" }}>
           {/* <ToolTipWrapper id="open-github">
             <a
               href={paths.github()}
@@ -98,8 +98,8 @@ export default function Footer() {
   }
 
   return (
-    <div className="flex justify-center mb-2">
-      <div className="flex space-x-4">
+    <div className="flex justify-center mb-2" style={{ flexDirection: 'column', rowGap: '4px' }}>
+      <div className="flex space-x-4" style={{ margin: 'auto' }}>
         {footerData.map((item, index) => (
           <a
             key={index}
@@ -118,9 +118,7 @@ export default function Footer() {
           </a>
         ))}
       </div>
-      <div className="flex px-6">
-        {!isMobile && <SettingsButton />}
-      </div>
+      <div className="flex px-6">{!isMobile && <SettingsButton />}</div>
     </div>
   );
 }
