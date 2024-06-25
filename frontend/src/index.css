@@ -229,10 +229,19 @@ button[type="submit"].send-message {
 .bg-\[\#41444C\] {
   background-color: #ddd !important;
 }
+
+.hover\:bg-zinc-700:hover,
 .hover\:bg-neutral-700:hover,
 .hover\:bg-dark-highlight:hover {
   background-color: rgba(0, 0, 0, 0.1) !important;
 }
+.uploaded-logo {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+.uploaded-logo button {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
 .bg-stone-800 {
   background-color: rgba(0, 0, 0, 0.1) !important;
 }

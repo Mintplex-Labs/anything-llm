@@ -15,10 +15,9 @@ export default function UserIcon({ size = 36, user, role, logo }) {
     const result = JAZZ(size, seed);
     divRef.current.appendChild(result);
   }, [pfp, role, seed, size]);
-
   return (
     <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden">
-      {logo ? (
+      {(logo && !pfp) ? (
         <img
           src={logo}
           style={{
@@ -30,7 +29,7 @@ export default function UserIcon({ size = 36, user, role, logo }) {
       ) : (
         <div ref={divRef} />
       )}
-      {role === "user" && pfp && !logo && (
+      {role === "user" && pfp && (
         <img
           src={pfp}
           alt="User profile picture"

@@ -162,7 +162,7 @@ function FirstTimeAgentUser() {
                 saving documents to your browser, summarizing documents, and
                 more.
               </p>
-              <p className="text-green-300/60 text-xs md:text-sm">
+              <p className="text-green-700/60 text-xs md:text-sm">
                 This feature is currently early access and fully custom agents
                 with custom integrations & code execution will be in a future
                 update.
@@ -174,7 +174,7 @@ function FirstTimeAgentUser() {
             <button
               onClick={dismiss}
               type="button"
-              className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
+              className="bg-primary-button px-4 py-2 rounded-lg text-white"
             >
               Continue
             </button>

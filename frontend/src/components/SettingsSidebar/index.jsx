@@ -115,7 +115,7 @@ export default function SettingsSidebar() {
               {/* Primary Body */}
               <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll">
                 <div className="h-auto md:sidebar-items md:dark:sidebar-items">
-                  <div className="flex flex-col gap-y-4 pb-[80px] overflow-y-scroll no-scroll">
+                  <div className="flex flex-col gap-y-4 pb-[120px] overflow-y-scroll no-scroll">
                     <SidebarOptions user={user} t={t} />
                   </div>
                 </div>
@@ -170,7 +170,7 @@ export default function SettingsSidebar() {
           </div>
           <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
             <div className="h-auto sidebar-items">
-              <div className="flex flex-col gap-y-2 pb-[80px] overflow-y-scroll no-scroll">
+              <div className="flex flex-col gap-y-2 pb-[120px] overflow-y-scroll no-scroll">
                 <SidebarOptions user={user} t={t} />
               </div>
             </div>

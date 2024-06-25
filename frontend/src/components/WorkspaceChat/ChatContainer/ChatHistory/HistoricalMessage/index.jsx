@@ -117,7 +117,7 @@ function ProfileImage({ role, workspace }) {
       </div>
     );
   }
-  console.log("role>>>", role);
+
   return (
     <UserIcon
       user={{

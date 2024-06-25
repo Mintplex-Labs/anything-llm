@@ -53,7 +53,7 @@ export default function Sidebar() {
         <div className="flex flex-col h-full overflow-x-hidden">
           <div className="flex-grow flex flex-col min-w-[235px]">
             <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between overflow-y-scroll no-scroll">
-              <div className="flex flex-col gap-y-2 pb-[80px] overflow-y-scroll no-scroll">
+              <div className="flex flex-col gap-y-2 pb-[120px] overflow-y-scroll no-scroll">
                 <div className="flex gap-x-2 items-center justify-between">
                   {(!user || user?.role !== "default") && (
                     <button
@@ -184,7 +184,7 @@ export function SidebarMobileHeader() {
             {/* Primary Body */}
             <div className="h-full flex flex-col w-full justify-between pt-4 ">
               <div className="h-auto md:sidebar-items">
-                <div className=" flex flex-col gap-y-4 overflow-y-scroll no-scroll pb-[80px]">
+                <div className=" flex flex-col gap-y-4 overflow-y-scroll no-scroll pb-[120px]">
                   <div className="flex gap-x-2 items-center justify-between">
                     {(!user || user?.role !== "default") && (
                       <button
