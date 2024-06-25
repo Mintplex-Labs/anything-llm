@@ -117,7 +117,7 @@ button.text-red-200 {
 }
 
 .react-loading-skeleton::after > div {
-  background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1)) !important;
+  background-image: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)) !important;
 }
 
 .react-loading-skeleton::after {
@@ -231,6 +231,12 @@ button[type="submit"].send-message {
 .hover\:text-white\/60:hover {
   color: rgba(0, 0, 0, 0.6) !important;
 }
+
+.hover\:bg-zinc-700:hover {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.bg-zinc-700,
 .bg-dark-highlight {
   background-color: rgba(0, 0, 0, 0.1);
 }
