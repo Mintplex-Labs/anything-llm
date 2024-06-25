@@ -13,32 +13,58 @@ export default function SettingsButton() {
 
   if (isInSettings)
     return (
-      <ToolTipWrapper id="go-home">
-        <Link
-          to={paths.home()}
-          className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-          aria-label="Home"
-          data-tooltip-id="go-home"
-          data-tooltip-content="Back to workspaces"
+      // <ToolTipWrapper id="go-home">
+      <Link
+        to={paths.home()}
+        className="transition-all duration-300 p-1 text-white"
+        style={{ width: '100%' }}
+        aria-label="Home"
+        data-tooltip-id="go-home"
+        data-tooltip-content="Back to workspaces"
+      >
+        <div
+          style={{ alignItems: 'center', width: '100%' }}
+          className={`transition-all duration-[200ms] text-sm
+            flex flex-grow w-[75%] gap-x-2 py-[8px] px-[12px] rounded-[4px] text-white justify-start items-center
+            hover:bg-workspace-item-selected-gradient hover:font-bold border-2 border-outline
+            `}
         >
           <ArrowUUpLeft className="h-5 w-5" weight="fill" />
-        </Link>
-      </ToolTipWrapper>
+          <span>
+            Back to workspaces
+          </span>
+        </div>
+      </Link>
+      // </ToolTipWrapper>
     );
 
   return (
-    <ToolTipWrapper id="open-settings">
-      <Link
-        to={
-          !!user?.role ? paths.settings.system() : paths.settings.appearance()
-        }
-        className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-        aria-label="Settings"
-        data-tooltip-id="open-settings"
-        data-tooltip-content="Open settings"
+    // <ToolTipWrapper
+    //   id="open-settings"
+    // >
+    <Link
+        to={!!user?.role ? paths.settings.system() : paths.settings.appearance()}
+        className="transition-all duration-300 p-1 text-white"
+        style={{ width: '100%' }}
+        aria-label="Home"
+        data-tooltip-id="go-home"
+        data-tooltip-content="Back to workspaces"
       >
+    <div
+      style={{ alignItems: 'center', width: '100%' }}
+      className={`transition-all duration-[200ms] text-sm
+          flex flex-grow w-[75%] gap-x-2 py-[8px] px-[12px] rounded-[4px] text-white justify-start items-center
+          hover:bg-workspace-item-selected-gradient hover:font-bold border-2 border-outline
+          `}
+    >
+      
         <Wrench className="h-5 w-5" weight="fill" />
-      </Link>
-    </ToolTipWrapper>
+      
+      <span>
+        Settings
+      </span>
+    </div>
+    </Link>
+    // </ToolTipWrapper>
   );
 }

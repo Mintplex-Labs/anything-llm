@@ -10,6 +10,8 @@ import NewWorkspaceModal, {
 } from "../Modals/NewWorkspace";
 import paths from "@/utils/paths";
 import { isMobile } from "react-device-detect";
+import AssistantLogo from '@/media/logo/assistant.png';
+import UserLogo from '@/media/logo/user.png';
 import { SidebarMobileHeader } from "../Sidebar";
 import ChatBubble from "../ChatBubble";
 import System from "@/models/system";
@@ -46,7 +48,7 @@ export default function DefaultChatContainer() {
           className={`pt-10 pb-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <UserIcon user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon logo={AssistantLogo} user={{ uid: "system" }} role={"assistant"} />
 
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -70,7 +72,7 @@ export default function DefaultChatContainer() {
           className={`pb-4 pt-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <UserIcon user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon logo={AssistantLogo} user={{ uid: "system" }} role={"assistant"} />
 
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -93,7 +95,7 @@ export default function DefaultChatContainer() {
           className={`pt-2 pb-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <UserIcon user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon logo={AssistantLogo} user={{ uid: "system" }} role={"assistant"} />
             <div>
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -129,6 +131,7 @@ export default function DefaultChatContainer() {
           <div className="flex gap-x-5">
             <UserIcon
               user={{ uid: userFromStorage()?.username }}
+              logo={UserLogo}
               role={"user"}
             />
 
@@ -150,7 +153,7 @@ export default function DefaultChatContainer() {
           className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <UserIcon user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon logo={AssistantLogo} user={{ uid: "system" }} role={"assistant"} />
             <div>
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -189,6 +192,7 @@ export default function DefaultChatContainer() {
           <div className="flex gap-x-5">
             <UserIcon
               user={{ uid: userFromStorage()?.username }}
+              logo={UserLogo}
               role={"user"}
             />
 
@@ -211,7 +215,7 @@ export default function DefaultChatContainer() {
           className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <UserIcon user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon logo={AssistantLogo} user={{ uid: "system" }} role={"assistant"} />
 
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
@@ -251,6 +255,7 @@ export default function DefaultChatContainer() {
           <div className="flex gap-x-5">
             <UserIcon
               user={{ uid: userFromStorage()?.username }}
+              logo={UserLogo}
               role={"user"}
             />
 
@@ -272,7 +277,7 @@ export default function DefaultChatContainer() {
           className={`py-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
         >
           <div className="flex gap-x-5">
-            <UserIcon user={{ uid: "system" }} role={"assistant"} />
+            <UserIcon logo={AssistantLogo} user={{ uid: "system" }} role={"assistant"} />
             <div>
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}

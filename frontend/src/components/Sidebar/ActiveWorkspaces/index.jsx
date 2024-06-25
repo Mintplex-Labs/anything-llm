@@ -105,7 +105,7 @@ export default function ActiveWorkspaces() {
                   <div className="flex items-center space-x-2">
                     <SquaresFour
                       weight={isActive ? "fill" : "regular"}
-                      className="flex-shrink-0"
+                      className="flex-shrink-0 squares-four"
                       size={24}
                     />
                     <p
@@ -144,6 +144,7 @@ export default function ActiveWorkspaces() {
                           <UploadSimple
                             className="h-[20px] w-[20px]"
                             weight="bold"
+                            color={"rgba(0, 0, 0, 0.6)"}
                           />
                         </button>
                       </div>
@@ -169,13 +170,14 @@ export default function ActiveWorkspaces() {
                         >
                           <div className="flex hover:bg-[#646768] p-[2px] rounded-[4px]">
                             <GearSix
-                              color={
-                                isInWorkspaceSettings && workspace.slug === slug
-                                  ? "#46C8FF"
-                                  : gearHover[workspace.id]
-                                    ? "#FFFFFF"
-                                    : "#A7A8A9"
-                              }
+                              // color={
+                              //   isInWorkspaceSettings && workspace.slug === slug
+                              //     ? "#46C8FF"
+                              //     : gearHover[workspace.id]
+                              //       ? "#FFFFFF"
+                              //       : "#A7A8A9"
+                              // }
+                              color={"rgba(0, 0, 0, 0.6)"}
                               weight="bold"
                               className="h-[20px] w-[20px]"
                             />

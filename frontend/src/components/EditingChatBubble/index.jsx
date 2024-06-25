@@ -34,7 +34,7 @@ export default function EditingChatBubble({
           <X className="m-0.5" size={20} />
         </button>
         <div
-          className={`p-2 max-w-full md:w-[290px] text-black rounded-[8px] ${
+          className={`p-2 max-w-full md:w-[290px] rounded-[8px] ${
             isUser ? "bg-[#41444C] text-white" : "bg-[#2E3036] text-white"
           }
         }`}

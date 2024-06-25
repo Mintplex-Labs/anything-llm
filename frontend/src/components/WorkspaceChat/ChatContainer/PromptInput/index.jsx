@@ -142,7 +142,7 @@ export default function PromptInput({
                   <button
                     ref={formRef}
                     type="submit"
-                    className="inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
+                    className="send-message inline-flex justify-center rounded-2xl cursor-pointer text-white/60 hover:text-white group ml-4"
                     data-tooltip-id="send-prompt"
                     data-tooltip-content="Send prompt message to workspace"
                     aria-label="Send prompt message to workspace"

@@ -201,7 +201,8 @@ function Directory({
         </div>
 
         <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900">
+          {/* <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900"> */}
+          <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 bg-zinc-900">
             <p className="col-span-6">Name</p>
           </div>
 

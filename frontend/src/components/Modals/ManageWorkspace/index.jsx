@@ -105,7 +105,7 @@ const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
       <div className="gap-x-2 flex justify-center -mt-[68px] mb-10 bg-sidebar-button p-1 rounded-xl shadow border-2 border-slate-300/10 w-fit">
         <button
           onClick={() => setSelectedTab("documents")}
-          className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
+          className={`px-4 switch py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
             selectedTab === "documents"
               ? "bg-switch-selected shadow-md font-bold"
               : "bg-sidebar-button text-white/20 font-medium hover:text-white"
@@ -115,7 +115,7 @@ const ModalTabSwitcher = ({ selectedTab, setSelectedTab }) => {
         </button>
         <button
           onClick={() => setSelectedTab("dataConnectors")}
-          className={`px-4 py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
+          className={`px-4 switch py-2 rounded-[8px] font-semibold text-white hover:bg-switch-selected hover:bg-opacity-60 ${
             selectedTab === "dataConnectors"
               ? "bg-switch-selected shadow-md font-bold"
               : "bg-sidebar-button text-white/20 font-medium hover:text-white"

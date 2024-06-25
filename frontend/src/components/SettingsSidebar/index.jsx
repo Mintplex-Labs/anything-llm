@@ -30,6 +30,8 @@ import { isMobile } from "react-device-detect";
 import Footer from "../Footer";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import SaalLogoDark from './../../media/logo/saal_logo_light.svg';
+
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
@@ -114,7 +116,7 @@ export default function SettingsSidebar() {
               {/* Primary Body */}
               <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll">
                 <div className="h-auto md:sidebar-items md:dark:sidebar-items">
-                  <div className="flex flex-col gap-y-4 pb-[60px] overflow-y-scroll no-scroll">
+                  <div className="flex flex-col gap-y-4 pb-[80px] overflow-y-scroll no-scroll">
                     <SidebarOptions user={user} t={t} />
                   </div>
                 </div>
@@ -133,6 +135,11 @@ export default function SettingsSidebar() {
     <div>
       <Link
         to={paths.home()}
+        style={{
+          marginTop: '26px',
+          marginBottom: '18px',
+          marginLeft: '16px'
+        }}
         className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
       >
         <img
@@ -144,21 +151,42 @@ export default function SettingsSidebar() {
       </Link>
       <div
         ref={sidebarRef}
-        className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-76px)]"
+        style={{
+          marginTop: "26px",
+          marginBottom: "16px",
+          backgroundColor: 'white'
+        }}
+        className="transition-all duration-500 relative m-[16px] rounded-[8px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-92px)]"
       >
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
-          <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
+          <div
+            className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2"
+            style={{
+              borderBottom: '1px solid #e3e3e3',
+              paddingBottom: '16px',
+              marginBottom: '6px'
+            }}
+          >
             {t("settings.title")}
           </div>
           <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
             <div className="h-auto sidebar-items">
-              <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
+              <div className="flex flex-col gap-y-2 pb-[80px] overflow-y-scroll no-scroll">
                 <SidebarOptions user={user} t={t} />
               </div>
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
+          <div
+            className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10"
+            style={{
+              backgroundColor: 'white'
+            }}
+          >
             <Footer />
+            <div style={{ display: 'flex', alignItems: 'center' }} className="whitespace-pre-line text-white align-center justify-center font-normal text-xs flex">
+              <>Powered by:&nbsp;</>
+              <img style={{ height: "12px" }} src={SaalLogoDark} alt="logo" />
+            </div>
           </div>
         </div>
       </div>
@@ -197,6 +225,7 @@ const Option = ({
           transition-all duration-[200ms]
           flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] justify-start items-center
           hover:bg-workspace-item-selected-gradient hover:text-white hover:font-medium
+          bg-menu-item-gradient
           ${
             isActive
               ? "bg-menu-item-selected-gradient font-medium border-outline text-white"

@@ -28,7 +28,7 @@ export default {
         "historical-msg-system": "rgba(255, 255, 255, 0.05);",
         "historical-msg-user": "#2C2F35",
         outline: "#4E5153",
-        "primary-button": "#46C8FF",
+        "primary-button": "#008ECE",
         secondary: "#2C2F36",
         "dark-input": "#18181B",
         "mobile-onboarding": "#2C2F35",
@@ -41,13 +41,13 @@ export default {
         "preference-gradient":
           "linear-gradient(180deg, #5A5C63 0%, rgba(90, 92, 99, 0.28) 100%);",
         "chat-msg-user-gradient":
-          "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%);",
+          "linear-gradient(180deg, #C7C9CC 0%, #E6E7E9 100%);",
         "selected-preference-gradient":
           "linear-gradient(180deg, #313236 0%, rgba(63.40, 64.90, 70.13, 0) 100%);",
-        "main-gradient": "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)",
-        "modal-gradient": "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)",
+        "main-gradient": "linear-gradient(180deg, #C7C9CC 0%, #E6E7E9 100%)",
+        "modal-gradient": "linear-gradient(180deg, #fff 0%, #fff 100%)",
         "sidebar-gradient": "linear-gradient(90deg, #5B616A 0%, #3F434B 100%)",
-        "login-gradient": "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)",
+        "login-gradient": "linear-gradient(180deg, #fff 0%, #fff 100%)",
         "menu-item-gradient":
           "linear-gradient(90deg, #3D4147 0%, #2C2F35 100%)",
         "menu-item-selected-gradient":

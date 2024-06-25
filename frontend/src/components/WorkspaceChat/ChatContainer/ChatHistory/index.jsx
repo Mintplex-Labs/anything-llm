@@ -171,7 +171,10 @@ export default function ChatHistory({
 
   return (
     <div
-      className={`markdown text-white/80 font-light ${textSize} h-full md:h-[50%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll`}
+      className={`markdown text-white/80 font-light ${textSize} h-full md:h-[57%] pb-[100px] pt-6 md:pt-0 md:pb-20 md:mx-0 overflow-y-scroll flex flex-col justify-start no-scroll`}
+      style={{
+        paddingBottom: '0px'
+      }}
       id="chat-history"
       ref={chatHistoryRef}
     >

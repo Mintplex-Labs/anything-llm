@@ -8,7 +8,7 @@ import {
   AUTH_TIMESTAMP,
 } from "../../../utils/constants";
 import useLogo from "../../../hooks/useLogo";
-import illustration from "@/media/illustrations/login-illustration.svg";
+import illustration from "@/media/illustrations/login-illustration.png";
 
 export default function PasswordModal({ mode = "single" }) {
   const { loginLogo } = useLogo();
@@ -16,13 +16,14 @@ export default function PasswordModal({ mode = "single" }) {
     <img
       src={loginLogo}
       alt="Logo"
-      className={`hidden relative md:flex w-fit m-4 z-30 relative max-h-[65px]  md:shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+      // className={`hidden relative md:flex w-fit m-4 z-30 relative max-h-[65px]  md:shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+      className={`hidden relative md:flex w-fit z-30 relative max-h-[65px]`}
       style={{ objectFit: "contain" }}
     />
   );
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-[#25272C] flex flex-col md:flex-row items-center justify-center">
+    <div className="fixed top-0 left-0 right-0 z-50 w-full overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] h-full bg-[#f5f5f5] flex flex-col md:flex-row items-center justify-center">
       <div
         style={{
           background: `
@@ -37,12 +38,13 @@ export default function PasswordModal({ mode = "single" }) {
       />
       <div className="hidden md:flex md:w-1/2 md:h-full md:items-center md:justify-center">
         <img
-          className="w-full h-full object-contain z-50"
+          // className="w-full h-full object-contain z-50"
+          className="w-full h-full z-50"
           src={illustration}
           alt="login illustration"
         />
       </div>
-      <div className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative">
+      <div style={{ background: '#f5f5f5' }} className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative">
         {mode === "single" ? <SingleUserAuth logo={logo} /> : <MultiUserAuth logo={logo} />}
       </div>
     </div>

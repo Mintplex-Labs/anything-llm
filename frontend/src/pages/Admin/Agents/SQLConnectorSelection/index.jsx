@@ -21,7 +21,7 @@ export default function AgentSQLConnectorSelection({
       <div className="p-2">
         <div className="flex flex-col gap-y-[18px] max-w-[500px]">
           <div className="flex items-center gap-x-2">
-            <Database size={24} color="white" weight="bold" />
+            <Database size={24} color="currentColor" weight="bold" />
             <label htmlFor="name" className="text-white text-md font-bold">
               SQL Agent
             </label>
@@ -87,7 +87,10 @@ export default function AgentSQLConnectorSelection({
                     className="w-fit relative flex h-[40px] items-center border-none hover:bg-slate-600/20 rounded-lg"
                   >
                     <div className="flex w-full gap-x-2 items-center p-4">
-                      <div className="bg-zinc-600 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
+                      <div
+                        // className="bg-zinc-600 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center"
+                        className="p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center"
+                      >
                         <Plus
                           weight="bold"
                           size={14}
