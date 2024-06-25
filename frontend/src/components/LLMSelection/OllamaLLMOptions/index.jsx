@@ -3,6 +3,7 @@ import System from "@/models/system";
 import showToast from "@/utils/toast";
 import PreLoader from "@/components/Preloader";
 import { OLLAMA_COMMON_URLS } from "@/utils/constants";
+import { CaretDown, CaretUp } from "@phosphor-icons/react";
 
 export default function OllamaLLMOptions({ settings }) {
   const [loading, setLoading] = useState(false);
@@ -11,6 +12,10 @@ export default function OllamaLLMOptions({ settings }) {
   );
   const [basePath, setBasePath] = useState(settings?.OllamaLLMBasePath || "");
   const [autoDetectAttempted, setAutoDetectAttempted] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [maxTokens, setMaxTokens] = useState(
+    settings?.OllamaLLMTokenLimit || 4096
+  );
 
   useEffect(() => {
     if (!settings?.OllamaLLMBasePath && !autoDetectAttempted) {
@@ -53,6 +58,7 @@ export default function OllamaLLMOptions({ settings }) {
     }
 
     setLoading(false);
+    setShowAdvanced(true);
     showToast(
       "Couldn't automatically detect Ollama. Ollama may not be setup properly. Please enter the URL manually or try again.",
       "info",
@@ -76,67 +82,89 @@ export default function OllamaLLMOptions({ settings }) {
     setBasePath(basePathValue);
   };
 
+  const handleMaxTokensChange = (e) => {
+    setMaxTokens(Number(e.target.value));
+  };
+
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-start gap-4">
+        <OllamaLLMModelSelection settings={settings} basePath={basePath} />
         <div className="flex flex-col w-60">
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-white text-sm font-semibold">
-              Ollama Base URL
-            </label>
-            {loading ? (
-              <PreLoader size="6" />
-            ) : (
-              <button
-                onClick={handleAutoDetectClick}
-                className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
-              >
-                Auto-Detect
-              </button>
-            )}
-          </div>
+          <label className="text-white text-sm font-semibold block mb-2">
+            Max Tokens
+          </label>
           <input
-            type="url"
-            name="OllamaLLMBasePath"
+            type="number"
+            name="OllamaLLMTokenLimit"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="http://127.0.0.1:11434"
-            value={basePathValue}
+            placeholder="4096"
+            defaultChecked="4096"
+            min={1}
+            value={maxTokens}
+            onChange={handleMaxTokensChange}
+            onScroll={(e) => e.target.blur()}
             required={true}
             autoComplete="off"
-            spellCheck={false}
-            onChange={handleBasePathChange}
-            onBlur={handleBasePathBlur}
           />
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-            Enter the URL where Ollama is running. Click "Auto-Detect" if you're
-            not sure.
+            Maximum number of tokens for context and response.
           </p>
         </div>
-        {!settings?.credentialsOnly && (
-          <>
-            <OllamaLLMModelSelection settings={settings} basePath={basePath} />
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-2">
-                Max Tokens
-              </label>
-              <input
-                type="number"
-                name="OllamaLLMTokenLimit"
-                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                placeholder="4096"
-                min={1}
-                onScroll={(e) => e.target.blur()}
-                defaultValue={settings?.OllamaLLMTokenLimit}
-                required={true}
-                autoComplete="off"
-              />
-              <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
-                Maximum number of tokens for context and response.
-              </p>
-            </div>
-          </>
-        )}
       </div>
+      <div className="flex justify-start">
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setShowAdvanced(!showAdvanced);
+          }}
+          className="text-white hover:text-white/70 flex items-center text-sm"
+        >
+          {showAdvanced ? "Hide" : "Show"} Advanced Options
+          {showAdvanced ? (
+            <CaretUp size={14} className="ml-1" />
+          ) : (
+            <CaretDown size={14} className="ml-1" />
+          )}
+        </button>
+      </div>
+      {showAdvanced && (
+        <div className="w-full flex items-start gap-4">
+          <div className="flex flex-col w-60">
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-white text-sm font-semibold">
+                Ollama Base URL
+              </label>
+              {loading ? (
+                <PreLoader size="6" />
+              ) : (
+                <button
+                  onClick={handleAutoDetectClick}
+                  className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+                >
+                  Auto-Detect
+                </button>
+              )}
+            </div>
+            <input
+              type="url"
+              name="OllamaLLMBasePath"
+              className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+              placeholder="http://127.0.0.1:11434"
+              value={basePathValue}
+              required={true}
+              autoComplete="off"
+              spellCheck={false}
+              onChange={handleBasePathChange}
+              onBlur={handleBasePathBlur}
+            />
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+              Enter the URL where Ollama is running. Click "Auto-Detect" if
+              you're not sure.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
