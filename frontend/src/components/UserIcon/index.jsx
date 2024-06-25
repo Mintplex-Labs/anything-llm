@@ -17,7 +17,7 @@ export default function UserIcon({ size = 36, user, role, logo }) {
   }, [pfp, role, seed, size]);
   return (
     <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden">
-      {(logo && !pfp) ? (
+      {((logo && !pfp) || (logo && role !== "user")) ? (
         <img
           src={logo}
           style={{
