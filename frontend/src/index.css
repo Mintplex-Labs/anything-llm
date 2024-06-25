@@ -64,7 +64,7 @@ a {
   animation-delay: 500ms;
 }
 
-.w-screen > div:nth-child(2) {
+.w-screen.h-screen.overflow-hidden.bg-sidebar.flex > div:nth-child(2) {
   height: calc(100% - 92px) !important;
   margin-top: 74px !important;
   margin-bottom: 16px;
@@ -72,7 +72,7 @@ a {
   background-color: #fff;
 }
 
-.w-screen > div:nth-child(2).border-2 {
+.w-screen.h-screen.overflow-hidden.bg-sidebar.flex > div:nth-child(2).border-2 {
   height: calc(100% - 88px) !important;
 }
 
