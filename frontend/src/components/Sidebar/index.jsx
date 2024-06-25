@@ -32,6 +32,7 @@ export default function Sidebar() {
         style={{
           marginTop: "26px",
           marginBottom: "18px",
+          marginLeft: '16px'
         }}
         aria-label="Home"
       >
