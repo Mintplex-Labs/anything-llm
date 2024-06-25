@@ -105,11 +105,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/upload",
-    [
-      validatedRequest,
-      flexUserRoleValid([ROLES.all]),
-      handleFileUpload,
-    ],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), handleFileUpload],
     async function (request, response) {
       try {
         const Collector = new CollectorApi();
@@ -558,11 +554,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/update-pin",
-    [
-      validatedRequest,
-      flexUserRoleValid([ROLES.all]),
-      validWorkspaceSlug,
-    ],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
     async (request, response) => {
       try {
         const { docPath, pinStatus = false } = reqBody(request);
@@ -670,11 +662,7 @@ function workspaceEndpoints(app) {
 
   app.post(
     "/workspace/:slug/upload-pfp",
-    [
-      validatedRequest,
-      flexUserRoleValid([ROLES.all]),
-      handlePfpUpload,
-    ],
+    [validatedRequest, flexUserRoleValid([ROLES.all]), handlePfpUpload],
     async function (request, response) {
       try {
         const { slug } = request.params;

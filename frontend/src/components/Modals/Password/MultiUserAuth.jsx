@@ -32,7 +32,7 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm, logo }) => {
     <form
       onSubmit={handleSubmit}
       style={{
-        minWidth: '460px'
+        minWidth: "460px",
       }}
       // className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-12 px-0 py-12 w-full md:w-fit mt-10 md:mt-0"
       className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-16 px-0 py-12 w-full md:w-fit mt-10 md:mt-0"
@@ -124,7 +124,7 @@ const ResetPasswordForm = ({ onSubmit, logo }) => {
   return (
     <form
       style={{
-        minWidth: '460px'
+        minWidth: "460px",
       }}
       onSubmit={handleSubmit}
       // className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-12 px-0 py-4 w-full md:w-fit -mt-24 md:-mt-28"
@@ -301,7 +301,7 @@ export default function MultiUserAuth({ logo }) {
       <form
         onSubmit={handleLogin}
         style={{
-          minWidth: '460px'
+          minWidth: "460px",
         }}
       >
         {/* <div className="flex flex-col justify-center items-center relative rounded-2xl md:bg-login-gradient md:shadow-[0_4px_14px_rgba(0,0,0,0.25)] md:px-12 py-12 -mt-4 md:mt-0"> */}

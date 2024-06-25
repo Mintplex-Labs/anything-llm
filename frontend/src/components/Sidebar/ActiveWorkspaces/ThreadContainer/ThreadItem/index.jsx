@@ -93,7 +93,9 @@ export default function ThreadItem({
           >
             <p
               className={`text-left text-sm ${
-                isActive ? "font-medium text-white menu-item-selected" : "text-slate-400"
+                isActive
+                  ? "font-medium text-white menu-item-selected"
+                  : "text-slate-400"
               }`}
             >
               {truncate(thread.name, 25)}

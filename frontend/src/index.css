@@ -97,7 +97,7 @@ select,
 input[type="number"],
 textarea,
 input {
-  border: 1px solid rgba(0, 0 ,0, 0.2) !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
   outline: none;
 }
 
@@ -117,19 +117,29 @@ button.text-red-200 {
 }
 
 .react-loading-skeleton::after > div {
-  background-image: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)) !important;
+  background-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0)
+  ) !important;
 }
 
 .react-loading-skeleton::after {
-  background-image: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)) !important;
+  background-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0)
+  ) !important;
 }
 
 div[role="checkbox"][aria-checked="true"] {
-  border-color: #007ABE !important;
+  border-color: #007abe !important;
 }
 
 div[role="checkbox"][aria-checked="true"] > div {
-  background-color: #007ABE !important;
+  background-color: #007abe !important;
 }
 
 div[role="checkbox"][aria-checked="false"].border-white {
@@ -153,7 +163,7 @@ svg.hover\:text-white:hover {
   background: rgba(0, 0, 0, 0.1) !important;
 }
 .bg-primary-button {
-  background-color: #008ECE;
+  background-color: #008ece;
   color: white !important;
 }
 
@@ -161,9 +171,8 @@ svg.hover\:text-white:hover {
   fill: white !important;
 }
 
-
 .hover\:text-white:hover.bg-primary-button:hover {
-  background-color: #007ABE !important;
+  background-color: #007abe !important;
   color: white !important;
 }
 button.shadow-\[0_4px_14px_rgba\(0\2c 0\2c 0\2c 0\.25\)\] {
@@ -177,11 +186,11 @@ input::placeholder {
 }
 
 button[type="submit"] {
-  background-color: #008ECE !important; /* Background color */
+  background-color: #008ece !important; /* Background color */
   color: #fff;
 }
 button[type="submit"]:hover {
-  background-color: #007ABE !important; /* Background color */
+  background-color: #007abe !important; /* Background color */
   color: #fff !important;
 }
 
@@ -190,7 +199,6 @@ button[type="submit"].send-message {
   background-color: inherit !important; /* Background color */
   color: inherit;
 }
-
 
 .bg-sidebar {
   background-color: #f5f5f5;
@@ -214,7 +222,7 @@ button[type="submit"].send-message {
   border-color: #e3e3e3 !important;
 }
 .radio-button.bg-white\/10 .bg-white {
-  background-color: #008ECE;
+  background-color: #008ece;
 }
 
 .bg-\[\#2E3036\],
@@ -318,7 +326,7 @@ button.bg-sidebar-button.bg-transparent {
   background-color: rgba(0, 0, 0, 0.1) !important;
 }
 .bg-historical-msg-user {
-  background-color: #EBEDF0;
+  background-color: #ebedf0;
 }
 .border-transparent {
   border-color: transparent !important;
@@ -333,7 +341,7 @@ button.bg-sidebar-button.bg-transparent {
 }
 
 .text-zinc-300 {
-  color: #2C2F35;
+  color: #2c2f35;
 }
 /* .z-99 {
   z-index: 9 !important;
@@ -362,11 +370,11 @@ button.rounded-2xl {
   /* background-color: rgb(255 255 255 / 0.9) !important; */
 }
 .add-new-space {
-  background-color: #008ECE;  
+  background-color: #008ece;
 }
 
 .add-new-space:hover {
-  background-color: #007ABE;
+  background-color: #007abe;
 }
 
 svg[fill="#D3D4D4"] {
@@ -476,7 +484,7 @@ button.bg-dark-input {
 }
 
 .peer:checked ~ .peer-checked\:bg-lime-300 {
-  background-color: rgba(0, 142, 206, 1) !important;;
+  background-color: rgba(0, 142, 206, 1) !important;
 }
 
 .border-gray-500\/50,
@@ -500,9 +508,8 @@ button.bg-dark-input {
 
 .hover\:bg-\[\#646768\]:hover svg,
 .hover\:text-white:hover svg {
-  fill: rgba(0, 142, 206, 1) !important;;
+  fill: rgba(0, 142, 206, 1) !important;
 }
-
 
 .hover\:text-white:hover,
 .text-slate-300,
@@ -521,7 +528,7 @@ button.bg-dark-input {
 }
 
 .border-white {
-  border-color: #fff; 
+  border-color: #fff;
 }
 
 .hover\:bg-slate-200\/20:hover {

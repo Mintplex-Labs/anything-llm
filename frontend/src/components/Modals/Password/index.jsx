@@ -44,8 +44,15 @@ export default function PasswordModal({ mode = "single" }) {
           alt="login illustration"
         />
       </div>
-      <div style={{ background: '#f5f5f5' }} className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative">
-        {mode === "single" ? <SingleUserAuth logo={logo} /> : <MultiUserAuth logo={logo} />}
+      <div
+        style={{ background: "#f5f5f5" }}
+        className="flex flex-col items-center justify-center h-full w-full md:w-1/2 z-50 relative"
+      >
+        {mode === "single" ? (
+          <SingleUserAuth logo={logo} />
+        ) : (
+          <MultiUserAuth logo={logo} />
+        )}
       </div>
     </div>
   );

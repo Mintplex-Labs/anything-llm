@@ -276,7 +276,8 @@ const TRANSLATIONS = {
   // API Keys
   api: {
     title: "API 密钥",
-    description: "API 密钥允许持有者以编程方式访问和管理此 DataPrism 360 实例。",
+    description:
+      "API 密钥允许持有者以编程方式访问和管理此 DataPrism 360 实例。",
     link: "阅读 API 文档",
     generate: "生成新的 API 密钥",
     table: {

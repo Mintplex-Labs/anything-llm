@@ -5,7 +5,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 const TITLE = "Welcome to DataPrism 360";
-const DESCRIPTION = "Help us make DataPrism 360 built for your needs. Optional.";
+const DESCRIPTION =
+  "Help us make DataPrism 360 built for your needs. Optional.";
 
 async function sendQuestionnaire({ email, useCase, comment }) {
   if (import.meta.env.DEV) {

@@ -30,8 +30,7 @@ import { isMobile } from "react-device-detect";
 import Footer from "../Footer";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import SaalLogoDark from './../../media/logo/saal_logo_light.svg';
-
+import SaalLogoDark from "./../../media/logo/saal_logo_light.svg";
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
@@ -136,9 +135,9 @@ export default function SettingsSidebar() {
       <Link
         to={paths.home()}
         style={{
-          marginTop: '26px',
-          marginBottom: '18px',
-          marginLeft: '16px'
+          marginTop: "26px",
+          marginBottom: "18px",
+          marginLeft: "16px",
         }}
         className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
       >
@@ -154,7 +153,7 @@ export default function SettingsSidebar() {
         style={{
           marginTop: "26px",
           marginBottom: "16px",
-          backgroundColor: 'white'
+          backgroundColor: "white",
         }}
         className="transition-all duration-500 relative m-[16px] rounded-[8px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-92px)]"
       >
@@ -162,9 +161,9 @@ export default function SettingsSidebar() {
           <div
             className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2"
             style={{
-              borderBottom: '1px solid #e3e3e3',
-              paddingBottom: '16px',
-              marginBottom: '6px'
+              borderBottom: "1px solid #e3e3e3",
+              paddingBottom: "16px",
+              marginBottom: "6px",
             }}
           >
             {t("settings.title")}
@@ -179,11 +178,14 @@ export default function SettingsSidebar() {
           <div
             className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10"
             style={{
-              backgroundColor: 'white'
+              backgroundColor: "white",
             }}
           >
             <Footer />
-            <div style={{ display: 'flex', alignItems: 'center' }} className="whitespace-pre-line text-white align-center justify-center font-normal text-xs flex">
+            <div
+              style={{ display: "flex", alignItems: "center" }}
+              className="whitespace-pre-line text-white align-center justify-center font-normal text-xs flex"
+            >
               <>Powered by:&nbsp;</>
               <img style={{ height: "12px" }} src={SaalLogoDark} alt="logo" />
             </div>

@@ -7,7 +7,7 @@ export const PfpContext = createContext();
 export function PfpProvider({ children }) {
   const [pfp, setPfp] = useState(null);
   const { user } = useUser();
-  
+
   useEffect(() => {
     async function fetchPfp() {
       if (!user?.id) return;

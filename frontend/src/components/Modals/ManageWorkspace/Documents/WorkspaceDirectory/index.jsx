@@ -163,9 +163,9 @@ const PinAlert = memo(() => {
               that are critical to its knowledge-base.
             </p>
             <p>
-              If you are not getting the answers you desire from DataPrism 360 by
-              default then pinning is a great way to get higher quality answers
-              in a click.
+              If you are not getting the answers you desire from DataPrism 360
+              by default then pinning is a great way to get higher quality
+              answers in a click.
             </p>
           </div>
 
