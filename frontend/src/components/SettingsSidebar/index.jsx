@@ -30,7 +30,7 @@ import { isMobile } from "react-device-detect";
 import Footer from "../Footer";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import SaalLogoDark from './../../media/logo/saal_logo_dark.png';
+import SaalLogoDark from './../../media/logo/saal_logo_light.svg';
 
 
 export default function SettingsSidebar() {
@@ -153,8 +153,9 @@ export default function SettingsSidebar() {
         style={{
           marginTop: "26px",
           marginBottom: "16px",
+          backgroundColor: 'white'
         }}
-        className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-92px)]"
+        className="transition-all duration-500 relative m-[16px] rounded-[8px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-92px)]"
       >
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
           <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
@@ -167,7 +168,12 @@ export default function SettingsSidebar() {
               </div>
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
+          <div
+            className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10"
+            style={{
+              backgroundColor: 'white'
+            }}
+          >
             <Footer />
             <div style={{ display: 'flex', alignItems: 'center' }} className="whitespace-pre-line text-white align-center justify-center font-normal text-xs flex">
               <>Powered by:&nbsp;</>

@@ -70,6 +70,237 @@ a {
   margin-bottom: 16px;
 }
 
+.text-white {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.text-white\/90 {
+  color: #000;
+  opacity: 0.9;
+}
+
+.text-black {
+  color: #fff;
+}
+
+.bg-zinc-900 {
+  background-color: #fff;
+}
+
+select,
+textarea,
+input {
+  border: 1px solid rgba(0, 0 ,0, 0.2) !important;
+  outline: none;
+}
+
+buttonhover.hover\:text-sky-400 {
+  color: rgba(56 189 248, 0.5);
+}
+
+button.text-red-200 {
+  color: red;
+}
+button.text-red-200.hover\:text-white:hover {
+  background-color: rgba(255, 0, 0, 0.4) !important;
+  color: red !important;
+}
+ 
+svg.hover\:text-white:hover {
+  background-color: transparent !important;
+}
+
+.bg-primary-button {
+  background-color: #008ECE;
+}
+
+textarea::placeholder,
+input::placeholder {
+  color: #000 !important;
+  opacity: 0.3 !important;
+}
+
+button[type="submit"] {
+  background-color: #008ECE !important; /* Background color */
+  color: #fff;
+}
+
+button[type="submit"]:hover {
+  background-color: #007ABE !important; /* Background color */
+  color: #fff !important;
+}
+
+.bg-sidebar {
+  background-color: #f5f5f5;
+}
+
+.text-zinc-200 {
+  color: #333338;
+}
+
+.bg-white {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.hover\:border-zinc-600:hover {
+  border-color: #e3e3e3 !important;
+}
+.text-sidebar {
+  color: rgb(216, 218, 223);
+}
+
+.bg-dark-input {
+  background-color: rgba(255, 255, 255, 1);
+}
+.hover\:text-x-button:hover {
+  color: inherit;
+}
+.bg-sidebar-button {
+  background-color: rgba(0, 0, 0, 0.1);
+  border: 1px solid #e3e3e3;
+}
+.bg-zinc-900\/50 {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+.bg-historical-msg-user {
+  background-color: #EBEDF0;
+}
+
+.text-white\/80 {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.border-white\/50 {
+  border-color: #e3e3e3;
+}
+
+.text-zinc-300 {
+  color: #2C2F35;
+}
+/* .z-99 {
+  z-index: 9 !important;
+} */
+.rounded-2xl {
+  border-radius: 8px;
+}
+.bg-main-gradient {
+  background-color: rgba(255, 255, 255, 0.8);
+  background-image: unset;
+}
+.bg-zinc-900\/50 {
+  background-color: rgb(255 255 255 / 0.5);
+}
+.hover\:bg-zinc-900\/90:hover {
+  background-color: rgb(255 255 255 / 0.9) !important;
+}
+.add-new-space {
+  background-color: #008ECE;  
+}
+
+.add-new-space:hover {
+  background-color: #007ABE;
+}
+
+.text-white\/60 {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.text-gray-300 {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.border-2 {
+  border-width: 1px;
+}
+
+.outline-none {
+  border: none !important;
+}
+.text-description {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+button.bg-dark-input {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.border-white,
+.border-outline {
+  border-color: #e3e3e3 !important;
+}
+
+/* modal */
+.absolute.bg-dark-input {
+  background-color: white;
+}
+.hover\:bg-menu-item-selected-gradient:hover {
+  background-image: unset !important;
+}
+
+.focus\:border-white:focus {
+  border-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.hover\:bg-slate-600\/20:hover {
+  background-color: rgba(0, 142, 206, 0.1) !important;
+  /* border-color: rgba(0, 142, 206, 0.3) !important; */
+}
+
+.bg-workspace-item-selected-gradient,
+.hover\:bg-workspace-item-selected-gradient:hover {
+  background-image: unset !important;
+  background-color: rgba(0, 142, 206, 0.2) !important;
+  border-color: rgba(0, 142, 206, 1) !important;
+}
+
+.font-medium.text-white,
+.bg-workspace-item-selected-gradient p,
+.bg-workspace-item-selected-gradient .squares-four {
+  fill: rgba(0, 142, 206, 1) !important;
+  color: rgba(0, 142, 206, 1) !important;;
+}
+
+
+.hover\:bg-slate-500\/20:hover,
+.hover\:text-red-100:hover {
+  background-color: rgba(0, 142, 206, 0.1) !important;
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+.hover\:bg-\[\#646768\]:hover,
+.hover\:text-white:hover {
+  background-color: rgba(0, 142, 206, 0.1) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.hover\:bg-\[\#646768\]:hover svg,
+.hover\:text-white:hover svg {
+  fill: rgba(0, 142, 206, 1) !important;;
+}
+
+
+.hover\:text-white:hover,
+.text-slate-300,
+.text-gray-300,
+.text-zinc-300,
+.text-slate-100,
+.text-slate-400 {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.bg-modal-gradient button[type="button"]:hover,
+.bg-modal-gradient button[type="button"] {
+  background-color: transparent !important;
+  color: rgba(0, 0, 0, 0.6) !important;
+  background-image: unset !important;
+}
+
+.border-white {
+  border-color: #fff; 
+}
+
+.drop-down-action {
+  border-color: #e3e3e3;
+  box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.25);
+}
+
 @keyframes message {
   0% {
     max-height: 100%;

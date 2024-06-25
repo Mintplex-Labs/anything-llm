@@ -49,7 +49,7 @@ export default function Footer() {
     return (
       <div className="flex justify-center mb-2">
         <div className="flex space-x-4">
-          <ToolTipWrapper id="open-github">
+          {/* <ToolTipWrapper id="open-github">
             <a
               href={paths.github()}
               target="_blank"
@@ -61,8 +61,8 @@ export default function Footer() {
             >
               <GithubLogo weight="fill" className="h-5 w-5 " />
             </a>
-          </ToolTipWrapper>
-          <ToolTipWrapper id="open-documentation">
+          </ToolTipWrapper> */}
+          {/* <ToolTipWrapper id="open-documentation">
             <a
               href={paths.docs()}
               target="_blank"
@@ -74,8 +74,8 @@ export default function Footer() {
             >
               <BookOpen weight="fill" className="h-5 w-5 " />
             </a>
-          </ToolTipWrapper>
-          <ToolTipWrapper id="open-discord">
+          </ToolTipWrapper> */}
+          {/* <ToolTipWrapper id="open-discord">
             <a
               href={paths.discord()}
               target="_blank"
@@ -90,7 +90,7 @@ export default function Footer() {
                 className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
               />
             </a>
-          </ToolTipWrapper>
+          </ToolTipWrapper> */}
           {!isMobile && <SettingsButton />}
         </div>
       </div>

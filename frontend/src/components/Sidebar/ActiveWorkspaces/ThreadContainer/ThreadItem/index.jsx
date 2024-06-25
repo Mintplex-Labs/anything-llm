@@ -115,7 +115,10 @@ export default function ThreadItem({
                 />
               </button>
             ) : (
-              <div className="flex items-center w-fit group-hover:visible md:invisible gap-x-1">
+              <div
+                // className="flex items-center w-fit group-hover:visible md:invisible gap-x-1"
+                className="flex items-center w-fit"
+              >
                 <button
                   type="button"
                   className="border-none"
@@ -225,7 +228,7 @@ function OptionsMenu({ containerRef, workspace, thread, onRemove, close }) {
   return (
     <div
       ref={menuRef}
-      className="absolute w-fit z-[20] top-[25px] right-[10px] bg-zinc-900 rounded-lg p-1"
+      className="absolute w-fit z-[20] top-[25px] right-[10px] bg-zinc-900 rounded-lg p-1 drop-down-action"
     >
       <button
         onClick={renameThread}
