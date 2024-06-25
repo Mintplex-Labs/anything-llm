@@ -21,21 +21,35 @@ export default function OllamaEmbeddingOptions({ settings }) {
   const autoDetectBasePath = async (firstLoad = false) => {
     setLoading(true);
     setAutoDetectAttempted(true);
-    for (const url of OLLAMA_COMMON_URLS) {
+
+    const checkUrl = async (url) => {
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Timeout")), 2000)
+      );
+
+      const fetchPromise = System.customModels("ollama", null, url);
+
       try {
-        const { models } = await System.customModels("ollama", null, url);
-        if (models && models.length > 0) {
-          setBasePath(url);
-          setBasePathValue(url);
-          setLoading(false);
-          if (!firstLoad)
-            showToast("Ollama URL detected successfully!", "success");
-          return;
-        }
+        const { models } = await Promise.race([fetchPromise, timeoutPromise]);
+        return models && models.length > 0 ? url : null;
       } catch (error) {
         console.error(`Failed to connect to ${url}:`, error);
+        return null;
+      }
+    };
+
+    for (const url of OLLAMA_COMMON_URLS) {
+      const detectedUrl = await checkUrl(url);
+      if (detectedUrl) {
+        setBasePath(detectedUrl);
+        setBasePathValue(detectedUrl);
+        setLoading(false);
+        if (!firstLoad)
+          showToast("Ollama URL detected successfully!", "success");
+        return;
       }
     }
+
     setLoading(false);
     showToast(
       "Couldn't automatically detect Ollama. Ollama may not be setup properly. Please enter the URL manually or try again.",
