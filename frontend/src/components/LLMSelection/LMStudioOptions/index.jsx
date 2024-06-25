@@ -1,13 +1,32 @@
 import { useEffect, useState } from "react";
-import { Info } from "@phosphor-icons/react";
+import { Info, CaretDown, CaretUp } from "@phosphor-icons/react";
 import paths from "@/utils/paths";
 import System from "@/models/system";
+import PreLoader from "@/components/Preloader";
+import { LMSTUDIO_COMMON_URLS } from "@/utils/constants";
+import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
 
 export default function LMStudioOptions({ settings, showAlert = false }) {
-  const [basePathValue, setBasePathValue] = useState(
-    settings?.LMStudioBasePath
+  const {
+    autoDetecting: loading,
+    basePath,
+    basePathValue,
+    showAdvancedControls,
+    setShowAdvancedControls,
+    handleAutoDetectClick,
+  } = useProviderEndpointAutoDiscovery({
+    provider: "lmstudio",
+    initialBasePath: settings?.LMStudioBasePath,
+    ENDPOINTS: LMSTUDIO_COMMON_URLS,
+  });
+
+  const [maxTokens, setMaxTokens] = useState(
+    settings?.LMStudioTokenLimit || 4096
   );
-  const [basePath, setBasePath] = useState(settings?.LMStudioBasePath);
+
+  const handleMaxTokensChange = (e) => {
+    setMaxTokens(Number(e.target.value));
+  };
 
   return (
     <div className="w-full flex flex-col">
@@ -28,45 +47,86 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
           </a>
         </div>
       )}
-      <div className="w-full flex items-center gap-4">
+      <div className="w-full flex items-start gap-4">
+        <LMStudioModelSelection settings={settings} basePath={basePath.value} />
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            LMStudio Base URL
+          <label className="text-white text-sm font-semibold block mb-2">
+            Max Tokens
           </label>
           <input
-            type="url"
-            name="LMStudioBasePath"
+            type="number"
+            name="LMStudioTokenLimit"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="http://localhost:1234/v1"
-            defaultValue={settings?.LMStudioBasePath}
+            placeholder="4096"
+            defaultChecked="4096"
+            min={1}
+            value={maxTokens}
+            onChange={handleMaxTokensChange}
+            onScroll={(e) => e.target.blur()}
             required={true}
             autoComplete="off"
-            spellCheck={false}
-            onChange={(e) => setBasePathValue(e.target.value)}
-            onBlur={() => setBasePath(basePathValue)}
           />
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+            Maximum number of tokens for context and response.
+          </p>
         </div>
-        {!settings?.credentialsOnly && (
-          <>
-            <LMStudioModelSelection settings={settings} basePath={basePath} />
-            <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-4">
-                Token context window
+      </div>
+      <div className="flex justify-start mt-4">
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setShowAdvancedControls(!showAdvancedControls);
+          }}
+          className="text-white hover:text-white/70 flex items-center text-sm"
+        >
+          {showAdvancedControls ? "Hide" : "Show"} Manual Endpoint Input
+          {showAdvancedControls ? (
+            <CaretUp size={14} className="ml-1" />
+          ) : (
+            <CaretDown size={14} className="ml-1" />
+          )}
+        </button>
+      </div>
+
+      <div hidden={!showAdvancedControls}>
+        <div className="w-full flex items-start gap-4 mt-4">
+          <div className="flex flex-col w-60">
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-white text-sm font-semibold">
+                LM Studio Base URL
               </label>
-              <input
-                type="number"
-                name="LMStudioTokenLimit"
-                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                placeholder="4096"
-                min={1}
-                onScroll={(e) => e.target.blur()}
-                defaultValue={settings?.LMStudioTokenLimit}
-                required={true}
-                autoComplete="off"
-              />
+              {loading ? (
+                <PreLoader size="6" />
+              ) : (
+                <>
+                  {!basePathValue.value && (
+                    <button
+                      onClick={handleAutoDetectClick}
+                      className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+                    >
+                      Auto-Detect
+                    </button>
+                  )}
+                </>
+              )}
             </div>
-          </>
-        )}
+            <input
+              type="url"
+              name="LMStudioBasePath"
+              className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+              placeholder="http://localhost:1234/v1"
+              value={basePathValue.value}
+              required={true}
+              autoComplete="off"
+              spellCheck={false}
+              onChange={basePath.onChange}
+              onBlur={basePath.onBlur}
+            />
+            <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+              Enter the URL where LM Studio is running.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -78,14 +138,23 @@ function LMStudioModelSelection({ settings, basePath = null }) {
 
   useEffect(() => {
     async function findCustomModels() {
-      if (!basePath || !basePath.includes("/v1")) {
+      if (!basePath) {
         setCustomModels([]);
         setLoading(false);
         return;
       }
       setLoading(true);
-      const { models } = await System.customModels("lmstudio", null, basePath);
-      setCustomModels(models || []);
+      try {
+        const { models } = await System.customModels(
+          "lmstudio",
+          null,
+          basePath
+        );
+        setCustomModels(models || []);
+      } catch (error) {
+        console.error("Failed to fetch custom models:", error);
+        setCustomModels([]);
+      }
       setLoading(false);
     }
     findCustomModels();
@@ -94,8 +163,8 @@ function LMStudioModelSelection({ settings, basePath = null }) {
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
-          Chat Model Selection
+        <label className="text-white text-sm font-semibold block mb-2">
+          LM Studio Model
         </label>
         <select
           name="LMStudioModelPref"
@@ -103,19 +172,23 @@ function LMStudioModelSelection({ settings, basePath = null }) {
           className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            {basePath?.includes("/v1")
-              ? "-- loading available models --"
-              : "-- waiting for URL --"}
+            {!!basePath
+              ? "--loading available models--"
+              : "Enter LM Studio URL first"}
           </option>
         </select>
+        <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+          Select the LM Studio model you want to use. Models will load after
+          entering a valid LM Studio URL.
+        </p>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-4">
-        Chat Model Selection
+      <label className="text-white text-sm font-semibold block mb-2">
+        LM Studio Model
       </label>
       <select
         name="LMStudioModelPref"
@@ -138,6 +211,9 @@ function LMStudioModelSelection({ settings, basePath = null }) {
           </optgroup>
         )}
       </select>
+      <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+        Choose the LM Studio model you want to use for your conversations.
+      </p>
     </div>
   );
 }

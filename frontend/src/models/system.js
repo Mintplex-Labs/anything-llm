@@ -512,10 +512,23 @@ const System = {
         return false;
       });
   },
-  customModels: async function (provider, apiKey = null, basePath = null) {
+  customModels: async function (
+    provider,
+    apiKey = null,
+    basePath = null,
+    timeout = null
+  ) {
+    const controller = new AbortController();
+    if (!!timeout) {
+      setTimeout(() => {
+        controller.abort("Request timed out.");
+      }, timeout);
+    }
+
     return fetch(`${API_BASE}/system/custom-models`, {
       method: "POST",
       headers: baseHeaders(),
+      signal: controller.signal,
       body: JSON.stringify({
         provider,
         apiKey,
