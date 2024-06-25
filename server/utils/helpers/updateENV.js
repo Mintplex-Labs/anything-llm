@@ -245,7 +245,7 @@ const KEY_MAPPING = {
   },
   WatsonxGuardRailsEnabled: {
     envKey: "WATSONX_GUARD_RAILS_ENABLED",
-    checks: [isNotEmpty],
+    checks: [],
   },
 
   // Vector Database Selection Settings

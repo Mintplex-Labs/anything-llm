@@ -252,7 +252,12 @@ export default function GeneralLLMPreference() {
     
 
     for (var [key, value] of formData.entries()) data[key] = value;
-    console.log(data)
+    // logic for handling toggle button setting for watsonx.ai
+    
+    if (data['LLMProvider'] === "watsonx" && !data['WatsonxGuardRailsEnabled']) {
+      data['WatsonxGuardRailsEnabled'] = "False"
+    }
+
     const { error } = await System.updateSystem(data);
     setSaving(true);
 

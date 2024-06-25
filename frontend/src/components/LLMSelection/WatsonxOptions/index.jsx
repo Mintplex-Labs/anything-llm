@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export default function WatsonxOptions({ settings }) {
-  const [GuardRailsEnabled, setGuardRailsEnabled] = useState(settings?.WatsonxGuardRailsEnabled || false);
+  const [GuardRailsEnabled, setGuardRailsEnabled] = useState(settings?.WatsonxGuardRailsEnabled === "False" ? false : true || false);
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4">
@@ -103,7 +103,7 @@ export default function WatsonxOptions({ settings }) {
                   onClick={() => setGuardRailsEnabled(!GuardRailsEnabled)}
                   checked={GuardRailsEnabled}
                   className="peer sr-only pointer-events-none"
-                  defaultChecked={settings?.WatsonxGuardRailsEnabled || GuardRailsEnabled}
+                  defaultChecked={GuardRailsEnabled}
                   name="WatsonxGuardRailsEnabled"
                   //required={true}
                 />
