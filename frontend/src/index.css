@@ -111,15 +111,47 @@ buttonhover.hover\:text-sky-400 {
 button.text-red-200 {
   color: red;
 }
+
+.react-loading-skeleton {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.react-loading-skeleton::after > div {
+  background-image: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)) !important;
+}
+
+.react-loading-skeleton::after {
+  background-image: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)) !important;
+}
+
+div[role="checkbox"][aria-checked="true"] {
+  border-color: #007ABE !important;
+}
+
+div[role="checkbox"][aria-checked="true"] > div {
+  background-color: #007ABE !important;
+}
+
+div[role="checkbox"][aria-checked="false"].border-white {
+  border-color: #9d9d9d !important;
+}
+
 button.text-red-200.hover\:text-white:hover {
   background-color: rgba(255, 0, 0, 0.4) !important;
   color: red !important;
 }
- 
+
+.file-row:nth-child(odd) {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
 svg.hover\:text-white:hover {
   background-color: transparent !important;
 }
 
+.rti--tag {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
 .bg-primary-button {
   background-color: #008ECE;
   color: white !important;
@@ -199,6 +231,12 @@ button[type="submit"].send-message {
 .hover\:text-white\/60:hover {
   color: rgba(0, 0, 0, 0.6) !important;
 }
+
+.hover\:bg-zinc-700:hover {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.bg-zinc-700,
 .bg-dark-highlight {
   background-color: rgba(0, 0, 0, 0.1);
 }
@@ -383,7 +421,7 @@ button.bg-dark-input {
   border-bottom: 1px solid #e3e3e3;
 }
 
-.chat-screen form textarea {
+.chat-screen form .bg-main-gradient textarea {
   border: none !important;
 }
 
