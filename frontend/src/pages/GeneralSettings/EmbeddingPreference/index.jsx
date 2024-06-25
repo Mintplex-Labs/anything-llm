@@ -209,7 +209,7 @@ export default function GeneralEmbeddingPreference() {
           </div>
         </div>
       ) : (
-        <div className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
+        <div className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full overflow-y-scroll border-2 border-outline h-[calc(100vh-72px)]">
           <form
             id="embedding-form"
             onSubmit={handleSubmit}

@@ -240,7 +240,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
   }, [socketId]);
 
   return (
-    <div className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
+    <div className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full overflow-y-scroll border-2 border-outline h-[calc(100vh-72px)]">
       <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
         <ChatHistory
           history={chatHistory}
