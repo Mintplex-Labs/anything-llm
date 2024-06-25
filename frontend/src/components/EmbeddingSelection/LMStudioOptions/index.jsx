@@ -175,7 +175,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
 
   useEffect(() => {
     async function findCustomModels() {
-      if (!basePath || !basePath.includes("/v1")) {
+      if (!basePath) {
         setCustomModels([]);
         setLoading(false);
         return;
@@ -209,7 +209,7 @@ function LMStudioModelSelection({ settings, basePath = null }) {
           className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
-            {basePath?.includes("/v1")
+            {!!basePath
               ? "--loading available models--"
               : "Enter LM Studio URL first"}
           </option>
