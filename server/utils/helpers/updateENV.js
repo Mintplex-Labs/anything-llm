@@ -15,7 +15,7 @@ const KEY_MAPPING = {
   // Azure OpenAI Settings
   AzureOpenAiEndpoint: {
     envKey: "AZURE_OPENAI_ENDPOINT",
-    checks: [isNotEmpty, validAzureURL],
+    checks: [isNotEmpty],
   },
   AzureOpenAiTokenLimit: {
     envKey: "AZURE_OPENAI_TOKEN_LIMIT",
@@ -620,17 +620,6 @@ function validChromaURL(input = "") {
   return input.slice(-1) === "/"
     ? `Chroma Instance URL should not end in a trailing slash.`
     : null;
-}
-
-function validAzureURL(input = "") {
-  try {
-    new URL(input);
-    if (!input.includes("openai.azure.com") && !input.includes("microsoft.com"))
-      return "Valid Azure endpoints must contain openai.azure.com OR microsoft.com";
-    return null;
-  } catch {
-    return "Not a valid URL";
-  }
 }
 
 function validOpenAiTokenLimit(input = "") {
