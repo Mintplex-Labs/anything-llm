@@ -17,6 +17,36 @@ export default function UserButton() {
   const [showMenu, setShowMenu] = useState(false);
   const [showAccountSettings, setShowAccountSettings] = useState(false);
   const [supportEmail, setSupportEmail] = useState("");
+  const idleTimeoutRef = useRef(null);
+
+  const signOut = () => {
+    window.localStorage.removeItem(AUTH_USER);
+    window.localStorage.removeItem(AUTH_TOKEN);
+    window.localStorage.removeItem(AUTH_TIMESTAMP);
+    window.location.replace(paths.home());
+  };
+
+  const resetIdleTimer = () => {
+    if (idleTimeoutRef.current) {
+      clearTimeout(idleTimeoutRef.current);
+    }
+    idleTimeoutRef.current = setTimeout(signOut, 30000); // 30 seconds
+  };
+
+  useEffect(() => {
+    const handleUserActivity = () => resetIdleTimer();
+
+    resetIdleTimer();
+    const events = ["mousemove", "keydown", "mousedown", "touchstart"];
+    events.forEach((event) => document.addEventListener(event, handleUserActivity));
+
+    return () => {
+      events.forEach((event) => document.removeEventListener(event, handleUserActivity));
+      if (idleTimeoutRef.current) {
+        clearTimeout(idleTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleClose = (event) => {
     if (
@@ -85,12 +115,7 @@ export default function UserButton() {
               Support
             </a>
             <button
-              onClick={() => {
-                window.localStorage.removeItem(AUTH_USER);
-                window.localStorage.removeItem(AUTH_TOKEN);
-                window.localStorage.removeItem(AUTH_TIMESTAMP);
-                window.location.replace(paths.home());
-              }}
+              onClick={signOut}
               type="button"
               className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
             >
