@@ -24,13 +24,13 @@ export default function AudioPreference() {
     >
       <Sidebar />
       {loading ? (
-        <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
+        <div className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full overflow-y-scroll border-2 border-outline h-[calc(100vh-72px)]">
           <div className="w-full h-full flex justify-center items-center">
             <PreLoader />
           </div>
         </div>
       ) : (
-        <div className="transition-all duration-500 relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] bg-main-gradient w-full h-[93vh] overflow-y-scroll border-2 border-outline">
+        <div className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full overflow-y-scroll border-2 border-outline h-[calc(100vh-72px)]">
           {/* Why no STT support for Electron? https://stackoverflow.com/a/74114170 */}
           {/* <SpeechToTextProvider settings={settings} /> */}
           <TextToSpeechProvider settings={settings} />
