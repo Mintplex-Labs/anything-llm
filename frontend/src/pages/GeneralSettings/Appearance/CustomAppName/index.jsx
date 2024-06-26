@@ -60,7 +60,7 @@ export default function CustomAppName() {
     <form className="mb-6" onSubmit={updateCustomAppName}>
       <div className="flex flex-col gap-y-1">
         <h2 className="text-base leading-6 font-bold text-white">
-          Custom App Name
+          Make this app more personal
         </h2>
         <p className="text-xs leading-[18px] font-base text-white/60">
           Set a custom app name that is displayed on the login page.
@@ -71,7 +71,7 @@ export default function CustomAppName() {
           name="customAppName"
           type="text"
           className="bg-zinc-900 mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[275px] placeholder:text-white/20"
-          placeholder="AnythingLLM"
+          placeholder="eg: Dr Cuterus"
           required={true}
           autoComplete="off"
           onChange={handleChange}

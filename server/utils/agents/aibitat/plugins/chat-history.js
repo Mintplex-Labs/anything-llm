@@ -1,7 +1,7 @@
 const { WorkspaceChats } = require("../../../../models/workspaceChats");
 
 /**
- * Plugin to save chat history to AnythingLLM DB.
+ * Plugin to save chat history to ChatLTT DB.
  */
 const chatHistory = {
   name: "chat-history",
