@@ -1,7 +1,10 @@
 import React, { Suspense, useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import { ContextWrapper } from "./AuthContext";
-import { READY_EVENT_NAME } from "./utils/constants";
+import { I18nextProvider } from "react-i18next";
+import { ContextWrapper } from "@/AuthContext";
+import { READY_EVENT_NAME } from "@/utils/constants";
+import i18n from "./i18n";
+
 import PrivateRoute, {
   AdminRoute,
   ManagerRoute,
@@ -28,115 +31,134 @@ import AdminLogs from "./pages/Admin/Logging";
 import AdminAgents from "./pages/Admin/Agents";
 import WorkspaceSettings from "./pages/WorkspaceSettings";
 import PrivacyAndData from "./pages/GeneralSettings/PrivacyAndData";
+import ExperimentalFeatures from "@/pages/Admin/ExperimentalFeatures";
+import LiveDocumentSyncManage from "@/pages/Admin/ExperimentalFeatures/Features/LiveSync/manage";
 
 import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   return (
     <BootLoader>
-      <Suspense fallback={<div />}>
+      <Suspense fallback={<FullScreenLoader />}>
         <ContextWrapper>
           <LogoProvider>
             <PfpProvider>
-              <Routes>
-                <Route path="/" element={<PrivateRoute Component={Main} />} />
-                <Route path="/login" element={<Login />} />
-                <Route
-                  path="/workspace/:slug/settings/:tab"
-                  element={<ManagerRoute Component={WorkspaceSettings} />}
-                />
-                <Route
-                  path="/workspace/:slug"
-                  element={<PrivateRoute Component={WorkspaceChat} />}
-                />
-                <Route
-                  path="/workspace/:slug/t/:threadSlug"
-                  element={<PrivateRoute Component={WorkspaceChat} />}
-                />
+              <I18nextProvider i18n={i18n}>
+                <Routes>
+                  <Route path="/" element={<PrivateRoute Component={Main} />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route
+                    path="/workspace/:slug/settings/:tab"
+                    element={<ManagerRoute Component={WorkspaceSettings} />}
+                  />
+                  <Route
+                    path="/workspace/:slug"
+                    element={<PrivateRoute Component={WorkspaceChat} />}
+                  />
+                  <Route
+                    path="/workspace/:slug/t/:threadSlug"
+                    element={<PrivateRoute Component={WorkspaceChat} />}
+                  />
 
-                {/* Admin */}
-                <Route
-                  path="/settings/llm-preference"
-                  element={<AdminRoute Component={GeneralLLMPreference} />}
-                />
-                <Route
-                  path="/settings/transcription-preference"
-                  element={
-                    <AdminRoute Component={GeneralTranscriptionPreference} />
-                  }
-                />
-                <Route
-                  path="/settings/audio-preference"
-                  element={<AdminRoute Component={GeneralAudioPreference} />}
-                />
-                <Route
-                  path="/settings/embedding-preference"
-                  element={
-                    <AdminRoute Component={GeneralEmbeddingPreference} />
-                  }
-                />
-                <Route
-                  path="/settings/text-splitter-preference"
-                  element={
-                    <AdminRoute Component={EmbeddingTextSplitterPreference} />
-                  }
-                />
-                <Route
-                  path="/settings/vector-database"
-                  element={<AdminRoute Component={GeneralVectorDatabase} />}
-                />
-                <Route
-                  path="/settings/agents"
-                  element={<AdminRoute Component={AdminAgents} />}
-                />
+                  {/* Admin */}
+                  <Route
+                    path="/settings/llm-preference"
+                    element={<AdminRoute Component={GeneralLLMPreference} />}
+                  />
+                  <Route
+                    path="/settings/transcription-preference"
+                    element={
+                      <AdminRoute Component={GeneralTranscriptionPreference} />
+                    }
+                  />
+                  <Route
+                    path="/settings/audio-preference"
+                    element={<AdminRoute Component={GeneralAudioPreference} />}
+                  />
+                  <Route
+                    path="/settings/embedding-preference"
+                    element={
+                      <AdminRoute Component={GeneralEmbeddingPreference} />
+                    }
+                  />
+                  <Route
+                    path="/settings/text-splitter-preference"
+                    element={
+                      <AdminRoute Component={EmbeddingTextSplitterPreference} />
+                    }
+                  />
+                  <Route
+                    path="/settings/vector-database"
+                    element={<AdminRoute Component={GeneralVectorDatabase} />}
+                  />
+                  <Route
+                    path="/settings/agents"
+                    element={<AdminRoute Component={AdminAgents} />}
+                  />
 
-                {/* Manager */}
-                {/* <Route
+                  {/* Manager */}
+                  {/* <Route
                   path="/settings/security"
                   element={<ManagerRoute Component={GeneralSecurity} />}
                 /> */}
-                <Route
-                  path="/settings/appearance"
-                  element={<ManagerRoute Component={GeneralAppearance} />}
-                />
-                <Route
-                  path="/settings/api-keys"
-                  element={<ManagerRoute Component={GeneralApiKeys} />}
-                />
-                <Route
-                  path="/settings/workspace-chats"
-                  element={<ManagerRoute Component={GeneralChats} />}
-                />
+                  <Route
+                    path="/settings/appearance"
+                    element={<ManagerRoute Component={GeneralAppearance} />}
+                  />
+                  <Route
+                    path="/settings/api-keys"
+                    element={<ManagerRoute Component={GeneralApiKeys} />}
+                  />
+                  <Route
+                    path="/settings/workspace-chats"
+                    element={<ManagerRoute Component={GeneralChats} />}
+                  />
 
-                {/* <Route
+                  {/* <Route
                   path="/settings/system-preferences"
                   element={<ManagerRoute Component={AdminSystem} />}
                 /> */}
-                {/* <Route
+                  {/* <Route
                   path="/settings/invites"
                   element={<ManagerRoute Component={AdminInvites} />}
                 /> */}
-                {/* <Route
+                  {/* <Route
                   path="/settings/users"
                   element={<ManagerRoute Component={AdminUsers} />}
                 /> */}
-                {/* <Route
+                  {/* <Route
                   path="/settings/workspaces"
                   element={<ManagerRoute Component={AdminWorkspaces} />}
                 /> */}
-                <Route
-                  path="/settings/event-logs"
-                  element={<AdminRoute Component={AdminLogs} />}
-                />
-                <Route
-                  path="/settings/privacy"
-                  element={<AdminRoute Component={PrivacyAndData} />}
-                />
-                {/* Onboarding Flow */}
-                <Route path="/onboarding" element={<OnboardingFlow />} />
-                <Route path="/onboarding/:step" element={<OnboardingFlow />} />
-              </Routes>
-              <ToastContainer />
+                  <Route
+                    path="/settings/event-logs"
+                    element={<AdminRoute Component={AdminLogs} />}
+                  />
+                  <Route
+                    path="/settings/privacy"
+                    element={<AdminRoute Component={PrivacyAndData} />}
+                  />
+
+                  <Route
+                    path="/settings/beta-features"
+                    element={<AdminRoute Component={ExperimentalFeatures} />}
+                  />
+                  {/* Onboarding Flow */}
+                  <Route path="/onboarding" element={<OnboardingFlow />} />
+                  <Route
+                    path="/onboarding/:step"
+                    element={<OnboardingFlow />}
+                  />
+
+                  {/* Experimental feature pages  */}
+                  {/* Live Document Sync feature */}
+                  <Route
+                    path="/settings/beta-features/live-document-sync/manage"
+                    element={<AdminRoute Component={LiveDocumentSyncManage} />}
+                  />
+                </Routes>
+                <ToastContainer />
+              </I18nextProvider>
             </PfpProvider>
           </LogoProvider>
         </ContextWrapper>

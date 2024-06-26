@@ -1,15 +1,17 @@
+import { useTranslation } from "react-i18next";
+
 export default function MaxContextSnippets({ workspace, setHasChanges }) {
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Max Context Snippets
+          {t("vector-workspace.snippets.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          This setting controls the maximum amount of context snippets the will
-          be sent to the LLM for per chat or query.
+          {t("vector-workspace.snippets.description")}
           <br />
-          <i>Recommended: 4</i>
+          <i>{t("vector-workspace.snippets.recommend")}</i>
         </p>
       </div>
       <input

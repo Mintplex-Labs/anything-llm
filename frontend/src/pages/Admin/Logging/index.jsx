@@ -7,6 +7,7 @@ import LogRow from "./LogRow";
 import showToast from "@/utils/toast";
 import { refocusApplication } from "@/ipc/node-api";
 import CTAButton from "@/components/lib/CTAButton";
+import { useTranslation } from "react-i18next";
 
 export default function AdminLogs() {
   const query = useQuery();
@@ -14,6 +15,7 @@ export default function AdminLogs() {
   const [logs, setLogs] = useState([]);
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchLogs() {
@@ -66,12 +68,11 @@ export default function AdminLogs() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="flex gap-x-4 items-center">
               <p className="text-lg leading-6 font-bold text-white">
-                Event Logs
+                {t("event.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              View all actions and events happening on this instance for
-              monitoring.
+              {t("event.description")}
             </p>
           </div>
           <div className="w-full justify-end flex">
@@ -79,7 +80,7 @@ export default function AdminLogs() {
               onClick={handleResetLogs}
               className="mt-3 mr-0 -mb-14 z-10"
             >
-              Clear Event Logs
+              {t("event.clear")}
             </CTAButton>
           </div>
           <LogsContainer
@@ -104,6 +105,7 @@ function LogsContainer({
   handleNext,
   handlePrevious,
 }) {
+  const { t } = useTranslation();
   if (loading) {
     return (
       <Skeleton.default
@@ -124,13 +126,13 @@ function LogsContainer({
         <thead className="text-white text-opacity-80 text-sm font-bold uppercase border-white border-b border-opacity-60">
           <tr>
             <th scope="col" className="px-6 py-3 rounded-tl-lg">
-              Event Type
+              {t("event.table.type")}
             </th>
             <th scope="col" className="px-6 py-3">
-              User
+              {t("event.table.user")}
             </th>
             <th scope="col" className="px-6 py-3">
-              Occurred At
+              {t("event.table.occurred")}
             </th>
             <th scope="col" className="px-6 py-3 rounded-tr-lg">
               {" "}
@@ -147,14 +149,14 @@ function LogsContainer({
           className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
           disabled={offset === 0}
         >
-          Previous Page
+          {t("common.previous")}
         </button>
         <button
           onClick={handleNext}
           className="px-4 py-2 rounded-lg border border-slate-200 text-slate-200 text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 disabled:invisible"
           disabled={!canNext}
         >
-          Next Page
+          {t("common.next")}
         </button>
       </div>
     </>

@@ -1,7 +1,7 @@
 import useGetProviderModels, {
   DISABLED_PROVIDERS,
 } from "@/hooks/useGetProvidersModels";
-
+import { useTranslation } from "react-i18next";
 export default function ChatModelSelection({
   provider,
   workspace,
@@ -9,6 +9,7 @@ export default function ChatModelSelection({
 }) {
   const { defaultModels, customModels, loading } =
     useGetProviderModels(provider);
+  const { t } = useTranslation();
   if (DISABLED_PROVIDERS.includes(provider)) return null;
 
   if (loading) {
@@ -16,11 +17,10 @@ export default function ChatModelSelection({
       <div>
         <div className="flex flex-col">
           <label htmlFor="name" className="block input-label">
-            Workspace Chat model
+            {t("chat.model.title")}
           </label>
           <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-            The specific chat model that will be used for this workspace. If
-            empty, will use the system LLM preference.
+            {t("chat.model.description")}
           </p>
         </div>
         <select
@@ -41,11 +41,10 @@ export default function ChatModelSelection({
     <div>
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Workspace Chat model
+          {t("chat.model.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          The specific chat model that will be used for this workspace. If
-          empty, will use the system LLM preference.
+          {t("chat.model.description")}
         </p>
       </div>
 

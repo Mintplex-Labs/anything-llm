@@ -8,7 +8,7 @@ const uuidPattern =
 const jsonPattern = /\.json$/;
 
 // Function to strip UUID v4 and JSON from file names as that will impact search results.
-const stripUuidAndJsonFromString = (input = "") => {
+export const stripUuidAndJsonFromString = (input = "") => {
   return input
     ?.replace(uuidPattern, "") // remove v4 uuid
     ?.replace(jsonPattern, "") // remove trailing .json

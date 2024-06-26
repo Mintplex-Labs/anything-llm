@@ -3,8 +3,10 @@ import { dollarFormat } from "@/utils/numbers";
 import WorkspaceFileRow from "./WorkspaceFileRow";
 import { memo, useEffect, useState } from "react";
 import ModalWrapper from "@/components/ModalWrapper";
-import { PushPin } from "@phosphor-icons/react";
-import { SEEN_DOC_PIN_ALERT } from "@/utils/constants";
+import { Eye, PushPin } from "@phosphor-icons/react";
+import { SEEN_DOC_PIN_ALERT, SEEN_WATCH_ALERT } from "@/utils/constants";
+import paths from "@/utils/paths";
+import { Link } from "react-router-dom";
 
 function WorkspaceDirectory({
   workspace,
@@ -31,8 +33,6 @@ function WorkspaceDirectory({
         <div className="relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5">
           <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8">
             <p className="col-span-5">Name</p>
-            <p className="col-span-3">Date</p>
-            <p className="col-span-2">Kind</p>
             <p className="col-span-2" />
           </div>
           <div className="w-full h-full flex items-center justify-center flex-col gap-y-5">
@@ -61,8 +61,6 @@ function WorkspaceDirectory({
         >
           <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 bg-zinc-900 sticky top-0 z-10">
             <p className="col-span-5">Name</p>
-            <p className="col-span-3">Date</p>
-            <p className="col-span-2">Kind</p>
             <p className="col-span-2" />
           </div>
           <div className="w-full h-full flex flex-col z-0">
@@ -122,6 +120,7 @@ function WorkspaceDirectory({
         )}
       </div>
       <PinAlert />
+      <DocumentWatchAlert />
     </>
   );
 }
@@ -145,7 +144,7 @@ const PinAlert = memo(() => {
   }, []);
 
   return (
-    <ModalWrapper isOpen={showAlert}>
+    <ModalWrapper isOpen={showAlert} noPortal={true}>
       <div className="relative w-full max-w-2xl max-h-full">
         <div className="relative bg-main-gradient rounded-lg shadow">
           <div className="flex items-start justify-between p-4 rounded-t border-gray-500/50">
@@ -170,6 +169,77 @@ const PinAlert = memo(() => {
               If you are not getting the answers you desire from AnythingLLM by
               default then pinning is a great way to get higher quality answers
               in a click.
+            </p>
+          </div>
+
+          <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
+            <button disabled={true} className="invisible" />
+            <button
+              onClick={dismissAlert}
+              className="border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            >
+              Okay, got it
+            </button>
+          </div>
+        </div>
+      </div>
+    </ModalWrapper>
+  );
+});
+
+const DocumentWatchAlert = memo(() => {
+  const [showAlert, setShowAlert] = useState(false);
+  function dismissAlert() {
+    setShowAlert(false);
+    window.localStorage.setItem(SEEN_WATCH_ALERT, "1");
+    window.removeEventListener(handlePinEvent);
+  }
+
+  function handlePinEvent() {
+    if (!!window?.localStorage?.getItem(SEEN_WATCH_ALERT)) return;
+    setShowAlert(true);
+  }
+
+  useEffect(() => {
+    if (!window || !!window?.localStorage?.getItem(SEEN_WATCH_ALERT)) return;
+    window?.addEventListener("watch_document_for_changes", handlePinEvent);
+  }, []);
+
+  return (
+    <ModalWrapper isOpen={showAlert} noPortal={true}>
+      <div className="relative w-full max-w-2xl max-h-full">
+        <div className="relative bg-main-gradient rounded-lg shadow">
+          <div className="flex items-start justify-between p-4 rounded-t border-gray-500/50">
+            <div className="flex items-center gap-2">
+              <Eye
+                className="text-yellow-600 text-lg w-6 h-6"
+                weight="regular"
+              />
+              <h3 className="text-xl font-semibold text-white">
+                What does watching a document do?
+              </h3>
+            </div>
+          </div>
+          <div className="w-full p-6 text-white text-md flex flex-col gap-y-2">
+            <p>
+              When you <b>watch</b> a document in AnythingLLM we will{" "}
+              <i>automatically</i> sync your document content from it's original
+              source on regular intervals. This will automatically update the
+              content in every workspace where this file is managed.
+            </p>
+            <p>
+              This feature currently supports online-based content and will not
+              be available for manually uploaded documents.
+            </p>
+            <p>
+              You can manage what documents are watched from the{" "}
+              <Link
+                to={paths.experimental.liveDocumentSync.manage()}
+                className="text-blue-600 underline"
+              >
+                File manager
+              </Link>{" "}
+              admin view.
             </p>
           </div>
 

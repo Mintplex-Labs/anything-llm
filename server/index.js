@@ -27,6 +27,7 @@ const {
 } = require("./utils/AiProviders/anythingLLM/utils/preload");
 const { CommunicationKey } = require("./utils/comKey");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
+const { experimentalEndpoints } = require("./endpoints/experimental");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -59,6 +60,7 @@ embedManagementEndpoints(apiRouter);
 utilEndpoints(apiRouter);
 documentEndpoints(apiRouter);
 agentWebsocket(apiRouter);
+experimentalEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
 
 // Externally facing embedder endpoints
