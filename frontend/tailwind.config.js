@@ -16,6 +16,9 @@ export default {
   },
   theme: {
     extend: {
+      borderRadius: {
+        'md': '22px', // Overriding the rounded-md class to be 22px
+      },
       rotate: {
         "270": "270deg",
         "360": "360deg"
