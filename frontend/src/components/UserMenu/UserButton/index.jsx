@@ -23,7 +23,7 @@ export default function UserButton() {
     window.localStorage.removeItem(AUTH_USER);
     window.localStorage.removeItem(AUTH_TOKEN);
     window.localStorage.removeItem(AUTH_TIMESTAMP);
-    window.location.replace(paths.home());
+    window.location.replace("https://chatltt.com");
   };
 
   const resetIdleTimer = () => {
@@ -147,7 +147,7 @@ function UserDisplay() {
           className="w-full h-full object-cover"
         />
       </div>
-    );
+  );
   }
 
   return user?.username?.slice(0, 2) || "AA";
