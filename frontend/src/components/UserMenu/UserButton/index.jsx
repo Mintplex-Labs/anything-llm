@@ -17,34 +17,6 @@ export default function UserButton() {
   const [showMenu, setShowMenu] = useState(false);
   const [showAccountSettings, setShowAccountSettings] = useState(false);
   const [supportEmail, setSupportEmail] = useState("");
-  const [idleTimeout, setIdleTimeout] = useState(null);
-
-  const signOut = () => {
-    window.localStorage.removeItem(AUTH_USER);
-    window.localStorage.removeItem(AUTH_TOKEN);
-    window.localStorage.removeItem(AUTH_TIMESTAMP);
-    window.location.replace(paths.home());
-  };
-
-  const resetIdleTimer = () => {
-    if (idleTimeout) {
-      clearTimeout(idleTimeout);
-    }
-    setIdleTimeout(setTimeout(signOut, 30000)); // 30 seconds
-  };
-
-  useEffect(() => {
-    resetIdleTimer();
-    const events = ["mousemove", "keydown", "mousedown", "touchstart"];
-    events.forEach((event) => document.addEventListener(event, resetIdleTimer));
-
-    return () => {
-      events.forEach((event) => document.removeEventListener(event, resetIdleTimer));
-      if (idleTimeout) {
-        clearTimeout(idleTimeout);
-      }
-    };
-  }, [idleTimeout]);
 
   const handleClose = (event) => {
     if (
@@ -113,7 +85,12 @@ export default function UserButton() {
               Support
             </a>
             <button
-              onClick={signOut}
+              onClick={() => {
+                window.localStorage.removeItem(AUTH_USER);
+                window.localStorage.removeItem(AUTH_TOKEN);
+                window.localStorage.removeItem(AUTH_TIMESTAMP);
+                window.location.replace(paths.home());
+              }}
               type="button"
               className="text-white hover:bg-slate-200/20 w-full text-left px-4 py-1.5 rounded-md"
             >
