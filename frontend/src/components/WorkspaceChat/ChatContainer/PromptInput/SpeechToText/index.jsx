@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { Microphone } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import _regeneratorRuntime from "regenerator-runtime";
@@ -44,6 +44,23 @@ export default function SpeechToText({ sendCommand }) {
     resetTranscript();
     clearTimeout(timeout);
   }
+
+  const handleKeyPress = useCallback((event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+      if (listening) {
+        endTTSSession()
+      } else {
+        startSTTSession()
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   useEffect(() => {
     if (transcript?.length > 0) {
