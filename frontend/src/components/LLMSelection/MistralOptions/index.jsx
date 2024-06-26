@@ -14,7 +14,7 @@ export default function MistralOptions({ settings }) {
         <input
           type="password"
           name="MistralApiKey"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="Mistral API Key"
           defaultValue={settings?.MistralApiKey ? "*".repeat(20) : ""}
           required={true}

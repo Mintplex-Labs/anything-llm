@@ -88,7 +88,7 @@ function NativeModelSelection({ settings }) {
         <input
           type="number"
           name="NativeLLMTokenLimit"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="4096"
           min={1}
           onScroll={(e) => e.target.blur()}

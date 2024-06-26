@@ -56,7 +56,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
           <input
             type="number"
             name="LMStudioTokenLimit"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="4096"
             defaultChecked="4096"
             min={1}
@@ -113,7 +113,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
             <input
               type="url"
               name="LMStudioBasePath"
-              className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+              className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="http://localhost:1234/v1"
               value={basePathValue.value}
               required={true}

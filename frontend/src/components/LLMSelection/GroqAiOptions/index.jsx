@@ -8,7 +8,7 @@ export default function GroqAiOptions({ settings }) {
         <input
           type="password"
           name="GroqApiKey"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="Groq API Key"
           defaultValue={settings?.GroqApiKey ? "*".repeat(20) : ""}
           required={true}

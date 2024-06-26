@@ -11,7 +11,7 @@ export default function OpenRouterOptions({ settings }) {
         <input
           type="password"
           name="OpenRouterApiKey"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="OpenRouter API Key"
           defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
           required={true}
