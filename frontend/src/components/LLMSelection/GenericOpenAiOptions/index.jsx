@@ -1,13 +1,4 @@
-import { useEffect, useState } from "react";
-import System from "@/models/system";
-
 export default function GenericOpenAiOptions({ settings }) {
-  const [basePathValue, setBasePathValue] = useState(
-    settings?.GenericOpenAiBasePath
-  );
-
-  const [basePath, setBasePath] = useState(settings?.GenericOpenAiBasePath);
-
   return (
     <div className="flex flex-col gap-y-4">
       <div className="flex gap-4 flex-wrap">
@@ -24,8 +15,6 @@ export default function GenericOpenAiOptions({ settings }) {
             required={true}
             autoComplete="off"
             spellCheck={false}
-            onChange={(e) => setBasePathValue(e.target.value)}
-            onBlur={() => setBasePath(basePathValue)}
           />
         </div>
         <div className="flex flex-col w-60">
@@ -70,7 +59,7 @@ export default function GenericOpenAiOptions({ settings }) {
             placeholder="Content window limit (eg: 4096)"
             min={1}
             onScroll={(e) => e.target.blur()}
-            defaultValue={settings?.GenericOpenAiTokenLimit}
+            defaultValue={settings?.GenericOpenAiTokenLimit || 4096}
             required={true}
             autoComplete="off"
           />
