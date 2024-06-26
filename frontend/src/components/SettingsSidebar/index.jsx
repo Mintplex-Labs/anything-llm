@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
 import useLogo from "@/hooks/useLogo";

@@ -56,6 +56,7 @@ class BackgroundService {
       // https://github.com/breejs/bree
       {
         name: "sync-watched-documents",
+        timeout: "1min", // Wait 60s to check job on boot to make sure there are no pending jobs since last app close.
         interval: "1hr",
       },
     ];

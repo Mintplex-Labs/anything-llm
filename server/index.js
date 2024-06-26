@@ -28,6 +28,8 @@ const {
 const { CommunicationKey } = require("./utils/comKey");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
 const { experimentalEndpoints } = require("./endpoints/experimental");
+const { EncryptionManager } = require("./utils/EncryptionManager");
+const { BackgroundService } = require("./utils/BackgroundWorkers");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -75,6 +77,8 @@ app
     await setupTelemetry();
     await preloadOllamaService();
     new CommunicationKey(true);
+    new EncryptionManager();
+    new BackgroundService().boot();
     console.log(
       `[${
         process.env.NODE_ENV || "development"

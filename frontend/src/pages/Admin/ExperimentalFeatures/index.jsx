@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import { FullScreenLoader } from "@/components/Preloader";
 import { CaretRight, Flask } from "@phosphor-icons/react";
@@ -33,10 +32,7 @@ export default function ExperimentalFeatures() {
 
   if (loading) {
     return (
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex justify-center items-center"
-      >
+      <div className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex justify-center items-center">
         <FullScreenLoader />
       </div>
     );
@@ -89,14 +85,11 @@ export default function ExperimentalFeatures() {
 function FeatureLayout({ children }) {
   return (
     <div
-      id="workspace-feature-settings-container"
-      className="w-screen h-screen overflow-hidden bg-sidebar flex md:mt-0 mt-6"
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen overflow-hidden bg-sidebar flex"
     >
       <Sidebar />
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex"
-      >
+      <div className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] w-full h-[93vh] overflow-y-scroll">
         {children}
       </div>
     </div>
@@ -112,11 +105,7 @@ function FeatureList({
   if (Object.keys(features).length === 0) return null;
 
   return (
-    <div
-      className={`bg-white/5 text-white rounded-xl ${
-        isMobile ? "w-full" : "min-w-[360px] w-fit"
-      }`}
-    >
+    <div className={`bg-white/5 text-white rounded-xl min-w-[360px] w-fit`}>
       {Object.entries(features).map(([feature, settings], index) => (
         <div
           key={feature}

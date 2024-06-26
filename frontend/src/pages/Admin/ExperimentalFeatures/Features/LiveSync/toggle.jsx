@@ -64,7 +64,7 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
         </div>
       </div>
       <div className="mt-8">
-        <ul className="space-y-2">
+        <ul className="space-y-2 list-none">
           <li>
             <a
               href="https://docs.useanything.com/beta-preview/active-features/live-document-sync"
