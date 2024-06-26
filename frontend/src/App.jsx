@@ -12,6 +12,7 @@ import PrivateRoute, {
 import { ToastContainer } from "react-toastify";
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
+import { FullScreenLoader } from "@/components/Preloader";
 import AnythingLLMLogo from "./assets/logo/anything-llm-splash.png";
 import MintplexLabsLogo from "./assets/logo/mintplexlabs.png";
 import Login from "./pages/Login";
