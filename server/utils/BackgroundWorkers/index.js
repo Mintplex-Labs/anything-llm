@@ -5,7 +5,12 @@ const Bree = require("bree");
 class BackgroundService {
   name = "BackgroundWorkerService";
   static _instance = null;
-  #root = path.resolve(__dirname, "../../jobs");
+  #root =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(__dirname, "../../jobs")
+      : // Since we bundle the jobs with esbuild into the jobs directory in Resources on desktop
+        // and it is in the same folder as server.js we can just reference the folder relative ./
+        path.resolve(__dirname, "./jobs");
 
   constructor() {
     if (BackgroundService._instance) {
