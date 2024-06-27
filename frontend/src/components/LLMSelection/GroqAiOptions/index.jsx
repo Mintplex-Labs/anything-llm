@@ -1,6 +1,6 @@
 export default function GroqAiOptions({ settings }) {
   return (
-    <div className="flex gap-x-4">
+    <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
           Groq API Key

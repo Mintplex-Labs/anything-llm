@@ -1,6 +1,6 @@
 export default function TextGenWebUIOptions({ settings }) {
   return (
-    <div className="flex gap-4 flex-wrap">
+    <div className="flex gap-[36px] mt-1.5 flex-wrap">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
           Base URL

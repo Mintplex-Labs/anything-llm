@@ -28,8 +28,8 @@ export default function OllamaLLMOptions({ settings }) {
   };
 
   return (
-    <div className="w-full flex flex-col gap-y-4">
-      <div className="w-full flex items-start gap-4">
+    <div className="w-full flex flex-col gap-y-7">
+      <div className="w-full flex items-start gap-[36px] mt-1.5">
         <OllamaLLMModelSelection
           settings={settings}
           basePath={basePath.value}

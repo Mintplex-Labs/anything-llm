@@ -8,8 +8,8 @@ export default function LiteLLMOptions({ settings }) {
   const [apiKey, setApiKey] = useState(settings?.LiteLLMAPIKey);
 
   return (
-    <div className="w-full flex flex-col gap-y-4">
-      <div className="w-full flex items-center gap-4">
+    <div className="w-full flex flex-col gap-y-7 mt-1.5">
+      <div className="w-full flex items-center gap-[36px]">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
             Base URL
@@ -49,7 +49,7 @@ export default function LiteLLMOptions({ settings }) {
           />
         </div>
       </div>
-      <div className="w-full flex items-center gap-4">
+      <div className="w-full flex items-center gap-[36px]">
         <div className="flex flex-col w-60">
           <div className="flex flex-col gap-y-1 mb-4">
             <label className="text-white text-sm font-semibold flex items-center gap-x-2">

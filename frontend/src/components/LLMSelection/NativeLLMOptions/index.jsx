@@ -13,7 +13,7 @@ export default function NativeLLMOptions({ settings }) {
           </p>
         </div>
       </div>
-      <div className="w-full flex items-center gap-4">
+      <div className="w-full flex items-center gap-[36px]">
         <NativeModelSelection settings={settings} />
       </div>
     </div>

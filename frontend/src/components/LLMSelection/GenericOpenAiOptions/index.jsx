@@ -1,7 +1,7 @@
 export default function GenericOpenAiOptions({ settings }) {
   return (
-    <div className="flex flex-col gap-y-4">
-      <div className="flex gap-4 flex-wrap">
+    <div className="flex flex-col gap-y-7">
+      <div className="flex gap-[36px] mt-1.5 flex-wrap">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
             Base URL
@@ -47,7 +47,7 @@ export default function GenericOpenAiOptions({ settings }) {
           />
         </div>
       </div>
-      <div className="flex gap-x-4 flex-wrap">
+      <div className="flex gap-[36px] flex-wrap">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
             Token context window
