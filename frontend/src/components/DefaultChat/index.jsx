@@ -120,14 +120,14 @@ export default function DefaultChatContainer() {
                 The AI tooling ecosystem gets more powerful everyday. DataPrism
                 360 makes it easy to use.
               </span>
-              <a
+              {/* <a
                 href={paths.github()}
                 target="_blank"
                 className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
               >
                 <GitMerge className="h-4 w-4" />
                 <p>Create an issue on Github</p>
-              </a>
+              </a> */}
             </div>
           </div>
         </div>
@@ -310,7 +310,7 @@ export default function DefaultChatContainer() {
                 Have Fun!
               </span>
 
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
+              {/* <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
                 <a
                   href={paths.github()}
                   target="_blank"
@@ -326,7 +326,7 @@ export default function DefaultChatContainer() {
                   <EnvelopeSimple className="h-4 w-4" />
                   <p>Contact Mintplex Labs</p>
                 </a>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
