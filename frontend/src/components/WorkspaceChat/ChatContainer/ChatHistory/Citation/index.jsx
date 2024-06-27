@@ -222,14 +222,16 @@ function parseChunkSource({ title = "", chunks = [] }) {
 
   if (
     !chunks.length ||
-    (!chunks[0].chunkSource.startsWith("link://") &&
-      !chunks[0].chunkSource.startsWith("confluence://"))
+    (!chunks[0].chunkSource?.startsWith("link://") &&
+      !chunks[0].chunkSource?.startsWith("confluence://") &&
+      !chunks[0].chunkSource?.startsWith("github://"))
   )
     return nullResponse;
   try {
     const url = new URL(
       chunks[0].chunkSource.split("link://")[1] ||
-        chunks[0].chunkSource.split("confluence://")[1]
+        chunks[0].chunkSource.split("confluence://")[1] ||
+        chunks[0].chunkSource.split("github://")[1]
     );
     let text = url.host + url.pathname;
     let icon = "link";

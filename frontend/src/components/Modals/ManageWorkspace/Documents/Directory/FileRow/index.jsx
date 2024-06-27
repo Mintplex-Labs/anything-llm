@@ -32,7 +32,7 @@ export default function FileRow({ item, selected, toggleSelection }) {
           weight="fill"
         />
         <p className="whitespace-nowrap overflow-hidden text-ellipsis">
-          {middleTruncate(item.title, 60)}
+          {middleTruncate(item.title, 55)}
         </p>
       </div>
       <div className="col-span-2 flex justify-end items-center">
