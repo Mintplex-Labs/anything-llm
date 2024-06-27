@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const { v4 } = require("uuid");
+// https://stackoverflow.com/questions/76883048/err-require-esm-for-import-with-xenova-transformers
+const TransformersApi = Function('return import("@xenova/transformers")')();
 const defaultWhisper = "Xenova/whisper-small"; // Model Card: https://huggingface.co/Xenova/whisper-small
 const fileSize = {
   "Xenova/whisper-small": "250mb",
@@ -115,9 +117,7 @@ class LocalWhisper {
     try {
       // Convert ESM to CommonJS via import so we can load this library.
       const pipeline = (...args) =>
-        import("@xenova/transformers").then(({ pipeline }) =>
-          pipeline(...args)
-        );
+        TransformersApi.then(({ pipeline }) => pipeline(...args));
       return await pipeline("automatic-speech-recognition", this.model, {
         cache_dir: this.cacheDir,
         ...(!fs.existsSync(this.modelPath)
