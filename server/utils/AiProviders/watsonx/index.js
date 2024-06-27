@@ -6,7 +6,7 @@ const {
 
 class WatsonxLLM {
   constructor(embedder = null, _modelPreference = null) {
-    const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
+    const { WatsonXAI } = require('@ibm-cloud/watsonx-ai');
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
     if (!process.env.AZURE_OPENAI_KEY)

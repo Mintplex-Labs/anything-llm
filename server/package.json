@@ -25,6 +25,7 @@
     "@datastax/astra-db-ts": "^0.1.3",
     "@google/generative-ai": "^0.7.1",
     "@googleapis/youtube": "^9.0.0",
+    "@ibm-cloud/watsonx-ai": "^0.1.1",
     "@langchain/anthropic": "0.1.16",
     "@langchain/community": "0.0.53",
     "@langchain/core": "0.1.61",
