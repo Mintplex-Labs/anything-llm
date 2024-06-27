@@ -26,6 +26,7 @@
     "@google/generative-ai": "^0.7.1",
     "@googleapis/youtube": "^9.0.0",
     "@ladjs/graceful": "^3.2.2",
+    "@lancedb/lancedb": "0.5.2",
     "@langchain/anthropic": "0.1.16",
     "@langchain/community": "0.0.53",
     "@langchain/core": "0.1.61",
@@ -81,7 +82,6 @@
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
     "uuid-apikey": "^1.5.3",
-    "vectordb": "0.4.11",
     "weaviate-ts-client": "^1.4.0",
     "winston": "^3.13.0"
   },
