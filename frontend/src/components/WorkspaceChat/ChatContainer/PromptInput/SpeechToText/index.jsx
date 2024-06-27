@@ -46,19 +46,19 @@ export default function SpeechToText({ sendCommand }) {
   }
 
   const handleKeyPress = useCallback((event) => {
-    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+    if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
       if (listening) {
-        endTTSSession()
+        endTTSSession();
       } else {
-        startSTTSession()
+        startSTTSession();
       }
     }
   }, []);
 
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress);
+    document.addEventListener("keydown", handleKeyPress);
     return () => {
-      document.removeEventListener('keydown', handleKeyPress);
+      document.removeEventListener("keydown", handleKeyPress);
     };
   }, [handleKeyPress]);
 
