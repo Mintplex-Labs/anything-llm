@@ -13,7 +13,7 @@ export default function LocalAiOptions({ settings }) {
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             LocalAI Base URL
           </label>
           <input
@@ -35,7 +35,7 @@ export default function LocalAiOptions({ settings }) {
           basePath={basePath}
         />
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Max embedding chunk length
           </label>
           <input
@@ -102,7 +102,7 @@ function LocalAIModelSelection({ settings, apiKey = null, basePath = null }) {
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Embedding Model Name
         </label>
         <select
@@ -122,7 +122,7 @@ function LocalAIModelSelection({ settings, apiKey = null, basePath = null }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-4">
+      <label className="text-white text-sm font-semibold block mb-3">
         Embedding Model Name
       </label>
       <select

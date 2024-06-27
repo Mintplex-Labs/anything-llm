@@ -134,7 +134,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
               </div>
 
               <div className="flex flex-col w-full">
-                <label className="text-white text-sm font-semibold block mb-4">
+                <label className="text-white text-sm font-semibold block mb-3">
                   Connection name
                 </label>
                 <input
@@ -150,7 +150,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col">
-                  <label className="text-white text-sm font-semibold block mb-4">
+                  <label className="text-white text-sm font-semibold block mb-3">
                     Database user
                   </label>
                   <input
@@ -164,7 +164,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <label className="text-white text-sm font-semibold block mb-4">
+                  <label className="text-white text-sm font-semibold block mb-3">
                     Database user password
                   </label>
                   <input
@@ -181,7 +181,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="sm:col-span-2">
-                  <label className="text-white text-sm font-semibold block mb-4">
+                  <label className="text-white text-sm font-semibold block mb-3">
                     Server endpoint
                   </label>
                   <input
@@ -195,7 +195,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                   />
                 </div>
                 <div>
-                  <label className="text-white text-sm font-semibold block mb-4">
+                  <label className="text-white text-sm font-semibold block mb-3">
                     Port
                   </label>
                   <input
@@ -211,7 +211,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
               </div>
 
               <div className="flex flex-col">
-                <label className="text-white text-sm font-semibold block mb-4">
+                <label className="text-white text-sm font-semibold block mb-3">
                   Database
                 </label>
                 <input

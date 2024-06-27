@@ -3,7 +3,7 @@ export default function GenericOpenAiEmbeddingOptions({ settings }) {
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4 flex-wrap">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Base URL
           </label>
           <input
@@ -18,7 +18,7 @@ export default function GenericOpenAiEmbeddingOptions({ settings }) {
           />
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Embedding Model
           </label>
           <input
@@ -33,7 +33,7 @@ export default function GenericOpenAiEmbeddingOptions({ settings }) {
           />
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Max embedding chunk length
           </label>
           <input

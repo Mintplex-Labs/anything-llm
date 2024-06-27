@@ -11,7 +11,7 @@ export default function LiteLLMOptions({ settings }) {
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Base URL
           </label>
           <input
@@ -33,7 +33,7 @@ export default function LiteLLMOptions({ settings }) {
           apiKey={apiKey}
         />
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Token context window
           </label>
           <input
@@ -99,7 +99,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
@@ -119,7 +119,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-4">
+      <label className="text-white text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select

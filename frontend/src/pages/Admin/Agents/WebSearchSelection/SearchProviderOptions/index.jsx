@@ -14,7 +14,7 @@ export function GoogleSearchOptions({ settings }) {
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Search engine ID
           </label>
           <input
@@ -29,7 +29,7 @@ export function GoogleSearchOptions({ settings }) {
           />
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Programmatic Access API Key
           </label>
           <input
@@ -66,7 +66,7 @@ export function SerperDotDevOptions({ settings }) {
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             API Key
           </label>
           <input
@@ -101,7 +101,7 @@ export function BingSearchOptions({ settings }) {
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             API Key
           </label>
           <input
@@ -164,7 +164,7 @@ export function SerplySearchOptions({ settings }) {
       </p>
       <div className="flex gap-x-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             API Key
           </label>
           <input
@@ -187,7 +187,7 @@ export function SearXNGOptions({ settings }) {
   return (
     <div className="flex gap-x-4">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           SearXNG API base URL
         </label>
         <input

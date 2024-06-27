@@ -37,7 +37,7 @@ function NativeModelSelection({ settings }) {
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Model Selection
         </label>
         <select
@@ -56,7 +56,7 @@ function NativeModelSelection({ settings }) {
   return (
     <>
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Model Selection
         </label>
         <select
@@ -82,7 +82,7 @@ function NativeModelSelection({ settings }) {
         </select>
       </div>
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Token context window
         </label>
         <input

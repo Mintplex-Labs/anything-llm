@@ -5,7 +5,7 @@ export default function TogetherAiOptions({ settings }) {
   return (
     <div className="flex gap-x-4">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Together AI API Key
         </label>
         <input
@@ -52,7 +52,7 @@ function TogetherAiModelSelection({ settings }) {
   if (loading || Object.keys(groupedModels).length === 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
@@ -70,7 +70,7 @@ function TogetherAiModelSelection({ settings }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-4">
+      <label className="text-white text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select

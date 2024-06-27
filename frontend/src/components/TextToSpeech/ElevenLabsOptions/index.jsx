@@ -8,7 +8,7 @@ export default function ElevenLabsOptions({ settings }) {
   return (
     <div className="flex gap-x-4">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           API Key
         </label>
         <input
@@ -60,7 +60,7 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
   if (loading) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
@@ -78,7 +78,7 @@ function ElevenLabsModelSelection({ apiKey, settings }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-4">
+      <label className="text-white text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select

@@ -3,7 +3,7 @@ export default function GenericOpenAiOptions({ settings }) {
     <div className="flex flex-col gap-y-4">
       <div className="flex gap-4 flex-wrap">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Base URL
           </label>
           <input
@@ -18,7 +18,7 @@ export default function GenericOpenAiOptions({ settings }) {
           />
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             API Key
           </label>
           <input
@@ -33,7 +33,7 @@ export default function GenericOpenAiOptions({ settings }) {
           />
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Chat Model Name
           </label>
           <input
@@ -49,7 +49,7 @@ export default function GenericOpenAiOptions({ settings }) {
       </div>
       <div className="flex gap-x-4 flex-wrap">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Token context window
           </label>
           <input
@@ -65,7 +65,7 @@ export default function GenericOpenAiOptions({ settings }) {
           />
         </div>
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Max Tokens
           </label>
           <input

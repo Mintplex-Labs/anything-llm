@@ -2,7 +2,7 @@ export default function TextGenWebUIOptions({ settings }) {
   return (
     <div className="flex gap-4 flex-wrap">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Base URL
         </label>
         <input
@@ -17,7 +17,7 @@ export default function TextGenWebUIOptions({ settings }) {
         />
       </div>
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Token context window
         </label>
         <input
@@ -33,7 +33,7 @@ export default function TextGenWebUIOptions({ settings }) {
         />
       </div>
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           API Key (Optional)
         </label>
         <input

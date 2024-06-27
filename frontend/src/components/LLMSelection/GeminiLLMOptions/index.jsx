@@ -3,7 +3,7 @@ export default function GeminiLLMOptions({ settings }) {
     <div className="w-full flex flex-col">
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Google AI API Key
           </label>
           <input
@@ -21,7 +21,7 @@ export default function GeminiLLMOptions({ settings }) {
         {!settings?.credentialsOnly && (
           <>
             <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-4">
+              <label className="text-white text-sm font-semibold block mb-3">
                 Chat Model Selection
               </label>
               <select
@@ -45,7 +45,7 @@ export default function GeminiLLMOptions({ settings }) {
               </select>
             </div>
             <div className="flex flex-col w-60">
-              <label className="text-white text-sm font-semibold block mb-4">
+              <label className="text-white text-sm font-semibold block mb-3">
                 Safety Setting
               </label>
               <select

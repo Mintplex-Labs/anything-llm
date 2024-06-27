@@ -10,7 +10,7 @@ export default function KoboldCPPOptions({ settings }) {
   return (
     <div className="flex gap-4 flex-wrap">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Base URL
         </label>
         <input
@@ -28,7 +28,7 @@ export default function KoboldCPPOptions({ settings }) {
       </div>
       <KoboldCPPModelSelection settings={settings} basePath={basePath} />
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Token context window
         </label>
         <input
@@ -69,7 +69,7 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
   if (loading || customModels.length === 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
@@ -89,7 +89,7 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-4">
+      <label className="text-white text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select

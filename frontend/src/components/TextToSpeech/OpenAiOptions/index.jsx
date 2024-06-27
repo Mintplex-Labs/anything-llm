@@ -10,7 +10,7 @@ export default function OpenAiTextToSpeechOptions({ settings }) {
   return (
     <div className="flex gap-x-4">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           API Key
         </label>
         <input
@@ -25,7 +25,7 @@ export default function OpenAiTextToSpeechOptions({ settings }) {
         />
       </div>
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Voice Model
         </label>
         <select
