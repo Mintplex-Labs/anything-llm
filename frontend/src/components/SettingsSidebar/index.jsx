@@ -413,7 +413,10 @@ function HoldToReveal({ children, holdForMs = 3_000 }) {
       if (!["Control", "Meta"].includes(e.key)) return;
       timeout = setTimeout(() => {
         setShowing(true);
-        showToast("Experimental feature previews unlocked!");
+        // Setting toastId prevents hook spam from holding control too many times or the event not detaching
+        showToast("Experimental feature previews unlocked!", {
+          toastId: "anythingllm_experimental_feature_preview_unlocked",
+        });
         window.localStorage.setItem(
           "anythingllm_experimental_feature_preview_unlocked",
           "enabled"
