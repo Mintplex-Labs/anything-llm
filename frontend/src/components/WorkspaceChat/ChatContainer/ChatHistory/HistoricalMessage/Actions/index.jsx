@@ -32,7 +32,7 @@ const Actions = ({
 
   return (
     <div className="flex w-full justify-between items-center">
-      <div className="flex justify-start items-center gap-x-4">
+      <div className="flex justify-start items-center gap-x-1">
         <CopyMessage message={message} />
         <EditMessageAction chatId={chatId} role={role} isEditing={isEditing} />
         {isLastMessage && !isEditing && (
