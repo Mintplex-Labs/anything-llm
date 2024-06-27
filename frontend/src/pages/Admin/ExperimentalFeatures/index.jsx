@@ -4,6 +4,7 @@ import Admin from "@/models/admin";
 import { FullScreenLoader } from "@/components/Preloader";
 import { CaretRight, Flask } from "@phosphor-icons/react";
 import { configurableFeatures } from "./features";
+import { Link } from "react-router-dom";
 import ModalWrapper from "@/components/ModalWrapper";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
@@ -109,15 +110,12 @@ function FeatureList({
       {Object.entries(features).map(([feature, settings], index) => (
         <div
           key={feature}
-          className={`py-3 px-4 flex items-center justify-between ${
-            index === 0 ? "rounded-t-xl" : ""
-          } ${
-            index === Object.keys(features).length - 1
+          className={`py-3 px-4 flex items-center justify-between ${index === 0 ? "rounded-t-xl" : ""
+            } ${index === Object.keys(features).length - 1
               ? "rounded-b-xl"
               : "border-b border-white/10"
-          } cursor-pointer transition-all duration-300  hover:bg-white/5 ${
-            selectedFeature === feature ? "bg-white/10" : ""
-          }`}
+            } cursor-pointer transition-all duration-300  hover:bg-white/5 ${selectedFeature === feature ? "bg-white/10" : ""
+            }`}
           onClick={() => handleClick?.(feature)}
         >
           <div className="text-sm font-light">{settings.title}</div>
@@ -245,12 +243,12 @@ function FeatureVerification({ children }) {
                 </div>
               </div>
               <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
-                <a
-                  href={paths.home()}
+                <Link
+                  to={paths.home()}
                   className="px-4 py-2 rounded-lg text-white hover:bg-stone-900 transition-all duration-300"
                 >
                   Reject & Close
-                </a>
+                </Link>
                 <button
                   type="submit"
                   className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"

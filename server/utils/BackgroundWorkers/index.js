@@ -1,21 +1,7 @@
-const path = require("path");
-const Graceful = require("@ladjs/graceful");
-const Bree = require("bree");
-
 class BackgroundService {
   name = "BackgroundWorkerService";
-  static _instance = null;
-  #root = path.resolve(__dirname, "../../jobs");
-
-  constructor() {
-    if (BackgroundService._instance) {
-      this.#log("SINGLETON LOCK: Using existing BackgroundService.");
-      return BackgroundService._instance;
-    }
-
-    this.logger = this.getLogger();
-    BackgroundService._instance = this;
-  }
+  #online = false;
+  constructor() { }
 
   #log(text, ...args) {
     console.log(`\x1b[36m[${this.name}]\x1b[0m ${text}`, ...args);
@@ -28,61 +14,32 @@ class BackgroundService {
       return;
     }
 
-    this.#log("Starting...");
-    this.bree = new Bree({
-      logger: this.logger,
-      root: this.#root,
-      jobs: this.jobs(),
-      errorHandler: this.onError,
-      workerMessageHandler: this.onWorkerMessageHandler,
+    const getProcessIdForBGService = new Promise((resolve) => {
+      const requestHandler = ({ data }) => {
+        const { type } = data;
+        if (type === "boot-background-service") resolve(!!type);
+      };
+
+      process?.parentPort?.once("message", requestHandler);
+      setTimeout(() => {
+        resolve(false);
+      }, 30_000);
     });
-    this.graceful = new Graceful({ brees: [this.bree], logger: this.logger });
-    this.graceful.listen();
-    this.bree.start();
-    this.#log("Service started");
+
+    if (!process.parentPort) return;
+    process.parentPort.postMessage({ message: "boot-background-service" });
+    const online = await getProcessIdForBGService
+      .then((res) => res)
+      .catch(() => false);
+    this.#online = online
+    this.#log(`Running BGService ${this.#online}`);
   }
 
   async stop() {
-    this.#log("Stopping...");
-    if (!!this.graceful && !!this.bree) this.graceful.stopBree(this.bree, 0);
-    this.bree = null;
-    this.graceful = null;
-    this.#log("Service stopped");
-  }
-
-  jobs() {
-    return [
-      // Job for auto-sync of documents
-      // https://github.com/breejs/bree
-      {
-        name: "sync-watched-documents",
-        timeout: "1min", // Wait 60s to check job on boot to make sure there are no pending jobs since last app close.
-        interval: "1hr",
-      },
-    ];
-  }
-
-  getLogger() {
-    const { format, createLogger, transports } = require("winston");
-    return new createLogger({
-      level: "info",
-      format: format.combine(
-        format.colorize(),
-        format.printf(({ level, message, service }) => {
-          return `\x1b[36m[${service}]\x1b[0m ${level}: ${message}`;
-        })
-      ),
-      defaultMeta: { service: this.name },
-      transports: [new transports.Console()],
-    });
-  }
-
-  onError(error, _workerMetadata) {
-    this.logger.error(`[${error.name}]: ${error.message}`);
-  }
-
-  onWorkerMessageHandler(message, _workerMetadata) {
-    this.logger.info(`[${message.name}]: ${message.message}`);
+    if (!process.parentPort) return;
+    process.parentPort.postMessage({ message: "kill-background-service" });
+    this.#log(`Killed BGService`);
+    this.#online = false;
   }
 }
 
