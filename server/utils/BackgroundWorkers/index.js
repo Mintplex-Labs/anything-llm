@@ -47,6 +47,16 @@ class BackgroundService {
     this.bree.start();
     this.#log("Service started");
 
+    // Note for future:
+    // This hack/patch exists because only on windows under the following conditions will the BGWorker crash the main backend process:
+    // - The user must be using LanceDB as their vectorDB.
+    // - The user opens the app **AND** they have not interacted with a single method that interacts with lanceDB (chat, vector count, openTable, add/delete embeddings etc)
+    // - The worker runs **AND** it reaches any line that requires the vectorDB to be interacted with
+    // => The main backend thread will be killed and the app will be unusable as the backend will never respond.
+    // This ONLY occurrs on Windows and with the lance version 0.5.2
+    // By pre-locking lanceDB by running a simple vectorCount on all tables before letting jobs run can we prevent this
+    // Why does this happen? I have no idea, but I wasted an entire day on it and if you find yourself back here to address
+    // this bug then I am sorry.
     if (process.platform === "win32" && process.env.VECTOR_DB === "lancedb") {
       this.#log(
         "Need main process to bind to lance to prevent lockout on worker for windows."
