@@ -15,7 +15,6 @@ function isNullOrNaN(value) {
 const SystemSettings = {
   protectedFields: ["multi_user_mode"],
   supportedFields: [
-    "users_can_delete_workspaces",
     "limit_user_messages",
     "message_limit",
     "logo_filename",
@@ -299,16 +298,6 @@ const SystemSettings = {
     } catch (error) {
       console.error(error.message);
       return null;
-    }
-  },
-
-  canDeleteWorkspaces: async function () {
-    try {
-      const setting = await this.get({ label: "users_can_delete_workspaces" });
-      return setting?.value === "true";
-    } catch (error) {
-      console.error(error.message);
-      return false;
     }
   },
 

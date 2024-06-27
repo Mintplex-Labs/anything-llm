@@ -479,7 +479,6 @@ function systemEndpoints(app) {
         });
         await SystemSettings._updateSettings({
           multi_user_mode: true,
-          users_can_delete_workspaces: false,
           limit_user_messages: false,
           message_limit: 25,
         });
@@ -772,33 +771,6 @@ function systemEndpoints(app) {
       } catch (error) {
         console.error("Error processing the logo removal:", error);
         response.status(500).json({ message: "Error removing the logo." });
-      }
-    }
-  );
-
-  app.get(
-    "/system/can-delete-workspaces",
-    [validatedRequest],
-    async function (request, response) {
-      try {
-        if (!response.locals.multiUserMode) {
-          return response.status(200).json({ canDelete: true });
-        }
-
-        const user = await userFromSession(request, response);
-        if ([ROLES.admin, ROLES.manager].includes(user?.role)) {
-          return response.status(200).json({ canDelete: true });
-        }
-
-        const canDelete = await SystemSettings.canDeleteWorkspaces();
-        response.status(200).json({ canDelete });
-      } catch (error) {
-        console.error("Error fetching can delete workspaces:", error);
-        response.status(500).json({
-          success: false,
-          message: "Internal server error",
-          canDelete: false,
-        });
       }
     }
   );
