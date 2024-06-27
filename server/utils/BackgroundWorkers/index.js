@@ -1,6 +1,7 @@
 const path = require("path");
 const Graceful = require("@ladjs/graceful");
 const Bree = require("bree");
+const { getVectorDbClass } = require("../helpers");
 
 class BackgroundService {
   name = "BackgroundWorkerService";
@@ -45,6 +46,15 @@ class BackgroundService {
     this.graceful.listen();
     this.bree.start();
     this.#log("Service started");
+
+    if (process.platform === "win32" && process.env.VECTOR_DB === "lancedb") {
+      this.#log(
+        "Need main process to bind to lance to prevent lockout on worker for windows."
+      );
+      this.#log(
+        `LanceDB currently has ${await getVectorDbClass().totalVectors()} vectors`
+      );
+    }
   }
 
   async stop() {
