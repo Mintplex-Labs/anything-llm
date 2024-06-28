@@ -6,6 +6,7 @@ import {
   ThumbsDown,
   ArrowsClockwise,
   Copy,
+  GitMerge,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
@@ -19,6 +20,7 @@ const Actions = ({
   slug,
   isLastMessage,
   regenerateMessage,
+  forkThread,
   isEditing,
   role,
 }) => {
@@ -32,8 +34,14 @@ const Actions = ({
 
   return (
     <div className="flex w-full justify-between items-center">
-      <div className="flex justify-start items-center gap-x-4">
+      <div className="flex justify-start items-center gap-x-4 group">
         <CopyMessage message={message} />
+        <ForkThread
+          chatId={chatId}
+          forkThread={forkThread}
+          isEditing={isEditing}
+          role={role}
+        />
         <EditMessageAction chatId={chatId} role={role} isEditing={isEditing} />
         {isLastMessage && !isEditing && (
           <RegenerateMessage
@@ -143,6 +151,28 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
       </button>
       <Tooltip
         id="regenerate-assistant-text"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
+    </div>
+  );
+}
+function ForkThread({ chatId, forkThread, isEditing, role }) {
+  if (!chatId || isEditing || role === "user") return null;
+  return (
+    <div className="mt-3 relative">
+      <button
+        onClick={() => forkThread(chatId)}
+        data-tooltip-id="fork-thread"
+        data-tooltip-content="Fork chat to new thread"
+        className="border-none text-zinc-300"
+        aria-label="Fork"
+      >
+        <GitMerge size={18} className="mb-1" weight="fill" />
+      </button>
+      <Tooltip
+        id="fork-thread"
         place="bottom"
         delayShow={300}
         className="tooltip !text-xs"
