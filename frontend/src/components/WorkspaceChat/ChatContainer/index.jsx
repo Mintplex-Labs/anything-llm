@@ -245,7 +245,6 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
 
     !hasAcceptedLegalDisclaimer && setTimeout(() => {
       openLegalDisclaimerModal();
-      document.cookie = `hasAcceptedLegalDisclaimer=true; max-age=86400; path=/;`;
     }, 1000)
   }, []);
 

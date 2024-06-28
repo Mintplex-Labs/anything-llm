@@ -19,6 +19,7 @@ export default function LegalDisclaimerModal(
   }, []);
 
   const handleClose = () => {
+    document.cookie = `hasAcceptedLegalDisclaimer=true; max-age=86400; path=/;`;
     onClose();
   };
 
@@ -33,7 +34,7 @@ export default function LegalDisclaimerModal(
             Correctness Info
           </h3>
         </div>
-        <div className="mt-8 max-h-[400px] overflow-y-auto">
+        <div className="mt-4 max-h-[400px] overflow-y-auto">
           <div
             className="bg-dark-highlight text-white 
                  flex items-center justify-center rounded-md mt-6"
