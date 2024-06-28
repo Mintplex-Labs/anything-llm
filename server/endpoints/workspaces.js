@@ -32,6 +32,7 @@ const {
 } = require("../utils/files/pfp");
 const { getTTSProvider } = require("../utils/TextToSpeech");
 const { WorkspaceThread } = require("../models/workspaceThread");
+const truncate = require("truncate");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -798,6 +799,7 @@ function workspaceEndpoints(app) {
           null,
           { id: "asc" }
         );
+        let lastMessageText = "";
 
         for (const chat of chatsToFork) {
           let response = chat.response;
@@ -813,9 +815,18 @@ function workspaceEndpoints(app) {
             user: user,
             threadId: newThread.id,
           });
+
+          if (response && response.text) {
+            lastMessageText = response.text;
+          }
         }
 
-        await WorkspaceThread.update(newThread, { name: "Forked Thread" });
+        await WorkspaceThread.update(newThread, {
+          name:
+            lastMessageText !== ""
+              ? truncate(lastMessageText, 22)
+              : "Forked Thread",
+        });
         await Telemetry.sendTelemetry(
           "thread_forked",
           {
@@ -833,7 +844,6 @@ function workspaceEndpoints(app) {
           user?.id
         );
         response.status(200).json({
-          thread: newThread,
           newThreadSlug: newThread.slug,
         });
       } catch (e) {
