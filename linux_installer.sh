@@ -2,15 +2,17 @@
 # This script installs AnythingLLMDesktop on Linux.
 # Due to READ_ONLY issues on regular mounting of an AppImage
 # we need to download the file then unpack it so it can be run.
+set -eu
+
+status() { echo ">>> $*" >&2; }
+error() { echo "ERROR $*"; exit 1; }
+warning() { echo "WARNING: $*"; }
 
 [ "$(uname -s)" = "Linux" ] || error 'This script is intended to run on Linux only.'
 if [ "$(id -u)" -eq 0 ]; then
-    echo "This script should not be run as root. Please run it as a regular user."
+    status "This script should not be run as root. Please run it as a regular user."
     exit 1
 fi
-
-set -eu
-status() { echo ">>> $*" >&2; }
 
 APPIMAGE_URL="https://s3.us-west-1.amazonaws.com/public.useanything.com/latest/AnythingLLMDesktop.AppImage"
 APPIMAGE_FILE="AnythingLLMDesktop.AppImage"
