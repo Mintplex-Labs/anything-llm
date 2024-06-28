@@ -72,11 +72,6 @@ class AzureOpenAiLLM {
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  async isSafe(_input = "") {
-    // Not implemented by Azure OpenAI so must be stubbed
-    return { safe: true, reasons: [] };
-  }
-
   async getChatCompletion(messages = [], { temperature = 0.7 }) {
     if (!this.model)
       throw new Error(
