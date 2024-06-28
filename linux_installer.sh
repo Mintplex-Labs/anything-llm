@@ -17,7 +17,6 @@ fi
 APPIMAGE_URL="https://s3.us-west-1.amazonaws.com/public.useanything.com/latest/AnythingLLMDesktop.AppImage"
 APPIMAGE_FILE="AnythingLLMDesktop.AppImage"
 EXTRACTED_DIR="anythingllm-desktop"
-COMMAND_NAME="anything-llm"
 OUTDIR="$HOME/AnythingLLMDesktop"
 
 rm -rf $OUTDIR
