@@ -1,5 +1,4 @@
 const { v4 } = require("uuid");
-const { PDFLoader } = require("langchain/document_loaders/fs/pdf");
 const {
   createdDate,
   trashFile,
@@ -9,21 +8,32 @@ const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 
 async function asPDF({ fullFilePath = "", filename = "" }) {
-  const pdfLoader = new PDFLoader(fullFilePath, {
-    splitPages: true,
-  });
-
+  const pdfjsLib = await import("pdfjs-dist");
   console.log(`-- Working ${filename} --`);
+
+  const loadingTask = pdfjsLib.default.getDocument(fullFilePath);
+  const pdf = await loadingTask.promise;
+
+  const numPages = pdf.numPages;
   const pageContent = [];
-  const docs = await pdfLoader.load();
-  for (const doc of docs) {
-    console.log(
-      `-- Parsing content from pg ${
-        doc.metadata?.loc?.pageNumber || "unknown"
-      } --`
-    );
-    if (!doc.pageContent || !doc.pageContent.length) continue;
-    pageContent.push(doc.pageContent);
+  const metadata = await pdf.getMetadata();
+  const outline = await pdf.getOutline();
+
+  for (let i = 1; i <= numPages; i++) {
+    console.log(`-- Parsing content from pg ${i} --`);
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const text = content.items.map((item) => item.str).join(" ");
+
+    // Find relevant bookmarks or chapters for this page
+    const relevantOutline =
+      outline?.filter((item) => item.dest?.[0] === i) || [];
+    const outlineInfo = relevantOutline.map((item) => item.title).join(", ");
+
+    const pageInfo = `[Page ${i}${
+      outlineInfo ? ` - ${outlineInfo}` : ""
+    }]:${text}`;
+    pageContent.push(pageInfo);
   }
 
   if (!pageContent.length) {
@@ -36,13 +46,13 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
     };
   }
 
-  const content = pageContent.join("");
+  const content = pageContent.join("\n");
   const data = {
     id: v4(),
     url: "file://" + fullFilePath,
     title: filename,
-    docAuthor: docs[0]?.metadata?.pdf?.info?.Creator || "no author found",
-    description: docs[0]?.metadata?.pdf?.info?.Title || "No description found.",
+    docAuthor: metadata?.info?.Creator || "no author found",
+    description: metadata?.info?.Title || "No description found.",
     docSource: "pdf file uploaded by the user.",
     chunkSource: "",
     published: createdDate(fullFilePath),
