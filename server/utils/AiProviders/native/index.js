@@ -117,11 +117,6 @@ class NativeLLM {
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  async isSafe(_input = "") {
-    // Not implemented so must be stubbed
-    return { safe: true, reasons: [] };
-  }
-
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     const model = await this.#llamaClient({ temperature });
     const response = await model.call(messages);

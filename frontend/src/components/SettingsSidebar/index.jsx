@@ -387,7 +387,7 @@ const SidebarOptions = ({ user = null, t }) => (
       flex={true}
       allowedRole={["admin"]}
     />
-    <HoldToReveal>
+    <HoldToReveal key="exp_features">
       <Option
         href={paths.settings.experimental()}
         btnText="Experimental Features"
@@ -401,7 +401,7 @@ const SidebarOptions = ({ user = null, t }) => (
 );
 
 function HoldToReveal({ children, holdForMs = 3_000 }) {
-  let timeout;
+  let timeout = null;
   const [showing, setShowing] = useState(
     window.localStorage.getItem(
       "anythingllm_experimental_feature_preview_unlocked"
@@ -410,13 +410,11 @@ function HoldToReveal({ children, holdForMs = 3_000 }) {
 
   useEffect(() => {
     const onPress = (e) => {
-      if (!["Control", "Meta"].includes(e.key)) return;
+      if (!["Control", "Meta"].includes(e.key) || timeout !== null) return;
       timeout = setTimeout(() => {
         setShowing(true);
         // Setting toastId prevents hook spam from holding control too many times or the event not detaching
-        showToast("Experimental feature previews unlocked!", {
-          toastId: "anythingllm_experimental_feature_preview_unlocked",
-        });
+        showToast("Experimental feature previews unlocked!");
         window.localStorage.setItem(
           "anythingllm_experimental_feature_preview_unlocked",
           "enabled"
