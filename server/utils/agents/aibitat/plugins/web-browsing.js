@@ -1,4 +1,5 @@
 const { SystemSettings } = require("../../../../models/systemSettings");
+const logger = require("../../../logger");
 
 const webBrowsing = {
   name: "web-browsing",
@@ -118,8 +119,10 @@ const webBrowsing = {
                 });
               })
               .catch((e) => {
-                console.log(e);
-                return [];
+                logger.error(e.message, {
+                  origin: "web-browsing._googleSearchEngine",
+                });
+                return {};
               });
 
             if (data.length === 0)
@@ -224,7 +227,9 @@ const webBrowsing = {
                 }));
               })
               .catch((e) => {
-                console.log(e);
+                logger.error(e.message, {
+                  origin: "web-browsing._bingWebSearchEngine",
+                });
                 return [];
               });
 

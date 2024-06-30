@@ -1,4 +1,5 @@
 const { maximumChunkLength } = require("../../helpers");
+const logger = require("../../logger");
 
 class OllamaEmbedder {
   constructor() {
@@ -14,17 +15,13 @@ class OllamaEmbedder {
     this.embeddingMaxChunkLength = maximumChunkLength();
   }
 
-  log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
-  }
-
   async #isAlive() {
     return await fetch(process.env.EMBEDDING_BASE_PATH, {
       method: "HEAD",
     })
       .then((res) => res.ok)
       .catch((e) => {
-        this.log(e.message);
+        logger.error(e.message, { origin: "OllamaEmbedder" });
         return false;
       });
   }
@@ -43,8 +40,9 @@ class OllamaEmbedder {
       );
 
     const embeddingRequests = [];
-    this.log(
-      `Embedding ${textChunks.length} chunks of text with ${this.model}.`
+    logger.info(
+      `Embedding ${textChunks.length} chunks of text with ${this.model}.`,
+      { origin: "OllamaEmbedder" }
     );
 
     for (const chunk of textChunks) {

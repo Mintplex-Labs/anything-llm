@@ -4,6 +4,7 @@ const {
   writeResponseChunk,
 } = require("../../helpers/chat/responses");
 const { v4: uuidv4 } = require("uuid");
+const logger = require("../../logger");
 
 class KoboldCPPLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -28,11 +29,9 @@ class KoboldCPPLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
-    this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
-  }
-
-  log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    logger.info(`Inference API: ${this.basePath} Model: ${this.model}`, {
+      origin: "KoboldCPPLLM",
+    });
   }
 
   #appendContext(contextTexts = []) {

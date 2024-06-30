@@ -1,6 +1,7 @@
 const chalk = require("chalk");
 const { RetryError } = require("../error");
 const { Telemetry } = require("../../../../models/telemetry");
+const logger = require("../../../logger");
 const SOCKET_TIMEOUT_MS = 300 * 1_000; // 5 mins
 
 /**
@@ -129,10 +130,13 @@ const websocket = {
               };
 
               socketTimeout = setTimeout(() => {
-                console.log(
+                logger.info(
                   chalk.red(
                     `Client took too long to respond, chat thread is dead after ${SOCKET_TIMEOUT_MS}ms`
-                  )
+                  ),
+                  {
+                    origin: "websocket.js",
+                  }
                 );
                 resolve("exit");
                 return;

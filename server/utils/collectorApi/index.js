@@ -4,6 +4,8 @@ const { EncryptionManager } = require("../EncryptionManager");
 // of docker this endpoint is not exposed so it is only on the Docker instances internal network
 // so no additional security is needed on the endpoint directly. Auth is done however by the express
 // middleware prior to leaving the node-side of the application so that is good enough >:)
+
+const logger = require("../logger");
 class CollectorApi {
   constructor() {
     const { CommunicationKey } = require("../comKey");
@@ -12,7 +14,7 @@ class CollectorApi {
   }
 
   log(text, ...args) {
-    console.log(`\x1b[36m[CollectorApi]\x1b[0m ${text}`, ...args);
+    logger.info(`${text} ${args}`, { origin: "CollectorApi" });
   }
 
   #attachOptions() {

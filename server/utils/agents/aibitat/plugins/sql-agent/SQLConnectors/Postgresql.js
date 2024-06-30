@@ -1,4 +1,5 @@
 const pgSql = require("pg");
+const logger = require("../../../../../logger");
 
 class PostgresSQLConnector {
   #connected = false;
@@ -32,7 +33,7 @@ class PostgresSQLConnector {
       result.rows = query.rows;
       result.count = query.rowCount;
     } catch (err) {
-      console.log(this.constructor.name, err);
+      logger.error(err.message, { origin: this.constructor.name });
       result.error = err.message;
     } finally {
       await this._client.end();

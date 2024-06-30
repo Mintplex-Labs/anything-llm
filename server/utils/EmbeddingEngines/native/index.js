@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const { toChunks } = require("../../helpers");
 const { v4 } = require("uuid");
+const logger = require("../../logger");
 
 class NativeEmbedder {
   // This is a folder that Mintplex Labs hosts for those who cannot capture the HF model download
@@ -30,10 +31,6 @@ class NativeEmbedder {
     this.log("Initialized");
   }
 
-  log(text, ...args) {
-    console.log(`\x1b[36m[NativeEmbedder]\x1b[0m ${text}`, ...args);
-  }
-
   #tempfilePath() {
     const filename = `${v4()}.tmp`;
     const tmpPath = process.env.STORAGE_DIR
@@ -47,7 +44,9 @@ class NativeEmbedder {
     try {
       await fs.promises.appendFile(filePath, data, { encoding: "utf8" });
     } catch (e) {
-      console.error(`Error writing to tempfile: ${e}`);
+      logger.error(`Error writing to tempfile: ${e}`, {
+        origin: "NativeEmbedder",
+      });
     }
   }
 
@@ -62,7 +61,9 @@ class NativeEmbedder {
               env.remoteHost = hostOverride;
               env.remotePathTemplate = "{model}/"; // Our S3 fallback url does not support revision File structure.
             }
-            this.log(`Downloading ${this.model} from ${env.remoteHost}`);
+            logger.info(`Downloading ${this.model} from ${env.remoteHost}`, {
+              origin: "NativeEmbedder",
+            });
           }
           return pipeline(...args);
         });
@@ -74,10 +75,9 @@ class NativeEmbedder {
                 // Show download progress if we need to download any files
                 progress_callback: (data) => {
                   if (!data.hasOwnProperty("progress")) return;
-                  console.log(
-                    `\x1b[36m[NativeEmbedder - Downloading model]\x1b[0m ${
-                      data.file
-                    } ${~~data?.progress}%`
+                  logger.info(
+                    `Downloading model - ${data.file} ${~~data?.progress}%`,
+                    { origin: "NativeEmbedder" }
                   );
                 },
               }
@@ -102,8 +102,9 @@ class NativeEmbedder {
   // So to attempt to monkey-patch this we have a single fallback URL to help alleviate duplicate bug reports.
   async embedderClient() {
     if (!this.modelDownloaded)
-      this.log(
-        "The native embedding model has never been run and will be downloaded right now. Subsequent runs will be faster. (~23MB)"
+      logger.info(
+        "The native embedding model has never been run and will be downloaded right now. Subsequent runs will be faster. (~23MB)",
+        { origin: "NativeEmbedder" }
       );
 
     let fetchResponse = await this.#fetchWithHost();

@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { v5: uuidv5 } = require("uuid");
 const { Document } = require("../../models/documents");
+const logger = require("../logger");
 const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
 const documentsPath =
   process.env.NODE_ENV === "development"
@@ -100,8 +101,9 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
   if (checkOnly) return exists;
   if (!exists) return { exists, chunks: [] };
 
-  console.log(
-    `Cached vectorized results of ${filename} found! Using cached data to save on embed costs.`
+  logger.info(
+    `Cached vectorized results of ${filename} found! Using cached data to save on embed costs.`,
+    { origin: "cachedVectorInformation" }
   );
   const rawData = fs.readFileSync(file, "utf8");
   return { exists: true, chunks: JSON.parse(rawData) };
@@ -111,8 +113,9 @@ async function cachedVectorInformation(filename = null, checkOnly = false) {
 // filename is the fullpath to the doc so we can compare by filename to find cached matches.
 async function storeVectorResult(vectorData = [], filename = null) {
   if (!filename) return;
-  console.log(
-    `Caching vectorized results of ${filename} to prevent duplicated embedding.`
+  logger.info(
+    `Caching vectorized results of ${filename} to prevent duplicated embedding.`,
+    { origin: "storeVectorResult" }
   );
   if (!fs.existsSync(vectorCachePath)) fs.mkdirSync(vectorCachePath);
 
@@ -134,7 +137,9 @@ async function purgeSourceDocument(filename = null) {
   )
     return;
 
-  console.log(`Purging source document of ${filename}.`);
+  logger.info(`Purging source document of ${filename}.`, {
+    origin: "purgeSourceDocument",
+  });
   fs.rmSync(filePath);
   return;
 }
@@ -146,7 +151,9 @@ async function purgeVectorCache(filename = null) {
   const filePath = path.resolve(vectorCachePath, `${digest}.json`);
 
   if (!fs.existsSync(filePath) || !fs.lstatSync(filePath).isFile()) return;
-  console.log(`Purging vector-cache of ${filename}.`);
+  logger.info(`Purging vector-cache of ${filename}.`, {
+    origin: "purgeVectorCache",
+  });
   fs.rmSync(filePath);
   return;
 }

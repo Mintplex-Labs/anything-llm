@@ -1,3 +1,5 @@
+const logger = require("../logger");
+
 function isNullOrNaN(value) {
   if (value === null) return true;
   return isNaN(value);
@@ -25,10 +27,6 @@ class TextSplitter {
     this.#splitter = this.#setSplitter(config);
   }
 
-  log(text, ...args) {
-    console.log(`\x1b[35m[TextSplitter]\x1b[0m ${text}`, ...args);
-  }
-
   // Does a quick check to determine the text chunk length limit.
   // Embedder models have hard-set limits that cannot be exceeded, just like an LLM context
   // so here we want to allow override of the default 1000, but up to the models maximum, which is
@@ -39,8 +37,9 @@ class TextSplitter {
       : Number(preferred);
     const limit = Number(embedderLimit);
     if (prefValue > limit)
-      console.log(
-        `\x1b[43m[WARN]\x1b[0m Text splitter chunk length of ${prefValue} exceeds embedder model max of ${embedderLimit}. Will use ${embedderLimit}.`
+      logger.warn(
+        `Text splitter chunk length of ${prefValue} exceeds embedder model max of ${embedderLimit}. Will use ${embedderLimit}.`,
+        { origin: "TextSplitter" }
       );
     return prefValue > limit ? limit : prefValue;
   }
@@ -79,16 +78,17 @@ class RecursiveSplitter {
     const {
       RecursiveCharacterTextSplitter,
     } = require("@langchain/textsplitters");
-    this.log(`Will split with`, { chunkSize, chunkOverlap });
+    logger.info(
+      `Will split with chunk size of ${chunkSize} and overlap of ${chunkOverlap}`,
+      {
+        origin: "RecursiveSplitter",
+      }
+    );
     this.chunkHeader = chunkHeader;
     this.engine = new RecursiveCharacterTextSplitter({
       chunkSize,
       chunkOverlap,
     });
-  }
-
-  log(text, ...args) {
-    console.log(`\x1b[35m[RecursiveSplitter]\x1b[0m ${text}`, ...args);
   }
 
   async _splitText(documentText) {

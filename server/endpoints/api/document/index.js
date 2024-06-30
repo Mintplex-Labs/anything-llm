@@ -13,6 +13,7 @@ const { CollectorApi } = require("../../../utils/collectorApi");
 const fs = require("fs");
 const path = require("path");
 const { Document } = require("../../../models/documents");
+const logger = require("../../../utils/logger");
 const documentsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, "../../../storage/documents")
@@ -115,7 +116,7 @@ function apiDocumentEndpoints(app) {
         });
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/document/upload" });
         response.sendStatus(500).end();
       }
     }
@@ -213,7 +214,7 @@ function apiDocumentEndpoints(app) {
         });
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/document/upload-link" });
         response.sendStatus(500).end();
       }
     }
@@ -346,7 +347,7 @@ function apiDocumentEndpoints(app) {
         await EventLogs.logEvent("api_raw_document_uploaded");
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/document/raw-text" });
         response.sendStatus(500).end();
       }
     }
@@ -391,7 +392,7 @@ function apiDocumentEndpoints(app) {
       const localFiles = await viewLocalFiles();
       response.status(200).json({ localFiles });
     } catch (e) {
-      console.log(e.message, e);
+      logger.error(e.message, { origin: "/v1/documents" });
       response.sendStatus(500).end();
     }
   });
@@ -447,7 +448,7 @@ function apiDocumentEndpoints(app) {
 
         response.status(200).json({ types });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/document/accepted-file-types" });
         response.sendStatus(500).end();
       }
     }
@@ -497,7 +498,7 @@ function apiDocumentEndpoints(app) {
           },
         });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/v1/document/metadata-schema" });
         response.sendStatus(500).end();
       }
     }
@@ -555,7 +556,7 @@ function apiDocumentEndpoints(app) {
       }
       response.status(200).json({ document });
     } catch (e) {
-      console.log(e.message, e);
+      logger.error(e.message, { origin: "/v1/document/:docName" });
       response.sendStatus(500).end();
     }
   });

@@ -31,6 +31,7 @@ const {
   fetchPfp,
 } = require("../utils/files/pfp");
 const { getTTSProvider } = require("../utils/TextToSpeech");
+const logger = require("../utils/logger");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -68,7 +69,7 @@ function workspaceEndpoints(app) {
 
         response.status(200).json({ workspace, message });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspace/new" });
         response.sendStatus(500).end();
       }
     }
@@ -97,7 +98,7 @@ function workspaceEndpoints(app) {
         );
         response.status(200).json({ workspace, message });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspace/:slug/update" });
         response.sendStatus(500).end();
       }
     }
@@ -147,7 +148,7 @@ function workspaceEndpoints(app) {
         );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspace/:slug/upload" });
         response.sendStatus(500).end();
       }
     }
@@ -190,7 +191,7 @@ function workspaceEndpoints(app) {
         );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspace/:slug/upload-link" });
         response.sendStatus(500).end();
       }
     }
@@ -234,7 +235,9 @@ function workspaceEndpoints(app) {
               : null,
         });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, {
+          origin: "/workspace/:slug/update-embeddings",
+        });
         response.sendStatus(500).end();
       }
     }
@@ -277,7 +280,7 @@ function workspaceEndpoints(app) {
         }
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspace/:slug" });
         response.sendStatus(500).end();
       }
     }
@@ -318,7 +321,7 @@ function workspaceEndpoints(app) {
         }
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspace/:slug/reset-vector-db" });
         response.sendStatus(500).end();
       }
     }
@@ -336,7 +339,7 @@ function workspaceEndpoints(app) {
 
         response.status(200).json({ workspaces });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspaces" });
         response.sendStatus(500).end();
       }
     }
@@ -355,7 +358,7 @@ function workspaceEndpoints(app) {
 
         response.status(200).json({ workspace });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspace/:slug" });
         response.sendStatus(500).end();
       }
     }
@@ -382,7 +385,7 @@ function workspaceEndpoints(app) {
           : await WorkspaceChats.forWorkspace(workspace.id);
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspace/:slug/chats" });
         response.sendStatus(500).end();
       }
     }
@@ -413,7 +416,7 @@ function workspaceEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspace/:slug/delete-chats" });
         response.sendStatus(500).end();
       }
     }
@@ -437,7 +440,9 @@ function workspaceEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, {
+          origin: "/workspace/:slug/delete-edited-chats",
+        });
         response.sendStatus(500).end();
       }
     }
@@ -474,7 +479,7 @@ function workspaceEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        logger.error(e.message, { origin: "/workspace/:slug/update-chat" });
         response.sendStatus(500).end();
       }
     }

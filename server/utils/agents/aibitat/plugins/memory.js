@@ -1,6 +1,7 @@
 const { v4 } = require("uuid");
 const { getVectorDbClass, getLLMProvider } = require("../../../helpers");
 const { Deduplicator } = require("../utils/dedupe");
+const logger = require("../../../logger");
 
 const memory = {
   name: "rag-memory",
@@ -77,7 +78,7 @@ const memory = {
               this.tracker.trackRun(this.name, { action, content });
               return response;
             } catch (error) {
-              console.log(error);
+              logger.error(error.message, { origin: "memory.handler" });
               return `There was an error while calling the function. ${error.message}`;
             }
           },

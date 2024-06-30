@@ -1,4 +1,5 @@
 const { maximumChunkLength } = require("../../helpers");
+const logger = require("../../logger");
 
 class LMStudioEmbedder {
   constructor() {
@@ -15,17 +16,13 @@ class LMStudioEmbedder {
     this.embeddingMaxChunkLength = maximumChunkLength();
   }
 
-  log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
-  }
-
   async #isAlive() {
     return await fetch(`${this.basePath}/models`, {
       method: "HEAD",
     })
       .then((res) => res.ok)
       .catch((e) => {
-        this.log(e.message);
+        logger.error(e, { origin: "LMStudioEmbedder" });
         return false;
       });
   }
@@ -43,8 +40,9 @@ class LMStudioEmbedder {
         `LMStudio service could not be reached. Is LMStudio running?`
       );
 
-    this.log(
-      `Embedding ${textChunks.length} chunks of text with ${this.model}.`
+    logger.info(
+      `Embedding ${textChunks.length} chunks of text with ${this.model}.`,
+      { origin: "LMStudioEmbedder" }
     );
 
     // LMStudio will drop all queued requests now? So if there are many going on
@@ -91,9 +89,13 @@ class LMStudioEmbedder {
 
     if (errors.length > 0) {
       let uniqueErrors = new Set();
-      console.log(errors);
       errors.map((error) =>
         uniqueErrors.add(`[${error.type}]: ${error.message}`)
+      );
+
+      logger.error(
+        `LMStudio Failed to embed: ${Array.from(uniqueErrors).join(", ")}`,
+        { origin: "LMStudioEmbedder" }
       );
 
       if (errors.length > 0)

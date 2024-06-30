@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const execSync = require("child_process").execSync;
 const fs = require("fs");
 const path = require("path");
+const logger = require("../logger");
 require("dotenv").config();
 
 const DATABASE_PATH = process.env.DB_URL || "../../storage/anythingllm.db";
@@ -14,7 +15,9 @@ const BACKUP_PATH = path.join(
 function backupDatabase() {
   try {
     fs.copyFileSync(DATABASE_PATH, BACKUP_PATH);
-    console.log("Database backup created successfully.");
+    logger.info("Database backup created successfully.", {
+      origin: "migrateFromSqlite.js",
+    });
   } catch (error) {
     console.error("Failed to create database backup:", error);
   }
@@ -27,14 +30,18 @@ const prisma = new PrismaClient();
 // Reset the prisma database and prepare it for migration of data from sqlite
 function resetAndMigrateDatabase() {
   try {
-    console.log("Resetting and migrating the database...");
+    logger.info("Resetting and migrating the database...", {
+      origin: "migrateFromSqlite.js",
+    });
     execSync("cd ../.. && npx prisma migrate reset --skip-seed --force", {
       stdio: "inherit",
     });
     execSync("cd ../.. && npx prisma migrate dev --name init", {
       stdio: "inherit",
     });
-    console.log("Database reset and initial migration completed successfully");
+    logger.info("Database reset and initial migration completed successfully", {
+      origin: "migrateFromSqlite.js",
+    });
   } catch (error) {
     console.error("Failed to reset and migrate the database:", error);
   }
@@ -45,7 +52,9 @@ resetAndMigrateDatabase();
 // Migrate data from sqlite to prisma
 async function migrateData() {
   try {
-    console.log("Starting data migration...");
+    logger.info("Starting data migration...", {
+      origin: "migrateFromSqlite.js",
+    });
     var legacyMap = {
       users: {
         count: 0,
@@ -234,7 +243,9 @@ async function migrateData() {
       });
     });
 
-    console.log("Data migration completed successfully");
+    logger.info("Data migration completed successfully", {
+      origin: "migrateFromSqlite.js",
+    });
   } catch (error) {
     console.error("Data migration failed:", error);
   } finally {
@@ -255,8 +266,11 @@ async function migrateTable(tableName, migrateRowFunc) {
     `SELECT COUNT(*) as count FROM sqlite_master WHERE name='${tableName}'`
   );
   if (count === 0) {
-    console.log(
-      `${tableName} does not exist in legacy DB - nothing to migrate - skipping.`
+    logger.info(
+      `${tableName} does not exist in legacy DB - nothing to migrate - skipping.`,
+      {
+        origin: "migrateFromSqlite.js",
+      }
     );
     return;
   }
@@ -270,8 +284,14 @@ async function migrateTable(tableName, migrateRowFunc) {
       upserts.push(row);
     }
   } catch (e) {
-    console.error(e);
-    console.log({ tableName, upserts });
+    logger.error(
+      `Error migrating ${tableName}: ${e.message} - ${JSON.stringify(
+        e
+      )} - ${JSON.stringify(upserts)}`,
+      {
+        origin: "migrateFromSqlite.js",
+      }
+    );
   } finally {
     await db.close();
   }

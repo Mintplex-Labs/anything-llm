@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { camelCase } = require("../../helpers/camelcase");
 const { sourceIdentifier } = require("../../chats");
+const logger = require("../../logger");
 
 const Weaviate = {
   name: "Weaviate",
@@ -53,7 +54,9 @@ const Weaviate = {
         response?.data?.Aggregate?.[camelCase(namespace)]?.[0]?.meta?.count || 0
       );
     } catch (e) {
-      console.error(`Weaviate:namespaceCountWithClient`, e.message);
+      logger.error(`namespaceCountWithClient:: ${e.message}`, {
+        origin: "Weaviate",
+      });
       return 0;
     }
   },
@@ -70,7 +73,9 @@ const Weaviate = {
         response?.data?.Aggregate?.[camelCase(namespace)]?.[0]?.meta?.count || 0
       );
     } catch (e) {
-      console.error(`Weaviate:namespaceCountWithClient`, e.message);
+      logger.error(`namespaceCountWithClient:: ${e.message}`, {
+        origin: "Weaviate",
+      });
       return 0;
     }
   },
@@ -109,8 +114,9 @@ const Weaviate = {
       } = response;
       if (certainty < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(rest))) {
-        console.log(
-          "Weaviate: A source was filtered from context as it's parent document is pinned."
+        logger.info(
+          "Weaviate: A source was filtered from context as it's parent document is pinned.",
+          { origin: "Weaviate" }
         );
         return;
       }
@@ -126,7 +132,7 @@ const Weaviate = {
       const { classes = [] } = await client.schema.getter().do();
       return classes.map((classObj) => classObj.class);
     } catch (e) {
-      console.error("Weaviate::AllNamespace", e);
+      logger.error(`allNamespaces:: ${e.message}`, { origin: "Weaviate" });
       return [];
     }
   },
@@ -192,7 +198,12 @@ const Weaviate = {
       } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      logger.info(
+        `Adding new vectorized document into namespace: ${namespace}`,
+        {
+          origin: "Weaviate",
+        }
+      );
       if (skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
@@ -236,7 +247,9 @@ const Weaviate = {
             const { success: additionResult, errors = [] } =
               await this.addVectors(client, vectors);
             if (!additionResult) {
-              console.error("Weaviate::addVectors failed to insert", errors);
+              logger.error(`addVectors failed to insert: ${errors.join(",")}`, {
+                origin: "Weaviate",
+              });
               throw new Error("Error embedding into Weaviate");
             }
           }
@@ -269,7 +282,9 @@ const Weaviate = {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Chunks created from document:", textChunks.length);
+      logger.info(`Chunks created from document: ${textChunks.length}`, {
+        origin: "Weaviate",
+      });
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -324,13 +339,17 @@ const Weaviate = {
         const chunks = [];
         for (const chunk of toChunks(vectors, 500)) chunks.push(chunk);
 
-        console.log("Inserting vectorized chunks into Weaviate collection.");
+        logger.info("Inserting vectorized chunks into Weaviate collection.", {
+          origin: "Weaviate",
+        });
         const { success: additionResult, errors = [] } = await this.addVectors(
           client,
           vectors
         );
         if (!additionResult) {
-          console.error("Weaviate::addVectors failed to insert", errors);
+          logger.error(`addVectors failed to insert: ${errors.join(",")}`, {
+            origin: "Weaviate",
+          });
           throw new Error("Error embedding into Weaviate");
         }
         await storeVectorResult(chunks, fullFilePath);
@@ -339,7 +358,9 @@ const Weaviate = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      logger.error(`addDocumentToNamespace:: ${e.message}`, {
+        origin: "Weaviate",
+      });
       return { vectorized: false, error: e.message };
     }
   },

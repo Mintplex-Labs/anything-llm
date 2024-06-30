@@ -1,6 +1,7 @@
 const swaggerAutogen = require("swagger-autogen")({ openapi: "3.0.0" });
 const fs = require("fs");
 const path = require("path");
+const logger = require("../utils/logger");
 
 const doc = {
   info: {
@@ -74,5 +75,5 @@ swaggerAutogen(outputFile, endpointsFiles, doc).then(({ data }) => {
     encoding: "utf-8",
     flag: "w",
   });
-  console.log(`Swagger-autogen:  \x1b[32mPatched servers.url ✔\x1b[0m`);
+  logger.info("Patched servers.url ✔", { origin: "Swagger-autogen" });
 });

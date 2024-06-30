@@ -5,6 +5,7 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { sourceIdentifier } = require("../../chats");
+const logger = require("../../logger");
 
 const AstraDB = {
   name: "AstraDB",
@@ -53,7 +54,9 @@ const AstraDB = {
     if (!(await this.isRealCollection(collection))) return null;
 
     const count = await collection.countDocuments().catch((e) => {
-      console.error("Astra::namespaceExists", e.message);
+      logger.error(`namespaceExists:: ${e.message}`, {
+        origin: "AstraDB",
+      });
       return null;
     });
 
@@ -109,7 +112,9 @@ const AstraDB = {
       const { pageContent, docId, ...metadata } = documentData;
       if (!pageContent || pageContent.length == 0) return false;
 
-      console.log("Adding new vectorized document into namespace", namespace);
+      logger.info("Adding new vectorized document into namespace", {
+        origin: "AstraDB",
+      });
       if (!skipCache) {
         const cacheResult = await cachedVectorInformation(fullFilePath);
         if (cacheResult.exists) {
@@ -167,7 +172,9 @@ const AstraDB = {
       });
       const textChunks = await textSplitter.splitText(pageContent);
 
-      console.log("Chunks created from document:", textChunks.length);
+      logger.info(`Chunks created from document: ${textChunks.length}`, {
+        origin: "AstraDB",
+      });
       const documentVectors = [];
       const vectors = [];
       const vectorValues = await EmbedderEngine.embedChunks(textChunks);
@@ -203,7 +210,9 @@ const AstraDB = {
       if (vectors.length > 0) {
         const chunks = [];
 
-        console.log("Inserting vectorized chunks into Astra DB.");
+        logger.info("Inserting vectorized chunks into Astra DB.", {
+          origin: "AstraDB",
+        });
 
         // AstraDB has maximum upsert size of 20 records per-request so we have to use a lower chunk size here
         // in order to do the queries - this takes a lot more time than other providers but there
@@ -223,7 +232,9 @@ const AstraDB = {
       await DocumentVectors.bulkInsert(documentVectors);
       return { vectorized: true, error: null };
     } catch (e) {
-      console.error("addDocumentToNamespace", e.message);
+      logger.error(`addDocumentToNamespace:: ${e.message}`, {
+        origin: "AstraDB",
+      });
       return { vectorized: false, error: e.message };
     }
   },
@@ -319,8 +330,9 @@ const AstraDB = {
     responses.forEach((response) => {
       if (response.$similarity < similarityThreshold) return;
       if (filterIdentifiers.includes(sourceIdentifier(response.metadata))) {
-        console.log(
-          "AstraDB: A source was filtered from context as it's parent document is pinned."
+        logger.info(
+          "A source was filtered from context as it's parent document is pinned.",
+          { origin: "AstraDB" }
         );
         return;
       }
@@ -352,7 +364,7 @@ const AstraDB = {
       const collections = resp ? JSON.parse(resp)?.status?.collections : [];
       return collections;
     } catch (e) {
-      console.error("Astra::AllNamespace", e);
+      logger.error(`allNamespace:: ${e.message}`, { origin: "AstraDB" });
       return [];
     }
   },

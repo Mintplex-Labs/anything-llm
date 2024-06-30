@@ -1,13 +1,16 @@
+const chalk = require("chalk");
 const { Telemetry } = require("../../models/telemetry");
 const { BackgroundService } = require("../BackgroundWorkers");
 const { EncryptionManager } = require("../EncryptionManager");
 const { CommunicationKey } = require("../comKey");
+const logger = require("../logger");
 const setupTelemetry = require("../telemetry");
 
 function bootSSL(app, port = 3001) {
   try {
-    console.log(
-      `\x1b[33m[SSL BOOT ENABLED]\x1b[0m Loading the certificate and key for HTTPS mode...`
+    logger.info(
+      chalk.yellow(`Loading the certificate and key for HTTPS mode...`),
+      { origin: "bootSSL" }
     );
     const fs = require("fs");
     const https = require("https");
@@ -22,21 +25,20 @@ function bootSSL(app, port = 3001) {
         new CommunicationKey(true);
         new EncryptionManager();
         new BackgroundService().boot();
-        console.log(`Primary server in HTTPS mode listening on port ${port}`);
+        logger.info(`Primary server in HTTPS mode listening on port ${port}`, {
+          origin: "bootSSL",
+        });
       })
       .on("error", catchSigTerms);
 
     require("express-ws")(app, server); // Apply same certificate + server for WSS connections
     return { app, server };
   } catch (e) {
-    console.error(
-      `\x1b[31m[SSL BOOT FAILED]\x1b[0m ${e.message} - falling back to HTTP boot.`,
-      {
-        ENABLE_HTTPS: process.env.ENABLE_HTTPS,
-        HTTPS_KEY_PATH: process.env.HTTPS_KEY_PATH,
-        HTTPS_CERT_PATH: process.env.HTTPS_CERT_PATH,
-        stacktrace: e.stack,
-      }
+    logger.error(
+      chalk.red(
+        `[SSL BOOT FAILED] ${e.message} - falling back to HTTP boot. ${{ ENABLE_HTTPS: process.env.ENABLE_HTTPS, HTTPS_KEY_PATH: process.env.HTTPS_KEY_PATH, HTTPS_CERT_PATH: process.env.HTTPS_CERT_PATH }}`
+      ),
+      { origin: "bootSSL" }
     );
     return bootHTTP(app, port);
   }
@@ -51,7 +53,9 @@ function bootHTTP(app, port = 3001) {
       new CommunicationKey(true);
       new EncryptionManager();
       new BackgroundService().boot();
-      console.log(`Primary server in HTTP mode listening on port ${port}`);
+      logger.info(`Primary server in HTTP mode listening on port ${port}`, {
+        origin: "bootHTTP",
+      });
     })
     .on("error", catchSigTerms);
 

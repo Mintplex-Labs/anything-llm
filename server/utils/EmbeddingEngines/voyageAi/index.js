@@ -1,3 +1,5 @@
+const logger = require("../../logger");
+
 class VoyageAiEmbedder {
   constructor() {
     if (!process.env.VOYAGEAI_API_KEY)
@@ -52,7 +54,7 @@ class VoyageAiEmbedder {
       });
       return embeddings;
     } catch (error) {
-      console.error("Voyage AI Failed to embed:", error);
+      logger.error(error, { origin: "VoyageAiEmbedder" });
       if (
         error.message.includes(
           "Cannot read properties of undefined (reading '0')"

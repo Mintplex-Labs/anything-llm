@@ -3,6 +3,7 @@ const {
   handleDefaultStreamResponseV2,
 } = require("../../helpers/chat/responses");
 const { toValidNumber } = require("../../http");
+const logger = require("../../logger");
 
 class GenericOpenAiLLM {
   constructor(embedder = null, modelPreference = null) {
@@ -32,11 +33,9 @@ class GenericOpenAiLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
-    this.log(`Inference API: ${this.basePath} Model: ${this.model}`);
-  }
-
-  log(text, ...args) {
-    console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+    logger.info(`Inference API: ${this.basePath} Model: ${this.model}`, {
+      origin: "GenericOpenAiLLM",
+    });
   }
 
   #appendContext(contextTexts = []) {
