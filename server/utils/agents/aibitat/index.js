@@ -775,6 +775,8 @@ ${this.getHistory({ to: route.to })
         return new Providers.PerplexityProvider({ model: config.model });
       case "textgenwebui":
         return new Providers.TextWebGenUiProvider({});
+      case "gemini":
+        return new Providers.GeminiProvider({ model: config.model });
 
       default:
         throw new Error(
