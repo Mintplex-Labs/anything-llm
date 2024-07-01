@@ -7,9 +7,10 @@ export default function ResetChat({ setChatHistory, settings, sessionId }) {
   };
 
   return (
-    <div className="w-full flex justify-center">
+    <div className="allm-w-full allm-flex allm-justify-center">
       <button
-        className="text-sm text-[#7A7D7E] hover:text-[#7A7D7E]/80 hover:underline"
+        style={{ color: "#7A7D7E" }}
+        className="hover:allm-cursor-pointer allm-border-none allm-text-sm allm-bg-transparent hover:allm-opacity-80 hover:allm-underline"
         onClick={() => handleChatReset()}
       >
         Reset Chat
