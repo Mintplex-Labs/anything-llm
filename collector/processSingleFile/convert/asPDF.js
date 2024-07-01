@@ -16,8 +16,6 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
 
   const numPages = pdf.numPages;
   const pageContent = [];
-  const metadata = await pdf.getMetadata();
-  const outline = await pdf.getOutline();
 
   for (let i = 1; i <= numPages; i++) {
     console.log(`-- Parsing content from pg ${i} --`);
@@ -25,15 +23,9 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
     const content = await page.getTextContent();
     const text = content.items.map((item) => item.str).join(" ");
 
-    // Find relevant bookmarks or chapters for this page
-    const relevantOutline =
-      outline?.filter((item) => item.dest?.[0] === i) || [];
-    const outlineInfo = relevantOutline.map((item) => item.title).join(", ");
-
-    const pageInfo = `[Page ${i}${
-      outlineInfo ? ` - ${outlineInfo}` : ""
-    }]:${text}`;
-    pageContent.push(pageInfo);
+    if (text.length) {
+      pageContent.push(text);
+    }
   }
 
   if (!pageContent.length) {
@@ -46,7 +38,9 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
     };
   }
 
-  const content = pageContent.join("\n");
+  const content = pageContent.join(" ");
+  const metadata = await pdf.getMetadata();
+
   const data = {
     id: v4(),
     url: "file://" + fullFilePath,
