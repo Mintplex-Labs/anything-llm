@@ -112,12 +112,6 @@ class GeminiLLM {
     return validModels.includes(modelName);
   }
 
-  // Moderation cannot be done with Gemini.
-  // Not implemented so must be stubbed
-  async isSafe(_input = "") {
-    return { safe: true, reasons: [] };
-  }
-
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],

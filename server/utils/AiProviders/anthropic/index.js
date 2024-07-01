@@ -66,13 +66,6 @@ class AnthropicLLM {
     return validModels.includes(modelName);
   }
 
-  // Moderation can be done with Anthropic, but its not really "exact" so we skip it
-  // https://docs.anthropic.com/claude/docs/content-moderation
-  async isSafe(_input = "") {
-    // Not implemented so must be stubbed
-    return { safe: true, reasons: [] };
-  }
-
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
