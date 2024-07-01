@@ -5,6 +5,7 @@ import _regeneratorRuntime from "regenerator-runtime";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
+import { PROMPT_INPUT_EVENT } from "../../PromptInput";
 
 let timeout;
 const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
@@ -46,7 +47,7 @@ export default function SpeechToText({ sendCommand }) {
   }
 
   const handleKeyPress = useCallback((event) => {
-    if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+    if ((event.ctrlKey || event.metaKey) && event.keyCode === 32) {
       if (listening) {
         endTTSSession();
       } else {
@@ -55,12 +56,26 @@ export default function SpeechToText({ sendCommand }) {
     }
   }, []);
 
+  function handlePromptUpdate(e) {
+    if (!e?.detail && timeout) {
+      endTTSSession();
+      clearTimeout(timeout);
+    }
+  }
+
   useEffect(() => {
     document.addEventListener("keydown", handleKeyPress);
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
     };
   }, [handleKeyPress]);
+
+  useEffect(() => {
+    if (!!window)
+      window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
+    return () =>
+      window?.removeEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
+  }, []);
 
   useEffect(() => {
     if (transcript?.length > 0) {
