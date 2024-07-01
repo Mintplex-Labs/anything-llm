@@ -54,7 +54,7 @@ export default function WorkspaceFileRow({
           weight="fill"
         />
         <p className="whitespace-nowrap overflow-hidden text-ellipsis">
-          {middleTruncate(item.title, 60)}
+          {middleTruncate(item.title, 50)}
         </p>
       </div>
       <div className="col-span-2 flex justify-end items-center">
