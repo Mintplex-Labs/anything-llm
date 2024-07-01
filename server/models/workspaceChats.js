@@ -240,6 +240,17 @@ const WorkspaceChats = {
       return false;
     }
   },
+  bulkCreate: async function (chatsData) {
+    try {
+      const createdChats = await prisma.workspace_chats.createMany({
+        data: chatsData,
+      });
+      return { chats: createdChats, message: null };
+    } catch (error) {
+      console.error(error.message);
+      return { chats: null, message: error.message };
+    }
+  },
 };
 
 module.exports = { WorkspaceChats };

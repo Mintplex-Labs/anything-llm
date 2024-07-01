@@ -799,41 +799,37 @@ function workspaceEndpoints(app) {
           null,
           { id: "asc" }
         );
-        let lastMessageText = "";
 
-        for (const chat of chatsToFork) {
+        let lastMessageText = "";
+        const chatsData = chatsToFork.map((chat) => {
           let response = chat.response;
           if (typeof response === "string") {
             response = safeJsonParse(response);
           }
 
-          await WorkspaceChats.new({
-            workspaceId: workspace.id,
-            prompt: chat.prompt,
-            response: response,
-            include: chat.include,
-            user: user,
-            threadId: newThread.id,
-          });
-
           if (response && response.text) {
             lastMessageText = response.text;
           }
-        }
 
+          return {
+            workspaceId: workspace.id,
+            prompt: chat.prompt,
+            response: JSON.stringify(response),
+            include: chat.include,
+            user_id: user?.id,
+            thread_id: newThread.id,
+          };
+        });
+        await WorkspaceChats.bulkCreate(chatsData);
         await WorkspaceThread.update(newThread, {
           name:
             lastMessageText !== ""
               ? truncate(lastMessageText, 22)
               : "Forked Thread",
         });
-        await Telemetry.sendTelemetry(
-          "thread_forked",
-          {
-            multiUserMode: multiUserMode(response),
-          },
-          user?.id
-        );
+        await Telemetry.sendTelemetry("thread_forked", {
+          multiUserMode: multiUserMode(response),
+        });
 
         await EventLogs.logEvent(
           "thread_forked",
