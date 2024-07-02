@@ -18,6 +18,7 @@ const SUPPORT_CUSTOM_MODELS = [
   "koboldcpp",
   "litellm",
   "elevenlabs-tts",
+  "generic-openai",
 ];
 
 async function getCustomModels(provider = "", apiKey = null, basePath = null) {
@@ -49,6 +50,8 @@ async function getCustomModels(provider = "", apiKey = null, basePath = null) {
       return await liteLLMModels(basePath, apiKey);
     case "elevenlabs-tts":
       return await getElevenLabsModels(apiKey);
+    case "generic-openai":
+      return await genericOpenAiModels(basePath);
     default:
       return { models: [], error: "Invalid provider for custom models" };
   }
@@ -370,6 +373,37 @@ async function getElevenLabsModels(apiKey = null) {
   }
 
   if (models.length > 0 && !!apiKey) process.env.TTS_ELEVEN_LABS_KEY = apiKey;
+  return { models, error: null };
+}
+
+async function genericOpenAiModels(basePath = null) {
+  let url;
+  try {
+    let urlPath = basePath ?? process.env.GENERIC_OPEN_AI_BASE_PATH;
+    new URL(urlPath);
+    if (urlPath.split("").slice(-1)?.[0] === "/")
+      throw new Error("BasePath Cannot end in /!");
+    url = urlPath;
+  } catch {
+    return { models: [], error: "Not a valid URL." };
+  }
+  const models = await fetch(`${url}/models`)
+    .then((res) => {
+      if (!res.ok)
+        throw new Error(`Could not reach generic OpenAI server! ${res.status}`);
+      return res.json();
+    })
+    .then((data) => data?.data || [])
+    .then((models) =>
+      models.map((model) => {
+        return { id: model.id };
+      })
+    )
+    .catch((e) => {
+      console.error(e);
+      return [];
+    });
+
   return { models, error: null };
 }
 
