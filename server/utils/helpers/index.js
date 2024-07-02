@@ -1,3 +1,46 @@
+/**
+ * @typedef {Object} BaseLLMProvider - A basic llm provider object
+ * @property {Function} streamingEnabled - Checks if streaming is enabled for chat completions.
+ * @property {Function} promptWindowLimit - Returns the token limit for the current model.
+ * @property {Function} isValidChatCompletionModel - Validates if the provided model is suitable for chat completion.
+ * @property {Function} constructPrompt - Constructs a formatted prompt for the chat completion request.
+ * @property {Function} getChatCompletion - Gets a chat completion response from OpenAI.
+ * @property {Function} streamGetChatCompletion - Streams a chat completion response from OpenAI.
+ * @property {Function} handleStream - Handles the streaming response.
+ * @property {Function} embedTextInput - Embeds the provided text input using the specified embedder.
+ * @property {Function} embedChunks - Embeds multiple chunks of text using the specified embedder.
+ * @property {Function} compressMessages - Compresses chat messages to fit within the token limit.
+ */
+
+/**
+ * @typedef {Object} BaseVectorDatabaseProvider
+ * @property {string} name - The name of the Vector Database instance.
+ * @property {Function} connect - Connects to the Vector Database client.
+ * @property {Function} totalVectors - Returns the total number of vectors in the database.
+ * @property {Function} namespaceCount - Returns the count of vectors in a given namespace.
+ * @property {Function} similarityResponse - Performs a similarity search on a given namespace.
+ * @property {Function} namespace - Retrieves the specified namespace collection.
+ * @property {Function} hasNamespace - Checks if a namespace exists.
+ * @property {Function} namespaceExists - Verifies if a namespace exists in the client.
+ * @property {Function} deleteVectorsInNamespace - Deletes all vectors in a specified namespace.
+ * @property {Function} deleteDocumentFromNamespace - Deletes a document from a specified namespace.
+ * @property {Function} addDocumentToNamespace - Adds a document to a specified namespace.
+ * @property {Function} performSimilaritySearch - Performs a similarity search in the namespace.
+ */
+
+/**
+ * @typedef {Object} BaseEmbedderProvider
+ * @property {string} model - The model used for embedding.
+ * @property {number} maxConcurrentChunks - The maximum number of chunks processed concurrently.
+ * @property {number} embeddingMaxChunkLength - The maximum length of each chunk for embedding.
+ * @property {Function} embedTextInput - Embeds a single text input.
+ * @property {Function} embedChunks - Embeds multiple chunks of text.
+ */
+
+/**
+ * Gets the systems current vector database provider.
+ * @returns { BaseVectorDatabaseProvider}
+ */
 function getVectorDbClass() {
   const vectorSelection = process.env.VECTOR_DB || "lancedb";
   switch (vectorSelection) {
@@ -30,6 +73,11 @@ function getVectorDbClass() {
   }
 }
 
+/**
+ * Returns the LLMProvider with its embedder attached via system or via defined provider.
+ * @param {{provider: string | null, model: string | null} | null} params - Initialize params for LLMs provider
+ * @returns {BaseLLMProvider}
+ */
 function getLLMProvider({ provider = null, model = null } = {}) {
   const LLMSelection = provider ?? process.env.LLM_PROVIDER ?? "openai";
   const embedder = getEmbeddingEngineSelection();
@@ -99,6 +147,10 @@ function getLLMProvider({ provider = null, model = null } = {}) {
   }
 }
 
+/**
+ * Returns the EmbedderProvider by itself to whatever is currently in the system settings.
+ * @returns {BaseEmbedderProvider}
+ */
 function getEmbeddingEngineSelection() {
   const { NativeEmbedder } = require("../EmbeddingEngines/native");
   const engineSelection = process.env.EMBEDDING_ENGINE;

@@ -18,7 +18,7 @@ export default function MaxContextSnippets({ workspace, setHasChanges }) {
         name="topN"
         type="number"
         min={1}
-        max={12}
+        max={200}
         step={1}
         onWheel={(e) => e.target.blur()}
         defaultValue={workspace?.topN ?? 4}
