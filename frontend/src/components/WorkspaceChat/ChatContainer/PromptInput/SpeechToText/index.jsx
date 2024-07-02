@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { Microphone } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import _regeneratorRuntime from "regenerator-runtime";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
+import { PROMPT_INPUT_EVENT } from "../../PromptInput";
 
 let timeout;
 const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
@@ -45,6 +46,37 @@ export default function SpeechToText({ sendCommand }) {
     clearTimeout(timeout);
   }
 
+  const handleKeyPress = useCallback((event) => {
+    if ((event.ctrlKey || event.metaKey) && event.keyCode === 32) {
+      if (listening) {
+        endTTSSession();
+      } else {
+        startSTTSession();
+      }
+    }
+  }, []);
+  
+  function handlePromptUpdate(e) {
+    if (!e?.detail && timeout) {
+      endTTSSession();
+      clearTimeout(timeout);
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyPress);
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [handleKeyPress]);
+
+  useEffect(() => {
+    if (!!window)
+      window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
+    return () =>
+      window?.removeEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
+  }, []);
+
   useEffect(() => {
     if (transcript?.length > 0) {
       sendCommand(transcript, false);
@@ -69,7 +101,9 @@ export default function SpeechToText({ sendCommand }) {
     >
       <Microphone
         weight="fill"
-        className="w-6 h-6 pointer-events-none text-white"
+        className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full ${
+          listening ? "animate-pulse" : ""
+        }`}
       />
       <Tooltip
         id="tooltip-text-size-btn"
