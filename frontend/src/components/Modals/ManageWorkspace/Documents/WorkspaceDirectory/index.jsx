@@ -228,8 +228,10 @@ const DocumentWatchAlert = memo(() => {
               content in every workspace where this file is managed.
             </p>
             <p>
-              This feature currently supports online-based content and will not
-              be available for manually uploaded documents.
+              This feature currently supports online-based content (links,
+              GitHub, Confluence) and <b>locally uploaded files</b>. In general,
+              online-based content is synced every hour and local files are
+              synced every 10 minutes.
             </p>
             <p>
               You can manage what documents are watched from the{" "}

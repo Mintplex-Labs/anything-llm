@@ -5,10 +5,12 @@ const { fileData } = require("../utils/files");
 const { log, conclude, updateSourceDocument } = require('./helpers/index.js');
 const { getVectorDbClass } = require('../utils/helpers/index.js');
 const { DocumentSyncRun } = require('../models/documentSyncRun.js');
+const fs = require('fs');
+const path = require('path');
 
 (async () => {
   try {
-    const queuesToProcess = await DocumentSyncQueue.staleDocumentQueues('remote');
+    const queuesToProcess = await DocumentSyncQueue.staleDocumentQueues('local');
     if (queuesToProcess.length === 0) {
       log('No outstanding documents to sync. Exiting.');
       return;
@@ -34,38 +36,31 @@ const { DocumentSyncRun } = require('../models/documentSyncRun.js');
         continue;
       }
 
-      if (type === 'link' || type === 'youtube') {
-        const response = await collector.forwardExtensionRequest({
-          endpoint: "/ext/resync-source-document",
-          method: "POST",
-          body: JSON.stringify({
-            type,
-            options: { link: source }
-          })
-        });
-        newContent = response?.content;
+      if (!fs.existsSync(source)) {
+        // Document reference is either broken, invalid, or not supported so drop it from future queues.
+        log(`Document ${document.filename} has moved and its known source is unable to be found - removing from queue.`)
+        await DocumentSyncQueue.unwatch(document);
+        continue;
       }
 
-      if (type === 'confluence' || type === 'github') {
-        const response = await collector.forwardExtensionRequest({
-          endpoint: "/ext/resync-source-document",
-          method: "POST",
-          body: JSON.stringify({
-            type,
-            options: { chunkSource: metadata.chunkSource }
-          })
-        });
-        newContent = response?.content;
-      }
+      const response = await collector.forwardExtensionRequest({
+        endpoint: "/ext/resync-source-document",
+        method: "POST",
+        body: JSON.stringify({
+          type,
+          options: { source }
+        })
+      });
+      newContent = response?.content;
 
       if (!newContent) {
         // Check if the last "x" runs were all failures (not exits!). If so - remove the job entirely since it is broken.
         const failedRunCount = (await DocumentSyncRun.where({ queueId: queue.id }, DocumentSyncQueue.maxRepeatFailures, { createdAt: 'desc' })).filter((run) => run.status === DocumentSyncRun.statuses.failed).length;
-        if (failedRunCount >= DocumentSyncQueue.maxRepeatFailures) {
-          log(`Document ${document.filename} has failed to refresh ${failedRunCount} times continuously and will now be removed from the watched document set.`)
-          await DocumentSyncQueue.unwatch(document);
-          continue;
-        }
+        // if (failedRunCount >= DocumentSyncQueue.maxRepeatFailures) {
+        //   log(`Document ${document.filename} has failed to refresh ${failedRunCount} times continuously and will now be removed from the watched document set.`)
+        //   await DocumentSyncQueue.unwatch(document);
+        //   continue;
+        // }
 
         log(`Failed to get a new content response from collector for source ${source}. Skipping, but will retry next worker interval. Attempt ${failedRunCount === 0 ? 1 : failedRunCount}/${DocumentSyncQueue.maxRepeatFailures}`);
         await DocumentSyncQueue.saveRun(queue.id, DocumentSyncRun.statuses.failed, { filename: document.filename, workspacesModified: [], reason: 'No content found.' })

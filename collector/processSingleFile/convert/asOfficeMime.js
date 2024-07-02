@@ -7,8 +7,13 @@ const {
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const { generateChunkSource } = require("./utils");
 
-async function asOfficeMime({ fullFilePath = "", filename = "" }) {
+async function asOfficeMime({
+  fullFilePath = "",
+  filename = "",
+  options = {},
+}) {
   console.log(`-- Working ${filename} --`);
   let content = "";
   try {
@@ -34,7 +39,7 @@ async function asOfficeMime({ fullFilePath = "", filename = "" }) {
     docAuthor: "no author found",
     description: "No description found.",
     docSource: "Office file uploaded by the user.",
-    chunkSource: "",
+    chunkSource: generateChunkSource({ filename, ...options }, ""),
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,
@@ -50,4 +55,26 @@ async function asOfficeMime({ fullFilePath = "", filename = "" }) {
   return { success: true, reason: null, documents: [document] };
 }
 
-module.exports = asOfficeMime;
+async function resyncOfficeMime({ fullFilePath = "", filename = "" }) {
+  console.log(`-- Syncing ${filename} --`);
+  let content = "";
+  try {
+    content = await officeParser.parseOfficeAsync(fullFilePath);
+  } catch (error) {
+    console.error(`Could not parse office or office-like file`, error);
+  }
+
+  if (!content.length) {
+    console.error(`Resulting text content was empty for ${filename}.`);
+    return {
+      success: false,
+      reason: `No text content found in ${filename}.`,
+      content: null,
+    };
+  }
+
+  console.log(`[SYNC SUCCESS]: ${filename} content was able to be synced.\n`);
+  return { success: true, reason: null, content };
+}
+
+module.exports = { asOfficeMime, resyncOfficeMime };

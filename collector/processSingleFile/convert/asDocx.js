@@ -7,8 +7,9 @@ const {
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const { generateChunkSource } = require("./utils");
 
-async function asDocX({ fullFilePath = "", filename = "" }) {
+async function asDocx({ fullFilePath = "", filename = "", options = {} }) {
   const loader = new DocxLoader(fullFilePath);
 
   console.log(`-- Working ${filename} --`);
@@ -39,7 +40,7 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
     docAuthor: "no author found",
     description: "No description found.",
     docSource: "pdf file uploaded by the user.",
-    chunkSource: "",
+    chunkSource: generateChunkSource({ filename, ...options }, ""),
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,
@@ -55,4 +56,31 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
   return { success: true, reason: null, documents: [document] };
 }
 
-module.exports = asDocX;
+async function resyncDocx({ fullFilePath = "", filename = "" }) {
+  const loader = new DocxLoader(fullFilePath);
+
+  console.log(`-- Syncing ${filename} --`);
+  let pageContent = [];
+  const docs = await loader.load();
+  for (const doc of docs) {
+    console.log(doc.metadata);
+    console.log(`-- Parsing content from docx page --`);
+    if (!doc.pageContent.length) continue;
+    pageContent.push(doc.pageContent);
+  }
+
+  if (!pageContent.length) {
+    console.error(`Resulting text content was empty for ${filename}.`);
+    return {
+      success: false,
+      reason: `No text content found in ${filename}.`,
+      content: null,
+    };
+  }
+
+  const content = pageContent.join("");
+  console.log(`[SYNC SUCCESS]: ${filename} content was able to be synced.\n`);
+  return { success: true, reason: null, content };
+}
+
+module.exports = { asDocx, resyncDocx };

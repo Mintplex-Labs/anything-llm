@@ -7,8 +7,9 @@ const {
   writeToServerDocuments,
 } = require("../../utils/files");
 const { default: slugify } = require("slugify");
+const { generateChunkSource } = require("./utils");
 
-async function asEPub({ fullFilePath = "", filename = "" }) {
+async function asEPub({ fullFilePath = "", filename = "", options = {} }) {
   let content = "";
   try {
     const loader = new EPubLoader(fullFilePath, { splitChapters: false });
@@ -36,7 +37,7 @@ async function asEPub({ fullFilePath = "", filename = "" }) {
     docAuthor: "Unknown", // TODO: Find a better author
     description: "Unknown", // TODO: Find a better description
     docSource: "a epub file uploaded by the user.",
-    chunkSource: "",
+    chunkSource: generateChunkSource({ filename, ...options }, ""),
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,
@@ -52,4 +53,28 @@ async function asEPub({ fullFilePath = "", filename = "" }) {
   return { success: true, reason: null, documents: [document] };
 }
 
-module.exports = asEPub;
+async function resyncEPub({ fullFilePath = "", filename = "" }) {
+  let content = "";
+  console.log(`-- Syncing ${filename} --`);
+  try {
+    const loader = new EPubLoader(fullFilePath, { splitChapters: false });
+    const docs = await loader.load();
+    docs.forEach((doc) => (content += doc.pageContent));
+  } catch (err) {
+    console.error("Could not read epub file!", err);
+  }
+
+  if (!content?.length) {
+    console.error(`Resulting text content was empty for ${filename}.`);
+    return {
+      success: false,
+      reason: `No text content found in ${filename}.`,
+      content: null,
+    };
+  }
+
+  console.log(`[SYNC SUCCESS]: ${filename} content was able to be synced.\n`);
+  return { success: true, reason: null, content };
+}
+
+module.exports = { asEPub, resyncEPub };

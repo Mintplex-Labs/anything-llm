@@ -284,6 +284,7 @@ model document_sync_queues {
   nextSyncAt     DateTime
   createdAt      DateTime                   @default(now())
   lastSyncedAt   DateTime                   @default(now())
+  type           String                     @default("remote")
   workspaceDocId Int                        @unique
   workspaceDoc   workspace_documents?       @relation(fields: [workspaceDocId], references: [id], onDelete: Cascade)
   runs           document_sync_executions[]
