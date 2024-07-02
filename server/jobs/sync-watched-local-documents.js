@@ -56,11 +56,11 @@ const path = require('path');
       if (!newContent) {
         // Check if the last "x" runs were all failures (not exits!). If so - remove the job entirely since it is broken.
         const failedRunCount = (await DocumentSyncRun.where({ queueId: queue.id }, DocumentSyncQueue.maxRepeatFailures, { createdAt: 'desc' })).filter((run) => run.status === DocumentSyncRun.statuses.failed).length;
-        // if (failedRunCount >= DocumentSyncQueue.maxRepeatFailures) {
-        //   log(`Document ${document.filename} has failed to refresh ${failedRunCount} times continuously and will now be removed from the watched document set.`)
-        //   await DocumentSyncQueue.unwatch(document);
-        //   continue;
-        // }
+        if (failedRunCount >= DocumentSyncQueue.maxRepeatFailures) {
+          log(`Document ${document.filename} has failed to refresh ${failedRunCount} times continuously and will now be removed from the watched document set.`)
+          await DocumentSyncQueue.unwatch(document);
+          continue;
+        }
 
         log(`Failed to get a new content response from collector for source ${source}. Skipping, but will retry next worker interval. Attempt ${failedRunCount === 0 ? 1 : failedRunCount}/${DocumentSyncQueue.maxRepeatFailures}`);
         await DocumentSyncQueue.saveRun(queue.id, DocumentSyncRun.statuses.failed, { filename: document.filename, workspacesModified: [], reason: 'No content found.' })

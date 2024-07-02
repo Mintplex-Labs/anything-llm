@@ -76,8 +76,8 @@ async function resyncConfluence({ chunkSource }, response) {
 }
 
 /**
- * Fetches the content of a specific confluence page via its chunkSource. 
- * Returns the content as a text string of the page in question and only that page.
+ * Fetches the content of a specific Github file via its chunkSource. 
+ * Returns the content as a text string of the file in question and only that file.
  * @param {object} data - metadata from document (eg: chunkSource) 
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
@@ -107,9 +107,9 @@ async function resyncGithub({ chunkSource }, response) {
 }
 
 /**
- * Fetches the content of a specific confluence page via its chunkSource. 
- * Returns the content as a text string of the page in question and only that page.
- * @param {object} data - metadata from document (eg: chunkSource) 
+ * Fetches the content of a specific local file via its full path reference. 
+ * Returns the content as a text string of the document in question.
+ * @param {object} data - source from document (eg: source) 
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
 async function resyncLocalfile({ source }, response) {
