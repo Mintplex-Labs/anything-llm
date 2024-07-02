@@ -384,6 +384,22 @@ const Workspace = {
         return false;
       });
   },
+  forkThread: async function (slug = "", threadSlug = null, chatId = null) {
+    return await fetch(`${API_BASE}/workspace/${slug}/thread/fork`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ threadSlug, chatId }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fork thread.");
+        return res.json();
+      })
+      .then((data) => data.newThreadSlug)
+      .catch((e) => {
+        console.error("Error forking thread:", e);
+        return null;
+      });
+  },
   threads: WorkspaceThread,
 };
 
