@@ -28,8 +28,8 @@ export default function LMStudioEmbeddingOptions({ settings }) {
   };
 
   return (
-    <div className="w-full flex flex-col gap-y-4">
-      <div className="w-full flex items-start gap-4">
+    <div className="w-full flex flex-col gap-y-7">
+      <div className="w-full flex items-start gap-[36px] mt-1.5">
         <LMStudioModelSelection settings={settings} basePath={basePath.value} />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-2">
@@ -38,7 +38,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
           <input
             type="number"
             name="EmbeddingModelMaxChunkLength"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="8192"
             min={1}
             value={maxChunkLength}
@@ -94,7 +94,7 @@ export default function LMStudioEmbeddingOptions({ settings }) {
             <input
               type="url"
               name="EmbeddingBasePath"
-              className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+              className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="http://localhost:1234/v1"
               value={basePathValue.value}
               required={true}

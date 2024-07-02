@@ -10,16 +10,16 @@ export default function LiteLLMOptions({ settings }) {
   const [apiKey, setApiKey] = useState(settings?.LiteLLMAPIKey);
 
   return (
-    <div className="w-full flex flex-col gap-y-4">
-      <div className="w-full flex items-center gap-4">
+    <div className="w-full flex flex-col gap-y-7">
+      <div className="w-full flex items-center gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Base URL
           </label>
           <input
             type="url"
             name="LiteLLMBasePath"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://127.0.0.1:4000"
             defaultValue={settings?.LiteLLMBasePath}
             required={true}
@@ -35,13 +35,13 @@ export default function LiteLLMOptions({ settings }) {
           apiKey={apiKey}
         />
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Max embedding chunk length
           </label>
           <input
             type="number"
             name="EmbeddingModelMaxChunkLength"
-            className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="8192"
             min={1}
             onScroll={(e) => e.target.blur()}
@@ -51,7 +51,7 @@ export default function LiteLLMOptions({ settings }) {
           />
         </div>
       </div>
-      <div className="w-full flex items-center gap-4">
+      <div className="w-full flex items-center gap-[36px]">
         <div className="flex flex-col w-60">
           <div className="flex flex-col gap-y-1 mb-4">
             <label className="text-white text-sm font-semibold flex items-center gap-x-2">
@@ -61,7 +61,7 @@ export default function LiteLLMOptions({ settings }) {
           <input
             type="password"
             name="LiteLLMAPIKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="sk-mysecretkey"
             defaultValue={settings?.LiteLLMAPIKey ? "*".repeat(20) : ""}
             autoComplete="off"
@@ -101,7 +101,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Embedding Model Selection
         </label>
         <select
@@ -122,7 +122,7 @@ function LiteLLMModelSelection({ settings, basePath = null, apiKey = null }) {
   return (
     <div className="flex flex-col w-60">
       <div className="flex items-center">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Embedding Model Selection
         </label>
         <EmbeddingModelTooltip />

@@ -8,15 +8,15 @@ export default function KoboldCPPOptions({ settings }) {
   const [basePath, setBasePath] = useState(settings?.KoboldCPPBasePath);
 
   return (
-    <div className="flex gap-4 flex-wrap">
+    <div className="flex gap-[36px] mt-1.5 flex-wrap">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Base URL
         </label>
         <input
           type="url"
           name="KoboldCPPBasePath"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="http://127.0.0.1:5000/v1"
           defaultValue={settings?.KoboldCPPBasePath}
           required={true}
@@ -28,13 +28,13 @@ export default function KoboldCPPOptions({ settings }) {
       </div>
       <KoboldCPPModelSelection settings={settings} basePath={basePath} />
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Token context window
         </label>
         <input
           type="number"
           name="KoboldCPPTokenLimit"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="4096"
           min={1}
           onScroll={(e) => e.target.blur()}
@@ -69,7 +69,7 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
   if (loading || customModels.length === 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
@@ -89,7 +89,7 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-4">
+      <label className="text-white text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select
