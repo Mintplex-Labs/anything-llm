@@ -786,10 +786,10 @@ function workspaceEndpoints(app) {
           {
             workspaceId: workspace.id,
             user_id: user?.id,
-            thread_id: threadSlug
+            thread_id: String(threadSlug)
               ? (
                   await WorkspaceThread.get({
-                    slug: threadSlug,
+                    slug: String(threadSlug),
                     workspace_id: workspace.id,
                   })
                 )?.id
