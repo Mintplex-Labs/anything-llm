@@ -7,6 +7,7 @@ const WorkspaceChats = {
     response = {},
     user = null,
     threadId = null,
+    include = true,
   }) {
     try {
       const chat = await prisma.workspace_chats.create({
@@ -16,6 +17,7 @@ const WorkspaceChats = {
           response: JSON.stringify(response),
           user_id: user?.id || null,
           thread_id: threadId,
+          include,
         },
       });
       return { chat, message: null };

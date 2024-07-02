@@ -4,10 +4,11 @@ import { safeJsonParse } from "@/utils/request";
 import NewIconForm from "./NewIconForm";
 import Admin from "@/models/admin";
 import System from "@/models/system";
+import { useTranslation } from "react-i18next";
 
 export default function FooterCustomization() {
   const [footerIcons, setFooterIcons] = useState(Array(3).fill(null));
-
+  const { t } = useTranslation();
   useEffect(() => {
     async function fetchFooterIcons() {
       const settings = (await Admin.systemPreferences())?.settings;
@@ -52,15 +53,15 @@ export default function FooterCustomization() {
     <div className="mb-8">
       <div className="flex flex-col gap-y-1">
         <h2 className="text-base leading-6 font-bold text-white">
-          Custom Footer Icons
+          {t("appearance.icons.title")}
         </h2>
         <p className="text-xs leading-[18px] font-base text-white/60">
-          Customize the footer icons displayed on the bottom of the sidebar.
+          {t("appearance.icons.description")}
         </p>
       </div>
       <div className="mt-3 flex gap-x-3 font-bold text-white text-sm">
-        <div>Icon</div>
-        <div>Link</div>
+        <div>{t("appearance.icons.icon")}</div>
+        <div>{t("appearance.icons.link")}</div>
       </div>
       <div className="mt-2 flex flex-col gap-y-[10px]">
         {footerIcons.map((icon, index) => (

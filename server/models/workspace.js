@@ -232,6 +232,7 @@ const Workspace = {
       const userInfo = usersById.map((user) => {
         const workspaceUser = users.find((u) => u.user_id === user.id);
         return {
+          userId: user.id,
           username: user.username,
           role: user.role,
           lastUpdatedAt: workspaceUser.lastUpdatedAt,

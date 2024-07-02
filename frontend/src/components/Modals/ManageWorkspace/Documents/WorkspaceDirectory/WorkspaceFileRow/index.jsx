@@ -4,11 +4,11 @@ import {
   getFileExtension,
   middleTruncate,
 } from "@/utils/directories";
-import { ArrowUUpLeft, File, PushPin } from "@phosphor-icons/react";
+import { ArrowUUpLeft, Eye, File, PushPin } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
-import debounce from "lodash.debounce";
-import { Tooltip } from "react-tooltip";
 import showToast from "@/utils/toast";
+import System from "@/models/system";
+import { Tooltip } from "react-tooltip";
 
 export default function WorkspaceFileRow({
   item,
@@ -20,8 +20,6 @@ export default function WorkspaceFileRow({
   hasChanges,
   movedItems,
 }) {
-  const [showTooltip, setShowTooltip] = useState(false);
-
   const onRemoveClick = async () => {
     setLoading(true);
 
@@ -40,62 +38,62 @@ export default function WorkspaceFileRow({
     setLoading(false);
   };
 
-  const handleShowTooltip = () => {
-    setShowTooltip(true);
-  };
-
-  const handleHideTooltip = () => {
-    setShowTooltip(false);
-  };
-
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
-  const handleMouseEnter = debounce(handleShowTooltip, 500);
-  const handleMouseLeave = debounce(handleHideTooltip, 500);
   return (
     <div
-      className={`items-center text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer
-          ${isMovedItem ? "bg-green-800/40" : "file-row"}`}
+      className={`items-center text-white/80 text-xs grid grid-cols-12 py-2 pl-3.5 pr-8 hover:bg-sky-500/20 cursor-pointer ${
+        isMovedItem ? "bg-green-800/40" : "file-row"
+      }`}
     >
-      <div className="col-span-5 flex gap-x-[4px] items-center">
+      <div
+        data-tooltip-id={`directory-item-${item.url}`}
+        className="col-span-10 w-fit flex gap-x-[4px] items-center relative"
+      >
         <File
-          className="text-base font-bold w-4 h-4 ml-3 mr-[3px]"
+          className="shrink-0 text-base font-bold w-4 h-4 mr-[3px] ml-3"
           weight="fill"
         />
-        <div
-          className="relative"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <p className="whitespace-nowrap overflow-hidden max-w-[165px] text-ellipsis">
-            {middleTruncate(item.title, 17)}
-          </p>
-          {showTooltip && (
-            <div className="absolute left-0 bg-white text-black p-1.5 rounded shadow-lg whitespace-nowrap">
-              {item.title}
-            </div>
-          )}
-        </div>
+        <p className="whitespace-nowrap overflow-hidden text-ellipsis">
+          {middleTruncate(item.title, 50)}
+        </p>
       </div>
-      <p className="col-span-3 pl-3.5 whitespace-nowrap">
-        {formatDate(item?.published)}
-      </p>
-      <p className="col-span-2 pl-2 uppercase overflow-x-hidden">
-        {getFileExtension(item.url)}
-      </p>
-      <div className="col-span-2 flex justify-center items-center">
+      <div className="col-span-2 flex justify-end items-center">
         {hasChanges ? (
           <div className="w-4 h-4 ml-2 flex-shrink-0" />
         ) : (
           <div className="flex gap-x-2 items-center">
+            <WatchForChanges
+              workspace={workspace}
+              docPath={`${folderName}/${item.name}`}
+              item={item}
+            />
             <PinItemToWorkspace
               workspace={workspace}
-              docPath={`${folderName}/${item.name}`} // how to find documents during pin/unpin
+              docPath={`${folderName}/${item.name}`}
               item={item}
             />
             <RemoveItemFromWorkspace item={item} onClick={onRemoveClick} />
           </div>
         )}
       </div>
+      <Tooltip
+        id={`directory-item-${item.url}`}
+        place="bottom"
+        delayShow={800}
+        className="tooltip invert z-99"
+      >
+        <div className="text-xs ">
+          <p className="text-white">{item.title}</p>
+          <div className="flex mt-1 gap-x-2">
+            <p className="">
+              Date: <b>{formatDate(item?.published)}</b>
+            </p>
+            <p className="">
+              Type: <b>{getFileExtension(item.url).toUpperCase()}</b>
+            </p>
+          </div>
+        </div>
+      </Tooltip>
     </div>
   );
 }
@@ -137,7 +135,7 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
     }
   };
 
-  if (!item) return <div />;
+  if (!item) return <div className="w-[16px] p-[2px] ml-2" />;
 
   return (
     <div
@@ -157,6 +155,78 @@ const PinItemToWorkspace = memo(({ workspace, docPath, item }) => {
       />
       <Tooltip
         id={`pin-${item.id}`}
+        place="bottom"
+        delayShow={300}
+        className="tooltip invert !text-xs"
+      />
+    </div>
+  );
+});
+
+const WatchForChanges = memo(({ workspace, docPath, item }) => {
+  const [watched, setWatched] = useState(item?.watched || false);
+  const [hover, setHover] = useState(false);
+  const watchEvent = new CustomEvent("watch_document_for_changes");
+
+  const updateWatchStatus = async () => {
+    try {
+      if (!watched) window.dispatchEvent(watchEvent);
+      const success =
+        await System.experimentalFeatures.liveSync.setWatchStatusForDocument(
+          workspace.slug,
+          docPath,
+          !watched
+        );
+
+      if (!success) {
+        showToast(
+          `Failed to ${!watched ? "watch" : "unwatch"} document.`,
+          "error",
+          {
+            clear: true,
+          }
+        );
+        return;
+      }
+
+      showToast(
+        `Document ${
+          !watched
+            ? "will be watched for changes"
+            : "will no longer be watched for changes"
+        }.`,
+        "success",
+        { clear: true }
+      );
+      setWatched(!watched);
+    } catch (error) {
+      showToast(`Failed to watch document. ${error.message}`, "error", {
+        clear: true,
+      });
+      return;
+    }
+  };
+
+  if (!item || !item.canWatch) return <div className="w-[16px] p-[2px] ml-2" />;
+
+  return (
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className="flex gap-x-2 items-center hover:bg-main-gradient p-[2px] rounded ml-2"
+    >
+      <Eye
+        data-tooltip-id={`watch-changes-${item.id}`}
+        data-tooltip-content={
+          watched ? "Stop watching for changes" : "Watch document for changes"
+        }
+        size={16}
+        onClick={updateWatchStatus}
+        weight={hover || watched ? "fill" : "regular"}
+        className="outline-none text-base font-bold flex-shrink-0 cursor-pointer"
+      />
+      <Tooltip
+        id={`watch-changes-${item.id}`}
         place="bottom"
         delayShow={300}
         className="tooltip invert !text-xs"

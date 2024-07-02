@@ -22,14 +22,19 @@ import {
   EyeSlash,
   SplitVertical,
   Microphone,
+  Robot,
+  Flask,
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { isMobile } from "react-device-detect";
 import Footer from "../Footer";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import showToast from "@/utils/toast";
 
 export default function SettingsSidebar() {
+  const { t } = useTranslation();
   const { logo } = useLogo();
   const { user } = useUser();
   const sidebarRef = useRef(null);
@@ -112,7 +117,7 @@ export default function SettingsSidebar() {
               <div className="h-full flex flex-col w-full justify-between pt-4 overflow-y-scroll no-scroll">
                 <div className="h-auto md:sidebar-items md:dark:sidebar-items">
                   <div className="flex flex-col gap-y-4 pb-[60px] overflow-y-scroll no-scroll">
-                    <SidebarOptions user={user} />
+                    <SidebarOptions user={user} t={t} />
                   </div>
                 </div>
               </div>
@@ -145,12 +150,12 @@ export default function SettingsSidebar() {
       >
         <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
           <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
-            Instance Settings
+            {t("settings.title")}
           </div>
           <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
             <div className="h-auto sidebar-items">
               <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
-                <SidebarOptions user={user} />
+                <SidebarOptions user={user} t={t} />
               </div>
             </div>
           </div>
@@ -220,47 +225,56 @@ const Option = ({
   );
 };
 
-const SidebarOptions = ({ user = null }) => (
+const SidebarOptions = ({ user = null, t }) => (
   <>
     <Option
       href={paths.settings.system()}
-      btnText="System Preferences"
+      btnText={t("settings.system")}
       icon={<SquaresFour className="h-5 w-5 flex-shrink-0" />}
       user={user}
       allowedRole={["admin", "manager"]}
     />
     <Option
       href={paths.settings.invites()}
-      btnText="Invitation"
+      btnText={t("settings.invites")}
       icon={<EnvelopeSimple className="h-5 w-5 flex-shrink-0" />}
       user={user}
       allowedRole={["admin", "manager"]}
     />
     <Option
       href={paths.settings.users()}
-      btnText="Users"
+      btnText={t("settings.users")}
       icon={<Users className="h-5 w-5 flex-shrink-0" />}
       user={user}
       allowedRole={["admin", "manager"]}
     />
     <Option
       href={paths.settings.workspaces()}
-      btnText="Workspaces"
+      btnText={t("settings.workspaces")}
       icon={<BookOpen className="h-5 w-5 flex-shrink-0" />}
       user={user}
       allowedRole={["admin", "manager"]}
     />
     <Option
       href={paths.settings.chats()}
-      btnText="Workspace Chat"
+      btnText={t("settings.workspace-chats")}
       icon={<ChatCenteredText className="h-5 w-5 flex-shrink-0" />}
+      user={user}
+      flex={true}
+      allowedRole={["admin", "manager"]}
+    />
+
+    <Option
+      href={paths.settings.agentSkills()}
+      btnText="Agent Skills"
+      icon={<Robot className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
       allowedRole={["admin", "manager"]}
     />
     <Option
       href={paths.settings.appearance()}
-      btnText="Appearance"
+      btnText={t("settings.appearance")}
       icon={<Eye className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -268,7 +282,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.apiKeys()}
-      btnText="API Keys"
+      btnText={t("settings.api-keys")}
       icon={<Key className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -276,7 +290,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.llmPreference()}
-      btnText="LLM Preference"
+      btnText={t("settings.llm")}
       icon={<ChatText className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -292,7 +306,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.transcriptionPreference()}
-      btnText="Transcription Model"
+      btnText={t("settings.transcription")}
       icon={<ClosedCaptioning className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -301,7 +315,7 @@ const SidebarOptions = ({ user = null }) => (
     <Option
       href={paths.settings.embedder.modelPreference()}
       childLinks={[paths.settings.embedder.chunkingPreference()]}
-      btnText="Embedder Preferences"
+      btnText={t("settings.embedder")}
       icon={<FileCode className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -310,7 +324,7 @@ const SidebarOptions = ({ user = null }) => (
         <>
           <Option
             href={paths.settings.embedder.chunkingPreference()}
-            btnText="Text Splitter & Chunking"
+            btnText={t("settings.text-splitting")}
             icon={<SplitVertical className="h-5 w-5 flex-shrink-0" />}
             user={user}
             flex={true}
@@ -321,7 +335,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.vectorDatabase()}
-      btnText="Vector Database"
+      btnText={t("settings.vector-database")}
       icon={<Database className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -330,7 +344,7 @@ const SidebarOptions = ({ user = null }) => (
     <Option
       href={paths.settings.embedSetup()}
       childLinks={[paths.settings.embedChats()]}
-      btnText="Chat Embed Widgets"
+      btnText={t("settings.embeds")}
       icon={<CodeBlock className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -339,7 +353,7 @@ const SidebarOptions = ({ user = null }) => (
         <>
           <Option
             href={paths.settings.embedChats()}
-            btnText="Chat Embed History"
+            btnText={t("settings.embed-chats")}
             icon={<Barcode className="h-5 w-5 flex-shrink-0" />}
             user={user}
             flex={true}
@@ -350,7 +364,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.security()}
-      btnText="Security"
+      btnText={t("settings.security")}
       icon={<Lock className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -359,7 +373,7 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.logs()}
-      btnText="Event Logs"
+      btnText={t("settings.event-logs")}
       icon={<Notepad className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
@@ -367,11 +381,70 @@ const SidebarOptions = ({ user = null }) => (
     />
     <Option
       href={paths.settings.privacy()}
-      btnText="Privacy & Data"
+      btnText={t("settings.privacy")}
       icon={<EyeSlash className="h-5 w-5 flex-shrink-0" />}
       user={user}
       flex={true}
       allowedRole={["admin"]}
     />
+    <HoldToReveal key="exp_features">
+      <Option
+        href={paths.settings.experimental()}
+        btnText="Experimental Features"
+        icon={<Flask className="h-5 w-5 flex-shrink-0" />}
+        user={user}
+        flex={true}
+        allowedRole={["admin"]}
+      />
+    </HoldToReveal>
   </>
 );
+
+function HoldToReveal({ children, holdForMs = 3_000 }) {
+  let timeout = null;
+  const [showing, setShowing] = useState(
+    window.localStorage.getItem(
+      "anythingllm_experimental_feature_preview_unlocked"
+    )
+  );
+
+  useEffect(() => {
+    const onPress = (e) => {
+      if (!["Control", "Meta"].includes(e.key) || timeout !== null) return;
+      timeout = setTimeout(() => {
+        setShowing(true);
+        // Setting toastId prevents hook spam from holding control too many times or the event not detaching
+        showToast("Experimental feature previews unlocked!");
+        window.localStorage.setItem(
+          "anythingllm_experimental_feature_preview_unlocked",
+          "enabled"
+        );
+        window.removeEventListener("keypress", onPress);
+        window.removeEventListener("keyup", onRelease);
+        clearTimeout(timeout);
+      }, holdForMs);
+    };
+    const onRelease = (e) => {
+      if (!["Control", "Meta"].includes(e.key)) return;
+      if (showing) {
+        window.removeEventListener("keypress", onPress);
+        window.removeEventListener("keyup", onRelease);
+        clearTimeout(timeout);
+        return;
+      }
+      clearTimeout(timeout);
+    };
+
+    if (!showing) {
+      window.addEventListener("keydown", onPress);
+      window.addEventListener("keyup", onRelease);
+    }
+    return () => {
+      window.removeEventListener("keydown", onPress);
+      window.removeEventListener("keyup", onRelease);
+    };
+  }, []);
+
+  if (!showing) return null;
+  return children;
+}

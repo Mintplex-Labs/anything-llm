@@ -179,7 +179,8 @@ const Weaviate = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null
+    fullFilePath = null,
+    skipCache = false
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -192,55 +193,57 @@ const Weaviate = {
       if (!pageContent || pageContent.length == 0) return false;
 
       console.log("Adding new vectorized document into namespace", namespace);
-      const cacheResult = await cachedVectorInformation(fullFilePath);
-      if (cacheResult.exists) {
-        const { client } = await this.connect();
-        const weaviateClassExits = await this.hasNamespace(namespace);
-        if (!weaviateClassExits) {
-          await client.schema
-            .classCreator()
-            .withClass({
-              class: camelCase(namespace),
-              description: `Class created by AnythingLLM named ${camelCase(
-                namespace
-              )}`,
-              vectorizer: "none",
-            })
-            .do();
-        }
-
-        const { chunks } = cacheResult;
-        const documentVectors = [];
-        const vectors = [];
-
-        for (const chunk of chunks) {
-          // Before sending to Weaviate and saving the records to our db
-          // we need to assign the id of each chunk that is stored in the cached file.
-          chunk.forEach((chunk) => {
-            const id = uuidv4();
-            const flattenedMetadata = this.flattenObjectForWeaviate(
-              chunk.properties ?? chunk.metadata
-            );
-            documentVectors.push({ docId, vectorId: id });
-            const vectorRecord = {
-              id,
-              class: camelCase(namespace),
-              vector: chunk.vector || chunk.values || [],
-              properties: { ...flattenedMetadata },
-            };
-            vectors.push(vectorRecord);
-          });
-
-          const { success: additionResult, errors = [] } =
-            await this.addVectors(client, vectors);
-          if (!additionResult) {
-            console.error("Weaviate::addVectors failed to insert", errors);
-            throw new Error("Error embedding into Weaviate");
+      if (skipCache) {
+        const cacheResult = await cachedVectorInformation(fullFilePath);
+        if (cacheResult.exists) {
+          const { client } = await this.connect();
+          const weaviateClassExits = await this.hasNamespace(namespace);
+          if (!weaviateClassExits) {
+            await client.schema
+              .classCreator()
+              .withClass({
+                class: camelCase(namespace),
+                description: `Class created by AnythingLLM named ${camelCase(
+                  namespace
+                )}`,
+                vectorizer: "none",
+              })
+              .do();
           }
-        }
 
-        await DocumentVectors.bulkInsert(documentVectors);
-        return { vectorized: true, error: null };
+          const { chunks } = cacheResult;
+          const documentVectors = [];
+          const vectors = [];
+
+          for (const chunk of chunks) {
+            // Before sending to Weaviate and saving the records to our db
+            // we need to assign the id of each chunk that is stored in the cached file.
+            chunk.forEach((chunk) => {
+              const id = uuidv4();
+              const flattenedMetadata = this.flattenObjectForWeaviate(
+                chunk.properties ?? chunk.metadata
+              );
+              documentVectors.push({ docId, vectorId: id });
+              const vectorRecord = {
+                id,
+                class: camelCase(namespace),
+                vector: chunk.vector || chunk.values || [],
+                properties: { ...flattenedMetadata },
+              };
+              vectors.push(vectorRecord);
+            });
+
+            const { success: additionResult, errors = [] } =
+              await this.addVectors(client, vectors);
+            if (!additionResult) {
+              console.error("Weaviate::addVectors failed to insert", errors);
+              throw new Error("Error embedding into Weaviate");
+            }
+          }
+
+          await DocumentVectors.bulkInsert(documentVectors);
+          return { vectorized: true, error: null };
+        }
       }
 
       // If we are here then we are going to embed and store a novel document.

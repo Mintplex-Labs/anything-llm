@@ -1,6 +1,7 @@
 import { API_BASE, AUTH_TIMESTAMP, fullApiUrl } from "@/utils/constants";
 import { baseHeaders, safeJsonParse } from "@/utils/request";
 import DataConnector from "./dataConnector";
+import LiveDocumentSync from "./experimental/liveSync";
 
 const System = {
   cacheKeys: {
@@ -419,22 +420,6 @@ const System = {
         return { success: false, error: e.message };
       });
   },
-  getCanDeleteWorkspaces: async function () {
-    return await fetch(`${API_BASE}/system/can-delete-workspaces`, {
-      method: "GET",
-      cache: "no-cache",
-      headers: baseHeaders(),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Could not fetch can delete workspaces.");
-        return res.json();
-      })
-      .then((res) => res?.canDelete)
-      .catch((e) => {
-        console.error(e);
-        return false;
-      });
-  },
   getWelcomeMessages: async function () {
     return await fetch(`${API_BASE}/system/welcome-messages`, {
       method: "GET",
@@ -511,10 +496,23 @@ const System = {
         return false;
       });
   },
-  customModels: async function (provider, apiKey = null, basePath = null) {
+  customModels: async function (
+    provider,
+    apiKey = null,
+    basePath = null,
+    timeout = null
+  ) {
+    const controller = new AbortController();
+    if (!!timeout) {
+      setTimeout(() => {
+        controller.abort("Request timed out.");
+      }, timeout);
+    }
+
     return fetch(`${API_BASE}/system/custom-models`, {
       method: "POST",
       headers: baseHeaders(),
+      signal: controller.signal,
       body: JSON.stringify({
         provider,
         apiKey,
@@ -674,6 +672,9 @@ const System = {
         console.error(e);
         return false;
       });
+  },
+  experimentalFeatures: {
+    liveSync: LiveDocumentSync,
   },
 };
 

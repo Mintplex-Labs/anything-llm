@@ -3,15 +3,14 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import GoogleSearchIcon from "./icons/google.png";
 import SerperDotDevIcon from "./icons/serper.png";
 import BingSearchIcon from "./icons/bing.png";
-import SerplySearchIcon from "./icons/serply.png";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import SearchProviderItem from "./SearchProviderItem";
 import {
   SerperDotDevOptions,
   GoogleSearchOptions,
   BingSearchOptions,
-  SerplySearchOptions,
 } from "./SearchProviderOptions";
+import { useTranslation } from "react-i18next";
 
 const SEARCH_PROVIDERS = [
   {
@@ -46,14 +45,6 @@ const SEARCH_PROVIDERS = [
     description:
       "Web search powered by the Bing Search API. Free for 1000 queries per month.",
   },
-  {
-    name: "Serply.io",
-    value: "serply-engine",
-    logo: SerplySearchIcon,
-    options: (settings) => <SerplySearchOptions settings={settings} />,
-    description:
-      "Serply.io web-search. Free account with a 100 calls/month forever.",
-  },
 ];
 
 export default function AgentWebSearchSelection({
@@ -67,7 +58,7 @@ export default function AgentWebSearchSelection({
   const [selectedProvider, setSelectedProvider] = useState("none");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
-
+  const { t } = useTranslation();
   function updateChoice(selection) {
     setSearchQuery("");
     setSelectedProvider(selection);
@@ -103,7 +94,7 @@ export default function AgentWebSearchSelection({
       <div className="flex flex-col">
         <div className="flex w-full justify-between items-center">
           <label htmlFor="name" className="block input-label">
-            Live web search and browsing
+            {t("agent.skill.web.title")}
           </label>
           <label className="border-none relative inline-flex cursor-pointer items-center mt-2">
             <input
@@ -117,10 +108,9 @@ export default function AgentWebSearchSelection({
           </label>
         </div>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          Enable your agent to search the web to answer your questions by
-          connecting to a web-search (SERP) provider.
+          {t("agent.skill.web.desc-start")}
           <br />
-          Web search during agent sessions will not work until this is set up.
+          {t("agent.skill.web.desc-end")}
         </p>
       </div>
       <div hidden={!enabled}>

@@ -10,7 +10,7 @@ const path = require("path");
 const fs = require("fs");
 
 async function discoverLinks(startUrl, depth = 1, maxLinks = 20) {
-  const baseUrl = new URL(startUrl).origin;
+  const baseUrl = new URL(startUrl);
   const discoveredLinks = new Set();
   const pendingLinks = [startUrl];
   let currentLevel = 0;
@@ -66,8 +66,12 @@ function extractLinks(html, baseUrl) {
   for (const link of links) {
     const href = link.getAttribute("href");
     if (href) {
-      const absoluteUrl = new URL(href, baseUrl).href;
-      if (absoluteUrl.startsWith(baseUrl)) {
+      const absoluteUrl = new URL(href, baseUrl.href).href;
+      if (
+        absoluteUrl.startsWith(
+          baseUrl.origin + baseUrl.pathname.split("/").slice(0, -1).join("/")
+        )
+      ) {
         extractedLinks.add(absoluteUrl);
       }
     }

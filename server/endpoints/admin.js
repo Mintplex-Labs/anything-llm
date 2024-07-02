@@ -317,10 +317,8 @@ function adminEndpoints(app) {
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
     async (_, response) => {
       try {
+        const embedder = getEmbeddingEngineSelection();
         const settings = {
-          users_can_delete_workspaces:
-            (await SystemSettings.get({ label: "users_can_delete_workspaces" }))
-              ?.value === "true",
           limit_user_messages:
             (await SystemSettings.get({ label: "limit_user_messages" }))
               ?.value === "true",
@@ -337,13 +335,12 @@ function adminEndpoints(app) {
           text_splitter_chunk_size:
             (await SystemSettings.get({ label: "text_splitter_chunk_size" }))
               ?.value ||
-            getEmbeddingEngineSelection()?.embeddingMaxChunkLength ||
+            embedder?.embeddingMaxChunkLength ||
             null,
           text_splitter_chunk_overlap:
             (await SystemSettings.get({ label: "text_splitter_chunk_overlap" }))
               ?.value || null,
-          max_embed_chunk_size:
-            getEmbeddingEngineSelection()?.embeddingMaxChunkLength || 1000,
+          max_embed_chunk_size: embedder?.embeddingMaxChunkLength || 1000,
           agent_search_provider:
             (await SystemSettings.get({ label: "agent_search_provider" }))
               ?.value || null,
@@ -358,6 +355,7 @@ function adminEndpoints(app) {
           custom_app_name:
             (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
             null,
+          feature_flags: (await SystemSettings.getFeatureFlags()) || {},
         };
         response.status(200).json({ settings });
       } catch (e) {

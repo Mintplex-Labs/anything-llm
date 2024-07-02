@@ -24,16 +24,18 @@ model api_keys {
 }
 
 model workspace_documents {
-  id            Int        @id @default(autoincrement())
-  docId         String     @unique
-  filename      String
-  docpath       String
-  workspaceId   Int
-  metadata      String?
-  pinned        Boolean?   @default(false)
-  createdAt     DateTime   @default(now())
-  lastUpdatedAt DateTime   @default(now())
-  workspace     workspaces @relation(fields: [workspaceId], references: [id])
+  id                   Int                   @id @default(autoincrement())
+  docId                String                @unique
+  filename             String
+  docpath              String
+  workspaceId          Int
+  metadata             String?
+  pinned               Boolean?              @default(false)
+  watched              Boolean?              @default(false)
+  createdAt            DateTime              @default(now())
+  lastUpdatedAt        DateTime              @default(now())
+  workspace            workspaces            @relation(fields: [workspaceId], references: [id])
+  document_sync_queues document_sync_queues?
 }
 
 model invites {
@@ -274,4 +276,24 @@ model slash_command_presets {
   user          users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([uid, command])
+}
+
+model document_sync_queues {
+  id             Int                        @id @default(autoincrement())
+  staleAfterMs   Int                        @default(604800000) // 7 days
+  nextSyncAt     DateTime
+  createdAt      DateTime                   @default(now())
+  lastSyncedAt   DateTime                   @default(now())
+  workspaceDocId Int                        @unique
+  workspaceDoc   workspace_documents?       @relation(fields: [workspaceDocId], references: [id], onDelete: Cascade)
+  runs           document_sync_executions[]
+}
+
+model document_sync_executions {
+  id        Int                  @id @default(autoincrement())
+  queueId   Int
+  status    String               @default("unknown")
+  result    String?
+  createdAt DateTime             @default(now())
+  queue     document_sync_queues @relation(fields: [queueId], references: [id], onDelete: Cascade)
 }

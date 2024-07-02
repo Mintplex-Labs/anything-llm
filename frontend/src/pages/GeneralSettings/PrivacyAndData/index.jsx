@@ -9,11 +9,12 @@ import {
   LLM_SELECTION_PRIVACY,
   VECTOR_DB_PRIVACY,
 } from "@/pages/OnboardingFlow/Steps/DataHandling";
+import { useTranslation } from "react-i18next";
 
 export default function PrivacyAndDataHandling() {
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
-
+  const { t } = useTranslation();
   useEffect(() => {
     async function fetchSettings() {
       setLoading(true);
@@ -35,12 +36,11 @@ export default function PrivacyAndDataHandling() {
           <div className="w-full flex flex-col gap-y-1 pb-6 border-white border-b-2 border-opacity-10">
             <div className="items-center flex gap-x-4">
               <p className="text-lg leading-6 font-bold text-white">
-                Privacy & Data-Handling
+                {t("privacy.title")}
               </p>
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-              This is your configuration for how connected third party providers
-              and AnythingLLM handle your data.
+              {t("privacy.description")}
             </p>
           </div>
           {loading ? (
@@ -65,12 +65,15 @@ function ThirdParty({ settings }) {
   const llmChoice = settings?.LLMProvider || "openai";
   const embeddingEngine = settings?.EmbeddingEngine || "openai";
   const vectorDb = settings?.VectorDB || "lancedb";
+  const { t } = useTranslation();
 
   return (
     <div className="py-8 w-full flex items-start justify-center flex-col gap-y-6 border-b-2 border-white/10">
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
-          <div className="text-white text-base font-bold">LLM Selection</div>
+          <div className="text-white text-base font-bold">
+            {t("privacy.llm")}
+          </div>
           <div className="flex items-center gap-2.5">
             <img
               src={LLM_SELECTION_PRIVACY[llmChoice].logo}
@@ -89,7 +92,7 @@ function ThirdParty({ settings }) {
         </div>
         <div className="flex flex-col gap-y-2 border-b border-zinc-500/50 pb-4">
           <div className="text-white text-base font-bold">
-            Embedding Preference
+            {t("privacy.embedding")}
           </div>
           <div className="flex items-center gap-2.5">
             <img
@@ -111,7 +114,9 @@ function ThirdParty({ settings }) {
         </div>
 
         <div className="flex flex-col gap-y-2 pb-4">
-          <div className="text-white text-base font-bold">Vector Database</div>
+          <div className="text-white text-base font-bold">
+            {t("privacy.vector")}
+          </div>
           <div className="flex items-center gap-2.5">
             <img
               src={VECTOR_DB_PRIVACY[vectorDb].logo}
@@ -137,6 +142,7 @@ function TelemetryLogs({ settings }) {
   const [telemetry, setTelemetry] = useState(
     settings?.DisableTelemetry !== "true"
   );
+  const { t } = useTranslation();
   async function toggleTelemetry() {
     await System.updateSystem({
       DisableTelemetry: !telemetry ? "false" : "true",
@@ -157,7 +163,7 @@ function TelemetryLogs({ settings }) {
           <div className="w-full flex flex-col gap-y-4">
             <div className="">
               <label className="mb-2.5 block font-medium text-white">
-                Anonymous Telemetry Enabled
+                {t("privacy.anonymous")}
               </label>
               <label className="relative inline-flex cursor-pointer items-center">
                 <input

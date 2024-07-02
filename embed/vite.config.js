@@ -1,6 +1,7 @@
 // vite.config.js
 import { defineConfig } from "vite"
 import { fileURLToPath, URL } from "url"
+import postcss from "./postcss.config.js"
 import react from "@vitejs/plugin-react"
 import image from "@rollup/plugin-image"
 
@@ -9,6 +10,9 @@ export default defineConfig({
   define: {
     // In dev, we need to disable this, but in prod, we need to enable it
     "process.env.NODE_ENV": JSON.stringify("production")
+  },
+  css: {
+    postcss
   },
   resolve: {
     alias: [
