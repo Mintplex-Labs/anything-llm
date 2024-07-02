@@ -55,7 +55,7 @@ export default function SpeechToText({ sendCommand }) {
       }
     }
   }, []);
-
+  
   function handlePromptUpdate(e) {
     if (!e?.detail && timeout) {
       endTTSSession();
@@ -101,7 +101,9 @@ export default function SpeechToText({ sendCommand }) {
     >
       <Microphone
         weight="fill"
-        className="w-6 h-6 pointer-events-none text-white"
+        className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full ${
+          listening ? "animate-pulse" : ""
+        }`}
       />
       <Tooltip
         id="tooltip-text-size-btn"
