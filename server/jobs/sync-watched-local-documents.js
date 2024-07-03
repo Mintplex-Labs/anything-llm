@@ -6,7 +6,6 @@ const { log, conclude, updateSourceDocument } = require('./helpers/index.js');
 const { getVectorDbClass } = require('../utils/helpers/index.js');
 const { DocumentSyncRun } = require('../models/documentSyncRun.js');
 const fs = require('fs');
-const path = require('path');
 
 (async () => {
   try {
