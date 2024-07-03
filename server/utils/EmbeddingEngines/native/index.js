@@ -71,15 +71,16 @@ class NativeEmbedder {
           cache_dir: this.cacheDir,
           ...(!this.modelDownloaded
             ? {
-              // Show download progress if we need to download any files
-              progress_callback: (data) => {
-                if (!data.hasOwnProperty("progress")) return;
-                console.log(
-                  `\x1b[36m[NativeEmbedder - Downloading model]\x1b[0m ${data.file
-                  } ${~~data?.progress}%`
-                );
-              },
-            }
+                // Show download progress if we need to download any files
+                progress_callback: (data) => {
+                  if (!data.hasOwnProperty("progress")) return;
+                  console.log(
+                    `\x1b[36m[NativeEmbedder - Downloading model]\x1b[0m ${
+                      data.file
+                    } ${~~data?.progress}%`
+                  );
+                },
+              }
             : {}),
         }),
         retry: false,
