@@ -75,7 +75,7 @@ function systemEndpoints(app) {
       const results = await SystemSettings.currentSettings();
       response.status(200).json({ results });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -98,7 +98,7 @@ function systemEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -241,7 +241,7 @@ function systemEndpoints(app) {
         });
       }
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -307,7 +307,7 @@ function systemEndpoints(app) {
           : await VectorDb.totalVectors();
         response.status(200).json({ vectorCount });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -322,7 +322,7 @@ function systemEndpoints(app) {
         await purgeDocument(name);
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -337,7 +337,7 @@ function systemEndpoints(app) {
         for await (const name of names) await purgeDocument(name);
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -352,7 +352,7 @@ function systemEndpoints(app) {
         await purgeFolder(name);
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -366,7 +366,7 @@ function systemEndpoints(app) {
         const localFiles = await viewLocalFiles();
         response.status(200).json({ localFiles });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -380,7 +380,7 @@ function systemEndpoints(app) {
         const online = await new CollectorApi().online();
         response.sendStatus(online ? 200 : 503);
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -399,7 +399,7 @@ function systemEndpoints(app) {
 
         response.status(200).json({ types });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -418,7 +418,7 @@ function systemEndpoints(app) {
         );
         response.status(200).json({ newValues, error });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -452,7 +452,7 @@ function systemEndpoints(app) {
         }
         response.status(200).json({ success: !error, error });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -500,7 +500,7 @@ function systemEndpoints(app) {
           multi_user_mode: false,
         });
 
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -511,7 +511,7 @@ function systemEndpoints(app) {
       const multiUserMode = await SystemSettings.isMultiUserMode();
       response.status(200).json({ multiUserMode });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
