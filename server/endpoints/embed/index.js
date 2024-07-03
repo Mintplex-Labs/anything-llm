@@ -76,7 +76,7 @@ function embeddedEndpoints(app) {
           history: convertToChatHistory(history),
         });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -93,7 +93,7 @@ function embeddedEndpoints(app) {
         await EmbedChats.markHistoryInvalid(embed.id, sessionId);
         response.status(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
