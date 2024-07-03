@@ -75,7 +75,7 @@ function apiOpenAICompatibleEndpoints(app) {
       }
       return response.status(200).json({ data });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -187,7 +187,7 @@ function apiOpenAICompatibleEndpoints(app) {
         });
         response.end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.status(500).end();
       }
     }
@@ -245,7 +245,7 @@ function apiOpenAICompatibleEndpoints(app) {
           model: Embedder.model,
         });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.status(500).end();
       }
     }
@@ -321,7 +321,7 @@ function apiOpenAICompatibleEndpoints(app) {
           has_more: false,
         });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.status(500).end();
       }
     }

@@ -68,7 +68,7 @@ function workspaceEndpoints(app) {
 
         response.status(200).json({ workspace, message });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -97,7 +97,7 @@ function workspaceEndpoints(app) {
         );
         response.status(200).json({ workspace, message });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -147,7 +147,7 @@ function workspaceEndpoints(app) {
         );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -190,7 +190,7 @@ function workspaceEndpoints(app) {
         );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -234,7 +234,7 @@ function workspaceEndpoints(app) {
               : null,
         });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -277,7 +277,7 @@ function workspaceEndpoints(app) {
         }
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -318,7 +318,7 @@ function workspaceEndpoints(app) {
         }
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -336,7 +336,7 @@ function workspaceEndpoints(app) {
 
         response.status(200).json({ workspaces });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -355,7 +355,7 @@ function workspaceEndpoints(app) {
 
         response.status(200).json({ workspace });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -382,7 +382,7 @@ function workspaceEndpoints(app) {
           : await WorkspaceChats.forWorkspace(workspace.id);
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -413,7 +413,7 @@ function workspaceEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -437,7 +437,7 @@ function workspaceEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -474,7 +474,7 @@ function workspaceEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
