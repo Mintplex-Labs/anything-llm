@@ -46,16 +46,19 @@ export default function SpeechToText({ sendCommand }) {
     clearTimeout(timeout);
   }
 
-  const handleKeyPress = useCallback((event) => {
-    if ((event.ctrlKey || event.metaKey) && event.keyCode === 32) {
-      if (listening) {
-        endTTSSession();
-      } else {
-        startSTTSession();
+  const handleKeyPress = useCallback(
+    (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.keyCode === 32) {
+        if (listening) {
+          endTTSSession();
+        } else {
+          startSTTSession();
+        }
       }
-    }
-  }, []);
-  
+    },
+    [listening, endTTSSession, startSTTSession]
+  );
+
   function handlePromptUpdate(e) {
     if (!e?.detail && timeout) {
       endTTSSession();
@@ -78,14 +81,14 @@ export default function SpeechToText({ sendCommand }) {
   }, []);
 
   useEffect(() => {
-    if (transcript?.length > 0) {
+    if (transcript?.length > 0 && listening) {
       sendCommand(transcript, false);
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         endTTSSession();
       }, SILENCE_INTERVAL);
     }
-  }, [transcript]);
+  }, [transcript, listening]);
 
   if (!browserSupportsSpeechRecognition) return null;
   return (

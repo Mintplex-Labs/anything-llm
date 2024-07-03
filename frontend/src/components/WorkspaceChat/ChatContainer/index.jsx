@@ -12,7 +12,9 @@ import handleSocketResponse, {
   AGENT_SESSION_END,
   AGENT_SESSION_START,
 } from "@/utils/chat/agent";
-import { useSpeechRecognition } from "react-speech-recognition";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const { threadSlug = null } = useParams();
@@ -27,7 +29,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     setMessage(event.target.value);
   };
 
-  const { resetTranscript } = useSpeechRecognition({
+  const { listening, resetTranscript } = useSpeechRecognition({
     clearTranscriptOnListen: true,
   });
 
@@ -55,11 +57,19 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       },
     ];
 
-    resetTranscript();
+    if (listening) {
+      // Stop the mic if the the send button is clicked
+      endTTSSession();
+    }
     setChatHistory(prevChatHistory);
     setMessageEmit("");
     setLoadingResponse(true);
   };
+
+  function endTTSSession() {
+    SpeechRecognition.stopListening();
+    resetTranscript();
+  }
 
   const regenerateAssistantMessage = (chatId) => {
     const updatedHistory = chatHistory.slice(0, -1);
