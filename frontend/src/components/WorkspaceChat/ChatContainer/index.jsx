@@ -58,7 +58,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
     ];
 
     if (listening) {
-      // Stop the mic if the the send button is clicked
+      // Stop the mic if the send button is clicked
       endTTSSession();
     }
     setChatHistory(prevChatHistory);
