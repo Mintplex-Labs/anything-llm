@@ -23,6 +23,7 @@ const HistoricalMessage = ({
   isLastMessage = false,
   regenerateMessage,
   saveEditedMessage,
+  forkThread,
 }) => {
   const { isEditing } = useEditMessage({ chatId, role });
   const adjustTextArea = (event) => {
@@ -95,6 +96,7 @@ const HistoricalMessage = ({
             regenerateMessage={regenerateMessage}
             isEditing={isEditing}
             role={role}
+            forkThread={forkThread}
           />
         </div>
         {role === "assistant" && <Citations sources={sources} />}

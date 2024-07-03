@@ -77,8 +77,8 @@ export default function ChatContainer({
   }, [loadingResponse, chatHistory]);
 
   return (
-    <div className="h-full w-full flex flex-col">
-      <div className="flex-grow overflow-y-auto">
+    <div className="allm-h-full allm-w-full allm-flex allm-flex-col">
+      <div className="allm-flex-grow allm-overflow-y-auto">
         <ChatHistory settings={settings} history={chatHistory} />
       </div>
       <PromptInput

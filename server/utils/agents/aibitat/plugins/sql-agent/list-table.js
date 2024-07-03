@@ -50,7 +50,7 @@ module.exports.SqlAgentListTables = {
               );
               if (!databaseConfig) {
                 this.super.handlerProps.log(
-                  `sql-list-tables failed to find config!.`,
+                  `sql-list-tables failed to find config!`,
                   database_id
                 );
                 return `No database connection for ${database_id} was found!`;

@@ -14,14 +14,14 @@ const HistoricalMessage = forwardRef(
     ref
   ) => {
     const textSize = !!embedderSettings.settings.textSize
-      ? `text-[${embedderSettings.settings.textSize}px]`
-      : "text-sm";
+      ? `allm-text-[${embedderSettings.settings.textSize}px]`
+      : "allm-text-sm";
 
     return (
       <div className="py-[5px]">
         {role === "assistant" && (
           <div
-            className={`text-[10px] font-medium text-gray-400 ml-[54px] mr-6 mb-2 text-left`}
+            className={`allm-text-[10px] allm-text-gray-400 allm-ml-[54px] allm-mr-6 allm-mb-2 allm-text-left allm-font-sans`}
           >
             {embedderSettings.settings.assistantName ||
               "Anything LLM Chat Assistant"}
@@ -30,42 +30,48 @@ const HistoricalMessage = forwardRef(
         <div
           key={uuid}
           ref={ref}
-          className={`flex items-start w-full h-fit ${
-            role === "user" ? "justify-end" : "justify-start"
+          className={`allm-flex allm-items-start allm-w-full allm-h-fit ${
+            role === "user" ? "allm-justify-end" : "allm-justify-start"
           }`}
         >
           {role === "assistant" && (
             <img
               src={embedderSettings.settings.assistantIcon || AnythingLLMIcon}
               alt="Anything LLM Icon"
-              className="w-9 h-9 flex-shrink-0 ml-2 mt-2"
+              className="allm-w-9 allm-h-9 allm-flex-shrink-0 allm-ml-2 allm-mt-2"
               id="anything-llm-icon"
             />
           )}
           <div
-            style={{ wordBreak: "break-word" }}
-            className={`py-[11px] px-4 flex flex-col ${
+            style={{
+              wordBreak: "break-word",
+              backgroundColor:
+                role === "user"
+                  ? embedderSettings.USER_STYLES.msgBg
+                  : embedderSettings.ASSISTANT_STYLES.msgBg,
+            }}
+            className={`allm-py-[11px] allm-px-4 allm-flex allm-flex-col allm-font-sans ${
               error
-                ? "bg-red-200 rounded-lg mr-[37px] ml-[9px]"
+                ? "allm-bg-red-200 allm-rounded-lg allm-mr-[37px] allm-ml-[9px]"
                 : role === "user"
-                  ? `${embedderSettings.USER_STYLES} anything-llm-user-message`
-                  : `${embedderSettings.ASSISTANT_STYLES} anything-llm-assistant-message`
-            } shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+                  ? `${embedderSettings.USER_STYLES.base} allm-anything-llm-user-message`
+                  : `${embedderSettings.ASSISTANT_STYLES.base} allm-anything-llm-assistant-message`
+            } allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
           >
-            <div className="flex">
+            <div className="allm-flex">
               {error ? (
-                <div className="p-2 rounded-lg bg-red-50 text-red-500">
-                  <span className={`inline-block `}>
-                    <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
-                    respond to message.
+                <div className="allm-p-2 allm-rounded-lg allm-bg-red-50 allm-text-red-500">
+                  <span className={`allm-inline-block `}>
+                    <Warning className="allm-h-4 allm-w-4 allm-mb-1 allm-inline-block" />{" "}
+                    Could not respond to message.
                   </span>
-                  <p className="text-xs font-mono mt-2 border-l-2 border-red-500 pl-2 bg-red-300 p-2 rounded-sm">
+                  <p className="allm-text-xs allm-font-mono allm-mt-2 allm-border-l-2 allm-border-red-500 allm-pl-2 allm-bg-red-300 allm-p-2 allm-rounded-sm">
                     {error}
                   </p>
                 </div>
               ) : (
                 <span
-                  className={`whitespace-pre-line font-medium flex flex-col gap-y-1 ${textSize} leading-[20px]`}
+                  className={`allm-whitespace-pre-line allm-flex allm-flex-col allm-gap-y-1 ${textSize} allm-leading-[20px]`}
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(renderMarkdown(message)),
                   }}
@@ -77,7 +83,7 @@ const HistoricalMessage = forwardRef(
 
         {sentAt && (
           <div
-            className={`text-[10px] font-medium text-gray-400 ml-[54px] mr-6 mt-2 ${role === "user" ? "text-right" : "text-left"}`}
+            className={`allm-font-sans allm-text-[10px] allm-text-gray-400 allm-ml-[54px] allm-mr-6 allm-mt-2 ${role === "user" ? "allm-text-right" : "allm-text-left"}`}
           >
             {formatDate(sentAt)}
           </div>
