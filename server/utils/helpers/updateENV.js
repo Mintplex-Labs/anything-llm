@@ -232,8 +232,12 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
   IBMIAMKey: {
-    envKey: "IBM_IAM_API_KEY",
+    envKey: "WATSONX_AI_APIKEY",
     checks: [isNotEmpty],
+  },
+  WatsonxTokenLimit: {
+    envKey: "WATSONX_TOKEN_LIMIT",
+    checks: [validWatsonxTokenLimit],
   },
   WatsonxModel: {
     envKey: "WATSONX_AI_MODEL",
@@ -658,6 +662,14 @@ function validWatsonxURL(input = "") {
   } catch {
     return "Not a valid URL";
   }
+}
+
+function validWatsonxTokenLimit(input = "") {
+  const tokenLimit = Number(input);
+  if (isNaN(tokenLimit)) return "Token limit is not a number";
+  if (![4_096, 16_384, 8_192, 32_768, 128_000].includes(tokenLimit))
+    return "Invalid Watsonx token limit.";
+  return null;
 }
 
 function validOpenAiTokenLimit(input = "") {

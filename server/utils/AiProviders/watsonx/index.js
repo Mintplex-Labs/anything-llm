@@ -1,22 +1,36 @@
+const WatsonxAiMlVmlv1 = require("@ibm-cloud/watsonx-ai/dist/watsonx-ai-ml/vml-v1");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
 const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
+const { input } = require("@inquirer/prompts");
 
 class WatsonxLLM {
   constructor(embedder = null, _modelPreference = null) {
-    const { WatsonXAI } = require('@ibm-cloud/watsonx-ai');
-    if (!process.env.AZURE_OPENAI_ENDPOINT)
-      throw new Error("No Azure API endpoint was set.");
-    if (!process.env.AZURE_OPENAI_KEY)
-      throw new Error("No Azure API key was set.");
+    const { WatsonXAI } = require("@ibm-cloud/watsonx-ai");
+    if (!process.env.WATSONX_AI_ENDPOINT)
+      throw new Error("No Watsonx API endpoint was set.");
+    if (!process.env.WATSONX_AI_APIKEY)
+      throw new Error("No Watsonx API key was set.");
 
-    this.openai = new OpenAIClient(
-      process.env.AZURE_OPENAI_ENDPOINT,
-      new AzureKeyCredential(process.env.AZURE_OPENAI_KEY)
-    );
-    this.model = process.env.OPEN_MODEL_PREF;
+    this.watsonx = WatsonXAI.newInstance({
+      version: "2024-05-31",
+      serviceUrl: process.env.WATSONX_AI_ENDPOINT,
+    });
+
+    this.model = process.env.WATSONX_AI_MODEL;
+    this.projectId = process.env.WATSONX_AI_PROJECT_ID;
+
+    // this.watsonx.listFoundationModelSpecs().then((response) => {
+    //   let obj = response.result.resources.find(
+    //     (o) => o.model_id === process.env.WATSONX_AI_MODEL
+    //   );
+    //   console.log(obj.model_limits.max_sequence_length);
+    //   console.log(this.model);
+    //   this.test = obj.model_limits.max_sequence_length
+    // });
+
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -47,8 +61,8 @@ class WatsonxLLM {
   // could be any of these https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#gpt-4-models
   // and if undefined - assume it is the lowest end.
   promptWindowLimit() {
-    return !!process.env.AZURE_OPENAI_TOKEN_LIMIT
-      ? Number(process.env.AZURE_OPENAI_TOKEN_LIMIT)
+    return !!process.env.WATSONX_TOKEN_LIMIT
+      ? Number(process.env.WATSONX_TOKEN_LIMIT)
       : 4096;
   }
 
@@ -83,11 +97,26 @@ class WatsonxLLM {
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
       );
 
-    const data = await this.openai.getChatCompletions(this.model, messages, {
+    const data = await this.watsonx.getChatCompletions(this.model, messages, {
       temperature,
     });
     if (!data.hasOwnProperty("choices")) return null;
     return data.choices[0].message.content;
+  }
+
+  formatMessages(messages) {
+    let input = "";
+    messages.forEach((message, index) => {
+      if (message.role == "system") {
+        input += "SYSTEM: \n";
+      } else {
+        input += "USER: \n";
+      }
+      input += `${message.content}\n\n`;
+    });
+
+    console.log(input);
+    return input;
   }
 
   async streamGetChatCompletion(messages = [], { temperature = 0.7 }) {
@@ -96,14 +125,13 @@ class WatsonxLLM {
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
       );
 
-    const stream = await this.openai.streamChatCompletions(
-      this.model,
-      messages,
-      {
-        temperature,
-        n: 1,
-      }
-    );
+    console.log(messages);
+
+    const stream = await this.watsonx.textGenerationStream({
+      modelId: this.model,
+      input: this.formatMessages(messages),
+      projectId: this.projectId,
+    });
     return stream;
   }
 

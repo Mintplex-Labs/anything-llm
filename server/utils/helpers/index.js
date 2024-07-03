@@ -92,6 +92,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "generic-openai":
       const { GenericOpenAiLLM } = require("../AiProviders/genericOpenAi");
       return new GenericOpenAiLLM(embedder, model);
+    case "watsonx":
+      const { WatsonxLLM} = require("../AiProviders/watsonx");
+      return new WatsonxLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`
