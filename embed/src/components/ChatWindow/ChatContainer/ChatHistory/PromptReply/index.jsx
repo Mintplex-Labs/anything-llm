@@ -11,18 +11,23 @@ const PromptReply = forwardRef(
 
     if (pending) {
       return (
-        <div className={`flex items-start w-full h-fit justify-start`}>
+        <div
+          className={`allm-flex allm-items-start allm-w-full allm-h-fit allm-justify-start`}
+        >
           <img
             src={embedderSettings.settings.assistantIcon || AnythingLLMIcon}
             alt="Anything LLM Icon"
-            className="w-9 h-9 flex-shrink-0 ml-2"
+            className="allm-w-9 allm-h-9 allm-flex-shrink-0 allm-ml-2"
           />
           <div
-            style={{ wordBreak: "break-word" }}
-            className={`py-[11px] px-4 flex flex-col ${embedderSettings.ASSISTANT_STYLES} shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+            style={{
+              wordBreak: "break-word",
+              backgroundColor: embedderSettings.ASSISTANT_STYLES.msgBg,
+            }}
+            className={`allm-py-[11px] allm-px-4 allm-flex allm-flex-col ${embedderSettings.ASSISTANT_STYLES.base} allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
           >
-            <div className="flex gap-x-5">
-              <div className="mx-4 my-1 dot-falling"></div>
+            <div className="allm-flex allm-gap-x-5">
+              <div className="allm-mx-4 allm-my-1 allm-dot-falling"></div>
             </div>
           </div>
         </div>
@@ -31,23 +36,27 @@ const PromptReply = forwardRef(
 
     if (error) {
       return (
-        <div className={`flex items-end w-full h-fit justify-start`}>
+        <div
+          className={`allm-flex allm-items-end allm-w-full allm-h-fit allm-justify-start`}
+        >
           <img
             src={embedderSettings.settings.assistantIcon || AnythingLLMIcon}
             alt="Anything LLM Icon"
-            className="w-9 h-9 flex-shrink-0 ml-2"
+            className="allm-w-9 allm-h-9 allm-flex-shrink-0 allm-ml-2"
           />
           <div
             style={{ wordBreak: "break-word" }}
-            className={`py-[11px] px-4 rounded-lg flex flex-col bg-red-200 shadow-[0_4px_14px_rgba(0,0,0,0.25)] mr-[37px] ml-[9px]`}
+            className={`allm-py-[11px] allm-px-4 allm-rounded-lg allm-flex allm-flex-col allm-bg-red-200 allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)] allm-mr-[37px] allm-ml-[9px]`}
           >
-            <div className="flex gap-x-5">
+            <div className="allm-flex allm-gap-x-5">
               <span
-                className={`inline-block p-2 rounded-lg bg-red-50 text-red-500`}
+                className={`allm-inline-block allm-p-2 allm-rounded-lg allm-bg-red-50 allm-text-red-500`}
               >
-                <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
-                respond to message.
-                <span className="text-xs">Reason: {error || "unknown"}</span>
+                <Warning className="allm-h-4 allm-w-4 allm-mb-1 allm-inline-block" />{" "}
+                Could not respond to message.
+                <span className="allm-text-xs">
+                  Reason: {error || "unknown"}
+                </span>
               </span>
             </div>
           </div>
@@ -56,9 +65,9 @@ const PromptReply = forwardRef(
     }
 
     return (
-      <div className="py-[5px]">
+      <div className="allm-py-[5px]">
         <div
-          className={`text-[10px] font-medium text-gray-400 ml-[54px] mr-6 mb-2 text-left`}
+          className={`allm-text-[10px] allm-text-gray-400 allm-ml-[54px] allm-mr-6 allm-mb-2 allm-text-left allm-font-sans`}
         >
           {embedderSettings.settings.assistantName ||
             "Anything LLM Chat Assistant"}
@@ -66,29 +75,32 @@ const PromptReply = forwardRef(
         <div
           key={uuid}
           ref={ref}
-          className={`flex items-start w-full h-fit justify-start`}
+          className={`allm-flex allm-items-start allm-w-full allm-h-fit allm-justify-start`}
         >
           <img
             src={embedderSettings.settings.assistantIcon || AnythingLLMIcon}
             alt="Anything LLM Icon"
-            className="w-9 h-9 flex-shrink-0 ml-2"
+            className="allm-w-9 allm-h-9 allm-flex-shrink-0 allm-ml-2"
           />
           <div
-            style={{ wordBreak: "break-word" }}
-            className={`py-[11px] px-4 flex flex-col ${
-              error ? "bg-red-200" : embedderSettings.ASSISTANT_STYLES
-            } shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
+            style={{
+              wordBreak: "break-word",
+              backgroundColor: embedderSettings.ASSISTANT_STYLES.msgBg,
+            }}
+            className={`allm-py-[11px] allm-px-4 allm-flex allm-flex-col ${
+              error ? "allm-bg-red-200" : embedderSettings.ASSISTANT_STYLES.base
+            } allm-shadow-[0_4px_14px_rgba(0,0,0,0.25)]`}
           >
-            <div className="flex gap-x-5">
+            <div className="allm-flex allm-gap-x-5">
               <span
-                className={`reply whitespace-pre-line font-normal text-sm md:text-sm flex flex-col gap-y-1`}
+                className={`allm-font-sans allm-reply allm-whitespace-pre-line allm-font-normal allm-text-sm allm-md:text-sm allm-flex allm-flex-col allm-gap-y-1`}
                 dangerouslySetInnerHTML={{ __html: renderMarkdown(reply) }}
               />
             </div>
           </div>
         </div>
         <div
-          className={`text-[10px] font-medium text-gray-400 ml-[54px] mr-6 mt-2 text-left`}
+          className={`allm-text-[10px] allm-text-gray-400 allm-ml-[54px] allm-mr-6 allm-mt-2 allm-text-left allm-font-sans`}
         >
           {formatDate(Date.now() / 1000)}
         </div>
