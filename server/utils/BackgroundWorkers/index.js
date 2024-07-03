@@ -68,8 +68,7 @@ class BackgroundService {
       },
       {
         name: "sync-watched-local-documents",
-        // timeout: false,
-        timeout: "10s",
+        timeout: false,
         interval: "5min",
       },
     ];
