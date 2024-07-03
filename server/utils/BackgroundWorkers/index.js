@@ -1,6 +1,6 @@
 const path = require("path");
 const Graceful = require("@ladjs/graceful");
-const Bree = require("bree");
+const Bree = require("@mintplex-labs/bree");
 
 class BackgroundService {
   name = "BackgroundWorkerService";
@@ -35,6 +35,7 @@ class BackgroundService {
       jobs: this.jobs(),
       errorHandler: this.onError,
       workerMessageHandler: this.onWorkerMessageHandler,
+      runJobsAs: "process",
     });
     this.graceful = new Graceful({ brees: [this.bree], logger: this.logger });
     this.graceful.listen();
@@ -50,6 +51,7 @@ class BackgroundService {
     this.#log("Service stopped");
   }
 
+  /** @returns {import("@mintplex-labs/bree").Job[]} */
   jobs() {
     return [
       // Job for auto-sync of documents
