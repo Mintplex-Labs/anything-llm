@@ -5,7 +5,7 @@ import { Tooltip } from "react-tooltip";
 
 const Actions = ({ message }) => {
   return (
-    <div className="flex justify-start items-center gap-x-4">
+    <div className="allm-flex allm-justify-start allm-items-center allm-gap-x-4">
       <CopyMessage message={message} />
       {/* Other actions to go here later. */}
     </div>
@@ -16,17 +16,17 @@ function CopyMessage({ message }) {
   const { copied, copyText } = useCopyText();
   return (
     <>
-      <div className="mt-3 relative">
+      <div className="allm-mt-3 allm-relative">
         <button
           data-tooltip-id="copy-assistant-text"
           data-tooltip-content="Copy"
-          className="text-zinc-300"
+          className="allm-border-none allm-text-zinc-300"
           onClick={() => copyText(message)}
         >
           {copied ? (
-            <Check size={18} className="mb-1" />
+            <Check size={18} className="allm-mb-1" />
           ) : (
-            <ClipboardText size={18} className="mb-1" />
+            <ClipboardText size={18} className="allm-mb-1" />
           )}
         </button>
       </div>
@@ -34,7 +34,7 @@ function CopyMessage({ message }) {
         id="copy-assistant-text"
         place="bottom"
         delayShow={300}
-        className="tooltip !text-xs"
+        className="allm-tooltip !allm-text-xs"
       />
     </>
   );
