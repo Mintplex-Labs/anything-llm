@@ -2,8 +2,6 @@ const path = require("path");
 const fs = require("fs");
 const { toChunks } = require("../../helpers");
 const { v4 } = require("uuid");
-// https://stackoverflow.com/questions/76883048/err-require-esm-for-import-with-xenova-transformers
-const TransformersApi = Function('return import("@xenova/transformers")')();
 
 class NativeEmbedder {
   // This is a folder that Mintplex Labs hosts for those who cannot capture the HF model download
@@ -57,7 +55,7 @@ class NativeEmbedder {
     try {
       // Convert ESM to CommonJS via import so we can load this library.
       const pipeline = (...args) =>
-        TransformersApi.then(({ pipeline, env }) => {
+        import("@xenova/transformers").then(({ pipeline, env }) => {
           if (!this.modelDownloaded) {
             // if model is not downloaded, we will log where we are fetching from.
             if (hostOverride) {
