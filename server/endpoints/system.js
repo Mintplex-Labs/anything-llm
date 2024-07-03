@@ -974,7 +974,7 @@ function systemEndpoints(app) {
 
   app.delete(
     "/system/workspace-chats/:id",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
       try {
         const { id } = request.params;

@@ -7,6 +7,7 @@ import {
   ArrowsClockwise,
   Copy,
   GitMerge,
+  Trash,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
@@ -21,6 +22,7 @@ const Actions = ({
   isLastMessage,
   regenerateMessage,
   forkThread,
+  deleteMessage,
   isEditing,
   role,
 }) => {
@@ -50,6 +52,12 @@ const Actions = ({
             chatId={chatId}
           />
         )}
+        <DeleteMessage
+          chatId={chatId}
+          deleteMessage={deleteMessage}
+          role={role}
+          isEditing={isEditing}
+        />
         {chatId && role !== "user" && !isEditing && (
           <>
             <FeedbackButton
@@ -173,6 +181,29 @@ function ForkThread({ chatId, forkThread, isEditing, role }) {
       </button>
       <Tooltip
         id="fork-thread"
+        place="bottom"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
+    </div>
+  );
+}
+
+function DeleteMessage({ chatId, deleteMessage, isEditing, role }) {
+  if (!chatId || isEditing || role === "user") return null;
+  return (
+    <div className="mt-3 relative">
+      <button
+        onClick={() => deleteMessage(chatId)}
+        data-tooltip-id="delete-message"
+        data-tooltip-content="Delete message"
+        className="border-none text-zinc-300"
+        aria-label="Delete"
+      >
+        <Trash size={18} className="mb-1" />
+      </button>
+      <Tooltip
+        id="delete-message"
         place="bottom"
         delayShow={300}
         className="tooltip !text-xs"

@@ -10,6 +10,8 @@ import Chartable from "./Chartable";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
+import showToast from "@/utils/toast";
+import System from "@/models/system";
 
 export default function ChatHistory({
   history = [],
@@ -143,6 +145,24 @@ export default function ChatHistory({
       newThreadSlug
     );
   };
+  const deleteMessage = async (chatId) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete this chat?\n\nThis action is irreversible.`
+      )
+    )
+      return false;
+
+    const { success } = await System.deleteChat(chatId);
+
+    if (success) {
+      const updatedHistory = history.filter((msg) => msg.chatId !== chatId);
+      updateHistory(updatedHistory);
+      showToast("Chat deleted successfully.", "success");
+    } else {
+      showToast("Failed to delete chat.", "error");
+    }
+  };
 
   if (history.length === 0) {
     return (
@@ -231,6 +251,7 @@ export default function ChatHistory({
             isLastMessage={isLastBotReply}
             saveEditedMessage={saveEditedMessage}
             forkThread={forkThread}
+            deleteMessage={deleteMessage}
           />
         );
       })}

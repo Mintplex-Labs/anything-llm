@@ -24,6 +24,7 @@ const HistoricalMessage = ({
   regenerateMessage,
   saveEditedMessage,
   forkThread,
+  deleteMessage,
 }) => {
   const { isEditing } = useEditMessage({ chatId, role });
   const adjustTextArea = (event) => {
@@ -94,6 +95,7 @@ const HistoricalMessage = ({
             slug={workspace?.slug}
             isLastMessage={isLastMessage}
             regenerateMessage={regenerateMessage}
+            deleteMessage={deleteMessage}
             isEditing={isEditing}
             role={role}
             forkThread={forkThread}
