@@ -7,8 +7,8 @@ const documentsPath =
     : path.resolve(process.env.STORAGE_DIR, `documents`);
 
 function log(stringContent = '') {
-  if (parentPort) parentPort.postMessage(stringContent);
-  else console.log(`parentPort is undefined. Debug: ${stringContent}`)
+  if (parentPort) parentPort.postMessage(`\x1b[33m[${process.pid}]\x1b[0m: ${stringContent}`); // running as worker
+  else process.send(`\x1b[33m[${process.ppid}:${process.pid}]\x1b[0m: ${stringContent}`); // running as child_process
 }
 
 function conclude() {
