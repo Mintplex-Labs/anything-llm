@@ -833,8 +833,33 @@ function workspaceEndpoints(app) {
         );
         response.status(200).json({ newThreadSlug: newThread.slug });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.put(
+    "/workspace/workspace-chats/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const user = await userFromSession(request, response);
+        const validChat = await WorkspaceChats.get({
+          id: Number(id),
+          user_id: user?.id ?? null,
+        });
+        if (!validChat)
+          return response
+            .status(404)
+            .json({ success: false, error: "Chat not found." });
+
+        await WorkspaceChats._update(validChat.id, { include: false });
+        response.json({ success: true, error: null });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).json({ success: false, error: "Server error" });
       }
     }
   );
