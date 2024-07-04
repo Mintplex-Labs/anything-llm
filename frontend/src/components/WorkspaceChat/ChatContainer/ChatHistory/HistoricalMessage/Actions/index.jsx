@@ -7,7 +7,6 @@ import {
   ArrowsClockwise,
   Copy,
   GitMerge,
-  Trash,
 } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
