@@ -13,6 +13,7 @@ import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
 import TTSMessage from "./TTSButton";
 import { EditMessageAction } from "./EditMessage";
+import { DeleteMessage } from "./DeleteMessage";
 
 const Actions = ({
   message,
@@ -22,7 +23,6 @@ const Actions = ({
   isLastMessage,
   regenerateMessage,
   forkThread,
-  deleteMessage,
   isEditing,
   role,
 }) => {
@@ -54,7 +54,6 @@ const Actions = ({
         )}
         <DeleteMessage
           chatId={chatId}
-          deleteMessage={deleteMessage}
           role={role}
           isEditing={isEditing}
         />
@@ -181,29 +180,6 @@ function ForkThread({ chatId, forkThread, isEditing, role }) {
       </button>
       <Tooltip
         id="fork-thread"
-        place="bottom"
-        delayShow={300}
-        className="tooltip !text-xs"
-      />
-    </div>
-  );
-}
-
-function DeleteMessage({ chatId, deleteMessage, isEditing, role }) {
-  if (!chatId || isEditing || role === "user") return null;
-  return (
-    <div className="mt-3 relative">
-      <button
-        onClick={() => deleteMessage(chatId)}
-        data-tooltip-id="delete-message"
-        data-tooltip-content="Delete message"
-        className="border-none text-zinc-300"
-        aria-label="Delete"
-      >
-        <Trash size={18} className="mb-1" />
-      </button>
-      <Tooltip
-        id="delete-message"
         place="bottom"
         delayShow={300}
         className="tooltip !text-xs"

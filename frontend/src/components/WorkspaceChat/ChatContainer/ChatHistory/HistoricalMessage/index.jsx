@@ -9,6 +9,7 @@ import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
 import { EditMessageForm, useEditMessage } from "./Actions/EditMessage";
+import { useWatchDeleteMessage } from "./Actions/DeleteMessage";
 
 const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = ({
@@ -24,9 +25,9 @@ const HistoricalMessage = ({
   regenerateMessage,
   saveEditedMessage,
   forkThread,
-  deleteMessage,
 }) => {
   const { isEditing } = useEditMessage({ chatId, role });
+  const { isDeleted } = useWatchDeleteMessage({ chatId });
   const adjustTextArea = (event) => {
     const element = event.target;
     element.style.height = "auto";
@@ -37,9 +38,8 @@ const HistoricalMessage = ({
     return (
       <div
         key={uuid}
-        className={`flex justify-center items-end w-full ${
-          role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
-        }`}
+        className={`flex justify-center items-end w-full ${role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
+          }`}
       >
         <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
           <div className="flex gap-x-5">
@@ -62,9 +62,8 @@ const HistoricalMessage = ({
   return (
     <div
       key={uuid}
-      className={`flex justify-center items-end w-full group ${
-        role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
-      }`}
+      className={`${isDeleted ? 'animate-remove' : ''} flex justify-center items-end w-full group ${role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
+        }`}
     >
       <div className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}>
         <div className="flex gap-x-5">
@@ -95,7 +94,6 @@ const HistoricalMessage = ({
             slug={workspace?.slug}
             isLastMessage={isLastMessage}
             regenerateMessage={regenerateMessage}
-            deleteMessage={deleteMessage}
             isEditing={isEditing}
             role={role}
             forkThread={forkThread}

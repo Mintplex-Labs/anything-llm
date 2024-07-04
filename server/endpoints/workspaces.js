@@ -231,8 +231,8 @@ function workspaceEndpoints(app) {
           message:
             failedToEmbed.length > 0
               ? `${failedToEmbed.length} documents failed to add.\n\n${errors
-                  .map((msg) => `${msg}`)
-                  .join("\n\n")}`
+                .map((msg) => `${msg}`)
+                .join("\n\n")}`
               : null,
         });
       } catch (e) {
@@ -779,11 +779,11 @@ function workspaceEndpoints(app) {
         // and is a valid thread slug.
         const threadId = !!threadSlug
           ? (
-              await WorkspaceThread.get({
-                slug: String(threadSlug),
-                workspace_id: workspace.id,
-              })
-            )?.id ?? null
+            await WorkspaceThread.get({
+              slug: String(threadSlug),
+              workspace_id: workspace.id,
+            })
+          )?.id ?? null
           : null;
         const chatsToFork = await WorkspaceChats.where(
           {
@@ -833,7 +833,7 @@ function workspaceEndpoints(app) {
         );
         response.status(200).json({ newThreadSlug: newThread.slug });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.status(500).json({ message: "Internal server error" });
       }
     }
@@ -843,24 +843,18 @@ function workspaceEndpoints(app) {
     "/workspace/workspace-chats/:id",
     [validatedRequest, flexUserRoleValid([ROLES.all])],
     async (request, response) => {
-      const user = await userFromSession(request, response);
       try {
         const { id } = request.params;
-        const result = await WorkspaceChats._update(Number(id), {
-          include: false,
-          user_id: user?.id,
+        const user = await userFromSession(request, response);
+        const validChat = await WorkspaceChats.get({
+          id: Number(id),
+          user_id: user?.id ?? null
         });
-
-        if (result) {
-          response.json({ success: true, error: null });
-        } else {
-          response.status(404).json({
-            success: false,
-            error: "Chat not found or user not authorized",
-          });
-        }
+        if (!validChat) return response.status(404).json({ success: false, error: 'Chat not found.' });
+        await WorkspaceChats._update(validChat.id, { include: false });
+        response.json({ success: true, error: null });
       } catch (e) {
-        console.error(e);
+        console.error(e.message, e);
         response.status(500).json({ success: false, error: "Server error" });
       }
     }
