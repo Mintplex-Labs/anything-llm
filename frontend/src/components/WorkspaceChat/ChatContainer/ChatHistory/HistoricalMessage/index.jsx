@@ -9,6 +9,7 @@ import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
 import { EditMessageForm, useEditMessage } from "./Actions/EditMessage";
+import { useWatchDeleteMessage } from "./Actions/DeleteMessage";
 
 const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = ({
@@ -26,6 +27,10 @@ const HistoricalMessage = ({
   forkThread,
 }) => {
   const { isEditing } = useEditMessage({ chatId, role });
+  const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
+    chatId,
+    role,
+  });
   const adjustTextArea = (event) => {
     const element = event.target;
     element.style.height = "auto";
@@ -58,10 +63,14 @@ const HistoricalMessage = ({
     );
   }
 
+  if (completeDelete) return null;
   return (
     <div
       key={uuid}
-      className={`flex justify-center items-end w-full group ${
+      onAnimationEnd={onEndAnimation}
+      className={`${
+        isDeleted ? "animate-remove" : ""
+      } flex justify-center items-end w-full group ${
         role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
       }`}
     >

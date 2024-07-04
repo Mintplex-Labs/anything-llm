@@ -12,6 +12,7 @@ import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
 import TTSMessage from "./TTSButton";
 import { EditMessageAction } from "./EditMessage";
+import { DeleteMessage } from "./DeleteMessage";
 
 const Actions = ({
   message,
@@ -50,6 +51,7 @@ const Actions = ({
             chatId={chatId}
           />
         )}
+        <DeleteMessage chatId={chatId} role={role} isEditing={isEditing} />
         {chatId && role !== "user" && !isEditing && (
           <FeedbackButton
             isSelected={selectedFeedback === true}
