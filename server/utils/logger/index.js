@@ -5,7 +5,8 @@ class Logger {
   static _instance;
   constructor() {
     if (Logger._instance) return Logger._instance;
-    this.logger = process.env.NODE_ENV === 'production' ? this.getWinstonLogger() : console;
+    this.logger =
+      process.env.NODE_ENV === "production" ? this.getWinstonLogger() : console;
     Logger._instance = this;
   }
 
