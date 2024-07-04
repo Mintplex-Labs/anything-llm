@@ -125,7 +125,7 @@ function systemEndpoints(app) {
             user: null,
             valid: false,
             token: null,
-            message: "[001] Invalid login credentials.",
+            message: "Invalid login credentials.",
           });
           return;
         }
@@ -143,7 +143,7 @@ function systemEndpoints(app) {
             user: null,
             valid: false,
             token: null,
-            message: "[002] Invalid login credentials.",
+            message: "Invalid login credentials.Note: Username and Passwords are case sensitive.",
           });
           return;
         }
