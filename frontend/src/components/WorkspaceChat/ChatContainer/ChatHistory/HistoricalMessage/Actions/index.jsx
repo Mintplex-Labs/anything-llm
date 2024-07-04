@@ -51,22 +51,13 @@ const Actions = ({
           />
         )}
         {chatId && role !== "user" && !isEditing && (
-          <>
-            <FeedbackButton
-              isSelected={selectedFeedback === true}
-              handleFeedback={() => handleFeedback(true)}
-              tooltipId={`${chatId}-thumbs-up`}
-              tooltipContent="Good response"
-              IconComponent={ThumbsUp}
-            />
-            <FeedbackButton
-              isSelected={selectedFeedback === false}
-              handleFeedback={() => handleFeedback(false)}
-              tooltipId={`${chatId}-thumbs-down`}
-              tooltipContent="Bad response"
-              IconComponent={ThumbsDown}
-            />
-          </>
+          <FeedbackButton
+            isSelected={selectedFeedback === true}
+            handleFeedback={() => handleFeedback(true)}
+            tooltipId={`${chatId}-thumbs-up`}
+            tooltipContent="Good response"
+            IconComponent={ThumbsUp}
+          />
         )}
       </div>
       <TTSMessage slug={slug} chatId={chatId} message={message} />
