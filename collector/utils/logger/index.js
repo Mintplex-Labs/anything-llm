@@ -5,7 +5,8 @@ class Logger {
   static _instance;
   constructor() {
     if (Logger._instance) return Logger._instance;
-    this.logger = process.env.NODE_ENV === 'production' ? this.getWinstonLogger() : console;
+    this.logger =
+      process.env.NODE_ENV === "production" ? this.getWinstonLogger() : console;
     Logger._instance = this;
   }
 
@@ -19,8 +20,9 @@ class Logger {
             winston.format.colorize(),
             winston.format.printf(
               ({ level, message, service, origin = "" }) => {
-                return `\x1b[36m[${service}]\x1b[0m${origin ? `\x1b[33m[${origin}]\x1b[0m` : ""
-                  } ${level}: ${message}`;
+                return `\x1b[36m[${service}]\x1b[0m${
+                  origin ? `\x1b[33m[${origin}]\x1b[0m` : ""
+                } ${level}: ${message}`;
               }
             )
           ),

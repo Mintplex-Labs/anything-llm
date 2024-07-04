@@ -27,7 +27,10 @@ const HistoricalMessage = ({
   forkThread,
 }) => {
   const { isEditing } = useEditMessage({ chatId, role });
-  const { isDeleted } = useWatchDeleteMessage({ chatId });
+  const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
+    chatId,
+    role,
+  });
   const adjustTextArea = (event) => {
     const element = event.target;
     element.style.height = "auto";
@@ -38,8 +41,9 @@ const HistoricalMessage = ({
     return (
       <div
         key={uuid}
-        className={`flex justify-center items-end w-full ${role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
-          }`}
+        className={`flex justify-center items-end w-full ${
+          role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
+        }`}
       >
         <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
           <div className="flex gap-x-5">
@@ -59,11 +63,16 @@ const HistoricalMessage = ({
     );
   }
 
+  if (completeDelete) return null;
   return (
     <div
       key={uuid}
-      className={`${isDeleted ? 'animate-remove' : ''} flex justify-center items-end w-full group ${role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
-        }`}
+      onAnimationEnd={onEndAnimation}
+      className={`${
+        isDeleted ? "animate-remove" : ""
+      } flex justify-center items-end w-full group ${
+        role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
+      }`}
     >
       <div className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}>
         <div className="flex gap-x-5">

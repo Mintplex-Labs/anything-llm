@@ -4,20 +4,12 @@ import { useState, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
 const DELETE_EVENT = "delete-message";
 
-export function useWatchDeleteMessage({ chatId = null }) {
+export function useWatchDeleteMessage({ chatId = null, role = "user" }) {
   const [isDeleted, setIsDeleted] = useState(false);
-
-  async function onDeleteEvent(e) {
-    if (e.detail.chatId === chatId) {
-      setIsDeleted(true);
-      await Workspace.deleteChat(chatId);
-      return false;
-    }
-  }
+  const [completeDelete, setCompleteDelete] = useState(false);
 
   useEffect(() => {
     function listenForEvent() {
-      console.log({ chatId })
       if (!chatId) return;
       window.addEventListener(DELETE_EVENT, onDeleteEvent);
     }
@@ -27,16 +19,30 @@ export function useWatchDeleteMessage({ chatId = null }) {
     };
   }, [chatId]);
 
-  return { isDeleted };
+  function onEndAnimation() {
+    if (!isDeleted) return;
+    setCompleteDelete(true);
+  }
+
+  async function onDeleteEvent(e) {
+    if (e.detail.chatId === chatId) {
+      setIsDeleted(true);
+      // Do this to prevent double-emission of the PUT/DELETE api call
+      // because then there will be a race condition and it will make an error log for nothing
+      // as one call will complete and the other will fail.
+      if (role === "assistant") await Workspace.deleteChat(chatId);
+      return false;
+    }
+  }
+
+  return { isDeleted, completeDelete, onEndAnimation };
 }
 
 export function DeleteMessage({ chatId, isEditing, role }) {
   if (!chatId || isEditing || role === "user") return null;
 
   function emitDeleteEvent() {
-    window.dispatchEvent(
-      new CustomEvent(DELETE_EVENT, { detail: { chatId } })
-    );
+    window.dispatchEvent(new CustomEvent(DELETE_EVENT, { detail: { chatId } }));
   }
 
   return (

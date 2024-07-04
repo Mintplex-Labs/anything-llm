@@ -52,11 +52,7 @@ const Actions = ({
             chatId={chatId}
           />
         )}
-        <DeleteMessage
-          chatId={chatId}
-          role={role}
-          isEditing={isEditing}
-        />
+        <DeleteMessage chatId={chatId} role={role} isEditing={isEditing} />
         {chatId && role !== "user" && !isEditing && (
           <>
             <FeedbackButton

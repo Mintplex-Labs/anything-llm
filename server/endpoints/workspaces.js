@@ -231,8 +231,8 @@ function workspaceEndpoints(app) {
           message:
             failedToEmbed.length > 0
               ? `${failedToEmbed.length} documents failed to add.\n\n${errors
-                .map((msg) => `${msg}`)
-                .join("\n\n")}`
+                  .map((msg) => `${msg}`)
+                  .join("\n\n")}`
               : null,
         });
       } catch (e) {
@@ -779,11 +779,11 @@ function workspaceEndpoints(app) {
         // and is a valid thread slug.
         const threadId = !!threadSlug
           ? (
-            await WorkspaceThread.get({
-              slug: String(threadSlug),
-              workspace_id: workspace.id,
-            })
-          )?.id ?? null
+              await WorkspaceThread.get({
+                slug: String(threadSlug),
+                workspace_id: workspace.id,
+              })
+            )?.id ?? null
           : null;
         const chatsToFork = await WorkspaceChats.where(
           {
@@ -848,9 +848,13 @@ function workspaceEndpoints(app) {
         const user = await userFromSession(request, response);
         const validChat = await WorkspaceChats.get({
           id: Number(id),
-          user_id: user?.id ?? null
+          user_id: user?.id ?? null,
         });
-        if (!validChat) return response.status(404).json({ success: false, error: 'Chat not found.' });
+        if (!validChat)
+          return response
+            .status(404)
+            .json({ success: false, error: "Chat not found." });
+
         await WorkspaceChats._update(validChat.id, { include: false });
         response.json({ success: true, error: null });
       } catch (e) {
