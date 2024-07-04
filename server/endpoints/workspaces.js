@@ -838,6 +838,33 @@ function workspaceEndpoints(app) {
       }
     }
   );
+
+  app.put(
+    "/workspace/workspace-chats/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      const user = await userFromSession(request, response);
+      try {
+        const { id } = request.params;
+        const result = await WorkspaceChats._update(Number(id), {
+          include: false,
+          user_id: user?.id,
+        });
+
+        if (result) {
+          response.json({ success: true, error: null });
+        } else {
+          response.status(404).json({
+            success: false,
+            error: "Chat not found or user not authorized",
+          });
+        }
+      } catch (e) {
+        console.error(e);
+        response.status(500).json({ success: false, error: "Server error" });
+      }
+    }
+  );
 }
 
 module.exports = { workspaceEndpoints };

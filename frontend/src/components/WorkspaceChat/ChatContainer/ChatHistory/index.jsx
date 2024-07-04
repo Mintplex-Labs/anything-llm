@@ -11,7 +11,6 @@ import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
-import System from "@/models/system";
 
 export default function ChatHistory({
   history = [],
@@ -153,7 +152,7 @@ export default function ChatHistory({
     )
       return false;
 
-    const { success } = await System.deleteChat(chatId);
+    const { success } = await Workspace.deleteChat(chatId);
 
     if (success) {
       const updatedHistory = history.filter((msg) => msg.chatId !== chatId);
