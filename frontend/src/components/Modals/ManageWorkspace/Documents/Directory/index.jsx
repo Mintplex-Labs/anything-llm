@@ -1,16 +1,16 @@
-import UploadFile from "../UploadFile";
 import PreLoader from "@/components/Preloader";
-import { memo, useEffect, useState } from "react";
-import FolderRow from "./FolderRow";
-import System from "@/models/system";
-import { MagnifyingGlass, Plus, Trash } from "@phosphor-icons/react";
+import { useModal } from "@/hooks/useModal";
 import Document from "@/models/document";
+import System from "@/models/system";
 import showToast from "@/utils/toast";
+import { MagnifyingGlass, Plus, Trash } from "@phosphor-icons/react";
+import debounce from "lodash.debounce";
+import { memo, useEffect, useState } from "react";
+import UploadFile from "../UploadFile";
+import FolderRow from "./FolderRow";
 import FolderSelectionPopup from "./FolderSelectionPopup";
 import MoveToFolderIcon from "./MoveToFolderIcon";
-import { useModal } from "@/hooks/useModal";
 import NewFolderModal from "./NewFolderModal";
-import debounce from "lodash.debounce";
 import { filterFileSearchResults } from "./utils";
 
 function Directory({
@@ -26,6 +26,7 @@ function Directory({
   moveToWorkspace,
   setLoadingMessage,
   loadingMessage,
+  isUploadedDoc,
 }) {
   const [amountSelected, setAmountSelected] = useState(0);
   const [showFolderSelection, setShowFolderSelection] = useState(false);
@@ -200,9 +201,16 @@ function Directory({
           </button>
         </div>
 
-        <div className="relative w-[560px] h-[310px] bg-zinc-900 rounded-2xl overflow-hidden">
+        <div
+          className={`relative w-[560px] bg-zinc-900 rounded-2xl overflow-hidden ${
+            isUploadedDoc ? "h-[600px]" : "h-[310px]"
+          }`}
+        >
           <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900">
             <p className="col-span-6">Name</p>
+            <p className="col-span-6" style={{ textAlign: "right" }}>
+              Tag
+            </p>
           </div>
 
           <div className="overflow-y-auto h-full pt-8">
@@ -281,14 +289,17 @@ function Directory({
             </div>
           )}
         </div>
-
-        <UploadFile
-          workspace={workspace}
-          fetchKeys={fetchKeys}
-          setLoading={setLoading}
-          setLoadingMessage={setLoadingMessage}
-        />
       </div>
+      {!isUploadedDoc ? (
+        <div style={{ marginTop: "1rem" }}>
+          <UploadFile
+            workspace={workspace}
+            fetchKeys={fetchKeys}
+            setLoading={setLoading}
+            setLoadingMessage={setLoadingMessage}
+          />
+        </div>
+      ) : null}
       {isFolderModalOpen && (
         <div className="bg-black/60 backdrop-blur-sm fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center z-30">
           <NewFolderModal
@@ -302,4 +313,6 @@ function Directory({
   );
 }
 
-export default memo(Directory);
+const DirectoryMemoized = memo(Directory);
+
+export default DirectoryMemoized;

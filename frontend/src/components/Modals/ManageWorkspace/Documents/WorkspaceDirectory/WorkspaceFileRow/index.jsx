@@ -1,13 +1,19 @@
-import { memo, useState } from "react";
+import System from "@/models/system";
+import Workspace from "@/models/workspace";
 import {
   formatDate,
   getFileExtension,
   middleTruncate,
 } from "@/utils/directories";
-import { ArrowUUpLeft, Eye, File, PushPin } from "@phosphor-icons/react";
-import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
-import System from "@/models/system";
+import {
+  ArrowUUpLeft,
+  Download,
+  Eye,
+  File,
+  PushPin,
+} from "@phosphor-icons/react";
+import { memo, useState } from "react";
 import { Tooltip } from "react-tooltip";
 
 export default function WorkspaceFileRow({
@@ -37,7 +43,6 @@ export default function WorkspaceFileRow({
     setLoadingMessage("");
     setLoading(false);
   };
-
   const isMovedItem = movedItems?.some((movedItem) => movedItem.id === item.id);
   return (
     <div
@@ -67,6 +72,7 @@ export default function WorkspaceFileRow({
               docPath={`${folderName}/${item.name}`}
               item={item}
             />
+            <DownloadFileButton item={item} />
             <PinItemToWorkspace
               workspace={workspace}
               docPath={`${folderName}/${item.name}`}
@@ -251,5 +257,29 @@ const RemoveItemFromWorkspace = ({ item, onClick }) => {
         className="tooltip invert !text-xs"
       />
     </div>
+  );
+};
+
+const DownloadFileButton = ({ item }) => {
+  const downloadFile = () => {
+    const blob = new Blob([item.content], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", item.title);
+    document.body.appendChild(link);
+    link.click();
+    URL.revokeObjectURL(url);
+    link.remove();
+  };
+  return (
+    <Download
+      data-tooltip-id={`download-${item.id}`}
+      data-tooltip-content="Download file"
+      size={16}
+      onClick={downloadFile}
+      className="text-base font-bold flex-shrink-0 cursor-pointer ml-2"
+    />
   );
 };

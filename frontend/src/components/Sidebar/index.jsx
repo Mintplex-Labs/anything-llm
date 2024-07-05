@@ -1,16 +1,18 @@
+import useLogo from "@/hooks/useLogo";
+import useUser from "@/hooks/useUser";
+import { USER_BACKGROUND_COLOR } from "@/utils/constants";
+import paths from "@/utils/paths";
+import { List, Plus, UploadSimple } from "@phosphor-icons/react";
 import React, { useEffect, useRef, useState } from "react";
-import { Plus, List } from "@phosphor-icons/react";
+import { Link } from "react-router-dom";
+import Footer from "../Footer";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
-import ActiveWorkspaces from "./ActiveWorkspaces";
-import { USER_BACKGROUND_COLOR } from "@/utils/constants";
-import useLogo from "@/hooks/useLogo";
-import useUser from "@/hooks/useUser";
-import Footer from "../Footer";
 import SettingsButton from "../SettingsButton";
-import { Link } from "react-router-dom";
-import paths from "@/utils/paths";
+import ActiveWorkspaces from "./ActiveWorkspaces";
+import UploadedDocuments from "./UploadDocuments";
+import { useUploadedModel } from "./UploadDocuments/useUploadedModel";
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -21,6 +23,11 @@ export default function Sidebar() {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
+  const {
+    show: showingUploadModal,
+    showUploadModal: showUploadedModal,
+    hideUploadModal: hideUploadModal,
+  } = useUploadedModel();
 
   return (
     <div>
@@ -46,8 +53,21 @@ export default function Sidebar() {
                 <div className="flex gap-x-2 items-center justify-between">
                   {(!user || user?.role !== "default") && (
                     <button
-                      onClick={showNewWsModal}
+                      onClick={showUploadedModal}
                       className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                    >
+                      <UploadSimple size={18} weight="bold" />
+                      <p className="text-sidebar text-sm font-semibold">
+                        Uploaded Document
+                      </p>
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-col gap-x-2 items-center justify-center">
+                  {(!user || user?.role !== "default") && (
+                    <button
+                      onClick={showNewWsModal}
+                      className="flex flex-grow w-full h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
                     >
                       <Plus size={18} weight="bold" />
                       <p className="text-sidebar text-sm font-semibold">
@@ -66,6 +86,7 @@ export default function Sidebar() {
         </div>
       </div>
       {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
+      {showingUploadModal && <UploadedDocuments hideModal={hideUploadModal} />}
     </div>
   );
 }
@@ -80,6 +101,11 @@ export function SidebarMobileHeader() {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
+  const {
+    show: showingUploadModal,
+    showUploadModal: showUploadedModal,
+    hideUploadModal: hideUploadModal,
+  } = useUploadedModel();
   const { user } = useUser();
 
   useEffect(() => {
