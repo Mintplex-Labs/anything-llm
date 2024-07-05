@@ -138,7 +138,7 @@ const PinAlert = memo(() => {
   }
 
   function handlePinEvent() {
-    if (!!window?.localStorage?.getItem(SEEN_DOC_PIN_ALERT)) return;
+    if (window?.localStorage?.getItem(SEEN_DOC_PIN_ALERT)) return;
     setShowAlert(true);
   }
 
@@ -227,7 +227,7 @@ const DocumentWatchAlert = memo(() => {
           <div className="w-full p-6 text-white text-md flex flex-col gap-y-2">
             <p>
               When you <b>watch</b> a document in AnythingLLM we will{" "}
-              <i>automatically</i> sync your document content from it's original
+              <i>automatically</i> sync your document content from its original
               source on regular intervals. This will automatically update the
               content in every workspace where this file is managed.
             </p>
@@ -262,4 +262,9 @@ const DocumentWatchAlert = memo(() => {
   );
 });
 
-export default memo(WorkspaceDirectory);
+DocumentWatchAlert.displayName = "DocumentWatchAlert";
+PinAlert.displayName = "PinAlert";
+
+const WorkspaceDirectoryMemoized = memo(WorkspaceDirectory);
+
+export default WorkspaceDirectoryMemoized;
