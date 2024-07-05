@@ -1,12 +1,12 @@
-import PreLoader from "@/components/Preloader";
-import { dollarFormat } from "@/utils/numbers";
-import WorkspaceFileRow from "./WorkspaceFileRow";
-import { memo, useEffect, useState } from "react";
 import ModalWrapper from "@/components/ModalWrapper";
-import { Eye, PushPin } from "@phosphor-icons/react";
+import PreLoader from "@/components/Preloader";
 import { SEEN_DOC_PIN_ALERT, SEEN_WATCH_ALERT } from "@/utils/constants";
+import { dollarFormat } from "@/utils/numbers";
 import paths from "@/utils/paths";
+import { Eye, PushPin } from "@phosphor-icons/react";
+import { memo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import WorkspaceFileRow from "./WorkspaceFileRow";
 
 function WorkspaceDirectory({
   workspace,
@@ -21,6 +21,7 @@ function WorkspaceDirectory({
   saveChanges,
   embeddingCosts,
   movedItems,
+  showWorkspaceName = true,
 }) {
   if (loading) {
     return (
@@ -48,15 +49,18 @@ function WorkspaceDirectory({
 
   return (
     <>
-      <div className="px-8">
-        <div className="flex items-center justify-start w-[560px]">
-          <h3 className="text-white text-base font-bold ml-5">
-            {workspace.name}
-          </h3>
-        </div>
+      <div className={showWorkspaceName ? "px-8" : "px-1"}>
+        {showWorkspaceName && (
+          <div className="flex items-center justify-start w-[560px]">
+            <h3 className="text-white text-base font-bold ml-5">
+              {workspace.name}
+            </h3>
+          </div>
+        )}
         <div
-          className={`relative w-[560px] h-[445px] bg-zinc-900 rounded-2xl mt-5 overflow-y-auto border-4 ${
-            highlightWorkspace ? "border-cyan-300/80" : "border-transparent"
+          className={`relative w-[560px] bg-zinc-900 rounded-2xl mt-4 overflow-y-auto border-4 ${
+            (highlightWorkspace ? "border-cyan-300/80" : "border-transparent",
+            showWorkspaceName ? "h-[445px]" : "h-[95vh]")
           }`}
         >
           <div className="text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 bg-zinc-900 sticky top-0 z-10">
