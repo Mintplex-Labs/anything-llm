@@ -70,7 +70,7 @@ const PromptReply = forwardRef(
           className={`allm-text-[10px] allm-text-gray-400 allm-ml-[54px] allm-mr-6 allm-mb-2 allm-text-left allm-font-sans`}
         >
           {embedderSettings.settings.assistantName ||
-            "Anything LLM Chat Assistant"}
+            "Fabriiq LLM Chat Assistant"}
         </div>
         <div
           key={uuid}
