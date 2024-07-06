@@ -18,7 +18,11 @@ const scriptSettings = Object.assign(
   document?.currentScript?.dataset || {}
 );
 export const embedderSettings = {
-  settings: scriptSettings,
+  settings: {
+    ...scriptSettings,
+    sponsorLink: scriptSettings.sponsorLink ?? "https://fabriiq.com",
+    sponsorText: scriptSettings.sponsorText ?? "Powered by Fabriiq",
+  },
   stylesSrc: parseStylesSrc(document?.currentScript?.src),
   USER_STYLES: {
     msgBg: scriptSettings?.userBgColor ?? "#3DBEF5",
