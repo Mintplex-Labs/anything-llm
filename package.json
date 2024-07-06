@@ -25,6 +25,7 @@
     "prod:frontend": "cd frontend && yarn build",
     "generate:cloudformation": "node cloud-deployments/aws/cloudformation/generate.mjs",
     "generate::gcp_deployment": "node cloud-deployments/gcp/deployment/generate.mjs",
+    "react-i18next": "^14.1.1",
     "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs"
   },
   "private": false
