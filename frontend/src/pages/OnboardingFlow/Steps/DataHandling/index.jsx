@@ -94,7 +94,7 @@ export const LLM_SELECTION_PRIVACY = {
   native: {
     name: "Custom Llama Model",
     description: [
-      "Your model and chats are only accessible on this AnythingLLM instance",
+      "Your model and chats are only accessible on this Fabriiq instance",
     ],
     logo: AnythingLLMIcon,
   },
