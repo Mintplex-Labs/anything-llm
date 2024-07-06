@@ -8,10 +8,10 @@
     "dev:preview": "yarn run dev:build && yarn serve . -p 3080 --no-clipboard",
     "dev:build": "vite build && yarn styles",
     "styles": "npx cleancss -o dist/anythingllm-chat-widget.min.css dist/style.css",
-    "build": "vite build && yarn styles && npx terser --compress -o dist/anythingllm-chat-widget.min.js -- dist/anythingllm-chat-widget.js",
+    "build": "vite build && yarn styles && npx terser --compress -o dist/fabriiq-chat-widget.min.js -- dist/fabriiq-chat-widget.js",
     "build:publish": "yarn build:publish:js && yarn build:publish:css",
-    "build:publish:js": "yarn build && mkdir -p ../frontend/public/embed && cp -r dist/anythingllm-chat-widget.min.js ../frontend/public/embed/anythingllm-chat-widget.min.js",
-    "build:publish:css": "cp -r dist/anythingllm-chat-widget.min.css ../frontend/public/embed/anythingllm-chat-widget.min.css",
+    "build:publish:js": "yarn build && mkdir -p ../frontend/public/embed && cp -r dist/fabriiq-chat-widget.min.js ../frontend/public/embed/fabriiq-chat-widget.min.js",
+    "build:publish:css": "cp -r dist/fabriiq-chat-widget.min.css ../frontend/public/embed/fabriiq-chat-widget.min.css",
     "lint": "yarn prettier --ignore-path ../.prettierignore --write ./src"
   },
   "dependencies": {
