@@ -51,11 +51,9 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              Welcome to AnythingLLM, AnythingLLM is an open-source AI tool by
-              Mintplex Labs that turns anything into a trained chatbot you can
-              query and chat with. AnythingLLM is a BYOK (bring-your-own-keys)
-              software so there is no subscription, fee, or charges for this
-              software outside of the services you want to use with it.
+              Welcome to Fabriiq Ai, Fabriiq Ai is an AI tool by
+              tekmindlabs that turns anything into a trained chatbot you can
+              query and chat with.
             </span>
           </div>
         </div>
@@ -75,9 +73,7 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              AnythingLLM is the easiest way to put powerful AI products like
-              OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services
-              together in a neat package with no fuss to increase your
+              Fabriiq Ai is the easiest way to put powerful AI on wotk with no fuss to increase your
               productivity by 100x.
             </span>
           </div>
@@ -98,21 +94,12 @@ export default function DefaultChatContainer() {
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               >
-                AnythingLLM can run totally locally on your machine with little
-                overhead you wont even notice it's there! No GPU needed. Cloud
-                and on-premises installation is available as well.
+                Cloud and on-premises installation is available as well.
                 <br />
                 The AI tooling ecosystem gets more powerful everyday.
-                AnythingLLM makes it easy to use.
+                Fabriiq Ai makes it easy to use.
               </span>
-              <a
-                href={paths.github()}
-                target="_blank"
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              >
-                <GitMerge className="h-4 w-4" />
-                <p>Create an issue on Github</p>
-              </a>
+             
             </div>
           </div>
         </div>
@@ -216,10 +203,10 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              AnythingLLM is more than a smarter Dropbox.
+              Fabriiq Ai is more than a smarter Dropbox.
               <br />
               <br />
-              AnythingLLM offers two ways of talking with your data:
+              Fabriiq Ai offers two ways of talking with your data:
               <br />
               <br />
               <i>Query:</i> Your chats will return data or inferences found with
@@ -280,7 +267,7 @@ export default function DefaultChatContainer() {
                 Have Fun!
               </span>
 
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
+          {/*    <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
                 <a
                   href={paths.github()}
                   target="_blank"
@@ -296,7 +283,7 @@ export default function DefaultChatContainer() {
                   <EnvelopeSimple className="h-4 w-4" />
                   <p>Contact Mintplex Labs</p>
                 </a>
-              </div>
+              </div>  */}
             </div>
           </div>
         </div>
