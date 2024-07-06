@@ -37,7 +37,7 @@ export default defineConfig({
       entry: "src/main.jsx",
       name: "EmbeddedAnythingLLM",
       formats: ["umd"],
-      fileName: (_format) => `anythingllm-chat-widget.js`
+      fileName: (_format) => `fabriiq-chat-widget.js`
     },
     rollupOptions: {
       external: [
