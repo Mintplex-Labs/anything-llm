@@ -115,7 +115,7 @@ function apiDocumentEndpoints(app) {
         });
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -213,7 +213,7 @@ function apiDocumentEndpoints(app) {
         });
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -346,7 +346,7 @@ function apiDocumentEndpoints(app) {
         await EventLogs.logEvent("api_raw_document_uploaded");
         response.status(200).json({ success: true, error: null, documents });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -391,7 +391,7 @@ function apiDocumentEndpoints(app) {
       const localFiles = await viewLocalFiles();
       response.status(200).json({ localFiles });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -447,7 +447,7 @@ function apiDocumentEndpoints(app) {
 
         response.status(200).json({ types });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -497,7 +497,7 @@ function apiDocumentEndpoints(app) {
           },
         });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -555,7 +555,7 @@ function apiDocumentEndpoints(app) {
       }
       response.status(200).json({ document });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });

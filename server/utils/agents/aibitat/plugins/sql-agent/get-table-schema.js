@@ -57,7 +57,7 @@ module.exports.SqlAgentGetTableSchema = {
               );
               if (!databaseConfig) {
                 this.super.handlerProps.log(
-                  `sql-get-table-schema to find config!.`,
+                  `sql-get-table-schema to find config!`,
                   database_id
                 );
                 return `No database connection for ${database_id} was found!`;

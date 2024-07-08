@@ -96,7 +96,7 @@ function apiWorkspaceThreadEndpoints(app) {
         });
         response.status(200).json({ thread, message });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -179,7 +179,7 @@ function apiWorkspaceThreadEndpoints(app) {
         );
         response.status(200).json({ thread: updatedThread, message });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -228,7 +228,7 @@ function apiWorkspaceThreadEndpoints(app) {
         });
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -307,7 +307,7 @@ function apiWorkspaceThreadEndpoints(app) {
 
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -425,7 +425,7 @@ function apiWorkspaceThreadEndpoints(app) {
         });
         response.status(200).json({ ...result });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.status(500).json({
           id: uuidv4(),
           type: "abort",
@@ -576,7 +576,7 @@ function apiWorkspaceThreadEndpoints(app) {
         });
         response.end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         writeResponseChunk(response, {
           id: uuidv4(),
           type: "abort",

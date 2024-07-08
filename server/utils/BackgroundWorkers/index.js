@@ -1,6 +1,7 @@
 const path = require("path");
 const Graceful = require("@ladjs/graceful");
-const Bree = require("bree");
+const Bree = require("@mintplex-labs/bree");
+const setLogger = require("../logger");
 
 class BackgroundService {
   name = "BackgroundWorkerService";
@@ -13,7 +14,7 @@ class BackgroundService {
       return BackgroundService._instance;
     }
 
-    this.logger = this.getLogger();
+    this.logger = setLogger();
     BackgroundService._instance = this;
   }
 
@@ -35,6 +36,7 @@ class BackgroundService {
       jobs: this.jobs(),
       errorHandler: this.onError,
       workerMessageHandler: this.onWorkerMessageHandler,
+      runJobsAs: "process",
     });
     this.graceful = new Graceful({ brees: [this.bree], logger: this.logger });
     this.graceful.listen();
@@ -50,6 +52,7 @@ class BackgroundService {
     this.#log("Service stopped");
   }
 
+  /** @returns {import("@mintplex-labs/bree").Job[]} */
   jobs() {
     return [
       // Job for auto-sync of documents
@@ -61,27 +64,18 @@ class BackgroundService {
     ];
   }
 
-  getLogger() {
-    const { format, createLogger, transports } = require("winston");
-    return new createLogger({
-      level: "info",
-      format: format.combine(
-        format.colorize(),
-        format.printf(({ level, message, service }) => {
-          return `\x1b[36m[${service}]\x1b[0m ${level}: ${message}`;
-        })
-      ),
-      defaultMeta: { service: this.name },
-      transports: [new transports.Console()],
+  onError(error, _workerMetadata) {
+    this.logger.error(`${error.message}`, {
+      service: "bg-worker",
+      origin: error.name,
     });
   }
 
-  onError(error, _workerMetadata) {
-    this.logger.error(`[${error.name}]: ${error.message}`);
-  }
-
   onWorkerMessageHandler(message, _workerMetadata) {
-    this.logger.info(`[${message.name}]: ${message.message}`);
+    this.logger.info(`${message.message}`, {
+      service: "bg-worker",
+      origin: message.name,
+    });
   }
 }
 
