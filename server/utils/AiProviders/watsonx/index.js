@@ -1,5 +1,5 @@
-const WatsonxAiMlVmlv1 = require("@ibm-cloud/watsonx-ai/dist/watsonx-ai-ml/vml-v1");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const { IamTokenManager } = require("ibm-watson/auth");
 const {
   writeResponseChunk,
   clientAbortedHandler,
@@ -13,6 +13,9 @@ class WatsonxLLM {
       throw new Error("No Watsonx API endpoint was set.");
     if (!process.env.WATSONX_AI_APIKEY)
       throw new Error("No Watsonx API key was set.");
+    this.auth = new IamTokenManager({
+      apikey: process.env.WATSONX_AI_APIKEY || "",
+    });
 
     this.watsonx = WatsonXAI.newInstance({
       version: "2024-05-31",
@@ -36,7 +39,6 @@ class WatsonxLLM {
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
-
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
   }
@@ -108,13 +110,13 @@ class WatsonxLLM {
     let input = "";
     messages.forEach((message, index) => {
       if (message.role == "system") {
-        input += "SYSTEM: \n";
+        input += "[INST]<<SYS>>\n";
+        input += `${message.content}\n`;
+        input += "<</SYS>>\n\n";
       } else {
-        input += "USER: \n";
+        input += `${message.content} [INST]\n\n`;
       }
-      input += `${message.content}\n\n`;
     });
-
     console.log(input);
     return input;
   }
@@ -125,14 +127,57 @@ class WatsonxLLM {
         "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
       );
 
-    console.log(messages);
-
-    const stream = await this.watsonx.textGenerationStream({
-      modelId: this.model,
+    const data = {
       input: this.formatMessages(messages),
-      projectId: this.projectId,
+      parameters: {
+        decoding_method: "greedy",
+        max_new_tokens: 900,
+        min_new_tokens: 0,
+        stop_sequences: [],
+        repetition_penalty: 1,
+      },
+      model_id: this.model,
+      project_id: this.projectId,
+    };
+
+    const stream = await fetch(
+      "https://us-south.ml.cloud.ibm.com/ml/v1/text/generation_stream?version=2023-05-29",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${await this.auth.getToken()}`,
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    console.log(stream);
+
+    return stream.body;
+  }
+
+  parseStreamResult(result) {
+    const lines = result.split("\n");
+    const events = [];
+    let event = {};
+
+    lines.forEach((line) => {
+      if (line.startsWith("id:")) {
+        event.id = line.slice(4);
+      } else if (line.startsWith("event:")) {
+        event.event = line.slice(7);
+      } else if (line.startsWith("data:")) {
+        event.data = JSON.parse(line.slice(6));
+      } else if (line === "") {
+        if (Object.keys(event).length > 0) {
+          events.push(event);
+          event = {};
+        }
+      }
     });
-    return stream;
+
+    return events;
   }
 
   handleStream(response, stream, responseProps) {
@@ -147,21 +192,48 @@ class WatsonxLLM {
       // to preserve previously generated content.
       const handleAbort = () => clientAbortedHandler(resolve, fullText);
       response.on("close", handleAbort);
+      //const reader = stream.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let chunks = "";
 
-      for await (const event of stream) {
-        for (const choice of event.choices) {
-          const delta = choice.delta?.content;
-          if (!delta) continue;
-          fullText += delta;
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: delta,
-            close: false,
-            error: false,
-          });
-        }
+      // try {
+      //   while (true) {
+      //     const { done, value } = await reader.read();
+      //     if (done) break;
+
+      //     chunks += decoder.decode(value, { stream: true });
+      //   }
+
+      //   // Convert the accumulated chunks to JSON
+      //   const jsonData = JSON.parse(chunks);
+
+      //   console.log('JSON Data:', jsonData);
+      // } catch (error) {
+      //   console.error('Error reading stream or parsing JSON:', error);
+      // } finally {
+      //   reader.releaseLock();
+      // }
+
+      for await (const chunk of stream) {
+        const decodedChunk = decoder.decode(chunk);
+        const lines = decodedChunk.split("\n");
+        console.log(lines);
+        const parsedLines = lines.map((line) => {
+          console.log(line.replace(/^data: /, ""));
+          line.replace(/^data: /, "").trim();
+        });
+        console.log(parsedLines);
+        const delta = data.results[0].generated_text;
+        if (!delta) continue;
+        fullText += delta;
+        writeResponseChunk(response, {
+          uuid,
+          sources: [],
+          type: "textResponseChunk",
+          textResponse: delta,
+          close: false,
+          error: false,
+        });
       }
 
       writeResponseChunk(response, {
@@ -195,3 +267,63 @@ class WatsonxLLM {
 module.exports = {
   WatsonxLLM,
 };
+
+class SSEStream {
+  constructor(response) {
+    this.buffer = "";
+    this.response = response;
+    this.response.on("data", (chunk) => this.handleData(chunk));
+    this.response.on("end", () => this.handleEnd());
+    this.response.on("error", (error) => this.handleError(error));
+  }
+
+  handleData(chunk) {
+    this.buffer += chunk.toString();
+    while (this.parseBuffer()) {}
+  }
+
+  handleEnd() {
+    this.parseBuffer();
+  }
+
+  handleError(error) {
+    this.emit("error", error);
+  }
+
+  parseBuffer() {
+    const endOfLine = this.buffer.indexOf("\n");
+    if (endOfLine === -1) {
+      return false;
+    }
+
+    const line = this.buffer.slice(0, endOfLine);
+    this.buffer = this.buffer.slice(endOfLine + 1);
+
+    if (line.startsWith("data:")) {
+      const jsonData = JSON.parse(line.substring(5).trim());
+      this.emit("data", jsonData);
+    }
+
+    return true;
+  }
+
+  emit(event, data) {
+    if (event === "data") {
+      if (this.onData) {
+        this.onData(data);
+      }
+    } else if (event === "error") {
+      if (this.onError) {
+        this.onError(data);
+      }
+    }
+  }
+
+  on(event, callback) {
+    if (event === "data") {
+      this.onData = callback;
+    } else if (event === "error") {
+      this.onError = callback;
+    }
+  }
+}
