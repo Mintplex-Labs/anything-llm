@@ -56,19 +56,6 @@ async function chatWithWorkspace(
     model: workspace?.chatModel,
   });
   const VectorDb = getVectorDbClass();
-  const { safe, reasons = [] } = await LLMConnector.isSafe(message);
-  if (!safe) {
-    return {
-      id: uuid,
-      type: "abort",
-      textResponse: null,
-      sources: [],
-      close: true,
-      error: `This message was moderated and will not be allowed. Violations for ${reasons.join(
-        ", "
-      )} found.`,
-    };
-  }
 
   const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);

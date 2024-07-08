@@ -112,8 +112,8 @@ async function chatSync({
   }
 
   // For OpenAI Compatible chats, we cannot do backfilling so we simply aggregate results here.
-  contextTexts = [...contextTexts];
-  sources = [...sources];
+  contextTexts = [...contextTexts, ...vectorSearchResults.contextTexts];
+  sources = [...sources, ...vectorSearchResults.sources];
 
   // If in query mode and no context chunks are found from search, backfill, or pins -  do not
   // let the LLM try to hallucinate a response or use general knowledge and exit early
@@ -328,8 +328,8 @@ async function streamChat({
   }
 
   // For OpenAI Compatible chats, we cannot do backfilling so we simply aggregate results here.
-  contextTexts = [...contextTexts];
-  sources = [...sources];
+  contextTexts = [...contextTexts, ...vectorSearchResults.contextTexts];
+  sources = [...sources, ...vectorSearchResults.sources];
 
   // If in query mode and no context chunks are found from search, backfill, or pins -  do not
   // let the LLM try to hallucinate a response or use general knowledge and exit early

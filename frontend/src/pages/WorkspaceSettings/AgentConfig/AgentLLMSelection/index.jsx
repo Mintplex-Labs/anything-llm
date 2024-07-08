@@ -20,8 +20,8 @@ const ENABLED_PROVIDERS = [
   "mistral",
   "perplexity",
   "textgenwebui",
+  "generic-openai",
   // TODO: More agent support.
-  // "generic-openai", // Need to support text-input for agent model input for this to be enabled.
   // "cohere",         // Has tool calling and will need to build explicit support
   // "huggingface"     // Can be done but already has issues with no-chat templated. Needs to be tested.
   // "gemini",         // Too rate limited and broken in several ways to use for agents.

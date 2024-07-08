@@ -66,7 +66,7 @@ module.exports.SqlAgentQuery = {
               );
               if (!databaseConfig) {
                 this.super.handlerProps.log(
-                  `sql-query failed to find config!.`,
+                  `sql-query failed to find config!`,
                   database_id
                 );
                 return `No database connection for ${database_id} was found!`;

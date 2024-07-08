@@ -31,6 +31,8 @@ const {
   fetchPfp,
 } = require("../utils/files/pfp");
 const { getTTSProvider } = require("../utils/TextToSpeech");
+const { WorkspaceThread } = require("../models/workspaceThread");
+const truncate = require("truncate");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -68,7 +70,7 @@ function workspaceEndpoints(app) {
 
         response.status(200).json({ workspace, message });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -97,7 +99,7 @@ function workspaceEndpoints(app) {
         );
         response.status(200).json({ workspace, message });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -147,7 +149,7 @@ function workspaceEndpoints(app) {
         );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -190,7 +192,7 @@ function workspaceEndpoints(app) {
         );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -234,7 +236,7 @@ function workspaceEndpoints(app) {
               : null,
         });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -277,7 +279,7 @@ function workspaceEndpoints(app) {
         }
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -318,7 +320,7 @@ function workspaceEndpoints(app) {
         }
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -336,7 +338,7 @@ function workspaceEndpoints(app) {
 
         response.status(200).json({ workspaces });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -355,7 +357,7 @@ function workspaceEndpoints(app) {
 
         response.status(200).json({ workspace });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -382,7 +384,7 @@ function workspaceEndpoints(app) {
           : await WorkspaceChats.forWorkspace(workspace.id);
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -413,7 +415,7 @@ function workspaceEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -437,7 +439,7 @@ function workspaceEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -474,7 +476,7 @@ function workspaceEndpoints(app) {
 
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -758,6 +760,106 @@ function workspaceEndpoints(app) {
       } catch (error) {
         console.error("Error processing the profile picture removal:", error);
         response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/thread/fork",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const workspace = response.locals.workspace;
+        const { chatId, threadSlug } = reqBody(request);
+        if (!chatId)
+          return response.status(400).json({ message: "chatId is required" });
+
+        // Get threadId we are branching from if that request body is sent
+        // and is a valid thread slug.
+        const threadId = !!threadSlug
+          ? (
+              await WorkspaceThread.get({
+                slug: String(threadSlug),
+                workspace_id: workspace.id,
+              })
+            )?.id ?? null
+          : null;
+        const chatsToFork = await WorkspaceChats.where(
+          {
+            workspaceId: workspace.id,
+            user_id: user?.id,
+            include: true, // only duplicate visible chats
+            thread_id: threadId,
+            id: { lte: Number(chatId) },
+          },
+          null,
+          { id: "asc" }
+        );
+
+        const { thread: newThread, message: threadError } =
+          await WorkspaceThread.new(workspace, user?.id);
+        if (threadError)
+          return response.status(500).json({ error: threadError });
+
+        let lastMessageText = "";
+        const chatsData = chatsToFork.map((chat) => {
+          const chatResponse = safeJsonParse(chat.response, {});
+          if (chatResponse?.text) lastMessageText = chatResponse.text;
+
+          return {
+            workspaceId: workspace.id,
+            prompt: chat.prompt,
+            response: JSON.stringify(chatResponse),
+            user_id: user?.id,
+            thread_id: newThread.id,
+          };
+        });
+        await WorkspaceChats.bulkCreate(chatsData);
+        await WorkspaceThread.update(newThread, {
+          name: !!lastMessageText
+            ? truncate(lastMessageText, 22)
+            : "Forked Thread",
+        });
+
+        await Telemetry.sendTelemetry("thread_forked");
+        await EventLogs.logEvent(
+          "thread_forked",
+          {
+            workspaceName: workspace?.name || "Unknown Workspace",
+            threadName: newThread.name,
+          },
+          user?.id
+        );
+        response.status(200).json({ newThreadSlug: newThread.slug });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.put(
+    "/workspace/workspace-chats/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const user = await userFromSession(request, response);
+        const validChat = await WorkspaceChats.get({
+          id: Number(id),
+          user_id: user?.id ?? null,
+        });
+        if (!validChat)
+          return response
+            .status(404)
+            .json({ success: false, error: "Chat not found." });
+
+        await WorkspaceChats._update(validChat.id, { include: false });
+        response.json({ success: true, error: null });
+      } catch (e) {
+        console.error(e.message, e);
+        response.status(500).json({ success: false, error: "Server error" });
       }
     }
   );
