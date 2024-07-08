@@ -115,17 +115,17 @@ AnythingLLM的一些酷炫特性
 
 这个单库由三个主要部分组成：
 
-- `frontend`: 一个viteJS + React前端，您可以运行它来轻松创建和管理LLM可以使用的所有内容。
-- `server`: 一个NodeJS express服务器，用于处理所有交互并进行所有向量数据库管理和LLM交互。
-- `docker`: Docker指令和构建过程 + 从源代码构建的信息。
-- `collector`: NodeJS express服务器，用于从UI处理和解析文档。
+- `frontend`: 一个 viteJS + React 前端，您可以运行它来轻松创建和管理LLM可以使用的所有内容。
+- `server`: 一个 NodeJS express 服务器，用于处理所有交互并进行所有向量数据库管理和 LLM 交互。
+- `docker`: Docker 指令和构建过程 + 从源代码构建的信息。
+- `collector`: NodeJS express 服务器，用于从UI处理和解析文档。
 
 ## 🛳 自托管
 
 Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以使用它们在本地运行AnythingLLM。请参阅下面的表格，了解如何在您喜欢的环境上部署，或自动部署。
 | Docker | AWS | GCP | Digital Ocean | Render.com |
 |----------------------------------------|----:|-----|---------------|------------|
-| [![在Docker上部署][docker-btn]][docker-deploy] | [![在AWS上部署][aws-btn]][aws-deploy] | [![在GCP上部署][gcp-btn]][gcp-deploy] | [![在DigitalOcean上部署][do-btn]][do-deploy] | [![在Render.com上部署][render-btn]][render-deploy] |
+| [![在 Docker 上部署][docker-btn]][docker-deploy] | [![在 AWS 上部署][aws-btn]][aws-deploy] | [![在 GCP 上部署][gcp-btn]][gcp-deploy] | [![在DigitalOcean上部署][do-btn]][do-deploy] | [![在 Render.com 上部署][render-btn]][render-deploy] |
 
 | Railway                                             |
 | --------------------------------------------------- |
@@ -135,7 +135,7 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ## 如何设置开发环境
 
-- `yarn setup` 填充每个应用程序部分所需的`.env`文件（从仓库的根目录）。
+- `yarn setup` 填充每个应用程序部分所需的 `.env` 文件（从仓库的根目录）。
   - 在开始下一步之前，先填写这些信息`server/.env.development`，不然代码无法正常执行。
 - `yarn dev:server` 在本地启动服务器（从仓库的根目录）。
 - `yarn dev:frontend` 在本地启动前端（从仓库的根目录）。
@@ -147,27 +147,27 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 
 ## 如何贡献
 
-- 创建issue
-- 创建PR，分支名称格式为`<issue number>-<short name>`
-- 然后合并
+- 创建 issue
+- 创建 PR，分支名称格式为 `<issue number>-<short name>`
+- 合并
 
 ## 远程信息收集与隐私保护
 
-由Mintplex Labs Inc开发的AnythingLLM包含一个收集匿名使用信息的Telemetry功能。
+由 Mintplex Labs Inc 开发的 AnythingLLM 包含一个收集匿名使用信息的 Telemetry 功能。
 
 <details>
-<summary><kbd>有关AnythingLLM的远程信息收集与隐私保护更多信息</kbd></summary>
+<summary><kbd>有关 AnythingLLM 的远程信息收集与隐私保护更多信息</kbd></summary>
 
 
 
 
 ### 为什么收集信息？
 
-我们使用这些信息来帮助我们理解AnythingLLM的使用情况，帮助我们确定新功能和错误修复的优先级，并帮助我们提高AnythingLLM的性能和稳定性。
+我们使用这些信息来帮助我们理解 AnythingLLM 的使用情况，帮助我们确定新功能和错误修复的优先级，并帮助我们提高 AnythingLLM 的性能和稳定性。
 
 ### 怎样关闭
 
-通过在服务器或docker的.env设置中将`DISABLE_TELEMETRY`设置为“true”来选择退出Telemetry远程信息收集功能。您也可以进入AnythingLLM应用>>>侧边栏最下方 >>> `隐私和数据` （Privacy&Data)>>>找到最下方的Anonymous Telemetry Enabled，点击绿色按钮让它变灰色，从而禁用信息收集功能。
+通过在服务器或 docker 的 `.env` 设置中将 `DISABLE_TELEMETRY` 设置为 “true” 来选择退出 Telemetry 远程信息收集功能。您也可以进入 AnythingLLM 应用 >>> 侧边栏最下方 >>> `隐私和数据` （Privacy&Data) >>> 找到最下方的 Anonymous Telemetry Enabled，点击绿色按钮让它变灰色，从而禁用信息收集功能。
 
 ### 你们跟踪收集哪些信息？
 
@@ -207,14 +207,14 @@ Mintplex Labs和社区维护了许多部署方法、脚本和模板，您可以�
 [profile-link]: https://github.com/mintplex-labs
 [vector-admin]: https://github.com/mintplex-labs/vector-admin
 [assistant-swarm]: https://github.com/Mintplex-Labs/openai-assistant-swarm
-[docker-btn]: ./images/deployBtns/docker.png
-[docker-deploy]: ./docker/HOW_TO_USE_DOCKER.md
-[aws-btn]: ./images/deployBtns/aws.png
-[aws-deploy]: ./cloud-deployments/aws/cloudformation/DEPLOY.md
+[docker-btn]: ../images/deployBtns/docker.png
+[docker-deploy]: ../docker/HOW_TO_USE_DOCKER.md
+[aws-btn]: ../images/deployBtns/aws.png
+[aws-deploy]: ../cloud-deployments/aws/cloudformation/DEPLOY.md
 [gcp-btn]: https://deploy.cloud.run/button.svg
-[gcp-deploy]: ./cloud-deployments/gcp/deployment/DEPLOY.md
+[gcp-deploy]: ../cloud-deployments/gcp/deployment/DEPLOY.md
 [do-btn]: https://www.deploytodo.com/do-btn-blue.svg
-[do-deploy]: ./cloud-deployments/digitalocean/terraform/DEPLOY.md
+[do-deploy]: ../cloud-deployments/digitalocean/terraform/DEPLOY.md
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
 [render-deploy]: https://render.com/deploy?repo=https://github.com/Mintplex-Labs/anything-llm&branch=render
 [render-btn]: https://render.com/images/deploy-to-render-button.svg
