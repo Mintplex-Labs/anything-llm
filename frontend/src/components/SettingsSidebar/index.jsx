@@ -109,13 +109,13 @@ export default function SettingsSidebar() {
                     <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
                     <Link
                       to={paths.mailToMintplex()}
-                      className="text-[#F4F4F4] hover:text-white text-xs leading-[18px] mx-3 mt-1"
+                      className="text-darker hover:text-white text-xs leading-[18px] mx-3 mt-1"
                     >
                       Support
                     </Link>
                     <Link
                       to={paths.settings.privacy()}
-                      className="text-[#F4F4F4] hover:text-white text-xs leading-[18px] mx-3"
+                      className="text-darker hover:text-white text-xs leading-[18px] mx-3"
                     >
                       Privacy & Data
                     </Link>
@@ -160,13 +160,13 @@ export default function SettingsSidebar() {
                 <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
                 <Link
                   to={paths.mailToMintplex()}
-                  className="text-[#F4F4F4] hover:text-white text-xs leading-[18px] mx-3 mt-1"
+                  className="text-darker hover:text-white text-xs leading-[18px] mx-3 mt-1"
                 >
                   Support
                 </Link>
                 <Link
                   to={paths.settings.privacy()}
-                  className="text-[#F4F4F4] hover:text-white text-xs leading-[18px] mx-3"
+                  className="text-darker hover:text-white text-xs leading-[18px] mx-3"
                 >
                   Privacy & Data
                 </Link>
