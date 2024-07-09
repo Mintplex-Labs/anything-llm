@@ -4,7 +4,6 @@ const {
   writeResponseChunk,
   clientAbortedHandler,
 } = require("../../helpers/chat/responses");
-const { input } = require("@inquirer/prompts");
 
 class WatsonxLLM {
   constructor(embedder = null, _modelPreference = null) {
@@ -34,11 +33,7 @@ class WatsonxLLM {
     //   this.test = obj.model_limits.max_sequence_length
     // });
 
-    this.limits = {
-      history: this.promptWindowLimit() * 0.15,
-      system: this.promptWindowLimit() * 0.15,
-      user: this.promptWindowLimit() * 0.7,
-    };
+    this.limits = this.promptWindowLimit();
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
   }
@@ -96,14 +91,23 @@ class WatsonxLLM {
   async getChatCompletion(messages = [], { temperature = 0.7 }) {
     if (!this.model)
       throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
+        "No OPEN_MODEL_PREF ENV defined. This must the id of your project on watsonx.ai"
       );
 
-    const data = await this.watsonx.getChatCompletions(this.model, messages, {
-      temperature,
+    const data = await this.watsonx.textGeneration({
+      input: this.formatMessages(messages),
+      modelId: this.model,
+      projectId: this.projectId,
+      parameters: {
+        decoding_method: "greedy",
+        max_new_tokens: this.limits,
+        min_new_tokens: 0,
+        stop_sequences: [],
+        repetition_penalty: 1,
+      },
     });
-    if (!data.hasOwnProperty("choices")) return null;
-    return data.choices[0].message.content;
+    if (!data.hasOwnProperty("result")) return null;
+    return data.result.results[0].generated_text;
   }
 
   formatMessages(messages) {
@@ -117,21 +121,21 @@ class WatsonxLLM {
         input += `${message.content} [INST]\n\n`;
       }
     });
-    console.log(input);
+
     return input;
   }
 
-  async streamGetChatCompletion(messages = [], { temperature = 0.7 }) {
+  async streamGetChatCompletion(messages = []) {
     if (!this.model)
       throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
+        "No OPEN_MODEL_PREF ENV defined. This must the id of your project on watsonx.ai."
       );
 
     const data = {
       input: this.formatMessages(messages),
       parameters: {
         decoding_method: "greedy",
-        max_new_tokens: 900,
+        max_new_tokens: this.limits,
         min_new_tokens: 0,
         stop_sequences: [],
         repetition_penalty: 1,
@@ -141,7 +145,7 @@ class WatsonxLLM {
     };
 
     const stream = await fetch(
-      "https://us-south.ml.cloud.ibm.com/ml/v1/text/generation_stream?version=2023-05-29",
+      `${process.env.WATSONX_AI_ENDPOINT}/ml/v1/text/generation_stream?version=2024-05-31`,
       {
         method: "POST",
         headers: {
@@ -157,29 +161,6 @@ class WatsonxLLM {
     return stream.body;
   }
 
-  parseStreamResult(result) {
-    const lines = result.split("\n");
-    const events = [];
-    let event = {};
-
-    lines.forEach((line) => {
-      if (line.startsWith("id:")) {
-        event.id = line.slice(4);
-      } else if (line.startsWith("event:")) {
-        event.event = line.slice(7);
-      } else if (line.startsWith("data:")) {
-        event.data = JSON.parse(line.slice(6));
-      } else if (line === "") {
-        if (Object.keys(event).length > 0) {
-          events.push(event);
-          event = {};
-        }
-      }
-    });
-
-    return events;
-  }
-
   handleStream(response, stream, responseProps) {
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
@@ -192,60 +173,53 @@ class WatsonxLLM {
       // to preserve previously generated content.
       const handleAbort = () => clientAbortedHandler(resolve, fullText);
       response.on("close", handleAbort);
-      //const reader = stream.getReader();
+      const reader = stream.getReader();
       const decoder = new TextDecoder("utf-8");
-      let chunks = "";
 
-      // try {
-      //   while (true) {
-      //     const { done, value } = await reader.read();
-      //     if (done) break;
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-      //     chunks += decoder.decode(value, { stream: true });
-      //   }
+          const decodedChunk = decoder.decode(value);
+          const lines = decodedChunk.split("\n");
+          const parsedLines = lines.map((line) => {
+            line = line.replace(/^data: /, "").trim();
+            return line;
+          });
 
-      //   // Convert the accumulated chunks to JSON
-      //   const jsonData = JSON.parse(chunks);
-
-      //   console.log('JSON Data:', jsonData);
-      // } catch (error) {
-      //   console.error('Error reading stream or parsing JSON:', error);
-      // } finally {
-      //   reader.releaseLock();
-      // }
-
-      for await (const chunk of stream) {
-        const decodedChunk = decoder.decode(chunk);
-        const lines = decodedChunk.split("\n");
-        console.log(lines);
-        const parsedLines = lines.map((line) => {
-          console.log(line.replace(/^data: /, ""));
-          line.replace(/^data: /, "").trim();
-        });
-        console.log(parsedLines);
-        const delta = data.results[0].generated_text;
-        if (!delta) continue;
-        fullText += delta;
+          try {
+            const data = JSON.parse(parsedLines[2]);
+            const delta = data.results[0].generated_text;
+            if (!delta) continue;
+            fullText += delta;
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: delta,
+              close: false,
+              error: false,
+            });
+          } catch {
+            console.log("Invalid JSON in ", parsedLines[0]);
+          }
+        }
         writeResponseChunk(response, {
           uuid,
-          sources: [],
+          sources,
           type: "textResponseChunk",
-          textResponse: delta,
-          close: false,
+          textResponse: "",
+          close: true,
           error: false,
         });
+        response.removeListener("close", handleAbort);
+        resolve(fullText);
+      } catch (error) {
+        console.error("Error reading stream or parsing JSON:", error);
+      } finally {
+        reader.releaseLock();
       }
-
-      writeResponseChunk(response, {
-        uuid,
-        sources,
-        type: "textResponseChunk",
-        textResponse: "",
-        close: true,
-        error: false,
-      });
-      response.removeListener("close", handleAbort);
-      resolve(fullText);
     });
   }
 
