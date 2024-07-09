@@ -192,28 +192,50 @@ const Option = ({
   hidden = false,
   isChild = false,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const hasChildren = childOptions.length > 0;
-  const firstChildHref = childOptions[0]?.href || href;
+  const storageKey = `anything_llm_menu_${btnText
+    .replace(/\s+/g, "_")
+    .toLowerCase()}_expanded`;
   const location = window.location.pathname;
+  const hasChildren = childOptions.length > 0;
+
+  const [isExpanded, setIsExpanded] = useState(() => {
+    if (hasChildren) {
+      const storedValue = localStorage.getItem(storageKey);
+      if (storedValue !== null) {
+        return JSON.parse(storedValue);
+      }
+      return childOptions.some((child) => child.href === location);
+    }
+    return false;
+  });
 
   useEffect(() => {
     if (hasChildren) {
-      setIsExpanded(childOptions.some((child) => child.href === location));
+      const shouldExpand = childOptions.some(
+        (child) => child.href === location
+      );
+      if (shouldExpand && !isExpanded) {
+        setIsExpanded(true);
+        localStorage.setItem(storageKey, JSON.stringify(true));
+      }
     }
-  }, [location, childOptions, hasChildren]);
+  }, [location]);
 
   if (hidden) return null;
   if (!flex && !allowedRole.includes(user?.role)) return null;
   if (flex && !!user && !allowedRole.includes(user?.role)) return null;
 
   const isActive = hasChildren
-    ? childOptions.some((child) => child.href === location)
+    ? (!isExpanded && childOptions.some((child) => child.href === location)) ||
+      location === href
     : location === href;
 
-  const handleClick = () => {
+  const handleClick = (e) => {
     if (hasChildren) {
-      setIsExpanded(!isExpanded);
+      e.preventDefault();
+      const newExpandedState = !isExpanded;
+      setIsExpanded(newExpandedState);
+      localStorage.setItem(storageKey, JSON.stringify(newExpandedState));
     }
   };
 
@@ -222,21 +244,21 @@ const Option = ({
       <div
         className={`
           flex items-center justify-between w-full
-          transition-all duration-[200ms]
-          rounded-[4px]
+          transition-all duration-300
+          rounded-[6px]
           ${
-            isActive && !hasChildren
+            isActive
               ? "bg-white/5 font-medium border-outline"
               : "hover:bg-white/5"
           }
         `}
       >
         <Link
-          to={hasChildren ? firstChildHref : href}
+          to={href}
           className={`flex flex-grow items-center px-[12px] h-[32px] font-medium ${
             isChild ? "text-white/70 hover:text-white" : "text-white"
           }`}
-          onClick={handleClick}
+          onClick={hasChildren ? handleClick : undefined}
         >
           {icon}
           <p
@@ -284,7 +306,6 @@ const SidebarOptions = ({ user = null, t }) => (
     <Option
       btnText={t("settings.ai-providers")}
       icon={<Gear className="h-5 w-5 flex-shrink-0" />}
-      href={paths.settings.llmPreference()}
       user={user}
       flex={true}
       allowedRole={["admin"]}
@@ -319,7 +340,6 @@ const SidebarOptions = ({ user = null, t }) => (
     <Option
       btnText={t("settings.admin")}
       icon={<UserCircleGear className="h-5 w-5 flex-shrink-0" />}
-      href={paths.settings.system()}
       user={user}
       allowedRole={["admin", "manager"]}
       flex={true}
@@ -370,7 +390,6 @@ const SidebarOptions = ({ user = null, t }) => (
     <Option
       btnText={t("settings.tools")}
       icon={<Toolbox className="h-5 w-5 flex-shrink-0" />}
-      href={paths.settings.system()}
       user={user}
       allowedRole={["admin", "manager"]}
       flex={true}
