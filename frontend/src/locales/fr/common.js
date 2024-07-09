@@ -33,6 +33,7 @@ const TRANSLATIONS = {
     privacy: "Confidentialité et données",
     "ai-providers": "Fournisseurs d'IA",
     "agent-skills": "Compétences de l'agent",
+    admin: "Admin",
     tools: "Outils",
   },
 

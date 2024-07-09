@@ -34,6 +34,7 @@ const TRANSLATIONS = {
     privacy: "隐私与数据",
     "ai-providers": "人工智能提供商",
     "agent-skills": "代理技能",
+    admin: "管理员",
     tools: "工具",
   },
 
