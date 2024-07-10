@@ -177,16 +177,31 @@ class WatsonxLLM {
       const decoder = new TextDecoder("utf-8");
 
       try {
+        const lines = [];
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
 
           const decodedChunk = decoder.decode(value);
-          const lines = decodedChunk.split("\n");
-          const parsedLines = lines.map((line) => {
+          const decodedLines = decodedChunk.split("\n");
+          let parsedLines = decodedLines.map((line) => {
             line = line.replace(/^data: /, "").trim();
             return line;
           });
+
+          if (!lines[2]?.endsWith('}')) {
+            lines[2] += parsedLines[0];
+            parsedLines.splice(0, 1);
+          }
+
+          lines.push(...parsedLines);
+          if (parsedLines.length >= 3 && !parsedLines[2].endsWith('}')) {
+            continue;
+          }
+
+          parsedLines = lines.slice(0, 3);
+          lines.splice(0, 3);
+
 
           try {
             const data = JSON.parse(parsedLines[2]);
