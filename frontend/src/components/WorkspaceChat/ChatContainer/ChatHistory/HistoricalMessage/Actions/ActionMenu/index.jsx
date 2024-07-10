@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Trash, DotsThreeVertical, TreeView } from "@phosphor-icons/react";
+import { Tooltip } from "react-tooltip";
 
 function ActionMenu({ chatId, forkThread, isEditing, role }) {
   const [open, setOpen] = useState(false);
@@ -36,6 +37,12 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
 
   return (
     <div className="mt-2 -ml-0.5 relative" ref={menuRef}>
+      <Tooltip
+        id="action-menu"
+        place="top"
+        delayShow={300}
+        className="tooltip !text-xs"
+      />
       <button
         onClick={toggleMenu}
         className="border-none text-zinc-300 hover:text-zinc-100 transition-colors duration-200"

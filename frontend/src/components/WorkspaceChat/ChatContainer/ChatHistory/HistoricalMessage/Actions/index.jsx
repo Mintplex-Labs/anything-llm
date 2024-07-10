@@ -29,7 +29,7 @@ const Actions = ({
     <div className="flex w-full justify-between items-center">
       <div className="flex justify-start items-center gap-x-[8px]">
         <CopyMessage message={message} />
-        <div className="group-hover:opacity-100 transition-all duration-300 opacity-0 flex justify-start items-center gap-x-[8px]">
+        <div className="md:group-hover:opacity-100 transition-all duration-300 md:opacity-0 flex justify-start items-center gap-x-[8px]">
           <EditMessageAction
             chatId={chatId}
             role={role}
