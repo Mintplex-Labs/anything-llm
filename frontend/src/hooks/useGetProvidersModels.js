@@ -7,6 +7,7 @@ export const DISABLED_PROVIDERS = [
   "lmstudio",
   "native",
   "textgenwebui",
+  "generic-openai",
 ];
 const PROVIDER_DEFAULT_MODELS = {
   openai: [],
@@ -46,6 +47,7 @@ const PROVIDER_DEFAULT_MODELS = {
     "command-light-nightly",
   ],
   textgenwebui: [],
+  "generic-openai": [],
 };
 
 // For togetherAi, which has a large model list - we subgroup the options

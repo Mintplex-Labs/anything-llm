@@ -7,6 +7,7 @@ process.env.NODE_ENV === "development"
         : path.resolve(__dirname, ".env"),
     });
 
+require("./utils/logger")();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -110,7 +111,7 @@ if (process.env.NODE_ENV !== "development") {
       }
       return;
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
