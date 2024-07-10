@@ -55,7 +55,7 @@ function apiUserManagementEndpoints(app) {
       }));
       response.status(200).json({ users: filteredUsers });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });

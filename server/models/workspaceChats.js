@@ -240,6 +240,23 @@ const WorkspaceChats = {
       return false;
     }
   },
+  bulkCreate: async function (chatsData) {
+    // TODO: Replace with createMany when we update prisma to latest version
+    // The version of prisma that we are currently using does not support createMany with SQLite
+    try {
+      const createdChats = [];
+      for (const chatData of chatsData) {
+        const chat = await prisma.workspace_chats.create({
+          data: chatData,
+        });
+        createdChats.push(chat);
+      }
+      return { chats: createdChats, message: null };
+    } catch (error) {
+      console.error(error.message);
+      return { chats: null, message: error.message };
+    }
+  },
 };
 
 module.exports = { WorkspaceChats };

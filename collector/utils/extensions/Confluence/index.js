@@ -5,9 +5,7 @@ const { v4 } = require("uuid");
 const UrlPattern = require("url-pattern");
 const { writeToServerDocuments, sanitizeFileName } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
-const {
-  ConfluencePagesLoader,
-} = require("langchain/document_loaders/web/confluence");
+const { ConfluencePagesLoader } = require("./ConfluenceLoader");
 
 /**
  * Load Confluence documents from a spaceID and Confluence credentials
