@@ -290,7 +290,7 @@ const Option = ({
               key={index}
               {...childOption}
               user={user}
-              flex={flex}
+              flex={childOption.flex !== undefined ? childOption.flex : flex}
               allowedRole={childOption.allowedRole || allowedRole}
               isChild={true}
             />
@@ -348,6 +348,7 @@ const SidebarOptions = ({ user = null, t }) => (
           btnText: t("settings.users"),
           href: paths.settings.users(),
           allowedRole: ["admin", "manager"],
+          flex: false,
         },
         {
           btnText: t("settings.workspaces"),
@@ -363,6 +364,7 @@ const SidebarOptions = ({ user = null, t }) => (
           btnText: t("settings.invites"),
           href: paths.settings.invites(),
           allowedRole: ["admin", "manager"],
+          flex: false,
         },
         {
           btnText: t("settings.system"),
@@ -377,7 +379,7 @@ const SidebarOptions = ({ user = null, t }) => (
       href={paths.settings.agentSkills()}
       user={user}
       flex={true}
-      allowedRole={["admin", "manager"]}
+      allowedRole={["admin"]}
     />
     <Option
       btnText={t("settings.customization")}
