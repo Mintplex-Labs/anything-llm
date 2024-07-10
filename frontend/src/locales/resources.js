@@ -16,6 +16,7 @@
 
 import English from "./en/common.js";
 import Spanish from "./es/common.js";
+import Portuguese from "./pt/common.js";
 import French from "./fr/common.js";
 import Mandarin from "./zh/common.js";
 import Russian from "./ru/common.js";
@@ -30,6 +31,9 @@ export const resources = {
   },
   es: {
     common: Spanish,
+  },
+  pt: {
+    common: Portuguese,
   },
   fr: {
     common: French,
