@@ -39,11 +39,13 @@
     "node-html-parser": "^6.1.13",
     "officeparser": "^4.0.5",
     "openai": "4.38.5",
-    "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "3.4.120",
+    "puppeteer": "~21.5.2",
     "slugify": "^1.6.6",
     "url-pattern": "^1.0.3",
     "uuid": "^9.0.0",
     "wavefile": "^11.0.0",
+    "winston": "^3.13.0",
     "youtubei.js": "^9.1.0"
   },
   "devDependencies": {

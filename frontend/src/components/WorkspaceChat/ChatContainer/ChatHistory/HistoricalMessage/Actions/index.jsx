@@ -1,16 +1,10 @@
 import React, { memo, useState } from "react";
 import useCopyText from "@/hooks/useCopyText";
-import {
-  Check,
-  ThumbsUp,
-  ThumbsDown,
-  ArrowsClockwise,
-  Copy,
-} from "@phosphor-icons/react";
+import { Check, ThumbsUp, ArrowsClockwise, Copy } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
-import TTSMessage from "./TTSButton";
 import { EditMessageAction } from "./EditMessage";
+import ActionMenu from "./ActionMenu";
 
 const Actions = ({
   message,
@@ -19,6 +13,7 @@ const Actions = ({
   slug,
   isLastMessage,
   regenerateMessage,
+  forkThread,
   isEditing,
   role,
 }) => {
@@ -32,18 +27,22 @@ const Actions = ({
 
   return (
     <div className="flex w-full justify-between items-center">
-      <div className="flex justify-start items-center gap-x-1">
+      <div className="flex justify-start items-center">
         <CopyMessage message={message} />
-        <EditMessageAction chatId={chatId} role={role} isEditing={isEditing} />
-        {isLastMessage && !isEditing && (
-          <RegenerateMessage
-            regenerateMessage={regenerateMessage}
-            slug={slug}
+        <div className="md:group-hover:opacity-100 transition-all duration-300 md:opacity-0 flex justify-start items-center">
+          <EditMessageAction
             chatId={chatId}
+            role={role}
+            isEditing={isEditing}
           />
-        )}
-        {chatId && role !== "user" && !isEditing && (
-          <>
+          {isLastMessage && !isEditing && (
+            <RegenerateMessage
+              regenerateMessage={regenerateMessage}
+              slug={slug}
+              chatId={chatId}
+            />
+          )}
+          {chatId && role !== "user" && !isEditing && (
             <FeedbackButton
               isSelected={selectedFeedback === true}
               handleFeedback={() => handleFeedback(true)}
@@ -51,17 +50,15 @@ const Actions = ({
               tooltipContent="Good response"
               IconComponent={ThumbsUp}
             />
-            <FeedbackButton
-              isSelected={selectedFeedback === false}
-              handleFeedback={() => handleFeedback(false)}
-              tooltipId={`${chatId}-thumbs-down`}
-              tooltipContent="Bad response"
-              IconComponent={ThumbsDown}
-            />
-          </>
-        )}
+          )}
+          <ActionMenu
+            chatId={chatId}
+            forkThread={forkThread}
+            isEditing={isEditing}
+            role={role}
+          />
+        </div>
       </div>
-      <TTSMessage slug={slug} chatId={chatId} message={message} />
     </div>
   );
 };
@@ -83,7 +80,7 @@ function FeedbackButton({
         aria-label={tooltipContent}
       >
         <IconComponent
-          size={18}
+          size={20}
           className="mb-1"
           weight={isSelected ? "fill" : "regular"}
         />
@@ -112,9 +109,9 @@ function CopyMessage({ message }) {
           aria-label="Copy"
         >
           {copied ? (
-            <Check size={18} className="mb-1" />
+            <Check size={20} className="mb-1" />
           ) : (
-            <Copy size={18} className="mb-1" />
+            <Copy size={20} className="mb-1" />
           )}
         </button>
         <Tooltip
@@ -139,7 +136,7 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
         className="border-none text-zinc-300"
         aria-label="Regenerate"
       >
-        <ArrowsClockwise size={18} className="mb-1" weight="fill" />
+        <ArrowsClockwise size={20} className="mb-1" weight="fill" />
       </button>
       <Tooltip
         id="regenerate-assistant-text"

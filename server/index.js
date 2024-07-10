@@ -5,6 +5,7 @@ require("dotenv").config({
     : `${path.join(__dirname, ".env")}`,
 });
 
+require("./utils/logger")();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");

@@ -128,7 +128,7 @@ export default function ThreadItem({
                   onClick={() => setShowOptions(!showOptions)}
                   aria-label="Thread options"
                 >
-                  <DotsThree className="text-slate-300" size={25} />
+                  <DotsThree className="text-slate-300" size={18} />
                 </button>
               </div>
             )}

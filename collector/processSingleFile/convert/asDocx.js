@@ -16,7 +16,6 @@ async function asDocx({ fullFilePath = "", filename = "", options = {} }) {
   let pageContent = [];
   const docs = await loader.load();
   for (const doc of docs) {
-    console.log(doc.metadata);
     console.log(`-- Parsing content from docx page --`);
     if (!doc.pageContent.length) continue;
     pageContent.push(doc.pageContent);
