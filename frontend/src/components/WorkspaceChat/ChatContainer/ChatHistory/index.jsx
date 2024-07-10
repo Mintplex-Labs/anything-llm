@@ -10,6 +10,7 @@ import Chartable from "./Chartable";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
+import { THREAD_FORK_EVENT } from "@/components/Sidebar/ActiveWorkspaces/ThreadContainer";
 
 export default function ChatHistory({
   history = [],
@@ -138,9 +139,14 @@ export default function ChatHistory({
       threadSlug,
       chatId
     );
-    window.location.href = paths.workspace.thread(
+    window.location.hash = paths.workspace.thread(
       workspace.slug,
       newThreadSlug
+    );
+    window.dispatchEvent(
+      new CustomEvent(THREAD_FORK_EVENT, {
+        detail: { threadSlug: newThreadSlug },
+      })
     );
   };
 

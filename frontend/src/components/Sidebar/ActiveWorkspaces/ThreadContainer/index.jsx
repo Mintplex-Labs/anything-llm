@@ -5,7 +5,9 @@ import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
+
 export const THREAD_RENAME_EVENT = "renameThread";
+export const THREAD_FORK_EVENT = "forkToThread";
 
 export default function ThreadContainer({ workspace }) {
   const { threadSlug = null } = useParams();
@@ -30,6 +32,25 @@ export default function ThreadContainer({ workspace }) {
 
     return () => {
       window.removeEventListener(THREAD_RENAME_EVENT, chatHandler);
+    };
+  }, []);
+
+  // Handle new fork events from chat actions.
+  useEffect(() => {
+    const forkHandler = (_e) => {
+      setLoading(true);
+      Workspace.threads
+        .all(workspace.slug)
+        .then(({ threads }) => {
+          setThreads(threads);
+        })
+        .finally(() => setLoading(false));
+    };
+
+    window.addEventListener(THREAD_FORK_EVENT, forkHandler);
+
+    return () => {
+      window.removeEventListener(THREAD_FORK_EVENT, forkHandler);
     };
   }, []);
 

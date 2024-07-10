@@ -146,29 +146,9 @@ const SidebarOptions = ({ user = null, t }) => (
       user={user}
       childOptions={[
         {
-          btnText: t("settings.users"),
-          href: paths.settings.users(),
-          roles: ["admin", "manager"],
-        },
-        {
-          btnText: t("settings.workspaces"),
-          href: paths.settings.workspaces(),
-          roles: ["admin", "manager"],
-        },
-        {
           btnText: t("settings.workspace-chats"),
           href: paths.settings.chats(),
           flex: true,
-          roles: ["admin", "manager"],
-        },
-        {
-          btnText: t("settings.invites"),
-          href: paths.settings.invites(),
-          roles: ["admin", "manager"],
-        },
-        {
-          btnText: t("settings.system"),
-          href: paths.settings.system(),
           roles: ["admin", "manager"],
         },
       ]}
@@ -195,18 +175,6 @@ const SidebarOptions = ({ user = null, t }) => (
       user={user}
       childOptions={[
         {
-          btnText: t("settings.embed-chats"),
-          href: paths.settings.embedChats(),
-          flex: true,
-          roles: ["admin"],
-        },
-        {
-          btnText: t("settings.embeds"),
-          href: paths.settings.embedSetup(),
-          flex: true,
-          roles: ["admin"],
-        },
-        {
           btnText: t("settings.event-logs"),
           href: paths.settings.logs(),
           flex: true,
@@ -219,15 +187,6 @@ const SidebarOptions = ({ user = null, t }) => (
           roles: ["admin"],
         },
       ]}
-    />
-    <Option
-      btnText={t("settings.security")}
-      icon={<Nut className="h-5 w-5 flex-shrink-0" />}
-      href={paths.settings.security()}
-      user={user}
-      flex={true}
-      roles={["admin", "manager"]}
-      hidden={user?.role}
     />
     <HoldToReveal key="exp_features">
       <Option

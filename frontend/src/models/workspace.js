@@ -369,7 +369,7 @@ const Workspace = {
       });
   },
   deleteChat: async (chatId) => {
-    return await fetch(`${API_BASE}/workspace/workspace-chats/${chatId}`, {
+    return await fetch(`${API_BASE()}/workspace/workspace-chats/${chatId}`, {
       method: "PUT",
       headers: baseHeaders(),
     })
@@ -380,7 +380,7 @@ const Workspace = {
       });
   },
   forkThread: async function (slug = "", threadSlug = null, chatId = null) {
-    return await fetch(`${API_BASE}/workspace/${slug}/thread/fork`, {
+    return await fetch(`${API_BASE()}/workspace/${slug}/thread/fork`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({ threadSlug, chatId }),

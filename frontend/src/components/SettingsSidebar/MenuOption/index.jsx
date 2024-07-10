@@ -89,7 +89,7 @@ export default function MenuOption({
           </p>
         </Link>
         {hasChildren && (
-          <button onClick={handleClick} className="p-2 text-white">
+          <button onClick={handleClick} className="border-none p-2 text-white">
             <CaretRight
               size={16}
               weight="bold"
