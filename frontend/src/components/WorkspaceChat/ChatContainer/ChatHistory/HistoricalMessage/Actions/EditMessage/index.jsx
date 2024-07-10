@@ -2,6 +2,7 @@ import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { Pencil } from "@phosphor-icons/react";
 import { useState, useEffect, useRef } from "react";
 import { Tooltip } from "react-tooltip";
+
 const EDIT_EVENT = "toggle-message-edit";
 
 export function useEditMessage({ chatId, role }) {
@@ -40,8 +41,8 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
   return (
     <div
       className={`mt-3 relative ${
-        role === "user" && !isEditing ? "opacity-0" : ""
-      } group-hover:opacity-100 transition-all duration-300`}
+        role === "user" && !isEditing ? "" : "!opacity-100"
+      }`}
     >
       <button
         onClick={handleEditClick}
@@ -52,7 +53,7 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
         className="border-none text-zinc-300"
         aria-label={`Edit ${role === "user" ? "Prompt" : "Response"}`}
       >
-        <Pencil size={18} className="mb-1" />
+        <Pencil size={21} className="mb-1" />
       </button>
       <Tooltip
         id="edit-input-text"
