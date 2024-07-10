@@ -60,7 +60,10 @@ class WatsonxLLM {
         (o) => o.model_id === process.env.WATSONX_AI_MODEL
       );
       if (process.env.WATSONX_TOKEN_LIMIT) {
-        return Number(process.env.WATSONX_TOKEN_LIMIT);
+        return Number(process.env.WATSONX_TOKEN_LIMIT) >
+          Number(obj.model_limits.max_sequence_length)
+          ? Number(obj.model_limits.max_sequence_length)
+          : Number(process.env.WATSONX_TOKEN_LIMIT);
       } else {
         console.log();
         return Number(obj.model_limits.max_sequence_length);
@@ -96,7 +99,7 @@ class WatsonxLLM {
   async getChatCompletion(messages = [], { temperature = 0.7 }) {
     if (!this.model)
       throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the id of your project on watsonx.ai"
+        "No WATSONX_AI_MODEL in ENV defined. This must the id of your model on watsonx.ai"
       );
 
     const data = await this.watsonx.textGeneration(
@@ -137,7 +140,7 @@ class WatsonxLLM {
       model_id: this.model,
       project_id: this.projectId,
     };
-
+    // adding guard rail settings when necessary
     if (this.guardrail === "true") {
       data["moderations"] = {
         hap: {
@@ -164,7 +167,7 @@ class WatsonxLLM {
   async streamGetChatCompletion(messages = []) {
     if (!this.model)
       throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the id of your project on watsonx.ai."
+        "No WATSONX_AI_MODEL in ENV defined. This must the id of your model on watsonx.ai."
       );
 
     const data = await this.getWatsonxPayload(messages);
