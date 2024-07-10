@@ -53,7 +53,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
         <DotsThreeVertical size={24} weight="bold" />
       </button>
       {open && (
-        <div className="absolute -top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-[#41454B] bg-opacity-100 flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-10">
+        <div className="absolute -top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-[#41454B] bg-opacity-100 flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-99 md:z-10">
           <button
             onClick={handleFork}
             className="border-none flex items-center gap-x-2 hover:bg-white/10 py-1.5 px-2 transition-colors duration-200 w-full text-left"
