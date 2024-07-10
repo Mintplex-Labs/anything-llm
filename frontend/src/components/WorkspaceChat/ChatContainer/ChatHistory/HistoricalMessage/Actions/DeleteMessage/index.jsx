@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Trash } from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
+
 const DELETE_EVENT = "delete-message";
 
 export function useWatchDeleteMessage({ chatId = null, role = "user" }) {

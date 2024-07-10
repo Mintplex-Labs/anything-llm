@@ -41,8 +41,8 @@ export function EditMessageAction({ chatId = null, role, isEditing }) {
   return (
     <div
       className={`mt-3 relative ${
-        role === "user" && !isEditing ? "opacity-0" : ""
-      } group-hover:opacity-100 transition-all duration-300`}
+        role === "user" && !isEditing ? "" : "!opacity-100"
+      }`}
     >
       <button
         onClick={handleEditClick}

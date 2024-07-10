@@ -27,31 +27,37 @@ const Actions = ({
 
   return (
     <div className="flex w-full justify-between items-center">
-      <div className="flex justify-start items-center gap-x-[8px] group">
+      <div className="flex justify-start items-center gap-x-[8px]">
         <CopyMessage message={message} />
-        <EditMessageAction chatId={chatId} role={role} isEditing={isEditing} />
-        {isLastMessage && !isEditing && (
-          <RegenerateMessage
-            regenerateMessage={regenerateMessage}
-            slug={slug}
+        <div className="group-hover:opacity-100 transition-all duration-300 opacity-0 flex justify-start items-center gap-x-[8px]">
+          <EditMessageAction
             chatId={chatId}
+            role={role}
+            isEditing={isEditing}
           />
-        )}
-        {chatId && role !== "user" && !isEditing && (
-          <FeedbackButton
-            isSelected={selectedFeedback === true}
-            handleFeedback={() => handleFeedback(true)}
-            tooltipId={`${chatId}-thumbs-up`}
-            tooltipContent="Good response"
-            IconComponent={ThumbsUp}
+          {isLastMessage && !isEditing && (
+            <RegenerateMessage
+              regenerateMessage={regenerateMessage}
+              slug={slug}
+              chatId={chatId}
+            />
+          )}
+          {chatId && role !== "user" && !isEditing && (
+            <FeedbackButton
+              isSelected={selectedFeedback === true}
+              handleFeedback={() => handleFeedback(true)}
+              tooltipId={`${chatId}-thumbs-up`}
+              tooltipContent="Good response"
+              IconComponent={ThumbsUp}
+            />
+          )}
+          <ActionMenu
+            chatId={chatId}
+            forkThread={forkThread}
+            isEditing={isEditing}
+            role={role}
           />
-        )}
-        <ActionMenu
-          chatId={chatId}
-          forkThread={forkThread}
-          isEditing={isEditing}
-          role={role}
-        />
+        </div>
       </div>
     </div>
   );
