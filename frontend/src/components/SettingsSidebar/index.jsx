@@ -20,6 +20,7 @@ import Footer from "../Footer";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import showToast from "@/utils/toast";
+import System from "@/models/system";
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
@@ -107,13 +108,11 @@ export default function SettingsSidebar() {
                   <div className="flex flex-col gap-y-4 pb-[60px] overflow-y-scroll no-scroll">
                     <SidebarOptions user={user} t={t} />
                     <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
+                    <SupportEmail />
                     <Link
-                      to={paths.mailToMintplex()}
-                      className="text-darker hover:text-white text-xs leading-[18px] mx-3 mt-1"
-                    >
-                      Support
-                    </Link>
-                    <Link
+                      hidden={
+                        user?.hasOwnProperty("role") && user.role !== "admin"
+                      }
                       to={paths.settings.privacy()}
                       className="text-darker hover:text-white text-xs leading-[18px] mx-3"
                     >
@@ -158,13 +157,9 @@ export default function SettingsSidebar() {
               <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
                 <SidebarOptions user={user} t={t} />
                 <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
+                <SupportEmail />
                 <Link
-                  to={paths.mailToMintplex()}
-                  className="text-darker hover:text-white text-xs leading-[18px] mx-3 mt-1"
-                >
-                  Support
-                </Link>
-                <Link
+                  hidden={user?.hasOwnProperty("role") && user.role !== "admin"}
                   to={paths.settings.privacy()}
                   className="text-darker hover:text-white text-xs leading-[18px] mx-3"
                 >
@@ -181,6 +176,43 @@ export default function SettingsSidebar() {
     </div>
   );
 }
+
+function SupportEmail() {
+  const [supportEmail, setSupportEmail] = useState(paths.mailToMintplex());
+
+  useEffect(() => {
+    const fetchSupportEmail = async () => {
+      const supportEmail = await System.fetchSupportEmail();
+      setSupportEmail(
+        supportEmail?.email
+          ? `mailto:${supportEmail.email}`
+          : paths.mailToMintplex()
+      );
+    };
+    fetchSupportEmail();
+  }, []);
+
+  return (
+    <Link
+      to={supportEmail}
+      className="text-darker hover:text-white text-xs leading-[18px] mx-3 mt-1"
+    >
+      Contact Support
+    </Link>
+  );
+}
+
+function isVisible({ roles = [], user = null, flex = false }) {
+  if (!flex && !roles.includes(user?.role)) return false;
+  if (flex && !!user && !roles.includes(user?.role)) return false;
+  return true;
+}
+
+function generateStorageKey({ key = "" }) {
+  const _key = key.replace(/\s+/g, "_").toLowerCase();
+  return `anything_llm_menu_${_key}_expanded`;
+}
+
 const Option = ({
   btnText,
   icon,
@@ -188,18 +220,20 @@ const Option = ({
   childOptions = [],
   flex = false,
   user = null,
-  allowedRole = [],
+  roles = [],
   hidden = false,
   isChild = false,
 }) => {
-  const storageKey = `anything_llm_menu_${btnText
-    .replace(/\s+/g, "_")
-    .toLowerCase()}_expanded`;
+  const storageKey = generateStorageKey({ key: btnText });
   const location = window.location.pathname;
   const hasChildren = childOptions.length > 0;
-
+  const hasVisibleChildren = hasChildren
+    ? childOptions.some((opt) =>
+        isVisible({ roles: opt.roles, user, flex: opt.flex })
+      )
+    : false;
   const [isExpanded, setIsExpanded] = useState(() => {
-    if (hasChildren) {
+    if (hasVisibleChildren) {
       const storedValue = localStorage.getItem(storageKey);
       if (storedValue !== null) {
         return JSON.parse(storedValue);
@@ -210,7 +244,7 @@ const Option = ({
   });
 
   useEffect(() => {
-    if (hasChildren) {
+    if (hasVisibleChildren) {
       const shouldExpand = childOptions.some(
         (child) => child.href === location
       );
@@ -222,8 +256,22 @@ const Option = ({
   }, [location]);
 
   if (hidden) return null;
-  if (!flex && !allowedRole.includes(user?.role)) return null;
-  if (flex && !!user && !allowedRole.includes(user?.role)) return null;
+
+  // If this option is a parent level option
+  if (!isChild) {
+    // and has no children then use its flex props and roles prop directly
+    if (!hasChildren) {
+      if (!flex && !roles.includes(user?.role)) return null;
+      if (flex && !!user && !roles.includes(user?.role)) return null;
+    }
+
+    // if has children and no visible children - remove it.
+    if (hasChildren && !hasVisibleChildren) return null;
+  } else {
+    // is a child so we use it's permissions
+    if (!flex && !roles.includes(user?.role)) return null;
+    if (flex && !!user && !roles.includes(user?.role)) return null;
+  }
 
   const isActive = hasChildren
     ? (!isExpanded && childOptions.some((child) => child.href === location)) ||
@@ -288,10 +336,8 @@ const Option = ({
           {childOptions.map((childOption, index) => (
             <Option
               key={index}
-              {...childOption}
+              {...childOption} // flex and roles go here.
               user={user}
-              flex={flex}
-              allowedRole={childOption.allowedRole || allowedRole}
               isChild={true}
             />
           ))}
@@ -307,33 +353,42 @@ const SidebarOptions = ({ user = null, t }) => (
       btnText={t("settings.ai-providers")}
       icon={<Gear className="h-5 w-5 flex-shrink-0" />}
       user={user}
-      flex={true}
-      allowedRole={["admin"]}
       childOptions={[
         {
           btnText: t("settings.llm"),
           href: paths.settings.llmPreference(),
-          allowedRole: ["admin"],
+          flex: true,
+          roles: ["admin"],
         },
         {
           btnText: t("settings.vector-database"),
           href: paths.settings.vectorDatabase(),
-          allowedRole: ["admin"],
+          flex: true,
+          roles: ["admin"],
         },
         {
           btnText: t("settings.embedder"),
           href: paths.settings.embedder.modelPreference(),
-          allowedRole: ["admin"],
+          flex: true,
+          roles: ["admin"],
+        },
+        {
+          btnText: t("settings.text-splitting"),
+          href: paths.settings.embedder.chunkingPreference(),
+          flex: true,
+          roles: ["admin"],
         },
         {
           btnText: "Voice & Speech",
           href: paths.settings.audioPreference(),
-          allowedRole: ["admin"],
+          flex: true,
+          roles: ["admin"],
         },
         {
           btnText: t("settings.transcription"),
           href: paths.settings.transcriptionPreference(),
-          allowedRole: ["admin"],
+          flex: true,
+          roles: ["admin"],
         },
       ]}
     />
@@ -341,33 +396,32 @@ const SidebarOptions = ({ user = null, t }) => (
       btnText={t("settings.admin")}
       icon={<UserCircleGear className="h-5 w-5 flex-shrink-0" />}
       user={user}
-      allowedRole={["admin", "manager"]}
-      flex={true}
       childOptions={[
         {
           btnText: t("settings.users"),
           href: paths.settings.users(),
-          allowedRole: ["admin", "manager"],
+          roles: ["admin", "manager"],
         },
         {
           btnText: t("settings.workspaces"),
           href: paths.settings.workspaces(),
-          allowedRole: ["admin", "manager"],
+          roles: ["admin", "manager"],
         },
         {
           btnText: t("settings.workspace-chats"),
           href: paths.settings.chats(),
-          allowedRole: ["admin", "manager"],
+          flex: true,
+          roles: ["admin", "manager"],
         },
         {
           btnText: t("settings.invites"),
           href: paths.settings.invites(),
-          allowedRole: ["admin", "manager"],
+          roles: ["admin", "manager"],
         },
         {
           btnText: t("settings.system"),
           href: paths.settings.system(),
-          allowedRole: ["admin", "manager"],
+          roles: ["admin", "manager"],
         },
       ]}
     />
@@ -377,7 +431,7 @@ const SidebarOptions = ({ user = null, t }) => (
       href={paths.settings.agentSkills()}
       user={user}
       flex={true}
-      allowedRole={["admin", "manager"]}
+      roles={["admin"]}
     />
     <Option
       btnText={t("settings.customization")}
@@ -385,34 +439,36 @@ const SidebarOptions = ({ user = null, t }) => (
       href={paths.settings.appearance()}
       user={user}
       flex={true}
-      allowedRole={["admin", "manager"]}
+      roles={["admin", "manager"]}
     />
     <Option
       btnText={t("settings.tools")}
       icon={<Toolbox className="h-5 w-5 flex-shrink-0" />}
       user={user}
-      allowedRole={["admin", "manager"]}
-      flex={true}
       childOptions={[
         {
           btnText: t("settings.embed-chats"),
           href: paths.settings.embedChats(),
-          allowedRole: ["admin", "manager"],
+          flex: true,
+          roles: ["admin"],
         },
         {
           btnText: t("settings.embeds"),
           href: paths.settings.embedSetup(),
-          allowedRole: ["admin", "manager"],
+          flex: true,
+          roles: ["admin"],
         },
         {
           btnText: t("settings.event-logs"),
           href: paths.settings.logs(),
-          allowedRole: ["admin"],
+          flex: true,
+          roles: ["admin"],
         },
         {
           btnText: t("settings.api-keys"),
           href: paths.settings.apiKeys(),
-          allowedRole: ["admin"],
+          flex: true,
+          roles: ["admin"],
         },
       ]}
     />
@@ -422,7 +478,7 @@ const SidebarOptions = ({ user = null, t }) => (
       href={paths.settings.security()}
       user={user}
       flex={true}
-      allowedRole={["admin", "manager"]}
+      roles={["admin", "manager"]}
       hidden={user?.role}
     />
     <HoldToReveal key="exp_features">
@@ -432,7 +488,7 @@ const SidebarOptions = ({ user = null, t }) => (
         href={paths.settings.experimental()}
         user={user}
         flex={true}
-        allowedRole={["admin"]}
+        roles={["admin"]}
       />
     </HoldToReveal>
   </>
