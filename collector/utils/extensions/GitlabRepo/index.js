@@ -7,23 +7,23 @@ const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 
 /**
- * Load in a Github Repo recursively or just the top level if no PAT is provided
+ * Load in a Gitlab Repo recursively or just the top level if no PAT is provided
  * @param {object} args - forwarded request body params
  * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
  * @returns
  */
-async function loadGithubRepo(args, response) {
+async function loadGitlabRepo(args, response) {
   const repo = new RepoLoader(args);
   await repo.init();
 
   if (!repo.ready)
     return {
       success: false,
-      reason: "Could not prepare Github repo for loading! Check URL",
+      reason: "Could not prepare Gitlab repo for loading! Check URL",
     };
 
   console.log(
-    `-- Working Github ${repo.author}/${repo.project}:${repo.branch} --`
+    `-- Working Gitlab ${repo.projectId}:${repo.branch} --`
   );
   const docs = await repo.recursiveLoader();
   if (!docs.length) {
@@ -33,9 +33,9 @@ async function loadGithubRepo(args, response) {
     };
   }
 
-  console.log(`[Github Loader]: Found ${docs.length} source files. Saving...`);
+  console.log(`[Gitlab Loader]: Found ${docs.length} source files. Saving...`);
   const outFolder = slugify(
-    `${repo.author}-${repo.project}-${repo.branch}-${v4().slice(0, 4)}`
+    `${repo.projectId}-${repo.branch}-${v4().slice(0, 4)}`
   ).toLowerCase();
 
   const outFolderPath =
@@ -53,9 +53,9 @@ async function loadGithubRepo(args, response) {
     if (!doc.pageContent) continue;
     const data = {
       id: v4(),
-      url: "github://" + doc.metadata.source,
+      url: "gitlab://" + doc.metadata.source,
       title: doc.metadata.source,
-      docAuthor: repo.author,
+      docAuthor: repo.projectId,
       description: "No description found.",
       docSource: doc.metadata.source,
       chunkSource: generateChunkSource(
@@ -69,7 +69,7 @@ async function loadGithubRepo(args, response) {
       token_count_estimate: tokenizeString(doc.pageContent).length,
     };
     console.log(
-      `[Github Loader]: Saving ${doc.metadata.source} to ${outFolder}`
+      `[Gitlab Loader]: Saving ${doc.metadata.source} to ${outFolder}`
     );
     writeToServerDocuments(
       data,
@@ -82,8 +82,7 @@ async function loadGithubRepo(args, response) {
     success: true,
     reason: null,
     data: {
-      author: repo.author,
-      repo: repo.project,
+      projectId: repo.projectId,
       branch: repo.branch,
       files: docs.length,
       destination: outFolder,
@@ -92,10 +91,10 @@ async function loadGithubRepo(args, response) {
 }
 
 /**
- * Gets the page content from a specific source file in a give Github Repo, not all items in a repo.
+ * Gets the page content from a specific source file in a given Gitlab Repo, not all items in a repo.
  * @returns
  */
-async function fetchGithubFile({
+async function fetchGitlabFile({
   repoUrl,
   branch,
   accessToken = null,
@@ -112,11 +111,11 @@ async function fetchGithubFile({
     return {
       success: false,
       content: null,
-      reason: "Could not prepare Github repo for loading! Check URL or PAT.",
+      reason: "Could not prepare Gitlab repo for loading! Check URL or PAT.",
     };
 
   console.log(
-    `-- Working Github ${repo.author}/${repo.project}:${repo.branch} file:${sourceFilePath} --`
+    `-- Working Gitlab ${repo.projectId}:${repo.branch} file:${sourceFilePath} --`
   );
   const fileContent = await repo.fetchSingleFile(sourceFilePath);
   if (!fileContent) {
@@ -145,15 +144,14 @@ async function fetchGithubFile({
  */
 function generateChunkSource(repo, doc, encryptionWorker) {
   const payload = {
-    owner: repo.author,
-    project: repo.project,
+    projectId: repo.projectId,
     branch: repo.branch,
     path: doc.metadata.source,
     pat: !!repo.accessToken ? repo.accessToken : null,
   };
-  return `github://${repo.repo}?payload=${encryptionWorker.encrypt(
+  return `gitlab://${repo.repo}?payload=${encryptionWorker.encrypt(
     JSON.stringify(payload)
   )}`;
 }
 
-module.exports = { loadGithubRepo, fetchGithubFile };
+module.exports = { loadGitlabRepo, fetchGitlabFile };
