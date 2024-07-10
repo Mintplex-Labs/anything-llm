@@ -24,16 +24,13 @@ class WatsonxLLM {
     this.model = process.env.WATSONX_AI_MODEL;
     this.projectId = process.env.WATSONX_AI_PROJECT_ID;
 
-    // this.watsonx.listFoundationModelSpecs().then((response) => {
-    //   let obj = response.result.resources.find(
-    //     (o) => o.model_id === process.env.WATSONX_AI_MODEL
-    //   );
-    //   console.log(obj.model_limits.max_sequence_length);
-    //   console.log(this.model);
-    //   this.test = obj.model_limits.max_sequence_length
-    // });
+    this.guardrail = process.env.WATSONX_GUARD_RAILS_ENABLED;
+    this.limits = {};
 
-    this.limits = this.promptWindowLimit();
+    this.limitPromise = this.promptWindowLimit().then((result) => {
+      this.limits = result;
+    });
+
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
   }
@@ -58,9 +55,17 @@ class WatsonxLLM {
   // could be any of these https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models#gpt-4-models
   // and if undefined - assume it is the lowest end.
   promptWindowLimit() {
-    return !!process.env.WATSONX_TOKEN_LIMIT
-      ? Number(process.env.WATSONX_TOKEN_LIMIT)
-      : 4096;
+    return this.watsonx.listFoundationModelSpecs().then((response) => {
+      let obj = response.result.resources.find(
+        (o) => o.model_id === process.env.WATSONX_AI_MODEL
+      );
+      if (process.env.WATSONX_TOKEN_LIMIT) {
+        return Number(process.env.WATSONX_TOKEN_LIMIT);
+      } else {
+        console.log();
+        return Number(obj.model_limits.max_sequence_length);
+      }
+    });
   }
 
   isValidChatCompletionModel(_modelName = "") {
@@ -94,24 +99,16 @@ class WatsonxLLM {
         "No OPEN_MODEL_PREF ENV defined. This must the id of your project on watsonx.ai"
       );
 
-    const data = await this.watsonx.textGeneration({
-      input: this.formatMessages(messages),
-      modelId: this.model,
-      projectId: this.projectId,
-      parameters: {
-        decoding_method: "greedy",
-        max_new_tokens: this.limits,
-        min_new_tokens: 0,
-        stop_sequences: [],
-        repetition_penalty: 1,
-      },
-    });
+    const data = await this.watsonx.textGeneration(
+      this.getWatsonxPayload(messages)
+    );
     if (!data.hasOwnProperty("result")) return null;
     return data.result.results[0].generated_text;
   }
 
   formatMessages(messages) {
     let input = "";
+    // TODO: Adapt different Prompt settings for model types
     messages.forEach((message, index) => {
       if (message.role == "system") {
         input += "[INST]<<SYS>>\n";
@@ -125,17 +122,14 @@ class WatsonxLLM {
     return input;
   }
 
-  async streamGetChatCompletion(messages = []) {
-    if (!this.model)
-      throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the id of your project on watsonx.ai."
-      );
+  async getWatsonxPayload(messages) {
+    await this.limitPromise;
 
-    const data = {
+    let data = {
       input: this.formatMessages(messages),
       parameters: {
         decoding_method: "greedy",
-        max_new_tokens: this.limits,
+        max_new_tokens: this.limits - 1,
         min_new_tokens: 0,
         stop_sequences: [],
         repetition_penalty: 1,
@@ -144,6 +138,37 @@ class WatsonxLLM {
       project_id: this.projectId,
     };
 
+    if (this.guardrail === "true") {
+      data["moderations"] = {
+        hap: {
+          input: {
+            enabled: true,
+            threshold: 0.5,
+            mask: {
+              remove_entity_value: true,
+            },
+          },
+          output: {
+            enabled: true,
+            threshold: 0.5,
+            mask: {
+              remove_entity_value: true,
+            },
+          },
+        },
+      };
+    }
+    return data;
+  }
+
+  async streamGetChatCompletion(messages = []) {
+    if (!this.model)
+      throw new Error(
+        "No OPEN_MODEL_PREF ENV defined. This must the id of your project on watsonx.ai."
+      );
+
+    const data = await this.getWatsonxPayload(messages);
+    console.log(data);
     const stream = await fetch(
       `${process.env.WATSONX_AI_ENDPOINT}/ml/v1/text/generation_stream?version=2024-05-31`,
       {
@@ -156,7 +181,6 @@ class WatsonxLLM {
         body: JSON.stringify(data),
       }
     );
-    console.log(stream);
 
     return stream.body;
   }
@@ -177,47 +201,41 @@ class WatsonxLLM {
       const decoder = new TextDecoder("utf-8");
 
       try {
-        const lines = [];
+        let collectedChunks = "";
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
 
           const decodedChunk = decoder.decode(value);
-          const decodedLines = decodedChunk.split("\n");
-          let parsedLines = decodedLines.map((line) => {
-            line = line.replace(/^data: /, "").trim();
-            return line;
-          });
+          collectedChunks += decodedChunk;
 
-          if (!lines[2]?.endsWith('}')) {
-            lines[2] += parsedLines[0];
-            parsedLines.splice(0, 1);
-          }
-
-          lines.push(...parsedLines);
-          if (parsedLines.length >= 3 && !parsedLines[2].endsWith('}')) {
-            continue;
-          }
-
-          parsedLines = lines.slice(0, 3);
-          lines.splice(0, 3);
-
-
-          try {
-            const data = JSON.parse(parsedLines[2]);
-            const delta = data.results[0].generated_text;
-            if (!delta) continue;
-            fullText += delta;
-            writeResponseChunk(response, {
-              uuid,
-              sources: [],
-              type: "textResponseChunk",
-              textResponse: delta,
-              close: false,
-              error: false,
+          // we cache the chunks incase two parts of different events are in the same chunk
+          if (collectedChunks.includes("\n\n")) {
+            const overlappingEvents = collectedChunks.split("\n\n");
+            const decodedLines = overlappingEvents[0].split("\n");
+            let parsedLines = decodedLines.map((line) => {
+              line = line.replace(/^data: /, "").trim();
+              return line;
             });
-          } catch {
-            console.log("Invalid JSON in ", parsedLines[0]);
+
+            collectedChunks = "" + overlappingEvents[1];
+            try {
+              const data = JSON.parse(parsedLines[2]);
+              const delta = data.results[0].generated_text;
+
+              if (!delta) continue;
+              fullText += delta;
+              writeResponseChunk(response, {
+                uuid,
+                sources: [],
+                type: "textResponseChunk",
+                textResponse: delta,
+                close: false,
+                error: false,
+              });
+            } catch {
+              console.error("Invalid JSON in: ", parsedLines);
+            }
           }
         }
         writeResponseChunk(response, {

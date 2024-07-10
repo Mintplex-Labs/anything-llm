@@ -1,3 +1,5 @@
+const { number } = require("joi");
+
 const KEY_MAPPING = {
   LLMProvider: {
     envKey: "LLM_PROVIDER",
@@ -666,9 +668,9 @@ function validWatsonxURL(input = "") {
 
 function validWatsonxTokenLimit(input = "") {
   const tokenLimit = Number(input);
-  if (isNaN(tokenLimit)) return "Token limit is not a number";
-  if (![4_096, 16_384, 8_192, 32_768, 128_000].includes(tokenLimit))
-    return "Invalid Watsonx token limit.";
+
+  if (!(typeof tokenLimit === "number"))
+    return "Watsonx Token Limit is not a number";
   return null;
 }
 
