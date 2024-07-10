@@ -3,7 +3,6 @@ import useCopyText from "@/hooks/useCopyText";
 import { Check, ThumbsUp, ArrowsClockwise, Copy } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
-import TTSMessage from "./TTSButton";
 import { EditMessageAction } from "./EditMessage";
 import ActionMenu from "./ActionMenu";
 
@@ -54,7 +53,6 @@ const Actions = ({
           role={role}
         />
       </div>
-      <TTSMessage slug={slug} chatId={chatId} message={message} />
     </div>
   );
 };
