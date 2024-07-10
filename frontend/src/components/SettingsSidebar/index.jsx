@@ -393,18 +393,18 @@ const SidebarOptions = ({ user = null, t }) => (
       btnText={t("settings.tools")}
       icon={<Toolbox className="h-5 w-5 flex-shrink-0" />}
       user={user}
-      allowedRole={["admin", "manager"]}
+      allowedRole={["admin"]}
       flex={true}
       childOptions={[
         {
           btnText: t("settings.embed-chats"),
           href: paths.settings.embedChats(),
-          allowedRole: ["admin", "manager"],
+          allowedRole: ["admin"],
         },
         {
           btnText: t("settings.embeds"),
           href: paths.settings.embedSetup(),
-          allowedRole: ["admin", "manager"],
+          allowedRole: ["admin"],
         },
         {
           btnText: t("settings.event-logs"),
