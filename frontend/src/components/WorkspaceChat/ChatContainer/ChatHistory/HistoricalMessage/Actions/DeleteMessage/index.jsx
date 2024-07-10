@@ -48,7 +48,7 @@ export function DeleteMessage({ chatId, isEditing, role }) {
   return (
     <button
       onClick={emitDeleteEvent}
-      className="flex items-center gap-x-1 w-full"
+      className="border-none flex items-center gap-x-1 w-full"
       role="menuitem"
     >
       <Trash size={21} weight="fill" />

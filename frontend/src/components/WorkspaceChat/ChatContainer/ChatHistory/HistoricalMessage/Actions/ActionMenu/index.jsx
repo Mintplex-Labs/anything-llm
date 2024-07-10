@@ -38,7 +38,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
     <div className="mt-2 -ml-0.5 relative" ref={menuRef}>
       <button
         onClick={toggleMenu}
-        className="text-zinc-300 hover:text-zinc-100 transition-colors duration-200"
+        className="border-none text-zinc-300 hover:text-zinc-100 transition-colors duration-200"
         data-tooltip-id="action-menu"
         data-tooltip-content="More actions"
         aria-label="More actions"
@@ -49,14 +49,14 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
         <div className="absolute -top-1 left-7 mt-1 border-[1.5px] border-white/40 rounded-lg bg-[#41454B] bg-opacity-100 flex flex-col shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-white z-10">
           <button
             onClick={handleFork}
-            className="flex items-center gap-x-2 hover:bg-white/10 py-1.5 px-2 transition-colors duration-200 w-full text-left"
+            className="border-none flex items-center gap-x-2 hover:bg-white/10 py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <TreeView size={18} />
             <span className="text-sm">Fork</span>
           </button>
           <button
             onClick={handleDelete}
-            className="flex items-center gap-x-2 hover:bg-white/10 py-1.5 px-2 transition-colors duration-200 w-full text-left"
+            className="border-none flex items-center gap-x-2 hover:bg-white/10 py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <Trash size={18} />
             <span className="text-sm">Delete</span>
