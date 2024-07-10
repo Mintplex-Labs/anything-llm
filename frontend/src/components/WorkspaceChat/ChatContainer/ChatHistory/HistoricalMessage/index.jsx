@@ -10,6 +10,7 @@ import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
 import { EditMessageForm, useEditMessage } from "./Actions/EditMessage";
 import { useWatchDeleteMessage } from "./Actions/DeleteMessage";
+import TTSMessage from "./Actions/TTSButton";
 
 const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = ({
@@ -76,7 +77,16 @@ const HistoricalMessage = ({
     >
       <div className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}>
         <div className="flex gap-x-5">
-          <ProfileImage role={role} workspace={workspace} />
+          <div className="flex flex-col items-center">
+            <ProfileImage role={role} workspace={workspace} />
+            <div className="mt-1 -mb-10">
+              <TTSMessage
+                slug={workspace?.slug}
+                chatId={chatId}
+                message={message}
+              />
+            </div>
+          </div>
           {isEditing ? (
             <EditMessageForm
               role={role}
@@ -94,8 +104,7 @@ const HistoricalMessage = ({
             />
           )}
         </div>
-        <div className="flex gap-x-5">
-          <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden" />
+        <div className="flex gap-x-5 ml-14">
           <Actions
             message={message}
             feedbackScore={feedbackScore}
