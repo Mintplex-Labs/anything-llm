@@ -75,7 +75,7 @@ export function Chartable({ props, workspace }) {
     switch (chartType) {
       case "area":
         return (
-          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+          <div className="border-none bg-zinc-900 p-8 rounded-xl text-white">
             <h3 className="text-lg font-medium">{title}</h3>
             <AreaChart
               className="h-[350px]"
@@ -90,7 +90,7 @@ export function Chartable({ props, workspace }) {
         );
       case "bar":
         return (
-          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+          <div className="border-none bg-zinc-900 p-8 rounded-xl text-white">
             <h3 className="text-lg font-medium">{title}</h3>
             <BarChart
               className="h-[350px]"
@@ -107,7 +107,7 @@ export function Chartable({ props, workspace }) {
         );
       case "line":
         return (
-          <div className="bg-zinc-900 p-8 pb-12 rounded-xl text-white h-[500px] w-full">
+          <div className="border-none bg-zinc-900 p-8 pb-12 rounded-xl text-white h-[500px] w-full">
             <h3 className="text-lg font-medium">{title}</h3>
             <LineChart
               className="h-[400px]"
@@ -122,7 +122,7 @@ export function Chartable({ props, workspace }) {
         );
       case "composed":
         return (
-          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+          <div className="border-none bg-zinc-900 p-8 rounded-xl text-white">
             <h3 className="text-lg font-medium">{title}</h3>
             {showLegend && (
               <Legend
@@ -178,7 +178,7 @@ export function Chartable({ props, workspace }) {
         );
       case "scatter":
         return (
-          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+          <div className="border-none bg-zinc-900 p-8 rounded-xl text-white">
             <h3 className="text-lg font-medium">{title}</h3>
             {showLegend && (
               <div className="flex justify-end">
@@ -224,7 +224,7 @@ export function Chartable({ props, workspace }) {
         );
       case "pie":
         return (
-          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+          <div className="border-none bg-zinc-900 p-8 rounded-xl text-white">
             <h3 className="text-lg font-medium">{title}</h3>
             <DonutChart
               data={data}
@@ -248,7 +248,7 @@ export function Chartable({ props, workspace }) {
         );
       case "radar":
         return (
-          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+          <div className="border-none bg-zinc-900 p-8 rounded-xl text-white">
             <h3 className="text-lg font-medium">{title}</h3>
             {showLegend && (
               <div className="flex justify-end">
@@ -282,7 +282,7 @@ export function Chartable({ props, workspace }) {
         );
       case "radialbar":
         return (
-          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+          <div className="border-none bg-zinc-900 p-8 rounded-xl text-white">
             <h3 className="text-lg font-medium">{title}</h3>
             {showLegend && (
               <div className="flex justify-end">
@@ -317,7 +317,7 @@ export function Chartable({ props, workspace }) {
         );
       case "treemap":
         return (
-          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+          <div className="border-none bg-zinc-900 p-8 rounded-xl text-white">
             <h3 className="text-lg font-medium">{title}</h3>
             {showLegend && (
               <div className="flex justify-end">
@@ -343,7 +343,7 @@ export function Chartable({ props, workspace }) {
         );
       case "funnel":
         return (
-          <div className="bg-zinc-900 p-8 rounded-xl text-white">
+          <div className="border-none bg-zinc-900 p-8 rounded-xl text-white">
             <h3 className="text-lg font-medium">{title}</h3>
             {showLegend && (
               <div className="flex justify-end">

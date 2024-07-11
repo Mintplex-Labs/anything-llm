@@ -30,7 +30,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
   };
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col gap-y-7">
       {showAlert && (
         <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-white mb-6 bg-blue-800/30 w-fit rounded-lg px-4 py-2">
           <div className="gap-x-2 flex items-center">
@@ -48,7 +48,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
           </Link>
         </div>
       )}
-      <div className="w-full flex items-start gap-4">
+      <div className="w-full flex items-start gap-[36px] mt-1.5">
         <LMStudioModelSelection settings={settings} basePath={basePath.value} />
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-2">
@@ -57,7 +57,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
           <input
             type="number"
             name="LMStudioTokenLimit"
-            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="4096"
             defaultChecked="4096"
             min={1}
@@ -90,7 +90,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
       </div>
 
       <div hidden={!showAdvancedControls}>
-        <div className="w-full flex items-start gap-4 mt-4">
+        <div className="w-full flex items-start gap-4">
           <div className="flex flex-col w-60">
             <div className="flex justify-between items-center mb-2">
               <label className="text-white text-sm font-semibold">
@@ -114,7 +114,7 @@ export default function LMStudioOptions({ settings, showAlert = false }) {
             <input
               type="url"
               name="LMStudioBasePath"
-              className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+              className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="http://localhost:1234/v1"
               value={basePathValue.value}
               required={true}

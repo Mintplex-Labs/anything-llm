@@ -63,7 +63,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
           </button>
           <button
             onClick={handleDelete}
-            className=" text-white border-none flex items-center gap-x-2 hover:bg-white/10 py-1.5 px-2 transition-colors duration-200 w-full text-left"
+            className="border-none text-white border-none flex items-center gap-x-2 hover:bg-white/10 py-1.5 px-2 transition-colors duration-200 w-full text-left"
           >
             <Trash size={18} />
             <span className="text-sm">Delete</span>

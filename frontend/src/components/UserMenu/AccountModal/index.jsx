@@ -189,7 +189,7 @@ function LanguagePreference() {
       </label>
       <select
         name="userLang"
-        className="bg-zinc-900 w-fit mt-2 px-4 border-gray-500 text-white text-sm rounded-lg block py-2"
+        className="border-none bg-zinc-900 w-fit mt-2 px-4 border-gray-500 text-white text-sm rounded-lg block py-2"
         defaultValue={currentLanguage || "en"}
         onChange={(e) => changeLanguage(e.target.value)}
       >

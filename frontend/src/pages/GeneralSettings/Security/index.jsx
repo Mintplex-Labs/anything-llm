@@ -145,7 +145,7 @@ function MultiUserMode() {
                       <input
                         name="username"
                         type="text"
-                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder:text-white/20 focus:ring-blue-500"
+                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-white/20 focus:ring-blue-500"
                         placeholder="Your admin username"
                         minLength={2}
                         required={true}
@@ -164,7 +164,7 @@ function MultiUserMode() {
                       <input
                         name="password"
                         type="text"
-                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder:text-white/20 focus:ring-blue-500"
+                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-white/20 focus:ring-blue-500"
                         placeholder="Your admin password"
                         minLength={8}
                         required={true}
@@ -317,7 +317,7 @@ function PasswordProtection() {
                       <input
                         name="password"
                         type="text"
-                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:border-blue-500 block w-full p-2.5 placeholder:text-white/20 focus:ring-blue-500"
+                        className="border-none bg-zinc-900 text-white text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5 placeholder:text-white/20"
                         placeholder="Your Instance Password"
                         minLength={8}
                         required={true}
