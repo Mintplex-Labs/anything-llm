@@ -10,16 +10,16 @@ export default function LocalAiOptions({ settings }) {
   const [apiKey, setApiKey] = useState(settings?.LocalAiApiKey);
 
   return (
-    <div className="w-full flex flex-col gap-y-4">
-      <div className="w-full flex items-center gap-4">
+    <div className="w-full flex flex-col gap-y-7">
+      <div className="w-full flex items-center gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             LocalAI Base URL
           </label>
           <input
             type="url"
             name="EmbeddingBasePath"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="http://localhost:8080/v1"
             defaultValue={settings?.EmbeddingBasePath}
             onChange={(e) => setBasePathValue(e.target.value)}
@@ -35,13 +35,13 @@ export default function LocalAiOptions({ settings }) {
           basePath={basePath}
         />
         <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
+          <label className="text-white text-sm font-semibold block mb-3">
             Max embedding chunk length
           </label>
           <input
             type="number"
             name="EmbeddingModelMaxChunkLength"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="1000"
             min={1}
             onScroll={(e) => e.target.blur()}
@@ -51,7 +51,7 @@ export default function LocalAiOptions({ settings }) {
           />
         </div>
       </div>
-      <div className="w-full flex items-center gap-4">
+      <div className="w-full flex items-center gap-[36px]">
         <div className="flex flex-col w-60">
           <div className="flex flex-col gap-y-1 mb-4">
             <label className="text-white text-sm font-semibold flex items-center gap-x-2">
@@ -62,7 +62,7 @@ export default function LocalAiOptions({ settings }) {
           <input
             type="password"
             name="LocalAiApiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="sk-mysecretkey"
             defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
             autoComplete="off"
@@ -102,7 +102,7 @@ function LocalAIModelSelection({ settings, apiKey = null, basePath = null }) {
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Embedding Model Name
         </label>
         <select
@@ -122,7 +122,7 @@ function LocalAIModelSelection({ settings, apiKey = null, basePath = null }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-4">
+      <label className="text-white text-sm font-semibold block mb-3">
         Embedding Model Name
       </label>
       <select

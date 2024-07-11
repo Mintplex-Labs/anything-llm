@@ -28,8 +28,8 @@ export default function OllamaLLMOptions({ settings }) {
   };
 
   return (
-    <div className="w-full flex flex-col gap-y-4">
-      <div className="w-full flex items-start gap-4">
+    <div className="w-full flex flex-col gap-y-7">
+      <div className="w-full flex items-start gap-[36px] mt-1.5">
         <OllamaLLMModelSelection
           settings={settings}
           basePath={basePath.value}
@@ -41,7 +41,7 @@ export default function OllamaLLMOptions({ settings }) {
           <input
             type="number"
             name="OllamaLLMTokenLimit"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="4096"
             defaultChecked="4096"
             min={1}
@@ -98,7 +98,7 @@ export default function OllamaLLMOptions({ settings }) {
             <input
               type="url"
               name="OllamaLLMBasePath"
-              className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+              className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="http://127.0.0.1:11434"
               value={basePathValue.value}
               required={true}

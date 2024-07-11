@@ -37,7 +37,7 @@
     "node-html-parser": "^6.1.13",
     "officeparser": "^4.0.5",
     "openai": "4.38.5",
-    "pdfjs-dist": "3.4.120",
+    "pdf-parse": "^1.1.1",
     "puppeteer": "~21.5.2",
     "slugify": "^1.6.6",
     "url-pattern": "^1.0.3",

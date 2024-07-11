@@ -3,8 +3,10 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import WorkspaceLLMItem from "./WorkspaceLLMItem";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
-import ChatModelSelection from "../ChatModelSelection";
+import ChatModelSelection from "./ChatModelSelection";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
 
 // Some providers can only be associated with a single model.
 // In that case there is no selection to be made so we can just move on.
@@ -80,7 +82,7 @@ export default function WorkspaceLLMSelection({
           />
         )}
         {searchMenuOpen ? (
-          <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-dark-input rounded-lg flex flex-col justify-between cursor-pointer border-2 border-[#46C8FF] z-20">
+          <div className="absolute top-0 left-0 w-full max-w-[640px] max-h-[310px] overflow-auto white-scrollbar min-h-[64px] bg-dark-input rounded-lg flex flex-col justify-between cursor-pointer border-2 border-primary-button z-20">
             <div className="w-full flex flex-col gap-y-1">
               <div className="flex items-center sticky top-0 border-b border-[#9CA3AF] mx-4 bg-dark-input">
                 <MagnifyingGlass
@@ -93,7 +95,7 @@ export default function WorkspaceLLMSelection({
                   name="llm-search"
                   autoComplete="off"
                   placeholder={t("chat.llm.search")}
-                  className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:border-white text-white placeholder:text-white placeholder:font-medium"
+                  className="-ml-4 my-2 bg-transparent z-20 pl-12 h-[38px] w-full px-4 py-1 text-sm outline-none focus:outline-primary-button active:outline-primary-button outline-none text-white placeholder:text-white placeholder:font-medium"
                   onChange={(e) => setSearchQuery(e.target.value)}
                   ref={searchInputRef}
                   onKeyDown={(e) => {
@@ -125,7 +127,7 @@ export default function WorkspaceLLMSelection({
           </div>
         ) : (
           <button
-            className="w-full max-w-[640px] h-[64px] bg-dark-input rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-[#46C8FF] transition-all duration-300"
+            className="w-full max-w-[640px] h-[64px] bg-dark-input rounded-lg flex items-center p-[14px] justify-between cursor-pointer border-2 border-transparent hover:border-primary-button transition-all duration-300"
             type="button"
             onClick={() => setSearchMenuOpen(true)}
           >
@@ -148,7 +150,22 @@ export default function WorkspaceLLMSelection({
           </button>
         )}
       </div>
-      {!NO_MODEL_SELECTION.includes(selectedLLM) && (
+      {NO_MODEL_SELECTION.includes(selectedLLM) ? (
+        <>
+          {selectedLLM !== "default" && (
+            <div className="w-full h-10 justify-center items-center flex mt-4">
+              <p className="text-sm font-base text-white text-opacity-60 text-center">
+                Multi-model support is not supported for this provider yet.
+                <br />
+                This workspace will use{" "}
+                <Link to={paths.settings.llmPreference()} className="underline">
+                  the model set for the system.
+                </Link>
+              </p>
+            </div>
+          )}
+        </>
+      ) : (
         <div className="mt-4 flex flex-col gap-y-1">
           <ChatModelSelection
             provider={selectedLLM}

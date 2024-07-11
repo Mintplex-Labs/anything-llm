@@ -33,7 +33,7 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".rst": "./convert/asTxt.js",
 
   ".html": "./convert/asTxt.js",
-  ".pdf": "./convert/asPDF.js",
+  ".pdf": "./convert/asPDF/index.js",
 
   ".docx": "./convert/asDocx.js",
   ".pptx": "./convert/asOfficeMime.js",

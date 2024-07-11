@@ -1,7 +1,9 @@
 import useGetProviderModels, {
   DISABLED_PROVIDERS,
 } from "@/hooks/useGetProvidersModels";
+import paths from "@/utils/paths";
 import { useTranslation } from "react-i18next";
+import { Link, useParams } from "react-router-dom";
 
 // These models do NOT support function calling
 function supportedModel(provider, model = "") {
@@ -18,11 +20,32 @@ export default function AgentModelSelection({
   workspace,
   setHasChanges,
 }) {
+  const { slug } = useParams();
   const { defaultModels, customModels, loading } =
     useGetProviderModels(provider);
 
   const { t } = useTranslation();
-  if (DISABLED_PROVIDERS.includes(provider)) return null;
+  if (DISABLED_PROVIDERS.includes(provider)) {
+    return (
+      <div className="w-full h-10 justify-center items-center flex">
+        <p className="text-sm font-base text-white text-opacity-60 text-center">
+          Multi-model support is not supported for this provider yet.
+          <br />
+          Agent's will use{" "}
+          <Link
+            to={paths.workspace.settings.chatSettings(slug)}
+            className="underline"
+          >
+            the model set for the workspace
+          </Link>{" "}
+          or{" "}
+          <Link to={paths.settings.llmPreference()} className="underline">
+            the model set for the system.
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
