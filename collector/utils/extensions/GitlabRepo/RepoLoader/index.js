@@ -1,4 +1,5 @@
-const axios = require('axios');
+const https = require('https');
+const UrlPattern = require("url-pattern");
 
 class RepoLoader {
   constructor(args = {}) {
@@ -13,7 +14,6 @@ class RepoLoader {
   }
 
   #validGitlabUrl() {
-    const UrlPattern = require("url-pattern");
     const pattern = new UrlPattern(
       "https\\://gitlab.com/(:projectId(*))",
       {
@@ -42,9 +42,7 @@ class RepoLoader {
   async #validateAccessToken() {
     if (!this.accessToken) return;
     try {
-      await axios.get('https://gitlab.com/api/v4/user', {
-        headers: { 'PRIVATE-TOKEN': this.accessToken }
-      });
+      await this.#makeRequest('https://gitlab.com/api/v4/user');
     } catch (e) {
       console.error(
         "Invalid Gitlab Access Token provided! Access token will not be used",
@@ -100,10 +98,8 @@ class RepoLoader {
     await this.#validateAccessToken();
 
     try {
-      const response = await axios.get(`https://gitlab.com/api/v4/projects/${this.projectId}/repository/branches`, {
-        headers: this.accessToken ? { 'PRIVATE-TOKEN': this.accessToken } : {}
-      });
-      this.branches = response.data.map(branch => branch.name);
+      const data = await this.#makeRequest(`https://gitlab.com/api/v4/projects/${this.projectId}/repository/branches`);
+      this.branches = JSON.parse(data).map(branch => branch.name);
       return this.#branchPrefSort(this.branches);
     } catch (err) {
       console.log(`RepoLoader.branches`, err);
@@ -113,11 +109,8 @@ class RepoLoader {
 
   async getRepositoryTree() {
     try {
-      const response = await axios.get(`https://gitlab.com/api/v4/projects/${this.projectId}/repository/tree`, {
-        params: { ref: this.branch, recursive: true, per_page: 100 },
-        headers: this.accessToken ? { 'PRIVATE-TOKEN': this.accessToken } : {}
-      });
-      return response.data.filter(item => item.type === 'blob');
+      const data = await this.#makeRequest(`https://gitlab.com/api/v4/projects/${this.projectId}/repository/tree?ref=${this.branch}&recursive=true&per_page=100`);
+      return JSON.parse(data).filter(item => item.type === 'blob');
     } catch (e) {
       console.error(`RepoLoader.getRepositoryTree`, e);
       return [];
@@ -126,15 +119,32 @@ class RepoLoader {
 
   async fetchSingleFile(sourceFilePath) {
     try {
-      const response = await axios.get(`https://gitlab.com/api/v4/projects/${this.projectId}/repository/files/${encodeURIComponent(sourceFilePath)}/raw`, {
-        params: { ref: this.branch },
-        headers: this.accessToken ? { 'PRIVATE-TOKEN': this.accessToken } : {}
-      });
-      return response.data;
+      const data = await this.#makeRequest(`https://gitlab.com/api/v4/projects/${this.projectId}/repository/files/${encodeURIComponent(sourceFilePath)}/raw?ref=${this.branch}`);
+      return data;
     } catch (e) {
       console.error(`RepoLoader.fetchSingleFile`, e);
       return null;
     }
+  }
+
+  #makeRequest(url) {
+    return new Promise((resolve, reject) => {
+      const options = {
+        headers: this.accessToken ? { 'PRIVATE-TOKEN': this.accessToken } : {}
+      };
+
+      https.get(url, options, (res) => {
+        let data = '';
+        res.on('data', (chunk) => data += chunk);
+        res.on('end', () => {
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(data);
+          } else {
+            reject(new Error(`Request failed with status code ${res.statusCode}`));
+          }
+        });
+      }).on('error', reject);
+    });
   }
 }
 
