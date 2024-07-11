@@ -81,6 +81,33 @@ function extensions(app) {
     }
   );
 
+  app.post(
+    "/ext/gitlab-repo",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const { loadGitlabRepo } = require("../utils/extensions/GitlabRepo");
+        const { success, reason, data } = await loadGitlabRepo(
+          reqBody(request),
+          response,
+        );
+        response.status(200).json({
+          success,
+          reason,
+          data,
+        });
+      } catch (e) {
+        console.error(e);
+        response.status(200).json({
+          success: false,
+          reason: e.message || "A processing error occurred.",
+          data: {},
+        });
+      }
+      return;
+    }
+  );
+
   // gets all branches for a specific repo
   app.post(
     "/ext/github-repo/branches",
@@ -89,6 +116,36 @@ function extensions(app) {
       try {
         const GithubRepoLoader = require("../utils/extensions/GithubRepo/RepoLoader");
         const allBranches = await new GithubRepoLoader(
+          reqBody(request)
+        ).getRepoBranches();
+        response.status(200).json({
+          success: true,
+          reason: null,
+          data: {
+            branches: allBranches,
+          },
+        });
+      } catch (e) {
+        console.error(e);
+        response.status(400).json({
+          success: false,
+          reason: e.message,
+          data: {
+            branches: [],
+          },
+        });
+      }
+      return;
+    }
+  );
+
+  app.post(
+    "/ext/gitlab-repo/branches",
+    [verifyPayloadIntegrity],
+    async function (request, response) {
+      try {
+        const GitlabRepoLoader = require("../utils/extensions/GitlabRepo/RepoLoader");
+        const allBranches = await new GitlabRepoLoader(
           reqBody(request)
         ).getRepoBranches();
         response.status(200).json({
