@@ -124,7 +124,7 @@ export default function EmbeddingTextSplitterPreference() {
                     min={1}
                     max={settings?.max_embed_chunk_size || 1000}
                     onWheel={(e) => e?.currentTarget?.blur()}
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="maximum length of vectorized text"
                     defaultValue={
                       isNullOrNaN(settings?.text_splitter_chunk_size)
@@ -134,7 +134,7 @@ export default function EmbeddingTextSplitterPreference() {
                     required={true}
                     autoComplete="off"
                   />
-                  <p className="text-xs text-white/40">
+                  <p className="text-xs text-white/40 mt-2">
                     {t("text.size.recommend")}{" "}
                     {numberWithCommas(settings?.max_embed_chunk_size || 1000)}.
                   </p>
@@ -156,7 +156,7 @@ export default function EmbeddingTextSplitterPreference() {
                     name="text_splitter_chunk_overlap"
                     min={0}
                     onWheel={(e) => e?.currentTarget?.blur()}
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="maximum length of vectorized text"
                     defaultValue={
                       isNullOrNaN(settings?.text_splitter_chunk_overlap)
