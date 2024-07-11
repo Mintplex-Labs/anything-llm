@@ -17,8 +17,6 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
   const pageContent = [];
   const docs = await pdfLoader.load();
 
-  console.log(docs);
-
   for (const doc of docs) {
     console.log(
       `-- Parsing content from pg ${

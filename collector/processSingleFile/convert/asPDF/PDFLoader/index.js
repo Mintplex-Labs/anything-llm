@@ -1,9 +1,5 @@
 const fs = require("fs").promises;
-const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = require.resolve(
-  "pdfjs-dist/legacy/build/pdf.worker.js"
-);
+const pdf = require("pdf-parse");
 
 class PDFLoader {
   constructor(filePath, { splitPages = true } = {}) {
@@ -12,76 +8,55 @@ class PDFLoader {
   }
 
   async load() {
-    const data = await fs.readFile(this.filePath);
-    const pdf = await pdfjsLib.getDocument({
-      data,
-      useWorkerFetch: false,
-      isEvalSupported: false,
-      useSystemFonts: true,
-    }).promise;
+    const buffer = await fs.readFile(this.filePath);
 
-    const meta = await pdf.getMetadata().catch(() => null);
-    const documents = [];
+    const options = {
+      pagerender: this.splitPages ? this.renderPage : null,
+    };
 
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
+    const { text, numpages, info, metadata, version } = await pdf(
+      buffer,
+      options
+    );
 
-      if (content.items.length === 0) {
-        continue;
-      }
-
-      let lastY;
-      const textItems = [];
-      for (const item of content.items) {
-        if ("str" in item) {
-          if (lastY === item.transform[5] || !lastY) {
-            textItems.push(item.str);
-          } else {
-            textItems.push(`\n${item.str}`);
-          }
-          lastY = item.transform[5];
-        }
-      }
-
-      const text = textItems.join("");
-
-      documents.push({
-        pageContent: text.trim(),
-        metadata: {
-          source: this.filePath,
-          pdf: {
-            version: pdf._pdfInfo.version,
-            info: meta?.info,
-            metadata: meta?.metadata,
-            totalPages: pdf.numPages,
-          },
-          loc: {
-            pageNumber: i,
-          },
-        },
-      });
-    }
-
-    if (this.splitPages) {
-      return documents;
-    } else {
+    if (!this.splitPages) {
       return [
         {
-          pageContent: documents.map((doc) => doc.pageContent).join("\n\n"),
+          pageContent: text.trim(),
           metadata: {
             source: this.filePath,
-            pdf: {
-              version: pdf._pdfInfo.version,
-              info: meta?.info,
-              metadata: meta?.metadata,
-              totalPages: pdf.numPages,
-            },
+            pdf: { version, info, metadata, totalPages: numpages },
           },
         },
       ];
     }
+
+    return this.pages.map((pageContent, index) => ({
+      pageContent: pageContent.trim(),
+      metadata: {
+        source: this.filePath,
+        pdf: { version, info, metadata, totalPages: numpages },
+        loc: { pageNumber: index + 1 },
+      },
+    }));
   }
+
+  pages = [];
+
+  renderPage = async (pageData) => {
+    const textContent = await pageData.getTextContent();
+    let lastY,
+      text = "";
+    for (const item of textContent.items) {
+      if (lastY !== item.transform[5] && lastY !== undefined) {
+        text += "\n";
+      }
+      text += item.str;
+      lastY = item.transform[5];
+    }
+    this.pages.push(text);
+    return text;
+  };
 }
 
 module.exports = PDFLoader;
