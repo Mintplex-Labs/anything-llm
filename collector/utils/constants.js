@@ -30,7 +30,7 @@ const ACCEPTED_MIMES = {
 };
 
 const asText = require("../processSingleFile/convert/asTxt.js");
-const asPdf = require("../processSingleFile/convert/asPDF.js");
+const asPdf = require("../processSingleFile/convert/asPDF/index.js");
 const asDocx = require("../processSingleFile/convert/asDocx.js");
 const asOfficeMime = require("../processSingleFile/convert/asOfficeMime.js");
 const asMbox = require("../processSingleFile/convert/asMbox.js");
