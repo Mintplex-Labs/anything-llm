@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Trash } from "@phosphor-icons/react";
-import { Tooltip } from "react-tooltip";
 import Workspace from "@/models/workspace";
+
 const DELETE_EVENT = "delete-message";
 
 export function useWatchDeleteMessage({ chatId = null, role = "user" }) {
@@ -46,22 +46,13 @@ export function DeleteMessage({ chatId, isEditing, role }) {
   }
 
   return (
-    <div className="mt-3 relative">
-      <button
-        onClick={emitDeleteEvent}
-        data-tooltip-id={`delete-message-${chatId}`}
-        data-tooltip-content="Delete message"
-        className="border-none text-zinc-300"
-        aria-label="Delete"
-      >
-        <Trash size={18} className="mb-1" />
-      </button>
-      <Tooltip
-        id={`delete-message-${chatId}`}
-        place="bottom"
-        delayShow={300}
-        className="tooltip !text-xs"
-      />
-    </div>
+    <button
+      onClick={emitDeleteEvent}
+      className="border-none flex items-center gap-x-1 w-full"
+      role="menuitem"
+    >
+      <Trash size={21} weight="fill" />
+      <p>Delete</p>
+    </button>
   );
 }

@@ -35,7 +35,8 @@ export default {
         "dark-highlight": "#1C1E21",
         "dark-text": "#222628",
         description: "#D2D5DB",
-        "x-button": "#9CA3AF"
+        "x-button": "#9CA3AF",
+        darker: "#F4F4F4"
       },
       backgroundImage: {
         "preference-gradient":
