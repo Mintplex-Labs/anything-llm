@@ -7,7 +7,7 @@ const {
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
-const { generateChunkSource } = require("./utils");
+const { generateLocalfileChunkSource } = require("../../utils/metadata");
 
 async function asOfficeMime({
   fullFilePath = "",
@@ -39,7 +39,10 @@ async function asOfficeMime({
     docAuthor: "no author found",
     description: "No description found.",
     docSource: "Office file uploaded by the user.",
-    chunkSource: generateChunkSource({ filename, ...options }, ""),
+    chunkSource: generategenerateLocalfileChunkSourceChunkSource(
+      { filename, ...options },
+      ""
+    ),
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,

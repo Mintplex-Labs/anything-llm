@@ -7,7 +7,7 @@ const {
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
-const { generateChunkSource } = require("./utils");
+const { generateLocalfileChunkSource } = require("../../utils/metadata");
 
 async function asDocx({ fullFilePath = "", filename = "", options = {} }) {
   const loader = new DocxLoader(fullFilePath);
@@ -39,7 +39,7 @@ async function asDocx({ fullFilePath = "", filename = "", options = {} }) {
     docAuthor: "no author found",
     description: "No description found.",
     docSource: "pdf file uploaded by the user.",
-    chunkSource: generateChunkSource({ filename, ...options }, ""),
+    chunkSource: generateLocalfileChunkSource({ filename, ...options }, ""),
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,

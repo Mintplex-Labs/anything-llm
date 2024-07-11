@@ -6,6 +6,7 @@ const UrlPattern = require("url-pattern");
 const { writeToServerDocuments, sanitizeFileName } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 const { ConfluencePagesLoader } = require("./ConfluenceLoader");
+const { generateConfluenceChunkSource } = require("../../metadata");
 
 /**
  * Load Confluence documents from a spaceID and Confluence credentials
@@ -83,7 +84,7 @@ async function loadConfluence({ pageUrl, username, accessToken }, response) {
       docAuthor: subdomain,
       description: doc.metadata.title,
       docSource: `${subdomain} Confluence`,
-      chunkSource: generateChunkSource(
+      chunkSource: generateConfluenceChunkSource(
         { doc, baseUrl, accessToken, username },
         response.locals.encryptionWorker
       ),
@@ -276,28 +277,6 @@ function validSpaceUrl(spaceUrl = "") {
 
   // No match
   return { valid: false, result: null };
-}
-
-/**
- * Generate the full chunkSource for a specific Confluence page so that we can resync it later.
- * This data is encrypted into a single `payload` query param so we can replay credentials later
- * since this was encrypted with the systems persistent password and salt.
- * @param {object} chunkSourceInformation
- * @param {import("../../EncryptionWorker").EncryptionWorker} encryptionWorker
- * @returns {string}
- */
-function generateChunkSource(
-  { doc, baseUrl, accessToken, username },
-  encryptionWorker
-) {
-  const payload = {
-    baseUrl,
-    token: accessToken,
-    username,
-  };
-  return `confluence://${doc.metadata.url}?payload=${encryptionWorker.encrypt(
-    JSON.stringify(payload)
-  )}`;
 }
 
 module.exports = {

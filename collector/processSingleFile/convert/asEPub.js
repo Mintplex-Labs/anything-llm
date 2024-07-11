@@ -7,7 +7,7 @@ const {
   writeToServerDocuments,
 } = require("../../utils/files");
 const { default: slugify } = require("slugify");
-const { generateChunkSource } = require("./utils");
+const { generateLocalfileChunkSource } = require("../../utils/metadata");
 
 async function asEPub({ fullFilePath = "", filename = "", options = {} }) {
   let content = "";
@@ -37,7 +37,7 @@ async function asEPub({ fullFilePath = "", filename = "", options = {} }) {
     docAuthor: "Unknown", // TODO: Find a better author
     description: "Unknown", // TODO: Find a better description
     docSource: "a epub file uploaded by the user.",
-    chunkSource: generateChunkSource({ filename, ...options }, ""),
+    chunkSource: generateLocalfileChunkSource({ filename, ...options }, ""),
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,

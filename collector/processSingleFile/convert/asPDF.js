@@ -6,7 +6,7 @@ const {
 } = require("../../utils/files");
 const { tokenizeString } = require("../../utils/tokenizer");
 const { default: slugify } = require("slugify");
-const { generateChunkSource } = require("./utils");
+const { generateLocalfileChunkSource } = require("../../utils/metadata");
 
 async function asPdf({ fullFilePath = "", filename = "", options = {} }) {
   const pdfjsLib = await import("pdfjs-dist");
@@ -49,7 +49,7 @@ async function asPdf({ fullFilePath = "", filename = "", options = {} }) {
     docAuthor: metadata?.info?.Creator || "no author found",
     description: metadata?.info?.Title || "No description found.",
     docSource: "pdf file uploaded by the user.",
-    chunkSource: generateChunkSource({ filename, ...options }, ""),
+    chunkSource: generateLocalfileChunkSource({ filename, ...options }, ""),
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,
