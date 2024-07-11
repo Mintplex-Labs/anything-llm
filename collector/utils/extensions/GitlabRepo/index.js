@@ -1,17 +1,9 @@
 const RepoLoader = require("./RepoLoader");
-const fs = require("fs");
-const path = require("path");
-const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
+const { getOutFolder, getOutFolderPath } = require("../../files");
 
-/**
- * Load in a GitLab Repo recursively or just the top level if no PAT is provided
- * @param {object} args - forwarded request body params
- * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
- * @returns
- */
 async function loadGitlabRepo(args, response) {
   const repo = new RepoLoader(args);
   await repo.init();
@@ -22,9 +14,7 @@ async function loadGitlabRepo(args, response) {
       reason: "Could not prepare Gitlab repo for loading! Check URL",
     };
 
-  console.log(
-    `-- Working GitLab ${repo.projectId}:${repo.branch} --`
-  );
+  console.log(`-- Working GitLab ${repo.projectId}:${repo.branch} --`);
   const docs = await repo.recursiveLoader();
   if (!docs.length) {
     return {
@@ -34,20 +24,8 @@ async function loadGitlabRepo(args, response) {
   }
 
   console.log(`[GitLab Loader]: Found ${docs.length} source files. Saving...`);
-  const outFolder = slugify(
-    `${repo.projectId}-${repo.branch}-${v4().slice(0, 4)}`
-  ).toLowerCase();
-
-  const outFolderPath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(
-          __dirname,
-          `../../../../server/storage/documents/${outFolder}`
-        )
-      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
-
-  if (!fs.existsSync(outFolderPath))
-    fs.mkdirSync(outFolderPath, { recursive: true });
+  const outFolder = getOutFolder(repo.projectId, repo.branch);
+  const outFolderPath = getOutFolderPath(outFolder);
 
   for (const doc of docs) {
     if (!doc.pageContent) continue;
@@ -71,11 +49,7 @@ async function loadGitlabRepo(args, response) {
     console.log(
       `[GitLab Loader]: Saving ${doc.metadata.source} to ${outFolder}`
     );
-    writeToServerDocuments(
-      data,
-      `${slugify(doc.metadata.source)}-${data.id}`,
-      outFolderPath
-    );
+    writeToServerDocuments(data, `${doc.metadata.source}-${data.id}`, outFolderPath);
   }
 
   return {
@@ -90,10 +64,6 @@ async function loadGitlabRepo(args, response) {
   };
 }
 
-/**
- * Gets the page content from a specific source file in a given GitLab Repo, not all items in a repo.
- * @returns
- */
 async function fetchGitlabFile({
   repoUrl,
   branch,
@@ -133,15 +103,6 @@ async function fetchGitlabFile({
   };
 }
 
-/**
- * Generate the full chunkSource for a specific file so that we can resync it later.
- * This data is encrypted into a single `payload` query param so we can replay credentials later
- * since this was encrypted with the systems persistent password and salt.
- * @param {RepoLoader} repo
- * @param {import("@langchain/core/documents").Document} doc
- * @param {import("../../EncryptionWorker").EncryptionWorker} encryptionWorker
- * @returns {string}
- */
 function generateChunkSource(repo, doc, encryptionWorker) {
   const payload = {
     projectId: repo.projectId,
