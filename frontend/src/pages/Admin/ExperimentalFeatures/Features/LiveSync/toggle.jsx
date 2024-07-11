@@ -58,8 +58,9 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
           </p>
           <p className="text-white/80 text-xs italic">
             You can sync both web-based content like websites, Confluence, and
-            GitHub files as well as locally uploaded documents. In general,
-            documents are checked every 10 minutes.
+            GitHub files as well as locally uploaded documents. Web-based
+            documents are checked hourly and locally referenced documents are
+            checked every 5 minutes.
           </p>
         </div>
       </div>
