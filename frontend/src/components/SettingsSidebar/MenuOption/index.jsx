@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CaretRight } from "@phosphor-icons/react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function MenuOption({
   btnText,
@@ -14,14 +14,14 @@ export default function MenuOption({
   isChild = false,
 }) {
   const storageKey = generateStorageKey({ key: btnText });
-  const location = window.location.pathname;
+  const location = useLocation();
   const hasChildren = childOptions.length > 0;
   const hasVisibleChildren = hasVisibleOptions(user, childOptions);
   const { isExpanded, setIsExpanded } = useIsExpanded({
     storageKey,
     hasVisibleChildren,
     childOptions,
-    location,
+    location: location.pathname,
   });
 
   if (hidden) return null;
@@ -43,9 +43,10 @@ export default function MenuOption({
   }
 
   const isActive = hasChildren
-    ? (!isExpanded && childOptions.some((child) => child.href === location)) ||
-      location === href
-    : location === href;
+    ? (!isExpanded &&
+        childOptions.some((child) => child.href === location.pathname)) ||
+      location.pathname === href
+    : location.pathname === href;
 
   const handleClick = (e) => {
     if (hasChildren) {
