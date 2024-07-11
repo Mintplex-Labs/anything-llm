@@ -212,9 +212,7 @@ class AgentHandler {
   #providerSetupAndCheck() {
     this.provider = this.invocation.workspace.agentProvider || "openai";
     this.model = this.#fetchModel();
-    this.log(
-      `Start ${this.#invocationUUID}::${this.provider}${this.model ? `:${this.model}` : ""}`
-    );
+    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.#checkSetup();
   }
 
