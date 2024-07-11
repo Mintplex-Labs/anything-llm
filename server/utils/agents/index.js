@@ -172,7 +172,7 @@ class AgentHandler {
       case "mistral":
         return "mistral-medium";
       case "generic-openai":
-        return "gpt-3.5-turbo";
+        return null;
       case "perplexity":
         return "sonar-small-online";
       case "textgenwebui":
@@ -184,9 +184,29 @@ class AgentHandler {
 
   #providerSetupAndCheck() {
     this.provider = this.invocation.workspace.agentProvider || "openai";
-    this.model =
-      this.invocation.workspace.agentModel || this.#providerDefault();
-    this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
+
+    // Providers that will not update the agentModel because they will manually enter
+    // the model name in the setup modal
+    const providersWithoutAgentModel = ["azure", "generic-openai"];
+
+    if (providersWithoutAgentModel.includes(this.provider)) {
+      switch (this.provider) {
+        case "azure":
+          this.model = process.env.OPEN_MODEL_PREF || this.#providerDefault();
+          break;
+        case "generic-openai":
+          this.model =
+            process.env.GENERIC_OPEN_AI_MODEL_PREF || this.#providerDefault();
+          break;
+      }
+    } else {
+      this.model =
+        this.invocation.workspace.agentModel || this.#providerDefault();
+    }
+
+    this.log(
+      `Start ${this.#invocationUUID}::${this.provider}${this.model ? `:${this.model}` : ""}`
+    );
     this.#checkSetup();
   }
 
