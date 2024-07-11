@@ -33,7 +33,7 @@ function ActionMenu({ chatId, forkThread, isEditing, role }) {
     };
   }, []);
 
-  if (isEditing || role === "user") return null;
+  if (!chatId || isEditing || role === "user") return null;
 
   return (
     <div className="mt-2 relative" ref={menuRef}>

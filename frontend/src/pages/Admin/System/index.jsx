@@ -98,7 +98,7 @@ export default function AdminSystem() {
             </div>
             {messageLimit.enabled && (
               <div className="mt-4">
-                <label className="block text-sm font-medium text-white">
+                <label className="text-white text-sm font-semibold block mb-4">
                   Message limit per day
                 </label>
                 <div className="relative mt-2">
@@ -115,7 +115,7 @@ export default function AdminSystem() {
                     value={messageLimit.limit}
                     min={1}
                     max={300}
-                    className="mt-2 w-1/3 border-none bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-60 p-2.5"
                   />
                 </div>
               </div>

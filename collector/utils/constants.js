@@ -30,7 +30,10 @@ const ACCEPTED_MIMES = {
 };
 
 const { asText, resyncText } = require("../processSingleFile/convert/asTxt.js");
-const { asPdf, resyncPdf } = require("../processSingleFile/convert/asPDF.js");
+const {
+  asPdf,
+  resyncPdf,
+} = require("../processSingleFile/convert/asPDF/index.js");
 const {
   asDocx,
   resyncDocx,
