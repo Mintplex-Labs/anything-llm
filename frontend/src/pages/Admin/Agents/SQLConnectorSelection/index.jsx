@@ -87,7 +87,7 @@ export default function AgentSQLConnectorSelection({
                     className="w-fit relative flex h-[40px] items-center border-none hover:bg-slate-600/20 rounded-lg"
                   >
                     <div className="flex w-full gap-x-2 items-center p-4">
-                      <div className="bg-zinc-600 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
+                      <div className="border-none bg-zinc-600 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
                         <Plus
                           weight="bold"
                           size={14}
