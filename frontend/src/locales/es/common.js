@@ -18,7 +18,7 @@ const TRANSLATIONS = {
     users: "Usuarios",
     workspaces: "Espacios de trabajo",
     "workspace-chats": "Chat del espacio de trabajo",
-    appearance: "Apariencia",
+    customization: "Apariencia",
     "api-keys": "Claves API",
     llm: "Preferencia de LLM",
     transcription: "Modelo de transcripción",
@@ -30,6 +30,10 @@ const TRANSLATIONS = {
     security: "Seguridad",
     "event-logs": "Registros de eventos",
     privacy: "Privacidad y datos",
+    "ai-providers": "Proveedores de IA",
+    "agent-skills": "Habilidades del agente",
+    admin: "Administrador",
+    tools: "Herramientas",
   },
 
   login: {
