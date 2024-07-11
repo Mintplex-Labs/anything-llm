@@ -3,29 +3,28 @@ const {
   createdDate,
   trashFile,
   writeToServerDocuments,
-} = require("../../utils/files");
-const { tokenizeString } = require("../../utils/tokenizer");
+} = require("../../../utils/files");
+const { tokenizeString } = require("../../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const PDFLoader = require("./PDFLoader");
 
-async function asPDF({ fullFilePath = "", filename = "" }) {
-  const pdfjsLib = await import("pdfjs-dist");
+async function asPdf({ fullFilePath = "", filename = "" }) {
+  const pdfLoader = new PDFLoader(fullFilePath, {
+    splitPages: true,
+  });
+
   console.log(`-- Working ${filename} --`);
-
-  const loadingTask = pdfjsLib.default.getDocument(fullFilePath);
-  const pdf = await loadingTask.promise;
-
-  const numPages = pdf.numPages;
   const pageContent = [];
+  const docs = await pdfLoader.load();
 
-  for (let i = 1; i <= numPages; i++) {
-    console.log(`-- Parsing content from pg ${i} --`);
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const text = content.items.map((item) => item.str).join(" ");
-
-    if (text.length) {
-      pageContent.push(text);
-    }
+  for (const doc of docs) {
+    console.log(
+      `-- Parsing content from pg ${
+        doc.metadata?.loc?.pageNumber || "unknown"
+      } --`
+    );
+    if (!doc.pageContent || !doc.pageContent.length) continue;
+    pageContent.push(doc.pageContent);
   }
 
   if (!pageContent.length) {
@@ -38,15 +37,13 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
     };
   }
 
-  const content = pageContent.join(" ");
-  const metadata = await pdf.getMetadata();
-
+  const content = pageContent.join("");
   const data = {
     id: v4(),
     url: "file://" + fullFilePath,
     title: filename,
-    docAuthor: metadata?.info?.Creator || "no author found",
-    description: metadata?.info?.Title || "No description found.",
+    docAuthor: docs[0]?.metadata?.pdf?.info?.Creator || "no author found",
+    description: docs[0]?.metadata?.pdf?.info?.Title || "No description found.",
     docSource: "pdf file uploaded by the user.",
     chunkSource: "",
     published: createdDate(fullFilePath),
@@ -64,4 +61,4 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
   return { success: true, reason: null, documents: [document] };
 }
 
-module.exports = asPDF;
+module.exports = asPdf;

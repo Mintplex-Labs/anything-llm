@@ -19,7 +19,7 @@ const TRANSLATIONS = {
     users: "Utilisateurs",
     workspaces: "Espaces de travail",
     "workspace-chats": "Chat de l'espace de travail",
-    appearance: "Apparence",
+    customization: "Apparence",
     "api-keys": "Clés API",
     llm: "Préférence LLM",
     transcription: "Modèle de transcription",
@@ -31,6 +31,10 @@ const TRANSLATIONS = {
     security: "Sécurité",
     "event-logs": "Journaux d'événements",
     privacy: "Confidentialité et données",
+    "ai-providers": "Fournisseurs d'IA",
+    "agent-skills": "Compétences de l'agent",
+    admin: "Admin",
+    tools: "Outils",
   },
 
   // Page Definitions

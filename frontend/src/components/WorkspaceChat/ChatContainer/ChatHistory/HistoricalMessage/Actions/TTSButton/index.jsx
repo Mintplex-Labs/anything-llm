@@ -16,7 +16,7 @@ export default function TTSMessage({ slug, chatId, message }) {
     getSettings();
   }, []);
 
-  if (loading) return null;
+  if (!chatId || loading) return null;
   if (provider !== "native")
     return <AsyncTTSMessage slug={slug} chatId={chatId} />;
   return <NativeTTSMessage message={message} />;

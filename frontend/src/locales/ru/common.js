@@ -17,7 +17,7 @@ const TRANSLATIONS = {
     users: "Пользователи",
     workspaces: "Рабочие пространства",
     "workspace-chats": "Чат рабочего пространства",
-    appearance: "Внешний вид",
+    customization: "Внешний вид",
     "api-keys": "API ключи",
     llm: "Предпочтение LLM",
     transcription: "Модель транскрипции",
@@ -29,6 +29,10 @@ const TRANSLATIONS = {
     security: "Безопасность",
     "event-logs": "Журналы событий",
     privacy: "Конфиденциальность и данные",
+    "ai-providers": "Поставщики ИИ",
+    "agent-skills": "Навыки агента",
+    admin: "Администратор",
+    tools: "Инструменты",
   },
   login: {
     "multi-user": {
