@@ -8,7 +8,7 @@ const { tokenizeString } = require("../../../utils/tokenizer");
 const { default: slugify } = require("slugify");
 const PDFLoader = require("./PDFLoader");
 
-async function asPDF({ fullFilePath = "", filename = "" }) {
+async function asPdf({ fullFilePath = "", filename = "" }) {
   const pdfLoader = new PDFLoader(fullFilePath, {
     splitPages: true,
   });
@@ -61,4 +61,4 @@ async function asPDF({ fullFilePath = "", filename = "" }) {
   return { success: true, reason: null, documents: [document] };
 }
 
-module.exports = asPDF;
+module.exports = asPdf;
