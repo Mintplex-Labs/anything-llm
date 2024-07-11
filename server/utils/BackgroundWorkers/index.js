@@ -70,7 +70,7 @@ class BackgroundService {
       {
         name: "sync-watched-local-documents",
         timeout: false,
-        interval: "5min",
+        interval: "10min",
       },
     ];
   }
