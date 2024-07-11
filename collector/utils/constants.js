@@ -29,13 +29,25 @@ const ACCEPTED_MIMES = {
   "application/epub+zip": [".epub"],
 };
 
-const asText = require("../processSingleFile/convert/asTxt.js");
-const asPdf = require("../processSingleFile/convert/asPDF/index.js");
-const asDocx = require("../processSingleFile/convert/asDocx.js");
-const asOfficeMime = require("../processSingleFile/convert/asOfficeMime.js");
-const asMbox = require("../processSingleFile/convert/asMbox.js");
-const asAudio = require("../processSingleFile/convert/asAudio.js");
-const asEPub = require("../processSingleFile/convert/asEPub.js");
+const { asText, resyncText } = require("../processSingleFile/convert/asTxt.js");
+const {
+  asPdf,
+  resyncPdf,
+} = require("../processSingleFile/convert/asPDF/index.js");
+const {
+  asDocx,
+  resyncDocx,
+} = require("../processSingleFile/convert/asDocx.js");
+const {
+  asOfficeMime,
+  resyncOfficeMime,
+} = require("../processSingleFile/convert/asOfficeMime.js");
+const { asMbox } = require("../processSingleFile/convert/asMbox.js");
+const { asAudio } = require("../processSingleFile/convert/asAudio.js");
+const {
+  asEPub,
+  resyncEPub,
+} = require("../processSingleFile/convert/asEPub.js");
 
 const SUPPORTED_FILETYPE_CONVERTERS = {
   ".txt": asText,
@@ -63,8 +75,28 @@ const SUPPORTED_FILETYPE_CONVERTERS = {
   ".mpeg": asAudio,
 };
 
+const SUPPORTED_RESYNC_CONVERTERS = {
+  ".txt": resyncText,
+  ".md": resyncText,
+  ".org": resyncText,
+  ".adoc": resyncText,
+  ".rst": resyncText,
+
+  ".html": resyncText,
+  ".pdf": resyncPdf,
+
+  ".docx": resyncDocx,
+  ".pptx": resyncOfficeMime,
+
+  ".odt": resyncOfficeMime,
+  ".odp": resyncOfficeMime,
+
+  ".epub": resyncEPub,
+};
+
 module.exports = {
   SUPPORTED_FILETYPE_CONVERTERS,
+  SUPPORTED_RESYNC_CONVERTERS,
   WATCH_DIRECTORY,
   ACCEPTED_MIMES,
 };

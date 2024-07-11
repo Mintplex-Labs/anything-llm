@@ -70,4 +70,4 @@ async function asAudio({ fullFilePath = "", filename = "", options = {} }) {
   return { success: true, reason: null, documents: [document] };
 }
 
-module.exports = asAudio;
+module.exports = { asAudio };

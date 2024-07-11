@@ -1,16 +1,17 @@
 const { BackgroundService } = require("../utils/BackgroundWorkers");
+const { safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
 const { SystemSettings } = require("./systemSettings");
 const { Telemetry } = require("./telemetry");
 
 /**
- * @typedef {('link'|'youtube'|'confluence'|'github')} validFileType
+ * @typedef {('link'|'youtube'|'confluence'|'github'|'localfile')} validFileType
  */
 
 const DocumentSyncQueue = {
   featureKey: "experimental_live_file_sync",
   // update the validFileTypes and .canWatch properties when adding elements here.
-  validFileTypes: ["link", "youtube", "confluence", "github"],
+  validFileTypes: ["link", "youtube", "confluence", "github", "localfile"],
   defaultStaleAfter: 604800000,
   maxRepeatFailures: 5, // How many times a run can fail in a row before pruning.
   writable: [],
@@ -44,6 +45,7 @@ const DocumentSyncQueue = {
     if (chunkSource.startsWith("youtube://")) return true; // If is a youtube link
     if (chunkSource.startsWith("confluence://")) return true; // If is a confluence document link
     if (chunkSource.startsWith("github://")) return true; // If is a Github file reference
+    if (chunkSource.startsWith("localfile://")) return true; // If is a local file reference
     return false;
   },
 
@@ -69,10 +71,16 @@ const DocumentSyncQueue = {
           `Cannot watch this document again - it already has a queue set.`
         );
 
+      const metadata = safeJsonParse(document.metadata, { chunkSource: "" });
+      const isLocalFile = metadata?.chunkSource?.startsWith("localfile:");
       const queue = await prisma.document_sync_queues.create({
         data: {
           workspaceDocId: document.id,
-          nextSyncAt: new Date(Number(new Date()) + this.defaultStaleAfter),
+          staleAfterMs: isLocalFile ? 0 : this.defaultStaleAfter,
+          nextSyncAt: isLocalFile
+            ? new Date()
+            : new Date(Number(new Date()) + this.defaultStaleAfter),
+          type: isLocalFile ? "local" : "remote",
         },
       });
       await Document._updateAll(
@@ -190,12 +198,13 @@ const DocumentSyncQueue = {
    *  { workspace: import("@prisma/client").workspaces }
    * })[]}>}
    */
-  staleDocumentQueues: async function () {
+  staleDocumentQueues: async function (type = null) {
     const queues = await this.where(
       {
         nextSyncAt: {
           lte: new Date().toISOString(),
         },
+        ...(!!type ? { type } : {}), // sync by "remote" || "local". Default is all.
       },
       null,
       null,

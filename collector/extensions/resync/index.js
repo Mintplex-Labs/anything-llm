@@ -1,4 +1,5 @@
 const { getLinkText } = require("../../processLink");
+const { processFileByReference } = require("../../processSingleFile");
 
 /**
  * Fetches the content of a raw link. Returns the content as a text string of the link in question.
@@ -75,8 +76,8 @@ async function resyncConfluence({ chunkSource }, response) {
 }
 
 /**
- * Fetches the content of a specific confluence page via its chunkSource. 
- * Returns the content as a text string of the page in question and only that page.
+ * Fetches the content of a specific Github file via its chunkSource. 
+ * Returns the content as a text string of the file in question and only that file.
  * @param {object} data - metadata from document (eg: chunkSource) 
  * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
  */
@@ -105,9 +106,31 @@ async function resyncGithub({ chunkSource }, response) {
   }
 }
 
+/**
+ * Fetches the content of a specific local file via its full path reference. 
+ * Returns the content as a text string of the document in question.
+ * @param {object} data - source from document (eg: source) 
+ * @param {import("../../middleware/setDataSigner").ResponseWithSigner} response
+ */
+async function resyncLocalfile({ source }, response) {
+  if (!source) throw new Error('Invalid source property provided');
+  try {
+    const { success, reason, content } = await processFileByReference(source);
+    if (!success) throw new Error(`Failed to resync local file content. ${reason}`);
+    response.status(200).json({ success, content });
+  } catch (e) {
+    console.error(e);
+    response.status(200).json({
+      success: false,
+      content: null,
+    });
+  }
+}
+
 module.exports = {
   link: resyncLink,
   youtube: resyncYouTube,
   confluence: resyncConfluence,
   github: resyncGithub,
+  localfile: resyncLocalfile,
 }

@@ -71,4 +71,4 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
   return { success: true, reason: null, documents };
 }
 
-module.exports = asMbox;
+module.exports = { asMbox };

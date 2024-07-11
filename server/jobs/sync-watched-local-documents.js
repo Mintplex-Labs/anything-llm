@@ -5,10 +5,11 @@ const { fileData } = require("../utils/files");
 const { log, conclude, updateSourceDocument } = require('./helpers/index.js');
 const { getVectorDbClass } = require('../utils/helpers/index.js');
 const { DocumentSyncRun } = require('../models/documentSyncRun.js');
+const fs = require('fs');
 
 (async () => {
   try {
-    const queuesToProcess = await DocumentSyncQueue.staleDocumentQueues('remote');
+    const queuesToProcess = await DocumentSyncQueue.staleDocumentQueues('local');
     if (queuesToProcess.length === 0) {
       log('No outstanding documents to sync. Exiting.');
       return;
@@ -34,29 +35,22 @@ const { DocumentSyncRun } = require('../models/documentSyncRun.js');
         continue;
       }
 
-      if (type === 'link' || type === 'youtube') {
-        const response = await collector.forwardExtensionRequest({
-          endpoint: "/ext/resync-source-document",
-          method: "POST",
-          body: JSON.stringify({
-            type,
-            options: { link: source }
-          })
-        });
-        newContent = response?.content;
+      if (!fs.existsSync(source)) {
+        // Document reference is either broken, invalid, or not supported so drop it from future queues.
+        log(`Document ${document.filename} has moved and its known source is unable to be found - removing from queue.`)
+        await DocumentSyncQueue.unwatch(document);
+        continue;
       }
 
-      if (type === 'confluence' || type === 'github') {
-        const response = await collector.forwardExtensionRequest({
-          endpoint: "/ext/resync-source-document",
-          method: "POST",
-          body: JSON.stringify({
-            type,
-            options: { chunkSource: metadata.chunkSource }
-          })
-        });
-        newContent = response?.content;
-      }
+      const response = await collector.forwardExtensionRequest({
+        endpoint: "/ext/resync-source-document",
+        method: "POST",
+        body: JSON.stringify({
+          type,
+          options: { source }
+        })
+      });
+      newContent = response?.content;
 
       if (!newContent) {
         // Check if the last "x" runs were all failures (not exits!). If so - remove the job entirely since it is broken.

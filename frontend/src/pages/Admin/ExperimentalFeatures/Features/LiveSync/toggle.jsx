@@ -57,8 +57,10 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
             are referenced in at the same time of update.
           </p>
           <p className="text-white/80 text-xs italic">
-            This feature only applies to web-based content, such as websites,
-            Confluence, YouTube, and GitHub files.
+            You can sync both web-based content like websites, Confluence, and
+            GitHub files as well as locally uploaded documents. Web-based
+            documents are checked hourly and locally referenced documents are
+            checked every 5 minutes.
           </p>
         </div>
       </div>

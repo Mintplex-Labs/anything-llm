@@ -67,6 +67,11 @@ class BackgroundService {
         timeout: "1min", // Wait 60s to check job on boot to make sure there are no pending jobs since last app close.
         interval: "1hr",
       },
+      {
+        name: "sync-watched-local-documents",
+        timeout: false,
+        interval: "5min",
+      },
     ];
   }
 

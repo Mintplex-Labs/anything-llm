@@ -3,6 +3,7 @@ const fs = require("fs");
 const {
   WATCH_DIRECTORY,
   SUPPORTED_FILETYPE_CONVERTERS,
+  SUPPORTED_RESYNC_CONVERTERS,
 } = require("../utils/constants");
 const {
   trashFile,
@@ -75,6 +76,40 @@ async function processSingleFile(targetFilename, options = {}) {
   });
 }
 
+async function processFileByReference(fileLocation) {
+  const fullFilePath = path.resolve(normalizePath(fileLocation));
+  if (!fs.existsSync(fullFilePath))
+    throw new Error(`File ${fullFilePath} does not exist.`);
+
+  const fileExtension = path.extname(fullFilePath).toLowerCase();
+  if (!fileExtension)
+    throw new Error(
+      `No file extension found for ${fullFilePath}. This file cannot be processed.`
+    );
+
+  let processFileAs = fileExtension;
+  if (!SUPPORTED_RESYNC_CONVERTERS.hasOwnProperty(fileExtension)) {
+    if (isTextType(fullFilePath)) {
+      console.log(
+        `\x1b[33m[Collector]\x1b[0m The provided filetype of ${fileExtension} does not have a preset and will be processed as .txt.`
+      );
+      processFileAs = ".txt";
+    } else {
+      throw new Error(
+        `File extension ${fileExtension} not supported for parsing and cannot be assumed as text file type.`
+      );
+    }
+  }
+
+  const FileTypeProcessor = SUPPORTED_RESYNC_CONVERTERS[processFileAs];
+  return await FileTypeProcessor({
+    fullFilePath,
+    filename: path.basename(fullFilePath),
+    options: { contentOnly: true },
+  });
+}
+
 module.exports = {
   processSingleFile,
+  processFileByReference,
 };

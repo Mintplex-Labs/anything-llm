@@ -1,5 +1,5 @@
 import { CloudArrowUp } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import showToast from "../../../../../utils/toast";
 import System from "../../../../../models/system";
 import { useDropzone } from "react-dropzone";
@@ -14,6 +14,7 @@ export default function UploadFile({
   setLoading,
   setLoadingMessage,
 }) {
+  const inputRef = useRef(null);
   const [ready, setReady] = useState(false);
   const [files, setFiles] = useState([]);
   const [fetchingUrl, setFetchingUrl] = useState(false);
@@ -43,7 +44,15 @@ export default function UploadFile({
   // Don't spam fetchKeys, wait 1s between calls at least.
   const handleUploadSuccess = debounce(() => fetchKeys(true), 1000);
   const handleUploadError = (_msg) => null; // stubbed.
-
+  const handleInputChange = (event) => {
+    const newFiles = Array.from(event.target.files).map((file) => {
+      return {
+        uid: v4(),
+        file,
+      };
+    });
+    setFiles([...files, ...newFiles]);
+  };
   const onDrop = async (acceptedFiles, rejections) => {
     const newAccepted = acceptedFiles.map((file) => {
       return {
@@ -70,9 +79,11 @@ export default function UploadFile({
     checkProcessorOnline();
   }, []);
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps } = useDropzone({
     onDrop,
     disabled: !ready,
+    noClick: true,
+    noKeyboard: true,
   });
 
   return (
@@ -81,9 +92,16 @@ export default function UploadFile({
         className={`w-[560px] border-2 border-dashed rounded-2xl bg-zinc-900/50 p-3 ${
           ready ? "cursor-pointer" : "cursor-not-allowed"
         } hover:bg-zinc-900/90`}
-        {...getRootProps()}
+        onClick={() => inputRef.current.click()}
       >
-        <input {...getInputProps()} />
+        <input
+          ref={inputRef}
+          type="file"
+          hidden={true}
+          name="files"
+          multiple={true}
+          onChange={handleInputChange}
+        />
         {ready === false ? (
           <div className="flex flex-col items-center justify-center h-full">
             <CloudArrowUp className="w-8 h-8 text-white/80" />
@@ -96,7 +114,10 @@ export default function UploadFile({
             </div>
           </div>
         ) : files.length === 0 ? (
-          <div className="flex flex-col items-center justify-center">
+          <div
+            {...getRootProps()}
+            className="flex flex-col items-center justify-center"
+          >
             <CloudArrowUp className="w-8 h-8 text-white/80" />
             <div className="text-white text-opacity-80 text-sm font-semibold py-1">
               Click to upload or drag and drop

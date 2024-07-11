@@ -6,9 +6,10 @@ const {
 } = require("../../../utils/files");
 const { tokenizeString } = require("../../../utils/tokenizer");
 const { default: slugify } = require("slugify");
+const { generateLocalfileChunkSource } = require("../../../utils/metadata");
 const PDFLoader = require("./PDFLoader");
 
-async function asPdf({ fullFilePath = "", filename = "" }) {
+async function asPdf({ fullFilePath = "", filename = "", options = {} }) {
   const pdfLoader = new PDFLoader(fullFilePath, {
     splitPages: true,
   });
@@ -45,7 +46,7 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
     docAuthor: docs[0]?.metadata?.pdf?.info?.Creator || "no author found",
     description: docs[0]?.metadata?.pdf?.info?.Title || "No description found.",
     docSource: "pdf file uploaded by the user.",
-    chunkSource: "",
+    chunkSource: generateLocalfileChunkSource({ filename, ...options }, ""),
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,
@@ -61,4 +62,37 @@ async function asPdf({ fullFilePath = "", filename = "" }) {
   return { success: true, reason: null, documents: [document] };
 }
 
-module.exports = asPdf;
+async function resyncPdf({ fullFilePath = "", filename = "" }) {
+  const pdfLoader = new PDFLoader(fullFilePath, {
+    splitPages: true,
+  });
+
+  console.log(`-- Syncing ${filename} --`);
+  const pageContent = [];
+  const docs = await pdfLoader.load();
+
+  for (const doc of docs) {
+    console.log(
+      `-- Parsing content from pg ${
+        doc.metadata?.loc?.pageNumber || "unknown"
+      } --`
+    );
+    if (!doc.pageContent || !doc.pageContent.length) continue;
+    pageContent.push(doc.pageContent);
+  }
+
+  if (!pageContent.length) {
+    console.error(`Resulting text content was empty for ${filename}.`);
+    return {
+      success: false,
+      reason: `No text content found in ${filename}.`,
+      content: null,
+    };
+  }
+
+  const content = pageContent.join("");
+  console.log(`[SYNC SUCCESS]: ${filename} content was able to be synced.\n`);
+  return { success: true, reason: null, content };
+}
+
+module.exports = { asPdf, resyncPdf };

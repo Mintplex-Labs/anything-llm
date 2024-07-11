@@ -5,6 +5,7 @@ const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
+const { generateGitHubChunkSource } = require("../../metadata");
 
 /**
  * Load in a Github Repo recursively or just the top level if no PAT is provided
@@ -58,7 +59,7 @@ async function loadGithubRepo(args, response) {
       docAuthor: repo.author,
       description: "No description found.",
       docSource: doc.metadata.source,
-      chunkSource: generateChunkSource(
+      chunkSource: generateGitHubChunkSource(
         repo,
         doc,
         response.locals.encryptionWorker
@@ -132,28 +133,6 @@ async function fetchGithubFile({
     reason: null,
     content: fileContent,
   };
-}
-
-/**
- * Generate the full chunkSource for a specific file so that we can resync it later.
- * This data is encrypted into a single `payload` query param so we can replay credentials later
- * since this was encrypted with the systems persistent password and salt.
- * @param {RepoLoader} repo
- * @param {import("@langchain/core/documents").Document} doc
- * @param {import("../../EncryptionWorker").EncryptionWorker} encryptionWorker
- * @returns {string}
- */
-function generateChunkSource(repo, doc, encryptionWorker) {
-  const payload = {
-    owner: repo.author,
-    project: repo.project,
-    branch: repo.branch,
-    path: doc.metadata.source,
-    pat: !!repo.accessToken ? repo.accessToken : null,
-  };
-  return `github://${repo.repo}?payload=${encryptionWorker.encrypt(
-    JSON.stringify(payload)
-  )}`;
 }
 
 module.exports = { loadGithubRepo, fetchGithubFile };
