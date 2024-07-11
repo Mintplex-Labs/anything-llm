@@ -3,8 +3,10 @@ import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import WorkspaceLLMItem from "./WorkspaceLLMItem";
 import { AVAILABLE_LLM_PROVIDERS } from "@/pages/GeneralSettings/LLMPreference";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
-import ChatModelSelection from "../ChatModelSelection";
+import ChatModelSelection from "./ChatModelSelection";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import paths from "@/utils/paths";
 
 // Some providers can only be associated with a single model.
 // In that case there is no selection to be made so we can just move on.
@@ -148,7 +150,22 @@ export default function WorkspaceLLMSelection({
           </button>
         )}
       </div>
-      {!NO_MODEL_SELECTION.includes(selectedLLM) && (
+      {NO_MODEL_SELECTION.includes(selectedLLM) ? (
+        <>
+          {selectedLLM !== "default" && (
+            <div className="w-full h-10 justify-center items-center flex mt-4">
+              <p className="text-sm font-base text-white text-opacity-60 text-center">
+                Multi-model support is not supported for this provider yet.
+                <br />
+                This workspace will use{" "}
+                <Link to={paths.settings.llmPreference()} className="underline">
+                  the model set for the system.
+                </Link>
+              </p>
+            </div>
+          )}
+        </>
+      ) : (
         <div className="mt-4 flex flex-col gap-y-1">
           <ChatModelSelection
             provider={selectedLLM}
