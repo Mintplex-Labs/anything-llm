@@ -7,7 +7,7 @@ import { Info, Warning } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 
 const DEFAULT_BRANCHES = ["main", "master"];
-export default function GithubOptions() {
+export default function GitlabOptions() {
   const [loading, setLoading] = useState(false);
   const [repo, setRepo] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
@@ -29,7 +29,7 @@ export default function GithubOptions() {
         "info",
         { clear: true, autoClose: false }
       );
-      const { data, error } = await System.dataConnectors.github.collect({
+      const { data, error } = await System.dataConnectors.gitlab.collect({
         repo: form.get("repo"),
         accessToken: form.get("accessToken"),
         branch: form.get("branch"),
@@ -68,17 +68,17 @@ export default function GithubOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold">
-                    GitHub Repo URL
+                    GitLab Repo URL
                   </label>
                   <p className="text-xs font-normal text-white/50">
-                    Url of the GitHub repo you wish to collect.
+                    URL of the GitLab repo you wish to collect.
                   </p>
                 </div>
                 <input
                   type="url"
                   name="repo"
                   className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                  placeholder="https://github.com/Mintplex-Labs/anything-llm"
+                  placeholder="https://gitlab.com/gitlab-org/gitlab"
                   required={true}
                   autoComplete="off"
                   onChange={(e) => setRepo(e.target.value)}
@@ -89,7 +89,7 @@ export default function GithubOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white font-bold text-sm flex gap-x-2 items-center">
-                    <p className="font-bold text-white">Github Access Token</p>{" "}
+                    <p className="font-bold text-white">GitLab Access Token</p>{" "}
                     <p className="text-xs text-white/50 font-light flex items-center">
                       optional
                       <PATTooltip accessToken={accessToken} />
@@ -103,7 +103,7 @@ export default function GithubOptions() {
                   type="text"
                   name="accessToken"
                   className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                  placeholder="github_pat_1234_abcdefg"
+                  placeholder="glpat-XXXXXXXXXXXXXXXXXXXX"
                   required={false}
                   autoComplete="off"
                   spellCheck={false}
@@ -111,7 +111,7 @@ export default function GithubOptions() {
                   onBlur={() => setSettings({ ...settings, accessToken })}
                 />
               </div>
-              <GitHubBranchSelection
+              <GitLabBranchSelection
                 repo={settings.repo}
                 accessToken={settings.accessToken}
               />
@@ -163,7 +163,7 @@ export default function GithubOptions() {
   );
 }
 
-function GitHubBranchSelection({ repo, accessToken }) {
+function GitLabBranchSelection({ repo, accessToken }) {
   const [allBranches, setAllBranches] = useState(DEFAULT_BRANCHES);
   const [loading, setLoading] = useState(true);
 
@@ -176,7 +176,7 @@ function GitHubBranchSelection({ repo, accessToken }) {
       }
 
       setLoading(true);
-      const { branches } = await System.dataConnectors.github.branches({
+      const { branches } = await System.dataConnectors.gitlab.branches({
         repo,
         accessToken,
       });
@@ -240,20 +240,20 @@ function PATAlert({ accessToken }) {
       <div className="gap-x-2 flex items-center">
         <Info className="shrink-0" size={25} />
         <p className="text-sm">
-          Without filling out the <b>Github Access Token</b> this data connector
+          Without filling out the <b>GitLab Access Token</b> this data connector
           will only be able to collect the <b>top-level</b> files of the repo
-          due to GitHub's public API rate-limits.
+          due to GitLab's public API rate-limits.
           <br />
           <br />
           <a
-            href="https://github.com/settings/personal-access-tokens/new"
+            href="https://gitlab.com/-/profile/personal_access_tokens"
             rel="noreferrer"
             target="_blank"
             className="underline"
             onClick={(e) => e.stopPropagation()}
           >
             {" "}
-            Get a free Personal Access Token with a GitHub account here.
+            Get a free Personal Access Token with a GitLab account here.
           </a>
         </p>
       </div>
@@ -282,7 +282,7 @@ function PATTooltip({ accessToken }) {
         <p className="text-sm">
           Without a{" "}
           <a
-            href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
+            href="https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html"
             rel="noreferrer"
             target="_blank"
             className="underline"
@@ -290,10 +290,10 @@ function PATTooltip({ accessToken }) {
           >
             Personal Access Token
           </a>
-          , the GitHub API may limit the number of files that can be collected
+          , the GitLab API may limit the number of files that can be collected
           due to rate limits. You can{" "}
           <a
-            href="https://github.com/settings/personal-access-tokens/new"
+            href="https://gitlab.com/-/profile/personal_access_tokens"
             rel="noreferrer"
             target="_blank"
             className="underline"

@@ -7,7 +7,7 @@ const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 
 /**
- * Load in a Gitlab Repo recursively or just the top level if no PAT is provided
+ * Load in a GitLab Repo recursively or just the top level if no PAT is provided
  * @param {object} args - forwarded request body params
  * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
  * @returns
@@ -23,7 +23,7 @@ async function loadGitlabRepo(args, response) {
     };
 
   console.log(
-    `-- Working Gitlab ${repo.projectId}:${repo.branch} --`
+    `-- Working GitLab ${repo.projectId}:${repo.branch} --`
   );
   const docs = await repo.recursiveLoader();
   if (!docs.length) {
@@ -33,7 +33,7 @@ async function loadGitlabRepo(args, response) {
     };
   }
 
-  console.log(`[Gitlab Loader]: Found ${docs.length} source files. Saving...`);
+  console.log(`[GitLab Loader]: Found ${docs.length} source files. Saving...`);
   const outFolder = slugify(
     `${repo.projectId}-${repo.branch}-${v4().slice(0, 4)}`
   ).toLowerCase();
@@ -69,7 +69,7 @@ async function loadGitlabRepo(args, response) {
       token_count_estimate: tokenizeString(doc.pageContent).length,
     };
     console.log(
-      `[Gitlab Loader]: Saving ${doc.metadata.source} to ${outFolder}`
+      `[GitLab Loader]: Saving ${doc.metadata.source} to ${outFolder}`
     );
     writeToServerDocuments(
       data,
@@ -91,7 +91,7 @@ async function loadGitlabRepo(args, response) {
 }
 
 /**
- * Gets the page content from a specific source file in a given Gitlab Repo, not all items in a repo.
+ * Gets the page content from a specific source file in a given GitLab Repo, not all items in a repo.
  * @returns
  */
 async function fetchGitlabFile({
@@ -111,11 +111,11 @@ async function fetchGitlabFile({
     return {
       success: false,
       content: null,
-      reason: "Could not prepare Gitlab repo for loading! Check URL or PAT.",
+      reason: "Could not prepare GitLab repo for loading! Check URL or PAT.",
     };
 
   console.log(
-    `-- Working Gitlab ${repo.projectId}:${repo.branch} file:${sourceFilePath} --`
+    `-- Working GitLab ${repo.projectId}:${repo.branch} file:${sourceFilePath} --`
   );
   const fileContent = await repo.fetchSingleFile(sourceFilePath);
   if (!fileContent) {
