@@ -134,13 +134,13 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
               </div>
 
               <div className="flex flex-col w-full">
-                <label className="text-white text-sm font-semibold block mb-4">
+                <label className="text-white text-sm font-semibold block mb-3">
                   Connection name
                 </label>
                 <input
                   type="text"
                   name="name"
-                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="a unique name to identify this SQL connection"
                   required={true}
                   autoComplete="off"
@@ -150,13 +150,13 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col">
-                  <label className="text-white text-sm font-semibold block mb-4">
+                  <label className="text-white text-sm font-semibold block mb-3">
                     Database user
                   </label>
                   <input
                     type="text"
                     name="username"
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="root"
                     required={true}
                     autoComplete="off"
@@ -164,13 +164,13 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <label className="text-white text-sm font-semibold block mb-4">
+                  <label className="text-white text-sm font-semibold block mb-3">
                     Database user password
                   </label>
                   <input
                     type="text"
                     name="password"
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="password123"
                     required={true}
                     autoComplete="off"
@@ -181,13 +181,13 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="sm:col-span-2">
-                  <label className="text-white text-sm font-semibold block mb-4">
+                  <label className="text-white text-sm font-semibold block mb-3">
                     Server endpoint
                   </label>
                   <input
                     type="text"
                     name="host"
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="the hostname or endpoint for your database"
                     required={true}
                     autoComplete="off"
@@ -195,13 +195,13 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                   />
                 </div>
                 <div>
-                  <label className="text-white text-sm font-semibold block mb-4">
+                  <label className="text-white text-sm font-semibold block mb-3">
                     Port
                   </label>
                   <input
                     type="text"
                     name="port"
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                     placeholder="3306"
                     required={false}
                     autoComplete="off"
@@ -211,13 +211,13 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
               </div>
 
               <div className="flex flex-col">
-                <label className="text-white text-sm font-semibold block mb-4">
+                <label className="text-white text-sm font-semibold block mb-3">
                   Database
                 </label>
                 <input
                   type="text"
                   name="database"
-                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
                   placeholder="the database the agent will interact with"
                   required={true}
                   autoComplete="off"
@@ -239,7 +239,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
               <button
                 type="submit"
                 form="sql-connection-form"
-                className="border-none text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-[#46C8FF] hover:text-white h-[32px] w-fit -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+                className="border-none text-xs px-2 py-1 font-semibold rounded-lg bg-primary-button hover:bg-secondary border-2 border-transparent hover:border-primary-button hover:text-white h-[32px] w-fit -mr-8 whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
               >
                 Save connection
               </button>

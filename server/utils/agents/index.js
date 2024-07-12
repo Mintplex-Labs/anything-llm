@@ -10,6 +10,12 @@ const { USER_AGENT, WORKSPACE_AGENT } = require("./defaults");
 class AgentHandler {
   #invocationUUID;
   #funcsToLoad = [];
+  #noProviderModelDefault = {
+    azure: "OPEN_MODEL_PREF",
+    lmstudio: "LMSTUDIO_MODEL_PREF",
+    textgenwebui: null, // does not even use `model` in API req
+    "generic-openai": "GENERIC_OPEN_AI_MODEL_PREF",
+  };
   invocation = null;
   aibitat = null;
   channel = null;
@@ -172,7 +178,7 @@ class AgentHandler {
       case "mistral":
         return "mistral-medium";
       case "generic-openai":
-        return "gpt-3.5-turbo";
+        return null;
       case "perplexity":
         return "sonar-small-online";
       case "textgenwebui":
@@ -182,10 +188,30 @@ class AgentHandler {
     }
   }
 
+  /**
+   * Finds or assumes the model preference value to use for API calls.
+   * If multi-model loading is supported, we use their agent model selection of the workspace
+   * If not supported, we attempt to fallback to the system provider value for the LLM preference
+   * and if that fails - we assume a reasonable base model to exist.
+   * @returns {string} the model preference value to use in API calls
+   */
+  #fetchModel() {
+    if (!Object.keys(this.#noProviderModelDefault).includes(this.provider))
+      return this.invocation.workspace.agentModel || this.#providerDefault();
+
+    // Provider has no reliable default (cant load many models) - so we need to look at system
+    // for the model param.
+    const sysModelKey = this.#noProviderModelDefault[this.provider];
+    if (!!sysModelKey)
+      return process.env[sysModelKey] ?? this.#providerDefault();
+
+    // If all else fails - look at the provider default list
+    return this.#providerDefault();
+  }
+
   #providerSetupAndCheck() {
     this.provider = this.invocation.workspace.agentProvider || "openai";
-    this.model =
-      this.invocation.workspace.agentModel || this.#providerDefault();
+    this.model = this.#fetchModel();
     this.log(`Start ${this.#invocationUUID}::${this.provider}:${this.model}`);
     this.#checkSetup();
   }

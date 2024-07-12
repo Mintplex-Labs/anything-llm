@@ -13,7 +13,7 @@ export default function NativeLLMOptions({ settings }) {
           </p>
         </div>
       </div>
-      <div className="w-full flex items-center gap-4">
+      <div className="w-full flex items-center gap-[36px]">
         <NativeModelSelection settings={settings} />
       </div>
     </div>
@@ -37,7 +37,7 @@ function NativeModelSelection({ settings }) {
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Model Selection
         </label>
         <select
@@ -56,7 +56,7 @@ function NativeModelSelection({ settings }) {
   return (
     <>
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Model Selection
         </label>
         <select
@@ -82,13 +82,13 @@ function NativeModelSelection({ settings }) {
         </select>
       </div>
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Token context window
         </label>
         <input
           type="number"
           name="NativeLLMTokenLimit"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="4096"
           min={1}
           onScroll={(e) => e.target.blur()}

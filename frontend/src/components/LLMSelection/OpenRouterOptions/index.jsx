@@ -3,15 +3,15 @@ import { useState, useEffect } from "react";
 
 export default function OpenRouterOptions({ settings }) {
   return (
-    <div className="flex gap-x-4">
+    <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           OpenRouter API Key
         </label>
         <input
           type="password"
           name="OpenRouterApiKey"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="OpenRouter API Key"
           defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -52,7 +52,7 @@ function OpenRouterModelSelection({ settings }) {
   if (loading || Object.keys(groupedModels).length === 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
@@ -70,7 +70,7 @@ function OpenRouterModelSelection({ settings }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-4">
+      <label className="text-white text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select
