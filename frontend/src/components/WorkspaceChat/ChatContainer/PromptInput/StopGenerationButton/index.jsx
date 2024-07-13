@@ -24,14 +24,14 @@ export default function StopGenerationButton() {
           xmlns="http://www.w3.org/2000/svg"
         >
           <circle
-            className="group-hover:stroke-[#FF5757] stroke-white"
+            className="group-hover:stroke-primary-button stroke-white"
             cx="10"
             cy="10.562"
             r="9"
             strokeWidth="2"
           />
           <rect
-            className="group-hover:fill-[#FF5757] fill-white"
+            className="group-hover:fill-primary-button fill-white"
             x="6.3999"
             y="6.96204"
             width="7.2"
