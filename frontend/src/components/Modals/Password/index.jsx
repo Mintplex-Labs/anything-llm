@@ -17,8 +17,8 @@ export default function PasswordModal({ mode = "single" }) {
       <div
         style={{
           background: `
-    radial-gradient(circle at center, transparent 40%, black 100%),
-    linear-gradient(180deg, #85F8FF 0%, #65A6F2 100%)
+    radial-gradient(circle at center, transparent 40%, white 100%),
+    linear-gradient(180deg, #ff5757 0%, #ffffff 100%)
   `,
           width: "575px",
           filter: "blur(150px)",

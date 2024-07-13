@@ -1,8 +1,8 @@
-# How to Configure HTTPS for Anything LLM AWS private deployment
+# How to Configure HTTPS for ChatLTT AWS private deployment
 Instructions for manual https configuration after generating and running the aws cloudformation template (aws_build_from_source_no_credentials.json). Tested on following browsers: Firefox version 119, Chrome version 118, Edge 118.
 
 **Requirements**
-- Successful deployment of Amazon Linux 2023 EC2 instance with Docker container running Anything LLM
+- Successful deployment of Amazon Linux 2023 EC2 instance with Docker container running ChatLTT
 - Admin priv to configure Elastic IP for EC2 instance via AWS Management Console UI
 - Admin priv to configure DNS services (i.e. AWS Route 53) via AWS Management Console UI
 - Admin priv to configure EC2 Security Group rules via AWS Management Console UI
