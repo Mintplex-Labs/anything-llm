@@ -30,7 +30,7 @@ export default function UserButton() {
     if (idleTimeoutRef.current) {
       clearTimeout(idleTimeoutRef.current);
     }
-    idleTimeoutRef.current = setTimeout(signOut, 3600000); // 30 seconds
+    idleTimeoutRef.current = setTimeout(signOut, 3600000); // 1 hour
   };
 
   useEffect(() => {
