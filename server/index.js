@@ -67,10 +67,9 @@ if (process.env.NODE_ENV !== "development") {
     express.static(path.resolve(__dirname, "public"), {
       extensions: ["js"],
       setHeaders: (res) => {
+        // Disable I-framing of entire site UI
         res.removeHeader("X-Powered-By");
-        // Remove the X-Frame-Options header
-        // Add a Content-Security-Policy header to allow embedding from your main domain
-        res.setHeader("Content-Security-Policy", "frame-ancestors 'self' https://app.chatltt.com");
+        res.setHeader("X-Frame-Options", "DENY");
       },
     })
   );
