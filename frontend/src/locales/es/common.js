@@ -50,6 +50,14 @@ const TRANSLATIONS = {
       start: "Iniciar sesión en tu",
       end: "cuenta.",
     },
+    "password-reset": {
+      title: "Restablecer la contraseña",
+      description:
+        "Proporcione la información necesaria a continuación para restablecer su contraseña.",
+      "recovery-codes": "Códigos de recuperación",
+      "recovery-code": "Código de recuperación {{index}}",
+      "back-to-login": "Volver al inicio de sesión",
+    },
   },
 
   "workspaces—settings": {

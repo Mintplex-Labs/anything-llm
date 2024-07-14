@@ -52,6 +52,14 @@ const TRANSLATIONS = {
       start: "Sign in to your",
       end: "account.",
     },
+    "password-reset": {
+      title: "Password Reset",
+      description:
+        "Provide the necessary information below to reset your password.",
+      "recovery-codes": "Recovery Codes",
+      "recovery-code": "Recovery Code {{index}}",
+      "back-to-login": "Back to Login",
+    },
   },
 
   // Workspace Settings menu items

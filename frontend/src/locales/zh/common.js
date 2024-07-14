@@ -53,6 +53,13 @@ const TRANSLATIONS = {
       start: "登录你的",
       end: "账户",
     },
+    "password-reset": {
+      title: "重置密码",
+      description: "请提供以下必要信息以重置您的密码。",
+      "recovery-codes": "恢复代码",
+      "recovery-code": "恢复代码 {{index}}",
+      "back-to-login": "返回登录",
+    },
   },
 
   // Workspace Settings menu items

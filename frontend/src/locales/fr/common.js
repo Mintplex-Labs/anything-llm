@@ -52,6 +52,14 @@ const TRANSLATIONS = {
       start: "Connectez-vous à votre",
       end: "compte.",
     },
+    "password-reset": {
+      title: "Réinitialisation du mot de passe",
+      description:
+        "Fournissez les informations nécessaires ci-dessous pour réinitialiser votre mot de passe.",
+      "recovery-codes": "Codes de récupération",
+      "recovery-code": "Code de récupération {{index}}",
+      "back-to-login": "Retour à la connexion",
+    },
   },
 
   // Workspace Settings menu items

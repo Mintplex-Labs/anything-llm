@@ -40,7 +40,7 @@ const TRANSLATIONS = {
   // Page Definitions
   login: {
     "multi-user": {
-      welcome: "환영합니다",
+      welcome: "웰컴!",
       "placeholder-username": "사용자 이름",
       "placeholder-password": "비밀번호",
       login: "로그인",
@@ -49,8 +49,15 @@ const TRANSLATIONS = {
       reset: "재설정",
     },
     "sign-in": {
-      start: "계정으로",
-      end: "로그인하세요.",
+      start: "사용자 계정으로 ",
+      end: "에 로그인하세요.",
+    },
+    "password-reset": {
+      title: "비밀번호 재설정",
+      description: "비밀번호를 재설정하려면 아래에 필요한 정보를 입력하세요.",
+      "recovery-codes": "복구 코드",
+      "recovery-code": "복구 코드 {{index}}",
+      "back-to-login": "로그인으로 돌아가기",
     },
   },
 

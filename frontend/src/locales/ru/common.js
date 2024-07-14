@@ -48,6 +48,14 @@ const TRANSLATIONS = {
       start: "Войти в ваш",
       end: "аккаунт.",
     },
+    "password-reset": {
+      title: "Сброс пароля",
+      description:
+        "Предоставьте необходимую информацию ниже, чтобы сбросить ваш пароль.",
+      "recovery-codes": "Коды восстановления",
+      "recovery-code": "Код восстановления {{index}}",
+      "back-to-login": "Вернуться к входу",
+    },
   },
   "workspaces—settings": {
     general: "Общие настройки",
