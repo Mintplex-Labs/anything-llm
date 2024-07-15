@@ -11,6 +11,7 @@ import Footer from "../Footer";
 import SettingsButton from "../SettingsButton";
 import { Link } from "react-router-dom";
 import paths from "@/utils/paths";
+import { useTranslation } from "react-i18next";
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -21,6 +22,7 @@ export default function Sidebar() {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
+  const { t } = useTranslation();
 
   return (
     <div>
@@ -51,7 +53,7 @@ export default function Sidebar() {
                     >
                       <Plus size={18} weight="bold" />
                       <p className="text-sidebar text-sm font-semibold">
-                        New Workspace
+                        {t("new-workspace.title")}
                       </p>
                     </button>
                   )}
@@ -81,6 +83,7 @@ export function SidebarMobileHeader() {
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
   const { user } = useUser();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Darkens the rest of the screen
@@ -167,7 +170,7 @@ export function SidebarMobileHeader() {
                       >
                         <Plus className="h-5 w-5" />
                         <p className="text-sidebar text-sm font-semibold">
-                          New Workspace
+                          {t("new-workspace.title")}
                         </p>
                       </button>
                     )}
