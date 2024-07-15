@@ -442,7 +442,7 @@ const SystemSettings = {
       // VoyageAi API Keys
       VoyageAiApiKey: !!process.env.VOYAGEAI_API_KEY,
 
-      //Watsonx.ai API Keys
+      // Watsonx.ai API Keys
       WatsonxEndpoint: process.env.WATSONX_AI_ENDPOINT,
       IBMIAMKey: !!process.env.WATSONX_AI_APIKEY,
       WatsonxProjectID: process.env.WATSONX_AI_PROJECT_ID,
