@@ -9,6 +9,10 @@ const PromptReply = forwardRef(
   ({ uuid, reply, pending, error, sources = [] }, ref) => {
     if (!reply && sources.length === 0 && !pending && !error) return null;
 
+    if (error) {
+      console.error(`ANYTHING_LLM_CHAT_WIDGET_ERROR: ${error}`);
+    }
+
     if (pending) {
       return (
         <div
