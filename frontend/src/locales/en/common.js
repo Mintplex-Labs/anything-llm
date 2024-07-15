@@ -25,6 +25,7 @@ const TRANSLATIONS = {
     transcription: "Transcription",
     embedder: "Embedder",
     "text-splitting": "Text Splitter & Chunking",
+    "voice-speech": "Voice & Speech",
     "vector-database": "Vector Database",
     embeds: "Chat Embed",
     "embed-chats": "Chat Embed History",
@@ -35,6 +36,8 @@ const TRANSLATIONS = {
     "agent-skills": "Agent Skills",
     admin: "Admin",
     tools: "Tools",
+    "experimental-features": "Experimental Features",
+    contact: "Contact Support",
   },
 
   // Page Definitions

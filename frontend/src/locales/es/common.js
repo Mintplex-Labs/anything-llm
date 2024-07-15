@@ -24,6 +24,7 @@ const TRANSLATIONS = {
     transcription: "Modelo de transcripción",
     embedder: "Preferencias de incrustación",
     "text-splitting": "Divisor y fragmentación de texto",
+    "voice-speech": "Voz y Habla",
     "vector-database": "Base de datos de vectores",
     embeds: "Widgets de chat incrustados",
     "embed-chats": "Historial de chats incrustados",
@@ -34,6 +35,8 @@ const TRANSLATIONS = {
     "agent-skills": "Habilidades del agente",
     admin: "Administrador",
     tools: "Herramientas",
+    "experimental-features": "Funciones Experimentales",
+    contact: "Contactar Soporte",
   },
 
   login: {

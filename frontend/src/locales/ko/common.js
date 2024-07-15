@@ -24,7 +24,8 @@ const TRANSLATIONS = {
     llm: "LLM",
     transcription: "텍스트 변환",
     embedder: "임베더",
-    "text-splitting": "텍스트 분할 및 청킹",
+    "text-splitting": "텍스트 분할과 청킹",
+    "voice-speech": "음성과 말하기",
     "vector-database": "벡터 데이터베이스",
     embeds: "채팅 임베드",
     "embed-chats": "채팅 임베드 기록",
@@ -35,6 +36,8 @@ const TRANSLATIONS = {
     "agent-skills": "에이전트 스킬",
     admin: "관리자",
     tools: "도구",
+    "experimental-features": "실험적 기능",
+    contact: "지원팀 연락",
   },
 
   // Page Definitions

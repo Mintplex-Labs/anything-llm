@@ -26,6 +26,7 @@ const TRANSLATIONS = {
     transcription: "Transcription 模型",
     embedder: "Embedder 首选项",
     "text-splitting": "文本分割",
+    "voice-speech": "语音和讲话",
     "vector-database": "向量数据库",
     embeds: "嵌入式对话",
     "embed-chats": "嵌入式对话历史",
@@ -36,6 +37,8 @@ const TRANSLATIONS = {
     "agent-skills": "代理技能",
     admin: "管理员",
     tools: "工具",
+    "experimental-features": "实验功能",
+    contact: "联系支持",
   },
 
   // Page Definitions

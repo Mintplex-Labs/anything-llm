@@ -10,6 +10,7 @@ const TRANSLATIONS = {
     previous: "Предыдущая страница",
     next: "Следующая страница",
   },
+
   settings: {
     title: "Настройки экземпляра",
     system: "Системные настройки",
@@ -23,6 +24,7 @@ const TRANSLATIONS = {
     transcription: "Модель транскрипции",
     embedder: "Настройки встраивания",
     "text-splitting": "Разделение и сегментация текста",
+    "voice-speech": "Голос и Речь",
     "vector-database": "Векторная база данных",
     embeds: "Виджеты встраивания чата",
     "embed-chats": "История встраивания чатов",
@@ -33,7 +35,10 @@ const TRANSLATIONS = {
     "agent-skills": "Навыки агента",
     admin: "Администратор",
     tools: "Инструменты",
+    "experimental-features": "Экспериментальные функции",
+    contact: "联系支持Связаться с Поддержкой",
   },
+
   login: {
     "multi-user": {
       welcome: "Добро пожаловать в",
