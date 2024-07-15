@@ -116,7 +116,7 @@ export default function SettingsSidebar() {
                       to={paths.settings.privacy()}
                       className="text-darker hover:text-white text-xs leading-[18px] mx-3"
                     >
-                      Privacy & Data
+                      {t("settings.privacy")}
                     </Link>
                   </div>
                 </div>
@@ -163,7 +163,7 @@ export default function SettingsSidebar() {
                   to={paths.settings.privacy()}
                   className="text-darker hover:text-white text-xs leading-[18px] mx-3"
                 >
-                  Privacy & Data
+                  {t("settings.privacy")}
                 </Link>
               </div>
             </div>
@@ -179,6 +179,7 @@ export default function SettingsSidebar() {
 
 function SupportEmail() {
   const [supportEmail, setSupportEmail] = useState(paths.mailToMintplex());
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchSupportEmail = async () => {
@@ -197,7 +198,7 @@ function SupportEmail() {
       to={supportEmail}
       className="text-darker hover:text-white text-xs leading-[18px] mx-3 mt-1"
     >
-      Contact Support
+      {t("settings.contact")}
     </Link>
   );
 }
@@ -234,7 +235,7 @@ const SidebarOptions = ({ user = null, t }) => (
           roles: ["admin"],
         },
         {
-          btnText: "Voice & Speech",
+          btnText: t("settings.voice-speech"),
           href: paths.settings.audioPreference(),
           flex: true,
           roles: ["admin"],
@@ -338,7 +339,7 @@ const SidebarOptions = ({ user = null, t }) => (
     />
     <HoldToReveal key="exp_features">
       <Option
-        btnText="Experimental Features"
+        btnText={t("settings.experimental-features")}
         icon={<Flask className="h-5 w-5 flex-shrink-0" />}
         href={paths.settings.experimental()}
         user={user}
