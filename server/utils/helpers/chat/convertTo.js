@@ -3,6 +3,7 @@
 
 const { Workspace } = require("../../../models/workspace");
 const { WorkspaceChats } = require("../../../models/workspaceChats");
+const { safeJsonParse } = require("../../http");
 
 async function convertToCSV(preparedData) {
   const rows = ["id,username,workspace,prompt,response,sent_at,rating"];
@@ -66,29 +67,30 @@ async function prepareWorkspaceChatsForExport(format = "jsonl") {
     return preparedData;
   }
 
+  const workspaceIds = [...new Set(chats.map((chat) => chat.workspaceId))];
+  const workspacesWithPrompts = await Promise.all(
+    workspaceIds.map((id) => Workspace.get({ id: Number(id) }))
+  );
+  const workspacePromptsMap = workspacesWithPrompts.reduce((acc, workspace) => {
+    acc[workspace.id] = workspace.openAiPrompt;
+    return acc;
+  }, {});
+
   if (format === "jsonAlpaca") {
     const preparedData = chats.map((chat) => {
       const responseJson = JSON.parse(chat.response);
       return {
-        instruction: chat.prompt,
-        input: "",
+        instruction: buildSystemPrompt(
+          chat,
+          workspacePromptsMap[chat.workspaceId]
+        ),
+        input: chat.prompt,
         output: responseJson.text,
       };
     });
 
     return preparedData;
   }
-
-  const workspaceIds = [...new Set(chats.map((chat) => chat.workspaceId))];
-
-  const workspacesWithPrompts = await Promise.all(
-    workspaceIds.map((id) => Workspace.get({ id: Number(id) }))
-  );
-
-  const workspacePromptsMap = workspacesWithPrompts.reduce((acc, workspace) => {
-    acc[workspace.id] = workspace.openAiPrompt;
-    return acc;
-  }, {});
 
   const workspaceChatsMap = chats.reduce((acc, chat) => {
     const { prompt, response, workspaceId } = chat;
@@ -155,6 +157,23 @@ async function exportChatsAsType(workspaceChatsMap, format = "jsonl") {
     contentType,
     data: await func(workspaceChatsMap),
   };
+}
+
+const STANDARD_PROMPT =
+  "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.";
+function buildSystemPrompt(chat, prompt = null) {
+  const sources = safeJsonParse(chat.response)?.sources || [];
+  const contextTexts = sources.map((source) => source.text);
+  const context =
+    sources.length > 0
+      ? "\nContext:\n" +
+        contextTexts
+          .map((text, i) => {
+            return `[CONTEXT ${i}]:\n${text}\n[END CONTEXT ${i}]\n\n`;
+          })
+          .join("")
+      : "";
+  return `${prompt ?? STANDARD_PROMPT}${context}`;
 }
 
 module.exports = {
