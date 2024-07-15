@@ -85,6 +85,11 @@ const TRANSLATIONS = {
     contact: "Contactar a Mintplex Labs",
   },
 
+  "new-workspace": {
+    title: "Nuevo Espacio de Trabajo",
+    placeholder: "Mi Espacio de Trabajo",
+  },
+
   "workspaces—settings": {
     general: "Configuración general",
     chat: "Configuración de chat",

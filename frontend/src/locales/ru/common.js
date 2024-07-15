@@ -85,6 +85,11 @@ const TRANSLATIONS = {
     contact: "Связаться с Mintplex Labs",
   },
 
+  "new-workspace": {
+    title: "Новая Рабочая Область",
+    placeholder: "Моя Рабочая Область",
+  },
+
   "workspaces—settings": {
     general: "Общие настройки",
     chat: "Настройки чата",

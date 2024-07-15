@@ -64,6 +64,11 @@ const TRANSLATIONS = {
     },
   },
 
+  "new-workspace": {
+    title: "새 워크스페이스",
+    placeholder: "내 워크스페이스",
+  },
+
   // Workspace Settings menu items
   "workspaces—settings": {
     general: "일반 설정",

@@ -86,6 +86,11 @@ const TRANSLATIONS = {
     contact: "联系 Mintplex Labs",
   },
 
+  "new-workspace": {
+    title: "新工作区",
+    placeholder: "我的工作区",
+  },
+
   // Workspace Settings menu items
   "workspaces—settings": {
     general: "通用设置",
