@@ -41,7 +41,7 @@ export default function KoboldCPPOptions({ settings }) {
           <input
             type="number"
             name="KoboldCPPTokenLimit"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="4096"
             min={1}
             value={tokenLimit}
@@ -61,7 +61,7 @@ export default function KoboldCPPOptions({ settings }) {
             e.preventDefault();
             setShowAdvancedControls(!showAdvancedControls);
           }}
-          className="text-white hover:text-white/70 flex items-center text-sm"
+          className="border-none text-white hover:text-white/70 flex items-center text-sm"
         >
           {showAdvancedControls ? "Hide" : "Show"} Manual Endpoint Input
           {showAdvancedControls ? (
@@ -86,7 +86,7 @@ export default function KoboldCPPOptions({ settings }) {
                   {!basePathValue.value && (
                     <button
                       onClick={handleAutoDetectClick}
-                      className="bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
+                      className="border-none bg-primary-button text-xs font-medium px-2 py-1 rounded-lg hover:bg-secondary hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.25)]"
                     >
                       Auto-Detect
                     </button>
@@ -97,7 +97,7 @@ export default function KoboldCPPOptions({ settings }) {
             <input
               type="url"
               name="KoboldCPPBasePath"
-              className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+              className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
               placeholder="http://127.0.0.1:5000/v1"
               value={basePathValue.value}
               required={true}
@@ -153,7 +153,7 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
         <select
           name="KoboldCPPModelPref"
           disabled={true}
-          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
@@ -177,7 +177,7 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
       <select
         name="KoboldCPPModelPref"
         required={true}
-        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.map((model) => (
           <option
