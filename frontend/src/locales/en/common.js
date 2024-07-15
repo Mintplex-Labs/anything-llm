@@ -65,6 +65,28 @@ const TRANSLATIONS = {
     },
   },
 
+  welcomeMessage: {
+    part1:
+      "Welcome to AnythingLLM, AnythingLLM is an open-source AI tool by Mintplex Labs that turns anything into a trained chatbot you can query and chat with. AnythingLLM is a BYOK (bring-your-own-keys) software so there is no subscription, fee, or charges for this software outside of the services you want to use with it.",
+    part2:
+      "AnythingLLM is the easiest way to put powerful AI products like OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services together in a neat package with no fuss to increase your productivity by 100x.",
+    part3:
+      "AnythingLLM can run totally locally on your machine with little overhead you wont even notice it's there! No GPU needed. Cloud and on-premises installation is available as well.\nThe AI tooling ecosystem gets more powerful everyday. AnythingLLM makes it easy to use.",
+    githubIssue: "Create an issue on Github",
+    user1: "How do I get started?!",
+    part4:
+      "It's simple. All collections are organized into buckets we call \"Workspaces\". Workspaces are buckets of files, documents, images, PDFs, and other files which will be transformed into something LLM's can understand and use in conversation.\n\nYou can add and remove files at anytime.",
+    createWorkspace: "Create your first workspace",
+    user2:
+      "Is this like an AI dropbox or something? What about chatting? It is a chatbot isn't it?",
+    part5:
+      "AnythingLLM is more than a smarter Dropbox.\n\nAnythingLLM offers two ways of talking with your data:\n\n<i>Query:</i> Your chats will return data or inferences found with the documents in your workspace it has access to. Adding more documents to the Workspace make it smarter! \n\n<i>Conversational:</i> Your documents + your on-going chat history both contribute to the LLM knowledge at the same time. Great for appending real-time text-based info or corrections and misunderstandings the LLM might have. \n\nYou can toggle between either mode \n<i>in the middle of chatting!</i>",
+    user3: "Wow, this sounds amazing, let me try it out already!",
+    part6: "Have Fun!",
+    starOnGithub: "Star on GitHub",
+    contact: "Contact Mintplex Labs",
+  },
+
   // Workspace Settings menu items
   "workspaces—settings": {
     general: "General Settings",
