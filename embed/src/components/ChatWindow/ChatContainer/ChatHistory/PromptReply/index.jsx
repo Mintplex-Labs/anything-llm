@@ -8,6 +8,7 @@ import { formatDate } from "@/utils/date";
 const PromptReply = forwardRef(
   ({ uuid, reply, pending, error, sources = [] }, ref) => {
     if (!reply && sources.length === 0 && !pending && !error) return null;
+    if (error) console.error(`ANYTHING_LLM_CHAT_WIDGET_ERROR: ${error}`);
 
     if (pending) {
       return (
@@ -54,9 +55,7 @@ const PromptReply = forwardRef(
               >
                 <Warning className="allm-h-4 allm-w-4 allm-mb-1 allm-inline-block" />{" "}
                 Could not respond to message.
-                <span className="allm-text-xs">
-                  Reason: {error || "unknown"}
-                </span>
+                <span className="allm-text-xs">Server error</span>
               </span>
             </div>
           </div>

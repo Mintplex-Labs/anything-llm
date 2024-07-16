@@ -26,6 +26,7 @@ const TRANSLATIONS = {
     transcription: "Transcription 模型",
     embedder: "Embedder 首选项",
     "text-splitting": "文本分割",
+    "voice-speech": "语音和讲话",
     "vector-database": "向量数据库",
     embeds: "嵌入式对话",
     "embed-chats": "嵌入式对话历史",
@@ -36,6 +37,8 @@ const TRANSLATIONS = {
     "agent-skills": "代理技能",
     admin: "管理员",
     tools: "工具",
+    "experimental-features": "实验功能",
+    contact: "联系支持",
   },
 
   // Page Definitions
@@ -53,6 +56,39 @@ const TRANSLATIONS = {
       start: "登录你的",
       end: "账户",
     },
+    "password-reset": {
+      title: "重置密码",
+      description: "请提供以下必要信息以重置您的密码。",
+      "recovery-codes": "恢复代码",
+      "recovery-code": "恢复代码 {{index}}",
+      "back-to-login": "返回登录",
+    },
+  },
+
+  welcomeMessage: {
+    part1:
+      "欢迎使用 AnythingLLM，这是由 Mintplex Labs 开发的开源 AI 工具，可以将任何东西转换为您可以查询和聊天的训练有素的聊天机器人。AnythingLLM 是一款 BYOK（自带密钥）软件，因此除了您想使用的服务外，此软件不收取订阅费、费用或其他费用。",
+    part2:
+      "AnythingLLM 是将强大的 AI 产品（如 OpenAi、GPT-4、LangChain、PineconeDB、ChromaDB 等）整合在一个整洁的包中而无需繁琐操作的最简单方法，可以将您的生产力提高 100 倍。",
+    part3:
+      "AnythingLLM 可以完全在您的本地计算机上运行，几乎没有开销，您甚至不会注意到它的存在！无需 GPU。也可以进行云端和本地安装。\nAI 工具生态系统每天都在变得更强大。AnythingLLM 使其易于使用。",
+    githubIssue: "在 Github 上创建问题",
+    user1: "我该如何开始?!",
+    part4:
+      "很简单。所有集合都组织成我们称之为“工作区”的桶。工作区是文件、文档、图像、PDF 和其他文件的存储桶，这些文件将被转换为 LLM 可以理解和在对话中使用的内容。\n\n您可以随时添加和删除文件。",
+    createWorkspace: "创建您的第一个工作区",
+    user2: "这像是一个 AI Dropbox 吗？那么聊天呢？它是一个聊天机器人，不是吗？",
+    part5:
+      "AnythingLLM 不仅仅是一个更智能的 Dropbox。\n\nAnythingLLM 提供了两种与您的数据交流的方式：\n\n<i>查询：</i> 您的聊天将返回在您的工作区中访问的文档中找到的数据或推论。向工作区添加更多文档会使其更智能！\n\n<i>对话：</i> 您的文档和正在进行的聊天记录同时为 LLM 知识做出贡献。非常适合添加基于文本的实时信息或纠正 LLM 可能存在的误解。\n\n您可以在聊天过程中 <i>切换模式！</i>",
+    user3: "哇，这听起来很棒，让我马上试试！",
+    part6: "玩得开心！",
+    starOnGithub: "在 GitHub 上加星",
+    contact: "联系 Mintplex Labs",
+  },
+
+  "new-workspace": {
+    title: "新工作区",
+    placeholder: "我的工作区",
   },
 
   // Workspace Settings menu items
