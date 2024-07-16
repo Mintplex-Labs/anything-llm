@@ -56,9 +56,13 @@ class WatsonxLLM {
   // and if undefined - assume it is the lowest end.
   promptWindowLimit() {
     return this.watsonx.listFoundationModelSpecs().then((response) => {
+      console.log('response.result.resources', response.result.resources)
       let obj = response.result.resources.find(
         (o) => o.model_id === process.env.WATSONX_AI_MODEL
       );
+      if (!obj) {
+        throw new Error(`wrong llm model configured: ${process.env.WATSONX_AI_MODEL} does not exist. available: ${response.result.resources.map(x => x.model_id)}`);
+      }
       if (process.env.WATSONX_TOKEN_LIMIT) {
         return Number(process.env.WATSONX_TOKEN_LIMIT) >
           Number(obj.model_limits.max_sequence_length)
@@ -114,11 +118,13 @@ class WatsonxLLM {
     // TODO: Adapt different Prompt settings for model types
     messages.forEach((message, index) => {
       if (message.role == "system") {
-        input += "[INST]<<SYS>>\n";
-        input += `${message.content}\n`;
-        input += "<</SYS>>\n\n";
+        input += `
+        <|system|>
+        ${message.content}
+        <|user|>
+        `;
       } else {
-        input += `${message.content} [INST]\n\n`;
+        input += `${message.content}\n<|assistant|>\n\n`;
       }
     });
 
@@ -201,7 +207,9 @@ class WatsonxLLM {
       const handleAbort = () => clientAbortedHandler(resolve, fullText);
       response.on("close", handleAbort);
       const reader = stream.getReader();
-      const decoder = new TextDecoder("utf-8");
+      const decoder = new TextDecoder("utf-8", {
+        stream: true,
+      });
 
       try {
         let collectedChunks = "";
@@ -212,32 +220,43 @@ class WatsonxLLM {
           const decodedChunk = decoder.decode(value);
           collectedChunks += decodedChunk;
 
+          console.log('collectedChunks', collectedChunks)
+
           // we cache the chunks incase two parts of different events are in the same chunk
           if (collectedChunks.includes("\n\n")) {
             const overlappingEvents = collectedChunks.split("\n\n");
-            const decodedLines = overlappingEvents[0].split("\n");
-            let parsedLines = decodedLines.map((line) => {
-              line = line.replace(/^data: /, "").trim();
-              return line;
-            });
-
-            collectedChunks = "" + overlappingEvents[1];
-            try {
-              const data = JSON.parse(parsedLines[2]);
-              const delta = data.results[0].generated_text;
-
-              if (!delta) continue;
-              fullText += delta;
-              writeResponseChunk(response, {
-                uuid,
-                sources: [],
-                type: "textResponseChunk",
-                textResponse: delta,
-                close: false,
-                error: false,
+            const decodedLines = overlappingEvents
+              .slice(0, -1)
+              .join("\n")
+              .split("\n");
+            let parsedLines = decodedLines
+              .filter((line) => line.startsWith("data: {"))
+              .map((line) => {
+                console.log('line', line);
+                line = line.replace(/^data: /, "").trim();
+                return line;
               });
-            } catch {
-              console.error("Invalid JSON in: ", parsedLines);
+
+            collectedChunks = "" + overlappingEvents.slice(-1)[0];
+            for (const parsedLine of parsedLines) {
+              try {
+                const data = JSON.parse(parsedLine);
+                const delta = data.results[0].generated_text;
+
+                if (!delta) continue;
+                fullText += delta;
+                writeResponseChunk(response, {
+                  uuid,
+                  sources: [],
+                  type: "textResponseChunk",
+                  textResponse: delta,
+                  close: false,
+                  error: false,
+                });
+              } catch {
+                console.error("Invalid JSON in: ", parsedLines);
+                throw new Error("Invalid JSON in: " + parsedLines);
+              }
             }
           }
         }
