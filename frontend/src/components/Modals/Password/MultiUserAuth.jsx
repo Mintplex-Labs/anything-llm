@@ -7,6 +7,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
 import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
   const [username, setUsername] = useState("");
@@ -36,21 +37,23 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
       <div className="flex items-start justify-between pt-11 pb-9 w-screen md:w-full md:px-12 px-6 ">
         <div className="flex flex-col gap-y-4 w-full">
           <h3 className="text-4xl md:text-lg font-bold text-white text-center md:text-left">
-            Password Reset
+            {t("login.password-reset.title")}
           </h3>
           <p className="text-sm text-white/90 md:text-left md:max-w-[300px] px-4 md:px-0 text-center">
-            Provide the necessary information below to reset your password.
+            {t("login.password-reset.description")}
           </p>
         </div>
       </div>
       <div className="md:px-12 px-6 space-y-6 flex h-full w-full">
         <div className="w-full flex flex-col gap-y-4">
           <div className="flex flex-col gap-y-2">
-            <label className="text-white text-sm font-bold">Username</label>
+            <label className="text-white text-sm font-bold">
+              {t("login.multi-user.placeholder-username")}
+            </label>
             <input
               name="username"
               type="text"
-              placeholder="Username"
+              placeholder={t("login.multi-user.placeholder-username")}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="bg-zinc-900 text-white placeholder-white/20 text-sm rounded-md p-2.5 w-full h-[48px] md:w-[300px] md:h-[34px]"
@@ -59,14 +62,16 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
           </div>
           <div className="flex flex-col gap-y-2">
             <label className="text-white text-sm font-bold">
-              Recovery Codes
+              {t("login.password-reset.recovery-codes")}
             </label>
             {recoveryCodeInputs.map((code, index) => (
               <div key={index}>
                 <input
                   type="text"
                   name={`recoveryCode${index + 1}`}
-                  placeholder={`Recovery Code ${index + 1}`}
+                  placeholder={t("login.password-reset.recovery-code", {
+                    index: index + 1,
+                  })}
                   value={code}
                   onChange={(e) =>
                     handleRecoveryCodeChange(index, e.target.value)
@@ -84,14 +89,14 @@ const RecoveryForm = ({ onSubmit, setShowRecoveryForm }) => {
           type="submit"
           className="md:text-primary-button md:bg-transparent md:w-[300px] text-dark-text text-sm font-bold focus:ring-4 focus:outline-none rounded-md border-[1.5px] border-primary-button md:h-[34px] h-[48px] md:hover:text-white md:hover:bg-primary-button bg-primary-button focus:z-10 w-full"
         >
-          Reset Password
+          {t("login.password-reset.title")}
         </button>
         <button
           type="button"
           className="text-white text-sm flex gap-x-1 hover:text-primary-button hover:underline -mb-8"
           onClick={() => setShowRecoveryForm(false)}
         >
-          Back to Login
+          {t("login.password-reset.back-to-login")}
         </button>
       </div>
     </form>
