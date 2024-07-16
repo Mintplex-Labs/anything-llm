@@ -56,7 +56,6 @@ class WatsonxLLM {
   // and if undefined - assume it is the lowest end.
   promptWindowLimit() {
     return this.watsonx.listFoundationModelSpecs().then((response) => {
-      console.log('response.result.resources', response.result.resources)
       let obj = response.result.resources.find(
         (o) => o.model_id === process.env.WATSONX_AI_MODEL
       );
@@ -69,7 +68,6 @@ class WatsonxLLM {
           ? Number(obj.model_limits.max_sequence_length)
           : Number(process.env.WATSONX_TOKEN_LIMIT);
       } else {
-        console.log();
         return Number(obj.model_limits.max_sequence_length);
       }
     });
@@ -177,7 +175,6 @@ class WatsonxLLM {
       );
 
     const data = await this.getWatsonxPayload(messages);
-    console.log(data);
     const stream = await fetch(
       `${process.env.WATSONX_AI_ENDPOINT}/ml/v1/text/generation_stream?version=2024-05-31`,
       {
@@ -220,8 +217,6 @@ class WatsonxLLM {
           const decodedChunk = decoder.decode(value);
           collectedChunks += decodedChunk;
 
-          console.log('collectedChunks', collectedChunks)
-
           // we cache the chunks incase two parts of different events are in the same chunk
           if (collectedChunks.includes("\n\n")) {
             const overlappingEvents = collectedChunks.split("\n\n");
@@ -232,7 +227,6 @@ class WatsonxLLM {
             let parsedLines = decodedLines
               .filter((line) => line.startsWith("data: {"))
               .map((line) => {
-                console.log('line', line);
                 line = line.replace(/^data: /, "").trim();
                 return line;
               });
