@@ -16,6 +16,7 @@ import System from "@/models/system";
 import UserIcon from "../UserIcon";
 import { userFromStorage } from "@/utils/request";
 import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
+import { useTranslation, Trans } from "react-i18next";
 
 export default function DefaultChatContainer() {
   const [mockMsgs, setMockMessages] = useState([]);
@@ -26,6 +27,7 @@ export default function DefaultChatContainer() {
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
   const popMsg = !window.localStorage.getItem("anythingllm_intro");
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,7 +38,7 @@ export default function DefaultChatContainer() {
   }, []);
 
   const MESSAGES = [
-    <React.Fragment>
+    <React.Fragment key="msg1">
       <div
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR} md:mt-0 mt-[40px]`}
       >
@@ -49,18 +51,14 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              Welcome to AnythingLLM, AnythingLLM is an open-source AI tool by
-              Mintplex Labs that turns anything into a trained chatbot you can
-              query and chat with. AnythingLLM is a BYOK (bring-your-own-keys)
-              software so there is no subscription, fee, or charges for this
-              software outside of the services you want to use with it.
+              {t("welcomeMessage.part1")}
             </span>
           </div>
         </div>
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="msg2">
       <div
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
@@ -73,17 +71,14 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              AnythingLLM is the easiest way to put powerful AI products like
-              OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services
-              together in a neat package with no fuss to increase your
-              productivity by 100x.
+              {t("welcomeMessage.part2")}
             </span>
           </div>
         </div>
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="msg3">
       <div
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
@@ -96,12 +91,7 @@ export default function DefaultChatContainer() {
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               >
-                AnythingLLM can run totally locally on your machine with little
-                overhead you wont even notice it's there! No GPU needed. Cloud
-                and on-premises installation is available as well.
-                <br />
-                The AI tooling ecosystem gets more powerful everyday.
-                AnythingLLM makes it easy to use.
+                {t("welcomeMessage.part3")}
               </span>
               <Link
                 to={paths.github()}
@@ -109,7 +99,7 @@ export default function DefaultChatContainer() {
                 className="border-solid h-button mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
               >
                 <GitMerge className="h-4 w-4" />
-                <p>Create an issue on Github</p>
+                <p>{t("welcomeMessage.githubIssue")}</p>
               </Link>
             </div>
           </div>
@@ -117,7 +107,7 @@ export default function DefaultChatContainer() {
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="msg4">
       <div
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
@@ -133,14 +123,14 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              How do I get started?!
+              {t("welcomeMessage.user1")}
             </span>
           </div>
         </div>
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="msg5">
       <div
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
@@ -153,20 +143,14 @@ export default function DefaultChatContainer() {
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               >
-                It's simple. All collections are organized into buckets we call{" "}
-                "Workspaces". Workspaces are buckets of files, documents,
-                images, PDFs, and other files which will be transformed into
-                something LLM's can understand and use in conversation.
-                <br />
-                <br />
-                You can add and remove files at anytime.
+                {t("welcomeMessage.part4")}
               </span>
               <button
                 onClick={showNewWsModal}
                 className="border-solid h-button mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
               >
                 <Plus className="h-4 w-4" />
-                <p>Create your first workspace</p>
+                <p>{t("welcomeMessage.createWorkspace")}</p>
               </button>
             </div>
           </div>
@@ -174,7 +158,7 @@ export default function DefaultChatContainer() {
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="msg6">
       <div
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
@@ -190,15 +174,14 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              Is this like an AI dropbox or something? What about chatting? It
-              is a chatbot isn't it?
+              {t("welcomeMessage.user2")}
             </span>
           </div>
         </div>
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="msg7">
       <div
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
@@ -211,32 +194,20 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              AnythingLLM is more than a smarter Dropbox.
-              <br />
-              <br />
-              AnythingLLM offers two ways of talking with your data:
-              <br />
-              <br />
-              <i>Query:</i> Your chats will return data or inferences found with
-              the documents in your workspace it has access to. Adding more
-              documents to the Workspace make it smarter!
-              <br />
-              <br />
-              <i>Conversational:</i> Your documents + your on-going chat history
-              both contribute to the LLM knowledge at the same time. Great for
-              appending real-time text-based info or corrections and
-              misunderstandings the LLM might have.
-              <br />
-              <br />
-              You can toggle between either mode{" "}
-              <i>in the middle of chatting!</i>
+              <Trans
+                i18nKey="welcomeMessage.part5"
+                components={{
+                  i: <i />,
+                  br: <br />,
+                }}
+              />
             </span>
           </div>
         </div>
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="msg8">
       <div
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
@@ -252,14 +223,14 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              Wow, this sounds amazing, let me try it out already!
+              {t("welcomeMessage.user3")}
             </span>
           </div>
         </div>
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="msg9">
       <div
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
@@ -272,7 +243,7 @@ export default function DefaultChatContainer() {
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               >
-                Have Fun!
+                {t("welcomeMessage.part6")}
               </span>
 
               <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
@@ -282,14 +253,14 @@ export default function DefaultChatContainer() {
                   className="border-solid h-button mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
                 >
                   <GithubLogo className="h-4 w-4" />
-                  <p>Star on GitHub</p>
+                  <p>{t("welcomeMessage.starOnGithub")}</p>
                 </Link>
                 <Link
                   to={paths.mailToMintplex()}
                   className="border-solid h-button mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
                 >
                   <EnvelopeSimple className="h-4 w-4" />
-                  <p>Contact Mintplex Labs</p>
+                  <p>{t("welcomeMessage.contact")}</p>
                 </Link>
               </div>
             </div>

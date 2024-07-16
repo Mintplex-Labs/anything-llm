@@ -9,6 +9,7 @@ import useUser from "@/hooks/useUser";
 import { Link } from "react-router-dom";
 import Footer from "../Footer";
 import paths from "@/utils/paths";
+import { useTranslation } from "react-i18next";
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -19,6 +20,7 @@ export default function Sidebar() {
     showModal: showNewWsModal,
     hideModal: hideNewWsModal,
   } = useNewWorkspaceModal();
+  const { t } = useTranslation();
 
   return (
     <div>
@@ -50,7 +52,7 @@ export default function Sidebar() {
                     >
                       <Plus size={18} weight="bold" />
                       <p className="text-sidebar text-sm font-semibold">
-                        New Workspace
+                        {t("new-workspace.title")}
                       </p>
                     </button>
                   )}
