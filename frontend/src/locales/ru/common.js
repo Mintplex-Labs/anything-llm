@@ -97,6 +97,7 @@ const TRANSLATIONS = {
     members: "Участники",
     agent: "Конфигурация агента",
   },
+
   general: {
     vector: {
       title: "Количество векторов",
@@ -133,6 +134,7 @@ const TRANSLATIONS = {
         "рабочее пространство. Это удалит все векторные встраивания в вашей векторной базе данных.\n\nОригинальные исходные файлы останутся нетронутыми. Это действие необратимо.",
     },
   },
+
   chat: {
     llm: {
       title: "Поставщик LLM рабочего пространства",
@@ -190,6 +192,7 @@ const TRANSLATIONS = {
       hint: "Большинство LLM имеют различные допустимые диапазоны значений. Проконсультируйтесь с вашим поставщиком LLM для получения этой информации.",
     },
   },
+
   "vector-workspace": {
     identifier: "Идентификатор векторной базы данных",
     snippets: {
@@ -216,6 +219,7 @@ const TRANSLATIONS = {
       success: "Векторная база данных рабочего пространства была сброшена!",
     },
   },
+
   agent: {
     "performance-warning":
       "Производительность LLM, не поддерживающих вызовы инструментов, сильно зависит от возможностей и точности модели. Некоторые способности могут быть ограничены или не функционировать.",
@@ -273,6 +277,7 @@ const TRANSLATIONS = {
       },
     },
   },
+
   recorded: {
     title: "Чаты рабочего пространства",
     description:
@@ -287,6 +292,7 @@ const TRANSLATIONS = {
       at: "Отправлено в",
     },
   },
+
   appearance: {
     title: "Внешний вид",
     description: "Настройте параметры внешнего вида вашей платформы.",
@@ -319,6 +325,7 @@ const TRANSLATIONS = {
       link: "Ссылка",
     },
   },
+
   api: {
     title: "API ключи",
     description:
@@ -331,12 +338,161 @@ const TRANSLATIONS = {
       created: "Создано",
     },
   },
+
   llm: {
     title: "Предпочтение LLM",
     description:
       "Это учетные данные и настройки для вашего предпочтительного поставщика чата и встраивания LLM. Важно, чтобы эти ключи были актуальными и правильными, иначе AnythingLLM не будет работать должным образом.",
     provider: "Поставщик LLM",
+    searchPlaceholder: "Поиск доступных поставщиков LLM",
+    noneSelected: "Ничего не выбрано",
+    selectLLM: "Вам нужно выбрать LLM",
+    saving: "Сохранение...",
+    saveChanges: "Сохранить изменения",
+    saveSuccess: "Настройки LLM успешно сохранены.",
+    saveError: "Не удалось сохранить настройки LLM: {{error}}",
+    providers: {
+      defaultName: "Системное по умолчанию",
+      defaultDescription:
+        "Использовать системные настройки LLM для этого рабочего пространства.",
+      apiKeyLabel: "API ключ {{provider}}",
+      apiKeyPlaceholder: "API ключ {{provider}}",
+      modelLabel: "Выбор модели чата",
+      openai:
+        "Стандартный вариант для большинства некоммерческих использований.",
+      azure: "Корпоративный вариант OpenAI, размещенный на Azure.",
+      anthropic: "Дружелюбный AI-ассистент, размещенный Anthropic.",
+      gemini: "Самая большая и мощная AI модель от Google",
+      huggingface:
+        "Доступ к более чем 150 000 open-source LLM и мировому сообществу AI",
+      ollama: "Запускайте LLM локально на своем компьютере.",
+      lmstudio:
+        "Откройте, скачайте и запустите тысячи передовых LLM за несколько кликов.",
+      localai: "Запускайте LLM локально на своем компьютере.",
+      togetherai: "Запускайте open-source модели от Together AI.",
+      mistral: "Запускайте open-source модели от Mistral AI.",
+      perplexity:
+        "Запускайте мощные и подключенные к интернету модели, размещенные Perplexity AI.",
+      openrouter: "Унифицированный интерфейс для LLM.",
+      groq: "Самая быстрая инференция LLM для приложений реального времени.",
+      koboldcpp: "Запускайте локальные LLM с использованием koboldcpp.",
+      textgenwebui:
+        "Запускайте локальные LLM с использованием веб-интерфейса текстовой генерации Oobabooga.",
+      cohere: "Запускайте мощные модели Command от Cohere.",
+      litellm:
+        "Запускайте совместимый с OpenAI прокси LiteLLM для различных LLM.",
+      genericopenai:
+        "Подключайтесь к любому совместимому с OpenAi сервису через пользовательскую конфигурацию",
+      native:
+        "Используйте загруженную пользовательскую модель Llama для чата на этой инстанции TeamplGPT.",
+      safetyLabel: "Настройки безопасности",
+      safety: {
+        none: "Нет",
+        blockFew: "Блокировать немного",
+        blockSome: "Блокировать некоторые (по умолчанию)",
+        blockMost: "Блокировать большинство",
+      },
+      baseUrl: "Базовый URL",
+      tokenContextWindow: "Окно контекста токенов",
+      loadingModels: "-- загрузка доступных моделей --",
+      waitingForUrl: "-- ожидание URL --",
+      waitingForAPI: "-- ожидание API --",
+      apiKey: "API ключ",
+      loadedModels: "Ваши загруженные модели",
+    },
   },
+
+  azure: {
+    serviceEndpoint: "Конечная Точка Сервиса Azure",
+    chatDeploymentName: "Имя Развертывания Чата",
+    chatDeploymentNamePlaceholder: "Имя модели чата Azure OpenAI",
+    chatModelTokenLimit: "Лимит Токенов Модели Чата",
+    embeddingDeploymentName: "Имя Развертывания Embedding",
+    embeddingDeploymentNamePlaceholder: "Имя модели embedding Azure OpenAI",
+  },
+
+  huggingface: {
+    inferenceEndpoint: "Конечная Точка Инференции HuggingFace",
+    accessToken: "Токен Доступа HuggingFace",
+    accessTokenPlaceholder: "Токен Доступа HuggingFace",
+    tokenLimit: "Лимит Токенов Модели",
+  },
+
+  genericOpenAi: {
+    baseUrl: "Базовый URL",
+    chatModelName: "Имя Модели Чата",
+    chatModelNamePlaceholder: "ID модели, используемой для запросов чата",
+    tokenContextWindow: "Окно Контекста Токенов",
+    tokenContextWindowPlaceholder: "Лимит окна контекста (например: 4096)",
+    maxTokens: "Максимум Токенов",
+    maxTokensPlaceholder: "Максимум токенов за запрос (например: 1024)",
+  },
+
+  ollama: {
+    maxTokens: "Максимум Токенов",
+    maxTokensDescription:
+      "Максимальное количество токенов для контекста и ответа.",
+    hideManualInput: "Скрыть Ручной Ввод Конечной Точки",
+    showManualInput: "Показать Ручной Ввод Конечной Точки",
+    baseUrl: "Базовый URL Ollama",
+    baseUrlDescription: "Введите URL, на котором работает Ollama.",
+    autoDetect: "Авто-Определение",
+    enterUrlFirst: "Сначала введите URL Ollama",
+    model: "Модель Ollama",
+    modelDescription:
+      "Выберите модель Ollama, которую вы хотите использовать. Модели будут загружены после ввода действительного URL Ollama.",
+    maxChunkLength: "Максимальная Длина Фрагмента Embedding",
+    maxChunkLengthDescription:
+      "Максимальная длина текстовых фрагментов для embedding.",
+  },
+
+  lmstudio: {
+    alertMessage:
+      "LMStudio в качестве LLM требует настройки сервиса embedding для использования.",
+    manageEmbedding: "Управление embedding →",
+    maxTokens: "Максимум Токенов",
+    maxTokensDescription:
+      "Максимальное количество токенов для контекста и ответа.",
+    hideManualInput: "Скрыть Ручной Ввод Конечной Точки",
+    showManualInput: "Показать Ручной Ввод Конечной Точки",
+    baseUrl: "Базовый URL LM Studio",
+    baseUrlDescription: "Введите URL, на котором работает LM Studio.",
+    autoDetect: "Авто-Определение",
+    enterUrlFirst: "Сначала введите URL LM Studio",
+    model: "Модель LM Studio",
+    modelDescription:
+      "Выберите модель LM Studio, которую вы хотите использовать. Модели будут загружены после ввода действительного URL LM Studio.",
+    maxChunkLength: "Максимальная Длина Фрагмента Embedding",
+    maxChunkLengthDescription:
+      "Максимальная длина текстовых фрагментов для embedding.",
+  },
+
+  localai: {
+    alertMessage:
+      "LocalAI в качестве LLM требует настройки сервиса embedding для использования.",
+    manageEmbedding: "Управление embedding →",
+    baseUrl: "Базовый URL Local AI",
+    tokenContextWindow: "Окно Контекста Токенов",
+    apiKey: "API ключ Local AI",
+    modelSelection: "Выбор Модели Чата",
+    optional: "опционально",
+  },
+
+  textgenwebui: {
+    baseUrl: "Базовый URL",
+    tokenContextWindow: "Окно Контекста Токенов",
+    tokenContextWindowPlaceholder: "Лимит окна контекста (например: 4096)",
+    apiKeyOptional: "API ключ (опционально)",
+  },
+
+  nativellm: {
+    experimentalWarning:
+      "Использование локально хостируемого LLM является экспериментальным. Используйте с осторожностью.",
+    modelSelection: "Выбор Модели",
+    waitingForModels: "-- ожидание моделей --",
+    tokenContextWindow: "Окно Контекста Токенов",
+  },
+
   transcription: {
     title: "Предпочтение модели транскрипции",
     description:
@@ -349,6 +505,7 @@ const TRANSLATIONS = {
     "warn-end":
       "Встроенная модель будет автоматически загружена при первом использовании.",
   },
+
   embedding: {
     title: "Настройки встраивания",
     "desc-start":
@@ -361,6 +518,7 @@ const TRANSLATIONS = {
         "Нет необходимости в настройке при использовании встроенного механизма встраивания AnythingLLM.",
     },
   },
+
   text: {
     title: "Настройки разделения и сегментации текста",
     "desc-start":
@@ -382,6 +540,7 @@ const TRANSLATIONS = {
         "Это максимальное перекрытие символов, которое происходит при сегментации между двумя смежными сегментами текста.",
     },
   },
+
   vector: {
     title: "Векторная база данных",
     description:
@@ -391,6 +550,7 @@ const TRANSLATIONS = {
       description: "Настройка для LanceDB не требуется.",
     },
   },
+
   embeddable: {
     title: "Встраиваемые виджеты чата",
     description:
@@ -402,6 +562,7 @@ const TRANSLATIONS = {
       Active: "Активные домены",
     },
   },
+
   "embed-chats": {
     title: "Встраивание чатов",
     description:
@@ -414,6 +575,7 @@ const TRANSLATIONS = {
       at: "Отправлено в",
     },
   },
+
   multi: {
     title: "Многопользовательский режим",
     description:
@@ -438,6 +600,7 @@ const TRANSLATIONS = {
       password: "Пароль экземпляра",
     },
   },
+
   event: {
     title: "Журналы событий",
     description:
@@ -449,6 +612,7 @@ const TRANSLATIONS = {
       occurred: "Произошло в",
     },
   },
+
   privacy: {
     title: "Конфиденциальность и обработка данных",
     description:

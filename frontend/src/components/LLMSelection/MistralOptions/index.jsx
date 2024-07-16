@@ -18,7 +18,7 @@ export default function MistralOptions({ settings }) {
           placeholder="Mistral API Key"
           defaultValue={settings?.MistralApiKey ? "*".repeat(20) : ""}
           required={true}
-          autoComplete="off"
+          autoComplete="new-password"
           spellCheck={false}
           onChange={(e) => setInputValue(e.target.value)}
           onBlur={() => setMistralKey(inputValue)}

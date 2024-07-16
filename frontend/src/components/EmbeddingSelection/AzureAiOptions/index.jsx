@@ -1,10 +1,15 @@
+import React from "react";
+import { useTranslation } from "react-i18next";
+
 export default function AzureAiOptions({ settings }) {
+  const { t } = useTranslation();
+
   return (
     <div className="w-full flex flex-col gap-y-4">
       <div className="w-full flex items-center gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Azure Service Endpoint
+            A{t("azure.serviceEndpoint")}
           </label>
           <input
             type="url"
@@ -20,7 +25,7 @@ export default function AzureAiOptions({ settings }) {
 
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            API Key
+            {t("azure.apiKeyLabel")}
           </label>
           <input
             type="password"
@@ -29,14 +34,14 @@ export default function AzureAiOptions({ settings }) {
             placeholder="Azure OpenAI API Key"
             defaultValue={settings?.AzureOpenAiKey ? "*".repeat(20) : ""}
             required={true}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>
 
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Embedding Deployment Name
+            {t("azure.embeddingDeploymentName")}
           </label>
           <input
             type="text"

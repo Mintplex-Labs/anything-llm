@@ -28,7 +28,7 @@ export default function QDrantDBOptions({ settings }) {
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="wOeqxsYP4....1244sba"
             defaultValue={settings?.QdrantApiKey}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>

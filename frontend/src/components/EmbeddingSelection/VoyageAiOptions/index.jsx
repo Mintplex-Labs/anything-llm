@@ -13,7 +13,7 @@ export default function VoyageAiOptions({ settings }) {
             placeholder="Voyage AI API Key"
             defaultValue={settings?.VoyageAiApiKey ? "*".repeat(20) : ""}
             required={true}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>

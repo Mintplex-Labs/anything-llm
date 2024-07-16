@@ -28,7 +28,7 @@ export default function PineconeDBOptions({ settings }) {
             placeholder="my-index"
             defaultValue={settings?.PineConeIndex}
             required={true}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>

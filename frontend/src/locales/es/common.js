@@ -348,6 +348,155 @@ const TRANSLATIONS = {
     description:
       "Estas son las credenciales y configuraciones para tu proveedor preferido de chat y incrustación de LLM. Es importante que estas claves estén actualizadas y correctas, de lo contrario AnythingLLM no funcionará correctamente.",
     provider: "Proveedor de LLM",
+    searchPlaceholder: "Buscar proveedores de LLM disponibles",
+    noneSelected: "Ninguno seleccionado",
+    selectLLM: "Necesitas seleccionar un LLM",
+    saving: "Guardando...",
+    saveChanges: "Guardar cambios",
+    saveSuccess: "Preferencias de LLM guardadas correctamente.",
+    saveError: "No se pudo guardar la configuración de LLM: {{error}}",
+    providers: {
+      defaultName: "Predeterminado del sistema",
+      defaultDescription:
+        "Usar la preferencia de LLM del sistema para este espacio de trabajo.",
+      apiKeyLabel: "Clave API de {{provider}}",
+      apiKeyPlaceholder: "Clave API de {{provider}}",
+      modelLabel: "Selección del modelo de chat",
+      openai: "La opción estándar para la mayoría de los usos no comerciales.",
+      azure:
+        "La opción empresarial de OpenAI alojada en los servicios de Azure.",
+      anthropic: "Un asistente de IA amigable alojado por Anthropic.",
+      gemini: "El modelo de IA más grande y capaz de Google",
+      huggingface:
+        "Accede a más de 150,000 LLMs de código abierto y a la comunidad mundial de IA",
+      ollama: "Ejecuta LLMs localmente en tu propia máquina.",
+      lmstudio:
+        "Descubre, descarga y ejecuta miles de LLMs de vanguardia en unos pocos clics.",
+      localai: "Ejecuta LLMs localmente en tu propia máquina.",
+      togetherai: "Ejecuta modelos de código abierto de Together AI.",
+      mistral: "Ejecuta modelos de código abierto de Mistral AI.",
+      perplexity:
+        "Ejecuta modelos potentes y conectados a internet alojados por Perplexity AI.",
+      openrouter: "Una interfaz unificada para LLMs.",
+      groq: "La inferencia LLM más rápida disponible para aplicaciones de IA en tiempo real.",
+      koboldcpp: "Ejecuta LLMs locales usando koboldcpp.",
+      textgenwebui:
+        "Ejecuta LLMs locales usando la Web UI de generación de texto de Oobabooga.",
+      cohere: "Ejecuta los potentes modelos Command de Cohere.",
+      litellm:
+        "Ejecuta el proxy compatible con OpenAI de LiteLLM para varios LLMs.",
+      genericopenai:
+        "Conéctate a cualquier servicio compatible con OpenAi a través de una configuración personalizada",
+      native:
+        "Usa un modelo Llama personalizado descargado para chatear en esta instancia de TeamplGPT.",
+      safetyLabel: "Configuración de seguridad",
+      safety: {
+        none: "Ninguno",
+        blockFew: "Bloquear pocos",
+        blockSome: "Bloquear algunos (predeterminado)",
+        blockMost: "Bloquear la mayoría",
+      },
+      baseUrl: "URL base",
+      tokenContextWindow: "Ventana de contexto de token",
+      loadingModels: "-- cargando modelos disponibles --",
+      waitingForUrl: "-- esperando URL --",
+      waitingForAPI: "-- esperando API --",
+      apiKey: "Clave API",
+      loadedModels: "Tus modelos cargados",
+    },
+  },
+
+  azure: {
+    serviceEndpoint: "Punto de Servicio de Azure",
+    chatDeploymentName: "Nombre de Despliegue del Chat",
+    chatDeploymentNamePlaceholder: "Nombre del modelo de chat de Azure OpenAI",
+    chatModelTokenLimit: "Límite de Tokens del Modelo de Chat",
+    embeddingDeploymentName: "Nombre de Despliegue de Embedding",
+    embeddingDeploymentNamePlaceholder:
+      "Nombre del modelo de embedding de Azure OpenAI",
+  },
+
+  huggingface: {
+    inferenceEndpoint: "Punto de Inferencia de HuggingFace",
+    accessToken: "Token de Acceso de HuggingFace",
+    accessTokenPlaceholder: "Token de Acceso de HuggingFace",
+    tokenLimit: "Límite de Tokens del Modelo",
+  },
+
+  genericOpenAi: {
+    baseUrl: "URL Base",
+    chatModelName: "Nombre del Modelo de Chat",
+    chatModelNamePlaceholder: "ID del modelo usado para solicitudes de chat",
+    tokenContextWindow: "Ventana de Contexto de Tokens",
+    tokenContextWindowPlaceholder:
+      "Límite de la ventana de contexto (ej: 4096)",
+    maxTokens: "Máximo de Tokens",
+    maxTokensPlaceholder: "Máximo de tokens por solicitud (ej: 1024)",
+  },
+
+  ollama: {
+    maxTokens: "Máximo de Tokens",
+    maxTokensDescription: "Número máximo de tokens para contexto y respuesta.",
+    hideManualInput: "Ocultar Entrada Manual del Punto de Acceso",
+    showManualInput: "Mostrar Entrada Manual del Punto de Acceso",
+    baseUrl: "URL Base de Ollama",
+    baseUrlDescription: "Ingrese la URL donde se está ejecutando Ollama.",
+    autoDetect: "Detección Automática",
+    enterUrlFirst: "Primero ingrese la URL de Ollama",
+    model: "Modelo de Ollama",
+    modelDescription:
+      "Seleccione el modelo de Ollama que desea usar. Los modelos se cargarán después de ingresar una URL válida de Ollama.",
+    maxChunkLength: "Longitud Máxima del Fragmento de Embedding",
+    maxChunkLengthDescription:
+      "Longitud máxima de los fragmentos de texto para embedding.",
+  },
+
+  lmstudio: {
+    alertMessage:
+      "LMStudio como su LLM requiere que configure un servicio de embedding para usar.",
+    manageEmbedding: "Gestionar embedding →",
+    maxTokens: "Máximo de Tokens",
+    maxTokensDescription: "Número máximo de tokens para contexto y respuesta.",
+    hideManualInput: "Ocultar Entrada Manual del Punto de Acceso",
+    showManualInput: "Mostrar Entrada Manual del Punto de Acceso",
+    baseUrl: "URL Base de LM Studio",
+    baseUrlDescription: "Ingrese la URL donde se está ejecutando LM Studio.",
+    autoDetect: "Detección Automática",
+    enterUrlFirst: "Primero ingrese la URL de LM Studio",
+    model: "Modelo de LM Studio",
+    modelDescription:
+      "Seleccione el modelo de LM Studio que desea usar. Los modelos se cargarán después de ingresar una URL válida de LM Studio.",
+    maxChunkLength: "Longitud Máxima del Fragmento de Embedding",
+    maxChunkLengthDescription:
+      "Longitud máxima de los fragmentos de texto para embedding.",
+  },
+
+  localai: {
+    alertMessage:
+      "LocalAI como su LLM requiere que configure un servicio de embedding para usar.",
+    manageEmbedding: "Gestionar embedding →",
+    baseUrl: "URL Base de Local AI",
+    tokenContextWindow: "Ventana de Contexto de Tokens",
+    apiKey: "Clave API de Local AI",
+    modelSelection: "Selección del Modelo de Chat",
+    optional: "opcional",
+  },
+
+  textgenwebui: {
+    baseUrl: "URL Base",
+    tokenContextWindow: "Ventana de Contexto de Tokens",
+    tokenContextWindowPlaceholder:
+      "Límite de la ventana de contexto (ej: 4096)",
+    apiKeyOptional: "Clave API (Opcional)",
+
+  },
+
+  nativellm: {
+    experimentalWarning:
+      "El uso de un LLM alojado localmente es experimental. Úselo con precaución.",
+    modelSelection: "Selección del Modelo",
+    waitingForModels: "-- esperando modelos --",
+    tokenContextWindow: "Ventana de Contexto de Tokens",
   },
 
   transcription: {

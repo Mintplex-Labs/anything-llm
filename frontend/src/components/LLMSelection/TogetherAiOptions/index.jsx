@@ -15,7 +15,7 @@ export default function TogetherAiOptions({ settings }) {
           placeholder="Together AI API Key"
           defaultValue={settings?.TogetherAiApiKey ? "*".repeat(20) : ""}
           required={true}
-          autoComplete="off"
+          autoComplete="new-password"
           spellCheck={false}
         />
       </div>

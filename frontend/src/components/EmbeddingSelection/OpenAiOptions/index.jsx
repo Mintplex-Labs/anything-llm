@@ -13,7 +13,7 @@ export default function OpenAiOptions({ settings }) {
             placeholder="OpenAI API Key"
             defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
             required={true}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>

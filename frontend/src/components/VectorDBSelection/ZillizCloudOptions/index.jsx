@@ -28,7 +28,7 @@ export default function ZillizCloudOptions({ settings }) {
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Zilliz cluster API Token"
             defaultValue={settings?.ZillizApiToken ? "*".repeat(20) : ""}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>

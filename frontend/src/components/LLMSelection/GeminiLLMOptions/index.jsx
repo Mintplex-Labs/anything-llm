@@ -1,10 +1,14 @@
+import React from "react";
+import { useTranslation } from "react-i18next";
+
 export default function GeminiLLMOptions({ settings }) {
+  const { t } = useTranslation();
   return (
     <div className="w-full flex flex-col">
       <div className="w-full flex items-center gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Google AI API Key
+            {t("llm.providers.apiKeyLabel", { provider: "Google AI" })}
           </label>
           <input
             type="password"
@@ -13,7 +17,7 @@ export default function GeminiLLMOptions({ settings }) {
             placeholder="Google Gemini API Key"
             defaultValue={settings?.GeminiLLMApiKey ? "*".repeat(20) : ""}
             required={true}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>
@@ -22,7 +26,7 @@ export default function GeminiLLMOptions({ settings }) {
           <>
             <div className="flex flex-col w-60">
               <label className="text-white text-sm font-semibold block mb-3">
-                Chat Model Selection
+                {t("llm.providers.modelLabel")}
               </label>
               <select
                 name="GeminiLLMModelPref"

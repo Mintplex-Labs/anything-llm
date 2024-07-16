@@ -18,7 +18,7 @@ export default function OpenAiOptions({ settings }) {
           placeholder="OpenAI API Key"
           defaultValue={settings?.OpenAiKey ? "*".repeat(20) : ""}
           required={true}
-          autoComplete="off"
+          autoComplete="new-password"
           spellCheck={false}
           onChange={(e) => setInputValue(e.target.value)}
           onBlur={() => setOpenAIKey(inputValue)}

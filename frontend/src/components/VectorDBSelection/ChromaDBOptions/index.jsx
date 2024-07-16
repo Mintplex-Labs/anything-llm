@@ -38,7 +38,7 @@ export default function ChromaDBOptions({ settings }) {
           </label>
           <input
             name="ChromaApiKey"
-            autoComplete="off"
+            autoComplete="new-password"
             type="password"
             defaultValue={settings?.ChromaApiKey ? "*".repeat(20) : ""}
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"

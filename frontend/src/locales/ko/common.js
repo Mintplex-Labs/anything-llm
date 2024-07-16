@@ -344,14 +344,154 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM 기본 설정",
     description:
-      "이것은 채팅과 임베딩을 하기 위한 선호하는 LLM 제공자의 인증입니다. 이 키가 현재 활성 상태이고 정확해야 AnythingLLM이 제대로 작동합니다.",
+      "선호하는 LLM 채팅과 임베딩 제공자에 대한 인증 키 설정입니다. 이 키가 현재 활성 상태이고 정확해야 AnythingLLM이 제대로 작동합니다.",
     provider: "LLM 제공자",
+    searchPlaceholder: "사용 가능한 LLM 제공자 검색",
+    noneSelected: "선택되지 않음",
+    selectLLM: "LLM을 선택해야 합니다",
+    saving: "저장 중...",
+    saveChanges: "변경 사항 저장",
+    saveSuccess: "LLM 선호도가 성공적으로 저장되었습니다.",
+    saveError: "LLM 설정을 저장하지 못했습니다: {{error}}",
+    providers: {
+      defaultName: "시스템 기본값",
+      defaultDescription:
+        "이 워크스페이스에 시스템 기본 설정 LLM을 사용합니다.",
+      apiKeyLabel: "{{provider}} API 키",
+      apiKeyPlaceholder: "{{provider}} API 키",
+      modelLabel: "채팅 모델 선택",
+      openai: "가장 인기있는 LLM 표준 옵션입니다.",
+      azure: "Azure 서비스에서 호스팅되는 OpenAI의 엔터프라이즈 옵션입니다.",
+      anthropic: "Anthropic에서 호스팅하는 친숙한 AI 어시스턴트입니다.",
+      gemini: "Google의 가장 크고 능력 있는 AI 모델입니다.",
+      huggingface:
+        "150,000개 이상의 오픈 소스 LLM과 전세계 AI 커뮤니티에 접근하십시오.",
+      ollama: "자신의 머신에서 LLM을 로컬로 실행합니다.",
+      lmstudio:
+        "몇 번의 클릭만으로 수천 개의 최첨단 LLM을 발견, 다운로드하고 실행합니다.",
+      localai: "자신의 머신에서 LLM을 로컬로 실행합니다.",
+      togetherai: "Together AI의 오픈 소스 모델을 실행합니다.",
+      mistral: "Mistral AI의 오픈 소스 모델을 실행합니다.",
+      perplexity:
+        "Perplexity AI에서 호스팅하는 강력하고 인터넷에 연결된 모델을 실행합니다.",
+      openrouter: "LLM을 위한 통합 인터페이스입니다.",
+      groq: "실시간 AI 응용 프로그램을 위한 가장 빠른 LLM 추론을 제공합니다.",
+      koboldcpp: "koboldcpp를 사용하여 로컬 LLM을 실행합니다.",
+      textgenwebui:
+        "Oobabooga의 텍스트 생성 웹 UI를 사용하여 로컬 LLM을 실행합니다.",
+      cohere: "Cohere의 강력한 Command 모델을 실행합니다.",
+      litellm: "여러 LLM을 위한 LiteLLM의 OpenAI 호환 프록시를 실행합니다.",
+      genericopenai: "맞춤 구성을 통해 OpenAi 호환 서비스를 연결합니다.",
+      native:
+        "TeamplGPT 인스턴스에서 채팅하기 위해 다운로드한 맞춤형 Llama 모델을 사용합니다.",
+      safetyLabel: "안전 설정",
+      safety: {
+        none: "없음",
+        blockFew: "조금 차단",
+        blockSome: "일부 차단 (기본값)",
+        blockMost: "대부분 차단",
+      },
+      baseUrl: "기본 URL",
+      tokenContextWindow: "토큰 컨텍스트 창",
+      loadingModels: "-- 사용 가능한 모델 로드 중 --",
+      waitingForUrl: "-- URL 대기 중 --",
+      waitingForAPI: "-- API 대기 중 --",
+      apiKey: "API 키",
+      loadedModels: "로드된 모델",
+    },
+  },
+
+  azure: {
+    serviceEndpoint: "Azure 서비스 엔드포인트",
+    chatDeploymentName: "채팅 배포 이름",
+    chatDeploymentNamePlaceholder: "Azure OpenAI 채팅 모델 배포 이름",
+    chatModelTokenLimit: "채팅 모델 토큰 제한",
+    embeddingDeploymentName: "임베딩 배포 이름",
+    embeddingDeploymentNamePlaceholder: "Azure OpenAI 임베딩 모델 배포 이름",
+  },
+
+  huggingface: {
+    inferenceEndpoint: "HuggingFace 추론 엔드포인트",
+    accessToken: "HuggingFace 액세스 토큰",
+    accessTokenPlaceholder: "HuggingFace 액세스 토큰",
+    tokenLimit: "모델 토큰 제한",
+  },
+
+  genericOpenAi: {
+    baseUrl: "기본 URL",
+    chatModelName: "채팅 모델 이름",
+    chatModelNamePlaceholder: "채팅 요청에 사용되는 모델 ID",
+    tokenContextWindow: "토큰 컨텍스트 윈도우",
+    tokenContextWindowPlaceholder: "컨텍스트 윈도우 제한 (예: 4096)",
+    maxTokens: "최대 토큰 수",
+    maxTokensPlaceholder: "요청당 최대 토큰 수 (예: 1024)",
+  },
+
+  ollama: {
+    maxTokens: "최대 토큰 수",
+    maxTokensDescription: "컨텍스트 및 응답의 최대 토큰 수.",
+    hideManualInput: "수동 엔드포인트 입력 숨기기",
+    showManualInput: "수동 엔드포인트 입력 표시",
+    baseUrl: "Ollama 기본 URL",
+    baseUrlDescription: "Ollama가 실행 중인 URL을 입력하세요.",
+    autoDetect: "자동 감지",
+    enterUrlFirst: "먼저 Ollama URL을 입력하세요",
+    model: "Ollama 모델",
+    modelDescription:
+      "사용하려는 Ollama 모델을 선택하세요. 유효한 Ollama URL을 입력한 후 모델이 로드됩니다.",
+    maxChunkLength: "최대 임베딩 청크 길이",
+    maxChunkLengthDescription: "임베딩을 위한 텍스트 청크의 최대 길이.",
+  },
+
+  lmstudio: {
+    alertMessage:
+      "LMStudio를 LLM으로 사용하려면 임베딩 서비스를 설정해야 합니다.",
+    manageEmbedding: "임베딩 관리 →",
+    maxTokens: "최대 토큰 수",
+    maxTokensDescription: "컨텍스트 및 응답의 최대 토큰 수.",
+    hideManualInput: "수동 엔드포인트 입력 숨기기",
+    showManualInput: "수동 엔드포인트 입력 표시",
+    baseUrl: "LM Studio 기본 URL",
+    baseUrlDescription: "LM Studio가 실행 중인 URL을 입력하세요.",
+    autoDetect: "자동 감지",
+    enterUrlFirst: "먼저 LM Studio URL을 입력하세요",
+    model: "LM Studio 모델",
+    modelDescription:
+      "사용하려는 LM Studio 모델을 선택하세요. 유효한 LM Studio URL을 입력한 후 모델이 로드됩니다.",
+    maxChunkLength: "최대 임베딩 청크 길이",
+    maxChunkLengthDescription: "임베딩을 위한 텍스트 청크의 최대 길이.",
+  },
+
+  localai: {
+    alertMessage:
+      "LocalAI를 LLM으로 사용하려면 임베딩 서비스를 설정해야 합니다.",
+    manageEmbedding: "임베딩 관리 →",
+    baseUrl: "Local AI 기본 URL",
+    tokenContextWindow: "토큰 컨텍스트 윈도우",
+    apiKey: "Local AI API 키",
+    modelSelection: "채팅 모델 선택",
+    optional: "선택 사항",
+  },
+
+  textgenwebui: {
+    baseUrl: "기본 URL",
+    tokenContextWindow: "토큰 컨텍스트 윈도우",
+    tokenContextWindowPlaceholder: "컨텍스트 윈도우 제한 (예: 4096)",
+    apiKeyOptional: "API 키 (선택 사항)",
+  },
+
+  nativellm: {
+    experimentalWarning:
+      "로컬에서 호스팅되는 LLM 사용은 실험적입니다. 주의해서 사용하세요.",
+    modelSelection: "모델 선택",
+    waitingForModels: "-- 모델을 기다리는 중 --",
+    tokenContextWindow: "토큰 컨텍스트 윈도우",
   },
 
   transcription: {
     title: "텍스트 변환 모델 기본 설정",
     description:
-      "이것은 선호하는 텍스트 변환 모델 제공자의 인증입니다. 이 키가 현재 활성 상태이고 정확해야 미디어 파일 및 오디오가 텍스트 변환됩니다.",
+      "선호하는 텍스트 변환 모델 제공자의 인증입니다. 이 키가 현재 활성 상태이고 정확해야 미디어 파일 및 오디오가 텍스트 변환됩니다.",
     provider: "텍스트 변환 제공자",
     "warn-start":
       "RAM 또는 CPU 성능이 제한된 머신에서 로컬 위스퍼 모델을 사용하면 미디어 파일을 처리할 때 AnythingLLM이 중단될 수 있습니다.",

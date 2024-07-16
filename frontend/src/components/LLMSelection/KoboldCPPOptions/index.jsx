@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import System from "@/models/system";
+import { useTranslation } from "react-i18next";
 
 export default function KoboldCPPOptions({ settings }) {
   const [basePathValue, setBasePathValue] = useState(
     settings?.KoboldCPPBasePath
   );
   const [basePath, setBasePath] = useState(settings?.KoboldCPPBasePath);
+  const { t } = useTranslation();
 
   return (
     <div className="flex gap-[36px] mt-1.5 flex-wrap">
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Base URL
+          {t("llm.providers.baseUrl")}
         </label>
         <input
           type="url"
@@ -29,7 +31,7 @@ export default function KoboldCPPOptions({ settings }) {
       <KoboldCPPModelSelection settings={settings} basePath={basePath} />
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Token context window
+          {t("llm.providers.tokenContextWindow")}
         </label>
         <input
           type="number"
@@ -50,6 +52,7 @@ export default function KoboldCPPOptions({ settings }) {
 function KoboldCPPModelSelection({ settings, basePath = null }) {
   const [customModels, setCustomModels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function findCustomModels() {
@@ -70,7 +73,7 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
     return (
       <div className="flex flex-col w-60">
         <label className="text-white text-sm font-semibold block mb-3">
-          Chat Model Selection
+          {t("llm.providers.modelLabel")}
         </label>
         <select
           name="KoboldCPPModelPref"
@@ -90,7 +93,7 @@ function KoboldCPPModelSelection({ settings, basePath = null }) {
   return (
     <div className="flex flex-col w-60">
       <label className="text-white text-sm font-semibold block mb-3">
-        Chat Model Selection
+        {t("llm.providers.modelLabel")}
       </label>
       <select
         name="KoboldCPPModelPref"

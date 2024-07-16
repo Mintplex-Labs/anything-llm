@@ -15,7 +15,7 @@ export default function OpenRouterOptions({ settings }) {
           placeholder="OpenRouter API Key"
           defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
           required={true}
-          autoComplete="off"
+          autoComplete="new-password"
           spellCheck={false}
         />
       </div>

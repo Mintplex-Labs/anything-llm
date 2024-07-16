@@ -1,19 +1,25 @@
+import React from "react";
+import { useTranslation } from "react-i18next";
+
 export default function AnthropicAiOptions({ settings }) {
+  const { t } = useTranslation();
   return (
     <div className="w-full flex flex-col">
       <div className="w-full flex items-center gap-[36px] mt-1.5">
         <div className="flex flex-col w-60">
           <label className="text-white text-sm font-semibold block mb-3">
-            Anthropic API Key
+            {t("llm.providers.apiKeyLabel", { provider: "Anthropic" })}
           </label>
           <input
             type="password"
             name="AnthropicApiKey"
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-            placeholder="Anthropic Claude-2 API Key"
+            placeholder={t("llm.providers.apiKeyPlaceholder", {
+              provider: "Anthropic Claude-2",
+            })}
             defaultValue={settings?.AnthropicApiKey ? "*".repeat(20) : ""}
             required={true}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>
@@ -21,7 +27,7 @@ export default function AnthropicAiOptions({ settings }) {
         {!settings?.credentialsOnly && (
           <div className="flex flex-col w-60">
             <label className="text-white text-sm font-semibold block mb-3">
-              Chat Model Selection
+              {t("llm.providers.modelLabel")}
             </label>
             <select
               name="AnthropicModelPref"

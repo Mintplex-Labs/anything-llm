@@ -41,7 +41,7 @@ export function GoogleSearchOptions({ settings }) {
               settings?.AgentGoogleSearchEngineKey ? "*".repeat(20) : ""
             }
             required={true}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>
@@ -76,7 +76,7 @@ export function SerperDotDevOptions({ settings }) {
             placeholder="Serper.dev API Key"
             defaultValue={settings?.AgentSerperApiKey ? "*".repeat(20) : ""}
             required={true}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>
@@ -111,7 +111,7 @@ export function BingSearchOptions({ settings }) {
             placeholder="Bing Web Search API Key"
             defaultValue={settings?.AgentBingSearchApiKey ? "*".repeat(20) : ""}
             required={true}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>
@@ -174,7 +174,7 @@ export function SerplySearchOptions({ settings }) {
             placeholder="Serply API Key"
             defaultValue={settings?.AgentSerplyApiKey ? "*".repeat(20) : ""}
             required={true}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>

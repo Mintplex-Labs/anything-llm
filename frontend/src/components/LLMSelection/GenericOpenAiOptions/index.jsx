@@ -28,7 +28,7 @@ export default function GenericOpenAiOptions({ settings }) {
             placeholder="Generic service API Key"
             defaultValue={settings?.GenericOpenAiKey ? "*".repeat(20) : ""}
             required={false}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>

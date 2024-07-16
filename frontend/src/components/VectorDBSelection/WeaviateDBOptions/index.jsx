@@ -28,7 +28,7 @@ export default function WeaviateDBOptions({ settings }) {
             className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="sk-123Abcweaviate"
             defaultValue={settings?.WeaviateApiKey}
-            autoComplete="off"
+            autoComplete="new-password"
             spellCheck={false}
           />
         </div>

@@ -352,6 +352,146 @@ const TRANSLATIONS = {
     description:
       "These are the credentials and settings for your preferred LLM chat & embedding provider. Its important these keys are current and correct or else AnythingLLM will not function properly.",
     provider: "LLM Provider",
+    searchPlaceholder: "Search available LLM providers",
+    noneSelected: "None selected",
+    selectLLM: "You need to select an LLM",
+    saving: "Saving...",
+    saveChanges: "Save changes",
+    saveSuccess: "LLM preferences saved successfully.",
+    saveError: "Failed to save LLM settings: {{error}}",
+    providers: {
+      defaultName: "System default",
+      defaultDescription: "Use the system LLM preference for this workspace.",
+      apiKeyLabel: "{{provider}} API Key",
+      apiKeyPlaceholder: "{{provider}} API Key",
+      modelLabel: "Chat Model Selection",
+      openai: "The standard option for most non-commercial use.",
+      azure: "The enterprise option of OpenAI hosted on Azure services.",
+      anthropic: "A friendly AI Assistant hosted by Anthropic.",
+      gemini: "Google's largest and most capable AI model",
+      huggingface:
+        "Access 150,000+ open-source LLMs and the world's AI community",
+      ollama: "Run LLMs locally on your own machine.",
+      lmstudio:
+        "Discover, download, and run thousands of cutting edge LLMs in a few clicks.",
+      localai: "Run LLMs locally on your own machine.",
+      togetherai: "Run open source models from Together AI.",
+      mistral: "Run open source models from Mistral AI.",
+      perplexity:
+        "Run powerful and internet-connected models hosted by Perplexity AI.",
+      openrouter: "A unified interface for LLMs.",
+      groq: "The fastest LLM inferencing available for real-time AI applications.",
+      koboldcpp: "Run local LLMs using koboldcpp.",
+      textgenwebui: "Run local LLMs using Oobabooga's Text Generation Web UI.",
+      cohere: "Run Cohere's powerful Command models.",
+      litellm: "Run LiteLLM's OpenAI compatible proxy for various LLMs.",
+      genericopenai:
+        "Connect to any OpenAi-compatible service via a custom configuration",
+      native:
+        "Use a downloaded custom Llama model for chatting on this TeamplGPT instance.",
+      safetyLabel: "Safety Setting",
+      safety: {
+        none: "None",
+        blockFew: "Block few",
+        blockSome: "Block some (default)",
+        blockMost: "Block most",
+      },
+      baseUrl: "Base URL",
+      tokenContextWindow: "Token context window",
+      loadingModels: "-- loading available models --",
+      waitingForUrl: "-- waiting for URL --",
+      waitingForAPI: "-- waiting for API --",
+      apiKey: "API Key",
+      loadedModels: "Your loaded models",
+    },
+  },
+
+  azure: {
+    serviceEndpoint: "Azure Service Endpoint",
+    chatDeploymentName: "Chat Deployment Name",
+    chatDeploymentNamePlaceholder: "Azure OpenAI chat model deployment name",
+    chatModelTokenLimit: "Chat Model Token Limit",
+    embeddingDeploymentName: "Embedding Deployment Name",
+    embeddingDeploymentNamePlaceholder:
+      "Azure OpenAI embedding model deployment name",
+  },
+
+  huggingface: {
+    inferenceEndpoint: "HuggingFace Inference Endpoint",
+    accessToken: "HuggingFace Access Token",
+    accessTokenPlaceholder: "HuggingFace Access Token",
+    tokenLimit: "Model Token Limit",
+  },
+
+  genericOpenAi: {
+    baseUrl: "Base URL",
+    chatModelName: "Chat Model Name",
+    chatModelNamePlaceholder: "Model id used for chat requests",
+    tokenContextWindow: "Token context window",
+    tokenContextWindowPlaceholder: "Content window limit (eg: 4096)",
+    maxTokens: "Max Tokens",
+    maxTokensPlaceholder: "Max tokens per request (eg: 1024)",
+  },
+
+  ollama: {
+    maxTokens: "Max Tokens",
+    maxTokensDescription: "Maximum number of tokens for context and response.",
+    hideManualInput: "Hide Manual Endpoint Input",
+    showManualInput: "Show Manual Endpoint Input",
+    baseUrl: "Ollama Base URL",
+    baseUrlDescription: "Enter the URL where Ollama is running.",
+    autoDetect: "Auto-Detect",
+    enterUrlFirst: "Enter Ollama URL first",
+    model: "Ollama Model",
+    modelDescription:
+      "Select the Ollama model you want to use. Models will load after entering a valid Ollama URL.",
+    maxChunkLength: "Max Embedding Chunk Length",
+    maxChunkLengthDescription: "Maximum length of text chunks for embedding.",
+  },
+
+  lmstudio: {
+    alertMessage:
+      "LMStudio as your LLM requires you to set an embedding service to use.",
+    manageEmbedding: "Manage embedding →",
+    maxTokens: "Max Tokens",
+    maxTokensDescription: "Maximum number of tokens for context and response.",
+    hideManualInput: "Hide Manual Endpoint Input",
+    showManualInput: "Show Manual Endpoint Input",
+    baseUrl: "LM Studio Base URL",
+    baseUrlDescription: "Enter the URL where LM Studio is running.",
+    autoDetect: "Auto-Detect",
+    enterUrlFirst: "Enter LM Studio URL first",
+    model: "LM Studio Model",
+    modelDescription:
+      "Select the LM Studio model you want to use. Models will load after entering a valid LM Studio URL.",
+    maxChunkLength: "Max Embedding Chunk Length",
+    maxChunkLengthDescription: "Maximum length of text chunks for embedding.",
+  },
+
+  localai: {
+    alertMessage:
+      "LocalAI as your LLM requires you to set an embedding service to use.",
+    manageEmbedding: "Manage embedding →",
+    baseUrl: "Local AI Base URL",
+    tokenContextWindow: "Token context window",
+    apiKey: "Local AI API Key",
+    modelSelection: "Chat Model Selection",
+    optional: "optional",
+  },
+
+  textgenwebui: {
+    baseUrl: "Base URL",
+    tokenContextWindow: "Token context window",
+    tokenContextWindowPlaceholder: "Content window limit (eg: 4096)",
+    apiKeyOptional: "API Key (Optional)",
+  },
+
+  nativellm: {
+    experimentalWarning:
+      "Using a locally hosted LLM is experimental. Use with caution.",
+    modelSelection: "Model Selection",
+    waitingForModels: "-- waiting for models --",
+    tokenContextWindow: "Token context window",
   },
 
   transcription: {
