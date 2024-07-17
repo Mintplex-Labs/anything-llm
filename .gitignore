@@ -8,4 +8,5 @@ v-env
 .DS_Store
 aws_cf_deploy_anything_llm.json
 yarn.lock
+yarn-error.log
 *.bak
