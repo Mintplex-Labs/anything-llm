@@ -90,6 +90,7 @@ Some cool features of AnythingLLM
 - [KoboldCPP](https://github.com/LostRuins/koboldcpp)
 - [LiteLLM](https://github.com/BerriAI/litellm)
 - [Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
+- [Watsonx.ai](http://watsonx.ai)
 
 **Embedder models:**
 
@@ -100,6 +101,7 @@ Some cool features of AnythingLLM
 - [Ollama (all)](https://ollama.ai/)
 - [LM Studio (all)](https://lmstudio.ai)
 - [Cohere](https://cohere.com/)
+- [Watsonx.ai](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-models-embed.html?context=wx) 
 
 **Audio Transcription models:**
 
