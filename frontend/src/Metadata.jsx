@@ -40,7 +40,6 @@ export function Metadata() {
         content={metadata.twitterDescription}
       />
       <meta property="twitter:image" content={metadata.twitterImage} />
-      <link rel="icon" href="/favicon.png" />
       <link rel="apple-touch-icon" href="/favicon.png" />
     </Helmet>
   );
