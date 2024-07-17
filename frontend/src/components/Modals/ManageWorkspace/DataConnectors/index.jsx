@@ -43,7 +43,7 @@ export default function DataConnectors() {
             ))
           ) : (
             <div className="text-white text-center mt-4">
-              No data connectors found.
+              No data connectors found..
             </div>
           )}
         </div>
