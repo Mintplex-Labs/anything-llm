@@ -15,6 +15,7 @@ const {
 const { handleAssetUpload, handlePfpUpload } = require("../utils/files/multer");
 const { v4 } = require("uuid");
 const { SystemSettings } = require("../models/systemSettings");
+const { MetadataSettings } = require("../models/metadataSettings");
 const { User } = require("../models/user");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const fs = require("fs");
@@ -74,6 +75,16 @@ function systemEndpoints(app) {
     try {
       const results = await SystemSettings.currentSettings();
       response.status(200).json({ results });
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
+
+  app.get("/metadata", async (_, response) => {
+    try {
+      const metadatas = await MetadataSettings.metadata();
+      response.status(200).json({ metadatas });
     } catch (e) {
       console.error(e.message, e);
       response.sendStatus(500).end();
@@ -588,6 +599,16 @@ function systemEndpoints(app) {
     } catch (error) {
       console.error("Error fetching custom app name:", error);
       response.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/metadata", async (_, response) => {
+    try {
+      const results = await Metadata;
+      response.status(200).json({ results });
+    } catch (e) {
+      console.error(e.message, e);
+      response.sendStatus(500).end();
     }
   });
 

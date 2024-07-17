@@ -469,6 +469,15 @@ const System = {
         return { apiKey: null, error: e.message };
       });
   },
+  fetchMetadata: async function () {
+    return await fetch(`${API_BASE}/metadata`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not find setup information.");
+        return res.json();
+      })
+      .then((res) => res.metadatas)
+      .catch(() => null);
+  },
   generateApiKey: async function () {
     return fetch(`${API_BASE}/system/generate-api-key`, {
       method: "POST",

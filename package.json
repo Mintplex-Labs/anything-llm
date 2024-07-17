@@ -27,5 +27,8 @@
     "generate::gcp_deployment": "node cloud-deployments/gcp/deployment/generate.mjs",
     "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs"
   },
-  "private": false
+  "private": false,
+  "dependencies": {
+    "react-helmet": "^6.1.0"
+  }
 }

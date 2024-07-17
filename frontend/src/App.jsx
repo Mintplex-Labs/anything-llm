@@ -15,6 +15,7 @@ import i18n from "./i18n";
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
 import { FullScreenLoader } from "./components/Preloader";
+import { Metadata } from "./Metadata";
 
 const Main = lazy(() => import("@/pages/Main"));
 const InvitePage = lazy(() => import("@/pages/Invite"));
@@ -67,6 +68,7 @@ const LiveDocumentSyncManage = lazy(
 export default function App() {
   return (
     <Suspense fallback={<FullScreenLoader />}>
+      <Metadata />
       <ContextWrapper>
         <LogoProvider>
           <PfpProvider>
