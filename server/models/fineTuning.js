@@ -1,3 +1,4 @@
+const { default: slugify } = require("slugify");
 const { safeJsonParse } = require("../utils/http");
 const { Telemetry } = require("./telemetry");
 const { Workspace } = require("./workspace");
@@ -16,7 +17,7 @@ const tmpStorage =
 const FineTuning = {
   API_BASE:
     process.env.NODE_ENV === "development"
-      ? "http://127.0.0.1:5001/mintplex-labs-saas/us-central1/finetuning"
+      ? process.env.FINE_TUNING_ORDER_API
       : "",
   recommendedMinDataset: 50,
   standardPrompt:
@@ -187,12 +188,24 @@ const FineTuning = {
       });
   },
 
+  /**
+   * Sanitizes the slugifies the model name to prevent issues during processing.
+   * only a-zA-Z0-9 are okay for model names. If name is totally invalid it becomes a uuid.
+   * @param {string} modelName - provided model name
+   * @returns {string}
+   */
+  _cleanModelName: function (modelName = "") {
+    if (!modelName) return uuidv4();
+    const sanitizedName = modelName.replace(/[^a-zA-Z0-9]/g, " ");
+    return slugify(sanitizedName);
+  },
+
   newOrder: async function ({ email, baseModel, modelName, trainingData }) {
     const datafileLocation = await this._createTempDataFile(trainingData);
     const order = await this._requestOrder({
       email,
       baseModel,
-      modelName,
+      modelName: this._cleanModelName(modelName),
       orderExtras: { platform: Telemetry.runtime() },
     });
     const uploadComplete = await this._uploadDatafile(

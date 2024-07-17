@@ -25,7 +25,7 @@ export default function Confirmation({ settings, setSettings, setStep }) {
 
     if (!data) {
       setLoading(false);
-      showToast("Could not generated new order.", "error", { clear: true });
+      showToast("Could not generate new order.", "error", { clear: true });
       return;
     }
 

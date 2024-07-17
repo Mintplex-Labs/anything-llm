@@ -30,12 +30,10 @@ function fineTuningEndpoints(app) {
       try {
         const { slugs = [], feedback = null } = reqBody(request);
         if (!Array.isArray(slugs) || slugs.length === 0) {
-          return response
-            .status(200)
-            .json({
-              count: 0,
-              recommendedMin: FineTuning.recommendedMinDataset,
-            });
+          return response.status(200).json({
+            count: 0,
+            recommendedMin: FineTuning.recommendedMinDataset,
+          });
         }
 
         const count = await FineTuning.datasetSize(slugs, feedback);
