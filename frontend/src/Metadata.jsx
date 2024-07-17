@@ -20,7 +20,7 @@ export function Metadata() {
   return (
     <Helmet>
       <meta charset="UTF-8" />
-      <link rel="icon" type="image/svg+xml" href="/favicon.png" />
+      <link rel="icon" type="image/svg+xml" href={metadata.image} />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>{metadata.title}</title>
       {/* Metadata for SEO */}
@@ -40,7 +40,7 @@ export function Metadata() {
         content={metadata.twitterDescription}
       />
       <meta property="twitter:image" content={metadata.twitterImage} />
-      <link rel="apple-touch-icon" href="/favicon.png" />
+      <link rel="apple-touch-icon" href={metadata.image} />
     </Helmet>
   );
 }

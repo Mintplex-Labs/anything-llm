@@ -10,7 +10,8 @@ const MetadataSettings = {
       // --------------------------------------------------------
       // Metadata configs
       // --------------------------------------------------------
-      title: process.env.APP_TITLE || defaultContent,
+      title: process.env.TAB_TITLE || defaultContent,
+      image: process.env.TAB_IMAGE || "/favicon.png",
       description: process.env.APP_DESCRIPTION || defaultContent,
 
       // Social media metadatas (cf index.html)
