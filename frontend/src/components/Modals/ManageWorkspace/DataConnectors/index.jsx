@@ -1,11 +1,11 @@
 import ConnectorImages from "@/components/DataConnectorOption/media";
 import { MagnifyingGlass } from "@phosphor-icons/react";
-
+import GithubOptions from "./Connectors/Github";
 import YoutubeOptions from "./Connectors/Youtube";
-
+import ConfluenceOptions from "./Connectors/Confluence";
 import { useState } from "react";
 import ConnectorOption from "./ConnectorOption";
-
+import WebsiteDepthOptions from "./Connectors/WebsiteDepth";
 
 export const DATA_CONNECTORS = {
   "youtube-transcript": {
@@ -43,7 +43,7 @@ export default function DataConnectors() {
             ))
           ) : (
             <div className="text-white text-center mt-4">
-              No data connectors found..
+              No data connectors found.
             </div>
           )}
         </div>
