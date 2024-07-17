@@ -313,7 +313,7 @@ function systemEndpoints(app) {
       try {
         const query = queryParams(request);
         const VectorDb = getVectorDbClass();
-        const vectorCount = !!query.slug
+        const vectorCount = query.slug
           ? await VectorDb.namespaceCount(query.slug)
           : await VectorDb.totalVectors();
         response.status(200).json({ vectorCount });
@@ -599,16 +599,6 @@ function systemEndpoints(app) {
     } catch (error) {
       console.error("Error fetching custom app name:", error);
       response.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  app.get("/metadata", async (_, response) => {
-    try {
-      const results = await Metadata;
-      response.status(200).json({ results });
-    } catch (e) {
-      console.error(e.message, e);
-      response.sendStatus(500).end();
     }
   });
 
