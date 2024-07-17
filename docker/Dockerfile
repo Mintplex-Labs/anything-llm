@@ -166,7 +166,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
 
-# Expose the server port
+# Expose the server TCP/IP port 3001
 EXPOSE 3001
 
 # Setup the healthcheck
