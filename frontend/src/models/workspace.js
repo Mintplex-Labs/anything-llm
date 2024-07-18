@@ -203,7 +203,7 @@ const Workspace = {
       method: "POST",
       body: formData,
       headers: {
-        "x-file-origin": localPath,
+        "x-file-origin": encodeURI(localPath),
         ...baseHeaders(),
       },
     });

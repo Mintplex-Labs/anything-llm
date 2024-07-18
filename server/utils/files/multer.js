@@ -21,7 +21,7 @@ const fileUploadStorage = multer.diskStorage({
       req.headers.hasOwnProperty("x-file-origin") &&
       typeof req.headers["x-file-origin"] === "string"
     )
-      file.localPath = req.headers["x-file-origin"];
+      file.localPath = decodeURI(req.headers["x-file-origin"]);
 
     cb(null, file.originalname);
   },
