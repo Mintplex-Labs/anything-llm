@@ -1,6 +1,7 @@
 import FineTuning from "@/models/experimental/fineTuning";
 import { useEffect, useState } from "react";
 import FineTuningSteps from "..";
+import { CircleNotch } from "@phosphor-icons/react/dist/ssr";
 
 export default function OrderDetails({ setSettings, setStep }) {
   const [info, setInfo] = useState({});
@@ -75,25 +76,31 @@ export default function OrderDetails({ setSettings, setStep }) {
                   on. We recommend Llama 3 8B.
                 </p>
               </div>
-              <select
-                name="baseModel"
-                required={true}
-                className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-fit p-2.5"
-              >
-                <option disabled="true" selected="true" value="">
-                  {" "}
-                  -- select a base model --{" "}
-                </option>
-                <optgroup label="Available base models">
-                  {(info?.availableBaseModels || []).map((model) => {
-                    return (
-                      <option key={model} value={model}>
-                        {model}
-                      </option>
-                    );
-                  })}
-                </optgroup>
-              </select>
+              {info.hasOwnProperty("availableBaseModels") ? (
+                <select
+                  name="baseModel"
+                  required={true}
+                  className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-fit p-2.5"
+                >
+                  <option disabled="true" selected="true" value="">
+                    -- select a base model --
+                  </option>
+                  <optgroup label="Available base models">
+                    {(info?.availableBaseModels || []).map((model) => {
+                      return (
+                        <option key={model} value={model}>
+                          {model}
+                        </option>
+                      );
+                    })}
+                  </optgroup>
+                </select>
+              ) : (
+                <div className="flex items-center gap-x-2 text-white/80 text-sm">
+                  <CircleNotch className="animate-spin" size={12} />
+                  <p>fetching available models...</p>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col pr-10">

@@ -31,8 +31,8 @@ export default function Introduction({ setSettings, setStep }) {
               When you create a custom fine-tune with AnythingLLM we will train
               a custom base model on your specific data already inside of this
               AnythingLLM instance and give you back a <code>GGUF</code> file
-              you can then load back into AnythingLLM or other tools like
-              Ollama, LMStudio, and anywhere else you use local LLMs.
+              you can then load back into tools like Ollama, LMStudio, and
+              anywhere else you use local LLMs.
             </p>
           </div>
 
@@ -59,8 +59,8 @@ export default function Introduction({ setSettings, setStep }) {
                 knowledge
               </li>
               <li className="flex items-center gap-x-1">
-                <CheckCircle className="text-green-300" /> You need this model
-                to run privately or offline
+                <CheckCircle className="text-green-300" /> You want to run this
+                model privately or offline
               </li>
             </ul>
           </div>

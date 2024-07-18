@@ -1,7 +1,12 @@
 import { API_BASE } from "@/utils/constants";
-import { baseHeaders } from "@/utils/request";
+import { baseHeaders, safeJsonParse } from "@/utils/request";
 
 const FineTuning = {
+  cacheKeys: {
+    dismissed_cta: "anythingllm_dismissed_fine_tune_notif",
+    eligibility: "anythingllm_can_fine_tune",
+  },
+
   /**
    * Get the information for the Fine-tuning product to display in various frontends
    * @returns {Promise<{
@@ -72,6 +77,51 @@ const FineTuning = {
       .catch((e) => {
         console.error(e);
         return null;
+      });
+  },
+
+  /**
+   * Determine if a user should see the CTA alert. In general this alert
+   * Can only render if the user is empty (single user) or is an admin role.
+   * @returns {boolean}
+   */
+  canAlert: function (user = null) {
+    if (!!user && user.role !== "admin") return false;
+    return !window?.localStorage?.getItem(this.cacheKeys.dismissed_cta);
+  },
+  checkEligibility: async function () {
+    const cache = window.localStorage.getItem(this.cacheKeys.eligibility);
+    if (!!cache) {
+      const { data, lastFetched } = safeJsonParse(cache, {
+        data: null,
+        lastFetched: 0,
+      });
+      if (!!data && Date.now() - lastFetched < 1.8e7)
+        // 5 hours
+        return data.eligible;
+    }
+
+    return await fetch(`${API_BASE}/experimental/fine-tuning/check-eligible`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not check if eligible.");
+        return res.json();
+      })
+      .then((res) => {
+        window.localStorage.setItem(
+          this.cacheKeys.eligibility,
+          JSON.stringify({
+            data: { eligible: res.eligible },
+            lastFetched: Date.now(),
+          })
+        );
+        return res.eligible;
+      })
+      .catch((e) => {
+        console.error(e);
+        return false;
       });
   },
 };

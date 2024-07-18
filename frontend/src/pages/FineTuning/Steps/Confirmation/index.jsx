@@ -111,10 +111,17 @@ export default function Confirmation({ settings, setSettings, setStep }) {
               <p className="font-thin">Agreed to Fulfillment terms</p>
             </div>
 
-            <div className="flex items-center gap-x-1 text-lg border-t-[2px] border-white/40 pt-2">
-              <p className="">Total one-time cost:</p>
-              <p className="font-thin">
-                {dollarFormat(settings.tuningInfo.pricing.usd)}
+            <div>
+              <div className="flex items-center gap-x-1 text-lg border-t-[2px] border-white/40 pt-2 mb-0">
+                <p className="">Total one-time cost:</p>
+                <p className="font-thin">
+                  {dollarFormat(settings.tuningInfo.pricing.usd)}
+                  <sup>*</sup>
+                </p>
+              </div>
+              <p className="m-0 p-0 text-xs text-white/60 font-mono">
+                <sup>*</sup> price does not include any coupons, incentives, or
+                discounts you can apply at checkout.
               </p>
             </div>
           </div>

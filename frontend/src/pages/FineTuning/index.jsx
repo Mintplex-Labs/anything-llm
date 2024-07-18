@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import FineTuningSteps, { FineTuningCreationLayout } from "./Steps";
-import { Brain, CheckCircle, Circle } from "@phosphor-icons/react";
+import { CheckCircle, Circle, Sparkle } from "@phosphor-icons/react";
 import { isMobile } from "react-device-detect";
 
 function SideBarSelection({ currentStep }) {
@@ -13,17 +13,18 @@ function SideBarSelection({ currentStep }) {
     >
       {Object.entries(FineTuningSteps).map(([stepKey, props], index) => {
         const isSelected = currentStep === stepKey;
+        const isLast = index === Object.keys(FineTuningSteps).length - 1;
         const isDone =
           currentIndex === Object.keys(FineTuningSteps).length - 1 ||
           index < currentIndex;
         return (
           <div
             key={stepKey}
-            className={`py-3 px-4 flex items-center justify-between ${
-              isSelected ? "rounded-t-xl" : ""
-            } ${
-              isSelected ? "rounded-b-xl" : "border-b border-white/10"
-            } transition-all duration-300`}
+            className={[
+              "py-3 px-4 flex items-center justify-between transition-all duration-300",
+              isSelected ? "rounded-t-xl" : "",
+              isLast ? "" : "border-b border-white/10",
+            ].join(" ")}
           >
             <div className="text-sm font-light">{props.name}</div>
             <div className="flex items-center gap-x-2">
@@ -56,7 +57,7 @@ export default function FineTuningFlow() {
         <div className="flex-1 flex gap-x-6 p-4 mt-10">
           <div className="flex flex-col gap-y-[18px]">
             <div className="text-white flex items-center gap-x-2">
-              <Brain size={24} />
+              <Sparkle size={24} />
               <p className="text-lg font-medium">Custom Fine-Tuned Model</p>
             </div>
             <SideBarSelection currentStep={step} />

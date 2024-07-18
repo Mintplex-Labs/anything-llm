@@ -42,7 +42,7 @@ export default function Fulfillment({ setSettings, setStep }) {
               link to a .gguf model file suitable for LLM text inferencing. The
               customer acknowledges that this exchange is strictly transactional
               and non-recurring. Once the model file is delivered, the agreement
-              is considered concluded and will be ineligible for a refund
+              is considered concluded and will be ineligible for a refund.
             </p>
 
             <h2 class="text-white/80 text-base font-semibold">Support</h2>
@@ -69,28 +69,32 @@ export default function Fulfillment({ setSettings, setStep }) {
             <p>
               Mintplex Labs Inc. reserves the right to cancel any fine-tuning
               job at our discretion. In the event of a cancellation, a refund
-              may be issued. Additionally, we reserve the right to deny payment
-              or issue refunds for any reason without cause.
+              may be issued. Additionally, we reserve the right to deny a
+              payment from the Customer or issue refunds for any reason without
+              cause or notice to the Customer.
             </p>
 
             <h2 class="text-white/80 text-base font-semibold">No Guarantees</h2>
             <p>
               Mintplex Labs Inc. makes <strong>NO GUARANTEES</strong> regarding
               the resulting model's output, functionality, speed, or
-              compatibility with your tools, infrastructure or devices.
-              Complaints of this nature are not eligible for refunds.
+              compatibility with your tools, infrastructure and devices. Refund
+              requests of this nature are not eligible for refunds.
             </p>
             <p>
-              Models are delivered and accepted in "As-Is" nature. All delivered
-              model files and download links are final and non-refundable for
-              any reason after training is complete.
+              Models are delivered and accepted in "As-Is" condition. All
+              delivered model and output files are deemed final and
+              non-refundable for any reason after training is complete and a
+              model has been generated.
             </p>
 
             <h2 class="text-white/80 text-base font-semibold">Payment Terms</h2>
             <p>
               All payments are required prior to the commencement of the
               fine-tuning process. Customers are responsible for ensuring that
-              valid payment information is provided.
+              valid payment information is provided. Checkout sessions not
+              completed within 1 hour of creation will be considered as
+              abandoned and will be deleted from our system.
             </p>
 
             <h2 class="text-white/80 text-base font-semibold">
