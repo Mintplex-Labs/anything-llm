@@ -1,5 +1,5 @@
 const prisma = require("../utils/prisma");
-const slugify = require("slugify");
+const slugifyModule = require("slugify");
 const { Document } = require("./documents");
 const { WorkspaceUser } = require("./workspaceUsers");
 const { ROLES } = require("../utils/middleware/multiUserProtected");
@@ -28,16 +28,27 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
   ],
+  /**
+   * The default Slugify module requires some additional mapping to prevent downstream issues
+   * with some vector db providers and instead of building a normalization method for every provider
+   * we can capture this on the table level to not have to worry about it.
+   * @param  {...any} args - slugify args for npm package.
+   * @returns {string}
+   */
+  slugify: function (...args) {
+    slugifyModule.extend({ "+": " plus ", "!": " bang " });
+    return slugifyModule(...args);
+  },
 
   new: async function (name = null, creatorId = null) {
     if (!name) return { result: null, message: "name cannot be null" };
-    var slug = slugify(name, { lower: true });
+    var slug = this.slugify(name, { lower: true });
     slug = slug || uuidv4();
 
     const existingBySlug = await this.get({ slug });
     if (existingBySlug !== null) {
       const slugSeed = Math.floor(10000000 + Math.random() * 90000000);
-      slug = slugify(`${name}-${slugSeed}`, { lower: true });
+      slug = this.slugify(`${name}-${slugSeed}`, { lower: true });
     }
 
     try {
