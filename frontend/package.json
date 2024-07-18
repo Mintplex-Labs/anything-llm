@@ -8,7 +8,8 @@
     "dev": "NODE_ENV=development vite --debug --host=0.0.0.0",
     "build": "vite build",
     "lint": "yarn prettier --ignore-path ../.prettierignore --write ./src",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "windev": "set NODE_ENV=development& vite --debug --host=0.0.0.0"
   },
   "dependencies": {
     "@metamask/jazzicon": "^2.0.0",

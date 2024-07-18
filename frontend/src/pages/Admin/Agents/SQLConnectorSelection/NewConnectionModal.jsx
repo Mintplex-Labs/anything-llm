@@ -11,6 +11,7 @@ function assembleConnectionString({
   host = "",
   port = "",
   database = "",
+  driver = "",
 }) {
   if ([username, password, host, database].every((i) => !!i) === false)
     return `Please fill out all the fields above.`;
@@ -21,6 +22,9 @@ function assembleConnectionString({
       return `mysql://${username}:${password}@${host}:${port}/${database}`;
     case "sql-server":
       return `mssql://${username}:${password}@${host}:${port}/${database}`;
+    case "odbc":
+      if (!driver) return `Please fill out the driver field.`;
+      return `Driver={${driver}};Server=${host};Port=${port};Database=${database};UID=${username};PWD=${password}`;
     default:
       return null;
   }
@@ -33,6 +37,7 @@ const DEFAULT_CONFIG = {
   host: null,
   port: null,
   database: null,
+  driver: null,
 };
 
 export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
@@ -48,12 +53,14 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
 
   function onFormChange() {
     const form = new FormData(document.getElementById("sql-connection-form"));
+
     setConfig({
       username: form.get("username").trim(),
       password: form.get("password"),
       host: form.get("host").trim(),
       port: form.get("port").trim(),
       database: form.get("database").trim(),
+      driver: form.get("driver")?.trim(),
     });
   }
 
@@ -129,6 +136,11 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                     provider="sql-server"
                     active={engine === "sql-server"}
                     onClick={() => setEngine("sql-server")}
+                  />
+                  <DBEngine
+                    provider="odbc"
+                    active={engine === "odbc"}
+                    onClick={() => setEngine("odbc")}
                   />
                 </div>
               </div>
@@ -224,6 +236,25 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                   spellCheck={false}
                 />
               </div>
+
+              {
+                engine === "odbc" &&
+                <div className="flex flex-col">
+                  <label
+                    className="text-white text-sm font-semibold block mb-3">
+                    Driver
+                  </label>
+                  <input
+                    type="text"
+                    name="driver"
+                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                    placeholder="the driver to use : MongoDB ODBC 1.2.0 ANSI Driver"
+                    required={true}
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
+                </div>
+              }
               <p className="text-white/40 text-sm">
                 {assembleConnectionString({ engine, ...config })}
               </p>

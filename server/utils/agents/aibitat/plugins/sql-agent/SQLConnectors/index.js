@@ -1,6 +1,7 @@
 const { SystemSettings } = require("../../../../../../models/systemSettings");
 const { safeJsonParse } = require("../../../../../http");
-
+const { MSSQLConnector } = require("./MSSQL");
+const { ODBCConnector } = require("./ODBC");
 /**
  * @typedef {('postgresql'|'mysql'|'sql-server')} SQLEngine
  */
@@ -36,6 +37,9 @@ function getDBClient(identifier = "", connectionConfig = {}) {
     case "sql-server":
       const { MSSQLConnector } = require("./MSSQL");
       return new MSSQLConnector(connectionConfig);
+    case "odbc":
+      const { ODBCConnector } = require("./ODBC");
+      return new ODBCConnector(connectionConfig);
     default:
       throw new Error(
         `There is no supported database connector for ${identifier}`
