@@ -33,7 +33,6 @@ export default function CustomSiteSettings() {
     return;
   }
 
-  console.log(settings);
   return (
     <form
       className="mb-6"
@@ -110,7 +109,7 @@ export default function CustomSiteSettings() {
         {hasChanges && (
           <button
             type="submit"
-            className="transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
+            className="border-none transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
           >
             Save
           </button>
