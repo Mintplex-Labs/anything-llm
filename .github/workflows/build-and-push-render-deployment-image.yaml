@@ -16,7 +16,7 @@ on:
       - '.github/ISSUE_TEMPLATE/**/*'
       - 'render.yaml'
       - 'embed/**/*' # Embed should be published to frontend (yarn build:publish) if any changes are introduced
-
+      - 'server/utils/agents/aibitat/example/**/*' # Do not push new image for local dev testing of new aibitat images.
 
 jobs:
   push_to_registries:
@@ -64,11 +64,13 @@ jobs:
             type=raw,value=railway
 
       - name: Build and push multi-platform Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./docker/render.Dockerfile
           push: true
+          sbom: true
+          provenance: mode=max
           platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
