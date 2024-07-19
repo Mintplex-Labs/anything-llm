@@ -9,9 +9,8 @@ export default function LiveSyncToggle({ enabled = false, onToggle }) {
   const [status, setStatus] = useState(enabled);
 
   async function toggleFeatureFlag() {
-    const updated = await System.experimentalFeatures.liveSync.toggleFeature(
-      !status
-    );
+    const updated =
+      await System.experimentalFeatures.liveSync.toggleFeature(!status);
     if (!updated) {
       showToast("Failed to update status of feature.", "error", {
         clear: true,
