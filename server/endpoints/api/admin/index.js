@@ -133,7 +133,13 @@ function apiAdminEndpoints(app) {
 
       const newUserParams = reqBody(request);
       const { user: newUser, error } = await User.create(newUserParams);
-      response.status(200).json({ user: newUser, error });
+      
+      if (newUser === null) {
+        // e.g., password is too short
+        response.status(400).json({ user: newUser, error });
+      } else {
+        response.status(200).json({ user: newUser, error });
+      }
     } catch (e) {
       console.error(e);
       response.sendStatus(500).end();
