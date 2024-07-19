@@ -162,6 +162,12 @@ RUN npx prisma generate --schema=./prisma/schema.prisma && \
     npx prisma migrate deploy --schema=./prisma/schema.prisma
 WORKDIR /app
 
+# Remove all deps that were used from frontend layer so they are no longer included in image.
+FROM frontend-deps AS clean-frontend
+WORKDIR /app/frontend
+RUN rm -rf node_modules && yarn cache clean
+WORKDIR /app
+
 # Setup the environment
 ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
