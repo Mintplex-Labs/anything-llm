@@ -143,8 +143,8 @@ RUN npx --no node-llama-cpp download
 WORKDIR /app
 USER anythingllm
 
-# Build collector deps (this also downloads proper chrome for collector in /app/.cache and it's
-# easier to just build server and collector in the same layer.
+# Build collector deps (this also downloads proper chrome for collector in /app/.cache so that needs to be
+# transferred properly in prod-build stage.
 FROM build AS collector-build
 COPY ./collector /app/collector
 WORKDIR /app/collector
@@ -162,6 +162,7 @@ COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /a
 COPY --chown=anythingllm:anythingllm --from=collector-build /app/collector/ /app/collector/
 COPY --chown=anythingllm:anythingllm --from=collector-build /app/.cache/puppeteer /app/.cache/puppeteer
 
+# No longer needed? (deprecated)
 # WORKDIR /app/server
 # RUN npx prisma generate --schema=./prisma/schema.prisma && \
 #     npx prisma migrate deploy --schema=./prisma/schema.prisma
@@ -179,5 +180,5 @@ HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
   CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
 
 # Run the server
-# CMD ["sh", "-c", "tail -f /dev/null"] # To keep container open
+# CMD ["sh", "-c", "tail -f /dev/null"] # For development: keep container open
 ENTRYPOINT ["/bin/bash", "/usr/local/bin/docker-entrypoint.sh"]
