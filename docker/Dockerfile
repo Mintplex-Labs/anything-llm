@@ -1,5 +1,5 @@
 # Setup base image
-FROM ubuntu:jammy-20230916 AS base
+FROM ubuntu:jammy-20240627.1 AS base
 
 # Build arguments
 ARG ARG_UID=1000
@@ -138,7 +138,7 @@ USER anythingllm
 FROM frontend-deps AS build-stage
 COPY ./frontend/ ./frontend/
 WORKDIR /app/frontend
-RUN yarn build && yarn cache clean
+RUN yarn build && yarn cache clean && rm -rf node_modules
 WORKDIR /app
 
 # Setup the server

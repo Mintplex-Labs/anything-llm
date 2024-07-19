@@ -4,7 +4,7 @@
 # TODO: Update `runs-on` for arm64 when GitHub finally supports
 # native arm environments as QEMU takes around 1 hour to build
 # ref: https://github.com/actions/runner-images/issues/5631 :(
-name: Publish AnythingLLM Primary Docker image (amd64/arm64)
+name: Docker image updates
 
 concurrency:
   group: build-${{ github.ref }}
@@ -12,7 +12,7 @@ concurrency:
 
 on:
   push:
-    branches: ['master'] # master branch only. Do not modify.
+    branches: ['docker-updates'] # master branch only. Do not modify.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
@@ -25,7 +25,7 @@ on:
 
 jobs:
   push_multi_platform_to_registries:
-    name: Push Docker multi-platform image to multiple registries
+    name: Push updated Docker image for scout
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -74,22 +74,19 @@ jobs:
         with:
           images: |
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
-            ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
-            type=ref,event=tag
-            type=ref,event=pr
 
       - name: Build and push multi-platform Docker image
+        id: docker_build
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./docker/Dockerfile
-          push: true
           sbom: true
           provenance: mode=max
-          platforms: linux/amd64,linux/arm64
+          push: true
+          platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
