@@ -138,7 +138,7 @@ USER anythingllm
 FROM frontend-deps AS build-stage
 COPY ./frontend/ ./frontend/
 WORKDIR /app/frontend
-RUN yarn build && yarn cache clean
+RUN yarn build && yarn cache clean && rm -rf node_modules
 WORKDIR /app
 
 # Setup the server
@@ -160,12 +160,6 @@ RUN yarn install --production --network-timeout 100000 && yarn cache clean
 WORKDIR /app/server
 RUN npx prisma generate --schema=./prisma/schema.prisma && \
     npx prisma migrate deploy --schema=./prisma/schema.prisma
-WORKDIR /app
-
-# Remove all deps that were used from frontend layer so they are no longer included in image.
-FROM frontend-deps AS clean-frontend
-WORKDIR /app/frontend
-RUN rm -rf node_modules && yarn cache clean
 WORKDIR /app
 
 # Setup the environment
