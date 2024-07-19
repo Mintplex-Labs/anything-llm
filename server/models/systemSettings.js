@@ -129,18 +129,24 @@ const SystemSettings = {
       return String(update);
     },
     meta_page_title: (newTitle) => {
-      if (typeof newTitle !== "string" || !newTitle) return null;
-      new MetaGenerator().clearConfig();
-      return String(newTitle);
+      try {
+        if (typeof newTitle !== "string" || !newTitle) return null;
+        return String(newTitle);
+      } catch {
+        return null;
+      } finally {
+        new MetaGenerator().clearConfig();
+      }
     },
     meta_page_favicon: (faviconUrl) => {
       if (!faviconUrl) return null;
       try {
         const url = new URL(faviconUrl);
-        new MetaGenerator().clearConfig();
         return url.toString();
       } catch {
         return null;
+      } finally {
+        new MetaGenerator().clearConfig();
       }
     },
   },
