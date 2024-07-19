@@ -85,7 +85,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -yq --no-install-recommends nodejs && \
     curl -LO https://github.com/yarnpkg/yarn/releases/download/v1.22.19/yarn_1.22.19_all.deb \
         && dpkg -i yarn_1.22.19_all.deb \
-        && rm yarn_1.22.19_all.deb
+        && rm yarn_1.22.19_all.deb && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create a group and user with specific UID and GID
 RUN groupadd -g "$ARG_GID" anythingllm && \
