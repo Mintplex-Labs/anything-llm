@@ -27,7 +27,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -yq --no-install-recommends nodejs && \
     curl -LO https://github.com/yarnpkg/yarn/releases/download/v1.22.19/yarn_1.22.19_all.deb \
         && dpkg -i yarn_1.22.19_all.deb \
-        && rm yarn_1.22.19_all.deb
+        && rm yarn_1.22.19_all.deb && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create a group and user with specific UID and GID
 RUN groupadd -g "$ARG_GID" anythingllm && \
@@ -134,13 +136,15 @@ RUN yarn install --production --network-timeout 100000 && yarn cache clean
 WORKDIR /app
 
 # Compile Llama.cpp bindings for node-llama-cpp for this operating system.
+# Creates appropriate bindings for the OS
 USER root
 WORKDIR /app/server
 RUN npx --no node-llama-cpp download
 WORKDIR /app
 USER anythingllm
 
-# Build collector layer
+# Build collector deps (this also downloads proper chrome for collector in /app/.cache and it's
+# easier to just build server and collector in the same layer.
 FROM build AS collector-build
 COPY ./collector /app/collector
 WORKDIR /app/collector
@@ -150,12 +154,13 @@ WORKDIR /app
 
 FROM build AS production-build
 WORKDIR /app
-# Copy the server
+# Copy the server 
 COPY --chown=anythingllm:anythingllm --from=server-build /app/server/ /app/server/
 # Copy built static frontend files to the server public directory
 COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /app/server/public
 # Copy the collector
 COPY --chown=anythingllm:anythingllm --from=collector-build /app/collector/ /app/collector/
+COPY --chown=anythingllm:anythingllm --from=collector-build /app/.cache/puppeteer /app/.cache/puppeteer
 
 # WORKDIR /app/server
 # RUN npx prisma generate --schema=./prisma/schema.prisma && \
@@ -174,4 +179,5 @@ HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
   CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
 
 # Run the server
+# CMD ["sh", "-c", "tail -f /dev/null"] # To keep container open
 ENTRYPOINT ["/bin/bash", "/usr/local/bin/docker-entrypoint.sh"]
