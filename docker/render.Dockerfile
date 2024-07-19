@@ -1,7 +1,6 @@
 # This is the dockerfile spefically to be used with Render.com docker deployments. Do not use
 # locally or in other environments as it will not be supported.
 
-
 # Setup base image
 FROM ubuntu:jammy-20240627.1 AS base
 
@@ -28,7 +27,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get install -yq --no-install-recommends nodejs && \
     curl -LO https://github.com/yarnpkg/yarn/releases/download/v1.22.19/yarn_1.22.19_all.deb \
         && dpkg -i yarn_1.22.19_all.deb \
-        && rm yarn_1.22.19_all.deb
+        && rm yarn_1.22.19_all.deb && \
+        apt-get clean && \
+        rm -rf /var/lib/apt/lists/*
 
 # Create a group and user with specific UID and GID
 RUN groupadd -g $ARG_GID anythingllm && \
@@ -47,41 +48,43 @@ RUN chmod +x /usr/local/bin/render-entrypoint.sh && \
 USER anythingllm
 WORKDIR /app
 
-# Install frontend dependencies
-FROM base AS frontend-deps
-COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/
+# Install & Build frontend layer
+FROM base AS frontend-build
+COPY --chown=anythingllm:anythingllm ./frontend /app/frontend/
 WORKDIR /app/frontend
 RUN yarn install --network-timeout 100000 && yarn cache clean
+RUN yarn build && \
+    cp -r dist /tmp/frontend-build && \
+    rm -rf * && \
+    cp -r /tmp/frontend-build dist && \
+    rm -rf /tmp/frontend-build
 WORKDIR /app
 
 # Install server dependencies
-FROM base as server-deps
-COPY ./server/package.json ./server/yarn.lock ./server/
+FROM base as server-build
+COPY ./server /app/server/
 WORKDIR /app/server
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
 WORKDIR /app
 
-# Build the frontend
-FROM frontend-deps as build-stage
-COPY ./frontend/ ./frontend/
-WORKDIR /app/frontend
-RUN yarn build && yarn cache clean && rm -rf node_modules
-WORKDIR /app
-
-# Setup the server
-FROM server-deps as production-stage
-COPY --chown=anythingllm:anythingllm ./server/ ./server/
-
-# Copy built static frontend files to the server public directory
-COPY --chown=anythingllm:anythingllm --from=build-stage /app/frontend/dist ./server/public
-
-# Copy the collector
-COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
-
-# Install collector dependencies
+# Build collector deps (this also downloads proper chrome for collector in /app/.cache so that needs to be
+# transferred properly in prod-build stage.
+FROM base AS collector-build
+COPY ./collector /app/collector
 WORKDIR /app/collector
 ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public 
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
+WORKDIR /app
+
+FROM base AS production-build
+WORKDIR /app
+# Copy the server 
+COPY --chown=anythingllm:anythingllm --from=server-build /app/server/ /app/server/
+# Copy built static frontend files to the server public directory
+COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /app/server/public
+# Copy the collector
+COPY --chown=anythingllm:anythingllm --from=collector-build /app/collector/ /app/collector/
+COPY --chown=anythingllm:anythingllm --from=collector-build /app/.cache/puppeteer /app/.cache/puppeteer
 
 # Setup the environment
 ENV NODE_ENV=production
