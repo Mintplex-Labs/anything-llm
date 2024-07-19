@@ -67,6 +67,9 @@ developerEndpoints(app, apiRouter);
 embeddedEndpoints(apiRouter);
 
 if (process.env.NODE_ENV !== "development") {
+  const { MetaGenerator } = require("./utils/boot/MetaGenerator");
+  const IndexPage = new MetaGenerator();
+
   app.use(
     express.static(path.resolve(__dirname, "public"), {
       extensions: ["js"],
@@ -79,7 +82,8 @@ if (process.env.NODE_ENV !== "development") {
   );
 
   app.use("/", function (_, response) {
-    response.sendFile(path.join(__dirname, "public", "index.html"));
+    IndexPage.generate(response);
+    return;
   });
 
   app.get("/robots.txt", function (_, response) {
