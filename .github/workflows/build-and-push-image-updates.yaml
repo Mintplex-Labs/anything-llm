@@ -77,8 +77,14 @@ jobs:
           tags: |
             type=ref,event=branch
 
+      - uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: 'spdx-json'
+          output-file: 'sbom.spdx.json'
 
       - name: Build and push multi-platform Docker image
+        id: docker_build
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -89,3 +95,18 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Attest Build Provenance
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
+          subject-digest: ${{ steps.docker_build.outputs.digest }}
+          push-to-registry: true
+
+      - name: Generate SBOM for the docker image
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}:${{ steps.meta.outputs.tags[0] }}
+          format: 'spdx-json'
+          output-file: 'sbom.spdx.json'
+          upload-artifact: false

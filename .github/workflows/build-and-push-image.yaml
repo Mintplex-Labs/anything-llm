@@ -81,7 +81,6 @@ jobs:
             type=ref,event=tag
             type=ref,event=pr
 
-
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v5
         with:
