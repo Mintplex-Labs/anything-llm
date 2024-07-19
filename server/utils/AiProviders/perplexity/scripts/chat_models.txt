@@ -10,3 +10,7 @@
 | `mistral-7b-instruct` [1] | 7B              | 16384          | Chat Completion |
 | `mixtral-8x7b-instruct`   | 8x7B            | 16384          | Chat Completion |
 | `mixtral-8x22b-instruct`  | 8x22B           | 16384          | Chat Completion |
+| `llama-3-sonar-small-32k-chat`  | B           | 32000          | Chat Completion |
+| `llama-3-sonar-small-32k-online`  | B           | 32000          | Chat Completion |
+| `llama-3-sonar-large-32k-chat`  | B           | 32000          | Chat Completion |
+| `llama-3-sonar-large-32k-online`  | B           | 32000          | Chat Completion |
