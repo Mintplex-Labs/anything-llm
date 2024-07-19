@@ -49,6 +49,26 @@ const MODELS = {
     name: "mixtral-8x22b-instruct",
     maxLength: 16384,
   },
+    "llama-3-sonar-small-32k-chat": {
+    id: "llama-3-sonar-small-32k-chat",
+    name: "llama-3-sonar-small-32k-chat",
+    maxLength: 32000,
+  },
+    "llama-3-sonar-small-32k-online": {
+    id: "llama-3-sonar-small-32k-online",
+    name: "llama-3-sonar-small-32k-online",
+    maxLength: 32000,
+  },
+    "llama-3-sonar-large-32k-chat": {
+    id: "llama-3-sonar-large-32k-chat",
+    name: "llama-3-sonar-large-32k-chat",
+    maxLength: 32000,
+  },
+    "llama-3-sonar-large-32k-online": {
+    id: "llama-3-sonar-large-32k-online",
+    name: "llama-3-sonar-large-32k-online",
+    maxLength: 32000,
+  },
 };
 
 module.exports.MODELS = MODELS;
