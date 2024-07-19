@@ -6,6 +6,7 @@ const { default: slugify } = require("slugify");
 const { isValidUrl, safeJsonParse } = require("../utils/http");
 const prisma = require("../utils/prisma");
 const { v4 } = require("uuid");
+const { MetaGenerator } = require("../utils/boot/MetaGenerator");
 
 function isNullOrNaN(value) {
   if (value === null) return true;
@@ -21,12 +22,17 @@ const SystemSettings = {
     "telemetry_id",
     "footer_data",
     "support_email",
+
     "text_splitter_chunk_size",
     "text_splitter_chunk_overlap",
     "agent_search_provider",
     "default_agent_skills",
     "agent_sql_connections",
     "custom_app_name",
+
+    // Meta page customization
+    "meta_page_title",
+    "meta_page_favicon",
 
     // beta feature flags
     "experimental_live_file_sync",
@@ -121,6 +127,27 @@ const SystemSettings = {
         return update === true ? "enabled" : "disabled";
       if (!["enabled", "disabled"].includes(update)) return "disabled";
       return String(update);
+    },
+    meta_page_title: (newTitle) => {
+      try {
+        if (typeof newTitle !== "string" || !newTitle) return null;
+        return String(newTitle);
+      } catch {
+        return null;
+      } finally {
+        new MetaGenerator().clearConfig();
+      }
+    },
+    meta_page_favicon: (faviconUrl) => {
+      if (!faviconUrl) return null;
+      try {
+        const url = new URL(faviconUrl);
+        return url.toString();
+      } catch {
+        return null;
+      } finally {
+        new MetaGenerator().clearConfig();
+      }
     },
   },
   currentSettings: async function () {
