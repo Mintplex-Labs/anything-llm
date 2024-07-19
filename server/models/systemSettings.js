@@ -7,10 +7,10 @@ const { v4 } = require("uuid");
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config({
-    path: process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, ".env")
-      : path.resolve(__dirname, ".env"),
-  });
+      path: process.env.STORAGE_DIR
+        ? path.resolve(process.env.STORAGE_DIR, ".env")
+        : path.resolve(__dirname, ".env"),
+    });
 
 function isNullOrNaN(value) {
   if (value === null) return true;

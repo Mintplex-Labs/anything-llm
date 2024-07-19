@@ -62,7 +62,8 @@ async function loadConfluence({ pageUrl, username, accessToken }, response) {
     `${subdomain}-confluence-${v4().slice(0, 4)}`
   ).toLowerCase();
   const outFolderPath = path.resolve(documentsFolder, outFolder);
-  if (!fs.existsSync(outFolderPath)) fs.mkdirSync(outFolderPath, { recursive: true });
+  if (!fs.existsSync(outFolderPath))
+    fs.mkdirSync(outFolderPath, { recursive: true });
 
   docs.forEach((doc) => {
     if (!doc.pageContent) return;

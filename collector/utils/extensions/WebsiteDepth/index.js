@@ -145,7 +145,8 @@ async function websiteScraper(startUrl, depth = 1, maxLinks = 20) {
   const linksToScrape = await discoverLinks(startUrl, depth, maxLinks);
   console.log(`Found ${linksToScrape.length} links to scrape.`);
 
-  if (!fs.existsSync(outFolderPath)) fs.mkdirSync(outFolderPath, { recursive: true });
+  if (!fs.existsSync(outFolderPath))
+    fs.mkdirSync(outFolderPath, { recursive: true });
 
   console.log("Starting bulk scraping...");
   const scrapedData = await bulkScrapePages(linksToScrape, outFolderPath);

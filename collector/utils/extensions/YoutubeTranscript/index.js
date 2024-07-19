@@ -9,8 +9,9 @@ const { YoutubeLoader } = require("./YoutubeLoader");
 function validYoutubeVideoUrl(link) {
   const UrlPattern = require("url-pattern");
   const opts = new URL(link);
-  const url = `${opts.protocol}//${opts.host}${opts.pathname}${opts.searchParams.has("v") ? `?v=${opts.searchParams.get("v")}` : ""
-    }`;
+  const url = `${opts.protocol}//${opts.host}${opts.pathname}${
+    opts.searchParams.has("v") ? `?v=${opts.searchParams.get("v")}` : ""
+  }`;
 
   const shortPatternMatch = new UrlPattern(
     "https\\://(www.)youtu.be/(:videoId)"
@@ -92,7 +93,8 @@ async function loadYouTubeTranscript({ url }) {
     `${metadata.author} YouTube transcripts`
   ).toLowerCase();
   const outFolderPath = path.resolve(documentsFolder, outFolder);
-  if (!fs.existsSync(outFolderPath)) fs.mkdirSync(outFolderPath, { recursive: true });
+  if (!fs.existsSync(outFolderPath))
+    fs.mkdirSync(outFolderPath, { recursive: true });
 
   const data = {
     id: v4(),

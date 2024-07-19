@@ -3,10 +3,10 @@ const fs = require("fs");
 process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config({
-    path: process.env.STORAGE_DIR
-      ? path.resolve(process.env.STORAGE_DIR, ".env")
-      : path.resolve(__dirname, ".env"),
-  });
+      path: process.env.STORAGE_DIR
+        ? path.resolve(process.env.STORAGE_DIR, ".env")
+        : path.resolve(__dirname, ".env"),
+    });
 
 const { viewLocalFiles, normalizePath, isWithin } = require("../utils/files");
 const { purgeDocument, purgeFolder } = require("../utils/files/purgeDocument");
