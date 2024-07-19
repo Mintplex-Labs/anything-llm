@@ -3,7 +3,7 @@
 
 
 # Setup base image
-FROM ubuntu:jammy-20230522 AS base
+FROM ubuntu:jammy-20240627.1 AS base
 
 # Build arguments
 ARG ARG_UID=1000
@@ -45,41 +45,47 @@ RUN chmod +x /usr/local/bin/render-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-healthcheck.sh
 
 USER anythingllm
-
 WORKDIR /app
 
 # Install frontend dependencies
-FROM base as frontend-deps
-
+FROM base AS frontend-deps
 COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/
-RUN cd ./frontend/ && yarn install  --network-timeout 100000 && yarn cache clean
+WORKDIR /app/frontend
+RUN yarn install --network-timeout 100000 && yarn cache clean
+WORKDIR /app
 
 # Install server dependencies
 FROM base as server-deps
 COPY ./server/package.json ./server/yarn.lock ./server/
-RUN cd ./server/ && yarn install --production --network-timeout 100000 && yarn cache clean
+WORKDIR /app/server
+RUN yarn install --production --network-timeout 100000 && yarn cache clean
+WORKDIR /app
 
 # Build the frontend
 FROM frontend-deps as build-stage
 COPY ./frontend/ ./frontend/
-RUN cd ./frontend/ && yarn build && yarn cache clean
+WORKDIR /app/frontend
+RUN yarn build && yarn cache clean && rm -rf node_modules
+WORKDIR /app
 
 # Setup the server
 FROM server-deps as production-stage
 COPY --chown=anythingllm:anythingllm ./server/ ./server/
 
 # Copy built static frontend files to the server public directory
-COPY --from=build-stage /app/frontend/dist ./server/public
+COPY --chown=anythingllm:anythingllm --from=build-stage /app/frontend/dist ./server/public
 
 # Copy the collector
 COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
 
 # Install collector dependencies
+WORKDIR /app/collector
 ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public 
-RUN cd /app/collector && yarn install --production --network-timeout 100000 && yarn cache clean
+RUN yarn install --production --network-timeout 100000 && yarn cache clean
 
 # Setup the environment
 ENV NODE_ENV=production
+ENV ANYTHING_LLM_RUNTIME=docker
 ENV STORAGE_DIR=$STORAGE_DIR
 
 # Expose the server port
