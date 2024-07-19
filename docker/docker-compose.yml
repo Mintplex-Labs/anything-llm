@@ -1,5 +1,3 @@
-version: "3.9"
-
 name: anythingllm
 
 networks:
@@ -8,8 +6,7 @@ networks:
 
 services:
   anything-llm:
-    container_name: anything-llm
-    image: anything-llm:latest
+    container_name: anythingllm
     build:
       context: ../.
       dockerfile: ./docker/Dockerfile
