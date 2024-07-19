@@ -8,7 +8,7 @@
 // copy outputs into the export in ../models.js
 
 // Update the date below if you run this again because Perplexity added new models.
-// Last Collected: Apr 25, 2024
+// Last Collected: Jul 19, 2024
 
 import fs from "fs";
 
@@ -23,7 +23,7 @@ function parseChatModels() {
       .slice(1, -1)
       .map((text) => text.trim());
     model = model.replace(/`|\s*\[\d+\]\s*/g, "");
-    const maxLength = Number(contextLength.replace(/\s*\[\d+\]\s*/g, ""));
+    const maxLength = Number(contextLength.replace(/[^\d]/g, ""));
     if (model && maxLength) {
       models[model] = {
         id: model,
