@@ -22,6 +22,7 @@ on:
       - '.github/ISSUE_TEMPLATE/**/*'
       - 'embed/**/*' # Embed should be published to frontend (yarn build:publish) if any changes are introduced
       - 'server/utils/agents/aibitat/example/**/*' # Do not push new image for local dev testing of new aibitat images.
+      - 'docker/vex/*' # CVE exceptions we know are not in risk
 
 jobs:
   push_multi_platform_to_registries:
