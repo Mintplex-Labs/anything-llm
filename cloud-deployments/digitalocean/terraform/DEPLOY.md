@@ -12,16 +12,18 @@ The output of this Terraform configuration will be:
   - Follow the instructions in the [official Terraform documentation](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) for your operating system.
 
 ## How to deploy on DigitalOcean
-Open your terminal and navigate to the `digitalocean/terraform` folder
-1. Replace the token value in the provider "digitalocean" block in main.tf with your DigitalOcean API token.
-2. Run the following commands to initialize Terraform, review the infrastructure changes, and apply them:
+Open your terminal and navigate to the `docker` folder
+1. Create a `.env` file by cloning the `.env.example`. 
+2. Navigate to `digitalocean/terraform` folder.
+3. Replace the token value in the provider "digitalocean" block in main.tf with your DigitalOcean API token.
+4. Run the following commands to initialize Terraform, review the infrastructure changes, and apply them:
     ```
     terraform init  
     terraform plan  
     terraform apply  
     ```
 Confirm the changes by typing yes when prompted.
-4. Once the deployment is complete, Terraform will output the public IP address of your droplet. You can access your application using this IP address.
+5. Once the deployment is complete, Terraform will output the public IP address of your droplet. You can access your application using this IP address.
 
 ## How to deploy on DigitalOcean
 To delete the resources created by Terraform, run the following command in the terminal:

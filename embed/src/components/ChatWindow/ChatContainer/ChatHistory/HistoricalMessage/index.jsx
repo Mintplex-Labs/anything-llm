@@ -16,6 +16,7 @@ const HistoricalMessage = forwardRef(
     const textSize = !!embedderSettings.settings.textSize
       ? `allm-text-[${embedderSettings.settings.textSize}px]`
       : "allm-text-sm";
+    if (error) console.error(`ANYTHING_LLM_CHAT_WIDGET_ERROR: ${error}`);
 
     return (
       <div className="py-[5px]">
@@ -66,7 +67,7 @@ const HistoricalMessage = forwardRef(
                     Could not respond to message.
                   </span>
                   <p className="allm-text-xs allm-font-mono allm-mt-2 allm-border-l-2 allm-border-red-500 allm-pl-2 allm-bg-red-300 allm-p-2 allm-rounded-sm">
-                    {error}
+                    Server error
                   </p>
                 </div>
               ) : (

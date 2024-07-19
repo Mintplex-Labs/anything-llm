@@ -22,6 +22,15 @@ const User = {
         throw new Error(e.message);
       }
     },
+    role: (role = "default") => {
+      const VALID_ROLES = ["default", "admin", "manager"];
+      if (!VALID_ROLES.includes(role)) {
+        throw new Error(
+          `Invalid role. Allowed roles are: ${VALID_ROLES.join(", ")}`
+        );
+      }
+      return String(role);
+    },
   },
 
   // validations for the above writable fields.
@@ -52,7 +61,7 @@ const User = {
         data: {
           username: this.validations.username(username),
           password: hashedPassword,
-          role: String(role),
+          role: this.validations.role(role),
         },
       });
       return { user: this.filterFields(user), error: null };
