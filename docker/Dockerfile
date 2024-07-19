@@ -113,11 +113,15 @@ USER anythingllm
 WORKDIR /app
 
 # Install frontend dependencies
-FROM build AS frontend-deps
-
-COPY ./frontend/package.json ./frontend/yarn.lock ./frontend/
+FROM build AS frontend-build
+COPY --chown=anythingllm:anythingllm ./frontend ./frontend/
 WORKDIR /app/frontend
-RUN yarn install --network-timeout 100000 && yarn cache clean
+RUN yarn install --network-timeout 100000 && \
+    yarn cache clean && \
+    yarn build && \
+    cp -r dist /tmp/frontend-build && \
+    rm -rf * && \
+    cp -r /tmp/frontend-build dist
 WORKDIR /app
 
 # Install server dependencies
@@ -134,19 +138,12 @@ RUN npx --no node-llama-cpp download
 WORKDIR /app
 USER anythingllm
 
-# Build the frontend
-FROM frontend-deps AS build-stage
-COPY ./frontend/ ./frontend/
-WORKDIR /app/frontend
-RUN yarn build && yarn cache clean && rm -rf node_modules
-WORKDIR /app
-
 # Setup the server
 FROM server-deps AS production-stage
 COPY --chown=anythingllm:anythingllm ./server/ ./server/
 
 # Copy built static frontend files to the server public directory
-COPY --chown=anythingllm:anythingllm --from=build-stage /app/frontend/dist ./server/public
+COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist ./server/public
 
 # Copy the collector
 COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
