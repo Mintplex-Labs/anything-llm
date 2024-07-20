@@ -28,17 +28,28 @@ class Logger {
       ],
     });
 
-    console.log = function () {
-      return logger.info.apply(logger, arguments);
+    function formatArgs(args) {
+      return args
+        .map((arg) => {
+          if (arg instanceof Error) {
+            return arg.stack; // If argument is an Error object, return its stack trace
+          } else if (typeof arg === "object") {
+            return JSON.stringify(arg); // Convert objects to JSON string
+          } else {
+            return arg; // Otherwise, return as-is
+          }
+        })
+        .join(" ");
+    }
+
+    console.log = function (...args) {
+      logger.info(formatArgs(args));
     };
-    console.error = function () {
-      if (arguments.length > 0 && arguments[0] instanceof Error) {
-        return logger.error(arguments[0].stack);
-      }
-      return logger.error.apply(logger, arguments);
+    console.error = function (...args) {
+      logger.error(formatArgs(args));
     };
-    console.info = function () {
-      return logger.warn.apply(logger, arguments);
+    console.info = function (...args) {
+      logger.warn(formatArgs(args));
     };
     return logger;
   }
