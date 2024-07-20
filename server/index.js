@@ -41,7 +41,7 @@ app.use(
 if (!!process.env.ENABLE_HTTPS) {
   bootSSL(app, process.env.SERVER_PORT || 3001);
 } else {
-  require("express-ws")(app); // load WebSockets in non-SSL mode.
+  require("@mintplex-labs/express-ws").default(app); // load WebSockets in non-SSL mode.
 }
 
 app.use("/api", apiRouter);
