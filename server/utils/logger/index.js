@@ -32,6 +32,9 @@ class Logger {
       return logger.info.apply(logger, arguments);
     };
     console.error = function () {
+      if (arguments.length > 0 && arguments[0] instanceof Error) {
+        return logger.error(arguments[0].stack);
+      }
       return logger.error.apply(logger, arguments);
     };
     console.info = function () {
