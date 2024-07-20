@@ -60,7 +60,7 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV CHROME_PATH=/app/chrome-linux/chrome
 ENV PUPPETEER_EXECUTABLE_PATH=/app/chrome-linux/chrome
 
-RUN echo "Done running arm64 specific installtion steps"
+RUN echo "Done running arm64 specific installation steps"
 
 #############################################
 
@@ -129,11 +129,18 @@ RUN yarn build && \
 WORKDIR /app
 
 # Install server layer & build node-llama-cpp
-FROM build AS server-build
+# Also pull and build collector deps (chromium issues prevent bad bindings)
+FROM build AS backend-build
 COPY ./server /app/server/
 WORKDIR /app/server
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
 WORKDIR /app
+
+# Install collector dependencies
+COPY ./collector/ ./collector/
+WORKDIR /app/collector
+ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public 
+RUN yarn install --production --network-timeout 100000 && yarn cache clean
 
 # Compile Llama.cpp bindings for node-llama-cpp for this operating system.
 # Creates appropriate bindings for the OS
@@ -143,24 +150,10 @@ RUN npx --no node-llama-cpp download
 WORKDIR /app
 USER anythingllm
 
-# Build collector deps (this also downloads proper chrome for collector in /app/.cache so that needs to be
-# transferred properly in prod-build stage.
-FROM build AS collector-build
-COPY ./collector /app/collector
-WORKDIR /app/collector
-ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public 
-RUN yarn install --production --network-timeout 100000 && yarn cache clean
+# Since we are building from backend-build we just need to move built frontend into server/public
+FROM backend-build AS production-build
 WORKDIR /app
-
-FROM build AS production-build
-WORKDIR /app
-# Copy the server 
-COPY --chown=anythingllm:anythingllm --from=server-build /app/server/ /app/server/
-# Copy built static frontend files to the server public directory
 COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /app/server/public
-# Copy the collector
-COPY --chown=anythingllm:anythingllm --from=collector-build /app/collector/ /app/collector/
-COPY --chown=anythingllm:anythingllm --from=collector-build /app/.cache/puppeteer /app/.cache/puppeteer
 
 # No longer needed? (deprecated)
 # WORKDIR /app/server
