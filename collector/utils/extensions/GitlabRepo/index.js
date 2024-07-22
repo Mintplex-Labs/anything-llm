@@ -1,8 +1,10 @@
 const RepoLoader = require("./RepoLoader");
+const fs = require("fs");
+const path = require("path");
+const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
-const { getOutFolder, getOutFolderPath } = require("../../files");
 
 async function loadGitlabRepo(args, response) {
   const repo = new RepoLoader(args);
@@ -24,8 +26,21 @@ async function loadGitlabRepo(args, response) {
   }
 
   console.log(`[GitLab Loader]: Found ${docs.length} source files. Saving...`);
-  const outFolder = getOutFolder(repo.projectId, repo.branch);
-  const outFolderPath = getOutFolderPath(outFolder);
+  const outFolder = slugify(
+    `${repo.author}-${repo.project}-${repo.branch}-${v4().slice(0, 4)}`
+  ).toLowerCase();
+
+  const outFolderPath =
+    process.env.NODE_ENV === "development"
+      ? path.resolve(
+          __dirname,
+          `../../../../server/storage/documents/${outFolder}`
+        )
+      : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
+
+  if (!fs.existsSync(outFolderPath))
+    fs.mkdirSync(outFolderPath, { recursive: true });
+
 
   for (const doc of docs) {
     if (!doc.pageContent) continue;
