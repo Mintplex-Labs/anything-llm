@@ -21,9 +21,10 @@ async function loadGitlabRepo(args, response) {
       success: false,
       reason: "Could not prepare Gitlab repo for loading! Check URL",
     };
-  
+    const repoName = repo.repo.split("/").pop();
+    const repoAuthor = repo.repo.split("/").slice(-2)[0];
     console.log(
-    `-- Working GitLab ${repo.projectId}:${repo.branch} --`
+    `-- Working GitLab ${repoName}:${repo.branch} --`
   );
   const docs = await repo.recursiveLoader();
   if (!docs.length) {
@@ -35,7 +36,7 @@ async function loadGitlabRepo(args, response) {
 
   console.log(`[GitLab Loader]: Found ${docs.length} source files. Saving...`);
   const outFolder = slugify(
-    `${repo.projectId}-${repo.branch}-${v4().slice(0, 4)}`
+    `${repoAuthor}-${repoName}-${repo.branch}-${v4().slice(0, 4)}`
   ).toLowerCase();
 
   const outFolderPath =
@@ -55,7 +56,7 @@ async function loadGitlabRepo(args, response) {
       id: v4(),
       url: "gitlab://" + doc.metadata.source,
       title: doc.metadata.source,
-      docAuthor: repo.projectId,
+      docAuthor: repoName,
       description: "No description found.",
       docSource: doc.metadata.source,
       chunkSource: generateChunkSource(
@@ -109,9 +110,9 @@ async function fetchGitlabFile({
       content: null,
       reason: "Could not prepare GitLab repo for loading! Check URL or PAT.",
     };
-
+  const repoName = repo.repo.split("/").pop();
   console.log(
-    `-- Working GitLab ${repo.projectId}:${repo.branch} file:${sourceFilePath} --`
+    `-- Working GitLab ${repoName}:${repo.branch} file:${sourceFilePath} --`
   );
   const fileContent = await repo.fetchSingleFile(sourceFilePath);
   if (!fileContent) {
