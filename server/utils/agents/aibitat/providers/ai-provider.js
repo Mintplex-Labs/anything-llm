@@ -78,7 +78,7 @@ class Provider {
           configuration: {
             baseURL: "https://openrouter.ai/api/v1",
             defaultHeaders: {
-              "HTTP-Referer": "https://useanything.com",
+              "HTTP-Referer": "https://anythingllm.com",
               "X-Title": "AnythingLLM",
             },
           },

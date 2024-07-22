@@ -903,7 +903,7 @@
                         "docAuthor": "no author found",
                         "description": "No description found.",
                         "docSource": "URL link uploaded by the user.",
-                        "chunkSource": "https:useanything.com.html",
+                        "chunkSource": "https:anythingllm.com.html",
                         "published": "1/16/2024, 3:46:33 PM",
                         "wordCount": 252,
                         "pageContent": "AnythingLLM is the best....",
@@ -944,7 +944,7 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "link": "https://useanything.com"
+                  "link": "https://anythingllm.com"
                 }
               }
             }
@@ -1012,26 +1012,7 @@
             "description": "Internal Server Error"
           }
         },
-        "requestBody": {
-          "description": "Text content and metadata of the file to be saved to the system. Use metadata-schema endpoint to get the possible metadata keys",
-          "required": true,
-          "type": "object",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "example": {
-                  "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
-                  "metadata": {
-                    "keyOne": "valueOne",
-                    "keyTwo": "valueTwo",
-                    "etc": "etc"
-                  }
-                }
-              }
-            }
-          }
-        }
+        "requestBody": {}
       }
     },
     "/v1/documents": {

@@ -240,10 +240,10 @@ function FeatureVerification({ children }) {
                     Access to any features requires approval of this modal. If
                     you would like to read more you can refer to{" "}
                     <a
-                      href="https://docs.useanything.com/beta-preview/overview"
+                      href="https://docs.anythingllm.com/beta-preview/overview"
                       className="underline text-blue-500"
                     >
-                      docs.useanything.com
+                      docs.anythingllm.com
                     </a>{" "}
                     or email{" "}
                     <a
