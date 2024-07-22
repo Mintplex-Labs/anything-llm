@@ -1,4 +1,4 @@
-const https = require('https');
+const https = require("https");
 const UrlPattern = require("url-pattern");
 
 class RepoLoader {
@@ -14,12 +14,9 @@ class RepoLoader {
   }
 
   #validGitlabUrl() {
-    const pattern = new UrlPattern(
-      "https\\://gitlab.com/(:projectId(*))",
-      {
-        segmentValueCharset: "a-zA-Z0-9-._~%/+",
-      }
-    );
+    const pattern = new UrlPattern("https\\://gitlab.com/(:projectId(*))", {
+      segmentValueCharset: "a-zA-Z0-9-._~%/+",
+    });
     const match = pattern.match(this.repo);
     if (!match) return false;
 
@@ -42,7 +39,7 @@ class RepoLoader {
   async #validateAccessToken() {
     if (!this.accessToken) return;
     try {
-      await this.#makeRequest('https://gitlab.com/api/v4/user');
+      await this.#makeRequest("https://gitlab.com/api/v4/user");
     } catch (e) {
       console.error(
         "Invalid Gitlab Access Token provided! Access token will not be used",
@@ -72,12 +69,12 @@ class RepoLoader {
     const docs = [];
 
     for (const file of files) {
-      if (this.ignorePaths.some(path => file.path.includes(path))) continue;
+      if (this.ignorePaths.some((path) => file.path.includes(path))) continue;
       const content = await this.fetchSingleFile(file.path);
       if (content) {
         docs.push({
           pageContent: content,
-          metadata: { source: file.path }
+          metadata: { source: file.path },
         });
       }
     }
@@ -98,8 +95,10 @@ class RepoLoader {
     await this.#validateAccessToken();
 
     try {
-      const data = await this.#makeRequest(`https://gitlab.com/api/v4/projects/${this.projectId}/repository/branches`);
-      this.branches = JSON.parse(data).map(branch => branch.name);
+      const data = await this.#makeRequest(
+        `https://gitlab.com/api/v4/projects/${this.projectId}/repository/branches`
+      );
+      this.branches = JSON.parse(data).map((branch) => branch.name);
       return this.#branchPrefSort(this.branches);
     } catch (err) {
       console.log(`RepoLoader.branches`, err);
@@ -109,8 +108,10 @@ class RepoLoader {
 
   async getRepositoryTree() {
     try {
-      const data = await this.#makeRequest(`https://gitlab.com/api/v4/projects/${this.projectId}/repository/tree?ref=${this.branch}&recursive=true&per_page=100`);
-      return JSON.parse(data).filter(item => item.type === 'blob');
+      const data = await this.#makeRequest(
+        `https://gitlab.com/api/v4/projects/${this.projectId}/repository/tree?ref=${this.branch}&recursive=true&per_page=100`
+      );
+      return JSON.parse(data).filter((item) => item.type === "blob");
     } catch (e) {
       console.error(`RepoLoader.getRepositoryTree`, e);
       return [];
@@ -119,7 +120,13 @@ class RepoLoader {
 
   async fetchSingleFile(sourceFilePath) {
     try {
-      const data = await this.#makeRequest(`https://gitlab.com/api/v4/projects/${this.projectId}/repository/files/${encodeURIComponent(sourceFilePath)}/raw?ref=${this.branch}`);
+      const data = await this.#makeRequest(
+        `https://gitlab.com/api/v4/projects/${
+          this.projectId
+        }/repository/files/${encodeURIComponent(sourceFilePath)}/raw?ref=${
+          this.branch
+        }`
+      );
       return data;
     } catch (e) {
       console.error(`RepoLoader.fetchSingleFile`, e);
@@ -130,20 +137,24 @@ class RepoLoader {
   #makeRequest(url) {
     return new Promise((resolve, reject) => {
       const options = {
-        headers: this.accessToken ? { 'PRIVATE-TOKEN': this.accessToken } : {}
+        headers: this.accessToken ? { "PRIVATE-TOKEN": this.accessToken } : {},
       };
 
-      https.get(url, options, (res) => {
-        let data = '';
-        res.on('data', (chunk) => data += chunk);
-        res.on('end', () => {
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            resolve(data);
-          } else {
-            reject(new Error(`Request failed with status code ${res.statusCode}`));
-          }
-        });
-      }).on('error', reject);
+      https
+        .get(url, options, (res) => {
+          let data = "";
+          res.on("data", (chunk) => (data += chunk));
+          res.on("end", () => {
+            if (res.statusCode >= 200 && res.statusCode < 300) {
+              resolve(data);
+            } else {
+              reject(
+                new Error(`Request failed with status code ${res.statusCode}`)
+              );
+            }
+          });
+        })
+        .on("error", reject);
     });
   }
 }

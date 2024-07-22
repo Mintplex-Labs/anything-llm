@@ -21,11 +21,9 @@ async function loadGitlabRepo(args, response) {
       success: false,
       reason: "Could not prepare Gitlab repo for loading! Check URL",
     };
-    const repoName = repo.repo.split("/").pop();
-    const repoAuthor = repo.repo.split("/").slice(-2)[0];
-    console.log(
-    `-- Working GitLab ${repoName}:${repo.branch} --`
-  );
+  const repoName = repo.repo.split("/").pop();
+  const repoAuthor = repo.repo.split("/").slice(-2)[0];
+  console.log(`-- Working GitLab ${repoName}:${repo.branch} --`);
   const docs = await repo.recursiveLoader();
   if (!docs.length) {
     return {
@@ -46,8 +44,8 @@ async function loadGitlabRepo(args, response) {
           `../../../../server/storage/documents/${outFolder}`
         )
       : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
-  
-      if (!fs.existsSync(outFolderPath))
+
+  if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
 
   for (const doc of docs) {
