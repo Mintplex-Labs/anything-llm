@@ -9,4 +9,3 @@ v-env
 aws_cf_deploy_anything_llm.json
 yarn.lock
 *.bak
-.aider*
