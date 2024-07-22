@@ -6,6 +6,12 @@ const { v4 } = require("uuid");
 const { writeToServerDocuments } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
 
+/**
+ * Load in a Gitlab Repo recursively or just the top level if no PAT is provided
+ * @param {object} args - forwarded request body params
+ * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
+ * @returns
+ */
 async function loadGitlabRepo(args, response) {
   const repo = new RepoLoader(args);
   await repo.init();
@@ -16,7 +22,9 @@ async function loadGitlabRepo(args, response) {
       reason: "Could not prepare Gitlab repo for loading! Check URL",
     };
 
-  console.log(`-- Working GitLab ${repo.projectId}:${repo.branch} --`);
+  console.log(
+    `-- Working GitLab ${repo.projectId}:${repo.branch} --`
+  );
   const docs = await repo.recursiveLoader();
   if (!docs.length) {
     return {
@@ -27,7 +35,7 @@ async function loadGitlabRepo(args, response) {
 
   console.log(`[GitLab Loader]: Found ${docs.length} source files. Saving...`);
   const outFolder = slugify(
-    `${repo.author}-${repo.project}-${repo.branch}-${v4().slice(0, 4)}`
+    `${repo.projectId}-${repo.branch}-${v4().slice(0, 4)}`
   ).toLowerCase();
 
   const outFolderPath =
@@ -40,7 +48,6 @@ async function loadGitlabRepo(args, response) {
 
   if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
-
 
   for (const doc of docs) {
     if (!doc.pageContent) continue;
