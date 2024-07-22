@@ -154,6 +154,10 @@ USER anythingllm
 FROM backend-build AS production-build
 WORKDIR /app
 COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /app/server/public
+USER root
+RUN chown -R anythingllm:anythingllm /app/server && \
+    chown -R anythingllm:anythingllm /app/collector
+USER anythingllm
 
 # No longer needed? (deprecated)
 # WORKDIR /app/server
