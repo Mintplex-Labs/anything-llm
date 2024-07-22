@@ -1012,26 +1012,7 @@
             "description": "Internal Server Error"
           }
         },
-        "requestBody": {
-          "description": "Text content and metadata of the file to be saved to the system. Use metadata-schema endpoint to get the possible metadata keys",
-          "required": true,
-          "type": "object",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "example": {
-                  "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
-                  "metadata": {
-                    "keyOne": "valueOne",
-                    "keyTwo": "valueTwo",
-                    "etc": "etc"
-                  }
-                }
-              }
-            }
-          }
-        }
+        "requestBody": {}
       }
     },
     "/v1/documents": {
