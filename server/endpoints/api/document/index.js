@@ -237,7 +237,7 @@ function apiDocumentEndpoints(app) {
             example: {
               "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
               "metadata": {
-                "title": "This key is required. See in /server/endpoints/api/document/index.js:287"
+                "title": "This key is required. See in /server/endpoints/api/document/index.js:287",
                 keyOne: "valueOne",
                 keyTwo: "valueTwo",
                 etc: "etc"
