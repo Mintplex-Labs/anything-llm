@@ -21,8 +21,8 @@ async function loadGitlabRepo(args, response) {
       success: false,
       reason: "Could not prepare Gitlab repo for loading! Check URL",
     };
-
-  console.log(
+  
+    console.log(
     `-- Working GitLab ${repo.projectId}:${repo.branch} --`
   );
   const docs = await repo.recursiveLoader();
@@ -45,8 +45,8 @@ async function loadGitlabRepo(args, response) {
           `../../../../server/storage/documents/${outFolder}`
         )
       : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
-
-  if (!fs.existsSync(outFolderPath))
+  
+      if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
 
   for (const doc of docs) {
@@ -71,7 +71,11 @@ async function loadGitlabRepo(args, response) {
     console.log(
       `[GitLab Loader]: Saving ${doc.metadata.source} to ${outFolder}`
     );
-    writeToServerDocuments(data, `${doc.metadata.source}-${data.id}`, outFolderPath);
+    writeToServerDocuments(
+      data,
+      `${slugify(doc.metadata.source)}-${data.id}`,
+      outFolderPath
+    );
   }
 
   return {
