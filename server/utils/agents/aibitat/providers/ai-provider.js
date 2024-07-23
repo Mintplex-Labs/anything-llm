@@ -12,6 +12,7 @@
 
 const { ChatOpenAI } = require("@langchain/openai");
 const { ChatAnthropic } = require("@langchain/anthropic");
+const { ChatBedrockConverse } = require("@langchain/aws");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber } = require("../../../http");
 
@@ -111,6 +112,16 @@ class Provider {
             process.env.GENERIC_OPEN_AI_MAX_TOKENS,
             1024
           ),
+          ...config,
+        });
+      case "bedrock":
+        return new ChatBedrockConverse({
+          model: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
+          region: process.env.AWS_BEDROCK_LLM_REGION,
+          credentials: {
+            accessKeyId: process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+          },
           ...config,
         });
 

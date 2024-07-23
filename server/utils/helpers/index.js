@@ -140,6 +140,9 @@ function getLLMProvider({ provider = null, model = null } = {}) {
     case "generic-openai":
       const { GenericOpenAiLLM } = require("../AiProviders/genericOpenAi");
       return new GenericOpenAiLLM(embedder, model);
+    case "bedrock":
+      const { AWSBedrockLLM } = require("../AiProviders/bedrock");
+      return new AWSBedrockLLM(embedder, model);
     default:
       throw new Error(
         `ENV: No valid LLM_PROVIDER value found in environment! Using ${process.env.LLM_PROVIDER}`

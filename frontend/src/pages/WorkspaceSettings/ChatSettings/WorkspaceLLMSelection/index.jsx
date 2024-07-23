@@ -10,7 +10,12 @@ import paths from "@/utils/paths";
 
 // Some providers can only be associated with a single model.
 // In that case there is no selection to be made so we can just move on.
-const NO_MODEL_SELECTION = ["default", "huggingface", "generic-openai"];
+const NO_MODEL_SELECTION = [
+  "default",
+  "huggingface",
+  "generic-openai",
+  "bedrock",
+];
 const DISABLED_PROVIDERS = ["azure", "lmstudio", "native"];
 const LLM_DEFAULT = {
   name: "System default",
