@@ -75,6 +75,7 @@ Some cool features of AnythingLLM
 - [OpenAI](https://openai.com)
 - [OpenAI (Generic)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+- [AWS Bedrock](https://aws.amazon.com/bedrock/)
 - [Anthropic](https://www.anthropic.com/)
 - [Google Gemini Pro](https://ai.google.dev/)
 - [Hugging Face (chat models)](https://huggingface.co/)
