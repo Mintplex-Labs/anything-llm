@@ -101,6 +101,10 @@ const KEY_MAPPING = {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  OllamaLLMKeepAliveSeconds: {
+    envKey: "OLLAMA_KEEP_ALIVE_TIMEOUT",
+    checks: [isInteger],
+  },
 
   // Mistral AI API Settings
   MistralApiKey: {
@@ -452,6 +456,11 @@ function isNotEmpty(input = "") {
 function nonZero(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
   return Number(input) <= 0 ? "Value must be greater than zero" : null;
+}
+
+function isInteger(input = "") {
+  if (isNaN(Number(input))) return "Value must be a number";
+  return Number(input);
 }
 
 function isValidURL(input = "") {

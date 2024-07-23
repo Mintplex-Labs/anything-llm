@@ -168,8 +168,8 @@ export default function ActiveWorkspaces() {
                               isInWorkspaceSettings && workspace.slug === slug
                                 ? "#46C8FF"
                                 : gearHover[workspace.id]
-                                ? "#FFFFFF"
-                                : "#A7A8A9"
+                                  ? "#FFFFFF"
+                                  : "#A7A8A9"
                             }
                             weight="bold"
                             className="h-[20px] w-[20px]"

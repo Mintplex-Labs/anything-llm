@@ -19,8 +19,13 @@ class TokenManager {
   // https://github.com/openai/tiktoken/blob/9e79899bc248d5313c7dd73562b5e211d728723d/tiktoken/core.py#L91C20-L91C38
   // Returns number[]
   tokensFromString(input = "") {
-    const tokens = this.encoder.encode(input, undefined, []);
-    return tokens;
+    try {
+      const tokens = this.encoder.encode(String(input), undefined, []);
+      return tokens;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
   }
 
   bytesFromTokens(tokens = []) {
