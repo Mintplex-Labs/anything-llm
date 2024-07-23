@@ -9,4 +9,4 @@ function isSupportedRepoProvider(request, response, next) {
       .text(`Unsupported repo platform ${repo_platform}`);
   next();
 }
-module.exports = { isSupportedRepoProvider }
+module.exports = { isSupportedRepoProvider };

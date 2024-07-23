@@ -5,7 +5,9 @@ const {
   ROLES,
 } = require("../../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../../utils/middleware/validatedRequest");
-const { isSupportedRepoProvider } = require("../../utils/middleware/isSupportedRepoProviders");
+const {
+  isSupportedRepoProvider,
+} = require("../../utils/middleware/isSupportedRepoProviders");
 
 function extensionEndpoints(app) {
   if (!app) return;
@@ -51,7 +53,7 @@ function extensionEndpoints(app) {
             body: request.body,
           });
         await Telemetry.sendTelemetry("extension_invoked", {
-          type: "github_repo",
+          type: `${repo_platform}_repo`,
         });
         response.status(200).json(responseFromProcessor);
       } catch (e) {
