@@ -270,7 +270,7 @@ export const PermittedDomains = ({ defaultValue = [] }) => {
       <TagsInput
         value={domains}
         onChange={handleChange}
-        placeholder="https://mysite.com, https://useanything.com"
+        placeholder="https://mysite.com, https://anythingllm.com"
         classNames={{
           tag: "bg-blue-300/10 text-zinc-800 m-1",
           input:

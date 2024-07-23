@@ -13,6 +13,9 @@ class OllamaAILLM {
 
     this.basePath = process.env.OLLAMA_BASE_PATH;
     this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
+    this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
+      ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
+      : 300; // Default 5-minute timeout for Ollama model loading.
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -28,6 +31,7 @@ class OllamaAILLM {
     return new ChatOllama({
       baseUrl: this.basePath,
       model: this.model,
+      keepAlive: this.keepAlive,
       useMLock: true,
       temperature,
     });
