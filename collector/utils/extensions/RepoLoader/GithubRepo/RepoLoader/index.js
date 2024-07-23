@@ -1,4 +1,21 @@
-class RepoLoader {
+/**
+ * @typedef {Object} RepoLoaderArgs
+ * @property {string} repo - The GitHub repository URL.
+ * @property {string} [branch] - The branch to load from (optional).
+ * @property {string} [accessToken] - GitHub access token for authentication (optional).
+ * @property {string[]} [ignorePaths] - Array of paths to ignore when loading (optional).
+ */
+
+/**
+ * @class
+ * @classdesc Loads and manages GitHub repository content.
+ */
+class GitHubRepoLoader {
+  /**
+   * Creates an instance of RepoLoader.
+   * @param {RepoLoaderArgs} [args] - The configuration options.
+   * @returns {GitHubRepoLoader}
+   */
   constructor(args = {}) {
     this.ready = false;
     this.repo = args?.repo;
@@ -67,6 +84,10 @@ class RepoLoader {
     return;
   }
 
+  /**
+   * Initializes the RepoLoader instance.
+   * @returns {Promise<RepoLoader>} The initialized RepoLoader instance.
+   */
   async init() {
     if (!this.#validGithubUrl()) return;
     await this.#validBranch();
@@ -75,6 +96,11 @@ class RepoLoader {
     return this;
   }
 
+  /**
+   * Recursively loads the repository content.
+   * @returns {Promise<Array<Object>>} An array of loaded documents.
+   * @throws {Error} If the RepoLoader is not in a ready state.
+   */
   async recursiveLoader() {
     if (!this.ready) throw new Error("[Github Loader]: not in ready state!");
     const {
@@ -109,7 +135,10 @@ class RepoLoader {
     }, []);
   }
 
-  // Get all branches for a given repo.
+  /**
+   * Retrieves all branches for the repository.
+   * @returns {Promise<string[]>} An array of branch names.
+   */
   async getRepoBranches() {
     if (!this.#validGithubUrl() || !this.author || !this.project) return [];
     await this.#validateAccessToken(); // Ensure API access token is valid for pre-flight
@@ -151,6 +180,11 @@ class RepoLoader {
     return this.#branchPrefSort(this.branches);
   }
 
+  /**
+   * Fetches the content of a single file from the repository.
+   * @param {string} sourceFilePath - The path to the file in the repository.
+   * @returns {Promise<string|null>} The content of the file, or null if fetching fails.
+   */
   async fetchSingleFile(sourceFilePath) {
     try {
       return fetch(
@@ -182,4 +216,4 @@ class RepoLoader {
   }
 }
 
-module.exports = RepoLoader;
+module.exports = GitHubRepoLoader;
