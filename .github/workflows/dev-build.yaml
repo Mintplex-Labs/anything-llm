@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['1915-docker-perms'] # master branch only. Do not modify.
+    branches: ['-dev'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

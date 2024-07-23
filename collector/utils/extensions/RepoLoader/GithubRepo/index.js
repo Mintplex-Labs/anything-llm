@@ -3,8 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
-const { writeToServerDocuments, documentsFolder } = require("../../files");
-const { tokenizeString } = require("../../tokenizer");
+const { writeToServerDocuments, documentsFolder } = require("../../../files");
+const { tokenizeString } = require("../../../tokenizer");
 
 /**
  * Load in a Github Repo recursively or just the top level if no PAT is provided
@@ -37,6 +37,7 @@ async function loadGithubRepo(args, response) {
   const outFolder = slugify(
     `${repo.author}-${repo.project}-${repo.branch}-${v4().slice(0, 4)}`
   ).toLowerCase();
+
   const outFolderPath = path.resolve(documentsFolder, outFolder);
   if (!fs.existsSync(outFolderPath))
     fs.mkdirSync(outFolderPath, { recursive: true });
