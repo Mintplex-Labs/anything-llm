@@ -137,7 +137,7 @@ function apiDocumentEndpoints(app) {
             schema: {
               type: 'object',
               example: {
-                "link": "https://useanything.com"
+                "link": "https://anythingllm.com"
               }
             }
           }
@@ -159,7 +159,7 @@ function apiDocumentEndpoints(app) {
                   "docAuthor": "no author found",
                   "description": "No description found.",
                   "docSource": "URL link uploaded by the user.",
-                  "chunkSource": "https:useanything.com.html",
+                  "chunkSource": "https:anythingllm.com.html",
                   "published": "1/16/2024, 3:46:33 PM",
                   "wordCount": 252,
                   "pageContent": "AnythingLLM is the best....",
@@ -237,6 +237,7 @@ function apiDocumentEndpoints(app) {
             example: {
               "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
               "metadata": {
+                "title": "This key is required. See in /server/endpoints/api/document/index.js:287",
                 keyOne: "valueOne",
                 keyTwo: "valueTwo",
                 etc: "etc"
