@@ -215,7 +215,7 @@ export default function DocumentSettings({
         isUploadedDoc={isUploadedDoc}
       />
       {isUploadedDoc ? (
-        <div style={{ margin: "3.7rem 2rem 2rem 2rem" }}>
+        <div style={{ margin: "3.7rem 0 2rem 0" }}>
           <UploadFile
             workspace={workspace}
             fetchKeys={fetchKeys}

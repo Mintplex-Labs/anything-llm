@@ -11,7 +11,7 @@ import FolderRow from "./FolderRow";
 import FolderSelectionPopup from "./FolderSelectionPopup";
 import MoveToFolderIcon from "./MoveToFolderIcon";
 import NewFolderModal from "./NewFolderModal";
-import { filterFileSearchResults } from "./utils";
+import { filterFileSearchResults, folderColumns } from "./utils";
 
 function Directory({
   files,
@@ -31,6 +31,7 @@ function Directory({
   const [amountSelected, setAmountSelected] = useState(0);
   const [showFolderSelection, setShowFolderSelection] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
   const {
     isOpen: isFolderModalOpen,
     openModal: openFolderModal,
@@ -170,12 +171,27 @@ function Directory({
     const searchValue = e.target.value;
     setSearchTerm(searchValue);
   }, 500);
-
   const filteredFiles = filterFileSearchResults(files, searchTerm);
+
+  const handleEditClick = (file) => {
+    setSelectedFile(file);
+    openFolderModal();
+  };
+
+  const handleCloseModal = () => {
+    closeFolderModal();
+    setSelectedFile(null);
+  };
   return (
-    <div className="px-8 pb-8">
-      <div className="flex flex-col gap-y-6">
-        <div className="flex items-center justify-between w-[560px] px-5 relative">
+    <div className="px-8 pr-0 pb-8">
+      <div
+        className="flex flex-col gap-y-6"
+        style={{ maxWidth: !isUploadedDoc ? "43rem" : null }}
+      >
+        <div
+          className="flex items-center justify-between w-[70vw] px-5 relative"
+          style={{ maxWidth: !isUploadedDoc ? "97%" : null }}
+        >
           <h3 className="text-white text-base font-bold">My Documents</h3>
           <div className="relative">
             <input
@@ -202,15 +218,18 @@ function Directory({
         </div>
 
         <div
-          className={`relative w-[560px] bg-zinc-900 rounded-2xl overflow-hidden ${
+          className={`relative w-[70vw] bg-zinc-900 rounded-2xl overflow-hidden ${
             isUploadedDoc ? "h-[600px]" : "h-[310px]"
           }`}
+          style={{ maxWidth: !isUploadedDoc ? "97%" : null }}
         >
-          <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs grid grid-cols-12 py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900">
-            <p className="col-span-6">Name</p>
-            <p className="col-span-6" style={{ textAlign: "right" }}>
-              Tag
-            </p>
+          <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs grid grid-cols-[1.5fr_repeat(6,1fr)] py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900">
+            <p className="place-self-start">Name</p>
+            {Object.values(folderColumns).map((tag, index) => (
+              <p key={index} className="place-self-center">
+                {tag.label}
+              </p>
+            ))}
           </div>
 
           <div className="overflow-y-auto h-full pt-8">
@@ -236,6 +255,7 @@ function Directory({
                       toggleSelection={toggleSelection}
                       isSelected={isSelected}
                       autoExpanded={index === 0}
+                      openFolderModal={() => handleEditClick(item)}
                     />
                   )
               )
@@ -297,15 +317,17 @@ function Directory({
             fetchKeys={fetchKeys}
             setLoading={setLoading}
             setLoadingMessage={setLoadingMessage}
+            isUploadedDoc={isUploadedDoc}
           />
         </div>
       ) : null}
       {isFolderModalOpen && (
         <div className="bg-black/60 backdrop-blur-sm fixed top-0 left-0 outline-none w-screen h-screen flex items-center justify-center z-30">
           <NewFolderModal
-            closeModal={closeFolderModal}
+            closeModal={handleCloseModal}
             files={files}
             setFiles={setFiles}
+            existingData={selectedFile}
           />
         </div>
       )}

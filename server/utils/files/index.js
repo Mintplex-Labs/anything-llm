@@ -37,16 +37,28 @@ async function viewLocalFiles() {
     if (path.extname(file) === ".md") continue;
     const folderPath = path.resolve(documentsPath, file);
     const isFolder = fs.lstatSync(folderPath).isDirectory();
+
     if (isFolder) {
       const subdocs = {
         name: file,
         type: "folder",
         items: [],
+        metadata: {},
       };
+
+      // Read the metadata.json file if it exists
+      const metadataPath = path.join(folderPath, "metadata.json");
+      if (fs.existsSync(metadataPath)) {
+        const rawData = fs.readFileSync(metadataPath, "utf8");
+        const metadata = JSON.parse(rawData);
+        subdocs.metadata = metadata;
+      }
+
       const subfiles = fs.readdirSync(folderPath);
 
       for (const subfile of subfiles) {
-        if (path.extname(subfile) !== ".json") continue;
+        if (path.extname(subfile) !== ".json" || subfile === "metadata.json")
+          continue;
         const filePath = path.join(folderPath, subfile);
         const rawData = fs.readFileSync(filePath, "utf8");
         const cachefilename = `${file}/${subfile}`;
@@ -71,7 +83,6 @@ async function viewLocalFiles() {
           canWatch: liveSyncAvailable
             ? DocumentSyncQueue.canWatch(metadata)
             : false,
-          // Is file watched in any workspace since sync updates all workspaces where file is referenced
           watched: watchedInWorkspaces.length !== 0,
         });
       }
@@ -84,7 +95,6 @@ async function viewLocalFiles() {
     directory.items.find((folder) => folder.name === "custom-documents"),
     ...directory.items.filter((folder) => folder.name !== "custom-documents"),
   ].filter((i) => !!i);
-
   return directory;
 }
 

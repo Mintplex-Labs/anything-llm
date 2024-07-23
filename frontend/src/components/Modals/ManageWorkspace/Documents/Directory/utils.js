@@ -47,3 +47,15 @@ export function filterFileSearchResults(files = [], searchTerm = "") {
 
   return searchResult;
 }
+
+export const folderColumns = {
+  numExp: { label: "Num. Exp", value: "numExp" },
+  año: { label: "AÑO", value: "año" },
+  cliente: { label: "Cliente", value: "cliente" },
+  juzgadoPrincipal: { label: "Juzgado Principal", value: "juzgadoPrincipal" },
+  fechaAlta: { label: "Fecha Alta", value: "fechaAlta" },
+  estadoDeExpediente: {
+    label: "Estado de Expediente",
+    value: "estadoDeExpediente",
+  },
+};

@@ -1,30 +1,118 @@
-import React, { useState } from "react";
-import { X } from "@phosphor-icons/react";
+/* eslint-disable prettier/prettier */
 import Document from "@/models/document";
+import { X } from "@phosphor-icons/react";
+import React, { useEffect, useState } from "react";
+import { folderColumns } from "../utils";
 
-export default function NewFolderModal({ closeModal, files, setFiles }) {
+export default function NewFolderModal({ closeModal, setFiles, existingData }) {
   const [error, setError] = useState(null);
-  const [folderName, setFolderName] = useState("");
+  const [formData, setFormData] = useState({
+    folderName: "",
+    numExp: "",
+    ano: "",
+    cliente: "",
+    juzgadoPrincipal: "",
+    fechaAlta: "",
+    estadoDeExpediente: "",
+  });
+
+  useEffect(() => {
+    if (existingData) {
+      setFormData({
+        folderName: existingData.name || "",
+        numExp: existingData.metadata?.numExp || "",
+        año: existingData.metadata?.ano || "",
+        cliente: existingData.metadata?.cliente || "",
+        juzgadoPrincipal: existingData.metadata?.juzgadoPrincipal || "",
+        fechaAlta: existingData.metadata?.fechaAlta || "",
+        estadoDeExpediente: existingData.metadata?.estadoDeExpediente || "",
+      });
+    }
+  }, [existingData]);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   const handleCreate = async (e) => {
     e.preventDefault();
     setError(null);
-    if (folderName.trim() !== "") {
-      const newFolder = {
-        name: folderName,
-        type: "folder",
-        items: [],
-      };
-      const { success } = await Document.createFolder(folderName);
-      if (success) {
-        setFiles({
-          ...files,
-          items: [...files.items, newFolder],
-        });
-        closeModal();
-      } else {
-        setError("Failed to create folder");
-      }
+    if (Object.values(formData).some((value) => value.trim() === "")) {
+      setError("All fields are required");
+      return;
+    }
+
+    const newFolder = {
+      name: formData.folderName,
+      type: "folder",
+      items: [],
+      metadata: {
+        numExp: formData.numExp,
+        ano: formData.ano,
+        cliente: formData.cliente,
+        juzgadoPrincipal: formData.juzgadoPrincipal,
+        fechaAlta: formData.fechaAlta,
+        estadoDeExpediente: formData.estadoDeExpediente,
+      },
+    };
+
+    const { success } = await Document.createFolder(
+      formData.folderName,
+      newFolder.metadata
+    );
+    if (success) {
+      setFiles((prevFiles) => ({
+        ...prevFiles,
+        items: [...prevFiles.items, newFolder],
+      }));
+      closeModal();
+    } else {
+      setError("Failed to create folder");
+    }
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setError(null);
+    if (Object.values(formData).some((value) => value.trim() === "")) {
+      setError("All fields are required");
+      return;
+    }
+
+    const updatedFolder = {
+      name: formData.folderName,
+      type: "folder",
+      items: [],
+      metadata: {
+        numExp: formData.numExp,
+        ano: formData.ano,
+        cliente: formData.cliente,
+        juzgadoPrincipal: formData.juzgadoPrincipal,
+        fechaAlta: formData.fechaAlta,
+        estadoDeExpediente: formData.estadoDeExpediente,
+      },
+    };
+
+    const { success } = await Document.updateFolderMetadata(
+      formData.folderName,
+      updatedFolder.metadata
+    );
+    if (success) {
+      setFiles((prevFiles) => ({
+        ...prevFiles,
+        items: prevFiles.items.map((item) =>
+          item.name === formData.folderName
+            ? { ...item, metadata: updatedFolder.metadata }
+            : item
+        ),
+      }));
+      closeModal();
+    } else {
+      setError("Failed to update folder");
     }
   };
 
@@ -33,7 +121,7 @@ export default function NewFolderModal({ closeModal, files, setFiles }) {
       <div className="relative bg-main-gradient rounded-lg shadow">
         <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
           <h3 className="text-xl font-semibold text-white">
-            Create New Folder
+            {existingData ? "Update Folder" : "Create New Folder"}
           </h3>
           <button
             onClick={closeModal}
@@ -44,30 +132,39 @@ export default function NewFolderModal({ closeModal, files, setFiles }) {
             <X className="text-gray-300 text-lg" />
           </button>
         </div>
-        <form onSubmit={handleCreate}>
-          <div className="p-6 space-y-6 flex h-full w-full">
-            <div className="w-full flex flex-col gap-y-4">
-              <div>
+        <form onSubmit={existingData ? handleUpdate : handleCreate}>
+          <div className="p-6 grid grid-cols-2 gap-4">
+            {Object.entries(formData).map(([key, value], index) => (
+              <div
+                key={key}
+                className={
+                  index === Object.entries(formData).length - 1
+                    ? "col-span-2"
+                    : ""
+                }
+              >
                 <label
-                  htmlFor="folderName"
+                  htmlFor={key}
                   className="block mb-2 text-sm font-medium text-white"
                 >
-                  Folder Name
+                  {folderColumns[key]?.label || key}
                 </label>
                 <input
-                  name="folderName"
+                  name={key}
                   type="text"
-                  className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  placeholder="Enter folder name"
+                  id={key}
+                  className="bg-zinc-900 w-full text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block p-2.5"
+                  placeholder={`Enter ${folderColumns[key]?.label || key}`}
                   required={true}
                   autoComplete="off"
-                  value={folderName}
-                  onChange={(e) => setFolderName(e.target.value)}
+                  value={value}
+                  onChange={handleInputChange}
+                  disabled={key === "folderName" && !!existingData}
                 />
               </div>
-              {error && <p className="text-red-400 text-sm">Error: {error}</p>}
-            </div>
+            ))}
           </div>
+          {error && <p className="text-red-400 text-sm px-6">Error: {error}</p>}
           <div className="flex w-full justify-between items-center p-6 space-x-2 border-t rounded-b border-gray-500/50">
             <button
               onClick={closeModal}
@@ -80,7 +177,7 @@ export default function NewFolderModal({ closeModal, files, setFiles }) {
               type="submit"
               className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             >
-              Create Folder
+              {existingData ? "Update Folder" : "Create Folder"}
             </button>
           </div>
         </form>
