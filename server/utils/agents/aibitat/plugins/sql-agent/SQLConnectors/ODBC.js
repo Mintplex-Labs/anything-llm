@@ -58,4 +58,3 @@ class ODBCConnector {
 }
 
 module.exports.ODBCConnector = ODBCConnector;
-

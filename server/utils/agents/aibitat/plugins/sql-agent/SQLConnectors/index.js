@@ -1,9 +1,8 @@
 const { SystemSettings } = require("../../../../../../models/systemSettings");
 const { safeJsonParse } = require("../../../../../http");
-const { MSSQLConnector } = require("./MSSQL");
-const { ODBCConnector } = require("./ODBC");
+
 /**
- * @typedef {('postgresql'|'mysql'|'sql-server')} SQLEngine
+ * @typedef {('postgresql'|'mysql'|'sql-server'|'odbc')} SQLEngine
  */
 
 /**
