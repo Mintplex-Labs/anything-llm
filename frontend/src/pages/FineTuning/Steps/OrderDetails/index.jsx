@@ -1,7 +1,7 @@
 import FineTuning from "@/models/experimental/fineTuning";
 import { useEffect, useState } from "react";
 import FineTuningSteps from "..";
-import { CircleNotch } from "@phosphor-icons/react/dist/ssr";
+import { CircleNotch } from "@phosphor-icons/react";
 
 export default function OrderDetails({ setSettings, setStep }) {
   const [info, setInfo] = useState({});
