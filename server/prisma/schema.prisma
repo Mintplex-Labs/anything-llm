@@ -11,8 +11,8 @@ generator client {
 //   url      = env("DATABASE_URL")
 // }
 datasource db {
-  provider = "sqlite"
-  url      = "file:../storage/anythingllm.db"
+  provider = env("DATABASE_PROVIDER")
+  url      = env("DATABASE_URL")
 }
 
 model api_keys {
