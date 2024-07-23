@@ -18,7 +18,7 @@ const FineTuning = {
   API_BASE:
     process.env.NODE_ENV === "development"
       ? process.env.FINE_TUNING_ORDER_API
-      : "",
+      : "https://finetuning-wxich7363q-uc.a.run.app",
   recommendedMinDataset: 50,
   standardPrompt:
     "Given the following conversation, relevant context, and a follow up question, reply with an answer to the current question the user is asking. Return only your response to the question given the above information following the users instructions as needed.",
