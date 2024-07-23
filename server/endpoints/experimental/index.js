@@ -1,3 +1,4 @@
+const { fineTuningEndpoints } = require("./fineTuning");
 const { liveSyncEndpoints } = require("./liveSync");
 
 // All endpoints here are not stable and can move around - have breaking changes
@@ -5,6 +6,7 @@ const { liveSyncEndpoints } = require("./liveSync");
 // When a feature is promoted it should be removed from here and added to the appropriate scope.
 function experimentalEndpoints(router) {
   liveSyncEndpoints(router);
+  fineTuningEndpoints(router);
 }
 
 module.exports = { experimentalEndpoints };
