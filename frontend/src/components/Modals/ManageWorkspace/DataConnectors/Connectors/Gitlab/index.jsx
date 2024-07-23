@@ -73,7 +73,8 @@ export default function GitlabOptions() {
                     GitLab Repo URL(s)
                   </label>
                   <p className="text-xs font-normal text-white/50">
-                    URL(s) of the GitLab repo(s) you wish to collect. Enter one URL per line.
+                    URL(s) of the GitLab repo(s) you wish to collect. Enter one
+                    URL per line.
                   </p>
                 </div>
                 <textarea
@@ -83,7 +84,9 @@ export default function GitlabOptions() {
                   required={true}
                   autoComplete="off"
                   onChange={(e) => setRepo(e.target.value)}
-                  onBlur={() => setSettings({ ...settings, repos: e.target.value })}
+                  onBlur={() =>
+                    setSettings({ ...settings, repos: e.target.value })
+                  }
                   spellCheck={false}
                   rows={2}
                 />
@@ -178,7 +181,7 @@ function GitLabBranchSelection({ repos, accessToken }) {
       }
 
       setLoading(true);
-      const repoList = repos.split('\n').filter(Boolean);
+      const repoList = repos.split("\n").filter(Boolean);
       if (repoList.length > 0) {
         const { branches } = await System.dataConnectors.gitlab.branches({
           repo: repoList[0],
