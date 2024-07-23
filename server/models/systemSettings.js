@@ -465,6 +465,12 @@ const SystemSettings = {
       GenericOpenAiKey: !!process.env.GENERIC_OPEN_AI_API_KEY,
       GenericOpenAiMaxTokens: process.env.GENERIC_OPEN_AI_MAX_TOKENS,
 
+      AwsBedrockLLMAccessKeyId: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY_ID,
+      AwsBedrockLLMAccessKey: !!process.env.AWS_BEDROCK_LLM_ACCESS_KEY,
+      AwsBedrockLLMRegion: process.env.AWS_BEDROCK_LLM_REGION,
+      AwsBedrockLLMModel: process.env.AWS_BEDROCK_LLM_MODEL_PREFERENCE,
+      AwsBedrockLLMTokenLimit: process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT,
+
       // Cohere API Keys
       CohereApiKey: !!process.env.COHERE_API_KEY,
       CohereModelPref: process.env.COHERE_MODEL_PREF,

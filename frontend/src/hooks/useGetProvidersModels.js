@@ -8,6 +8,7 @@ export const DISABLED_PROVIDERS = [
   "native",
   "textgenwebui",
   "generic-openai",
+  "bedrock",
 ];
 const PROVIDER_DEFAULT_MODELS = {
   openai: [],
@@ -48,6 +49,7 @@ const PROVIDER_DEFAULT_MODELS = {
   ],
   textgenwebui: [],
   "generic-openai": [],
+  bedrock: [],
 };
 
 // For togetherAi, which has a large model list - we subgroup the options
