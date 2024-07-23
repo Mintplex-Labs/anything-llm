@@ -13,7 +13,7 @@ export default function GitlabOptions() {
   const [accessToken, setAccessToken] = useState(null);
   const [ignores, setIgnores] = useState([]);
   const [settings, setSettings] = useState({
-    repos: null,
+    repo: null,
     accessToken: null,
   });
 
@@ -23,37 +23,35 @@ export default function GitlabOptions() {
 
     try {
       setLoading(true);
-      const repos = form.get("repos").split("\n").filter(Boolean);
+      showToast(
+        `Fetching all files for repo ${repo} - this may take a while.`,
+        "info",
+        { clear: true, autoClose: false }
+      );
 
-      for (const repo of repos) {
-        showToast(
-          `Fetching all files for repo ${repo} - this may take a while.`,
-          "info",
-          { clear: true, autoClose: false }
-        );
-        const { data, error } = await System.dataConnectors.gitlab.collect({
-          repo: repo.trim(),
-          accessToken: form.get("accessToken"),
-          branch: form.get("branch"),
-          ignorePaths: ignores,
-        });
+      const { data, error } = await System.dataConnectors.gitlab.collect({
+        repo: form.get("repo"),
+        accessToken: form.get("accessToken"),
+        branch: form.get("branch"),
+        ignorePaths: ignores,
+      });
 
-        if (!!error) {
-          showToast(`Error for ${repo}: ${error}`, "error", { clear: true });
-          continue;
-        }
-
-        showToast(
-          `${data.files} ${pluralize("file", data.files)} collected from ${
-            data.author
-          }/${data.repo}:${data.branch}. Output folder is ${data.destination}.`,
-          "success",
-          { clear: true }
-        );
+      if (!!error) {
+        showToast(error, "error", { clear: true });
+        setLoading(false);
+        return;
       }
 
+      showToast(
+        `${data.files} ${pluralize("file", data.files)} collected from ${
+          data.author
+        }/${data.repo}:${data.branch}. Output folder is ${data.destination}.`,
+        "success",
+        { clear: true }
+      );
       e.target.reset();
       setLoading(false);
+      return;
     } catch (e) {
       console.error(e);
       showToast(e.message, "error", { clear: true });
@@ -70,20 +68,21 @@ export default function GitlabOptions() {
               <div className="flex flex-col pr-10">
                 <div className="flex flex-col gap-y-1 mb-4">
                   <label className="text-white text-sm font-bold">
-                    GitLab Repo URL(s)
+                    GitLab Repo URL
                   </label>
                   <p className="text-xs font-normal text-white/50">
-                    URL(s) of the GitLab repo(s) you wish to collect. Enter one URL per line.
+                    URL of the GitLab repo you wish to collect.
                   </p>
                 </div>
-                <textarea
-                  name="repos"
-                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
-                  placeholder="https://gitlab.com/gitlab-org/gitlab&#10;https://gitlab.com/another-org/another-repo"
+                <input
+                  type="url"
+                  name="repo"
+                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  placeholder="https://gitlab.com/gitlab-org/gitlab"
                   required={true}
                   autoComplete="off"
                   onChange={(e) => setRepo(e.target.value)}
-                  onBlur={() => setSettings({ ...settings, repos: e.target.value })}
+                  onBlur={() => setSettings({ ...settings, repo })}
                   spellCheck={false}
                   rows={2}
                 />
@@ -104,7 +103,7 @@ export default function GitlabOptions() {
                 <input
                   type="text"
                   name="accessToken"
-                  className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                  className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
                   placeholder="glpat-XXXXXXXXXXXXXXXXXXXX"
                   required={false}
                   autoComplete="off"
@@ -114,7 +113,7 @@ export default function GitlabOptions() {
                 />
               </div>
               <GitLabBranchSelection
-                repos={settings.repos}
+                repo={settings.repo}
                 accessToken={settings.accessToken}
               />
             </div>
@@ -165,33 +164,28 @@ export default function GitlabOptions() {
   );
 }
 
-function GitLabBranchSelection({ repos, accessToken }) {
+function GitLabBranchSelection({ repo, accessToken }) {
   const [allBranches, setAllBranches] = useState(DEFAULT_BRANCHES);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchAllBranches() {
-      if (!repos) {
+      if (!repo) {
         setAllBranches(DEFAULT_BRANCHES);
         setLoading(false);
         return;
       }
 
       setLoading(true);
-      const repoList = repos.split('\n').filter(Boolean);
-      if (repoList.length > 0) {
-        const { branches } = await System.dataConnectors.gitlab.branches({
-          repo: repoList[0],
-          accessToken,
-        });
-        setAllBranches(branches.length > 0 ? branches : DEFAULT_BRANCHES);
-      } else {
-        setAllBranches(DEFAULT_BRANCHES);
-      }
+      const { branches } = await System.dataConnectors.gitlab.branches({
+        repo,
+        accessToken,
+      });
+      setAllBranches(branches.length > 0 ? branches : DEFAULT_BRANCHES);
       setLoading(false);
     }
     fetchAllBranches();
-  }, [repos, accessToken]);
+  }, [repo, accessToken]);
 
   if (loading) {
     return (

@@ -3,27 +3,27 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
-const { writeToServerDocuments } = require("../../files");
-const { tokenizeString } = require("../../tokenizer");
+const { writeToServerDocuments } = require("../../../files");
+const { tokenizeString } = require("../../../tokenizer");
 
 /**
- * Load in a Github Repo recursively or just the top level if no PAT is provided
+ * Load in a Gitlab Repo recursively or just the top level if no PAT is provided
  * @param {object} args - forwarded request body params
  * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
  * @returns
  */
-async function loadGithubRepo(args, response) {
+async function loadGitlabRepo(args, response) {
   const repo = new RepoLoader(args);
   await repo.init();
 
   if (!repo.ready)
     return {
       success: false,
-      reason: "Could not prepare Github repo for loading! Check URL",
+      reason: "Could not prepare Gitlab repo for loading! Check URL",
     };
 
   console.log(
-    `-- Working Github ${repo.author}/${repo.project}:${repo.branch} --`
+    `-- Working GitLab ${repo.author}/${repo.project}:${repo.branch} --`
   );
   const docs = await repo.recursiveLoader();
   if (!docs.length) {
@@ -33,7 +33,7 @@ async function loadGithubRepo(args, response) {
     };
   }
 
-  console.log(`[Github Loader]: Found ${docs.length} source files. Saving...`);
+  console.log(`[GitLab Loader]: Found ${docs.length} source files. Saving...`);
   const outFolder = slugify(
     `${repo.author}-${repo.project}-${repo.branch}-${v4().slice(0, 4)}`
   ).toLowerCase();
@@ -42,7 +42,7 @@ async function loadGithubRepo(args, response) {
     process.env.NODE_ENV === "development"
       ? path.resolve(
           __dirname,
-          `../../../../server/storage/documents/${outFolder}`
+          `../../../../../server/storage/documents/${outFolder}`
         )
       : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 
@@ -53,7 +53,7 @@ async function loadGithubRepo(args, response) {
     if (!doc.pageContent) continue;
     const data = {
       id: v4(),
-      url: "github://" + doc.metadata.source,
+      url: "gitlab://" + doc.metadata.source,
       title: doc.metadata.source,
       docAuthor: repo.author,
       description: "No description found.",
@@ -69,7 +69,7 @@ async function loadGithubRepo(args, response) {
       token_count_estimate: tokenizeString(doc.pageContent).length,
     };
     console.log(
-      `[Github Loader]: Saving ${doc.metadata.source} to ${outFolder}`
+      `[GitLab Loader]: Saving ${doc.metadata.source} to ${outFolder}`
     );
     writeToServerDocuments(
       data,
@@ -84,6 +84,7 @@ async function loadGithubRepo(args, response) {
     data: {
       author: repo.author,
       repo: repo.project,
+      projectId: repo.projectId,
       branch: repo.branch,
       files: docs.length,
       destination: outFolder,
@@ -91,11 +92,7 @@ async function loadGithubRepo(args, response) {
   };
 }
 
-/**
- * Gets the page content from a specific source file in a give Github Repo, not all items in a repo.
- * @returns
- */
-async function fetchGithubFile({
+async function fetchGitlabFile({
   repoUrl,
   branch,
   accessToken = null,
@@ -112,11 +109,10 @@ async function fetchGithubFile({
     return {
       success: false,
       content: null,
-      reason: "Could not prepare Github repo for loading! Check URL or PAT.",
+      reason: "Could not prepare GitLab repo for loading! Check URL or PAT.",
     };
-
   console.log(
-    `-- Working Github ${repo.author}/${repo.project}:${repo.branch} file:${sourceFilePath} --`
+    `-- Working GitLab ${repo.author}/${repo.project}:${repo.branch} file:${sourceFilePath} --`
   );
   const fileContent = await repo.fetchSingleFile(sourceFilePath);
   if (!fileContent) {
@@ -134,26 +130,16 @@ async function fetchGithubFile({
   };
 }
 
-/**
- * Generate the full chunkSource for a specific file so that we can resync it later.
- * This data is encrypted into a single `payload` query param so we can replay credentials later
- * since this was encrypted with the systems persistent password and salt.
- * @param {RepoLoader} repo
- * @param {import("@langchain/core/documents").Document} doc
- * @param {import("../../EncryptionWorker").EncryptionWorker} encryptionWorker
- * @returns {string}
- */
 function generateChunkSource(repo, doc, encryptionWorker) {
   const payload = {
-    owner: repo.author,
-    project: repo.project,
+    projectId: decodeURIComponent(repo.projectId),
     branch: repo.branch,
     path: doc.metadata.source,
     pat: !!repo.accessToken ? repo.accessToken : null,
   };
-  return `github://${repo.repo}?payload=${encryptionWorker.encrypt(
+  return `gitlab://${repo.repo}?payload=${encryptionWorker.encrypt(
     JSON.stringify(payload)
   )}`;
 }
 
-module.exports = { loadGithubRepo, fetchGithubFile };
+module.exports = { loadGitlabRepo, fetchGitlabFile };

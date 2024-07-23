@@ -1,5 +1,6 @@
 const { setDataSigner } = require("../middleware/setDataSigner");
 const { verifyPayloadIntegrity } = require("../middleware/verifyIntegrity");
+const { resolveRepoLoader, resolveRepoLoaderFunction } = require("../utils/extensions/RepoLoader");
 const { reqBody } = require("../utils/http");
 const { validURL } = require("../utils/url");
 const RESYNC_METHODS = require("./resync");
@@ -28,69 +29,16 @@ function extensions(app) {
   )
 
   app.post(
-    "/ext/github-repo",
+    "/ext/:repo_platform-repo",
     [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {
       try {
-        const { loadGithubRepo } = require("../utils/extensions/GithubRepo");
-        const { success, reason, data } = await loadGithubRepo(
+        const loadRepo = resolveRepoLoaderFunction(request.params.repo_platform);
+        const { success, reason, data } = await loadRepo(
           reqBody(request),
           response,
         );
-        response.status(200).json({
-          success,
-          reason,
-          data,
-        });
-      } catch (e) {
-        console.error(e);
-        response.status(200).json({
-          success: false,
-          reason: e.message || "A processing error occurred.",
-          data: {},
-        });
-      }
-      return;
-    }
-  );
-
-  app.post(
-    "/ext/gitlab-repo",
-    [verifyPayloadIntegrity, setDataSigner],
-    async function (request, response) {
-      try {
-        const { loadGitlabRepo } = require("../utils/extensions/GitlabRepo");
-        const { success, reason, data } = await loadGitlabRepo(
-          reqBody(request),
-          response,
-        );
-        response.status(200).json({
-          success,
-          reason,
-          data,
-        });
-      } catch (e) {
-        console.error(e);
-        response.status(200).json({
-          success: false,
-          reason: e.message || "A processing error occurred.",
-          data: {},
-        });
-      }
-      return;
-    }
-  );
-
-  app.post(
-    "/ext/gitlab-repo",
-    [verifyPayloadIntegrity, setDataSigner],
-    async function (request, response) {
-      try {
-        const { loadGitlabRepo } = require("../utils/extensions/GitlabRepo");
-        const { success, reason, data } = await loadGitlabRepo(
-          reqBody(request),
-          response,
-        );
+        console.log({ success, reason, data })
         response.status(200).json({
           success,
           reason,
@@ -110,73 +58,12 @@ function extensions(app) {
 
   // gets all branches for a specific repo
   app.post(
-    "/ext/github-repo/branches",
+    "/ext/:repo_platform-repo/branches",
     [verifyPayloadIntegrity],
     async function (request, response) {
       try {
-        const GithubRepoLoader = require("../utils/extensions/GithubRepo/RepoLoader");
-        const allBranches = await new GithubRepoLoader(
-          reqBody(request)
-        ).getRepoBranches();
-        response.status(200).json({
-          success: true,
-          reason: null,
-          data: {
-            branches: allBranches,
-          },
-        });
-      } catch (e) {
-        console.error(e);
-        response.status(400).json({
-          success: false,
-          reason: e.message,
-          data: {
-            branches: [],
-          },
-        });
-      }
-      return;
-    }
-  );
-
-  app.post(
-    "/ext/gitlab-repo/branches",
-    [verifyPayloadIntegrity],
-    async function (request, response) {
-      try {
-        const GitlabRepoLoader = require("../utils/extensions/GitlabRepo/RepoLoader");
-        const allBranches = await new GitlabRepoLoader(
-          reqBody(request)
-        ).getRepoBranches();
-        response.status(200).json({
-          success: true,
-          reason: null,
-          data: {
-            branches: allBranches,
-          },
-        });
-      } catch (e) {
-        console.error(e);
-        response.status(400).json({
-          success: false,
-          reason: e.message,
-          data: {
-            branches: [],
-          },
-        });
-      }
-      return;
-    }
-  );
-
-  // gets all branches for a specific GitLab repo
-  app.post(
-    "/ext/gitlab-repo/branches",
-    [verifyPayloadIntegrity],
-    async function (request, response) {
-      try {
-        const GitlabRepoLoader = require("../utils/extensions/GitlabRepo/RepoLoader");
-        const allBranches = await new GitlabRepoLoader(
+        const RepoLoader = resolveRepoLoader(request.params.repo_platform);
+        const allBranches = await new RepoLoader(
           reqBody(request)
         ).getRepoBranches();
         response.status(200).json({

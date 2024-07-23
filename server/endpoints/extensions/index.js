@@ -6,17 +6,33 @@ const {
 } = require("../../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../../utils/middleware/validatedRequest");
 
+// Middleware to validate that a repo provider URL is supported.
+function isSupportedRepoProvider(request, response, next) {
+  const REPO_PLATFORMS = ["github", "gitlab"];
+  const { repo_platform = null } = request.params;
+  if (!repo_platform || !REPO_PLATFORMS.includes(repo_platform))
+    return response
+      .status(500)
+      .text(`Unsupported repo platform ${repo_platform}`);
+  next();
+}
+
 function extensionEndpoints(app) {
   if (!app) return;
 
   app.post(
-    "/ext/github/branches",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    "/ext/:repo_platform/branches",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      isSupportedRepoProvider,
+    ],
     async (request, response) => {
       try {
+        const { repo_platform } = request.params;
         const responseFromProcessor =
           await new CollectorApi().forwardExtensionRequest({
-            endpoint: "/ext/github-repo/branches",
+            endpoint: `/ext/${repo_platform}-repo/branches`,
             method: "POST",
             body: request.body,
           });
@@ -29,59 +45,23 @@ function extensionEndpoints(app) {
   );
 
   app.post(
-    "/ext/github/repo",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    "/ext/:repo_platform/repo",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      isSupportedRepoProvider,
+    ],
     async (request, response) => {
       try {
+        const { repo_platform } = request.params;
         const responseFromProcessor =
           await new CollectorApi().forwardExtensionRequest({
-            endpoint: "/ext/github-repo",
+            endpoint: `/ext/${repo_platform}-repo`,
             method: "POST",
             body: request.body,
           });
         await Telemetry.sendTelemetry("extension_invoked", {
           type: "github_repo",
-        });
-        response.status(200).json(responseFromProcessor);
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.post(
-    "/ext/gitlab/branches",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (request, response) => {
-      try {
-        const responseFromProcessor =
-          await new CollectorApi().forwardExtensionRequest({
-            endpoint: "/ext/gitlab-repo/branches",
-            method: "POST",
-            body: request.body,
-          });
-        response.status(200).json(responseFromProcessor);
-      } catch (e) {
-        console.error(e);
-        response.sendStatus(500).end();
-      }
-    }
-  );
-
-  app.post(
-    "/ext/gitlab/repo",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
-    async (request, response) => {
-      try {
-        const responseFromProcessor =
-          await new CollectorApi().forwardExtensionRequest({
-            endpoint: "/ext/gitlab-repo",
-            method: "POST",
-            body: request.body,
-          });
-        await Telemetry.sendTelemetry("extension_invoked", {
-          type: "gitlab_repo",
         });
         response.status(200).json(responseFromProcessor);
       } catch (e) {
