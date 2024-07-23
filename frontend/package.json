@@ -6,10 +6,9 @@
   "scripts": {
     "start": "vite --open",
     "dev": "NODE_ENV=development vite --debug --host=0.0.0.0",
-    "build": "vite build",
+    "build": "vite build && node scripts/postbuild.js",
     "lint": "yarn prettier --ignore-path ../.prettierignore --write ./src",
-    "preview": "vite preview",
-    "windev": "set NODE_ENV=development& vite --debug --host=0.0.0.0"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@metamask/jazzicon": "^2.0.0",
