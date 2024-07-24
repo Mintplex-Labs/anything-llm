@@ -11,7 +11,6 @@ function assembleConnectionString({
   host = "",
   port = "",
   database = "",
-  driver = "",
 }) {
   if ([username, password, host, database].every((i) => !!i) === false)
     return `Please fill out all the fields above.`;
@@ -22,9 +21,6 @@ function assembleConnectionString({
       return `mysql://${username}:${password}@${host}:${port}/${database}`;
     case "sql-server":
       return `mssql://${username}:${password}@${host}:${port}/${database}`;
-    case "odbc":
-      if (!driver) return `Please fill out the driver field.`;
-      return `Driver={${driver}};Server=${host};Port=${port};Database=${database};UID=${username};PWD=${password}`;
     default:
       return null;
   }
@@ -37,7 +33,6 @@ const DEFAULT_CONFIG = {
   host: null,
   port: null,
   database: null,
-  driver: null,
 };
 
 export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
@@ -53,14 +48,12 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
 
   function onFormChange() {
     const form = new FormData(document.getElementById("sql-connection-form"));
-
     setConfig({
       username: form.get("username").trim(),
       password: form.get("password"),
       host: form.get("host").trim(),
       port: form.get("port").trim(),
       database: form.get("database").trim(),
-      driver: form.get("driver")?.trim(),
     });
   }
 
@@ -81,7 +74,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
   // to the parent container form so we don't have nested forms.
   return createPortal(
     <ModalWrapper isOpen={isOpen}>
-      <div className="relative w-full md:w-fit max-w-2xl max-h-full md:mt-8">
+      <div className="relative w-full md:w-1/3 max-w-2xl max-h-full md:mt-8">
         <div className="relative bg-main-gradient rounded-xl shadow-[0_4px_14px_rgba(0,0,0,0.25)] max-h-[85vh] overflow-y-scroll no-scroll">
           <div className="flex items-start justify-between p-4 border-b rounded-t border-gray-500/50">
             <h3 className="text-xl font-semibold text-white">
@@ -121,7 +114,7 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                 <label className="text-white text-sm font-semibold block my-4">
                   Select your SQL engine
                 </label>
-                <div className="flex flex-wrap gap-x-4 gap-y-4">
+                <div className="grid md:grid-cols-4 gap-4 grid-cols-2">
                   <DBEngine
                     provider="postgresql"
                     active={engine === "postgresql"}
@@ -136,11 +129,6 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                     provider="sql-server"
                     active={engine === "sql-server"}
                     onClick={() => setEngine("sql-server")}
-                  />
-                  <DBEngine
-                    provider="odbc"
-                    active={engine === "odbc"}
-                    onClick={() => setEngine("odbc")}
                   />
                 </div>
               </div>
@@ -236,23 +224,6 @@ export default function NewSQLConnection({ isOpen, closeModal, onSubmit }) {
                   spellCheck={false}
                 />
               </div>
-
-              {engine === "odbc" && (
-                <div className="flex flex-col">
-                  <label className="text-white text-sm font-semibold block mb-3">
-                    Driver
-                  </label>
-                  <input
-                    type="text"
-                    name="driver"
-                    className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-                    placeholder="the driver to use eg: MongoDB ODBC 1.2.0 ANSI Driver"
-                    required={true}
-                    autoComplete="off"
-                    spellCheck={false}
-                  />
-                </div>
-              )}
               <p className="text-white/40 text-sm">
                 {assembleConnectionString({ engine, ...config })}
               </p>
