@@ -163,12 +163,6 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 
 [Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
 
-## Contributing
-
-- create issue
-- create PR with branch name format of `<issue number>-<short name>`
-- yee haw let's merge
-
 ## Telemetry & Privacy
 
 AnythingLLM by Mintplex Labs Inc contains a telemetry feature that collects anonymous usage information.
@@ -199,6 +193,19 @@ You can verify these claims by finding all locations `Telemetry.sendTelemetry` i
 [View all telemetry events in source code](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
 
 </details>
+
+
+## 👋 Contributing
+
+- create issue
+- create PR with branch name format of `<issue number>-<short name>`
+- LGTM from core-team
+
+## 🌟 Contributors
+
+[![anythingllm contributors](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
+
+[![Star History Chart](https://api.star-history.com/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.com/#mintplex-labs/anything-llm&Date)
 
 ## 🔗 More Products
 
