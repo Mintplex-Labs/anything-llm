@@ -208,6 +208,28 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // AWS Bedrock LLM InferenceSettings
+  AwsBedrockLLMAccessKeyId: {
+    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMAccessKey: {
+    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMRegion: {
+    envKey: "AWS_BEDROCK_LLM_REGION",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMModel: {
+    envKey: "AWS_BEDROCK_LLM_MODEL_PREFERENCE",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMTokenLimit: {
+    envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
@@ -541,6 +563,7 @@ function supportedLLM(input = "") {
     "cohere",
     "litellm",
     "generic-openai",
+    "bedrock",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

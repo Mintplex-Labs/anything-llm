@@ -17,6 +17,7 @@ import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
+import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
@@ -37,6 +38,7 @@ import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
 import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
+import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -188,6 +190,13 @@ const LLMS = [
   //   description:
   //     "Use a downloaded custom Llama model for chatting on this AnythingLLM instance.",
   // },
+  {
+    name: "AWS Bedrock",
+    value: "bedrock",
+    logo: AWSBedrockLogo,
+    options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
+    description: "Run powerful foundation models privately with AWS Bedrock.",
+  },
 ];
 
 export default function LLMPreference({
