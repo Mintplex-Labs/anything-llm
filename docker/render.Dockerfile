@@ -90,7 +90,7 @@ RUN cd /app/.cache/puppeteer/chrome/linux-119.0.6045.105/chrome-linux64 && \
     chmod 4755 chrome_sandbox && \
     cp -p chrome_sandbox /usr/local/sbin/chrome-devel-sandbox
 USER anythingllm
-ENV CHROME_DEVEL_SANDBOX /usr/local/sbin/chrome-devel-sandbox
+ENV CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
 
 ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
