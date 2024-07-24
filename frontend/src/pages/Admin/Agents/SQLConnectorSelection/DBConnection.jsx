@@ -1,14 +1,12 @@
 import PostgreSQLLogo from "./icons/postgresql.png";
 import MySQLLogo from "./icons/mysql.png";
 import MSSQLLogo from "./icons/mssql.png";
-import ODBCLogo from "./icons/odbc.png";
 import { X } from "@phosphor-icons/react";
 
 export const DB_LOGOS = {
   postgresql: PostgreSQLLogo,
   mysql: MySQLLogo,
   "sql-server": MSSQLLogo,
-  odbc: ODBCLogo,
 };
 
 export default function DBConnection({ connection, onRemove, setHasChanges }) {
