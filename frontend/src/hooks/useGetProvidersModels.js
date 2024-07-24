@@ -32,12 +32,7 @@ const PROVIDER_DEFAULT_MODELS = {
   localai: [],
   ollama: [],
   togetherai: [],
-  groq: [
-    "mixtral-8x7b-32768",
-    "llama3-8b-8192",
-    "llama3-70b-8192",
-    "gemma-7b-it",
-  ],
+  groq: [],
   native: [],
   cohere: [
     "command-r",
