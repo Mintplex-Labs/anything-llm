@@ -61,7 +61,7 @@ RUN yarn build && \
 WORKDIR /app
 
 # Install server dependencies
-FROM build AS backend-build
+FROM base AS backend-build
 COPY ./server /app/server/
 WORKDIR /app/server
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
