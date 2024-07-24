@@ -86,7 +86,7 @@ USER anythingllm
 ENV PUPPETEER_EXECUTABLE_PATH=/app/.cache/puppeteer/chrome/linux-119.0.6045.105/chrome-linux64/chrome
 USER root
 RUN cd /app/.cache/puppeteer/chrome/linux-119.0.6045.105/chrome-linux64 && \
-    chown root:root chrome_sandbox && \
+    chown anythingllm:anythingllm chrome_sandbox && \
     chmod 4755 chrome_sandbox && \
     cp -p chrome_sandbox /usr/local/sbin/chrome-devel-sandbox
 USER anythingllm
