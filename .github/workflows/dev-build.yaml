@@ -85,7 +85,7 @@ jobs:
             for tag in "${{ join(fromJSON(steps.meta.outputs.json).tags, ' ') }}"; do
               echo "Attaching VEX exception $cve to $tag"
               docker scout attestation add \
-              --file "$cve.vex.json" \
+              --file "./docker/vex/$cve.vex.json" \
               --predicate-type https://openvex.dev/ns/v0.2.0 \
               $tag
             done
