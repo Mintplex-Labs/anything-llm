@@ -41,7 +41,7 @@ export default function Confirmation({ settings, setSettings, setStep }) {
   }
 
   return (
-    <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
+    <div className="flex-[2] flex flex-col gap-y-[18px]">
       <div className="bg-[#303237] text-white rounded-xl flex-1 p-4 flex flex-col justify-between">
         <div className="w-full flex flex-col gap-y-4">
           <h2 className="text-xl text-white font-semibold">Confirm & Submit</h2>

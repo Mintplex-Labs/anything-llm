@@ -173,7 +173,7 @@ function WorkspaceSelector({
                       <button
                         onClick={() => handleRemoveWorkspace(workspace)}
                         type="button"
-                        className="hover:text-red-500"
+                        className="border-none text-white/40 hover:text-red-500 h-[14px] p-0"
                       >
                         <X size={14} weight="bold" />
                       </button>
@@ -192,7 +192,7 @@ function WorkspaceSelector({
                     }, 500)
                   }
                   placeholder="Enter a workspace name"
-                  className="w-[200px] bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-white"
+                  className="border-none w-[200px] bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-white"
                 />
               </div>
             </div>
@@ -246,7 +246,7 @@ function WorkspaceSuggestions({
             key={workspace.slug}
             onClick={() => addWorkspace(workspace)}
             type="button"
-            className="text-left text-white hover:bg-white/10 rounded-lg p-1"
+            className="border-none text-left text-white hover:bg-white/10 rounded-lg p-1"
           >
             {workspace.name}
           </button>
@@ -275,7 +275,7 @@ function DatasetSummary({ workspaces = [], feedback = null }) {
       <p>Training dataset size: {stats.count ?? "Unknown"}</p>
       {stats.count < stats.recommendedMin ? (
         <div className="flex items-center gap-x-1 text-red-500 text-sm p-1 rounded-lg bg-red-500/20 w-fit my-2">
-          <Warning />
+          <Warning size={20} className="shrink-0" />
           <p>
             Your dataset is below the recommended minimum of{" "}
             {stats.recommendedMin}! You may see no impact from a fine-tune.
@@ -283,7 +283,7 @@ function DatasetSummary({ workspaces = [], feedback = null }) {
         </div>
       ) : (
         <div className="flex items-center gap-x-1 text-green-500 text-sm p-1 rounded-lg bg-green-500/20 w-fit my-2">
-          <CheckCircle />
+          <CheckCircle size={20} className="shrink-0" />
           <p>
             Your dataset is large enough that you should see good results from a
             fine-tune.

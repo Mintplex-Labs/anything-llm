@@ -8,7 +8,7 @@ export default function OrderDetails({ setSettings, setStep }) {
   useEffect(() => {
     FineTuning.info()
       .then((res) => {
-        setInfo(res);
+        setInfo(res ?? {});
         setSettings((prev) => {
           return { ...prev, tuningInfo: res };
         });
@@ -31,7 +31,7 @@ export default function OrderDetails({ setSettings, setStep }) {
   }
 
   return (
-    <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
+    <div className="flex-[2] flex flex-col gap-y-[18px]">
       <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
         <form onSubmit={handleSubmit}>
           <div className="w-full flex flex-col gap-y-4">

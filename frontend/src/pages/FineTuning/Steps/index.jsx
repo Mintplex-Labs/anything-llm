@@ -1,4 +1,3 @@
-import { isMobile } from "react-device-detect";
 import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Introduction from "./Introduction";
@@ -133,13 +132,11 @@ export function FineTuningCreationLayout({ setStep, children }) {
   return (
     <div
       id="fine-tune-create-order-container"
-      className="w-screen h-screen overflow-y-auto bg-sidebar flex"
+      style={{ height: "calc(100vh - 40px)" }}
+      className="w-screen bg-sidebar flex"
     >
       <Sidebar />
-      <div
-        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
-        className="relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] w-full h-full flex"
-      >
+      <div className="relative ml-[2px] mr-[16px] my-[16px] md:rounded-[16px] w-full h-[93vh] overflow-y-scroll">
         {children(settings, setSettings, setStep)}
       </div>
     </div>

@@ -133,7 +133,7 @@ export default function GithubOptions() {
                 name="ignores"
                 placeholder="!*.js, images/*, .DS_Store, bin/*"
                 classNames={{
-                  tag: "bg-blue-300/10 text-zinc-800",
+                  tag: "bg-blue-300/10 text-white",
                   input:
                     "flex bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none",
                 }}

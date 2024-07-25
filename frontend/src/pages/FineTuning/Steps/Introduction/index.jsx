@@ -10,7 +10,7 @@ export default function Introduction({ setSettings, setStep }) {
   };
 
   return (
-    <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
+    <div className="flex-[2] flex flex-col gap-y-[18px]">
       <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
         <div className="w-full flex flex-col gap-y-4">
           <h2 className="text-xl text-white font-semibold">
@@ -44,7 +44,7 @@ export default function Introduction({ setSettings, setStep }) {
               Fine-tuned models are perfect for when you need any of the
               following
             </p>
-            <ul className="flex flex-col gap-y-1">
+            <ul className="flex flex-col gap-y-1 pl-[15px]">
               <li className="flex items-center gap-x-1">
                 <CheckCircle className="text-green-300" /> Setting the style,
                 tone, format, or other qualitative aspects without prompting
@@ -74,7 +74,7 @@ export default function Introduction({ setSettings, setStep }) {
               to any issues you have with RAG currently. Some notable
               limitations are
             </p>
-            <ul>
+            <ul className="flex flex-col gap-y-1 pl-[15px]">
               <li className="flex items-center gap-x-1">
                 <XCircle className="text-red-300" /> You need perfect recall of
                 some piece of literature or reference document
