@@ -12,6 +12,19 @@ function reqBody(request) {
     : request.body;
 }
 
+function reqMetadata(request) {
+  const metadata = {
+    method: request.method, 
+    url: request.url,
+    headers: request.headers,
+    params: request.params, 
+    query: request.query,
+    body: request.body 
+  };
+
+  return JSON.stringify(metadata);
+}
+
 function queryParams(request) {
   return request.query;
 }
@@ -98,6 +111,7 @@ function toValidNumber(number = null, fallback = null) {
 
 module.exports = {
   reqBody,
+  reqMetadata,
   multiUserMode,
   queryParams,
   makeJWT,

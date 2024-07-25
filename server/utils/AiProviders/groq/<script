@@ -1,0 +1,10 @@
+<script
+    data-embed-id="66d0afae-0a65-47c5-94fe-3c8cdd5cf0ea"
+    data-base-api-url="http://advantageintegrationai.duckdns.org:3001/api/embed"
+    data-chat-icon="chatCircle"
+    data-brand-image-url="assets/09b1d125-afbb-4cd3-8f72-20250e86ec84.jpeg"
+    data-greeting="Hello, I'm Advantage Integration's AI chatbot. How can we help you today?"
+    data-sponsor-link="https://www.advantageintegrationai.com"
+    data-sponsor-text="Advantage Integration, LLC"
+    src="http://advantageintegrationai.duckdns.org:3001/embed/anythingllm-chat-widget.min.js">
+</script>

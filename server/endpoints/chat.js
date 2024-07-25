@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
-const { reqBody, userFromSession, multiUserMode } = require("../utils/http");
+const { reqBody, userFromSession, multiUserMode, reqMetadata } = require("../utils/http");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const { WorkspaceChats } = require("../models/workspaceChats");
 const { SystemSettings } = require("../models/systemSettings");
@@ -28,6 +28,7 @@ function chatEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const { message } = reqBody(request);
+        const metadata = reqMetadata(request);
         const workspace = response.locals.workspace;
 
         if (!message?.length) {
@@ -87,6 +88,7 @@ function chatEndpoints(app) {
           response,
           workspace,
           message,
+          metadata,
           workspace?.chatMode,
           user
         );
@@ -102,6 +104,8 @@ function chatEndpoints(app) {
           {
             workspaceName: workspace?.name,
             chatModel: workspace?.chatModel || "System Default",
+            chatSent: message,
+            metadata: metadata,
           },
           user?.id
         );
@@ -132,6 +136,7 @@ function chatEndpoints(app) {
       try {
         const user = await userFromSession(request, response);
         const { message } = reqBody(request);
+        const metadata = reqMetadata(request);
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
 
@@ -194,6 +199,7 @@ function chatEndpoints(app) {
           response,
           workspace,
           message,
+          metadata,
           workspace?.chatMode,
           user,
           thread
@@ -229,6 +235,7 @@ function chatEndpoints(app) {
             workspaceName: workspace.name,
             thread: thread.name,
             chatModel: workspace?.chatModel || "System Default",
+            metadata: metadata,
           },
           user?.id
         );

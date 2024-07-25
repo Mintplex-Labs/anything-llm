@@ -4,11 +4,11 @@ const { v5: uuidv5 } = require("uuid");
 const { Document } = require("../../models/documents");
 const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
 const documentsPath =
-  process.env.NODE_ENV === "development"
+  process.env.NODE_ENV === "development" || process.env.NODE_ENV === "production"
     ? path.resolve(__dirname, `../../storage/documents`)
     : path.resolve(process.env.STORAGE_DIR, `documents`);
 const vectorCachePath =
-  process.env.NODE_ENV === "development"
+  process.env.NODE_ENV === "development" || process.env.NODE_ENV === "production"
     ? path.resolve(__dirname, `../../storage/vector-cache`)
     : path.resolve(process.env.STORAGE_DIR, `vector-cache`);
 
