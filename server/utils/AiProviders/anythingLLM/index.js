@@ -291,10 +291,37 @@ class AnythingLLMOllama {
   }
 
   promptWindowLimit() {
-    const limit = 4096;
-    if (!limit || isNaN(Number(limit)))
-      throw new Error("No AnythingLLM token context limit was set.");
-    return Number(limit);
+    switch (this.model) {
+      case "llama3.1:latest":
+      case "phi3:latest":
+        return 131072;
+
+      case "gemma2:latest":
+      case "gemma:2b":
+      case "gemma:7b":
+      case "llama3:latest":
+        return 8192;
+
+      case "llama2:latest":
+      case "llama2:13b":
+      case "llama2-uncensored:latest":
+      case "codellama:7b":
+        return 4096;
+
+      case "mistral:latest":
+      case "mixtral:latest":
+      case "dolphin-mixtral:latest":
+        return 32768;
+
+      case "phi:latest":
+      case "orca-mini:3b":
+      case "orca-mini:7b":
+      case "orca-mini:13b":
+        return 2048;
+
+      default:
+        return 4096;
+    }
   }
 
   async isValidChatCompletionModel(_ = "") {

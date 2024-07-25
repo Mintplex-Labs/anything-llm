@@ -1,8 +1,22 @@
 export const DOWNLOADABLE_MODELS = [
   {
+    id: "llama3.1:latest",
+    name: "Llama3.1 8B",
+    description: "Meta Llama 3.1: The new state-of-the-art model from Meta.",
+    size: "4.7GB",
+    link: "https://llama.meta.com/",
+    licenses: [
+      {
+        title: "LLAMA 3 COMMUNITY LICENSE AGREEMENT",
+        link: "https://llama.meta.com/llama3.1/license/",
+      },
+    ],
+  },
+  {
     id: "llama3:latest",
     name: "Llama3 8B",
-    description: "Meta Llama 3: The most capable openly available LLM to date.",
+    description:
+      "Meta Llama 3: The previous generation of the Llama model by Meta.",
     size: "4.7GB",
     link: "https://llama.meta.com/",
     licenses: [
@@ -113,6 +127,20 @@ export const DOWNLOADABLE_MODELS = [
     ],
   },
   {
+    id: "gemma2:latest",
+    name: "Gemma2 9B",
+    description:
+      "Gemma2 is the second evolution of the Google Gemma model, now available as a 9B size.",
+    size: "5.4GB",
+    link: "https://blog.google/technology/developers/gemma-open-models/",
+    licenses: [
+      {
+        title: "Gemma Terms of Use",
+        link: "https://ai.google.dev/gemma/terms",
+      },
+    ],
+  },
+  {
     id: "gemma:2b",
     name: "Gemma 2B",
     description:
@@ -137,6 +165,20 @@ export const DOWNLOADABLE_MODELS = [
       {
         title: "Gemma Terms of Use",
         link: "https://ai.google.dev/gemma/terms",
+      },
+    ],
+  },
+  {
+    id: "phi3:latest",
+    name: "Phi-3",
+    description:
+      "Phi-3: a 3.8B language model by Microsoft Research that demonstrates outstanding reasoning and language understanding capabilities.",
+    size: "2.2GB",
+    link: "https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/",
+    licenses: [
+      {
+        title: "MIT License",
+        link: "https://opensource.org/license/mit",
       },
     ],
   },
