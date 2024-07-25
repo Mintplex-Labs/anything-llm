@@ -75,9 +75,23 @@ jobs:
       #     cache-from: type=gha
       #     cache-to: type=gha,mode=max
 
+      - name: Collect known and verified CVE exceptions
+        id: cve-list
+        run: |
+          CVE_NAMES=""
+          for file in .docker/vex/CVE-*.vex.json; do
+            [ -e "$file" ] || continue
+            filename=$(basename "$file")
+            stripped_filename=${filename%.vex.json}
+            CVE_NAMES+=" $stripped_filename"
+          done
+          echo "CVE_EXCEPTIONS=$CVE_NAMES" >> $GITHUB_OUTPUT
+        shell: bash
+
+
       - name: Add VEX attestations
         env:
-          CVE_EXCEPTIONS: CVE-2019-10790 CVE-2024-37890 CVE-2024-29415
+          CVE_EXCEPTIONS: ${{ steps.cve-list.outputs.CVE_EXCEPTIONS }}
         run: |
           curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
           for cve in $CVE_EXCEPTIONS; do
