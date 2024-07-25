@@ -62,27 +62,26 @@ jobs:
           tags: |
             type=raw,value=vex-test
 
-      - name: Build and push multi-platform Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/Dockerfile
-          push: true
-          sbom: true
-          provenance: mode=max
-          platforms: linux/amd64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      # - name: Build and push multi-platform Docker image
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     context: .
+      #     file: ./docker/Dockerfile
+      #     push: true
+      #     sbom: true
+      #     provenance: mode=max
+      #     platforms: linux/amd64
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     cache-from: type=gha
+      #     cache-to: type=gha,mode=max
       
       - name: Add VEX attestations
         env:
           CVE_EXCEPTIONS: CVE-2019-10790 CVE-2024-37890
         run: |
-          for cve in $CVE_EXCEPTIONS
-            for tag in ${{ join(fromJSON(steps.meta.outputs.json).tags, ' ') }}
-            do
+          for cve in $CVE_EXCEPTIONS; do
+            for tag in "${{ join(fromJSON(steps.meta.outputs.json).tags, ' ') }}"; do
               echo "Attaching VEX exception $cve to $tag"
             done
           done
