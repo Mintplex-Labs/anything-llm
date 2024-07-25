@@ -59,7 +59,7 @@ jobs:
           images: |
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
           tags: |
-            type=raw,value=vex-test
+            type=raw,value=dev
 
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v6
