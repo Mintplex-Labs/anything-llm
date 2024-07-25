@@ -84,13 +84,6 @@ USER anythingllm
 # Chrome scraping fixes for puppeteer
 # Fix path to chrome executable as the runner will assume the file is in `/root/.cache`
 ENV PUPPETEER_EXECUTABLE_PATH=/app/.cache/puppeteer/chrome/linux-119.0.6045.105/chrome-linux64/chrome
-USER root
-RUN cd /app/.cache/puppeteer/chrome/linux-119.0.6045.105/chrome-linux64 && \
-    chown anythingllm:anythingllm chrome_sandbox && \
-    chmod 4755 chrome_sandbox && \
-    cp -p chrome_sandbox /usr/local/sbin/chrome-devel-sandbox
-USER anythingllm
-ENV CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
 
 ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
