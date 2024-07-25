@@ -22,7 +22,6 @@ export default function ActiveWorkspaces() {
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWs, setSelectedWs] = useState(null);
   const [hoverStates, setHoverStates] = useState({});
-  const [uploadHover, setUploadHover] = useState({});
   const isInWorkspaceSettings = !!useMatch("/workspace/:slug/settings/:tab");
 
   useEffect(() => {
@@ -48,14 +47,6 @@ export default function ActiveWorkspaces() {
 
   const handleGearMouseLeave = useCallback((workspaceId) => {
     setSettingHover((prev) => ({ ...prev, [workspaceId]: false }));
-  }, []);
-
-  const handleUploadMouseEnter = useCallback((workspaceId) => {
-    setUploadHover((prev) => ({ ...prev, [workspaceId]: true }));
-  }, []);
-
-  const handleUploadMouseLeave = useCallback((workspaceId) => {
-    setUploadHover((prev) => ({ ...prev, [workspaceId]: false }));
   }, []);
 
   if (loading) {
@@ -128,12 +119,6 @@ export default function ActiveWorkspaces() {
                           setSelectedWs(workspace);
                           showModal();
                         }}
-                        onMouseEnter={() =>
-                          handleUploadMouseEnter(workspace.id)
-                        }
-                        onMouseLeave={() =>
-                          handleUploadMouseLeave(workspace.id)
-                        }
                         className="group p-[2px] hover:bg-[#646768] rounded-[4px] border-none rounded-md flex items-center justify-center"
                       >
                         <UploadSimple
