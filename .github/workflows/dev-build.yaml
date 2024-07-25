@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['railway-dev'] # put your current branch to create a build. Core team only.
+    branches: ['-dev'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
@@ -60,13 +60,13 @@ jobs:
           images: |
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
           tags: |
-            type=raw,value=railway-dev
+            type=raw,value=dev
 
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./docker/render.Dockerfile
+          file: ./docker/Dockerfile
           push: true
           sbom: true
           provenance: mode=max
@@ -75,5 +75,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: |
-            "STORAGE_DIR=/storage"
