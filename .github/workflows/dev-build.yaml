@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['cleanup-deps'] # put your current branch to create a build. Core team only.
+    branches: ['jwt-bump'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
