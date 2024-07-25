@@ -1,4 +1,4 @@
-name: Publish AnythingLLM Development Docker image (amd64)
+name: AnythingLLM Development Docker image (amd64)
 
 concurrency:
   group: build-${{ github.ref }}
@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['-dev'] # put your current branch to create a build. Core team only.
+    branches: ['vex'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'
@@ -60,7 +60,7 @@ jobs:
           images: |
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
           tags: |
-            type=raw,value=dev
+            type=raw,value=vex-test
 
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v6

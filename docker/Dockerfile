@@ -165,6 +165,8 @@ USER anythingllm
 #     npx prisma migrate deploy --schema=./prisma/schema.prisma
 # WORKDIR /app
 
+COPY ./docker/vex/* /var/lib/db/
+
 # Setup the environment
 ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
