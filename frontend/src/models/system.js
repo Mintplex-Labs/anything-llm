@@ -679,6 +679,56 @@ const System = {
       .then((res) => res.json())
       .catch(() => false);
   },
+  uploadCustomOllamaModel: async function (localPathToFile, progressCallback) {
+    return new Promise(async (resolve) => {
+      try {
+        const response = await fetch(
+          `${API_BASE()}/system/upload-custom-ollama-model`,
+          {
+            method: "POST",
+            headers: baseHeaders(),
+            body: JSON.stringify({ localPathToFile }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Error uploading model. Code: 1.");
+        }
+
+        const reader = response.body.getReader();
+        let done = false;
+
+        while (!done) {
+          const { value, done: readerDone } = await reader.read();
+          if (readerDone) {
+            done = true;
+            resolve({ success: true, error: null });
+          } else {
+            const chunk = new TextDecoder("utf-8").decode(value);
+            const lines = chunk.split("\n");
+            for (const line of lines) {
+              if (line.startsWith("data:")) {
+                const data = safeJsonParse(line.slice(5));
+                if (data?.done) {
+                  resolve({ success: true, error: null });
+                } else if (data?.error) {
+                  resolve({ success: false, error: data?.error });
+                } else {
+                  progressCallback(data?.message, data?.status);
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error loading in custom model:", error);
+        resolve({
+          success: false,
+          error: "Error loading custom model. Code: 2.",
+        });
+      }
+    });
+  },
   supporterInterest: async function (action = "open") {
     return fetch(`${API_BASE()}/system/support-interest/${action}`, {
       method: "HEAD",

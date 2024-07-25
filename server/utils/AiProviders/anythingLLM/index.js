@@ -262,6 +262,66 @@ class AnythingLLMOllama {
     }
   }
 
+  async createModel(
+    modelFileLocation = null,
+    progressCallback,
+    successCallback,
+    errorCallback
+  ) {
+    const fs = require("fs");
+    if (!modelFileLocation || !fs.existsSync(modelFileLocation)) {
+      errorCallback?.(
+        `Could not find a model at file location: ${modelFileLocation}.`
+      );
+      return;
+    }
+
+    if (!this.#supportedPlatform()) {
+      errorCallback?.(`${this.process.APP_PLATFORM} is not supported.`);
+      return;
+    }
+    await this.bootOrContinue();
+    const modelName = modelFileLocation.split("/").splice(-1)[0];
+    this.#log(
+      `Starting creation of model ${modelName} from "${modelFileLocation}".`
+    );
+    const response = await fetch(`${this.basePath()}/api/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: modelName,
+        modelfile: `FROM ${modelFileLocation}`,
+        stream: true,
+      }),
+    });
+
+    const reader = response.body.getReader();
+    let chunks = [];
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) break;
+
+      chunks.push(value);
+      const receivedText = new TextDecoder("utf-8").decode(value);
+      try {
+        const parsedResult = safeJsonParse(receivedText);
+        const responses = Array.isArray(parsedResult)
+          ? parsedResult
+          : [parsedResult];
+        for (let json of responses) {
+          if (json?.status) progressCallback?.(json?.status, "OK");
+          if (json?.status === "success") successCallback?.();
+        }
+      } catch (e) {
+        console.error("Error parsing JSON", e);
+        errorCallback?.(e.message);
+      }
+    }
+  }
+
   async deleteModel(modelName = null) {
     if (!this.#supportedPlatform()) return [];
     if (!modelName) return true;
