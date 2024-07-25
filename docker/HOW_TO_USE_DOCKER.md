@@ -102,7 +102,7 @@ services:
     cap_add:
       - SYS_ADMIN
     environment:
-    # Adjust for your environemnt
+    # Adjust for your environment
       - STORAGE_DIR=/app/server/storage
       - JWT_SECRET="make this a large list of random numbers and letters 20+"
       - LLM_PROVIDER=ollama

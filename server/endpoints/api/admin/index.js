@@ -133,7 +133,7 @@ function apiAdminEndpoints(app) {
 
       const newUserParams = reqBody(request);
       const { user: newUser, error } = await User.create(newUserParams);
-      response.status(200).json({ user: newUser, error });
+      response.status(newUser ? 200 : 400).json({ user: newUser, error });
     } catch (e) {
       console.error(e);
       response.sendStatus(500).end();
@@ -616,7 +616,6 @@ function apiAdminEndpoints(app) {
             type: 'object',
             example: {
               settings: {
-                users_can_delete_workspaces: true,
                 limit_user_messages: false,
                 message_limit: 10,
               }
@@ -641,9 +640,6 @@ function apiAdminEndpoints(app) {
       }
 
       const settings = {
-        users_can_delete_workspaces:
-          (await SystemSettings.get({ label: "users_can_delete_workspaces" }))
-            ?.value === "true",
         limit_user_messages:
           (await SystemSettings.get({ label: "limit_user_messages" }))
             ?.value === "true",
@@ -673,7 +669,6 @@ function apiAdminEndpoints(app) {
       content: {
         "application/json": {
           example: {
-            users_can_delete_workspaces: false,
             limit_user_messages: true,
             message_limit: 5,
           }

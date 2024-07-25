@@ -57,7 +57,7 @@ export default function Citations({ sources = [] }) {
         />
       </button>
       {open && (
-        <div className="flex flex-wrap md:flex-row flex-col md:items-center gap-4 overflow-x-scroll mt-1 doc__source">
+        <div className="flex flex-wrap md:flex-row md:items-center gap-4 overflow-x-scroll mt-1 doc__source ml-14">
           {combineLikeSources(sources).map((source) => (
             <Citation
               key={v4()}
@@ -222,14 +222,16 @@ function parseChunkSource({ title = "", chunks = [] }) {
 
   if (
     !chunks.length ||
-    (!chunks[0].chunkSource.startsWith("link://") &&
-      !chunks[0].chunkSource.startsWith("confluence://"))
+    (!chunks[0].chunkSource?.startsWith("link://") &&
+      !chunks[0].chunkSource?.startsWith("confluence://") &&
+      !chunks[0].chunkSource?.startsWith("github://"))
   )
     return nullResponse;
   try {
     const url = new URL(
       chunks[0].chunkSource.split("link://")[1] ||
-        chunks[0].chunkSource.split("confluence://")[1]
+        chunks[0].chunkSource.split("confluence://")[1] ||
+        chunks[0].chunkSource.split("github://")[1]
     );
     let text = url.host + url.pathname;
     let icon = "link";

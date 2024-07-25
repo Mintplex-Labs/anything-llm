@@ -6,15 +6,15 @@ export default function MistralOptions({ settings }) {
   const [mistralKey, setMistralKey] = useState(settings?.MistralApiKey);
 
   return (
-    <div className="flex gap-x-4">
+    <div className="flex gap-[36px] mt-1.5">
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Mistral API Key
         </label>
         <input
           type="password"
           name="MistralApiKey"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
           placeholder="Mistral API Key"
           defaultValue={settings?.MistralApiKey ? "*".repeat(20) : ""}
           required={true}
@@ -56,7 +56,7 @@ function MistralModelSelection({ apiKey, settings }) {
   if (loading || customModels.length == 0) {
     return (
       <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-4">
+        <label className="text-white text-sm font-semibold block mb-3">
           Chat Model Selection
         </label>
         <select
@@ -76,7 +76,7 @@ function MistralModelSelection({ apiKey, settings }) {
 
   return (
     <div className="flex flex-col w-60">
-      <label className="text-white text-sm font-semibold block mb-4">
+      <label className="text-white text-sm font-semibold block mb-3">
         Chat Model Selection
       </label>
       <select

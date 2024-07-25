@@ -1,7 +1,18 @@
 const { Telemetry } = require("../../models/telemetry");
+const { BackgroundService } = require("../BackgroundWorkers");
+const { EncryptionManager } = require("../EncryptionManager");
 const { CommunicationKey } = require("../comKey");
 const setupTelemetry = require("../telemetry");
 
+// Testing SSL? You can make a self signed certificate and point the ENVs to that location
+// make a directory in server called 'sslcert' - cd into it
+// - openssl genrsa -aes256 -passout pass:gsahdg -out server.pass.key 4096
+// - openssl rsa -passin pass:gsahdg -in server.pass.key -out server.key
+// - rm server.pass.key
+// - openssl req -new -key server.key -out server.csr
+// Update .env keys with the correct values and boot. These are temporary and not real SSL certs - only use for local.
+// Test with https://localhost:3001/api/ping
+// build and copy frontend to server/public with correct API_BASE and start server in prod model and all should be ok
 function bootSSL(app, port = 3001) {
   try {
     console.log(
@@ -18,11 +29,13 @@ function bootSSL(app, port = 3001) {
       .listen(port, async () => {
         await setupTelemetry();
         new CommunicationKey(true);
+        new EncryptionManager();
+        new BackgroundService().boot();
         console.log(`Primary server in HTTPS mode listening on port ${port}`);
       })
       .on("error", catchSigTerms);
 
-    require("express-ws")(app, server); // Apply same certificate + server for WSS connections
+    require("@mintplex-labs/express-ws").default(app, server);
     return { app, server };
   } catch (e) {
     console.error(
@@ -45,6 +58,8 @@ function bootHTTP(app, port = 3001) {
     .listen(port, async () => {
       await setupTelemetry();
       new CommunicationKey(true);
+      new EncryptionManager();
+      new BackgroundService().boot();
       console.log(`Primary server in HTTP mode listening on port ${port}`);
     })
     .on("error", catchSigTerms);

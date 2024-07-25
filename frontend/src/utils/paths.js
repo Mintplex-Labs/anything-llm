@@ -40,7 +40,7 @@ export default {
     return "https://discord.com/invite/6UyHPeGZAC";
   },
   docs: () => {
-    return "https://docs.useanything.com";
+    return "https://docs.anythingllm.com";
   },
   mailToMintplex: () => {
     return "mailto:team@mintplexlabs.com";
@@ -75,6 +75,9 @@ export default {
   },
   apiDocs: () => {
     return `${API_BASE}/docs`;
+  },
+  orderFineTune: () => {
+    return `/fine-tuning`;
   },
   settings: {
     system: () => {
@@ -134,6 +137,14 @@ export default {
     },
     embedChats: () => {
       return `/settings/embed-chats`;
+    },
+    experimental: () => {
+      return `/settings/beta-features`;
+    },
+  },
+  experimental: {
+    liveDocumentSync: {
+      manage: () => `/settings/beta-features/live-document-sync/manage`,
     },
   },
 };

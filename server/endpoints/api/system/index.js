@@ -26,10 +26,10 @@ function apiSystemEndpoints(app) {
     try {
       if (process.env.NODE_ENV !== "production")
         return response.sendStatus(200).end();
-      await dumpENV();
+      dumpENV();
       response.sendStatus(200).end();
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -66,7 +66,7 @@ function apiSystemEndpoints(app) {
       const settings = await SystemSettings.currentSettings();
       response.status(200).json({ settings });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -98,7 +98,7 @@ function apiSystemEndpoints(app) {
       const vectorCount = await VectorDb.totalVectors();
       response.status(200).json({ vectorCount });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -145,10 +145,9 @@ function apiSystemEndpoints(app) {
       try {
         const body = reqBody(request);
         const { newValues, error } = await updateENV(body);
-        if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -202,7 +201,7 @@ function apiSystemEndpoints(app) {
         response.setHeader("Content-Type", contentType);
         response.status(200).send(data);
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -268,7 +267,7 @@ function apiSystemEndpoints(app) {
           .json({ success: true, message: "Documents removed successfully" })
           .end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }

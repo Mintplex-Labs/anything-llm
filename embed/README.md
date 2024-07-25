@@ -95,7 +95,7 @@ REQUIRED data attributes:
 
 **Behavior Overrides**
 
-- `data-open-on-load` — Once loaded, open the chat as default. It can still be closed by the user.
+- `data-open-on-load` — Once loaded, open the chat as default. It can still be closed by the user. To enable set this attribute to `on`. All other values will be ignored.
 
 - `data-support-email` — Shows a support email that the user can used to draft an email via the "three dot" menu in the top right. Option will not appear if it is not set.
 

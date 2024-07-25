@@ -79,7 +79,7 @@ function apiWorkspaceEndpoints(app) {
       });
       response.status(200).json({ workspace, message });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -121,7 +121,7 @@ function apiWorkspaceEndpoints(app) {
       const workspaces = await Workspace.where();
       response.status(200).json({ workspaces });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -170,7 +170,7 @@ function apiWorkspaceEndpoints(app) {
       const workspace = await Workspace.get({ slug });
       response.status(200).json({ workspace });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -221,7 +221,7 @@ function apiWorkspaceEndpoints(app) {
         }
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -301,7 +301,7 @@ function apiWorkspaceEndpoints(app) {
         );
         response.status(200).json({ workspace, message });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -362,7 +362,7 @@ function apiWorkspaceEndpoints(app) {
         const history = await WorkspaceChats.forWorkspace(workspace.id);
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -441,7 +441,7 @@ function apiWorkspaceEndpoints(app) {
         });
         response.status(200).json({ workspace: updatedWorkspace });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -603,7 +603,7 @@ function apiWorkspaceEndpoints(app) {
         });
         response.status(200).json({ ...result });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.status(500).json({
           id: uuidv4(),
           type: "abort",
@@ -726,7 +726,7 @@ function apiWorkspaceEndpoints(app) {
         });
         response.end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         writeResponseChunk(response, {
           id: uuidv4(),
           type: "abort",

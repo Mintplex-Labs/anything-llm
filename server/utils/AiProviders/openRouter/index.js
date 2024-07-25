@@ -24,7 +24,7 @@ class OpenRouterLLM {
       baseURL: this.basePath,
       apiKey: process.env.OPENROUTER_API_KEY ?? null,
       defaultHeaders: {
-        "HTTP-Referer": "https://useanything.com",
+        "HTTP-Referer": "https://anythingllm.com",
         "X-Title": "AnythingLLM",
       },
     });
@@ -122,11 +122,6 @@ class OpenRouterLLM {
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
-  }
-
-  async isSafe(_input = "") {
-    // Not implemented so must be stubbed
-    return { safe: true, reasons: [] };
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {

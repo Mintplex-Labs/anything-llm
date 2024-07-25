@@ -18,6 +18,7 @@ import GroqLogo from "@/media/llmprovider/groq.png";
 import KoboldCPPLogo from "@/media/llmprovider/koboldcpp.png";
 import TextGenWebUILogo from "@/media/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/media/llmprovider/litellm.png";
+import AWSBedrockLogo from "@/media/llmprovider/bedrock.png";
 
 import CohereLogo from "@/media/llmprovider/cohere.png";
 import ZillizLogo from "@/media/vectordbs/zilliz.png";
@@ -179,6 +180,13 @@ export const LLM_SELECTION_PRIVACY = {
     ],
     logo: LiteLLMLogo,
   },
+  bedrock: {
+    name: "AWS Bedrock",
+    description: [
+      "You model and chat contents are subject to the agreed EULA for AWS and the model provider on aws.amazon.com",
+    ],
+    logo: AWSBedrockLogo,
+  },
 };
 
 export const VECTOR_DB_PRIVACY = {
@@ -307,6 +315,13 @@ export const EMBEDDING_ENGINE_PRIVACY = {
       "Your document text is only accessible on the server running LiteLLM and to the providers you configured in LiteLLM.",
     ],
     logo: LiteLLMLogo,
+  },
+  "generic-openai": {
+    name: "Generic OpenAI compatible service",
+    description: [
+      "Data is shared according to the terms of service applicable with your generic endpoint provider.",
+    ],
+    logo: GenericOpenAiLogo,
   },
 };
 

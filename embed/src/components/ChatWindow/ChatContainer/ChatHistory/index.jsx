@@ -46,9 +46,9 @@ export default function ChatHistory({ settings = {}, history = [] }) {
 
   if (history.length === 0) {
     return (
-      <div className="pb-[100px] pt-[5px] rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
-        <div className="flex h-full flex-col items-center justify-center">
-          <p className="text-slate-400 text-sm font-base py-4 text-center">
+      <div className="allm-pb-[100px] allm-pt-[5px] allm-rounded-lg allm-px-2 allm-h-full allm-mt-2 allm-gap-y-2 allm-overflow-y-scroll allm-flex allm-flex-col allm-justify-start allm-no-scroll">
+        <div className="allm-flex allm-h-full allm-flex-col allm-items-center allm-justify-center">
+          <p className="allm-text-slate-400 allm-text-sm allm-font-sans allm-py-4 allm-text-center">
             {settings?.greeting ?? "Send a chat to get started."}
           </p>
         </div>
@@ -58,7 +58,7 @@ export default function ChatHistory({ settings = {}, history = [] }) {
 
   return (
     <div
-      className="pb-[30px] pt-[5px] rounded-lg px-2 h-full gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll md:max-h-[500px]"
+      className="allm-pb-[30px] allm-pt-[5px] allm-rounded-lg allm-px-2 allm-h-full allm-gap-y-2 allm-overflow-y-scroll allm-flex allm-flex-col allm-justify-start allm-no-scroll allm-md:max-h-[500px]"
       id="chat-history"
       ref={chatHistoryRef}
     >
@@ -97,12 +97,12 @@ export default function ChatHistory({ settings = {}, history = [] }) {
         );
       })}
       {!isAtBottom && (
-        <div className="fixed bottom-[10rem] right-[50px] z-50 cursor-pointer animate-pulse">
-          <div className="flex flex-col items-center">
-            <div className="p-1 rounded-full border border-white/10 bg-black/20 hover:bg-black/50">
+        <div className="allm-fixed allm-bottom-[10rem] allm-right-[50px] allm-z-50 allm-cursor-pointer allm-animate-pulse">
+          <div className="allm-flex allm-flex-col allm-items-center">
+            <div className="allm-p-1 allm-rounded-full allm-border allm-border-white/10 allm-bg-black/20 hover:allm-bg-black/50">
               <ArrowDown
                 weight="bold"
-                className="text-white/50 w-5 h-5"
+                className="allm-text-white/50 allm-w-5 allm-h-5"
                 onClick={scrollToBottom}
                 id="scroll-to-bottom-button"
                 aria-label="Scroll to bottom"
@@ -117,10 +117,13 @@ export default function ChatHistory({ settings = {}, history = [] }) {
 
 export function ChatHistoryLoading() {
   return (
-    <div className="h-full w-full relative">
-      <div className="h-full max-h-[82vh] pb-[100px] pt-[5px] bg-gray-100 rounded-lg px-2 h-full mt-2 gap-y-2 overflow-y-scroll flex flex-col justify-start no-scroll">
-        <div className="flex h-full flex-col items-center justify-center">
-          <CircleNotch size={14} className="text-slate-400 animate-spin" />
+    <div className="allm-h-full allm-w-full allm-relative">
+      <div className="allm-h-full allm-max-h-[82vh] allm-pb-[100px] allm-pt-[5px] allm-bg-gray-100 allm-rounded-lg allm-px-2 allm-h-full allm-mt-2 allm-gap-y-2 allm-overflow-y-scroll allm-flex allm-flex-col allm-justify-start allm-no-scroll">
+        <div className="allm-flex allm-h-full allm-flex-col allm-items-center allm-justify-center">
+          <CircleNotch
+            size={14}
+            className="allm-text-slate-400 allm-animate-spin"
+          />
         </div>
       </div>
     </div>

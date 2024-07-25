@@ -1,4 +1,4 @@
-const lancedb = require("vectordb");
+const lancedb = require("@lancedb/lancedb");
 const { toChunks, getEmbeddingEngineSelection } = require("../../helpers");
 const { TextSplitter } = require("../../TextSplitter");
 const { SystemSettings } = require("../../../models/systemSettings");
@@ -6,11 +6,18 @@ const { storeVectorResult, cachedVectorInformation } = require("../../files");
 const { v4: uuidv4 } = require("uuid");
 const { sourceIdentifier } = require("../../chats");
 
+/**
+ * LancedDB Client connection object
+ * @typedef {import('@lancedb/lancedb').Connection} LanceClient
+ */
+
 const LanceDb = {
   uri: `${
     !!process.env.STORAGE_DIR ? `${process.env.STORAGE_DIR}/` : "./storage/"
   }lancedb`,
   name: "LanceDb",
+
+  /** @returns {Promise<{client: LanceClient}>} */
   connect: async function () {
     if (process.env.VECTOR_DB !== "lancedb")
       throw new Error("LanceDB::Invalid ENV settings");
@@ -29,14 +36,12 @@ const LanceDb = {
     return { heartbeat: Number(new Date()) };
   },
   tables: async function () {
-    const fs = require("fs");
     const { client } = await this.connect();
-    const dirs = fs.readdirSync(client.uri);
-    return dirs.map((folder) => folder.replace(".lance", ""));
+    return await client.tableNames();
   },
   totalVectors: async function () {
     const { client } = await this.connect();
-    const tables = await this.tables();
+    const tables = await client.tableNames();
     let count = 0;
     for (const tableName of tables) {
       const table = await client.openTable(tableName);
@@ -52,6 +57,16 @@ const LanceDb = {
     const table = await client.openTable(_namespace);
     return (await table.countRows()) || 0;
   },
+  /**
+   * Performs a SimilaritySearch on a give LanceDB namespace.
+   * @param {LanceClient} client
+   * @param {string} namespace
+   * @param {number[]} queryVector
+   * @param {number} similarityThreshold
+   * @param {number} topN
+   * @param {string[]} filterIdentifiers
+   * @returns
+   */
   similarityResponse: async function (
     client,
     namespace,
@@ -68,10 +83,10 @@ const LanceDb = {
     };
 
     const response = await collection
-      .search(queryVector)
-      .metricType("cosine")
+      .vectorSearch(queryVector)
+      .distanceType("cosine")
       .limit(topN)
-      .execute();
+      .toArray();
 
     response.forEach((item) => {
       if (this.distanceToSimilarity(item._distance) < similarityThreshold)
@@ -94,6 +109,12 @@ const LanceDb = {
 
     return result;
   },
+  /**
+   *
+   * @param {LanceClient} client
+   * @param {string} namespace
+   * @returns
+   */
   namespace: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
     const collection = await client.openTable(namespace).catch(() => false);
@@ -103,6 +124,13 @@ const LanceDb = {
       ...collection,
     };
   },
+  /**
+   *
+   * @param {LanceClient} client
+   * @param {number[]} data
+   * @param {string} namespace
+   * @returns
+   */
   updateOrCreateCollection: async function (client, data = [], namespace) {
     const hasNamespace = await this.hasNamespace(namespace);
     if (hasNamespace) {
@@ -120,14 +148,25 @@ const LanceDb = {
     const exists = await this.namespaceExists(client, namespace);
     return exists;
   },
-  namespaceExists: async function (_client, namespace = null) {
+  /**
+   *
+   * @param {LanceClient} client
+   * @param {string} namespace
+   * @returns
+   */
+  namespaceExists: async function (client, namespace = null) {
     if (!namespace) throw new Error("No namespace value provided.");
-    const collections = await this.tables();
+    const collections = await client.tableNames();
     return collections.includes(namespace);
   },
+  /**
+   *
+   * @param {LanceClient} client
+   * @param {string} namespace
+   * @returns
+   */
   deleteVectorsInNamespace: async function (client, namespace = null) {
-    const fs = require("fs");
-    fs.rm(`${client.uri}/${namespace}.lance`, { recursive: true }, () => null);
+    await client.dropTable(namespace);
     return true;
   },
   deleteDocumentFromNamespace: async function (namespace, docId) {
@@ -153,7 +192,8 @@ const LanceDb = {
   addDocumentToNamespace: async function (
     namespace,
     documentData = {},
-    fullFilePath = null
+    fullFilePath = null,
+    skipCache = false
   ) {
     const { DocumentVectors } = require("../../../models/vectors");
     try {
@@ -161,25 +201,27 @@ const LanceDb = {
       if (!pageContent || pageContent.length == 0) return false;
 
       console.log("Adding new vectorized document into namespace", namespace);
-      const cacheResult = await cachedVectorInformation(fullFilePath);
-      if (cacheResult.exists) {
-        const { client } = await this.connect();
-        const { chunks } = cacheResult;
-        const documentVectors = [];
-        const submissions = [];
+      if (!skipCache) {
+        const cacheResult = await cachedVectorInformation(fullFilePath);
+        if (cacheResult.exists) {
+          const { client } = await this.connect();
+          const { chunks } = cacheResult;
+          const documentVectors = [];
+          const submissions = [];
 
-        for (const chunk of chunks) {
-          chunk.forEach((chunk) => {
-            const id = uuidv4();
-            const { id: _id, ...metadata } = chunk.metadata;
-            documentVectors.push({ docId, vectorId: id });
-            submissions.push({ id: id, vector: chunk.values, ...metadata });
-          });
+          for (const chunk of chunks) {
+            chunk.forEach((chunk) => {
+              const id = uuidv4();
+              const { id: _id, ...metadata } = chunk.metadata;
+              documentVectors.push({ docId, vectorId: id });
+              submissions.push({ id: id, vector: chunk.values, ...metadata });
+            });
+          }
+
+          await this.updateOrCreateCollection(client, submissions, namespace);
+          await DocumentVectors.bulkInsert(documentVectors);
+          return { vectorized: true, error: null };
         }
-
-        await this.updateOrCreateCollection(client, submissions, namespace);
-        await DocumentVectors.bulkInsert(documentVectors);
-        return { vectorized: true, error: null };
       }
 
       // If we are here then we are going to embed and store a novel document.

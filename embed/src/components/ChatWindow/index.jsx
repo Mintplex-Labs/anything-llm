@@ -14,7 +14,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
 
   if (loading) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="allm-flex allm-flex-col allm-h-full">
         <ChatWindowHeader
           sessionId={sessionId}
           settings={settings}
@@ -23,7 +23,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
           setChatHistory={setChatHistory}
         />
         <ChatHistoryLoading />
-        <div className="pt-4 pb-2 h-fit gap-y-1">
+        <div className="allm-pt-4 allm-pb-2 allm-h-fit allm-gap-y-1">
           <SessionId />
           <Sponsor settings={settings} />
         </div>
@@ -34,7 +34,7 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
   setEventDelegatorForCodeSnippets();
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="allm-flex allm-flex-col allm-h-full">
       <ChatWindowHeader
         sessionId={sessionId}
         settings={settings}
@@ -42,14 +42,14 @@ export default function ChatWindow({ closeChat, settings, sessionId }) {
         closeChat={closeChat}
         setChatHistory={setChatHistory}
       />
-      <div className="flex-grow overflow-y-auto">
+      <div className="allm-flex-grow allm-overflow-y-auto">
         <ChatContainer
           sessionId={sessionId}
           settings={settings}
           knownHistory={chatHistory}
         />
       </div>
-      <div className="mt-4 pb-4 h-fit gap-y-2 z-10">
+      <div className="allm-mt-4 allm-pb-4 allm-h-fit allm-gap-y-2 allm-z-10">
         <Sponsor settings={settings} />
         <ResetChat
           setChatHistory={setChatHistory}
@@ -76,13 +76,13 @@ function copyCodeSnippet(uuid) {
 
   window.navigator.clipboard.writeText(markdown);
 
-  target.classList.add("text-green-500");
+  target.classList.add("allm-text-green-500");
   const originalText = target.innerHTML;
   target.innerText = "Copied!";
   target.setAttribute("disabled", true);
 
   setTimeout(() => {
-    target.classList.remove("text-green-500");
+    target.classList.remove("allm-text-green-500");
     target.innerHTML = originalText;
     target.removeAttribute("disabled");
   }, 2500);

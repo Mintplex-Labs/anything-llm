@@ -15,13 +15,14 @@ on:
     branches: ['master'] # master branch only. Do not modify.
     paths-ignore:
       - '**.md'
-      - 'cloud-deployments/*'
+      - 'cloud-deployments/**/*'
       - 'images/**/*'
       - '.vscode/**/*'
       - '**/.env.example'
       - '.github/ISSUE_TEMPLATE/**/*'
       - 'embed/**/*' # Embed should be published to frontend (yarn build:publish) if any changes are introduced
       - 'server/utils/agents/aibitat/example/**/*' # Do not push new image for local dev testing of new aibitat images.
+      - 'docker/vex/*' # CVE exceptions we know are not in risk
 
 jobs:
   push_multi_platform_to_registries:
@@ -81,13 +82,14 @@ jobs:
             type=ref,event=tag
             type=ref,event=pr
 
-
       - name: Build and push multi-platform Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./docker/Dockerfile
           push: true
+          sbom: true
+          provenance: mode=max
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

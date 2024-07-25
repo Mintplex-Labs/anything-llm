@@ -3,13 +3,17 @@ const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
 const UrlPattern = require("url-pattern");
-const { writeToServerDocuments } = require("../../files");
+const { writeToServerDocuments, sanitizeFileName } = require("../../files");
 const { tokenizeString } = require("../../tokenizer");
-const {
-  ConfluencePagesLoader,
-} = require("langchain/document_loaders/web/confluence");
+const { ConfluencePagesLoader } = require("./ConfluenceLoader");
 
-async function loadConfluence({ pageUrl, username, accessToken }) {
+/**
+ * Load Confluence documents from a spaceID and Confluence credentials
+ * @param {object} args - forwarded request body params
+ * @param {import("../../../middleware/setDataSigner").ResponseWithSigner} response - Express response object with encryptionWorker
+ * @returns
+ */
+async function loadConfluence({ pageUrl, username, accessToken }, response) {
   if (!pageUrl || !username || !accessToken) {
     return {
       success: false,
@@ -79,7 +83,10 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
       docAuthor: subdomain,
       description: doc.metadata.title,
       docSource: `${subdomain} Confluence`,
-      chunkSource: `confluence://${doc.metadata.url}`,
+      chunkSource: generateChunkSource(
+        { doc, baseUrl, accessToken, username },
+        response.locals.encryptionWorker
+      ),
       published: new Date().toLocaleString(),
       wordCount: doc.pageContent.split(" ").length,
       pageContent: doc.pageContent,
@@ -89,11 +96,11 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
     console.log(
       `[Confluence Loader]: Saving ${doc.metadata.title} to ${outFolder}`
     );
-    writeToServerDocuments(
-      data,
-      `${slugify(doc.metadata.title)}-${data.id}`,
-      outFolderPath
+
+    const fileName = sanitizeFileName(
+      `${slugify(doc.metadata.title)}-${data.id}`
     );
+    writeToServerDocuments(data, fileName, outFolderPath);
   });
 
   return {
@@ -103,6 +110,82 @@ async function loadConfluence({ pageUrl, username, accessToken }) {
       spaceKey,
       destination: outFolder,
     },
+  };
+}
+
+/**
+ * Gets the page content from a specific Confluence page, not all pages in a workspace.
+ * @returns
+ */
+async function fetchConfluencePage({
+  pageUrl,
+  baseUrl,
+  username,
+  accessToken,
+}) {
+  if (!pageUrl || !baseUrl || !username || !accessToken) {
+    return {
+      success: false,
+      content: null,
+      reason:
+        "You need either a username and access token, or a personal access token (PAT), to use the Confluence connector.",
+    };
+  }
+
+  const { valid, result } = validSpaceUrl(pageUrl);
+  if (!valid) {
+    return {
+      success: false,
+      content: null,
+      reason:
+        "Confluence space URL is not in the expected format of https://domain.atlassian.net/wiki/space/~SPACEID/* or https://customDomain/wiki/space/~SPACEID/*",
+    };
+  }
+
+  console.log(`-- Working Confluence Page ${pageUrl} --`);
+  const { spaceKey } = result;
+  const loader = new ConfluencePagesLoader({
+    baseUrl,
+    spaceKey,
+    username,
+    accessToken,
+  });
+
+  const { docs, error } = await loader
+    .load()
+    .then((docs) => {
+      return { docs, error: null };
+    })
+    .catch((e) => {
+      return {
+        docs: [],
+        error: e.message?.split("Error:")?.[1] || e.message,
+      };
+    });
+
+  if (!docs.length || !!error) {
+    return {
+      success: false,
+      reason: error ?? "No pages found for that Confluence space.",
+      content: null,
+    };
+  }
+
+  const targetDocument = docs.find(
+    (doc) => doc.pageContent && doc.metadata.url === pageUrl
+  );
+  if (!targetDocument) {
+    return {
+      success: false,
+      reason: "Target page could not be found in Confluence space.",
+      content: null,
+    };
+  }
+
+  return {
+    success: true,
+    reason: null,
+    content: targetDocument.pageContent,
   };
 }
 
@@ -195,4 +278,29 @@ function validSpaceUrl(spaceUrl = "") {
   return { valid: false, result: null };
 }
 
-module.exports = loadConfluence;
+/**
+ * Generate the full chunkSource for a specific Confluence page so that we can resync it later.
+ * This data is encrypted into a single `payload` query param so we can replay credentials later
+ * since this was encrypted with the systems persistent password and salt.
+ * @param {object} chunkSourceInformation
+ * @param {import("../../EncryptionWorker").EncryptionWorker} encryptionWorker
+ * @returns {string}
+ */
+function generateChunkSource(
+  { doc, baseUrl, accessToken, username },
+  encryptionWorker
+) {
+  const payload = {
+    baseUrl,
+    token: accessToken,
+    username,
+  };
+  return `confluence://${doc.metadata.url}?payload=${encryptionWorker.encrypt(
+    JSON.stringify(payload)
+  )}`;
+}
+
+module.exports = {
+  loadConfluence,
+  fetchConfluencePage,
+};
