@@ -90,7 +90,7 @@
                 "touch /home/ec2-user/anythingllm/.env\n",
                 "sudo chown ec2-user:ec2-user -R /home/ec2-user/anythingllm\n",
                 "docker pull mintplexlabs/anythingllm:master\n",
-                "docker run -d -p 3001:3001 --cap-add SYS_ADMIN -v /home/ec2-user/anythingllm:/app/server/storage -v /home/ec2-user/anythingllm/.env:/app/server/.env -e STORAGE_DIR=\"/app/server/storage\" mintplexlabs/anythingllm:master\n",
+                "docker run -d -p 3001:3001 --cap-add SYS_ADMIN -v /home/ec2-user/anythingllm:/app/server/storage -v /home/ec2-user/anythingllm/.env:/app/server/.env -e STORAGE_DIR=\"/app/server/storage\" mintplexlabs/anythingllm\n",
                 "echo \"Container ID: $(sudo docker ps --latest --quiet)\"\n",
                 "export ONLINE=$(curl -Is http://localhost:3001/api/ping | head -n 1|cut -d$' ' -f2)\n",
                 "echo \"Health check: $ONLINE\"\n",
