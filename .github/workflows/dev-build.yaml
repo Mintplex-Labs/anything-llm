@@ -81,6 +81,7 @@ jobs:
           # Collect CVEs from filenames in vex folder
           CVE_NAMES=""
           for file in .docker/vex/CVE-*.vex.json; do
+            echo "Looking at $file"
             [ -e "$file" ] || continue
             filename=$(basename "$file")
             stripped_filename=${filename%.vex.json}
