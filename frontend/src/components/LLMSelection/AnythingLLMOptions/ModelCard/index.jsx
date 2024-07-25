@@ -5,6 +5,7 @@ import { DOWNLOADABLE_MODELS } from "../downloadable";
 import { middleTruncate } from "@/utils/directories";
 import showToast from "@/utils/toast";
 import { openElectronWindow } from "@/ipc/node-api";
+import CustomLLMIcon from "@/assets/logo/custom-llm.png";
 
 export default function ModelCard({
   model,
@@ -14,6 +15,7 @@ export default function ModelCard({
   downloading = false,
   handleClick,
   uninstallModel,
+  isCustom = false,
 }) {
   const onClick = (e) => {
     if (disabled) {
@@ -27,9 +29,11 @@ export default function ModelCard({
     handleClick(e);
   };
 
-  const modelInfo = DOWNLOADABLE_MODELS.find(
-    (availableModel) => availableModel.id === model?.id
-  );
+  const modelInfo = !isCustom
+    ? DOWNLOADABLE_MODELS.find(
+        (availableModel) => availableModel.id === model?.id
+      )
+    : model;
   if (!modelInfo) return null;
 
   return (
@@ -47,7 +51,11 @@ export default function ModelCard({
           {/* Model Header details */}
           <div className="flex items-center gap-x-[9px]">
             <img
-              src="https://avatars.githubusercontent.com/u/151674099?s=48&v=4"
+              src={
+                isCustom
+                  ? CustomLLMIcon
+                  : "https://avatars.githubusercontent.com/u/151674099?s=48&v=4"
+              }
               className="w-[28px] h-[28px] rounded-[6px] bg-white"
             />
             <div className="flex flex-col">
@@ -62,7 +70,7 @@ export default function ModelCard({
                 </p>
               </div>
               <p className="text-[10px] italic text-gray-300">
-                Compiled by Ollama
+                {isCustom ? "Imported locally" : "Compiled by Ollama"}
               </p>
             </div>
           </div>
@@ -120,27 +128,30 @@ export default function ModelCard({
   );
 }
 
-function ModelDescription({ description }) {
+const TRUNCATION_LIMIT = 70;
+function ModelDescription({ description = "" }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
     <div className="py-[8px]">
       <p className="text-gray-400 text-[12px]">
         {truncate(description, expanded ? Number.POSITIVE_INFINITY : 70)}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setExpanded(!expanded);
-            return;
-          }}
-          className="border-none"
-        >
-          <p className="text-white font-bold text-[12px]">
-            {expanded ? "Show less" : "Read more"}
-          </p>
-        </button>
+        {description.length > TRUNCATION_LIMIT && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setExpanded(!expanded);
+              return;
+            }}
+            className="border-none"
+          >
+            <p className="text-white font-bold text-[12px]">
+              {expanded ? "Show less" : "Read more"}
+            </p>
+          </button>
+        )}
       </p>
     </div>
   );

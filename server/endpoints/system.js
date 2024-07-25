@@ -929,6 +929,67 @@ function systemEndpoints(app) {
     }
   );
 
+  app.post(
+    "/system/upload-custom-ollama-model",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const {
+          AnythingLLMOllama,
+        } = require("../utils/AiProviders/anythingLLM");
+        const { localPathToFile } = reqBody(request);
+        response.writeHead(200, {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        });
+
+        const progressCallback = (message, status) => {
+          response.write(
+            `event: progress\ndata: ${JSON.stringify({
+              message,
+              status,
+            })}\n\n`
+          );
+        };
+
+        const successCallback = () => {
+          response.write(
+            `event: done\ndata: ${JSON.stringify({
+              done: true,
+            })}\n\n`
+          );
+          response.end();
+        };
+
+        const errorCallback = (error) => {
+          response.write(
+            `event: error\ndata: ${JSON.stringify({ error })}\n\n`
+          );
+          response.end();
+        };
+
+        await new AnythingLLMOllama().createModel(
+          localPathToFile,
+          progressCallback,
+          successCallback,
+          errorCallback
+        );
+      } catch (error) {
+        console.error(
+          "Error downloading Ollama model - it may have been killed manually.",
+          error.message
+        );
+        response.write(
+          `event: error\ndata: ${JSON.stringify({
+            error: "Internal server error",
+          })}\n\n`
+        );
+        response.end();
+      }
+    }
+  );
+
   app.delete(
     "/system/download-ollama-model",
     [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],

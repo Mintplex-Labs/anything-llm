@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import System from "@/models/system";
 import { ANYTHINGLLM_OLLAMA, _APP_PLATFORM } from "@/utils/constants";
 import { DOWNLOADABLE_MODELS } from "./downloadable";
@@ -8,6 +8,12 @@ import showToast from "@/utils/toast";
 import { refocusApplication } from "@/ipc/node-api";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { CircleNotch, Plus } from "@phosphor-icons/react";
+
+function getCustomModels(models = []) {
+  const OFFICIAL_TAGS = DOWNLOADABLE_MODELS.map((model) => model.id);
+  return models.filter((model) => !OFFICIAL_TAGS.includes(model.id));
+}
 
 // Highlighted and/or recommended models for use.
 const SHORT_MODELS = ["llama3.1:latest", "mistral:latest", "gemma2:latest"];
@@ -22,6 +28,7 @@ export default function AnythingLLMOptions({
   const [hasComponentChanges, setHasComponentChanges] = useState(false);
   const [modelDownloading, setModelDownloading] = useState(null);
   const [downloadedModels, setDownloadedModels] = useState([]);
+  const [importedModels, setImportedModels] = useState([]);
   const [selectedModel, setSelectedModel] = useState(
     settings?.AnythingLLMOllamaModelPref
   );
@@ -80,12 +87,20 @@ export default function AnythingLLMOptions({
     const { models } = await System.customModels("anythingllm_ollama");
     setModelDownloading(null);
     setDownloadedModels(models || []);
+    setImportedModels(getCustomModels(models) || []);
+  }
+
+  async function refreshModelSelection() {
+    const { models } = await System.customModels("anythingllm_ollama");
+    setDownloadedModels(models || []);
+    setImportedModels(getCustomModels(models) || []);
   }
 
   useEffect(() => {
     async function findModels() {
       const { models } = await System.customModels("anythingllm_ollama");
       setDownloadedModels(models || []);
+      setImportedModels(getCustomModels(models) || []);
       const downloadState = window.localStorage.getItem(
         ANYTHINGLLM_OLLAMA.localStorageKey
       );
@@ -109,6 +124,7 @@ export default function AnythingLLMOptions({
         setModelDownloading(null);
         const { models } = await System.customModels("anythingllm_ollama");
         setDownloadedModels(models || []);
+        setImportedModels(getCustomModels(models) || []);
       };
 
       const handleDownloadAbort = async () => {
@@ -116,6 +132,7 @@ export default function AnythingLLMOptions({
         setModelDownloading(null);
         const { models } = await System.customModels("anythingllm_ollama");
         setDownloadedModels(models || []);
+        setImportedModels(getCustomModels(models) || []);
       };
 
       const formEl = document.getElementsByName("LLMPreferenceForm")?.[0];
@@ -146,18 +163,20 @@ export default function AnythingLLMOptions({
 
   return (
     <div className="w-full flex flex-col">
-      <div className="flex flex-col gap-y-4">
-        <div className="flex w-fit items-center gap-x-2">
-          <label className="text-white text-base font-bold">
-            Available Models
-          </label>
-          {hasComponentChanges && (
-            <p className="text-white italic font-thin text-sm text-gray-200">
-              {short
-                ? "Model will begin downloading in background"
-                : "Pressing save changes will begin the model download"}
-            </p>
-          )}
+      <div className="flex flex-col gap-y-4 w-fit">
+        <div className="flex w-3/4 items-start justify-between">
+          <div className="flex w-fit shrink-0">
+            <div className="flex flex-col">
+              {hasComponentChanges && (
+                <p className="text-white italic font-thin text-sm text-gray-200">
+                  {short
+                    ? "Model will begin downloading in background"
+                    : "Pressing save changes will begin the model download"}
+                </p>
+              )}
+            </div>
+          </div>
+          <UploadCustomModelButton onSuccess={refreshModelSelection} />
         </div>
 
         {/* Short mode is onboarding only where the user will have no downloads */}
@@ -175,14 +194,54 @@ export default function AnythingLLMOptions({
           <>
             {["windows", "mac"].includes(_APP_PLATFORM.value) ? (
               <>
+                <input
+                  className="hidden"
+                  type="text"
+                  name="AnythingLLMOllamaModelPref"
+                  readOnly={true}
+                  value={selectedModel}
+                />
+
+                {importedModels.length !== 0 && (
+                  <>
+                    <label className="text-white text-base font-bold">
+                      Imported Models
+                    </label>
+                    <div className="flex gap-[12px] w-fill flex-wrap p-0">
+                      {importedModels.map((model) => {
+                        if (showShortList) return null; // never show this on shortlist
+                        return (
+                          <ModelCard
+                            key={model.id}
+                            isCustom={true}
+                            model={{
+                              ...model,
+                              name: model.name.split(":")[0],
+                              description:
+                                "This is an imported GGUF model from your computer.",
+                              licenses: [],
+                            }}
+                            disabled={false}
+                            isActive={model.id === selectedModel}
+                            downloaded={true}
+                            downloading={false}
+                            uninstallModel={uninstallModel}
+                            handleClick={() => {
+                              setSelectedModel(model.id);
+                              setHasComponentChanges(true);
+                              setHasChanges?.(true);
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                <label className="text-white text-base font-bold">
+                  Official Models
+                </label>
                 <div className="flex gap-[12px] w-fill flex-wrap p-0">
-                  <input
-                    className="hidden"
-                    type="text"
-                    name="AnythingLLMOllamaModelPref"
-                    readOnly={true}
-                    value={selectedModel}
-                  />
                   {DOWNLOADABLE_MODELS.map((model) => {
                     if (showShortList && !SHORT_MODELS.includes(model.id))
                       return null;
@@ -228,5 +287,91 @@ export default function AnythingLLMOptions({
         )}
       </div>
     </div>
+  );
+}
+
+function UploadCustomModelButton({ onSuccess }) {
+  const filePicker = useRef(null);
+  const [loading, setLoading] = useState("");
+
+  async function handleSelection(e) {
+    try {
+      e.preventDefault();
+      if (!e.target.files.length) return false;
+      const filePath = e.target.files[0].path;
+      if (!filePath.toLowerCase().endsWith(".gguf")) {
+        showToast("Not a valid GGUF file", "error", { clear: true });
+        return;
+      }
+
+      const filename = filePath.split("/").splice(-1)[0];
+      setLoading(`Importing ${filename} from file...`);
+      await System.uploadCustomOllamaModel(filePath, (message) =>
+        setLoading(message)
+      ).then(({ success, error }) => {
+        showToast(
+          error ?? "Model imported successfully!",
+          success ? "success" : "error",
+          { clear: true }
+        );
+        if (success) onSuccess?.();
+      });
+    } catch (e) {
+      showToast(e.message, "error", { clear: true });
+      return false;
+    } finally {
+      // Show last message for a few seconds.
+      setTimeout(() => {
+        setLoading("");
+      }, 2500);
+      if (!filePicker.current) return;
+      filePicker.current.value = "";
+    }
+  }
+
+  return (
+    <>
+      <input
+        ref={filePicker}
+        multiple={false}
+        type="file"
+        hidden={true}
+        accept=".gguf,.GGUF"
+        onChange={handleSelection}
+      />
+      <div className="flex flex-col w-fit items-end justify-end">
+        <button
+          type="button"
+          onClick={() => filePicker?.current?.click()}
+          className="w-fit relative flex h-[40px] items-center border-none hover:bg-slate-600/20 rounded-lg"
+        >
+          <div className="flex w-full gap-x-2 items-center pl-4">
+            <div className="border-none bg-zinc-600 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
+              {loading ? (
+                <CircleNotch
+                  weight="bold"
+                  size={14}
+                  className="shrink-0 animate-spin text-slate-100"
+                />
+              ) : (
+                <Plus
+                  weight="bold"
+                  size={14}
+                  className="shrink-0 text-slate-100"
+                />
+              )}
+            </div>
+            <p className="text-left text-slate-100 text-sm">
+              Import custom model
+            </p>
+          </div>
+        </button>
+        {!!loading && (
+          <p className="animate-pulse text-white italic font-thin text-sm text-gray-200">
+            {loading}
+          </p>
+        )}
+      </div>
+    </>
   );
 }
