@@ -103,26 +103,23 @@ class GitHubRepoLoader {
    */
   async recursiveLoader() {
     if (!this.ready) throw new Error("[Github Loader]: not in ready state!");
-    const {
-      GithubRepoLoader: LCGithubLoader,
-    } = require("langchain/document_loaders/web/github");
+    const { GithubRepoLoader } = require("@langchain/community/document_loaders/web/github");
 
     if (this.accessToken)
       console.log(
         `[Github Loader]: Access token set! Recursive loading enabled!`
       );
 
-    const loader = new LCGithubLoader(this.repo, {
-      accessToken: this.accessToken,
+    const loader = new GithubRepoLoader(this.repo, {
       branch: this.branch,
       recursive: !!this.accessToken, // Recursive will hit rate limits.
       maxConcurrency: 5,
-      unknown: "ignore",
+      unknown: "warn",
+      accessToken: this.accessToken,
       ignorePaths: this.ignorePaths,
     });
 
-    const docs = [];
-    for await (const doc of loader.loadAsStream()) docs.push(doc);
+    const docs = await loader.load();
     return docs;
   }
 
