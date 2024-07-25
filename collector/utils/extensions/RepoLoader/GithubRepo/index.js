@@ -3,9 +3,9 @@ const fs = require("fs");
 const path = require("path");
 const { default: slugify } = require("slugify");
 const { v4 } = require("uuid");
-const { writeToServerDocuments } = require("../../files");
-const { tokenizeString } = require("../../tokenizer");
-const { generateGitHubChunkSource } = require("../../metadata");
+const { writeToServerDocuments } = require("../../../files");
+const { tokenizeString } = require("../../../tokenizer");
+const { generateGitHubChunkSource } = require("../../../metadata");
 
 /**
  * Load in a Github Repo recursively or just the top level if no PAT is provided
@@ -43,7 +43,7 @@ async function loadGithubRepo(args, response) {
     process.env.NODE_ENV === "development"
       ? path.resolve(
           __dirname,
-          `../../../../server/storage/documents/${outFolder}`
+          `../../../../../server/storage/documents/${outFolder}`
         )
       : path.resolve(process.env.STORAGE_DIR, `documents/${outFolder}`);
 

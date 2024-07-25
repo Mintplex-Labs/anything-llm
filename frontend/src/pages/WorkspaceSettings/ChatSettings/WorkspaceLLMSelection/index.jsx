@@ -13,6 +13,7 @@ const NO_MODEL_SELECTION = [
   "anythingllm_ollama",
   "huggingface",
   "generic-openai",
+  "bedrock",
 ];
 const DISABLED_PROVIDERS = [
   "anythingllm_ollama",

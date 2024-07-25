@@ -6,7 +6,7 @@
   "scripts": {
     "start": "vite --open",
     "dev": "NODE_ENV=development vite --debug --host=0.0.0.0",
-    "build": "vite build",
+    "build": "vite build && node scripts/postbuild.js",
     "lint": "yarn prettier --ignore-path ../.prettierignore --write ./src",
     "preview": "vite preview"
   },

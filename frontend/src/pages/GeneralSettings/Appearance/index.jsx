@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 // import CustomLogo from "./CustomLogo";
 import CustomMessages from "./CustomMessages";
 // import CustomAppName from "./CustomAppName";
+// import CustomSiteSettings from "./CustomSiteSettings";
 import LanguagePreference from "./LanguagePreference";
 
 export default function Appearance() {
@@ -33,8 +34,11 @@ export default function Appearance() {
           {/* <CustomLogo /> */}
           {/* <CustomAppName /> */}
           <CustomMessages />
-          {/* <FooterCustomization />
-          <SupportEmail /> */}
+          {/* 
+          <FooterCustomization />
+          <SupportEmail /> 
+          CustomSiteSettings />
+          */}
         </div>
       </div>
     </div>

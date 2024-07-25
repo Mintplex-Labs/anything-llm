@@ -1,12 +1,9 @@
-| Model                 | Parameter Count | Context Length | Model Type      |
-| :-------------------- | :-------------- | :------------- | :-------------- |
-| `sonar-small-chat`    | 7B              | 16384          | Chat Completion |
-| `sonar-small-online`  | 7B              | 12000          | Chat Completion |
-| `sonar-medium-chat`   | 8x7B            | 16384          | Chat Completion |
-| `sonar-medium-online` | 8x7B            | 12000          | Chat Completion |
-| `llama-3-8b-instruct`     | 8B              | 8192           | Chat Completion |
-| `llama-3-70b-instruct`    | 70B             | 8192           | Chat Completion |
-| `codellama-70b-instruct`  | 70B             | 16384          | Chat Completion |
-| `mistral-7b-instruct` [1] | 7B              | 16384          | Chat Completion |
-| `mixtral-8x7b-instruct`   | 8x7B            | 16384          | Chat Completion |
-| `mixtral-8x22b-instruct`  | 8x22B           | 16384          | Chat Completion |
+| Model                              | Parameter Count | Context Length | Model Type      |
+| :--------------------------------- | :-------------- | :------------- | :-------------- |
+| `llama-3-sonar-small-32k-online`\* | 8B              | 28,000         | Chat Completion |
+| `llama-3-sonar-small-32k-chat`     | 8B              | 32,768         | Chat Completion |
+| `llama-3-sonar-large-32k-online`\* | 70B             | 28,000         | Chat Completion |
+| `llama-3-sonar-large-32k-chat`     | 70B             | 32,768         | Chat Completion |
+| `llama-3-8b-instruct`   | 8B              | 8,192          | Chat Completion |
+| `llama-3-70b-instruct`  | 70B             | 8,192          | Chat Completion |
+| `mixtral-8x7b-instruct` | 8x7B            | 16,384         | Chat Completion |

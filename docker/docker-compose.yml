@@ -1,0 +1,31 @@
+name: anythingllm
+
+networks:
+  anything-llm:
+    driver: bridge
+
+services:
+  anything-llm:
+    container_name: anythingllm
+    build:
+      context: ../.
+      dockerfile: ./docker/Dockerfile
+      args:
+        ARG_UID: ${UID:-1000}
+        ARG_GID: ${GID:-1000}
+    cap_add:
+      - SYS_ADMIN
+    volumes:
+      - "./.env:/app/server/.env"
+      - "../server/storage:/app/server/storage"
+      - "../collector/hotdir/:/app/collector/hotdir"
+      - "../collector/outputs/:/app/collector/outputs"
+    user: "${UID:-1000}:${GID:-1000}"
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    networks:
+      - anything-llm
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

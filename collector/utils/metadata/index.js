@@ -55,8 +55,30 @@ function generateGitHubChunkSource(repo, doc, encryptionWorker) {
   )}`;
 }
 
+/**
+ * Generate the full chunkSource for a specific GitLab file so that we can resync it later.
+ * This data is encrypted into a single `payload` query param so we can replay credentials later
+ * since this was encrypted with the systems persistent password and salt.
+ * @param {RepoLoader} repo
+ * @param {import("@langchain/core/documents").Document} doc
+ * @param {import("../EncryptionWorker").EncryptionWorker} encryptionWorker
+ * @returns {string}
+ */
+function generateGitlabChunkSource(repo, doc, encryptionWorker) {
+  const payload = {
+    projectId: decodeURIComponent(repo.projectId),
+    branch: repo.branch,
+    path: doc.metadata.source,
+    pat: !!repo.accessToken ? repo.accessToken : null,
+  };
+  return `gitlab://${repo.repo}?payload=${encryptionWorker.encrypt(
+    JSON.stringify(payload)
+  )}`;
+}
+
 module.exports = {
   generateLocalfileChunkSource,
   generateConfluenceChunkSource,
   generateGitHubChunkSource,
+  generateGitlabChunkSource,
 };

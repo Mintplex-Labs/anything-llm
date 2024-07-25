@@ -20,6 +20,7 @@ import KoboldCPPLogo from "@/assets/llmprovider/koboldcpp.png";
 import CohereLogo from "@/assets/llmprovider/cohere.png";
 import TextGenWebUILogo from "@/assets/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/assets/llmprovider/litellm.png";
+import AWSBedrockLogo from "@/assets/llmprovider/bedrock.png";
 
 import OpenAiOptions from "@/components/LLMSelection/OpenAiOptions";
 import GenericOpenAiOptions from "@/components/LLMSelection/GenericOpenAiOptions";
@@ -40,6 +41,7 @@ import CohereAiOptions from "@/components/LLMSelection/CohereAiOptions";
 import KoboldCPPOptions from "@/components/LLMSelection/KoboldCPPOptions";
 import TextGenWebUIOptions from "@/components/LLMSelection/TextGenWebUIOptions";
 import LiteLLMOptions from "@/components/LLMSelection/LiteLLMOptions";
+import AWSBedrockLLMOptions from "@/components/LLMSelection/AwsBedrockLLMOptions";
 
 import LLMItem from "@/components/LLMSelection/LLMItem";
 import System from "@/models/system";
@@ -195,6 +197,13 @@ const LLMS = [
     options: (settings) => <GenericOpenAiOptions settings={settings} />,
     description:
       "Connect to any OpenAi-compatible service via a custom configuration",
+  },
+  {
+    name: "AWS Bedrock",
+    value: "bedrock",
+    logo: AWSBedrockLogo,
+    options: (settings) => <AWSBedrockLLMOptions settings={settings} />,
+    description: "Run powerful foundation models privately with AWS Bedrock.",
   },
   // {
   //   name: "Native",

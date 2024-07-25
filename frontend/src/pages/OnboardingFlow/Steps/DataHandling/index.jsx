@@ -21,6 +21,7 @@ import KoboldCPPLogo from "@/assets/llmprovider/koboldcpp.png";
 import CohereLogo from "@/assets/llmprovider/cohere.png";
 import TextGenWebUILogo from "@/assets/llmprovider/text-generation-webui.png";
 import LiteLLMLogo from "@/assets/llmprovider/litellm.png";
+import AWSBedrockLogo from "@/assets/llmprovider/bedrock.png";
 
 import ZillizLogo from "@/assets/vectordbs/zilliz.png";
 import AstraDBLogo from "@/assets/vectordbs/astraDB.png";
@@ -179,6 +180,13 @@ export const LLM_SELECTION_PRIVACY = {
       "Your model and chats are only accessible on the server running LiteLLM",
     ],
     logo: LiteLLMLogo,
+  },
+  bedrock: {
+    name: "AWS Bedrock",
+    description: [
+      "You model and chat contents are subject to the agreed EULA for AWS and the model provider on aws.amazon.com",
+    ],
+    logo: AWSBedrockLogo,
   },
 };
 

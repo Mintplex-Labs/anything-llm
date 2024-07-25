@@ -8,6 +8,7 @@ import PasswordModal, {
 } from "../../components/Modals/Password";
 
 import { FullScreenLoader } from "../../components/Preloader";
+import { FineTuningAlert } from "../FineTuning/Banner";
 
 export default function WorkspaceChat() {
   const { loading, requiresAuth, mode } = usePasswordModal();
@@ -46,12 +47,15 @@ function ShowWorkspaceChat() {
   }, [slug, threadSlug]);
 
   return (
-    <div
-      style={{ height: "calc(100vh - 40px)" }}
-      className="w-screen overflow-hidden bg-sidebar flex"
-    >
-      <Sidebar />
-      <WorkspaceChatContainer loading={loading} workspace={workspace} />
-    </div>
+    <>
+      <div
+        style={{ height: "calc(100vh - 40px)" }}
+        className="w-screen overflow-hidden bg-sidebar flex"
+      >
+        <Sidebar />
+        <WorkspaceChatContainer loading={loading} workspace={workspace} />
+      </div>
+      <FineTuningAlert />
+    </>
   );
 }

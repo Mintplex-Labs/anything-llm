@@ -102,6 +102,10 @@ const KEY_MAPPING = {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  OllamaLLMKeepAliveSeconds: {
+    envKey: "OLLAMA_KEEP_ALIVE_TIMEOUT",
+    checks: [isInteger],
+  },
 
   // Mistral AI API Settings
   MistralApiKey: {
@@ -198,6 +202,28 @@ const KEY_MAPPING = {
   },
   GenericOpenAiMaxTokens: {
     envKey: "GENERIC_OPEN_AI_MAX_TOKENS",
+    checks: [nonZero],
+  },
+
+  // AWS Bedrock LLM InferenceSettings
+  AwsBedrockLLMAccessKeyId: {
+    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMAccessKey: {
+    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMRegion: {
+    envKey: "AWS_BEDROCK_LLM_REGION",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMModel: {
+    envKey: "AWS_BEDROCK_LLM_MODEL_PREFERENCE",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMTokenLimit: {
+    envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
 
@@ -451,6 +477,11 @@ function nonZero(input = "") {
   return Number(input) <= 0 ? "Value must be greater than zero" : null;
 }
 
+function isInteger(input = "") {
+  if (isNaN(Number(input))) return "Value must be a number";
+  return Number(input);
+}
+
 function isValidURL(input = "") {
   try {
     new URL(input);
@@ -529,6 +560,7 @@ function supportedLLM(input = "") {
     "cohere",
     "litellm",
     "generic-openai",
+    "bedrock",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }

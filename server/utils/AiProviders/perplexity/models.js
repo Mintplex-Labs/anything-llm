@@ -1,23 +1,23 @@
 const MODELS = {
-  "sonar-small-chat": {
-    id: "sonar-small-chat",
-    name: "sonar-small-chat",
-    maxLength: 16384,
+  "llama-3-sonar-small-32k-online\\*": {
+    id: "llama-3-sonar-small-32k-online\\*",
+    name: "llama-3-sonar-small-32k-online\\*",
+    maxLength: 28000,
   },
-  "sonar-small-online": {
-    id: "sonar-small-online",
-    name: "sonar-small-online",
-    maxLength: 12000,
+  "llama-3-sonar-small-32k-chat": {
+    id: "llama-3-sonar-small-32k-chat",
+    name: "llama-3-sonar-small-32k-chat",
+    maxLength: 32768,
   },
-  "sonar-medium-chat": {
-    id: "sonar-medium-chat",
-    name: "sonar-medium-chat",
-    maxLength: 16384,
+  "llama-3-sonar-large-32k-online\\*": {
+    id: "llama-3-sonar-large-32k-online\\*",
+    name: "llama-3-sonar-large-32k-online\\*",
+    maxLength: 28000,
   },
-  "sonar-medium-online": {
-    id: "sonar-medium-online",
-    name: "sonar-medium-online",
-    maxLength: 12000,
+  "llama-3-sonar-large-32k-chat": {
+    id: "llama-3-sonar-large-32k-chat",
+    name: "llama-3-sonar-large-32k-chat",
+    maxLength: 32768,
   },
   "llama-3-8b-instruct": {
     id: "llama-3-8b-instruct",
@@ -29,24 +29,9 @@ const MODELS = {
     name: "llama-3-70b-instruct",
     maxLength: 8192,
   },
-  "codellama-70b-instruct": {
-    id: "codellama-70b-instruct",
-    name: "codellama-70b-instruct",
-    maxLength: 16384,
-  },
-  "mistral-7b-instruct": {
-    id: "mistral-7b-instruct",
-    name: "mistral-7b-instruct",
-    maxLength: 16384,
-  },
   "mixtral-8x7b-instruct": {
     id: "mixtral-8x7b-instruct",
     name: "mixtral-8x7b-instruct",
-    maxLength: 16384,
-  },
-  "mixtral-8x22b-instruct": {
-    id: "mixtral-8x22b-instruct",
-    name: "mixtral-8x22b-instruct",
     maxLength: 16384,
   },
 };

@@ -5,18 +5,26 @@ const {
   ROLES,
 } = require("../../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../../utils/middleware/validatedRequest");
+const {
+  isSupportedRepoProvider,
+} = require("../../utils/middleware/isSupportedRepoProviders");
 
 function extensionEndpoints(app) {
   if (!app) return;
 
   app.post(
-    "/ext/github/branches",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    "/ext/:repo_platform/branches",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      isSupportedRepoProvider,
+    ],
     async (request, response) => {
       try {
+        const { repo_platform } = request.params;
         const responseFromProcessor =
           await new CollectorApi().forwardExtensionRequest({
-            endpoint: "/ext/github-repo/branches",
+            endpoint: `/ext/${repo_platform}-repo/branches`,
             method: "POST",
             body: request.body,
           });
@@ -29,18 +37,23 @@ function extensionEndpoints(app) {
   );
 
   app.post(
-    "/ext/github/repo",
-    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    "/ext/:repo_platform/repo",
+    [
+      validatedRequest,
+      flexUserRoleValid([ROLES.admin, ROLES.manager]),
+      isSupportedRepoProvider,
+    ],
     async (request, response) => {
       try {
+        const { repo_platform } = request.params;
         const responseFromProcessor =
           await new CollectorApi().forwardExtensionRequest({
-            endpoint: "/ext/github-repo",
+            endpoint: `/ext/${repo_platform}-repo`,
             method: "POST",
             body: request.body,
           });
         await Telemetry.sendTelemetry("extension_invoked", {
-          type: "github_repo",
+          type: `${repo_platform}_repo`,
         });
         response.status(200).json(responseFromProcessor);
       } catch (e) {

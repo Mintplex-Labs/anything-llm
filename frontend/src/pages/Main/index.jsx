@@ -5,6 +5,7 @@ import PasswordModal, {
   usePasswordModal,
 } from "../../components/Modals/Password";
 import { FullScreenLoader } from "../../components/Preloader";
+import { FineTuningAlert } from "../FineTuning/Banner";
 
 export default function Main() {
   const { loading, requiresAuth, mode } = usePasswordModal();
@@ -14,13 +15,15 @@ export default function Main() {
   }
 
   return (
-    <div
-      style={{ height: "calc(100vh - 40px)" }}
-      className="w-screen overflow-hidden bg-sidebar flex"
-    >
-      {" "}
-      <Sidebar />
-      <DefaultChatContainer />
-    </div>
+    <>
+      <div
+        style={{ height: "calc(100vh - 40px)" }}
+        className="w-screen overflow-hidden bg-sidebar flex"
+      >
+        <Sidebar />
+        <DefaultChatContainer />
+      </div>
+      <FineTuningAlert />
+    </>
   );
 }

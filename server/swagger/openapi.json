@@ -165,6 +165,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "401": {
             "description": "Instance is not in Multi-User mode. Method denied"
           },
@@ -900,7 +903,7 @@
                         "docAuthor": "no author found",
                         "description": "No description found.",
                         "docSource": "URL link uploaded by the user.",
-                        "chunkSource": "https:useanything.com.html",
+                        "chunkSource": "https:anythingllm.com.html",
                         "published": "1/16/2024, 3:46:33 PM",
                         "wordCount": 252,
                         "pageContent": "AnythingLLM is the best....",
@@ -941,7 +944,7 @@
               "schema": {
                 "type": "object",
                 "example": {
-                  "link": "https://useanything.com"
+                  "link": "https://anythingllm.com"
                 }
               }
             }
@@ -1020,6 +1023,7 @@
                 "example": {
                   "textContent": "This is the raw text that will be saved as a document in AnythingLLM.",
                   "metadata": {
+                    "title": "This key is required. See in /server/endpoints/api/document/index.js:287",
                     "keyOne": "valueOne",
                     "keyTwo": "valueTwo",
                     "etc": "etc"

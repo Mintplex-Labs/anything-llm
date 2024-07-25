@@ -34,6 +34,7 @@ import WorkspaceSettings from "./pages/WorkspaceSettings";
 import PrivacyAndData from "./pages/GeneralSettings/PrivacyAndData";
 import ExperimentalFeatures from "@/pages/Admin/ExperimentalFeatures";
 import LiveDocumentSyncManage from "@/pages/Admin/ExperimentalFeatures/Features/LiveSync/manage";
+import FineTuningWalkthrough from "@/pages/FineTuning";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -156,6 +157,10 @@ export default function App() {
                   <Route
                     path="/settings/beta-features/live-document-sync/manage"
                     element={<AdminRoute Component={LiveDocumentSyncManage} />}
+                  />
+                  <Route
+                    path="/fine-tuning"
+                    element={<AdminRoute Component={FineTuningWalkthrough} />}
                   />
                 </Routes>
                 <ToastContainer />
