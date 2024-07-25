@@ -15,7 +15,7 @@ on:
     branches: ['master'] # master branch only. Do not modify.
     paths-ignore:
       - '**.md'
-      - 'cloud-deployments/*'
+      - 'cloud-deployments/**/*'
       - 'images/**/*'
       - '.vscode/**/*'
       - '**/.env.example'
