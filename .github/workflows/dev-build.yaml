@@ -61,33 +61,34 @@ jobs:
           tags: |
             type=raw,value=vex-test
 
-      # - name: Build and push multi-platform Docker image
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     context: .
-      #     file: ./docker/Dockerfile
-      #     push: true
-      #     sbom: true
-      #     provenance: mode=max
-      #     platforms: linux/amd64
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     labels: ${{ steps.meta.outputs.labels }}
-      #     cache-from: type=gha
-      #     cache-to: type=gha,mode=max
+      - name: Build and push multi-platform Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          push: true
+          sbom: true
+          provenance: mode=max
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
+      # For Docker scout there are some intermediary reported CVEs which exists outside
+      # of execution content or are unreachable by an attacker but exist in image.
+      # We create VEX files for these so they don't show in scout summary. 
       - name: Collect known and verified CVE exceptions
         id: cve-list
         run: |
           # Collect CVEs from filenames in vex folder
           CVE_NAMES=""
           for file in ./docker/vex/*.vex.json; do
-            echo "Looking at $file"
             [ -e "$file" ] || continue
             filename=$(basename "$file")
             stripped_filename=${filename%.vex.json}
             CVE_NAMES+=" $stripped_filename"
           done
-          echo $CVE_NAMES
           echo "CVE_EXCEPTIONS=$CVE_NAMES" >> $GITHUB_OUTPUT
         shell: bash
 
