@@ -75,9 +75,11 @@ jobs:
       #     labels: ${{ steps.meta.outputs.labels }}
       #     cache-from: type=gha
       #     cache-to: type=gha,mode=max
+
+      - name: Add Docker scout CLI
+        uses: docker/scout-action@v1
       
       - name: Add VEX attestations
-        uses: docker/scout-action@v1
         env:
           CVE_EXCEPTIONS: CVE-2019-10790 CVE-2024-37890
         run: |
