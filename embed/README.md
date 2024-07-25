@@ -63,7 +63,7 @@ REQUIRED data attributes:
 
 **Style Overrides**
 
-- `data-chat-icon` — The chat bubble icon show when chat is closed. Options are `plus`, `chatCircle`, `support`, `search2`, `search`, `magic`.
+- `data-chat-icon` — The chat bubble icon show when chat is closed. Options are `plus`, `chatBubble`, `support`, `search2`, `search`, `magic`.
 
 - `data-button-color` — The chat bubble background color shown when chat is closed. Value must be hex color code.
 
