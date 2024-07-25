@@ -1,4 +1,4 @@
-import { API_BASE } from "@/utils/constants";
+import { API_BASE } from "@/utils/api";
 import { baseHeaders, safeJsonParse } from "@/utils/request";
 
 const FineTuning = {
@@ -23,7 +23,7 @@ const FineTuning = {
    * }>}
    */
   info: async function () {
-    return await fetch(`${API_BASE}/experimental/fine-tuning/info`, {
+    return await fetch(`${API_BASE()}/experimental/fine-tuning/info`, {
       method: "GET",
       headers: baseHeaders(),
     })
@@ -38,7 +38,7 @@ const FineTuning = {
       });
   },
   datasetStat: async function ({ slugs = [], feedback = null }) {
-    return await fetch(`${API_BASE}/experimental/fine-tuning/dataset`, {
+    return await fetch(`${API_BASE()}/experimental/fine-tuning/dataset`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({ slugs, feedback }),
@@ -59,7 +59,7 @@ const FineTuning = {
    * @returns {Promise<{checkoutUrl:string, jobId:string}|null>}
    */
   createOrder: async function ({ email, baseModel, modelName, trainingData }) {
-    return await fetch(`${API_BASE}/experimental/fine-tuning/order`, {
+    return await fetch(`${API_BASE()}/experimental/fine-tuning/order`, {
       method: "POST",
       headers: baseHeaders(),
       body: JSON.stringify({
@@ -101,10 +101,13 @@ const FineTuning = {
         return data.eligible;
     }
 
-    return await fetch(`${API_BASE}/experimental/fine-tuning/check-eligible`, {
-      method: "GET",
-      headers: baseHeaders(),
-    })
+    return await fetch(
+      `${API_BASE()}/experimental/fine-tuning/check-eligible`,
+      {
+        method: "GET",
+        headers: baseHeaders(),
+      }
+    )
       .then((res) => {
         if (!res.ok) throw new Error("Could not check if eligible.");
         return res.json();

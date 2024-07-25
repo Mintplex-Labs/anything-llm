@@ -44,7 +44,7 @@ const DataConnector = {
   },
   gitlab: {
     branches: async ({ repo, accessToken }) => {
-      return await fetch(`${API_BASE}/ext/gitlab/branches`, {
+      return await fetch(`${API_BASE()}/ext/gitlab/branches`, {
         method: "POST",
         headers: baseHeaders(),
         cache: "force-cache",
@@ -65,7 +65,7 @@ const DataConnector = {
         });
     },
     collect: async function ({ repo, accessToken, branch, ignorePaths = [] }) {
-      return await fetch(`${API_BASE}/ext/gitlab/repo`, {
+      return await fetch(`${API_BASE()}/ext/gitlab/repo`, {
         method: "POST",
         headers: baseHeaders(),
         body: JSON.stringify({ repo, accessToken, branch, ignorePaths }),
