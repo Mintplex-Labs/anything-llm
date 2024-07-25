@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['-dev'] # put your current branch to create a build. Core team only.
+    branches: ['cleanup-deps'] # put your current branch to create a build. Core team only.
     paths-ignore:
       - '**.md'
       - 'cloud-deployments/*'

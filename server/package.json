@@ -13,8 +13,7 @@
     "dev": "NODE_ENV=development nodemon --ignore documents --ignore vector-cache --ignore storage --ignore swagger --trace-warnings index.js",
     "start": "NODE_ENV=production node index.js",
     "lint": "yarn prettier --ignore-path ../.prettierignore --write ./endpoints ./models ./utils index.js",
-    "swagger": "node ./swagger/init.js",
-    "sqlite:migrate": "cd ./utils/prisma && node migrateFromSqlite.js"
+    "swagger": "node ./swagger/init.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
@@ -24,7 +23,6 @@
     "@azure/openai": "1.0.0-beta.10",
     "@datastax/astra-db-ts": "^0.1.3",
     "@google/generative-ai": "^0.7.1",
-    "@googleapis/youtube": "^9.0.0",
     "@ladjs/graceful": "^3.2.2",
     "@lancedb/lancedb": "0.5.2",
     "@langchain/anthropic": "0.1.16",
@@ -40,7 +38,6 @@
     "@qdrant/js-client-rest": "^1.9.0",
     "@xenova/transformers": "^2.14.0",
     "@zilliz/milvus2-sdk-node": "^2.3.5",
-    "archiver": "^5.3.1",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "chalk": "^4",
@@ -52,7 +49,6 @@
     "elevenlabs": "^0.5.0",
     "express": "^4.18.2",
     "extract-json-from-string": "^1.0.1",
-    "extract-zip": "^2.0.1",
     "graphql": "^16.7.1",
     "joi": "^17.11.0",
     "joi-password-complexity": "^5.2.0",
@@ -65,7 +61,6 @@
     "mssql": "^10.0.2",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.9.8",
-    "node-html-markdown": "^1.3.0",
     "node-llama-cpp": "^2.8.0",
     "ollama": "^0.5.0",
     "openai": "4.38.5",
@@ -75,8 +70,6 @@
     "posthog-node": "^3.1.1",
     "prisma": "5.3.1",
     "slugify": "^1.6.6",
-    "sqlite": "^4.2.1",
-    "sqlite3": "^5.1.6",
     "swagger-autogen": "^2.23.5",
     "swagger-ui-express": "^5.0.0",
     "truncate": "^3.0.0",
@@ -100,6 +93,7 @@
     "globals": "^13.21.0",
     "hermes-eslint": "^0.15.0",
     "nodemon": "^2.0.22",
+    "node-html-markdown": "^1.3.0",
     "prettier": "^3.0.3"
   }
 }
