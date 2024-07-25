@@ -78,14 +78,14 @@ jobs:
 
       - name: Add VEX attestations
         env:
-          CVE_EXCEPTIONS: CVE-2019-10790 CVE-2024-37890
+          CVE_EXCEPTIONS: CVE-2019-10790 CVE-2024-37890 CVE-2024-29415
         run: |
           curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
           for cve in $CVE_EXCEPTIONS; do
             for tag in "${{ join(fromJSON(steps.meta.outputs.json).tags, ' ') }}"; do
               echo "Attaching VEX exception $cve to $tag"
               docker scout attestation add \
-              --file "./docker/vex/$cve.vex.json" \
+              --file "${{ github.action_path }}/docker/vex/$cve.vex.json" \
               --predicate-type https://openvex.dev/ns/v0.2.0 \
               $tag
             done
