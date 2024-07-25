@@ -77,24 +77,10 @@ export default function SettingsSidebar() {
 }
 
 function SupportEmail() {
-  const [supportEmail, setSupportEmail] = useState(paths.mailToMintplex());
   const { t } = useTranslation();
-
-  useEffect(() => {
-    const fetchSupportEmail = async () => {
-      const supportEmail = await System.fetchSupportEmail();
-      setSupportEmail(
-        supportEmail?.email
-          ? `mailto:${supportEmail.email}`
-          : paths.mailToMintplex()
-      );
-    };
-    fetchSupportEmail();
-  }, []);
-
   return (
     <Link
-      to={supportEmail}
+      to={paths.mailToMintplex()}
       className="text-darker hover:text-white text-xs leading-[18px] mx-3 mt-1"
     >
       {t("settings.contact")}

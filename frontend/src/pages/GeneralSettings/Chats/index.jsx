@@ -11,6 +11,7 @@ import { saveAs } from "file-saver";
 import { refocusApplication } from "@/ipc/node-api";
 import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
+import { Link } from "react-router-dom";
 
 const exportOptions = {
   csv: {
@@ -172,13 +173,13 @@ export default function WorkspaceChats() {
                     <Trash size={18} weight="bold" />
                     Clear Chats
                   </button>
-                  <a
-                    href={paths.orderFineTune()}
+                  <Link
+                    to={paths.orderFineTune()}
                     className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-yellow-300 text-yellow-300/80 rounded-lg bg-transparent hover:text-white text-xs font-semibold hover:bg-yellow-300/75 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
                   >
                     <Sparkle size={18} weight="bold" />
                     Order Fine-Tune Model
-                  </a>
+                  </Link>
                 </>
               )}
             </div>

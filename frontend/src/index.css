@@ -850,7 +850,7 @@ does not extend the close button beyond the viewport. */
   }
 
   100% {
-    top: 0px;
+    top: 40px;
   }
 }
 
@@ -860,7 +860,7 @@ does not extend the close button beyond the viewport. */
 
 @keyframes rmPopTop {
   0% {
-    top: 0px;
+    top: 40px;
   }
 
   100% {
