@@ -8,7 +8,7 @@ export default function OrderDetails({ setSettings, setStep }) {
   useEffect(() => {
     FineTuning.info()
       .then((res) => {
-        setInfo(res);
+        setInfo(res ?? {});
         setSettings((prev) => {
           return { ...prev, tuningInfo: res };
         });
