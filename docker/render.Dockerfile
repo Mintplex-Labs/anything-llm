@@ -1,4 +1,4 @@
-# This is the dockerfile spefically to be used with Render.com docker deployments. Do not use
+# This is the dockerfile spefically to be used with Render.com & Railway.app docker deployments. Do not use
 # locally or in other environments as it will not be supported.
 
 # Setup base image
@@ -61,32 +61,30 @@ RUN yarn build && \
 WORKDIR /app
 
 # Install server dependencies
-FROM base as server-build
+FROM base AS backend-build
 COPY ./server /app/server/
 WORKDIR /app/server
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
 WORKDIR /app
 
-# Build collector deps (this also downloads proper chrome for collector in /app/.cache so that needs to be
-# transferred properly in prod-build stage.
-FROM base AS collector-build
-COPY ./collector /app/collector
+# Install collector dependencies (& puppeteer)
+COPY ./collector/ ./collector/
 WORKDIR /app/collector
 ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public 
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
-WORKDIR /app
 
-FROM base AS production-build
+FROM backend-build AS production-build
 WORKDIR /app
-# Copy the server 
-COPY --chown=anythingllm:anythingllm --from=server-build /app/server/ /app/server/
-# Copy built static frontend files to the server public directory
 COPY --chown=anythingllm:anythingllm --from=frontend-build /app/frontend/dist /app/server/public
-# Copy the collector
-COPY --chown=anythingllm:anythingllm --from=collector-build /app/collector/ /app/collector/
-COPY --chown=anythingllm:anythingllm --from=collector-build /app/.cache/puppeteer /app/.cache/puppeteer
+USER root
+RUN chown -R anythingllm:anythingllm /app/server && \
+    chown -R anythingllm:anythingllm /app/collector
+USER anythingllm
 
-# Setup the environment
+# Chrome scraping fixes for puppeteer
+# Fix path to chrome executable as the runner will assume the file is in `/root/.cache`
+ENV PUPPETEER_EXECUTABLE_PATH=/app/.cache/puppeteer/chrome/linux-119.0.6045.105/chrome-linux64/chrome
+
 ENV NODE_ENV=production
 ENV ANYTHING_LLM_RUNTIME=docker
 ENV STORAGE_DIR=$STORAGE_DIR
