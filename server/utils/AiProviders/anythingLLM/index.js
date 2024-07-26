@@ -281,7 +281,13 @@ class AnythingLLMOllama {
       return;
     }
     await this.bootOrContinue();
-    const modelName = modelFileLocation.split("/").splice(-1)[0];
+
+    const modelName = (
+      modelFileLocation.includes("\\")
+        ? modelFileLocation.split("\\") // split for windows
+        : modelFileLocation.split("/")
+    ).splice(-1)[0];
+
     this.#log(
       `Starting creation of model ${modelName} from "${modelFileLocation}".`
     );

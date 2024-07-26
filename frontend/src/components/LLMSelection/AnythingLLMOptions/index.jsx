@@ -290,6 +290,14 @@ export default function AnythingLLMOptions({
   );
 }
 
+function parseFilename(filepath) {
+  return (
+    filepath.includes("\\")
+      ? filepath.split("\\") // split for windows
+      : filepath.split("/")
+  ).splice(-1)[0];
+}
+
 function UploadCustomModelButton({ onSuccess }) {
   const filePicker = useRef(null);
   const [loading, setLoading] = useState("");
@@ -304,7 +312,7 @@ function UploadCustomModelButton({ onSuccess }) {
         return;
       }
 
-      const filename = filePath.split("/").splice(-1)[0];
+      const filename = parseFilename(filePath);
       setLoading(`Importing ${filename} from file...`);
       await System.uploadCustomOllamaModel(filePath, (message) =>
         setLoading(message)
