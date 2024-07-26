@@ -302,6 +302,37 @@ const Workspace = {
     );
     return;
   },
+
+  // Direct DB queries for API use only.
+  /**
+   * Generic prisma FindMany query for workspaces collections
+   * @param {import("../node_modules/.prisma/client/index.d.ts").Prisma.TypeMap['model']['workspaces']['operations']['findMany']['args']} prismaQuery
+   * @returns
+   */
+  _findMany: async function (prismaQuery = {}) {
+    try {
+      const results = await prisma.workspaces.findMany(prismaQuery);
+      return results;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  },
+
+  /**
+   * Generic prisma query for .get of workspaces collections
+   * @param {import("../node_modules/.prisma/client/index.d.ts").Prisma.TypeMap['model']['workspaces']['operations']['findFirst']['args']} prismaQuery
+   * @returns
+   */
+  _findFirst: async function (prismaQuery = {}) {
+    try {
+      const results = await prisma.workspaces.findFirst(prismaQuery);
+      return results;
+    } catch (error) {
+      console.error(error.message);
+      return null;
+    }
+  },
 };
 
 module.exports = { Workspace };
