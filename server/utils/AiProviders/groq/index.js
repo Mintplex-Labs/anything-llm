@@ -49,7 +49,6 @@ class GroqLLM {
         return 8192;
       case "llama-3.1-70b-versatile":
       case "llama-3.1-8b-instant":
-      case "llama-3.1-8b-instant":
         return 131072;
       case "mixtral-8x7b-32768":
         return 32768;
