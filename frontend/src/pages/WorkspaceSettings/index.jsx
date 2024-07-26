@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, NavLink, useParams } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import Workspace from "@/models/workspace";
-import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
+import { usePasswordModal } from "@/components/Modals/Password";
 import { FullScreenLoader } from "@/components/Preloader";
 import {
   ArrowUUpLeft,
@@ -30,13 +30,8 @@ const TABS = {
 };
 
 export default function WorkspaceSettings() {
-  const { loading, requiresAuth, mode } = usePasswordModal();
-
+  const { loading } = usePasswordModal();
   if (loading) return <FullScreenLoader />;
-  if (requiresAuth !== false) {
-    return <>{requiresAuth !== null && <PasswordModal mode={mode} />}</>;
-  }
-
   return <ShowWorkspaceChat />;
 }
 
