@@ -164,19 +164,19 @@ export default function AnythingLLMOptions({
   return (
     <div className="w-full flex flex-col">
       <div className="flex flex-col gap-y-4 w-fit">
-        <div className="flex w-3/4 items-start justify-between">
-          <div className="flex w-fit shrink-0">
-            <div className="flex flex-col">
-              {hasComponentChanges && (
-                <p className="text-white italic font-thin text-sm text-gray-200">
-                  {short
-                    ? "Model will begin downloading in background"
-                    : "Pressing save changes will begin the model download"}
-                </p>
-              )}
-            </div>
+        <div className="flex w-fit items-start justify-between">
+          <div className="flex flex-col">
+            {!showShortList && (
+              <UploadCustomModelButton onSuccess={refreshModelSelection} />
+            )}
+            {hasComponentChanges && (
+              <p className="text-white italic font-thin text-sm text-gray-200">
+                {short
+                  ? "Model will begin downloading in background"
+                  : "Pressing save changes will begin the model download"}
+              </p>
+            )}
           </div>
-          <UploadCustomModelButton onSuccess={refreshModelSelection} />
         </div>
 
         {/* Short mode is onboarding only where the user will have no downloads */}
@@ -339,13 +339,13 @@ function UploadCustomModelButton({ onSuccess }) {
         accept=".gguf,.GGUF"
         onChange={handleSelection}
       />
-      <div className="flex flex-col w-fit items-end justify-end">
+      <div className="flex flex-col w-fit ">
         <button
           type="button"
           onClick={() => filePicker?.current?.click()}
           className="w-fit relative flex h-[40px] items-center border-none hover:bg-slate-600/20 rounded-lg"
         >
-          <div className="flex w-full gap-x-2 items-center pl-4">
+          <div className="flex w-full gap-x-2 items-center">
             <div className="border-none bg-zinc-600 p-2 rounded-lg h-[24px] w-[24px] flex items-center justify-center">
               {loading ? (
                 <CircleNotch
