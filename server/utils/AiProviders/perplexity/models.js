@@ -1,7 +1,7 @@
 const MODELS = {
-  "llama-3-sonar-small-32k-online\\*": {
-    id: "llama-3-sonar-small-32k-online\\*",
-    name: "llama-3-sonar-small-32k-online\\*",
+  "llama-3-sonar-small-32k-online": {
+    id: "llama-3-sonar-small-32k-online",
+    name: "llama-3-sonar-small-32k-online",
     maxLength: 28000,
   },
   "llama-3-sonar-small-32k-chat": {
@@ -9,9 +9,9 @@ const MODELS = {
     name: "llama-3-sonar-small-32k-chat",
     maxLength: 32768,
   },
-  "llama-3-sonar-large-32k-online\\*": {
-    id: "llama-3-sonar-large-32k-online\\*",
-    name: "llama-3-sonar-large-32k-online\\*",
+  "llama-3-sonar-large-32k-online": {
+    id: "llama-3-sonar-large-32k-online",
+    name: "llama-3-sonar-large-32k-online",
     maxLength: 28000,
   },
   "llama-3-sonar-large-32k-chat": {

@@ -1,8 +1,8 @@
 | Model                              | Parameter Count | Context Length | Model Type      |
 | :--------------------------------- | :-------------- | :------------- | :-------------- |
-| `llama-3-sonar-small-32k-online`\* | 8B              | 28,000         | Chat Completion |
+| `llama-3-sonar-small-32k-online` | 8B              | 28,000         | Chat Completion |
 | `llama-3-sonar-small-32k-chat`     | 8B              | 32,768         | Chat Completion |
-| `llama-3-sonar-large-32k-online`\* | 70B             | 28,000         | Chat Completion |
+| `llama-3-sonar-large-32k-online` | 70B             | 28,000         | Chat Completion |
 | `llama-3-sonar-large-32k-chat`     | 70B             | 32,768         | Chat Completion |
 | `llama-3-8b-instruct`   | 8B              | 8,192          | Chat Completion |
 | `llama-3-70b-instruct`  | 70B             | 8,192          | Chat Completion |
