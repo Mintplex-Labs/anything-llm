@@ -1,27 +1,72 @@
 import System from "@/models/system";
+import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 
 export default function OpenRouterOptions({ settings }) {
+  const [showAdvancedControls, setShowAdvancedControls] = useState(false);
+
   return (
-    <div className="flex gap-[36px] mt-1.5">
-      <div className="flex flex-col w-60">
-        <label className="text-white text-sm font-semibold block mb-3">
-          OpenRouter API Key
-        </label>
-        <input
-          type="password"
-          name="OpenRouterApiKey"
-          className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
-          placeholder="OpenRouter API Key"
-          defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
-          required={true}
-          autoComplete="off"
-          spellCheck={false}
-        />
+    <div className="flex flex-col gap-y-4 mt-1.5">
+      <div className="flex gap-[36px]">
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            OpenRouter API Key
+          </label>
+          <input
+            type="password"
+            name="OpenRouterApiKey"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="OpenRouter API Key"
+            defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
+            required={true}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        </div>
+        {!settings?.credentialsOnly && (
+          <OpenRouterModelSelection settings={settings} />
+        )}
       </div>
-      {!settings?.credentialsOnly && (
-        <OpenRouterModelSelection settings={settings} />
-      )}
+      <AdvancedControls settings={settings} />
+    </div>
+  );
+}
+
+function AdvancedControls({ settings }) {
+  const [showAdvancedControls, setShowAdvancedControls] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-y-4">
+      <button
+        type="button"
+        onClick={() => setShowAdvancedControls(!showAdvancedControls)}
+        className="text-white hover:text-white/70 flex items-center text-sm"
+      >
+        {showAdvancedControls ? "Hide" : "Show"} advanced controls
+        {showAdvancedControls ? (
+          <CaretUp size={14} className="ml-1" />
+        ) : (
+          <CaretDown size={14} className="ml-1" />
+        )}
+      </button>
+      <div hidden={!showAdvancedControls}>
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold block mb-3">
+            Stream Timeout (ms)
+          </label>
+          <input
+            type="number"
+            name="OpenRouterTimeout"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            placeholder="Timeout value between token responses to auto-timeout the stream"
+            defaultValue={settings?.OpenRouterTimeout ?? 500}
+            autoComplete="off"
+            onScroll={(e) => e.target.blur()}
+            min={500}
+            step={1}
+          />
+        </div>
+      </div>
     </div>
   );
 }

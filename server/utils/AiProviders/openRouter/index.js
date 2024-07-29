@@ -38,6 +38,7 @@ class OpenRouterLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.timeout = this.#parseTimeout();
 
     if (!fs.existsSync(cacheFolder))
       fs.mkdirSync(cacheFolder, { recursive: true });
@@ -47,6 +48,22 @@ class OpenRouterLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+  }
+
+  /**
+   * OpenRouter has various models that never return `finish_reasons` and thus leave the stream open
+   * which causes issues in subsequent messages. This timeout value forces us to close the stream after
+   * x milliseconds. This is a configurable value via the OPENROUTER_TIMEOUT_MS value
+   * @returns {number} The timeout value in milliseconds (default: 500)
+   */
+  #parseTimeout() {
+    this.log(
+      `OpenRouter timeout is set to ${process.env.OPENROUTER_TIMEOUT_MS ?? 500}ms`
+    );
+    if (isNaN(Number(process.env.OPENROUTER_TIMEOUT_MS))) return 500;
+    const setValue = Number(process.env.OPENROUTER_TIMEOUT_MS);
+    if (setValue < 500) return 500;
+    return setValue;
   }
 
   // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)
@@ -161,7 +178,7 @@ class OpenRouterLLM {
   }
 
   handleStream(response, stream, responseProps) {
-    const timeoutThresholdMs = 500;
+    const timeoutThresholdMs = this.timeout;
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
     return new Promise(async (resolve) => {
