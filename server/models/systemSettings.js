@@ -424,6 +424,7 @@ const SystemSettings = {
       // OpenRouter Keys
       OpenRouterApiKey: !!process.env.OPENROUTER_API_KEY,
       OpenRouterModelPref: process.env.OPENROUTER_MODEL_PREF,
+      OpenRouterTimeout: process.env.OPENROUTER_TIMEOUT_MS,
 
       // Mistral AI (API) Keys
       MistralApiKey: !!process.env.MISTRAL_API_KEY,
