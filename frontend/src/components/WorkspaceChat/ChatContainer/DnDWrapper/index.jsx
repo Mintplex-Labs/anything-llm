@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { v4 } from "uuid";
 import System from "@/models/system";
 import { useDropzone } from "react-dropzone";
-import { FileText } from "@phosphor-icons/react";
+import DndIcon from "./dnd-icon.png";
 import Workspace from "@/models/workspace";
 import useUser from "@/hooks/useUser";
+
 export const REMOVE_ATTACHMENT_EVENT = "ATTACHMENT_REMOVE";
 export const CLEAR_ATTACHMENTS_EVENT = "ATTACHMENT_CLEAR";
 
@@ -109,20 +110,20 @@ export default function DnDFileUploaderWrapper({ workspace, children }) {
 
   return (
     <div
-      className={`relative flex flex-col h-full w-full md:mt-0 mt-[40px]`}
+      className={`relative flex flex-col h-full w-full md:mt-0 mt-[40px] p-[1px]`}
       {...getRootProps()}
     >
       <div
         hidden={!dragging}
-        className="absolute top-0 w-full h-full bg-zinc-900/75 z-[9999]"
+        className="absolute top-0 w-full h-full bg-dark-text/90 rounded-2xl border-[4px] border-white z-[9999]"
       >
         <div className="w-full h-full flex justify-center items-center rounded-xl">
-          <div className="flex flex-col gap-y-1 justify-center items-center">
-            <FileText className="text-zinc-100" size={80} />
-            <p className="text-white/80 text-xl font-semibold">Add anything</p>
-            <p className="text-white/80 text-sm">
-              Drop your file here to embed it into your workspace
-              auto-magically.
+          <div className="flex flex-col gap-y-[14px] justify-center items-center">
+            <img src={DndIcon} width={69} height={69} />
+            <p className="text-white text-[24px] font-semibold">Add anything</p>
+            <p className="text-white text-[16px] text-center">
+              Drop your file here to embed it into your <br />
+              workspace auto-magically.
             </p>
           </div>
         </div>

@@ -932,13 +932,11 @@ function workspaceEndpoints(app) {
             .status(200)
             .json({ success: false, error: errors?.[0], document: null });
 
-        response
-          .status(200)
-          .json({
-            success: true,
-            error: null,
-            document: { id: document.id, location: document.location },
-          });
+        response.status(200).json({
+          success: true,
+          error: null,
+          document: { id: document.id, location: document.location },
+        });
       } catch (e) {
         console.error(e.message, e);
         response.sendStatus(500).end();

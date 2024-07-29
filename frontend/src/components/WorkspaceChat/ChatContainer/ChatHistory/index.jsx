@@ -17,6 +17,7 @@ export default function ChatHistory({
   sendCommand,
   updateHistory,
   regenerateAssistantMessage,
+  hasAttachments = false,
 }) {
   const { user } = useUser();
   const { threadSlug = null } = useParams();
@@ -144,7 +145,7 @@ export default function ChatHistory({
     );
   };
 
-  if (history.length === 0) {
+  if (history.length === 0 && !hasAttachments) {
     return (
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
