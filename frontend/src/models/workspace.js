@@ -110,6 +110,20 @@ const Workspace = {
       );
     return this._updateChatResponse(slug, chatId, newText);
   },
+  multiplexStream: async function ({
+    workspaceSlug,
+    threadSlug = null,
+    prompt,
+    chatHandler,
+  }) {
+    if (!!threadSlug)
+      return this.threads.streamChat(
+        { workspaceSlug, threadSlug },
+        prompt,
+        chatHandler
+      );
+    return this.streamChat({ slug: workspaceSlug }, prompt, chatHandler);
+  },
   streamChat: async function ({ slug }, message, handleChat) {
     const ctrl = new AbortController();
 
@@ -410,6 +424,43 @@ const Workspace = {
         console.error("Error forking thread:", e);
         return null;
       });
+  },
+  /**
+   * Uploads and embeds a single file in a single call into a workspace
+   * @param {string} slug - workspace slug
+   * @param {FormData} formData
+   * @returns {Promise<{response: {ok: boolean}, data: {success: boolean, error: string|null, document: {id: string, location:string}|null}}>}
+   */
+  uploadAndEmbedFile: async function (slug, formData) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/upload-and-embed`,
+      {
+        method: "POST",
+        body: formData,
+        headers: baseHeaders(),
+      }
+    );
+
+    const data = await response.json();
+    return { response, data };
+  },
+
+  /**
+   * Deletes and un-embeds a single file in a single call from a workspace
+   * @param {string} slug - workspace slug
+   * @param {string} documentLocation - location of file eg: custom-documents/my-file-uuid.json
+   * @returns {Promise<boolean>}
+   */
+  deleteAndUnembedFile: async function (slug, documentLocation) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/remove-and-unembed`,
+      {
+        method: "DELETE",
+        body: JSON.stringify({ documentLocation }),
+        headers: baseHeaders(),
+      }
+    );
+    return response.ok;
   },
   threads: WorkspaceThread,
 };
