@@ -72,17 +72,16 @@ if (process.env.NODE_ENV !== "development") {
       setHeaders: (res) => {
         // Disable I-framing of entire site UI
         res.removeHeader("X-Powered-By");
-        res.setHeader("X-Frame-Options", "DENY");
       },
     })
   );
 
-  app.use("/", function (_, response) {
+  app.use("/", function(_, response) {
     IndexPage.generate(response);
     return;
   });
 
-  app.get("/robots.txt", function (_, response) {
+  app.get("/robots.txt", function(_, response) {
     response.type("text/plain");
     response.send("User-agent: *\nDisallow: /").end();
   });
@@ -117,7 +116,7 @@ if (process.env.NODE_ENV !== "development") {
   });
 }
 
-app.all("*", function (_, response) {
+app.all("*", function(_, response) {
   response.sendStatus(404);
 });
 
