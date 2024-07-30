@@ -69,7 +69,6 @@ class LocalAiLLM {
         type: "image_url",
         image_url: {
           url: attachment.contentString,
-          detail: "high",
         },
       });
     }
