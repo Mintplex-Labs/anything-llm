@@ -141,15 +141,15 @@ function displayFromFile(file) {
   const extension = file?.name?.split(".")?.pop()?.toLowerCase() ?? "txt";
   switch (extension) {
     case "pdf":
-      return { iconBgColor: "bg-red-600", Icon: FilePdf };
+      return { iconBgColor: "bg-danger", Icon: FilePdf };
     case "doc":
     case "docx":
-      return { iconBgColor: "bg-red-600", Icon: FileDoc };
+      return { iconBgColor: "bg-danger", Icon: FileDoc };
     case "html":
-      return { iconBgColor: "bg-red-600", Icon: FileHtml };
+      return { iconBgColor: "bg-danger", Icon: FileHtml };
     case "csv":
     case "xlsx":
-      return { iconBgColor: "bg-green-600", Icon: FileCsv };
+      return { iconBgColor: "bg-success", Icon: FileCsv };
     case "json":
     case "sql":
     case "js":
@@ -157,8 +157,8 @@ function displayFromFile(file) {
     case "cpp":
     case "c":
     case "c":
-      return { iconBgColor: "bg-orange-600", Icon: FileCode };
+      return { iconBgColor: "bg-warn", Icon: FileCode };
     default:
-      return { iconBgColor: "bg-blue-600", Icon: FileText };
+      return { iconBgColor: "bg-info", Icon: FileText };
   }
 }
