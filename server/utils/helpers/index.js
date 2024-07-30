@@ -1,4 +1,12 @@
 /**
+ * File Attachment for automatic upload on the chat container page.
+ * @typedef Attachment
+ * @property {string} name - the given file name
+ * @property {string} mime - the given file mime
+ * @property {string} contentString - full base64 encoded string of file
+ */
+
+/**
  * @typedef {Object} BaseLLMProvider - A basic llm provider object
  * @property {Function} streamingEnabled - Checks if streaming is enabled for chat completions.
  * @property {Function} promptWindowLimit - Returns the token limit for the current model.
