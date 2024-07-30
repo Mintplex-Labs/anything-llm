@@ -49,6 +49,7 @@ export default function DnDFileUploaderWrapper({ workspace, children }) {
     /** @type {{uid: Attachment['uid'], document: Attachment['document']}} */
     const { uid, document } = event.detail;
     setFiles((prev) => prev.filter((prevFile) => prevFile.uid !== uid));
+    if (!document.location) return;
     await Workspace.deleteAndUnembedFile(workspace.slug, document.location);
   }
 

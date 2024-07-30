@@ -36,10 +36,11 @@ export default {
         "dark-text": "#222628",
         description: "#D2D5DB",
         "x-button": "#9CA3AF",
-        info: '#026AA2',
-        danger: '#B42318',
-        warn: '#DC6803',
-        success: '#039855',
+        royalblue: '#3538CD',
+        magenta: '#C11574',
+        danger: '#F04438',
+        warn: '#854708',
+        success: '#027A48',
         darker: "#F4F4F4"
       },
       backgroundImage: {

@@ -67,18 +67,30 @@ function AttachmentItem({ attachment }) {
         <div
           data-tooltip-id={`attachment-uid-${uid}-error`}
           data-tooltip-content={error}
-          className={`h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-zinc-800 border border-white/20 w-[200px]`}
+          className={`relative h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-[#4E140B] border border-transparent w-[200px] group`}
         >
+          <div className="invisible group-hover:visible absolute -top-[5px] -right-[5px] w-fit h-fit z-[10]">
+            <button
+              onClick={removeFileFromQueue}
+              type="button"
+              className="bg-zinc-700 hover:bg-red-400 rounded-full p-1 flex items-center justify-center hover:border-transparent border border-white/40"
+            >
+              <X
+                size={10}
+                className="flex-shrink-0 text-zinc-200 group-hover:text-white"
+              />
+            </button>
+          </div>
           <div
-            className={`bg-red-300 rounded-lg flex items-center justify-center flex-shrink-0 p-1`}
+            className={`bg-danger rounded-lg flex items-center justify-center flex-shrink-0 p-1`}
           >
-            <WarningOctagon size={30} className="text-red-800" />
+            <WarningOctagon size={30} className="text-white" />
           </div>
           <div className="flex flex-col w-[130px]">
             <p className="text-white text-xs font-medium truncate">
               {file.name}
             </p>
-            <p className="text-red-300 text-xs truncate">
+            <p className="text-red-100 text-xs truncate">
               {error ?? "this file failed to upload"}. It will not be available
               in the workspace.
             </p>
@@ -141,12 +153,12 @@ function displayFromFile(file) {
   const extension = file?.name?.split(".")?.pop()?.toLowerCase() ?? "txt";
   switch (extension) {
     case "pdf":
-      return { iconBgColor: "bg-danger", Icon: FilePdf };
+      return { iconBgColor: "bg-magenta", Icon: FilePdf };
     case "doc":
     case "docx":
-      return { iconBgColor: "bg-danger", Icon: FileDoc };
+      return { iconBgColor: "bg-royalblue", Icon: FileDoc };
     case "html":
-      return { iconBgColor: "bg-danger", Icon: FileHtml };
+      return { iconBgColor: "bg-warn", Icon: FileHtml };
     case "csv":
     case "xlsx":
       return { iconBgColor: "bg-success", Icon: FileCsv };
@@ -159,6 +171,6 @@ function displayFromFile(file) {
     case "c":
       return { iconBgColor: "bg-warn", Icon: FileCode };
     default:
-      return { iconBgColor: "bg-info", Icon: FileText };
+      return { iconBgColor: "bg-royalblue", Icon: FileText };
   }
 }
