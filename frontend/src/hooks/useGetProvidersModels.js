@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 // Providers which cannot use this feature for workspace<>model selection
 export const DISABLED_PROVIDERS = [
   "azure",
-  "lmstudio",
   "native",
   "textgenwebui",
   "generic-openai",

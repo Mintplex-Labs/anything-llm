@@ -112,11 +112,34 @@ class GeminiLLM {
     return validModels.includes(modelName);
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        inlineData: {
+          data: attachment.contentString.split("base64,")[1],
+          mimeType: attachment.mime,
+        },
+      });
+    }
+    return content.flat();
+  }
+
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
@@ -126,7 +149,10 @@ class GeminiLLM {
       prompt,
       { role: "assistant", content: "Okay." },
       ...chatHistory,
-      { role: "USER_PROMPT", content: userPrompt },
+      {
+        role: "USER_PROMPT",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
     ];
   }
 

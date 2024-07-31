@@ -17,6 +17,7 @@ export default function ChatHistory({
   sendCommand,
   updateHistory,
   regenerateAssistantMessage,
+  hasAttachments = false,
 }) {
   const { user } = useUser();
   const { threadSlug = null } = useParams();
@@ -92,7 +93,12 @@ export default function ChatHistory({
     sendCommand(`${heading} ${message}`, true);
   };
 
-  const saveEditedMessage = async ({ editedMessage, chatId, role }) => {
+  const saveEditedMessage = async ({
+    editedMessage,
+    chatId,
+    role,
+    attachments = [],
+  }) => {
     if (!editedMessage) return; // Don't save empty edits.
 
     // if the edit was a user message, we will auto-regenerate the response and delete all
@@ -109,7 +115,7 @@ export default function ChatHistory({
       updatedHistory[updatedHistory.length - 1].content = editedMessage;
       // remove all edited messages after the edited message in backend
       await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
-      sendCommand(editedMessage, true, updatedHistory);
+      sendCommand(editedMessage, true, updatedHistory, attachments);
       return;
     }
 
@@ -144,7 +150,7 @@ export default function ChatHistory({
     );
   };
 
-  if (history.length === 0) {
+  if (history.length === 0 && !hasAttachments) {
     return (
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
@@ -227,6 +233,7 @@ export default function ChatHistory({
             feedbackScore={props.feedbackScore}
             chatId={props.chatId}
             error={props.error}
+            attachments={props.attachments}
             regenerateMessage={regenerateAssistantMessage}
             isLastMessage={isLastBotReply}
             saveEditedMessage={saveEditedMessage}
