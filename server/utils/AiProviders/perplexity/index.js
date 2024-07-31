@@ -21,7 +21,7 @@ class PerplexityLLM {
     this.model =
       modelPreference ||
       process.env.PERPLEXITY_MODEL_PREF ||
-      "sonar-small-online"; // Give at least a unique model to the provider as last fallback.
+      "llama-3-sonar-large-32k-online"; // Give at least a unique model to the provider as last fallback.
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
