@@ -13,6 +13,7 @@ import AvailableAgentsButton, {
 import TextSizeButton from "./TextSizeMenu";
 import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
+import AttachmentManager from "./Attachments";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 export default function PromptInput({
@@ -21,6 +22,7 @@ export default function PromptInput({
   inputDisabled,
   buttonDisabled,
   sendCommand,
+  attachments = [],
 }) {
   const [promptInput, setPromptInput] = useState("");
   const { showAgents, setShowAgents } = useAvailableAgents();
@@ -106,10 +108,11 @@ export default function PromptInput({
       />
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl"
+        className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl items-center"
       >
         <div className="flex items-center rounded-lg md:mb-4">
-          <div className="w-[600px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+          <div className="w-[635px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+            <AttachmentManager attachments={attachments} />
             <div className="flex items-center w-full border-b-2 border-gray-500/50">
               <textarea
                 ref={textareaRef}

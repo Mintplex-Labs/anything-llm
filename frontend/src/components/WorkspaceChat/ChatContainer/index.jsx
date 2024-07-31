@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ChatHistory from "./ChatHistory";
+import DnDFileUploadWrapper, { CLEAR_ATTACHMENTS_EVENT } from "./DnDWrapper";
 import PromptInput, { PROMPT_INPUT_EVENT } from "./PromptInput";
 import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
@@ -121,37 +122,22 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         return;
       }
 
-      // TODO: Simplify this
       if (!promptMessage || !promptMessage?.userMessage) return false;
-      if (!!threadSlug) {
-        await Workspace.threads.streamChat(
-          { workspaceSlug: workspace.slug, threadSlug },
-          promptMessage.userMessage,
-          (chatResult) =>
-            handleChat(
-              chatResult,
-              setLoadingResponse,
-              setChatHistory,
-              remHistory,
-              _chatHistory,
-              setSocketId
-            )
-        );
-      } else {
-        await Workspace.streamChat(
-          workspace,
-          promptMessage.userMessage,
-          (chatResult) =>
-            handleChat(
-              chatResult,
-              setLoadingResponse,
-              setChatHistory,
-              remHistory,
-              _chatHistory,
-              setSocketId
-            )
-        );
-      }
+      window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
+      await Workspace.multiplexStream({
+        workspaceSlug: workspace.slug,
+        threadSlug,
+        prompt: promptMessage.userMessage,
+        chatHandler: (chatResult) =>
+          handleChat(
+            chatResult,
+            setLoadingResponse,
+            setChatHistory,
+            remHistory,
+            _chatHistory,
+            setSocketId
+          ),
+      });
       return;
     }
     loadingResponse === true && fetchReply();
@@ -205,6 +191,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
         });
         setWebsocket(socket);
         window.dispatchEvent(new CustomEvent(AGENT_SESSION_START));
+        window.dispatchEvent(new CustomEvent(CLEAR_ATTACHMENTS_EVENT));
       } catch (e) {
         setChatHistory((prev) => [
           ...prev.filter((msg) => !!msg.content),
@@ -234,22 +221,28 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-main-gradient w-full h-full overflow-y-scroll border-2 border-outline"
     >
       {isMobile && <SidebarMobileHeader />}
-      <div className="flex flex-col h-full w-full md:mt-0 mt-[40px]">
-        <ChatHistory
-          history={chatHistory}
-          workspace={workspace}
-          sendCommand={sendCommand}
-          updateHistory={setChatHistory}
-          regenerateAssistantMessage={regenerateAssistantMessage}
-        />
-        <PromptInput
-          submit={handleSubmit}
-          onChange={handleMessageChange}
-          inputDisabled={loadingResponse}
-          buttonDisabled={loadingResponse}
-          sendCommand={sendCommand}
-        />
-      </div>
+      <DnDFileUploadWrapper workspace={workspace}>
+        {(files) => (
+          <>
+            <ChatHistory
+              history={chatHistory}
+              workspace={workspace}
+              sendCommand={sendCommand}
+              updateHistory={setChatHistory}
+              regenerateAssistantMessage={regenerateAssistantMessage}
+              hasAttachments={files.length > 0}
+            />
+            <PromptInput
+              submit={handleSubmit}
+              onChange={handleMessageChange}
+              inputDisabled={loadingResponse}
+              buttonDisabled={loadingResponse}
+              sendCommand={sendCommand}
+              attachments={files}
+            />
+          </>
+        )}
+      </DnDFileUploadWrapper>
     </div>
   );
 }
