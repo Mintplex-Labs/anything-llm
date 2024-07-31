@@ -16,7 +16,14 @@ function getCustomModels(models = []) {
 }
 
 // Highlighted and/or recommended models for use.
-const SHORT_MODELS = ["llama3.1:latest", "mistral:latest", "gemma2:latest"];
+const SHORT_MODELS = [
+  "llava-llama3:latest",
+  "llama3.1:latest",
+  "mistral:latest",
+  "phi3:latest",
+  "gemma2:latest",
+  "gemma:2b",
+];
 
 export default function AnythingLLMOptions({
   short = false,

@@ -5,12 +5,23 @@ export const DOWNLOADABLE_MODELS = [
     description: "Meta Llama 3.1: The new state-of-the-art model from Meta.",
     size: "4.7GB",
     link: "https://llama.meta.com/",
+    tag: "text",
     licenses: [
       {
         title: "LLAMA 3 COMMUNITY LICENSE AGREEMENT",
-        link: "https://llama.meta.com/llama3.1/license/",
+        link: "https://raw.githubusercontent.com/meta-llama/llama-models/main/models/llama3_1/LICENSE",
       },
     ],
+  },
+  {
+    id: "llava-llama3:latest",
+    name: "LLaVA Llama3 8B",
+    description:
+      "A LLaVA model fine-tuned from llama 3 to create a powerful multi-modal LLM.",
+    size: "5.5GB",
+    link: "https://github.com/InternLM/xtuner/tree/main",
+    tag: "text-and-vision",
+    licenses: [],
   },
   {
     id: "llama3:latest",
@@ -19,6 +30,7 @@ export const DOWNLOADABLE_MODELS = [
       "Meta Llama 3: The previous generation of the Llama model by Meta.",
     size: "4.7GB",
     link: "https://llama.meta.com/",
+    tag: "text",
     licenses: [
       {
         title: "LLAMA 3 COMMUNITY LICENSE AGREEMENT",
@@ -33,6 +45,7 @@ export const DOWNLOADABLE_MODELS = [
       "Llama 2 is released by Meta Platforms, Inc. This model is trained on 2 trillion tokens, and by default supports a context length of 4096. Llama 2 Chat models are fine-tuned on over 1 million human annotations, and are made for chat.",
     size: "3.8GB",
     link: "https://llama.meta.com/",
+    tag: "text",
     licenses: [
       {
         title: "Llama 2 Acceptable Use Policy",
@@ -51,6 +64,7 @@ export const DOWNLOADABLE_MODELS = [
       "Llama 2 Uncensored is based on Meta's Llama 2 model, and was created by George Sung and Jarrad Hope using the process defined by Eric Hartford.",
     size: "3.8GB",
     link: "https://erichartford.com/uncensored-models",
+    tag: "text",
     licenses: [
       {
         title: "Llama 2 Acceptable Use Policy",
@@ -69,6 +83,7 @@ export const DOWNLOADABLE_MODELS = [
       "Llama 2 is released by Meta Platforms, Inc. This model is trained on 2 trillion tokens, and by default supports a context length of 4096. Llama 2 Chat models are fine-tuned on over 1 million human annotations, and are made for chat.",
     size: "7.4GB",
     link: "https://llama.meta.com/",
+    tag: "text",
     licenses: [
       {
         title: "Llama 2 Acceptable Use Policy",
@@ -87,6 +102,7 @@ export const DOWNLOADABLE_MODELS = [
       "A large language model that can use text prompts to generate and discuss code.",
     size: "3.8GB",
     link: "https://llama.meta.com/",
+    tag: "text",
     licenses: [
       {
         title: "Llama 2 Acceptable Use Policy",
@@ -105,6 +121,7 @@ export const DOWNLOADABLE_MODELS = [
       "Mistral 7B is an LLM that outperforms Llama-2 7B on many benchmarks and is open-weight and uncensored.",
     size: "4.1GB",
     link: "https://mistral.ai/",
+    tag: "text",
     licenses: [
       {
         title: "Apache 2.0",
@@ -119,6 +136,7 @@ export const DOWNLOADABLE_MODELS = [
       "The Mixtral-8x7B Large Language Model (LLM) is a pretrained generative Sparse Mixture of Experts. It outperforms Llama 2 70B on many benchmarks.",
     size: "26GB",
     link: "https://mistral.ai/",
+    tag: "text",
     licenses: [
       {
         title: "Apache 2.0",
@@ -133,6 +151,7 @@ export const DOWNLOADABLE_MODELS = [
       "Gemma2 is the second evolution of the Google Gemma model, now available as a 9B size.",
     size: "5.4GB",
     link: "https://blog.google/technology/developers/gemma-open-models/",
+    tag: "text",
     licenses: [
       {
         title: "Gemma Terms of Use",
@@ -147,6 +166,7 @@ export const DOWNLOADABLE_MODELS = [
       "Gemma is a family of lightweight, state-of-the-art open models built by Google DeepMind.",
     size: "1.7GB",
     link: "https://blog.google/technology/developers/gemma-open-models/",
+    tag: "text",
     licenses: [
       {
         title: "Gemma Terms of Use",
@@ -161,6 +181,7 @@ export const DOWNLOADABLE_MODELS = [
       "Gemma is a family of lightweight, state-of-the-art open models built by Google DeepMind.",
     size: "5.2GB",
     link: "https://blog.google/technology/developers/gemma-open-models/",
+    tag: "text",
     licenses: [
       {
         title: "Gemma Terms of Use",
@@ -175,6 +196,7 @@ export const DOWNLOADABLE_MODELS = [
       "Phi-3: a 3.8B language model by Microsoft Research that demonstrates outstanding reasoning and language understanding capabilities.",
     size: "2.2GB",
     link: "https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/",
+    tag: "text",
     licenses: [
       {
         title: "MIT License",
@@ -189,6 +211,7 @@ export const DOWNLOADABLE_MODELS = [
       "Phi-2: a 2.7B language model by Microsoft Research that demonstrates outstanding reasoning and language understanding capabilities.",
     size: "1.6GB",
     link: "https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/",
+    tag: "text",
     licenses: [
       {
         title: "MIT License",
@@ -203,6 +226,7 @@ export const DOWNLOADABLE_MODELS = [
       "A general-purpose model ranging from 3 billion parameters to 70 billion, suitable for entry-level hardware.",
     size: "2.0GB",
     link: "https://arxiv.org/abs/2306.02707",
+    tag: "text",
     licenses: [],
   },
   {
@@ -212,6 +236,7 @@ export const DOWNLOADABLE_MODELS = [
       "A general-purpose model ranging from 3 billion parameters to 70 billion, suitable for entry-level hardware.",
     size: "3.8GB",
     link: "https://arxiv.org/abs/2306.02707",
+    tag: "text",
     licenses: [],
   },
   {
@@ -221,6 +246,7 @@ export const DOWNLOADABLE_MODELS = [
       "A general-purpose model ranging from 3 billion parameters to 70 billion, suitable for entry-level hardware.",
     size: "7.4GB",
     link: "https://arxiv.org/abs/2306.02707",
+    tag: "text",
     licenses: [],
   },
   {
@@ -230,6 +256,7 @@ export const DOWNLOADABLE_MODELS = [
       "An uncensored, fine-tuned model based on the Mixtral mixture of experts model that excels at coding tasks. Created by Eric Hartford.",
     size: "26GB",
     link: "https://huggingface.co/cognitivecomputations/dolphin-2.5-mixtral-8x7b",
+    tag: "text",
     licenses: [
       {
         title: "Apache License",

@@ -94,6 +94,8 @@ class AnythingLLMOllama {
     return new ChatOllama({
       baseUrl: this.basePath(),
       model: this.model,
+      keepAlive: 600, // 10 min to keep in memory
+      useMLock: true,
       temperature,
     });
   }
@@ -366,6 +368,7 @@ class AnythingLLMOllama {
       case "gemma:2b":
       case "gemma:7b":
       case "llama3:latest":
+      case "llava-llama3:latest":
         return 8192;
 
       case "llama2:latest":
@@ -394,17 +397,50 @@ class AnythingLLMOllama {
     return true;
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return { content: userPrompt };
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: attachment.contentString,
+      });
+    }
+    return { content: content.flat() };
+  }
+
+  /**
+   * Construct the user prompt for this model.
+   * @param {{attachments: import("../../helpers").Attachment[]}} param0
+   * @returns
+   */
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...chatHistory,
+      {
+        role: "user",
+        ...this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
   }
 
   async isSafe(_input = "") {
