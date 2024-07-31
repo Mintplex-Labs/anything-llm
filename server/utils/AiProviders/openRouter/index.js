@@ -128,17 +128,49 @@ class OpenRouterLLM {
     return availableModels.hasOwnProperty(model);
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+          detail: "auto",
+        },
+      });
+    }
+    console.log(content.flat());
+    return content.flat();
+  }
+
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...chatHistory,
+      {
+        role: "user",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {

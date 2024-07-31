@@ -93,7 +93,12 @@ export default function ChatHistory({
     sendCommand(`${heading} ${message}`, true);
   };
 
-  const saveEditedMessage = async ({ editedMessage, chatId, role }) => {
+  const saveEditedMessage = async ({
+    editedMessage,
+    chatId,
+    role,
+    attachments = [],
+  }) => {
     if (!editedMessage) return; // Don't save empty edits.
 
     // if the edit was a user message, we will auto-regenerate the response and delete all
@@ -110,7 +115,7 @@ export default function ChatHistory({
       updatedHistory[updatedHistory.length - 1].content = editedMessage;
       // remove all edited messages after the edited message in backend
       await Workspace.deleteEditedChats(workspace.slug, threadSlug, chatId);
-      sendCommand(editedMessage, true, updatedHistory);
+      sendCommand(editedMessage, true, updatedHistory, attachments);
       return;
     }
 
@@ -228,6 +233,7 @@ export default function ChatHistory({
             feedbackScore={props.feedbackScore}
             chatId={props.chatId}
             error={props.error}
+            attachments={props.attachments}
             regenerateMessage={regenerateAssistantMessage}
             isLastMessage={isLastBotReply}
             saveEditedMessage={saveEditedMessage}
