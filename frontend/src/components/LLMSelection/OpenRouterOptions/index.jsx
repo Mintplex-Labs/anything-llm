@@ -13,7 +13,7 @@ export default function OpenRouterOptions({ settings }) {
           <input
             type="password"
             name="OpenRouterApiKey"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="OpenRouter API Key"
             defaultValue={settings?.OpenRouterApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -38,7 +38,7 @@ function AdvancedControls({ settings }) {
       <button
         type="button"
         onClick={() => setShowAdvancedControls(!showAdvancedControls)}
-        className="text-white hover:text-white/70 flex items-center text-sm"
+        className="border-none text-white hover:text-white/70 flex items-center text-sm"
       >
         {showAdvancedControls ? "Hide" : "Show"} advanced controls
         {showAdvancedControls ? (
@@ -55,7 +55,7 @@ function AdvancedControls({ settings }) {
           <input
             type="number"
             name="OpenRouterTimeout"
-            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+            className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
             placeholder="Timeout value between token responses to auto-timeout the stream"
             defaultValue={settings?.OpenRouterTimeout ?? 500}
             autoComplete="off"

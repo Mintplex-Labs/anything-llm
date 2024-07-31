@@ -427,7 +427,7 @@ const Workspace = {
    */
   uploadAndEmbedFile: async function (slug, formData) {
     const response = await fetch(
-      `${API_BASE}/workspace/${slug}/upload-and-embed`,
+      `${API_BASE()}/workspace/${slug}/upload-and-embed`,
       {
         method: "POST",
         body: formData,
@@ -447,7 +447,7 @@ const Workspace = {
    */
   deleteAndUnembedFile: async function (slug, documentLocation) {
     const response = await fetch(
-      `${API_BASE}/workspace/${slug}/remove-and-unembed`,
+      `${API_BASE()}/workspace/${slug}/remove-and-unembed`,
       {
         method: "DELETE",
         body: JSON.stringify({ documentLocation }),
