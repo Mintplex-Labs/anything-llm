@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
 import { OLLAMA_COMMON_URLS } from "@/utils/constants";
-import { CaretDown, CaretUp } from "@phosphor-icons/react";
+import { CaretDown, CaretUp, Info } from "@phosphor-icons/react";
 import useProviderEndpointAutoDiscovery from "@/hooks/useProviderEndpointAutoDiscovery";
+import { Tooltip } from "react-tooltip";
 
 export default function OllamaLLMOptions({ settings }) {
   const {
@@ -23,8 +24,14 @@ export default function OllamaLLMOptions({ settings }) {
     settings?.OllamaLLMTokenLimit || 4096
   );
 
+  const [context, setContext] = useState(settings?.OllamaLLMContext || "base");
+
   const handleMaxTokensChange = (e) => {
     setMaxTokens(Number(e.target.value));
+  };
+
+  const handleContextChange = (e) => {
+    setContext(e.target.value);
   };
 
   return (
@@ -54,6 +61,49 @@ export default function OllamaLLMOptions({ settings }) {
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
             Maximum number of tokens for context and response.
           </p>
+        </div>
+        <div className="flex flex-col w-60">
+          <label className="text-white text-sm font-semibold mb-2 flex items-center">
+            Performance Mode
+            <Info
+              size={16}
+              className="ml-2 text-white"
+              data-tooltip-id="context-mode-tooltip"
+            />
+          </label>
+          <select
+            name="OllamaLLMContext"
+            required={true}
+            className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            value={context}
+            onChange={handleContextChange}
+          >
+            <option value="base">Base (Default)</option>
+            <option value="maximum">Maximum</option>
+          </select>
+          <p className="text-xs leading-[18px] font-base text-white text-opacity-60 mt-2">
+            Choose the performance mode for the Ollama model.
+          </p>
+          <Tooltip
+            id="context-mode-tooltip"
+            place="bottom"
+            className="tooltip !text-xs max-w-xs"
+          >
+            <p className="text-red-500">
+              <strong>Note:</strong> Only change this setting if you understand
+              its implications on performance and resource usage.
+            </p>
+            <br />
+            <p>
+              <strong>Base:</strong> Ollama automatically limits the context to
+              2048 tokens, reducing VRAM usage. Suitable for most users.
+            </p>
+            <br />
+            <p>
+              <strong>Maximum:</strong> Uses the full context window (up to Max
+              Tokens). May increase VRAM usage significantly.
+            </p>
+          </Tooltip>
         </div>
       </div>
       <div className="flex justify-start mt-4">
@@ -134,6 +184,7 @@ export default function OllamaLLMOptions({ settings }) {
                 className="underline text-blue-300"
                 href="https://github.com/ollama/ollama/blob/main/docs/faq.md#how-do-i-keep-a-model-loaded-in-memory-or-make-it-unload-immediately"
                 target="_blank"
+                rel="noreferrer"
               >
                 {" "}
                 Learn more &rarr;

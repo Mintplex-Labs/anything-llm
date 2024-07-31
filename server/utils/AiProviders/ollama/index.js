@@ -21,6 +21,7 @@ class OllamaAILLM {
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
+    this.context = process.env.OLLAMA_CONTEXT || "base";
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
@@ -28,13 +29,18 @@ class OllamaAILLM {
 
   #ollamaClient({ temperature = 0.07 }) {
     const { ChatOllama } = require("@langchain/community/chat_models/ollama");
-    return new ChatOllama({
+    const config = {
       baseUrl: this.basePath,
       model: this.model,
       keepAlive: this.keepAlive,
       useMLock: true,
       temperature,
-    });
+    };
+
+    if (this.context === "maximum") {
+      config.numCtx = this.promptWindowLimit();
+    }
+    return new ChatOllama(config);
   }
 
   // For streaming we use Langchain's wrapper to handle weird chunks

@@ -101,6 +101,10 @@ const KEY_MAPPING = {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  OllamaLLMContext: {
+    envKey: "OLLAMA_CONTEXT",
+    checks: [],
+  },
   OllamaLLMKeepAliveSeconds: {
     envKey: "OLLAMA_KEEP_ALIVE_TIMEOUT",
     checks: [isInteger],
