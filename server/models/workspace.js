@@ -36,7 +36,20 @@ const Workspace = {
    * @returns {string}
    */
   slugify: function (...args) {
-    slugifyModule.extend({ "+": " plus ", "!": " bang " });
+    slugifyModule.extend({
+      "+": " plus ",
+      "!": " bang ",
+      "@": " at ",
+      "*": " splat ",
+      ".": " dot ",
+      ":": "",
+      "~": "",
+      "(": "",
+      ")": "",
+      "'": "",
+      '"': "",
+      "|": "",
+    });
     return slugifyModule(...args);
   },
 
