@@ -48,7 +48,7 @@ export default function SpeechToText({ sendCommand }) {
 
   const handleKeyPress = useCallback(
     (event) => {
-      if ((event.ctrlKey || event.metaKey) && event.keyCode === 32) {
+      if (event.ctrlKey && event.keyCode === 77) {
         if (listening) {
           endTTSSession();
         } else {
