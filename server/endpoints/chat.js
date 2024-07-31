@@ -97,6 +97,7 @@ function chatEndpoints(app) {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          multiModal: Array.isArray(attachments) && attachments?.length !== 0,
         });
 
         await EventLogs.logEvent(
@@ -224,6 +225,7 @@ function chatEndpoints(app) {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          multiModal: Array.isArray(attachments) && attachments?.length !== 0,
         });
 
         await EventLogs.logEvent(
