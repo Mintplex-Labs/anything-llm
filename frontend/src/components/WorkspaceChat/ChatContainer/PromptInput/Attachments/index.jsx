@@ -4,13 +4,13 @@ import {
   FileCsv,
   FileDoc,
   FileHtml,
+  FileText,
   FileImage,
   FilePdf,
   WarningOctagon,
   X,
 } from "@phosphor-icons/react";
 import { humanFileSize } from "@/utils/numbers";
-import { FileText } from "@phosphor-icons/react/dist/ssr";
 import { REMOVE_ATTACHMENT_EVENT } from "../../DnDWrapper";
 import { Tooltip } from "react-tooltip";
 
