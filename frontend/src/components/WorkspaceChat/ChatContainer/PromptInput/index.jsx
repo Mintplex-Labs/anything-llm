@@ -12,6 +12,8 @@ import AvailableAgentsButton, {
 } from "./AgentMenu";
 import TextSizeButton from "./TextSizeMenu";
 import { Tooltip } from "react-tooltip";
+import AttachmentManager from "./Attachments";
+import AttachItem from "./AttachItem";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 export default function PromptInput({
@@ -20,6 +22,7 @@ export default function PromptInput({
   inputDisabled,
   buttonDisabled,
   sendCommand,
+  attachments = [],
 }) {
   const [promptInput, setPromptInput] = useState("");
   const { showAgents, setShowAgents } = useAvailableAgents();
@@ -108,7 +111,8 @@ export default function PromptInput({
         className="flex flex-col gap-y-1 rounded-t-lg md:w-3/4 w-full mx-auto max-w-xl border-none"
       >
         <div className="flex items-center rounded-lg md:mb-4">
-          <div className="border-none w-[600px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+          <div className="border-none w-[635px] bg-main-gradient shadow-2xl border border-white/50 rounded-2xl flex flex-col px-4 overflow-hidden">
+            <AttachmentManager attachments={attachments} />
             <div className="flex items-center w-full border-bb-only border-b border-solid border-gray-500/50">
               <textarea
                 ref={textareaRef}
@@ -157,6 +161,7 @@ export default function PromptInput({
             </div>
             <div className="flex justify-between py-3.5">
               <div className="flex gap-x-2">
+                <AttachItem />
                 <SlashCommandsButton
                   showing={showSlashCommand}
                   setShowSlashCommand={setShowSlashCommand}

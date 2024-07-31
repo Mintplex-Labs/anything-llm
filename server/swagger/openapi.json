@@ -1476,7 +1476,8 @@
                         "openAiTemp": null,
                         "lastUpdatedAt": "2023-08-17 00:45:03",
                         "openAiHistory": 20,
-                        "openAiPrompt": null
+                        "openAiPrompt": null,
+                        "threads": []
                       }
                     ]
                   }
@@ -1539,7 +1540,8 @@
                       "lastUpdatedAt": "2023-08-17 00:45:03",
                       "openAiHistory": 20,
                       "openAiPrompt": null,
-                      "documents": []
+                      "documents": [],
+                      "threads": []
                     }
                   }
                 }

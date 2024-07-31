@@ -69,6 +69,7 @@ export function EditMessageForm({
   role,
   chatId,
   message,
+  attachments = [],
   adjustTextArea,
   saveChanges,
 }) {
@@ -77,15 +78,15 @@ export function EditMessageForm({
     e.preventDefault();
     const form = new FormData(e.target);
     const editedMessage = form.get("editedMessage");
-    saveChanges({ editedMessage, chatId, role });
+    saveChanges({ editedMessage, chatId, role, attachments });
     window.dispatchEvent(
-      new CustomEvent(EDIT_EVENT, { detail: { chatId, role } })
+      new CustomEvent(EDIT_EVENT, { detail: { chatId, role, attachments } })
     );
   }
 
   function cancelEdits() {
     window.dispatchEvent(
-      new CustomEvent(EDIT_EVENT, { detail: { chatId, role } })
+      new CustomEvent(EDIT_EVENT, { detail: { chatId, role, attachments } })
     );
     return false;
   }

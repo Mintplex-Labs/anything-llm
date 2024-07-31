@@ -15,12 +15,7 @@ const NO_MODEL_SELECTION = [
   "generic-openai",
   "bedrock",
 ];
-const DISABLED_PROVIDERS = [
-  "anythingllm_ollama",
-  "azure",
-  "lmstudio",
-  "native",
-];
+const DISABLED_PROVIDERS = ["anythingllm_ollama", "azure", "native"];
 const LLM_DEFAULT = {
   name: "System default",
   value: "default",

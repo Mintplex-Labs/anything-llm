@@ -362,6 +362,10 @@ const KEY_MAPPING = {
     envKey: "OPENROUTER_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  OpenRouterTimeout: {
+    envKey: "OPENROUTER_TIMEOUT_MS",
+    checks: [],
+  },
 
   // Groq Options
   GroqApiKey: {

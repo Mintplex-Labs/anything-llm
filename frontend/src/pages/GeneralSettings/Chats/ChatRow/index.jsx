@@ -5,6 +5,22 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import { refocusApplication } from "@/ipc/node-api";
 
+// Some LLMs may return a "valid" response that truncation fails to truncate because
+// it stored an Object as opposed to a string for the `text` field.
+function parseText(jsonResponse = "") {
+  try {
+    const json = JSON.parse(jsonResponse);
+    if (!json.hasOwnProperty("text"))
+      throw new Error('JSON response has no property "text".');
+    return typeof json.text !== "string"
+      ? JSON.stringify(json.text)
+      : json.text;
+  } catch (e) {
+    console.error(e);
+    return "--failed to parse--";
+  }
+}
+
 export default function ChatRow({ chat, onDelete }) {
   const {
     isOpen: isPromptOpen,
@@ -52,7 +68,7 @@ export default function ChatRow({ chat, onDelete }) {
           onClick={openResponseModal}
           className="px-6 py-4 cursor-pointer transform transition-transform duration-200 hover:scale-105 hover:shadow-lg"
         >
-          {truncate(JSON.parse(chat.response)?.text, 40)}
+          {truncate(parseText(chat.response), 40)}
         </td>
         <td className="px-6 py-4">{chat.createdAt}</td>
         <td className="px-6 py-4 flex items-center gap-x-6">
@@ -69,7 +85,7 @@ export default function ChatRow({ chat, onDelete }) {
       </ModalWrapper>
       <ModalWrapper isOpen={isResponseOpen}>
         <TextPreview
-          text={JSON.parse(chat.response)?.text}
+          text={parseText(chat.response)}
           closeModal={closeResponseModal}
         />
       </ModalWrapper>
