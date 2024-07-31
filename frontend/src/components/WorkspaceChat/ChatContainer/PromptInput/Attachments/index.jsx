@@ -20,7 +20,7 @@ import { Tooltip } from "react-tooltip";
 export default function AttachmentManager({ attachments }) {
   if (attachments.length === 0) return null;
   return (
-    <div className="flex flex-wrap my-2">
+    <div className="flex flex-wrap mt-4 mb-2">
       {attachments.map((attachment) => (
         <AttachmentItem key={attachment.uid} attachment={attachment} />
       ))}
@@ -82,7 +82,7 @@ function AttachmentItem({ attachment }) {
             </button>
           </div>
           <div
-            className={`bg-danger rounded-lg flex items-center justify-center flex-shrink-0 p-1`}
+            className={`bg-error rounded-lg flex items-center justify-center flex-shrink-0 p-1`}
           >
             <WarningOctagon size={30} className="text-white" />
           </div>
@@ -158,7 +158,7 @@ function displayFromFile(file) {
     case "docx":
       return { iconBgColor: "bg-royalblue", Icon: FileDoc };
     case "html":
-      return { iconBgColor: "bg-warn", Icon: FileHtml };
+      return { iconBgColor: "bg-purple", Icon: FileHtml };
     case "csv":
     case "xlsx":
       return { iconBgColor: "bg-success", Icon: FileCsv };
