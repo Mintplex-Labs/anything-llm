@@ -211,7 +211,6 @@ function displayFromFile(file) {
     case "jsx":
     case "cpp":
     case "c":
-    case "c":
       return { iconBgColor: "bg-warn", Icon: FileCode };
     case "png":
     case "jpg":
