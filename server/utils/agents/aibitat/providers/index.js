@@ -12,6 +12,7 @@ const MistralProvider = require("./mistral.js");
 const GenericOpenAiProvider = require("./genericOpenAi.js");
 const PerplexityProvider = require("./perplexity.js");
 const TextWebGenUiProvider = require("./textgenwebui.js");
+const AWSBedrockProvider = require("./bedrock.js");
 
 module.exports = {
   OpenAIProvider,
@@ -28,4 +29,5 @@ module.exports = {
   GenericOpenAiProvider,
   PerplexityProvider,
   TextWebGenUiProvider,
+  AWSBedrockProvider,
 };

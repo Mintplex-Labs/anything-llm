@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 // Providers which cannot use this feature for workspace<>model selection
 export const DISABLED_PROVIDERS = [
   "azure",
-  "lmstudio",
   "native",
   "textgenwebui",
   "generic-openai",
+  "bedrock",
 ];
 const PROVIDER_DEFAULT_MODELS = {
   openai: [],
@@ -31,12 +31,7 @@ const PROVIDER_DEFAULT_MODELS = {
   localai: [],
   ollama: [],
   togetherai: [],
-  groq: [
-    "mixtral-8x7b-32768",
-    "llama3-8b-8192",
-    "llama3-70b-8192",
-    "gemma-7b-it",
-  ],
+  groq: [],
   native: [],
   cohere: [
     "command-r",
@@ -48,6 +43,7 @@ const PROVIDER_DEFAULT_MODELS = {
   ],
   textgenwebui: [],
   "generic-openai": [],
+  bedrock: [],
 };
 
 // For togetherAi, which has a large model list - we subgroup the options

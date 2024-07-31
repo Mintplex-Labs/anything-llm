@@ -86,7 +86,7 @@ async function resyncGithub({ chunkSource }, response) {
     // Github file data is `payload` encrypted (might contain PAT). So we need to expand its
     // encrypted payload back into query params so we can reFetch the page with same access token/params.
     const source = response.locals.encryptionWorker.expandPayload(chunkSource);
-    const { fetchGithubFile } = require("../../utils/extensions/GithubRepo");
+    const { fetchGithubFile } = require("../../utils/extensions/RepoLoader/GithubRepo");
     const { success, reason, content } = await fetchGithubFile({
       repoUrl: `https:${source.pathname}`, // need to add back the real protocol
       branch: source.searchParams.get('branch'),

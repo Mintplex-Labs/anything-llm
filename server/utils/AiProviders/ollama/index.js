@@ -13,6 +13,9 @@ class OllamaAILLM {
 
     this.basePath = process.env.OLLAMA_BASE_PATH;
     this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
+    this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
+      ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
+      : 300; // Default 5-minute timeout for Ollama model loading.
     this.limits = {
       history: this.promptWindowLimit() * 0.15,
       system: this.promptWindowLimit() * 0.15,
@@ -28,6 +31,7 @@ class OllamaAILLM {
     return new ChatOllama({
       baseUrl: this.basePath,
       model: this.model,
+      keepAlive: this.keepAlive,
       useMLock: true,
       temperature,
     });
@@ -86,17 +90,50 @@ class OllamaAILLM {
     return true;
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return { content: userPrompt };
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: attachment.contentString,
+      });
+    }
+    return { content: content.flat() };
+  }
+
+  /**
+   * Construct the user prompt for this model.
+   * @param {{attachments: import("../../helpers").Attachment[]}} param0
+   * @returns
+   */
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...chatHistory,
+      {
+        role: "user",
+        ...this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {

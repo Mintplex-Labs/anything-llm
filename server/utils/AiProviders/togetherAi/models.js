@@ -1,15 +1,69 @@
 const MODELS = {
-  "zero-one-ai/Yi-34B-Chat": {
-    id: "zero-one-ai/Yi-34B-Chat",
-    organization: "01.AI",
-    name: "01-ai Yi Chat (34B)",
+  "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo": {
+    id: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+    organization: "Meta",
+    name: "Llama 3.1 8B Instruct Turbo",
+    maxLength: 128000,
+  },
+  "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": {
+    id: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+    organization: "Meta",
+    name: "Llama 3.1 70B Instruct Turbo",
+    maxLength: 128000,
+  },
+  "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": {
+    id: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+    organization: "Meta",
+    name: "Llama 3.1 405B Instruct Turbo",
     maxLength: 4096,
+  },
+  "meta-llama/Meta-Llama-3-8B-Instruct-Turbo": {
+    id: "meta-llama/Meta-Llama-3-8B-Instruct-Turbo",
+    organization: "Meta",
+    name: "Llama 3 8B Instruct Turbo",
+    maxLength: 8192,
+  },
+  "meta-llama/Meta-Llama-3-70B-Instruct-Turbo": {
+    id: "meta-llama/Meta-Llama-3-70B-Instruct-Turbo",
+    organization: "Meta",
+    name: "Llama 3 70B Instruct Turbo",
+    maxLength: 8192,
+  },
+  "meta-llama/Meta-Llama-3-8B-Instruct-Lite": {
+    id: "meta-llama/Meta-Llama-3-8B-Instruct-Lite",
+    organization: "Meta",
+    name: "Llama 3 8B Instruct Lite",
+    maxLength: 8192,
+  },
+  "meta-llama/Meta-Llama-3-70B-Instruct-Lite": {
+    id: "meta-llama/Meta-Llama-3-70B-Instruct-Lite",
+    organization: "Meta",
+    name: "Llama 3 70B Instruct Lite",
+    maxLength: 8192,
+  },
+  "google/gemma-2-27b-it": {
+    id: "google/gemma-2-27b-it",
+    organization: "Google",
+    name: "Gemma 2 27B",
+    maxLength: 8192,
+  },
+  "google/gemma-2-9b-it": {
+    id: "google/gemma-2-9b-it",
+    organization: "Google",
+    name: "Gemma 2 9B",
+    maxLength: 8192,
   },
   "allenai/OLMo-7B-Instruct": {
     id: "allenai/OLMo-7B-Instruct",
     organization: "Allen AI",
     name: "OLMo Instruct (7B)",
     maxLength: 2048,
+  },
+  "zero-one-ai/Yi-34B-Chat": {
+    id: "zero-one-ai/Yi-34B-Chat",
+    organization: "01.AI",
+    name: "01-ai Yi Chat (34B)",
+    maxLength: 4096,
   },
   "allenai/OLMo-7B-Twin-2T": {
     id: "allenai/OLMo-7B-Twin-2T",
@@ -135,19 +189,13 @@ const MODELS = {
     id: "meta-llama/Llama-3-8b-chat-hf",
     organization: "Meta",
     name: "LLaMA-3 Chat (8B)",
-    maxLength: 8000,
+    maxLength: 8192,
   },
   "meta-llama/Llama-3-70b-chat-hf": {
     id: "meta-llama/Llama-3-70b-chat-hf",
     organization: "Meta",
     name: "LLaMA-3 Chat (70B)",
-    maxLength: 8000,
-  },
-  "microsoft/WizardLM-2-8x22B": {
-    id: "microsoft/WizardLM-2-8x22B",
-    organization: "Microsoft",
-    name: "WizardLM-2 (8x22B)",
-    maxLength: 65536,
+    maxLength: 8192,
   },
   "mistralai/Mistral-7B-Instruct-v0.1": {
     id: "mistralai/Mistral-7B-Instruct-v0.1",
@@ -159,6 +207,12 @@ const MODELS = {
     id: "mistralai/Mistral-7B-Instruct-v0.2",
     organization: "mistralai",
     name: "Mistral (7B) Instruct v0.2",
+    maxLength: 32768,
+  },
+  "mistralai/Mistral-7B-Instruct-v0.3": {
+    id: "mistralai/Mistral-7B-Instruct-v0.3",
+    organization: "mistralai",
+    name: "Mistral (7B) Instruct v0.3",
     maxLength: 32768,
   },
   "mistralai/Mixtral-8x7B-Instruct-v0.1": {
@@ -269,11 +323,29 @@ const MODELS = {
     name: "Qwen 1.5 Chat (72B)",
     maxLength: 32768,
   },
+  "Qwen/Qwen1.5-110B-Chat": {
+    id: "Qwen/Qwen1.5-110B-Chat",
+    organization: "Qwen",
+    name: "Qwen 1.5 Chat (110B)",
+    maxLength: 32768,
+  },
+  "Qwen/Qwen2-72B-Instruct": {
+    id: "Qwen/Qwen2-72B-Instruct",
+    organization: "Qwen",
+    name: "Qwen 2 Instruct (72B)",
+    maxLength: 32768,
+  },
   "snorkelai/Snorkel-Mistral-PairRM-DPO": {
     id: "snorkelai/Snorkel-Mistral-PairRM-DPO",
     organization: "Snorkel AI",
     name: "Snorkel Mistral PairRM DPO (7B)",
     maxLength: 32768,
+  },
+  "Snowflake/snowflake-arctic-instruct": {
+    id: "Snowflake/snowflake-arctic-instruct",
+    organization: "Snowflake",
+    name: "Snowflake Arctic Instruct",
+    maxLength: 4096,
   },
   "togethercomputer/alpaca-7b": {
     id: "togethercomputer/alpaca-7b",

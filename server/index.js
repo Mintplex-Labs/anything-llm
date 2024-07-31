@@ -41,7 +41,7 @@ app.use(
 if (!!process.env.ENABLE_HTTPS) {
   bootSSL(app, process.env.SERVER_PORT || 3001);
 } else {
-  require("express-ws")(app); // load WebSockets in non-SSL mode.
+  require("@mintplex-labs/express-ws").default(app); // load WebSockets in non-SSL mode.
 }
 
 app.use("/api", apiRouter);
@@ -63,6 +63,9 @@ developerEndpoints(app, apiRouter);
 embeddedEndpoints(apiRouter);
 
 if (process.env.NODE_ENV !== "development") {
+  const { MetaGenerator } = require("./utils/boot/MetaGenerator");
+  const IndexPage = new MetaGenerator();
+
   app.use(
     express.static(path.resolve(__dirname, "public"), {
       extensions: ["js"],
@@ -75,7 +78,8 @@ if (process.env.NODE_ENV !== "development") {
   );
 
   app.use("/", function (_, response) {
-    response.sendFile(path.join(__dirname, "public", "index.html"));
+    IndexPage.generate(response);
+    return;
   });
 
   app.get("/robots.txt", function (_, response) {

@@ -71,6 +71,7 @@ function convertToChatHistory(history = []) {
         role: "user",
         content: prompt,
         sentAt: moment(createdAt).unix(),
+        attachments: data?.attachments ?? [],
         chatId: id,
       },
       {

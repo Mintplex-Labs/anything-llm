@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
 import Option from "./MenuOption";
+import { FineTuningAlert } from "@/pages/FineTuning/Banner";
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
@@ -132,48 +133,53 @@ export default function SettingsSidebar() {
   }
 
   return (
-    <div>
-      <Link
-        to={paths.home()}
-        className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
-      >
-        <img
-          src={logo}
-          alt="Logo"
-          className="rounded max-h-[24px]"
-          style={{ objectFit: "contain" }}
-        />
-      </Link>
-      <div
-        ref={sidebarRef}
-        className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-76px)]"
-      >
-        <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
-          <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
-            {t("settings.title")}
-          </div>
-          <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
-            <div className="h-auto sidebar-items">
-              <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
-                <SidebarOptions user={user} t={t} />
-                <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
-                <SupportEmail />
-                <Link
-                  hidden={user?.hasOwnProperty("role") && user.role !== "admin"}
-                  to={paths.settings.privacy()}
-                  className="text-darker hover:text-white text-xs leading-[18px] mx-3"
-                >
-                  {t("settings.privacy")}
-                </Link>
+    <>
+      <div>
+        <Link
+          to={paths.home()}
+          className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
+        >
+          <img
+            src={logo}
+            alt="Logo"
+            className="rounded max-h-[24px]"
+            style={{ objectFit: "contain" }}
+          />
+        </Link>
+        <div
+          ref={sidebarRef}
+          className="transition-all duration-500 relative m-[16px] rounded-[16px] bg-sidebar border-2 border-outline min-w-[250px] p-[10px] h-[calc(100%-76px)]"
+        >
+          <div className="w-full h-full flex flex-col overflow-x-hidden items-between min-w-[235px]">
+            <div className="text-white text-opacity-60 text-sm font-medium uppercase mt-[4px] mb-0 ml-2">
+              {t("settings.title")}
+            </div>
+            <div className="relative h-[calc(100%-60px)] flex flex-col w-full justify-between pt-[10px] overflow-y-scroll no-scroll">
+              <div className="h-auto sidebar-items">
+                <div className="flex flex-col gap-y-2 pb-[60px] overflow-y-scroll no-scroll">
+                  <SidebarOptions user={user} t={t} />
+                  <div className="h-[1.5px] bg-[#3D4147] mx-3 mt-[14px]" />
+                  <SupportEmail />
+                  <Link
+                    hidden={
+                      user?.hasOwnProperty("role") && user.role !== "admin"
+                    }
+                    to={paths.settings.privacy()}
+                    className="text-darker hover:text-white text-xs leading-[18px] mx-3"
+                  >
+                    {t("settings.privacy")}
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
-            <Footer />
+            <div className="absolute bottom-0 left-0 right-0 pt-4 pb-3 rounded-b-[16px] bg-sidebar bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
+              <Footer />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <FineTuningAlert />
+    </>
   );
 }
 
