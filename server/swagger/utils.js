@@ -25,7 +25,7 @@ function useSwagger(app) {
       swaggerDocument,
       {
         ...options,
-        customJsStr: 'window.SWAGGER_DOCS_ENV = "production";\n\n' + fs.readFileSync(path.resolve(__dirname, 'server.js'), 'utf8'),
+        customJsStr: 'window.SWAGGER_DOCS_ENV = "production";\n\n' + fs.readFileSync(path.resolve(__dirname, 'swagger', 'index.js'), 'utf8'),
       },
     ));
   } else {
