@@ -134,7 +134,7 @@ const TRANSLATIONS = {
         deleting: "Eliminazione dell'area di lavoro...",
         "confirm-start": "Stai per eliminare l'intera",
         "confirm-end":
-          "area di lavoro. Verranno rimossi tutti gli incorporamenti vettoriali nel tuo database vettoriale.\n\nI file sorgente originali rimarranno intatti. Questa azione è irreversibile.",
+          "area di lavoro. Verranno rimossi tutti gli embeddings vettoriali nel tuo database vettoriale.\n\nI file sorgente originali rimarranno intatti. Questa azione è irreversibile.",
       },
     },
   
@@ -349,7 +349,7 @@ const TRANSLATIONS = {
     llm: {
         title: "Preferenza LLM",
         description:
-        "Queste sono le credenziali e le impostazioni per il tuo provider di chat e incorporamento LLM preferito. È importante che queste chiavi siano aggiornate e corrette, altrimenti AnythingLLM non funzionerà correttamente.",
+        "Queste sono le credenziali e le impostazioni per il tuo provider di chat e embedding LLM preferito. È importante che queste chiavi siano aggiornate e corrette, altrimenti AnythingLLM non funzionerà correttamente.",
         provider: "Provider LLM",
     },
   
@@ -392,7 +392,7 @@ const TRANSLATIONS = {
         title: "Dimensioni blocco di testo",
         description:
         "Questa è la lunghezza massima di caratteri che possono essere presenti in un singolo vettore.",
-        recommend: "La lunghezza massima del modello incorporato è",
+        recommend: "La lunghezza massima del modello di embedding è",
         },
         overlap: {
         title: "Sovrapposizione blocco di testo",
@@ -417,7 +417,7 @@ const TRANSLATIONS = {
         title: "Widget di chat incorporabili",
         description:
         "I widget di chat incorporabili sono interfacce di chat pubbliche che sono collegate a una singola area di lavoro. Queste ti consentono di creare aree di lavoro che puoi poi pubblicare ovunque.",
-        create: "Crea incorporamento",
+        create: "Crea embedding",
         table: {
           workspace: "Area di lavoro",
           chats: "Chat inviate",
@@ -428,7 +428,7 @@ const TRANSLATIONS = {
     "embed-chats": {
         title: "Chat incorporate",
         description:
-        "Queste sono tutte le chat e i messaggi registrati da qualsiasi incorporamento che hai pubblicato.",
+        "Queste sono tutte le chat e i messaggi registrati da qualsiasi embedding che hai pubblicato.",
         table: {
         embed: "Incorpora",
         sender: "Mittente",
@@ -482,7 +482,7 @@ const TRANSLATIONS = {
         description:
         "Questa è la tua configurazione per il modo in cui i provider terzi connessi e AnythingLLM gestiscono i tuoi dati.",
         llm: "Selezione LLM",
-        embedding: "Preferenza di incorporamento",
+        embedding: "Preferenza di embedding",
         vector: "Database vettoriale",
         anonymous: "Telemetria anonima abilitata",
     },
