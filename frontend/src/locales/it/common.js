@@ -73,14 +73,14 @@ const TRANSLATIONS = {
       part3:
         "AnythingLLM può essere eseguito completamente in locale sulla tua macchina con un overhead minimo, non ti accorgerai nemmeno che c'è! Non serve GPU. Sono disponibili anche installazioni cloud e on-premise.\nL'ecosistema degli strumenti di intelligenza artificiale diventa ogni giorno più potente. AnythingLLM lo rende facile da usare.",
       githubIssue: "Apri una issue su Github",
-      utente1: "Come posso iniziare?!",
+      user1: "Come posso iniziare?!",
       part4:
         "È semplice. Tutte le raccolte sono organizzate in contenitori che chiamiamo \"Aree di lavoro\". Le aree di lavoro sono contenitori di file, documenti, immagini, PDF e altri file che verranno trasformati in qualcosa che gli LLM possono comprendere e utilizzare nella conversazione.\n\nPuoi aggiungere e rimuovere file in qualsiasi momento.",
-      createWorkspace: "Crea il tuo primo area di lavoro",
+      createWorkspace: "Crea la tua prima area di lavoro",
       user2:
         "È come Dropbox AI o qualcosa del genere? E le chat? È un chatbot, non è vero?",
       part5:
-       "AnythingLLM è più di un Dropbox smart.\n\nAnythingLLM offre due modi di comunicare con i tuoi dati:\n\n<i>Query:</i> Le tue chat restituiranno dati o inferenze trovate con i documenti nel tuo area di lavoro a cui ha accesso. Aggiungere più documenti all'area di lavoro lo rende più intelligente! \n\n<i>Conversazionale:</i> i tuoi documenti + la cronologia delle chat in corso contribuiscono entrambi alla conoscenza dell'LLM allo stesso tempo. Ottimo per aggiungere informazioni basate su testo in tempo reale o correzioni e incomprensioni che l'LLM potrebbe avere. \n\nPuoi passare da una modalità all'altra \n<i>nel mezzo della chat!</i>",
+       "AnythingLLM è migliore di un Dropbox più smart.\n\nAnythingLLM offre due modi di comunicare con i tuoi dati:\n\n<i>Query:</i> Le tue chat restituiranno dati o inferenze trovate con i documenti nella tua area di lavoro a cui ha accesso. Aggiungere più documenti all'area di lavoro lo rende più intelligente! \n\n<i>Conversazionale:</i> i tuoi documenti + la cronologia delle chat in corso contribuiscono entrambi alla conoscenza dell'LLM allo stesso tempo. Ottimo per aggiungere informazioni basate su testo in tempo reale o correzioni e incomprensioni che l'LLM potrebbe avere. \n\nPuoi passare da una modalità all'altra \n<i>nel mezzo della chat!</i>",
       user3: "Wow, sembra fantastico, fammi provare!",
       part6: "Divertiti!",
       starOnGithub: "Metti una stella su GitHub",
@@ -108,12 +108,12 @@ const TRANSLATIONS = {
         description: "Numero totale di vettori nel tuo database vettoriale.",
       },
       names: {
-        description: "Questo cambierà solo il nome visualizzato del tuo area di lavoro.",
+        description: "Questo cambierà solo il nome visualizzato della tua area di lavoro.",
       },
       message: {
         title: "Messaggi Chat suggeriti",
         description:
-          "Personalizza i messaggi che verranno suggeriti agli utenti del tuo area di lavoro.",
+          "Personalizza i messaggi che verranno suggeriti agli utenti della tua area di lavoro.",
         add: "Aggiungi un nuovo messaggio",
         save: "Salva messaggi",
         heading: "Spiegami",
