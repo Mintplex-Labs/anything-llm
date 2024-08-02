@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { v5: uuidv5 } = require("uuid");
 const { Document } = require("../../models/documents");
+const { DocumentSyncQueue } = require("../../models/documentSyncQueue");
 const documentsPath =
   process.env.NODE_ENV === "development"
     ? path.resolve(__dirname, `../../storage/documents`)
@@ -25,7 +26,7 @@ async function fileData(filePath = null) {
 
 async function viewLocalFiles() {
   if (!fs.existsSync(documentsPath)) fs.mkdirSync(documentsPath);
-
+  const liveSyncAvailable = await DocumentSyncQueue.enabled();
   const directory = {
     name: "documents",
     type: "folder",
@@ -50,16 +51,28 @@ async function viewLocalFiles() {
         const rawData = fs.readFileSync(filePath, "utf8");
         const cachefilename = `${file}/${subfile}`;
         const { pageContent, ...metadata } = JSON.parse(rawData);
+        const pinnedInWorkspaces = await Document.getOnlyWorkspaceIds({
+          docpath: cachefilename,
+          pinned: true,
+        });
+        const watchedInWorkspaces = liveSyncAvailable
+          ? await Document.getOnlyWorkspaceIds({
+              docpath: cachefilename,
+              watched: true,
+            })
+          : [];
 
         subdocs.items.push({
           name: subfile,
           type: "file",
           ...metadata,
           cached: await cachedVectorInformation(cachefilename, true),
-          pinnedWorkspaces: await Document.getPins({
-            docpath: cachefilename,
-            pinned: true,
-          }),
+          pinnedWorkspaces: pinnedInWorkspaces,
+          canWatch: liveSyncAvailable
+            ? DocumentSyncQueue.canWatch(metadata)
+            : false,
+          // Is file watched in any workspace since sync updates all workspaces where file is referenced
+          watched: watchedInWorkspaces.length !== 0,
         });
       }
       directory.items.push(subdocs);

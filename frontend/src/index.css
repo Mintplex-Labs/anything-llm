@@ -616,7 +616,7 @@ dialog::backdrop {
 }
 
 .file-row:nth-child(even) {
-  @apply bg-[#1C1E21];
+  @apply bg-dark-highlight;
 }
 
 .file-row:nth-child(odd) {
@@ -740,5 +740,57 @@ does not extend the close button beyond the viewport. */
 
   100% {
     opacity: 0;
+  }
+}
+
+.search-input::-webkit-search-cancel-button {
+  filter: grayscale(100%) invert(1) brightness(100) opacity(0.5);
+}
+
+.animate-remove {
+  animation: fadeAndShrink 800ms forwards;
+}
+
+@keyframes fadeAndShrink {
+  50% {
+    opacity: 25%;
+  }
+
+  75% {
+    opacity: 10%;
+  }
+
+  100% {
+    height: 0px;
+    opacity: 0%;
+    display: none;
+  }
+}
+
+.top-banner {
+  animation: popTop 500ms forwards;
+}
+
+@keyframes popTop {
+  0% {
+    top: -3.5rem;
+  }
+
+  100% {
+    top: 0px;
+  }
+}
+
+.rm-top-banner {
+  animation: rmPopTop 500ms forwards;
+}
+
+@keyframes rmPopTop {
+  0% {
+    top: 0px;
+  }
+
+  100% {
+    top: -3.5rem;
   }
 }

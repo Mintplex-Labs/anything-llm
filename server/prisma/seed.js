@@ -4,7 +4,6 @@ const prisma = new PrismaClient();
 async function main() {
   const settings = [
     { label: "multi_user_mode", value: "false" },
-    { label: "users_can_delete_workspaces", value: "false" },
     { label: "limit_user_messages", value: "false" },
     { label: "message_limit", value: "25" },
     { label: "logo_filename", value: "anything-llm.png" },

@@ -68,6 +68,12 @@ const webBrowsing = {
               case "bing-search":
                 engine = "_bingWebSearch";
                 break;
+              case "serply-engine":
+                engine = "_serplyEngine";
+                break;
+              case "searxng-engine":
+                engine = "_searXNGEngine";
+                break;
               default:
                 engine = "_googleSearchEngine";
             }
@@ -99,7 +105,7 @@ const webBrowsing = {
                 query.length > 100 ? `${query.slice(0, 100)}...` : query
               }"`
             );
-            const searchResponse = await fetch(searchURL)
+            const data = await fetch(searchURL)
               .then((res) => res.json())
               .then((searchResult) => searchResult?.items || [])
               .then((items) => {
@@ -113,10 +119,15 @@ const webBrowsing = {
               })
               .catch((e) => {
                 console.log(e);
-                return {};
+                return [];
               });
 
-            return JSON.stringify(searchResponse);
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - looking over them now.`
+            );
+            return JSON.stringify(data);
           },
 
           /**
@@ -173,6 +184,9 @@ const webBrowsing = {
 
             if (data.length === 0)
               return `No information was found online for the search query.`;
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - looking over them now.`
+            );
             return JSON.stringify(data);
           },
           _bingWebSearch: async function (query) {
@@ -216,7 +230,149 @@ const webBrowsing = {
 
             if (searchResponse.length === 0)
               return `No information was found online for the search query.`;
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - looking over them now.`
+            );
             return JSON.stringify(searchResponse);
+          },
+          _serplyEngine: async function (
+            query,
+            language = "en",
+            hl = "us",
+            limit = 100,
+            device_type = "desktop",
+            proxy_location = "US"
+          ) {
+            //  query (str): The query to search for
+            //  hl (str): Host Language code to display results in (reference https://developers.google.com/custom-search/docs/xml_results?hl=en#wsInterfaceLanguages)
+            //  limit (int): The maximum number of results to return [10-100, defaults to 100]
+            //  device_type: get results based on desktop/mobile (defaults to desktop)
+
+            if (!process.env.AGENT_SERPLY_API_KEY) {
+              this.super.introspect(
+                `${this.caller}: I can't use Serply.io searching because the user has not defined the required API key.\nVisit: https://serply.io to create the API key for free.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using Serply to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const params = new URLSearchParams({
+              q: query,
+              language: language,
+              hl,
+              gl: proxy_location.toUpperCase(),
+            });
+            const url = `https://api.serply.io/v1/search/${params.toString()}`;
+            const { response, error } = await fetch(url, {
+              method: "GET",
+              headers: {
+                "X-API-KEY": process.env.AGENT_SERPLY_API_KEY,
+                "Content-Type": "application/json",
+                "User-Agent": "anything-llm",
+                "X-Proxy-Location": proxy_location,
+                "X-User-Agent": device_type,
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data?.message === "Unauthorized") {
+                  return {
+                    response: null,
+                    error:
+                      "Unauthorized. Please double check your AGENT_SERPLY_API_KEY",
+                  };
+                }
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response.results?.forEach((searchResult) => {
+              const { title, link, description } = searchResult;
+              data.push({
+                title,
+                link,
+                snippet: description,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - looking over them now.`
+            );
+            return JSON.stringify(data);
+          },
+          _searXNGEngine: async function (query) {
+            let searchURL;
+            if (!process.env.AGENT_SEARXNG_API_URL) {
+              this.super.introspect(
+                `${this.caller}: I can't use SearXNG searching because the user has not defined the required base URL.\nPlease set this value in the agent skill settings.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            try {
+              searchURL = new URL(process.env.AGENT_SEARXNG_API_URL);
+              searchURL.searchParams.append("q", encodeURIComponent(query));
+              searchURL.searchParams.append("format", "json");
+            } catch (e) {
+              this.super.handlerProps.log(`SearXNG Search: ${e.message}`);
+              this.super.introspect(
+                `${this.caller}: I can't use SearXNG searching because the url provided is not a valid URL.`
+              );
+              return `Search is disabled and no content was found. This functionality is disabled because the user has not set it up yet.`;
+            }
+
+            this.super.introspect(
+              `${this.caller}: Using SearXNG to search for "${
+                query.length > 100 ? `${query.slice(0, 100)}...` : query
+              }"`
+            );
+
+            const { response, error } = await fetch(searchURL.toString(), {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "User-Agent": "anything-llm",
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                return { response: data, error: null };
+              })
+              .catch((e) => {
+                return { response: null, error: e.message };
+              });
+            if (error)
+              return `There was an error searching for content. ${error}`;
+
+            const data = [];
+            response.results?.forEach((searchResult) => {
+              const { url, title, content, publishedDate } = searchResult;
+              data.push({
+                title,
+                link: url,
+                snippet: content,
+                publishedDate,
+              });
+            });
+
+            if (data.length === 0)
+              return `No information was found online for the search query.`;
+            this.super.introspect(
+              `${this.caller}: I found ${data.length} results - looking over them now.`
+            );
+            return JSON.stringify(data);
           },
         });
       },

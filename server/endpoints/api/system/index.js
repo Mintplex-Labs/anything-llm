@@ -1,5 +1,6 @@
 const { EventLogs } = require("../../../models/eventLogs");
 const { SystemSettings } = require("../../../models/systemSettings");
+const { purgeDocument } = require("../../../utils/files/purgeDocument");
 const { getVectorDbClass } = require("../../../utils/helpers");
 const {
   prepareWorkspaceChatsForExport,
@@ -25,10 +26,10 @@ function apiSystemEndpoints(app) {
     try {
       if (process.env.NODE_ENV !== "production")
         return response.sendStatus(200).end();
-      await dumpENV();
+      dumpENV();
       response.sendStatus(200).end();
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -65,7 +66,7 @@ function apiSystemEndpoints(app) {
       const settings = await SystemSettings.currentSettings();
       response.status(200).json({ settings });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -97,7 +98,7 @@ function apiSystemEndpoints(app) {
       const vectorCount = await VectorDb.totalVectors();
       response.status(200).json({ vectorCount });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -144,10 +145,9 @@ function apiSystemEndpoints(app) {
       try {
         const body = reqBody(request);
         const { newValues, error } = await updateENV(body);
-        if (process.env.NODE_ENV === "production") await dumpENV();
         response.status(200).json({ newValues, error });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -201,7 +201,73 @@ function apiSystemEndpoints(app) {
         response.setHeader("Content-Type", contentType);
         response.status(200).send(data);
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+  app.delete(
+    "/v1/system/remove-documents",
+    [validApiKey],
+    async (request, response) => {
+      /*
+      #swagger.tags = ['System Settings']
+      #swagger.description = 'Permanently remove documents from the system.'
+      #swagger.requestBody = {
+        description: 'Array of document names to be removed permanently.',
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              properties: {
+                names: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  },
+                  example: [
+                    "custom-documents/file.txt-fc4beeeb-e436-454d-8bb4-e5b8979cb48f.json"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[200] = {
+        description: 'Documents removed successfully.',
+        content: {
+          "application/json": {
+            schema: {
+              type: 'object',
+              example: {
+                success: true,
+                message: 'Documents removed successfully'
+              }
+            }
+          }
+        }
+      }
+      #swagger.responses[403] = {
+        description: 'Forbidden',
+        schema: {
+          "$ref": "#/definitions/InvalidAPIKey"
+        }
+      }
+      #swagger.responses[500] = {
+        description: 'Internal Server Error'
+      }
+      */
+      try {
+        const { names } = reqBody(request);
+        for await (const name of names) await purgeDocument(name);
+        response
+          .status(200)
+          .json({ success: true, message: "Documents removed successfully" })
+          .end();
+      } catch (e) {
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }

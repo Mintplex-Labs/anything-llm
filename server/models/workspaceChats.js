@@ -7,6 +7,7 @@ const WorkspaceChats = {
     response = {},
     user = null,
     threadId = null,
+    include = true,
   }) {
     try {
       const chat = await prisma.workspace_chats.create({
@@ -16,6 +17,7 @@ const WorkspaceChats = {
           response: JSON.stringify(response),
           user_id: user?.id || null,
           thread_id: threadId,
+          include,
         },
       });
       return { chat, message: null };
@@ -218,6 +220,41 @@ const WorkspaceChats = {
       return;
     } catch (error) {
       console.error(error.message);
+    }
+  },
+
+  // Explicit update of settings + key validations.
+  // Only use this method when directly setting a key value
+  // that takes no user input for the keys being modified.
+  _update: async function (id = null, data = {}) {
+    if (!id) throw new Error("No workspace chat id provided for update");
+
+    try {
+      await prisma.workspace_chats.update({
+        where: { id },
+        data,
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
+  bulkCreate: async function (chatsData) {
+    // TODO: Replace with createMany when we update prisma to latest version
+    // The version of prisma that we are currently using does not support createMany with SQLite
+    try {
+      const createdChats = [];
+      for (const chatData of chatsData) {
+        const chat = await prisma.workspace_chats.create({
+          data: chatData,
+        });
+        createdChats.push(chat);
+      }
+      return { chats: createdChats, message: null };
+    } catch (error) {
+      console.error(error.message);
+      return { chats: null, message: error.message };
     }
   },
 };

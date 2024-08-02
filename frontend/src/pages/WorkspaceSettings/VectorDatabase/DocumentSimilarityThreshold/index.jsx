@@ -1,17 +1,18 @@
+import { useTranslation } from "react-i18next";
+
 export default function DocumentSimilarityThreshold({
   workspace,
   setHasChanges,
 }) {
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex flex-col">
         <label htmlFor="name" className="block input-label">
-          Document similarity threshold
+          {t("vector-workspace.doc.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          The minimum similarity score required for a source to be considered
-          related to the chat. The higher the number, the more similar the
-          source must be to the chat.
+          {t("vector-workspace.doc.description")}
         </p>
       </div>
       <select
@@ -21,10 +22,10 @@ export default function DocumentSimilarityThreshold({
         onChange={() => setHasChanges(true)}
         required={true}
       >
-        <option value={0.0}>No restriction</option>
-        <option value={0.25}>Low (similarity score &ge; .25)</option>
-        <option value={0.5}>Medium (similarity score &ge; .50)</option>
-        <option value={0.75}>High (similarity score &ge; .75)</option>
+        <option value={0.0}>{t("vector-workspace.doc.zero")}</option>
+        <option value={0.25}>{t("vector-workspace.doc.low")}</option>
+        <option value={0.5}>{t("vector-workspace.doc.medium")}</option>
+        <option value={0.75}>{t("vector-workspace.doc.high")}</option>
       </select>
     </div>
   );

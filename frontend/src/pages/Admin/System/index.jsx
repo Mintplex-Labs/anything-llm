@@ -8,7 +8,6 @@ import CTAButton from "@/components/lib/CTAButton";
 export default function AdminSystem() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [canDelete, setCanDelete] = useState(false);
   const [messageLimit, setMessageLimit] = useState({
     enabled: false,
     limit: 10,
@@ -18,7 +17,6 @@ export default function AdminSystem() {
     e.preventDefault();
     setSaving(true);
     await Admin.updateSystemPreferences({
-      users_can_delete_workspaces: canDelete,
       limit_user_messages: messageLimit.enabled,
       message_limit: messageLimit.limit,
     });
@@ -31,7 +29,6 @@ export default function AdminSystem() {
     async function fetchSettings() {
       const settings = (await Admin.systemPreferences())?.settings;
       if (!settings) return;
-      setCanDelete(settings?.users_can_delete_workspaces);
       setMessageLimit({
         enabled: settings.limit_user_messages,
         limit: settings.message_limit,
@@ -73,29 +70,6 @@ export default function AdminSystem() {
           <div className="mt-4 mb-8">
             <div className="flex flex-col gap-y-1">
               <h2 className="text-base leading-6 font-bold text-white">
-                Users can delete workspaces
-              </h2>
-              <p className="text-xs leading-[18px] font-base text-white/60">
-                Allow non-admin users to delete workspaces that they are a part
-                of. This would delete the workspace for everyone.
-              </p>
-              <label className="relative inline-flex cursor-pointer items-center mt-2">
-                <input
-                  type="checkbox"
-                  name="users_can_delete_workspaces"
-                  checked={canDelete}
-                  onChange={(e) => setCanDelete(e.target.checked)}
-                  className="peer sr-only"
-                />
-                <div className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"></div>
-                <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
-              </label>
-            </div>
-          </div>
-
-          <div className="mb-8">
-            <div className="flex flex-col gap-y-1">
-              <h2 className="text-base leading-6 font-bold text-white">
                 Limit messages per user per day
               </h2>
               <p className="text-xs leading-[18px] font-base text-white/60">
@@ -125,7 +99,7 @@ export default function AdminSystem() {
             </div>
             {messageLimit.enabled && (
               <div className="mt-4">
-                <label className="block text-sm font-medium text-white">
+                <label className="text-white text-sm font-semibold block mb-4">
                   Message limit per day
                 </label>
                 <div className="relative mt-2">
@@ -142,7 +116,7 @@ export default function AdminSystem() {
                     value={messageLimit.limit}
                     min={1}
                     max={300}
-                    className="w-1/3 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-gray-800 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                    className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-60 p-2.5"
                   />
                 </div>
               </div>

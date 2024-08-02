@@ -2,6 +2,7 @@ process.env.NODE_ENV === "development"
   ? require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` })
   : require("dotenv").config();
 
+require("./utils/logger")();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -22,6 +23,7 @@ const { bootHTTP, bootSSL } = require("./utils/boot");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const { documentEndpoints } = require("./endpoints/document");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
+const { experimentalEndpoints } = require("./endpoints/experimental");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -39,7 +41,7 @@ app.use(
 if (!!process.env.ENABLE_HTTPS) {
   bootSSL(app, process.env.SERVER_PORT || 3001);
 } else {
-  require("express-ws")(app); // load WebSockets in non-SSL mode.
+  require("@mintplex-labs/express-ws").default(app); // load WebSockets in non-SSL mode.
 }
 
 app.use("/api", apiRouter);
@@ -54,12 +56,16 @@ embedManagementEndpoints(apiRouter);
 utilEndpoints(apiRouter);
 documentEndpoints(apiRouter);
 agentWebsocket(apiRouter);
+experimentalEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
 
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
 
 if (process.env.NODE_ENV !== "development") {
+  const { MetaGenerator } = require("./utils/boot/MetaGenerator");
+  const IndexPage = new MetaGenerator();
+
   app.use(
     express.static(path.resolve(__dirname, "public"), {
       extensions: ["js"],
@@ -72,7 +78,8 @@ if (process.env.NODE_ENV !== "development") {
   );
 
   app.use("/", function (_, response) {
-    response.sendFile(path.join(__dirname, "public", "index.html"));
+    IndexPage.generate(response);
+    return;
   });
 
   app.get("/robots.txt", function (_, response) {
@@ -104,7 +111,7 @@ if (process.env.NODE_ENV !== "development") {
       }
       return;
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });

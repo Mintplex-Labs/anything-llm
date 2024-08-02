@@ -79,7 +79,7 @@ function apiWorkspaceEndpoints(app) {
       });
       response.status(200).json({ workspace, message });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -103,7 +103,8 @@ function apiWorkspaceEndpoints(app) {
                   "openAiTemp": null,
                   "lastUpdatedAt": "2023-08-17 00:45:03",
                   "openAiHistory": 20,
-                  "openAiPrompt": null
+                  "openAiPrompt": null,
+                  "threads": []
                 }
               ],
             }
@@ -118,10 +119,20 @@ function apiWorkspaceEndpoints(app) {
     }
     */
     try {
-      const workspaces = await Workspace.where();
+      const workspaces = await Workspace._findMany({
+        where: {},
+        include: {
+          threads: {
+            select: {
+              user_id: true,
+              slug: true,
+            },
+          },
+        },
+      });
       response.status(200).json({ workspaces });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -152,7 +163,8 @@ function apiWorkspaceEndpoints(app) {
                 "lastUpdatedAt": "2023-08-17 00:45:03",
                 "openAiHistory": 20,
                 "openAiPrompt": null,
-                "documents": []
+                "documents": [],
+                "threads": []
               }
             }
           }
@@ -167,10 +179,24 @@ function apiWorkspaceEndpoints(app) {
     */
     try {
       const { slug } = request.params;
-      const workspace = await Workspace.get({ slug });
+      const workspace = await Workspace._findMany({
+        where: {
+          slug: String(slug),
+        },
+        include: {
+          documents: true,
+          threads: {
+            select: {
+              user_id: true,
+              slug: true,
+            },
+          },
+        },
+      });
+
       response.status(200).json({ workspace });
     } catch (e) {
-      console.log(e.message, e);
+      console.error(e.message, e);
       response.sendStatus(500).end();
     }
   });
@@ -221,7 +247,7 @@ function apiWorkspaceEndpoints(app) {
         }
         response.sendStatus(200).end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -301,7 +327,7 @@ function apiWorkspaceEndpoints(app) {
         );
         response.status(200).json({ workspace, message });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -362,7 +388,7 @@ function apiWorkspaceEndpoints(app) {
         const history = await WorkspaceChats.forWorkspace(workspace.id);
         response.status(200).json({ history: convertToChatHistory(history) });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -441,7 +467,7 @@ function apiWorkspaceEndpoints(app) {
         });
         response.status(200).json({ workspace: updatedWorkspace });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.sendStatus(500).end();
       }
     }
@@ -603,7 +629,7 @@ function apiWorkspaceEndpoints(app) {
         });
         response.status(200).json({ ...result });
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         response.status(500).json({
           id: uuidv4(),
           type: "abort",
@@ -726,7 +752,7 @@ function apiWorkspaceEndpoints(app) {
         });
         response.end();
       } catch (e) {
-        console.log(e.message, e);
+        console.error(e.message, e);
         writeResponseChunk(response, {
           id: uuidv4(),
           type: "abort",

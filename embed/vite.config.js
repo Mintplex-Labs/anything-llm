@@ -1,6 +1,7 @@
 // vite.config.js
 import { defineConfig } from "vite"
 import { fileURLToPath, URL } from "url"
+import postcss from "./postcss.config.js"
 import react from "@vitejs/plugin-react"
 import image from "@rollup/plugin-image"
 
@@ -9,6 +10,9 @@ export default defineConfig({
   define: {
     // In dev, we need to disable this, but in prod, we need to enable it
     "process.env.NODE_ENV": JSON.stringify("production")
+  },
+  css: {
+    postcss
   },
   resolve: {
     alias: [
@@ -38,7 +42,7 @@ export default defineConfig({
     rollupOptions: {
       external: [
         // Reduces transformation time by 50% and we don't even use this variant, so we can ignore.
-        /@phosphor-icons\/react\/dist\/ssr/,
+        /@phosphor-icons\/react\/dist\/ssr/
       ]
     },
     commonjsOptions: {
@@ -51,7 +55,7 @@ export default defineConfig({
     emptyOutDir: true,
     inlineDynamicImports: true,
     assetsDir: "",
-    sourcemap: 'inline',
+    sourcemap: "inline"
   },
   optimizeDeps: {
     esbuildOptions: {
@@ -60,5 +64,5 @@ export default defineConfig({
       },
       plugins: []
     }
-  },
+  }
 })
