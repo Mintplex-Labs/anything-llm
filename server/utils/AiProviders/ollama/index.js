@@ -13,6 +13,7 @@ class OllamaAILLM {
 
     this.basePath = process.env.OLLAMA_BASE_PATH;
     this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
+    this.performanceMode = process.env.OLLAMA_PERFORMANCE_MODE || "base";
     this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
       ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
       : 300; // Default 5-minute timeout for Ollama model loading.
@@ -33,6 +34,10 @@ class OllamaAILLM {
       model: this.model,
       keepAlive: this.keepAlive,
       useMLock: true,
+      // There are currently only two performance settings so if its not "base" - its max context.
+      ...(this.performanceMode === "base"
+        ? {}
+        : { numCtx: this.promptWindowLimit() }),
       temperature,
     });
   }
