@@ -46,7 +46,7 @@
           }
         }
       },
-      "command": "cd ${workspaceFolder}/server/ && yarn dev & if [ \"${CODESPACES}\" = \"true\" ]; then while ! nc -z localhost 3001; do sleep 1; done; gh codespace ports visibility 3001:public -c $CODESPACE_NAME; fi",
+      "command": "if [ \"${CODESPACES}\" = \"true\" ]; then while ! nc -z 127.0.0.1 3001; do sleep 1; done; gh codespace ports visibility 3001:public -c $CODESPACE_NAME; fi & cd ${workspaceFolder}/server/ && yarn dev",
       "runOptions": {
         "instanceLimit": 1,
         "reevaluateOnRerun": true
