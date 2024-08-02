@@ -1,6 +1,6 @@
 const TRANSLATIONS = {
     common: {
-      "workspaces-name": "Nome degli spazi di lavoro",
+      "workspaces-name": "Nome delle aree di lavoro",
       error: "errore",
       success: "successo",
       user: "Utente",
@@ -17,7 +17,7 @@ const TRANSLATIONS = {
       system: "Impostazioni generali",
       invites: "Inviti",
       users: "Utenti",
-      workspaces: "Spazi di lavoro",
+      workspaces: "Aree di lavoro",
       "workspace-chats": "Chat dell'area di lavoro",
       customization: "Personalizzazione",
       "api-keys": "Developer API",
@@ -75,7 +75,7 @@ const TRANSLATIONS = {
       githubIssue: "Apri una issue su Github",
       utente1: "Come posso iniziare?!",
       part4:
-        "È semplice. Tutte le raccolte sono organizzate in contenitori che chiamiamo \"Spazi di lavoro\". Gli spazi di lavoro sono contenitori di file, documenti, immagini, PDF e altri file che verranno trasformati in qualcosa che gli LLM possono comprendere e utilizzare nella conversazione.\n\nPuoi aggiungere e rimuovere file in qualsiasi momento.",
+        "È semplice. Tutte le raccolte sono organizzate in contenitori che chiamiamo \"Aree di lavoro\". Le aree di lavoro sono contenitori di file, documenti, immagini, PDF e altri file che verranno trasformati in qualcosa che gli LLM possono comprendere e utilizzare nella conversazione.\n\nPuoi aggiungere e rimuovere file in qualsiasi momento.",
       createWorkspace: "Crea il tuo primo area di lavoro",
       user2:
         "È come Dropbox AI o qualcosa del genere? E le chat? È un chatbot, non è vero?",
@@ -88,8 +88,8 @@ const TRANSLATIONS = {
     },
   
     "new-workspace": {
-      title: "Nuovo area di lavoro",
-      placeholder: "Il mio area di lavoro",
+      title: "Nuova area di lavoro",
+      placeholder: "La mia area di lavoro",
     },
   
     // Workspace Settings menu items
