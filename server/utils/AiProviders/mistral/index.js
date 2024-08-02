@@ -62,10 +62,6 @@ class MistralLLM {
     return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
   }
 
-  async isSafe(_ = "") {
-    return { safe: true, reasons: [] };
-  }
-
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
     if (!(await this.isValidChatCompletionModel(this.model)))
       throw new Error(

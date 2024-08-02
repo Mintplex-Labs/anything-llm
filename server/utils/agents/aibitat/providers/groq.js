@@ -1,26 +1,50 @@
 const OpenAI = require("openai");
 const Provider = require("./ai-provider.js");
-const { RetryError } = require("../error.js");
+const InheritMultiple = require("./helpers/classes.js");
+const UnTooled = require("./helpers/untooled.js");
 
 /**
- * The agent provider for the Groq provider.
- * Using OpenAI tool calling with groq really sucks right now
- * its just fast and bad. We should probably migrate this to Untooled to improve
- * coherence.
+ * The agent provider for the GroqAI provider.
+ * We wrap Groq in UnTooled because its tool-calling built in is quite bad and wasteful.
  */
-class GroqProvider extends Provider {
+class GroqProvider extends InheritMultiple([Provider, UnTooled]) {
   model;
 
   constructor(config = {}) {
     const { model = "llama3-8b-8192" } = config;
+    super();
     const client = new OpenAI({
       baseURL: "https://api.groq.com/openai/v1",
       apiKey: process.env.GROQ_API_KEY,
       maxRetries: 3,
     });
-    super(client);
+
+    this._client = client;
     this.model = model;
     this.verbose = true;
+  }
+
+  get client() {
+    return this._client;
+  }
+
+  async #handleFunctionCallChat({ messages = [] }) {
+    return await this.client.chat.completions
+      .create({
+        model: this.model,
+        temperature: 0,
+        messages,
+      })
+      .then((result) => {
+        if (!result.hasOwnProperty("choices"))
+          throw new Error("GroqAI chat: No results!");
+        if (result.choices.length === 0)
+          throw new Error("GroqAI chat: No results length!");
+        return result.choices[0].message.content;
+      })
+      .catch((_) => {
+        return null;
+      });
   }
 
   /**
@@ -32,68 +56,49 @@ class GroqProvider extends Provider {
    */
   async complete(messages, functions = null) {
     try {
-      const response = await this.client.chat.completions.create({
-        model: this.model,
-        // stream: true,
-        messages,
-        ...(Array.isArray(functions) && functions?.length > 0
-          ? { functions }
-          : {}),
-      });
+      let completion;
+      if (functions.length > 0) {
+        const { toolCall, text } = await this.functionCall(
+          messages,
+          functions,
+          this.#handleFunctionCallChat.bind(this)
+        );
 
-      // Right now, we only support one completion,
-      // so we just take the first one in the list
-      const completion = response.choices[0].message;
-      const cost = this.getCost(response.usage);
-      // treat function calls
-      if (completion.function_call) {
-        let functionArgs = {};
-        try {
-          functionArgs = JSON.parse(completion.function_call.arguments);
-        } catch (error) {
-          // call the complete function again in case it gets a json error
-          return this.complete(
-            [
-              ...messages,
-              {
-                role: "function",
-                name: completion.function_call.name,
-                function_call: completion.function_call,
-                content: error?.message,
-              },
-            ],
-            functions
-          );
+        if (toolCall !== null) {
+          this.providerLog(`Valid tool call found - running ${toolCall.name}.`);
+          this.deduplicator.trackRun(toolCall.name, toolCall.arguments);
+          return {
+            result: null,
+            functionCall: {
+              name: toolCall.name,
+              arguments: toolCall.arguments,
+            },
+            cost: 0,
+          };
         }
-
-        // console.log(completion, { functionArgs })
-        return {
-          result: null,
-          functionCall: {
-            name: completion.function_call.name,
-            arguments: functionArgs,
-          },
-          cost,
-        };
+        completion = { content: text };
       }
 
+      if (!completion?.content) {
+        this.providerLog(
+          "Will assume chat completion without tool call inputs."
+        );
+        const response = await this.client.chat.completions.create({
+          model: this.model,
+          messages: this.cleanMsgs(messages),
+        });
+        completion = response.choices[0].message;
+      }
+
+      // The UnTooled class inherited Deduplicator is mostly useful to prevent the agent
+      // from calling the exact same function over and over in a loop within a single chat exchange
+      // _but_ we should enable it to call previously used tools in a new chat interaction.
+      this.deduplicator.reset("runs");
       return {
         result: completion.content,
-        cost,
+        cost: 0,
       };
     } catch (error) {
-      // If invalid Auth error we need to abort because no amount of waiting
-      // will make auth better.
-      if (error instanceof OpenAI.AuthenticationError) throw error;
-
-      if (
-        error instanceof OpenAI.RateLimitError ||
-        error instanceof OpenAI.InternalServerError ||
-        error instanceof OpenAI.APIError // Also will catch AuthenticationError!!!
-      ) {
-        throw new RetryError(error.message);
-      }
-
       throw error;
     }
   }
@@ -103,7 +108,7 @@ class GroqProvider extends Provider {
    *
    * @param _usage The completion to get the cost for.
    * @returns The cost of the completion.
-   * Stubbed since Groq has no cost basis.
+   * Stubbed since LMStudio has no cost basis.
    */
   getCost(_usage) {
     return 0;

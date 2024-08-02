@@ -3,6 +3,7 @@ import Workspace from "@/models/workspace";
 import showToast from "@/utils/toast";
 import { useEffect, useState } from "react";
 import { Plus, X } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
 
 export default function SuggestedChatMessages({ slug }) {
   const [suggestedMessages, setSuggestedMessages] = useState([]);
@@ -10,7 +11,7 @@ export default function SuggestedChatMessages({ slug }) {
   const [newMessage, setNewMessage] = useState({ heading: "", message: "" });
   const [hasChanges, setHasChanges] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  const { t } = useTranslation();
   useEffect(() => {
     async function fetchWorkspace() {
       if (!slug) return;
@@ -45,8 +46,8 @@ export default function SuggestedChatMessages({ slug }) {
       return;
     }
     const defaultMessage = {
-      heading: "Explain to me",
-      message: "the benefits of AnythingLLM",
+      heading: t("general.message.heading"),
+      message: t("general.message.body"),
     };
     setNewMessage(defaultMessage);
     setSuggestedMessages([...suggestedMessages, { ...defaultMessage }]);
@@ -91,9 +92,11 @@ export default function SuggestedChatMessages({ slug }) {
   if (loading)
     return (
       <div className="flex flex-col">
-        <label className="block input-label">Suggested Chat Messages</label>
+        <label className="block input-label">
+          {t("general.message.title")}
+        </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          Customize the messages that will be suggested to your workspace users.
+          {t("general.message.description")}
         </p>
         <p className="text-white text-opacity-60 text-sm font-medium mt-6">
           <PreLoader size="4" />
@@ -103,9 +106,11 @@ export default function SuggestedChatMessages({ slug }) {
   return (
     <div className="w-screen mt-6">
       <div className="flex flex-col">
-        <label className="block input-label">Suggested Chat Messages</label>
+        <label className="block input-label">
+          {t("general.message.title")}
+        </label>
         <p className="text-white text-opacity-60 text-xs font-medium py-1.5">
-          Customize the messages that will be suggested to your workspace users.
+          {t("general.message.description")}
         </p>
       </div>
 
@@ -169,7 +174,8 @@ export default function SuggestedChatMessages({ slug }) {
           onClick={addMessage}
           className="flex gap-x-2 items-center justify-center mt-6 text-white text-sm hover:text-sky-400 transition-all duration-300"
         >
-          Add new message <Plus className="" size={24} weight="fill" />
+          {t("general.message.add")}{" "}
+          <Plus className="" size={24} weight="fill" />
         </button>
       )}
 
@@ -180,7 +186,7 @@ export default function SuggestedChatMessages({ slug }) {
             className="transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
             onClick={handleSaveSuggestedMessages}
           >
-            Save Messages
+            {t("general.message.save")}
           </button>
         </div>
       )}

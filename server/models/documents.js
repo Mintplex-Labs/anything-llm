@@ -3,9 +3,30 @@ const { getVectorDbClass } = require("../utils/helpers");
 const prisma = require("../utils/prisma");
 const { Telemetry } = require("./telemetry");
 const { EventLogs } = require("./eventLogs");
+const { safeJsonParse } = require("../utils/http");
 
 const Document = {
-  writable: ["pinned"],
+  writable: ["pinned", "watched", "lastUpdatedAt"],
+  /**
+   * @param {import("@prisma/client").workspace_documents} document - Document PrismaRecord
+   * @returns {{
+   *  metadata: (null|object),
+   *  type: import("./documentSyncQueue.js").validFileType,
+   *  source: string
+   * }}
+   */
+  parseDocumentTypeAndSource: function (document) {
+    const metadata = safeJsonParse(document.metadata, null);
+    if (!metadata) return { metadata: null, type: null, source: null };
+
+    // Parse the correct type of source and its original source path.
+    const idx = metadata.chunkSource.indexOf("://");
+    const [type, source] = [
+      metadata.chunkSource.slice(0, idx),
+      metadata.chunkSource.slice(idx + 3),
+    ];
+    return { metadata, type, source: this._stripSource(source, type) };
+  },
 
   forWorkspace: async function (workspaceId = null) {
     if (!workspaceId) return [];
@@ -36,7 +57,7 @@ const Document = {
     }
   },
 
-  getPins: async function (clause = {}) {
+  getOnlyWorkspaceIds: async function (clause = {}) {
     try {
       const workspaceIds = await prisma.workspace_documents.findMany({
         where: clause,
@@ -44,19 +65,25 @@ const Document = {
           workspaceId: true,
         },
       });
-      return workspaceIds.map((pin) => pin.workspaceId) || [];
+      return workspaceIds.map((record) => record.workspaceId) || [];
     } catch (error) {
       console.error(error.message);
       return [];
     }
   },
 
-  where: async function (clause = {}, limit = null, orderBy = null) {
+  where: async function (
+    clause = {},
+    limit = null,
+    orderBy = null,
+    include = null
+  ) {
     try {
       const results = await prisma.workspace_documents.findMany({
         where: clause,
         ...(limit !== null ? { take: limit } : {}),
         ...(orderBy !== null ? { orderBy } : {}),
+        ...(include !== null ? { include } : {}),
       });
       return results;
     } catch (error) {
@@ -202,6 +229,18 @@ const Document = {
       return { document: null, message: error.message };
     }
   },
+  _updateAll: async function (clause = {}, data = {}) {
+    try {
+      await prisma.workspace_documents.updateMany({
+        where: clause,
+        data,
+      });
+      return true;
+    } catch (error) {
+      console.error(error.message);
+      return false;
+    }
+  },
   content: async function (docId) {
     if (!docId) throw new Error("No workspace docId provided!");
     const document = await this.get({ docId: String(docId) });
@@ -210,6 +249,22 @@ const Document = {
     const { fileData } = require("../utils/files");
     const data = await fileData(document.docpath);
     return { title: data.title, content: data.pageContent };
+  },
+  contentByDocPath: async function (docPath) {
+    const { fileData } = require("../utils/files");
+    const data = await fileData(docPath);
+    return { title: data.title, content: data.pageContent };
+  },
+
+  // Some data sources have encoded params in them we don't want to log - so strip those details.
+  _stripSource: function (sourceString, type) {
+    if (["confluence", "github"].includes(type)) {
+      const _src = new URL(sourceString);
+      _src.search = ""; // remove all search params that are encoded for resync.
+      return _src.toString();
+    }
+
+    return sourceString;
   },
 };
 

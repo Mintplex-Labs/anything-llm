@@ -90,7 +90,48 @@ const Workspace = {
         return false;
       });
   },
-  streamChat: async function ({ slug }, message, handleChat) {
+  deleteEditedChats: async function (slug = "", threadSlug = "", startingId) {
+    if (!!threadSlug)
+      return this.threads._deleteEditedChats(slug, threadSlug, startingId);
+    return this._deleteEditedChats(slug, startingId);
+  },
+  updateChatResponse: async function (
+    slug = "",
+    threadSlug = "",
+    chatId,
+    newText
+  ) {
+    if (!!threadSlug)
+      return this.threads._updateChatResponse(
+        slug,
+        threadSlug,
+        chatId,
+        newText
+      );
+    return this._updateChatResponse(slug, chatId, newText);
+  },
+  multiplexStream: async function ({
+    workspaceSlug,
+    threadSlug = null,
+    prompt,
+    chatHandler,
+    attachments = [],
+  }) {
+    if (!!threadSlug)
+      return this.threads.streamChat(
+        { workspaceSlug, threadSlug },
+        prompt,
+        chatHandler,
+        attachments
+      );
+    return this.streamChat(
+      { slug: workspaceSlug },
+      prompt,
+      chatHandler,
+      attachments
+    );
+  },
+  streamChat: async function ({ slug }, message, handleChat, attachments = []) {
     const ctrl = new AbortController();
 
     // Listen for the ABORT_STREAM_EVENT key to be emitted by the client
@@ -104,7 +145,7 @@ const Workspace = {
 
     await fetchEventSource(`${API_BASE}/workspace/${slug}/stream-chat`, {
       method: "POST",
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message, attachments }),
       headers: baseHeaders(),
       signal: ctrl.signal,
       openWhenHidden: true,
@@ -287,8 +328,6 @@ const Workspace = {
         return null;
       });
   },
-  threads: WorkspaceThread,
-
   uploadPfp: async function (formData, slug) {
     return await fetch(`${API_BASE}/workspace/${slug}/upload-pfp`, {
       method: "POST",
@@ -336,6 +375,101 @@ const Workspace = {
         return { success: false, error: e.message };
       });
   },
+  _updateChatResponse: async function (slug = "", chatId, newText) {
+    return await fetch(`${API_BASE}/workspace/${slug}/update-chat`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ chatId, newText }),
+    })
+      .then((res) => {
+        if (res.ok) return true;
+        throw new Error("Failed to update chat.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return false;
+      });
+  },
+  _deleteEditedChats: async function (slug = "", startingId) {
+    return await fetch(`${API_BASE}/workspace/${slug}/delete-edited-chats`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+      body: JSON.stringify({ startingId }),
+    })
+      .then((res) => {
+        if (res.ok) return true;
+        throw new Error("Failed to delete chats.");
+      })
+      .catch((e) => {
+        console.log(e);
+        return false;
+      });
+  },
+  deleteChat: async (chatId) => {
+    return await fetch(`${API_BASE}/workspace/workspace-chats/${chatId}`, {
+      method: "PUT",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { success: false, error: e.message };
+      });
+  },
+  forkThread: async function (slug = "", threadSlug = null, chatId = null) {
+    return await fetch(`${API_BASE}/workspace/${slug}/thread/fork`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify({ threadSlug, chatId }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fork thread.");
+        return res.json();
+      })
+      .then((data) => data.newThreadSlug)
+      .catch((e) => {
+        console.error("Error forking thread:", e);
+        return null;
+      });
+  },
+  /**
+   * Uploads and embeds a single file in a single call into a workspace
+   * @param {string} slug - workspace slug
+   * @param {FormData} formData
+   * @returns {Promise<{response: {ok: boolean}, data: {success: boolean, error: string|null, document: {id: string, location:string}|null}}>}
+   */
+  uploadAndEmbedFile: async function (slug, formData) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/upload-and-embed`,
+      {
+        method: "POST",
+        body: formData,
+        headers: baseHeaders(),
+      }
+    );
+
+    const data = await response.json();
+    return { response, data };
+  },
+
+  /**
+   * Deletes and un-embeds a single file in a single call from a workspace
+   * @param {string} slug - workspace slug
+   * @param {string} documentLocation - location of file eg: custom-documents/my-file-uuid.json
+   * @returns {Promise<boolean>}
+   */
+  deleteAndUnembedFile: async function (slug, documentLocation) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/remove-and-unembed`,
+      {
+        method: "DELETE",
+        body: JSON.stringify({ documentLocation }),
+        headers: baseHeaders(),
+      }
+    );
+    return response.ok;
+  },
+  threads: WorkspaceThread,
 };
 
 export default Workspace;

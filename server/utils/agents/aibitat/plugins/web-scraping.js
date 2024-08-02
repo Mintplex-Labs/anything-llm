@@ -19,8 +19,8 @@ const webScraping = {
             "Scrapes the content of a webpage or online resource from a provided URL.",
           examples: [
             {
-              prompt: "What is useanything.com about?",
-              call: JSON.stringify({ url: "https://useanything.com" }),
+              prompt: "What is anythingllm.com about?",
+              call: JSON.stringify({ url: "https://anythingllm.com" }),
             },
             {
               prompt: "Scrape https://example.com",
@@ -90,11 +90,13 @@ const webScraping = {
               );
               this.controller.abort();
             });
-            return summarizeContent(
-              this.super.provider,
-              this.controller.signal,
-              content
-            );
+
+            return summarizeContent({
+              provider: this.super.provider,
+              model: this.super.model,
+              controllerSignal: this.controller.signal,
+              content,
+            });
           },
         });
       },

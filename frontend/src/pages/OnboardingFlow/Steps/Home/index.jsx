@@ -8,7 +8,7 @@ export default function OnboardingHome() {
   const navigate = useNavigate();
   return (
     <>
-      <div className="relative w-screen h-screen flex overflow-hidden bg-[#2C2F35] md:bg-main-gradient">
+      <div className="relative w-screen h-screen flex overflow-hidden bg-mobile-onboarding md:bg-main-gradient">
         <div
           className="hidden md:block fixed bottom-10 left-10 w-[320px] h-[320px] bg-no-repeat bg-contain"
           style={{ backgroundImage: `url(${LGroupImg})` }}

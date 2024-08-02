@@ -37,7 +37,7 @@ export function OnboardingLayout({ children }) {
 
   if (isMobile) {
     return (
-      <div className="w-screen h-screen overflow-y-auto bg-[#2C2F35] overflow-hidden">
+      <div className="w-screen h-screen overflow-y-auto bg-mobile-onboarding overflow-hidden">
         <div className="flex flex-col">
           <div className="w-full relative py-10 px-2">
             <div className="flex flex-col w-fit mx-auto gap-y-1 mb-[55px]">
@@ -87,17 +87,17 @@ export function OnboardingLayout({ children }) {
   }
 
   return (
-    <div className="w-screen overflow-y-auto bg-[#2C2F35] md:bg-main-gradient flex justify-center overflow-hidden">
+    <div className="w-screen overflow-y-auto bg-mobile-onboarding md:bg-main-gradient flex justify-center overflow-hidden">
       <div className="flex w-1/5 h-screen justify-center items-center">
         {backBtn.showing && (
           <button
             disabled={backBtn.disabled}
             onClick={backBtn.onClick}
-            className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+            className="group p-2 rounded-lg border-2 border-zinc-600 h-fit w-fit disabled:cursor-not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
             aria-label="Back"
           >
             <ArrowLeft
-              className="text-white group-hover:text-black group-disabled:text-gray-500"
+              className="group-hover:text-black text-gray-500"
               size={30}
             />
           </button>
@@ -121,7 +121,7 @@ export function OnboardingLayout({ children }) {
           <button
             disabled={forwardBtn.disabled}
             onClick={forwardBtn.onClick}
-            className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+            className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:cursor-not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
             aria-label="Continue"
           >
             <ArrowRight

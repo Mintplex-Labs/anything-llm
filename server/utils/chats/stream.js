@@ -20,7 +20,8 @@ async function streamChatWithWorkspace(
   message,
   chatMode = "chat",
   user = null,
-  thread = null
+  thread = null,
+  attachments = []
 ) {
   const uuid = uuidv4();
   const updatedMessage = await grepCommand(message, user);
@@ -53,20 +54,6 @@ async function streamChatWithWorkspace(
     model: workspace?.chatModel,
   });
   const VectorDb = getVectorDbClass();
-  const { safe, reasons = [] } = await LLMConnector.isSafe(message);
-  if (!safe) {
-    writeResponseChunk(response, {
-      id: uuid,
-      type: "abort",
-      textResponse: null,
-      sources: [],
-      close: true,
-      error: `This message was moderated and will not be allowed. Violations for ${reasons.join(
-        ", "
-      )} found.`,
-    });
-    return;
-  }
 
   const messageLimit = workspace?.openAiHistory || 20;
   const hasVectorizedSpace = await VectorDb.hasNamespace(workspace.slug);
@@ -75,15 +62,30 @@ async function streamChatWithWorkspace(
   // User is trying to query-mode chat a workspace that has no data in it - so
   // we should exit early as no information can be found under these conditions.
   if ((!hasVectorizedSpace || embeddingsCount === 0) && chatMode === "query") {
+    const textResponse =
+      workspace?.queryRefusalResponse ??
+      "There is no relevant information in this workspace to answer your query.";
     writeResponseChunk(response, {
       id: uuid,
       type: "textResponse",
-      textResponse:
-        workspace?.queryRefusalResponse ??
-        "There is no relevant information in this workspace to answer your query.",
+      textResponse,
       sources: [],
+      attachments,
       close: true,
       error: null,
+    });
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: {
+        text: textResponse,
+        sources: [],
+        type: chatMode,
+        attachments,
+      },
+      threadId: thread?.id || null,
+      include: false,
+      user,
     });
     return;
   }
@@ -177,15 +179,30 @@ async function streamChatWithWorkspace(
   // If in query mode and no context chunks are found from search, backfill, or pins -  do not
   // let the LLM try to hallucinate a response or use general knowledge and exit early
   if (chatMode === "query" && contextTexts.length === 0) {
+    const textResponse =
+      workspace?.queryRefusalResponse ??
+      "There is no relevant information in this workspace to answer your query.";
     writeResponseChunk(response, {
       id: uuid,
       type: "textResponse",
-      textResponse:
-        workspace?.queryRefusalResponse ??
-        "There is no relevant information in this workspace to answer your query.",
+      textResponse,
       sources: [],
       close: true,
       error: null,
+    });
+
+    await WorkspaceChats.new({
+      workspaceId: workspace.id,
+      prompt: message,
+      response: {
+        text: textResponse,
+        sources: [],
+        type: chatMode,
+        attachments,
+      },
+      threadId: thread?.id || null,
+      include: false,
+      user,
     });
     return;
   }
@@ -198,6 +215,7 @@ async function streamChatWithWorkspace(
       userPrompt: updatedMessage,
       contextTexts,
       chatHistory,
+      attachments,
     },
     rawHistory
   );
@@ -233,7 +251,7 @@ async function streamChatWithWorkspace(
     const { chat } = await WorkspaceChats.new({
       workspaceId: workspace.id,
       prompt: message,
-      response: { text: completeText, sources, type: chatMode },
+      response: { text: completeText, sources, type: chatMode, attachments },
       threadId: thread?.id || null,
       user,
     });

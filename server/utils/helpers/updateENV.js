@@ -15,7 +15,7 @@ const KEY_MAPPING = {
   // Azure OpenAI Settings
   AzureOpenAiEndpoint: {
     envKey: "AZURE_OPENAI_ENDPOINT",
-    checks: [isNotEmpty, validAzureURL],
+    checks: [isNotEmpty],
   },
   AzureOpenAiTokenLimit: {
     envKey: "AZURE_OPENAI_TOKEN_LIMIT",
@@ -100,6 +100,10 @@ const KEY_MAPPING = {
   OllamaLLMTokenLimit: {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
+  },
+  OllamaLLMKeepAliveSeconds: {
+    envKey: "OLLAMA_KEEP_ALIVE_TIMEOUT",
+    checks: [isInteger],
   },
 
   // Mistral AI API Settings
@@ -204,6 +208,28 @@ const KEY_MAPPING = {
     checks: [nonZero],
   },
 
+  // AWS Bedrock LLM InferenceSettings
+  AwsBedrockLLMAccessKeyId: {
+    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY_ID",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMAccessKey: {
+    envKey: "AWS_BEDROCK_LLM_ACCESS_KEY",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMRegion: {
+    envKey: "AWS_BEDROCK_LLM_REGION",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMModel: {
+    envKey: "AWS_BEDROCK_LLM_MODEL_PREFERENCE",
+    checks: [isNotEmpty],
+  },
+  AwsBedrockLLMTokenLimit: {
+    envKey: "AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT",
+    checks: [nonZero],
+  },
+
   EmbeddingEngine: {
     envKey: "EMBEDDING_ENGINE",
     checks: [supportedEmbeddingModel],
@@ -219,6 +245,12 @@ const KEY_MAPPING = {
   EmbeddingModelMaxChunkLength: {
     envKey: "EMBEDDING_MODEL_MAX_CHUNK_LENGTH",
     checks: [nonZero],
+  },
+
+  // Generic OpenAI Embedding Settings
+  GenericOpenAiEmbeddingApiKey: {
+    envKey: "GENERIC_OPEN_AI_EMBEDDING_API_KEY",
+    checks: [],
   },
 
   // Vector Database Selection Settings
@@ -333,6 +365,10 @@ const KEY_MAPPING = {
     envKey: "OPENROUTER_MODEL_PREF",
     checks: [isNotEmpty],
   },
+  OpenRouterTimeout: {
+    envKey: "OPENROUTER_TIMEOUT_MS",
+    checks: [],
+  },
 
   // Groq Options
   GroqApiKey: {
@@ -403,6 +439,14 @@ const KEY_MAPPING = {
     envKey: "AGENT_BING_SEARCH_API_KEY",
     checks: [],
   },
+  AgentSerplyApiKey: {
+    envKey: "AGENT_SERPLY_API_KEY",
+    checks: [],
+  },
+  AgentSearXNGApiUrl: {
+    envKey: "AGENT_SEARXNG_API_URL",
+    checks: [],
+  },
 
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
@@ -438,6 +482,11 @@ function isNotEmpty(input = "") {
 function nonZero(input = "") {
   if (isNaN(Number(input))) return "Value must be a number";
   return Number(input) <= 0 ? "Value must be greater than zero" : null;
+}
+
+function isInteger(input = "") {
+  if (isNaN(Number(input))) return "Value must be a number";
+  return Number(input);
 }
 
 function isValidURL(input = "") {
@@ -518,6 +567,7 @@ function supportedLLM(input = "") {
     "cohere",
     "litellm",
     "generic-openai",
+    "bedrock",
   ].includes(input);
   return validSelection ? null : `${input} is not a valid LLM provider.`;
 }
@@ -532,6 +582,7 @@ function supportedTranscriptionProvider(input = "") {
 function validGeminiModel(input = "") {
   const validModels = [
     "gemini-pro",
+    "gemini-1.0-pro",
     "gemini-1.5-pro-latest",
     "gemini-1.5-flash-latest",
   ];
@@ -560,6 +611,7 @@ function validAnthropicModel(input = "") {
     "claude-3-opus-20240229",
     "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
+    "claude-3-5-sonnet-20240620",
   ];
   return validModels.includes(input)
     ? null
@@ -576,6 +628,8 @@ function supportedEmbeddingModel(input = "") {
     "lmstudio",
     "cohere",
     "voyageai",
+    "litellm",
+    "generic-openai",
   ];
   return supported.includes(input)
     ? null
@@ -602,17 +656,6 @@ function validChromaURL(input = "") {
   return input.slice(-1) === "/"
     ? `Chroma Instance URL should not end in a trailing slash.`
     : null;
-}
-
-function validAzureURL(input = "") {
-  try {
-    new URL(input);
-    if (!input.includes("openai.azure.com") && !input.includes("microsoft.com"))
-      return "Valid Azure endpoints must contain openai.azure.com OR microsoft.com";
-    return null;
-  } catch {
-    return "Not a valid URL";
-  }
 }
 
 function validOpenAiTokenLimit(input = "") {
@@ -712,6 +755,7 @@ async function updateENV(newENVs = {}, force = false, userId = null) {
   }
 
   await logChangesToEventLog(newValues, userId);
+  if (process.env.NODE_ENV === "production") dumpENV();
   return { newValues, error: error?.length > 0 ? error : false };
 }
 
@@ -737,15 +781,20 @@ async function logChangesToEventLog(newValues = {}, userId = null) {
   return;
 }
 
-async function dumpENV() {
+function dumpENV() {
   const fs = require("fs");
   const path = require("path");
 
   const frozenEnvs = {};
   const protectedKeys = [
     ...Object.values(KEY_MAPPING).map((values) => values.envKey),
+    // Manually Add Keys here which are not already defined in KEY_MAPPING
+    // and are either managed or manually set ENV key:values.
     "STORAGE_DIR",
     "SERVER_PORT",
+    // For persistent data encryption
+    "SIG_KEY",
+    "SIG_SALT",
     // Password Schema Keys if present.
     "PASSWORDMINCHAR",
     "PASSWORDMAXCHAR",
@@ -758,15 +807,6 @@ async function dumpENV() {
     "ENABLE_HTTPS",
     "HTTPS_CERT_PATH",
     "HTTPS_KEY_PATH",
-    // DISABLED TELEMETRY
-    "DISABLE_TELEMETRY",
-
-    // Agent Integrations
-    // Search engine integrations
-    "AGENT_GSE_CTX",
-    "AGENT_GSE_KEY",
-    "AGENT_SERPER_DEV_KEY",
-    "AGENT_BING_SEARCH_API_KEY",
   ];
 
   // Simple sanitization of each value to prevent ENV injection via newline or quote escaping.

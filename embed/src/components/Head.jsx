@@ -1,3 +1,5 @@
+import { embedderSettings } from "@/main";
+
 const hljsCss = `
 pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}/*!
   Theme: GitHub Dark Dimmed
@@ -16,7 +18,7 @@ const customCss = `
    * Dot Falling
    * ==============================================
    */
-  .dot-falling {
+  .allm-dot-falling {
     position: relative;
     left: -9999px;
     width: 10px;
@@ -29,15 +31,15 @@ const customCss = `
     animation-delay: 0.1s;
   }
 
-  .dot-falling::before,
-  .dot-falling::after {
+  .allm-dot-falling::before,
+  .allm-dot-falling::after {
     content: "";
     display: inline-block;
     position: absolute;
     top: 0;
   }
 
-  .dot-falling::before {
+  .allm-dot-falling::before {
     width: 10px;
     height: 10px;
     border-radius: 5px;
@@ -47,7 +49,7 @@ const customCss = `
     animation-delay: 0s;
   }
 
-  .dot-falling::after {
+  .allm-dot-falling::after {
     width: 10px;
     height: 10px;
     border-radius: 5px;
@@ -101,50 +103,20 @@ const customCss = `
 
   #chat-history::-webkit-scrollbar,
   #chat-container::-webkit-scrollbar,
-  .no-scroll::-webkit-scrollbar {
+  .allm-no-scroll::-webkit-scrollbar {
     display: none !important;
   }
 
   /* Hide scrollbar for IE, Edge and Firefox */
   #chat-history,
   #chat-container,
-  .no-scroll {
+  .allm-no-scroll {
     -ms-overflow-style: none !important; /* IE and Edge */
     scrollbar-width: none !important; /* Firefox */
   }
 
-  .animate-slow-pulse {
-    transform: scale(1);
-    animation: subtlePulse 20s infinite;
-    will-change: transform;
-  }
-
-  @keyframes subtlePulse {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.1);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  @keyframes subtleShift {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
-  .bg-black-900 {
-    background: #141414;
+  span.allm-whitespace-pre-line>p {
+    margin: 0px;
   }
 `;
 
@@ -153,6 +125,7 @@ export default function Head() {
     <head>
       <style>{hljsCss}</style>
       <style>{customCss}</style>
+      <link rel="stylesheet" href={embedderSettings.stylesSrc} />
     </head>
   );
 }

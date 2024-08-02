@@ -1,19 +1,44 @@
+const { setDataSigner } = require("../middleware/setDataSigner");
 const { verifyPayloadIntegrity } = require("../middleware/verifyIntegrity");
+const { resolveRepoLoader, resolveRepoLoaderFunction } = require("../utils/extensions/RepoLoader");
 const { reqBody } = require("../utils/http");
 const { validURL } = require("../utils/url");
+const RESYNC_METHODS = require("./resync");
 
 function extensions(app) {
   if (!app) return;
 
   app.post(
-    "/ext/github-repo",
-    [verifyPayloadIntegrity],
+    "/ext/resync-source-document",
+    [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {
       try {
-        const loadGithubRepo = require("../utils/extensions/GithubRepo");
-        const { success, reason, data } = await loadGithubRepo(
-          reqBody(request)
+        const { type, options } = reqBody(request);
+        if (!RESYNC_METHODS.hasOwnProperty(type)) throw new Error(`Type "${type}" is not a valid type to sync.`);
+        return await RESYNC_METHODS[type](options, response);
+      } catch (e) {
+        console.error(e);
+        response.status(200).json({
+          success: false,
+          content: null,
+          reason: e.message || "A processing error occurred.",
+        });
+      }
+      return;
+    }
+  )
+
+  app.post(
+    "/ext/:repo_platform-repo",
+    [verifyPayloadIntegrity, setDataSigner],
+    async function (request, response) {
+      try {
+        const loadRepo = resolveRepoLoaderFunction(request.params.repo_platform);
+        const { success, reason, data } = await loadRepo(
+          reqBody(request),
+          response,
         );
+        console.log({ success, reason, data })
         response.status(200).json({
           success,
           reason,
@@ -33,12 +58,12 @@ function extensions(app) {
 
   // gets all branches for a specific repo
   app.post(
-    "/ext/github-repo/branches",
+    "/ext/:repo_platform-repo/branches",
     [verifyPayloadIntegrity],
     async function (request, response) {
       try {
-        const GithubRepoLoader = require("../utils/extensions/GithubRepo/RepoLoader");
-        const allBranches = await new GithubRepoLoader(
+        const RepoLoader = resolveRepoLoader(request.params.repo_platform);
+        const allBranches = await new RepoLoader(
           reqBody(request)
         ).getRepoBranches();
         response.status(200).json({
@@ -67,7 +92,7 @@ function extensions(app) {
     [verifyPayloadIntegrity],
     async function (request, response) {
       try {
-        const loadYouTubeTranscript = require("../utils/extensions/YoutubeTranscript");
+        const { loadYouTubeTranscript } = require("../utils/extensions/YoutubeTranscript");
         const { success, reason, data } = await loadYouTubeTranscript(
           reqBody(request)
         );
@@ -108,12 +133,13 @@ function extensions(app) {
 
   app.post(
     "/ext/confluence",
-    [verifyPayloadIntegrity],
+    [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {
       try {
-        const loadConfluence = require("../utils/extensions/Confluence");
+        const { loadConfluence } = require("../utils/extensions/Confluence");
         const { success, reason, data } = await loadConfluence(
-          reqBody(request)
+          reqBody(request),
+          response
         );
         response.status(200).json({ success, reason, data });
       } catch (e) {

@@ -15,6 +15,8 @@ const {
   validWorkspaceSlug,
 } = require("../utils/middleware/validWorkspace");
 const { writeResponseChunk } = require("../utils/helpers/chat/responses");
+const { WorkspaceThread } = require("../models/workspaceThread");
+const truncate = require("truncate");
 
 function chatEndpoints(app) {
   if (!app) return;
@@ -25,7 +27,7 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { message } = reqBody(request);
+        const { message, attachments = [] } = reqBody(request);
         const workspace = response.locals.workspace;
 
         if (!message?.length) {
@@ -86,13 +88,16 @@ function chatEndpoints(app) {
           workspace,
           message,
           workspace?.chatMode,
-          user
+          user,
+          null,
+          attachments
         );
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          multiModal: Array.isArray(attachments) && attachments?.length !== 0,
         });
 
         await EventLogs.logEvent(
@@ -129,7 +134,7 @@ function chatEndpoints(app) {
     async (request, response) => {
       try {
         const user = await userFromSession(request, response);
-        const { message } = reqBody(request);
+        const { message, attachments = [] } = reqBody(request);
         const workspace = response.locals.workspace;
         const thread = response.locals.thread;
 
@@ -194,13 +199,33 @@ function chatEndpoints(app) {
           message,
           workspace?.chatMode,
           user,
-          thread
+          thread,
+          attachments
         );
+
+        // If thread was renamed emit event to frontend via special `action` response.
+        await WorkspaceThread.autoRenameThread({
+          thread,
+          workspace,
+          user,
+          newName: truncate(message, 22),
+          onRename: (thread) => {
+            writeResponseChunk(response, {
+              action: "rename_thread",
+              thread: {
+                slug: thread.slug,
+                name: thread.name,
+              },
+            });
+          },
+        });
+
         await Telemetry.sendTelemetry("sent_chat", {
           multiUserMode: multiUserMode(response),
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          multiModal: Array.isArray(attachments) && attachments?.length !== 0,
         });
 
         await EventLogs.logEvent(

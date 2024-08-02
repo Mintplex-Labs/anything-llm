@@ -4,7 +4,6 @@
 **/server/storage/*.db
 **/server/storage/lancedb
 **/collector/hotdir/**
-**/collector/v-env/**
 **/collector/outputs/**
 **/node_modules/
 **/dist/
@@ -13,7 +12,11 @@
 **/.env
 **/.env.*
 **/bundleinspector.html
+**/tmp/**
+<<<<<<< HEAD
+**/.models
+=======
+**/.log
 !docker/.env.example
 !frontend/.env.production
-**/tmp/**
-**/.models
+>>>>>>> 6dc3642661e56a1aad913bead48b7e333fc8f282

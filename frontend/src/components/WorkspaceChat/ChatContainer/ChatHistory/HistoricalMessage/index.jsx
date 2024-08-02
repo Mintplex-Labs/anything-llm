@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { Warning } from "@phosphor-icons/react";
-import Jazzicon from "../../../../UserIcon";
+import UserIcon from "../../../../UserIcon";
 import Actions from "./Actions";
 import renderMarkdown from "@/utils/chat/markdown";
 import { userFromStorage } from "@/utils/request";
@@ -8,6 +8,9 @@ import Citations from "../Citation";
 import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import { v4 } from "uuid";
 import createDOMPurify from "dompurify";
+import { EditMessageForm, useEditMessage } from "./Actions/EditMessage";
+import { useWatchDeleteMessage } from "./Actions/DeleteMessage";
+import TTSMessage from "./Actions/TTSButton";
 
 const DOMPurify = createDOMPurify(window);
 const HistoricalMessage = ({
@@ -16,25 +19,39 @@ const HistoricalMessage = ({
   role,
   workspace,
   sources = [],
+  attachments = [],
   error = false,
   feedbackScore = null,
   chatId = null,
   isLastMessage = false,
   regenerateMessage,
+  saveEditedMessage,
+  forkThread,
 }) => {
-  return (
-    <div
-      key={uuid}
-      className={`flex justify-center items-end w-full ${
-        role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
-      }`}
-    >
-      <div className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}>
-        <div className="flex gap-x-5">
-          <ProfileImage role={role} workspace={workspace} />
-          {error ? (
+  const { isEditing } = useEditMessage({ chatId, role });
+  const { isDeleted, completeDelete, onEndAnimation } = useWatchDeleteMessage({
+    chatId,
+    role,
+  });
+  const adjustTextArea = (event) => {
+    const element = event.target;
+    element.style.height = "auto";
+    element.style.height = element.scrollHeight + "px";
+  };
+
+  if (!!error) {
+    return (
+      <div
+        key={uuid}
+        className={`flex justify-center items-end w-full ${
+          role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
+        }`}
+      >
+        <div className="py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col">
+          <div className="flex gap-x-5">
+            <ProfileImage role={role} workspace={workspace} />
             <div className="p-2 rounded-lg bg-red-50 text-red-500">
-              <span className={`inline-block `}>
+              <span className="inline-block">
                 <Warning className="h-4 w-4 mb-1 inline-block" /> Could not
                 respond to message.
               </span>
@@ -42,28 +59,69 @@ const HistoricalMessage = ({
                 {error}
               </p>
             </div>
-          ) : (
-            <span
-              className={`flex flex-col gap-y-1`}
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(renderMarkdown(message)),
-              }}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (completeDelete) return null;
+  return (
+    <div
+      key={uuid}
+      onAnimationEnd={onEndAnimation}
+      className={`${
+        isDeleted ? "animate-remove" : ""
+      } flex justify-center items-end w-full group ${
+        role === "user" ? USER_BACKGROUND_COLOR : AI_BACKGROUND_COLOR
+      }`}
+    >
+      <div className={`py-8 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}>
+        <div className="flex gap-x-5">
+          <div className="flex flex-col items-center">
+            <ProfileImage role={role} workspace={workspace} />
+            <div className="mt-1 -mb-10">
+              <TTSMessage
+                slug={workspace?.slug}
+                chatId={chatId}
+                message={message}
+              />
+            </div>
+          </div>
+          {isEditing ? (
+            <EditMessageForm
+              role={role}
+              chatId={chatId}
+              message={message}
+              attachments={attachments}
+              adjustTextArea={adjustTextArea}
+              saveChanges={saveEditedMessage}
             />
+          ) : (
+            <div>
+              <span
+                className={`flex flex-col gap-y-1`}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(renderMarkdown(message)),
+                }}
+              />
+              <ChatAttachments attachments={attachments} />
+            </div>
           )}
         </div>
-        {role === "assistant" && !error && (
-          <div className="flex gap-x-5">
-            <div className="relative w-[35px] h-[35px] rounded-full flex-shrink-0 overflow-hidden" />
-            <Actions
-              message={message}
-              feedbackScore={feedbackScore}
-              chatId={chatId}
-              slug={workspace?.slug}
-              isLastMessage={isLastMessage}
-              regenerateMessage={regenerateMessage}
-            />
-          </div>
-        )}
+        <div className="flex gap-x-5 ml-14">
+          <Actions
+            message={message}
+            feedbackScore={feedbackScore}
+            chatId={chatId}
+            slug={workspace?.slug}
+            isLastMessage={isLastMessage}
+            regenerateMessage={regenerateMessage}
+            isEditing={isEditing}
+            role={role}
+            forkThread={forkThread}
+          />
+        </div>
         {role === "assistant" && <Citations sources={sources} />}
       </div>
     </div>
@@ -84,8 +142,7 @@ function ProfileImage({ role, workspace }) {
   }
 
   return (
-    <Jazzicon
-      size={36}
+    <UserIcon
       user={{
         uid: role === "user" ? userFromStorage()?.username : workspace.slug,
       }}
@@ -108,3 +165,18 @@ export default memo(
     );
   }
 );
+
+function ChatAttachments({ attachments = [] }) {
+  if (!attachments.length) return null;
+  return (
+    <div className="flex flex-wrap gap-2">
+      {attachments.map((item) => (
+        <img
+          key={item.name}
+          src={item.contentString}
+          className="max-w-[300px] rounded-md"
+        />
+      ))}
+    </div>
+  );
+}

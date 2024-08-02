@@ -13,7 +13,7 @@ const {
 const path = require("path");
 const port = 3000;
 const app = express();
-require("express-ws")(app);
+require("@mintplex-labs/express-ws").default(app); // load WebSockets in non-SSL mode.
 require("dotenv").config({ path: `../../../../../.env.development` });
 
 // Debugging echo function if this is working for you.

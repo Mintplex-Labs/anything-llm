@@ -6,6 +6,7 @@ import Workspace from "@/models/workspace";
 import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
 import { isMobile } from "react-device-detect";
 import { FullScreenLoader } from "@/components/Preloader";
+import { FineTuningAlert } from "../FineTuning/Banner";
 
 export default function WorkspaceChat() {
   const { loading, requiresAuth, mode } = usePasswordModal();
@@ -44,9 +45,12 @@ function ShowWorkspaceChat() {
   }, []);
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
-      {!isMobile && <Sidebar />}
-      <WorkspaceChatContainer loading={loading} workspace={workspace} />
-    </div>
+    <>
+      <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
+        {!isMobile && <Sidebar />}
+        <WorkspaceChatContainer loading={loading} workspace={workspace} />
+      </div>
+      <FineTuningAlert />
+    </>
   );
 }

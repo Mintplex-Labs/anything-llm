@@ -94,6 +94,7 @@ const memory = {
                   namespace: workspace.slug,
                   input: query,
                   LLMConnector,
+                  topN: workspace?.topN ?? 4,
                 });
 
               if (contextTexts.length === 0) {

@@ -4,7 +4,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Workspace from "@/models/workspace";
 import ManageWorkspace, {
   useManageWorkspaceModal,
-} from "../../Modals/MangeWorkspace";
+} from "../../Modals/ManageWorkspace";
 import paths from "@/utils/paths";
 import { useParams } from "react-router-dom";
 import { GearSix, SquaresFour, UploadSimple } from "@phosphor-icons/react";
@@ -168,8 +168,8 @@ export default function ActiveWorkspaces() {
                               isInWorkspaceSettings && workspace.slug === slug
                                 ? "#46C8FF"
                                 : gearHover[workspace.id]
-                                ? "#FFFFFF"
-                                : "#A7A8A9"
+                                  ? "#FFFFFF"
+                                  : "#A7A8A9"
                             }
                             weight="bold"
                             className="h-[20px] w-[20px]"

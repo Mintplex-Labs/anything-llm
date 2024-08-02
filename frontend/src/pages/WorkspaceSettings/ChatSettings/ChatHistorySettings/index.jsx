@@ -1,16 +1,16 @@
+import { useTranslation } from "react-i18next";
 export default function ChatHistorySettings({ workspace, setHasChanges }) {
+  const { t } = useTranslation();
   return (
     <div>
       <div className="flex flex-col gap-y-1 mb-4">
         <label htmlFor="name" className="block mb-2 input-label">
-          Chat History
+          {t("chat.history.title")}
         </label>
         <p className="text-white text-opacity-60 text-xs font-medium">
-          The number of previous chats that will be included in the
-          response&apos;s short-term memory.
-          <i>Recommend 20. </i>
-          Anything more than 45 is likely to lead to continuous chat failures
-          depending on message size.
+          {t("chat.history.desc-start")}
+          <i> {t("chat.history.recommend")} </i>
+          {t("chat.history.desc-end")}
         </p>
       </div>
       <input
