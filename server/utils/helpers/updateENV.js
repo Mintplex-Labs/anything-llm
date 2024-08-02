@@ -101,8 +101,8 @@ const KEY_MAPPING = {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
-  OllamaLLMContext: {
-    envKey: "OLLAMA_CONTEXT",
+  OllamaLLMPerformanceMode: {
+    envKey: "OLLAMA_PERFORMANCE_MODE",
     checks: [],
   },
   OllamaLLMKeepAliveSeconds: {

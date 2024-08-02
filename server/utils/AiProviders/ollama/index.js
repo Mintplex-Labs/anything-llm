@@ -13,6 +13,7 @@ class OllamaAILLM {
 
     this.basePath = process.env.OLLAMA_BASE_PATH;
     this.model = modelPreference || process.env.OLLAMA_MODEL_PREF;
+    this.performanceMode = process.env.OLLAMA_PERFORMANCE_MODE || "base";
     this.keepAlive = process.env.OLLAMA_KEEP_ALIVE_TIMEOUT
       ? Number(process.env.OLLAMA_KEEP_ALIVE_TIMEOUT)
       : 300; // Default 5-minute timeout for Ollama model loading.
@@ -21,7 +22,6 @@ class OllamaAILLM {
       system: this.promptWindowLimit() * 0.15,
       user: this.promptWindowLimit() * 0.7,
     };
-    this.context = process.env.OLLAMA_CONTEXT || "base";
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
@@ -29,18 +29,17 @@ class OllamaAILLM {
 
   #ollamaClient({ temperature = 0.07 }) {
     const { ChatOllama } = require("@langchain/community/chat_models/ollama");
-    const config = {
+    return new ChatOllama({
       baseUrl: this.basePath,
       model: this.model,
       keepAlive: this.keepAlive,
       useMLock: true,
+      // There are currently only two performance settings so if its not "base" - its max context.
+      ...(this.performanceMode === "base"
+        ? {}
+        : { numCtx: this.promptWindowLimit() }),
       temperature,
-    };
-
-    if (this.context === "maximum") {
-      config.numCtx = this.promptWindowLimit();
-    }
-    return new ChatOllama(config);
+    });
   }
 
   // For streaming we use Langchain's wrapper to handle weird chunks
