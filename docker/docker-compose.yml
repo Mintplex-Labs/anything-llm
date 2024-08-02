@@ -33,14 +33,3 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  llamacpp_model:
-    volumes:
-      - ./.models/rocket-3b.Q4_K_M.gguf:/models:ro
-    # Expose llamacpp API outside the container stack
-    ports:
-      - 8086:8086
-    container_name: llamacpp_model
-    command: --host 0.0.0.0 --port 8086 -m /models -c 4096 -fa --chat-template chatml
-    image: ghcr.io/ggerganov/llama.cpp:server
-    networks:
-      - anything-llm
