@@ -17,6 +17,8 @@ const User = {
           throw new Error("Username cannot be longer than 100 characters");
         if (String(newValue).length < 2)
           throw new Error("Username must be at least 2 characters");
+        if (!/^[a-z0-9]+$/.test(newValue))
+          throw new Error("Username must be lowercase and contain no spaces");
         return String(newValue);
       } catch (e) {
         throw new Error(e.message);
