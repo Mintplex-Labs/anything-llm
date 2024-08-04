@@ -233,9 +233,21 @@ class GitLabRepoLoader {
           `Found ${objects.length} blobs from repo from pg ${page}/${totalPages}`
         );
         for (const file of objects) {
-          const isIgnored = this.ignorePaths.some((ignorePattern) =>
-            minimatch(file.path, ignorePattern, { matchBase: true })
-          );
+          let isIgnored = false;
+          for (const ignorePattern of this.ignorePaths) {
+            if (ignorePattern.startsWith('!')) {
+              // This is an "un-ignore" pattern
+              if (minimatch(file.path, ignorePattern.slice(1), { matchBase: true })) {
+                isIgnored = false;
+                break;
+              }
+            } else {
+              // This is an ignore pattern
+              if (minimatch(file.path, ignorePattern, { matchBase: true })) {
+                isIgnored = true;
+              }
+            }
+          }
           if (!isIgnored) files.push(file);
         }
 
