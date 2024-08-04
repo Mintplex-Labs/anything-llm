@@ -72,7 +72,7 @@ const FineTuning = {
       workspaceId: {
         in: workspaceIds,
       },
-      ...(feedback === true ? { feedback: 1 } : {}),
+      ...(feedback === true ? { feedbackScore: true } : {}),
     });
     return count;
   },
@@ -141,7 +141,7 @@ const FineTuning = {
       workspaceId: {
         in: workspaces.map((ws) => ws.id),
       },
-      ...(feedback === true ? { feedback: 1 } : {}),
+      ...(feedback === true ? { feedbackScore: true } : {}),
     });
     const preparedData = chats.map((chat) => {
       const responseJson = safeJsonParse(chat.response);

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 // Providers which cannot use this feature for workspace<>model selection
 export const DISABLED_PROVIDERS = [
   "azure",
-  "lmstudio",
   "native",
   "textgenwebui",
   "generic-openai",
@@ -17,6 +16,7 @@ const PROVIDER_DEFAULT_MODELS = {
     "gemini-1.0-pro",
     "gemini-1.5-pro-latest",
     "gemini-1.5-flash-latest",
+    "gemini-1.5-pro-exp-0801",
   ],
   anthropic: [
     "claude-instant-1.2",

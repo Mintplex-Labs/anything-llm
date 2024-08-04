@@ -3,7 +3,7 @@ import FineTuningSteps, { FineTuningCreationLayout } from "./Steps";
 import { CheckCircle, Circle, Sparkle } from "@phosphor-icons/react";
 import { isMobile } from "react-device-detect";
 
-function SideBarSelection({ currentStep }) {
+function SideBarSelection({ setStep, currentStep }) {
   const currentIndex = Object.keys(FineTuningSteps).indexOf(currentStep);
   return (
     <div
@@ -26,7 +26,16 @@ function SideBarSelection({ currentStep }) {
               isLast ? "" : "border-b border-white/10",
             ].join(" ")}
           >
-            <div className="text-sm font-light">{props.name}</div>
+            {isDone ? (
+              <button
+                onClick={() => setStep(stepKey)}
+                className="border-none hover:underline text-white/40 text-sm font-light"
+              >
+                {props.name}
+              </button>
+            ) : (
+              <div className="text-sm font-light">{props.name}</div>
+            )}
             <div className="flex items-center gap-x-2">
               {isDone ? (
                 <CheckCircle className={`text-green-300`} />
@@ -60,7 +69,7 @@ export default function FineTuningFlow() {
               <Sparkle size={24} />
               <p className="text-lg font-medium">Custom Fine-Tuned Model</p>
             </div>
-            <SideBarSelection currentStep={step} />
+            <SideBarSelection setStep={setStep} currentStep={step} />
           </div>
           {StepPage.component({ settings, setSettings, setStep })}
         </div>
