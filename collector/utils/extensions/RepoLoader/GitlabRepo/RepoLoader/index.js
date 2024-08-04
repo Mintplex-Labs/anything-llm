@@ -1,4 +1,4 @@
-const ignore = require('ignore');
+const ignore = require("ignore");
 
 /**
  * @typedef {Object} RepoLoaderArgs

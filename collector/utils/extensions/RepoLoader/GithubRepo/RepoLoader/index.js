@@ -103,7 +103,9 @@ class GitHubRepoLoader {
    */
   async recursiveLoader() {
     if (!this.ready) throw new Error("[Github Loader]: not in ready state!");
-    const { GithubRepoLoader } = require("@langchain/community/document_loaders/web/github");
+    const {
+      GithubRepoLoader,
+    } = require("@langchain/community/document_loaders/web/github");
 
     if (this.accessToken)
       console.log(
