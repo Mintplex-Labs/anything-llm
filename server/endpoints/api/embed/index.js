@@ -113,7 +113,7 @@ function apiEmbedEndpoints(app) {
     */
       try {
         const { embedUuid } = request.params;
-        const embed = await EmbedConfig.get({ uuid: embedUuid });
+        const embed = await EmbedConfig.get({ uuid: String(embedUuid) });
         if (!embed) {
           return response.status(404).json({ error: "Embed not found" });
         }
@@ -184,14 +184,14 @@ function apiEmbedEndpoints(app) {
     */
       try {
         const { embedUuid, sessionUuid } = request.params;
-        const embed = await EmbedConfig.get({ uuid: embedUuid });
+        const embed = await EmbedConfig.get({ uuid: String(embedUuid) });
         if (!embed) {
           return response.status(404).json({ error: "Embed not found" });
         }
 
         const chats = await EmbedChats.where({
           embed_id: embed.id,
-          session_id: sessionUuid,
+          session_id: String(sessionUuid),
         });
 
         if (!chats || chats.length === 0) {
