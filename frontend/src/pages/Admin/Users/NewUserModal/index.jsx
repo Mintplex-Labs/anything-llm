@@ -7,7 +7,6 @@ import { RoleHintDisplay } from "..";
 export default function NewUserModal({ closeModal }) {
   const [error, setError] = useState(null);
   const [role, setRole] = useState("default");
-  const [username, setUsername] = useState("");
 
   const handleCreate = async (e) => {
     setError(null);
@@ -21,11 +20,6 @@ export default function NewUserModal({ closeModal }) {
   };
 
   const user = userFromStorage();
-
-  const handleUsernameChange = (e) => {
-    const value = e.target.value.toLowerCase().replace(/\s/g, '');
-    setUsername(value);
-  };
 
   return (
     <div className="relative w-full max-w-2xl max-h-full">
@@ -61,8 +55,13 @@ export default function NewUserModal({ closeModal }) {
                   minLength={2}
                   required={true}
                   autoComplete="off"
-                  value={username}
-                  onChange={handleUsernameChange}
+                  pattern="^[a-z0-9]+$"
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity(
+                      "Username must be lowercase with no spaces"
+                    )
+                  }
+                  onChange={(e) => e.target.setCustomValidity("")}
                 />
                 <p className="mt-2 text-xs text-white/60">
                   Username must be lowercase with no spaces

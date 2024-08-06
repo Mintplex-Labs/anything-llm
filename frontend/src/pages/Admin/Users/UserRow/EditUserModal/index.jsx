@@ -6,7 +6,6 @@ import { RoleHintDisplay } from "../..";
 export default function EditUserModal({ currentUser, user, closeModal }) {
   const [role, setRole] = useState(user.role);
   const [error, setError] = useState(null);
-  const [username, setUsername] = useState(user.username);
 
   const handleUpdate = async (e) => {
     setError(null);
@@ -20,11 +19,6 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
     const { success, error } = await Admin.updateUser(user.id, data);
     if (success) window.location.reload();
     setError(error);
-  };
-
-  const handleUsernameChange = (e) => {
-    const value = e.target.value.toLowerCase().replace(/\s/g, '');
-    setUsername(value);
   };
 
   return (
@@ -58,9 +52,8 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   type="text"
                   className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder="User's username"
+                  defaultValue={user.username}
                   minLength={2}
-                  value={username}
-                  onChange={handleUsernameChange}
                   required={true}
                   autoComplete="off"
                 />

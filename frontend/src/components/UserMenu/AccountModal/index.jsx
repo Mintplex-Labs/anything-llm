@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useLanguageOptions } from "@/hooks/useLanguageOptions";
 import usePfp from "@/hooks/usePfp";
 import System from "@/models/system";
@@ -8,7 +8,6 @@ import { Plus, X } from "@phosphor-icons/react";
 
 export default function AccountModal({ user, hideModal }) {
   const { pfp, setPfp } = usePfp();
-  const [username, setUsername] = useState(user.username);
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -35,11 +34,6 @@ export default function AccountModal({ user, hideModal }) {
     }
 
     setPfp(null);
-  };
-
-  const handleUsernameChange = (e) => {
-    const value = e.target.value.toLowerCase().replace(/\s/g, '');
-    setUsername(value);
   };
 
   const handleUpdate = async (e) => {
@@ -137,8 +131,7 @@ export default function AccountModal({ user, hideModal }) {
                 className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 placeholder="User's username"
                 minLength={2}
-                value={username}
-                onChange={handleUsernameChange}
+                defaultValue={user.username}
                 required
                 autoComplete="off"
               />
