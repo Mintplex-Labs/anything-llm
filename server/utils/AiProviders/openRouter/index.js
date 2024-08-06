@@ -254,35 +254,48 @@ class OpenRouterLLM {
         }
       }, 500);
 
-      for await (const chunk of stream) {
-        const message = chunk?.choices?.[0];
-        const token = message?.delta?.content;
-        lastChunkTime = Number(new Date());
+      try {
+        for await (const chunk of stream) {
+          const message = chunk?.choices?.[0];
+          const token = message?.delta?.content;
+          lastChunkTime = Number(new Date());
 
-        if (token) {
-          fullText += token;
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: token,
-            close: false,
-            error: false,
-          });
-        }
+          if (token) {
+            fullText += token;
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: token,
+              close: false,
+              error: false,
+            });
+          }
 
-        if (message.finish_reason !== null) {
-          writeResponseChunk(response, {
-            uuid,
-            sources,
-            type: "textResponseChunk",
-            textResponse: "",
-            close: true,
-            error: false,
-          });
-          response.removeListener("close", handleAbort);
-          resolve(fullText);
+          if (message.finish_reason !== null) {
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: "",
+              close: true,
+              error: false,
+            });
+            response.removeListener("close", handleAbort);
+            resolve(fullText);
+          }
         }
+      } catch (e) {
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "abort",
+          textResponse: null,
+          close: true,
+          error: e.message,
+        });
+        response.removeListener("close", handleAbort);
+        resolve(fullText);
       }
     });
   }

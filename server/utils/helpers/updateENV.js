@@ -102,6 +102,10 @@ const KEY_MAPPING = {
     envKey: "OLLAMA_MODEL_TOKEN_LIMIT",
     checks: [nonZero],
   },
+  OllamaLLMPerformanceMode: {
+    envKey: "OLLAMA_PERFORMANCE_MODE",
+    checks: [],
+  },
   OllamaLLMKeepAliveSeconds: {
     envKey: "OLLAMA_KEEP_ALIVE_TIMEOUT",
     checks: [isInteger],
@@ -470,6 +474,12 @@ const KEY_MAPPING = {
     envKey: "TTS_ELEVEN_LABS_VOICE_MODEL",
     checks: [],
   },
+
+  // PiperTTS Local
+  TTSPiperTTSVoiceModel: {
+    envKey: "TTS_PIPER_VOICE_MODEL",
+    checks: [],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -529,7 +539,12 @@ function validOllamaLLMBasePath(input = "") {
 }
 
 function supportedTTSProvider(input = "") {
-  const validSelection = ["native", "openai", "elevenlabs"].includes(input);
+  const validSelection = [
+    "native",
+    "openai",
+    "elevenlabs",
+    "piper_local",
+  ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
 
@@ -582,6 +597,7 @@ function validGeminiModel(input = "") {
     "gemini-1.0-pro",
     "gemini-1.5-pro-latest",
     "gemini-1.5-flash-latest",
+    "gemini-1.5-pro-exp-0801",
   ];
   return validModels.includes(input)
     ? null
