@@ -14,6 +14,9 @@ export default defineConfig({
     './public/piper/piper_phonemize.wasm',
     './public/piper/piper_phonemize.data',
   ],
+  worker: {
+    format: 'es'
+  },
   server: {
     port: 3000,
     host: "localhost"
