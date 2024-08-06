@@ -1,12 +1,22 @@
-version: "3.9"
-
-name: anythingllm
-
+version: '3.3'
 networks:
   anything-llm:
     driver: bridge
 
 services:
+  postgres:
+      image: postgres:latest
+      environment:
+        POSTGRES_USER: user
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: midhun
+      ports:
+        - 5432:5432
+      volumes:
+        - ./postgres-data:/var/lib/postgresql/data
+        - ./initdb:/docker-entrypoint-initdb.d
+      networks:
+        - anything-llm
   anything-llm:
     container_name: anything-llm
     image: anything-llm:latest
@@ -26,8 +36,15 @@ services:
     user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "3001:3001"
+      - "8888:8888"
     env_file:
       - .env
+    environment:
+      DATABASE_URL: "postgresql://user:password@postgres:5432/midhun"
+      KEYCLOAK_URL: "https://dev2.digixt.ae/auth/realms/Datalake/protocol/openid-connect/auth"
+      KEYCLOAK_REALM: "Datalake"
+      KEYCLOAK_CLIENT_ID: "dataprism"
+      SESSION_SECRET": "Qk2MPaU6QadK5u3RnbsiEXkkmmyYqJbX"
     networks:
       - anything-llm
     extra_hosts:

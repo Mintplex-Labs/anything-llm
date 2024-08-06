@@ -153,13 +153,14 @@ COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
 
 # Install collector dependencies
 WORKDIR /app/collector
-ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public 
+ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public
+RUN chmod 644 /app/server/yarn.lock
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
 
 # Migrate and Run Prisma against known schema
 WORKDIR /app/server
-RUN npx prisma generate --schema=./prisma/schema.prisma && \
-    npx prisma migrate deploy --schema=./prisma/schema.prisma
+# RUN npx prisma generate --schema=./prisma/schema.prisma && \
+#     npx prisma migrate deploy --schema=./prisma/schema.prisma
 WORKDIR /app
 
 # Setup the environment
@@ -170,8 +171,7 @@ ENV ANYTHING_LLM_RUNTIME=docker
 EXPOSE 3001
 
 # Setup the healthcheck
-HEALTHCHECK --interval=1m --timeout=10s --start-period=1m \
-  CMD /bin/bash /usr/local/bin/docker-healthcheck.sh || exit 1
+HEALTHCHECK --interval=1m --timeout=10s --start-period=5s --retries=3 CMD ["docker-healthcheck.sh"]
 
-# Run the server
-ENTRYPOINT ["/bin/bash", "/usr/local/bin/docker-entrypoint.sh"]
+# Start the application
+ENTRYPOINT ["docker-entrypoint.sh"]
