@@ -98,12 +98,12 @@ export default function Introduction({ setSettings, setStep }) {
             </p>
           </div>
           <CTAButton
-          className="text-dark-text w-full mt-[18px] h-[34px] hover:bg-accent"
-          onClick={handleAccept}
-          text="Create fine-tune model &rarr;"
-        >
-          Create a fine-tune model &rarr;
-        </CTAButton>
+            className="text-dark-text w-full mt-[18px] h-[34px] hover:bg-accent"
+            onClick={handleAccept}
+            text="Create fine-tune model &rarr;"
+          >
+            Create a fine-tune model &rarr;
+          </CTAButton>
         </div>
       </div>
     </div>

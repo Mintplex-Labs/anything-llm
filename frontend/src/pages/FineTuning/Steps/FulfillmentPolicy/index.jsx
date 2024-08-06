@@ -89,7 +89,9 @@ export default function Fulfillment({ setSettings, setStep }) {
               abandoned and will be deleted from our system.
             </p>
 
-            <h2 className="text-white mt-4">Denial of Service for Payment Reasons</h2>
+            <h2 className="text-white mt-4">
+              Denial of Service for Payment Reasons
+            </h2>
             <p className="text-white/80">
               Mintplex Labs Inc. reserves the right to deny service to any
               customer with an outstanding balance or invalid payment
@@ -101,9 +103,13 @@ export default function Fulfillment({ setSettings, setStep }) {
             <p className="text-white/80">
               For any questions related to payment or fulfillment of services,
               please contact us at{" "}
-              <a href="mailto:team@mintplexlabs.com" className="text-blue-400 hover:underline">
+              <a
+                href="mailto:team@mintplexlabs.com"
+                className="text-blue-400 hover:underline"
+              >
                 team@mintplexlabs.com
-              </a>.
+              </a>
+              .
             </p>
           </div>
           <CTAButton

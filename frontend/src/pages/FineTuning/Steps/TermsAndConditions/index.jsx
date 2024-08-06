@@ -125,11 +125,16 @@ export default function TermsAndConditions({ setSettings, setStep }) {
             </p>
             <p className="text-white/80">
               For Company:{" "}
-              <a href="mailto:team@mintplexlabs.com" className="text-blue-400 hover:underline">
+              <a
+                href="mailto:team@mintplexlabs.com"
+                className="text-blue-400 hover:underline"
+              >
                 team@mintplexlabs.com
               </a>
             </p>
-            <p className="text-white/80">For Customer: The main email address on Customer's account</p>
+            <p className="text-white/80">
+              For Customer: The main email address on Customer's account
+            </p>
 
             <h2 className="text-white mt-4">9. Amendments</h2>
             <p className="text-white/80">
