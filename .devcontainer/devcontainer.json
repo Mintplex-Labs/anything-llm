@@ -78,8 +78,8 @@
   },
   "updateContentCommand": "cd server && yarn && cd ../collector && PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public yarn && cd ../frontend && yarn && cd .. && yarn setup:envs && yarn prisma:setup && echo \"Please run yarn dev:server, yarn dev:collector, and yarn dev:frontend in separate terminal tabs.\"",
   // Use 'postCreateCommand' to run commands after the container is created.
-  // This configures VITE for github codespaces
-  "postCreateCommand": "if [ \"${CODESPACES}\" = \"true\" ]; then echo 'VITE_API_BASE=\"https://$CODESPACE_NAME-3001.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN/api\"' > ./frontend/.env; fi",
+  // This configures VITE for github codespaces and installs gh cli
+  "postCreateCommand": "if [ \"${CODESPACES}\" = \"true\" ]; then echo 'VITE_API_BASE=\"https://$CODESPACE_NAME-3001.$GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN/api\"' > ./frontend/.env && (type -p wget >/dev/null || (sudo apt update && sudo apt-get install wget -y)) && sudo mkdir -p -m 755 /etc/apt/keyrings && wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg && echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null && sudo apt update && sudo apt install gh -y; fi",
   "portsAttributes": {
     "3001": {
       "label": "Backend",
