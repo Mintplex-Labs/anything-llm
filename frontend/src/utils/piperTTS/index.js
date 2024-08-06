@@ -106,7 +106,9 @@ export default class PiperTTSClient {
       type: "init",
       text: String(textToSpeak),
       voiceId: voiceId ?? this.voiceId,
-      baseUrl: `${window.location.origin}/public`,
+      baseUrl: import.meta.env.DEV
+        ? `${window.location.origin}/public`
+        : `${window.location.origin}/`,
     });
 
     const blobURL = await this.waitForBlobResponse();

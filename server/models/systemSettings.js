@@ -210,7 +210,7 @@ const SystemSettings = {
       TTSElevenLabsKey: !!process.env.TTS_ELEVEN_LABS_KEY,
       TTSElevenLabsVoiceModel: process.env.TTS_ELEVEN_LABS_VOICE_MODEL,
       // Piper TTS
-      TTSPiperTTSVoiceModel: process.env.TTS_PIPER_VOICE_MODEL,
+      TTSPiperTTSVoiceModel: process.env.TTS_PIPER_VOICE_MODEL ?? 'en_US-hfc_female-medium',
 
       // --------------------------------------------------------
       // Agent Settings & Configs
