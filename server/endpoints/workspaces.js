@@ -31,6 +31,7 @@ const {
   fetchPfp,
 } = require("../utils/files/pfp");
 const { getTTSProvider } = require("../utils/TextToSpeech");
+const { log } = require("console");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -110,8 +111,9 @@ function workspaceEndpoints(app) {
       try {
         const Collector = new CollectorApi();
         const { originalname } = request.file;
-        const processingOnline = await Collector.online();
 
+        const processingOnline = await Collector.online();
+        const { slug } = request.params;
         if (!processingOnline) {
           response
             .status(500)
@@ -123,8 +125,13 @@ function workspaceEndpoints(app) {
           return;
         }
 
-        const { success, reason } =
-          await Collector.processDocument(originalname);
+        const { success, reason } = await Collector.processDocument(
+          originalname,
+          slug
+        );
+
+        log("Collector.processDocument(originalname)");
+
         if (!success) {
           response.status(500).json({ success: false, error: reason }).end();
           return;

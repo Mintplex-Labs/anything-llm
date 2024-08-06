@@ -12,11 +12,12 @@ const {
 } = require("../utils/files");
 const RESERVED_FILES = ["__HOTDIR__.md"];
 
-async function processSingleFile(targetFilename, options = {}) {
+async function processSingleFile(targetFilename, options = {},workspace) {
   const fullFilePath = path.resolve(
     WATCH_DIRECTORY,
     normalizePath(targetFilename)
   );
+  console.log("file now reached here for processing, "+fullFilePath)
   if (!isWithin(path.resolve(WATCH_DIRECTORY), fullFilePath))
     return {
       success: false,
@@ -70,6 +71,7 @@ async function processSingleFile(targetFilename, options = {}) {
     fullFilePath,
     filename: targetFilename,
     options,
+    workspace
   });
 }
 

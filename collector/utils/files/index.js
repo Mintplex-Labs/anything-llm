@@ -44,13 +44,14 @@ function createdDate(filepath) {
 function writeToServerDocuments(
   data = {},
   filename,
+  workspace,
   destinationOverride = null
 ) {
   const destination = destinationOverride
     ? path.resolve(destinationOverride)
     : path.resolve(
         __dirname,
-        "../../../server/storage/documents/custom-documents"
+        `../../../server/storage/documents/${workspace}`
       );
   if (!fs.existsSync(destination))
     fs.mkdirSync(destination, { recursive: true });

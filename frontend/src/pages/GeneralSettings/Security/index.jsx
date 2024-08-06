@@ -48,6 +48,7 @@ function MultiUserMode() {
         showToast("Multi-User mode enabled successfully.", "success");
         setSaving(false);
         setTimeout(() => {
+          alert("setTimeout")
           window.localStorage.removeItem(AUTH_USER);
           window.localStorage.removeItem(AUTH_TOKEN);
           window.localStorage.removeItem(AUTH_TIMESTAMP);
@@ -224,6 +225,7 @@ function PasswordProtection() {
       showToast("Your page will refresh in a few seconds.", "success");
       setSaving(false);
       setTimeout(() => {
+        alert("setTimeout")
         window.localStorage.removeItem(AUTH_USER);
         window.localStorage.removeItem(AUTH_TOKEN);
         window.localStorage.removeItem(AUTH_TIMESTAMP);

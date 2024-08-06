@@ -26,19 +26,22 @@ app.use(
 );
 
 app.post(
-  "/process",
+  "/process/:workspace",
   [verifyPayloadIntegrity],
   async function (request, response) {
+    console.log("Process End point got invoked")
+    const { workspace } = request.params;
     const { filename, options = {} } = reqBody(request);
     try {
       const targetFilename = path
         .normalize(filename)
         .replace(/^(\.\.(\/|\\|$))+/, "");
+        
       const {
         success,
         reason,
         documents = [],
-      } = await processSingleFile(targetFilename, options);
+      } = await processSingleFile(targetFilename, options,workspace);
       response
         .status(200)
         .json({ filename: targetFilename, success, reason, documents });

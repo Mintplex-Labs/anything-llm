@@ -22,6 +22,7 @@ const { bootHTTP, bootSSL } = require("./utils/boot");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
 const { documentEndpoints } = require("./endpoints/document");
 const { agentWebsocket } = require("./endpoints/agentWebsocket");
+const session = require("express-session");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -33,6 +34,16 @@ app.use(
   bodyParser.urlencoded({
     limit: FILE_LIMIT,
     extended: true,
+  })
+);
+
+// Session middleware
+app.use(
+  session({
+    secret: "some secret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
   })
 );
 

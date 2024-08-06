@@ -55,12 +55,13 @@ const System = {
   },
 
   checkAuth: async function (currentToken = null) {
+    alert("checkAuth ")
     const valid = await fetch(`${API_BASE}/system/check-token`, {
       headers: baseHeaders(currentToken),
     })
       .then((res) => res.ok)
       .catch(() => false);
-
+    alert("checkAuth ", valid)
     window.localStorage.setItem(AUTH_TIMESTAMP, Number(new Date()));
     return valid;
   },
@@ -78,6 +79,15 @@ const System = {
         return { valid: false, message: e.message };
       });
   },
+
+  openidToken: async function (body) {
+    // Construct the query parameters from the body object
+    const queryParams = new URLSearchParams(body).toString();
+
+    // Redirect the user to the URL with query parameters
+    window.location.href = `${API_BASE}/request-token?${queryParams}`;
+  },
+
   recoverAccount: async function (username, recoveryCodes) {
     return await fetch(`${API_BASE}/system/recover-account`, {
       method: "POST",

@@ -17,6 +17,7 @@ export function ContextWrapper(props) {
       setStore({ user, authToken });
     },
     unsetUser: () => {
+      alert("unsetUser")
       localStorage.removeItem(AUTH_USER);
       localStorage.removeItem(AUTH_TOKEN);
       localStorage.removeItem(AUTH_TIMESTAMP);

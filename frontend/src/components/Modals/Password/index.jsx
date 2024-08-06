@@ -68,7 +68,7 @@ export function usePasswordModal(notry = false) {
   useEffect(() => {
     async function checkAuthReq() {
       if (!window) return;
-
+      console.log("notry - ",notry)
       // If the last validity check is still valid
       // we can skip the loading.
       if (!System.needsAuthCheck() && notry === false) {
@@ -91,6 +91,7 @@ export function usePasswordModal(notry = false) {
               requiresAuth: true,
               mode: "multi",
             });
+            alert("multi")
             window.localStorage.removeItem(AUTH_USER);
             window.localStorage.removeItem(AUTH_TOKEN);
             window.localStorage.removeItem(AUTH_TIMESTAMP);

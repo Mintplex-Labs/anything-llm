@@ -91,6 +91,7 @@ export default function UserButton() {
             </a>
             <button
               onClick={() => {
+                alert("onClick")
                 window.localStorage.removeItem(AUTH_USER);
                 window.localStorage.removeItem(AUTH_TOKEN);
                 window.localStorage.removeItem(AUTH_TIMESTAMP);

@@ -41,15 +41,16 @@ class CollectorApi {
       });
   }
 
-  async processDocument(filename = "") {
+  async processDocument(filename = "", workspace = "") {
     if (!filename) return false;
 
     const data = JSON.stringify({
       filename,
       options: this.#attachOptions(),
     });
-
-    return await fetch(`${this.endpoint}/process`, {
+    console.log(`${this.endpoint}/process`, ", iNVOKED");
+    console.log(data);
+    return await fetch(`${this.endpoint}/process/${workspace}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -67,7 +68,7 @@ class CollectorApi {
         return { success: false, reason: e.message, documents: [] };
       });
   }
-
+///end
   async processLink(link = "") {
     if (!link) return false;
 

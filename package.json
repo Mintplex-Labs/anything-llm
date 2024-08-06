@@ -27,5 +27,12 @@
     "generate::gcp_deployment": "node cloud-deployments/gcp/deployment/generate.mjs",
     "verify:translations": "cd frontend/src/locales && node verifyTranslations.mjs"
   },
-  "private": false
+  "private": false,
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express-session": "^1.18.0",
+    "keycloak-connect": "^25.0.2",
+    "qs": "^6.13.0",
+    "swagger-autogen": "^2.23.7"
+  }
 }
