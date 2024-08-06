@@ -3,8 +3,6 @@ import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import { useState, useEffect } from "react";
 
 export default function OpenRouterOptions({ settings }) {
-  const [showAdvancedControls, setShowAdvancedControls] = useState(false);
-
   return (
     <div className="flex flex-col gap-y-4 mt-1.5">
       <div className="flex gap-[36px]">
