@@ -32,7 +32,7 @@ const User = {
       return String(role);
     },
   },
-
+  // validations for the above writable fields.
   castColumnValue: function (key, value) {
     switch (key) {
       case "suspended":
@@ -74,7 +74,8 @@ const User = {
       return { user: null, error: error.message };
     }
   },
-
+  // Log the changes to a user object, but omit sensitive fields
+  // that are not meant to be logged.
   loggedChanges: function (updates, prev = {}) {
     const changes = {};
     const sensitiveFields = ["password"];
@@ -95,7 +96,8 @@ const User = {
         where: { id: parseInt(userId) },
       });
       if (!currentUser) return { success: false, error: "User not found" };
-
+      // Removes non-writable fields for generic updates
+      // and force-casts to the proper type;
       Object.entries(updates).forEach(([key, value]) => {
         if (this.writable.includes(key)) {
           if (this.validations.hasOwnProperty(key)) {
@@ -109,7 +111,7 @@ const User = {
         }
         delete updates[key];
       });
-
+      // Handle password specific updates
       if (Object.keys(updates).length === 0)
         return { success: false, error: "No valid updates applied." };
 
@@ -142,6 +144,9 @@ const User = {
     }
   },
 
+  // Explicit direct update of user object.
+  // Only use this method when directly setting a key value
+  // that takes no user input for the keys being modified.
   _update: async function (id = null, data = {}) {
     if (!id) throw new Error("No user id provided for update");
 
@@ -166,7 +171,7 @@ const User = {
       return null;
     }
   },
-
+  // Returns user object with all fields
   _get: async function (clause = {}) {
     try {
       const user = await prisma.users.findFirst({ where: clause });
@@ -212,6 +217,8 @@ const User = {
 
   checkPasswordComplexity: function (passwordInput = "") {
     const passwordComplexity = require("joi-password-complexity");
+    // Can be set via ENV variable on boot. No frontend config at this time.
+    // Docs: https://www.npmjs.com/package/joi-password-complexity
     const complexityOptions = {
       min: process.env.PASSWORDMINCHAR || 8,
       max: process.env.PASSWORDMAXCHAR || 250,
@@ -219,6 +226,7 @@ const User = {
       upperCase: process.env.PASSWORDUPPERCASE || 0,
       numeric: process.env.PASSWORDNUMERIC || 0,
       symbol: process.env.PASSWORDSYMBOL || 0,
+      // reqCount should be equal to how many conditions you are testing for (1-4)
       requirementCount: process.env.PASSWORDREQUIREMENTS || 0,
     };
 
