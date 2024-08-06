@@ -111,10 +111,10 @@ const User = {
         }
         delete updates[key];
       });
-      // Handle password specific updates
+
       if (Object.keys(updates).length === 0)
         return { success: false, error: "No valid updates applied." };
-
+      // Handle password specific updates
       if (updates.hasOwnProperty("password")) {
         const passwordCheck = this.checkPasswordComplexity(updates.password);
         if (!passwordCheck.checkedOK) {
