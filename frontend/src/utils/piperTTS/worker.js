@@ -79,8 +79,16 @@ async function main(event) {
   if (event.data.voiceId && PIPER_SESSION.voiceId !== event.data.voiceId)
     PIPER_SESSION.voiceId = event.data.voiceId;
 
-  const blob = await PIPER_SESSION.predict(event.data.text);
-  self.postMessage({ type: "result", audio: blob });
+  PIPER_SESSION.predict(event.data.text)
+    .then((res) => {
+      if (res instanceof Blob) {
+        self.postMessage({ type: "result", audio: res });
+        return;
+      }
+    })
+    .catch((error) => {
+      self.postMessage({ type: "error", message: error.message, error }); // Will be an error.
+    });
 }
 
 self.addEventListener("message", main);

@@ -1,3 +1,5 @@
+import showToast from "../toast";
+
 export default class PiperTTSClient {
   static _instance;
   voiceId = "en_US-hfc_female-medium";
@@ -78,23 +80,32 @@ export default class PiperTTSClient {
 
   /**
    * Runs prediction via webworker so we can get an audio blob back.
-   * @returns {Promise<string>} objectURL blob: type.
+   * @returns {Promise<{blobURL: string|null, error: string|null}>} objectURL blob: type.
    */
   async waitForBlobResponse() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       let timeout = null;
       const handleMessage = (event) => {
+        if (event.data.type === "error") {
+          this.worker.removeEventListener("message", handleMessage);
+          timeout && clearTimeout(timeout);
+          return resolve({ blobURL: null, error: event.data.message });
+        }
+
         if (event.data.type !== "result") {
           console.log("PiperTTSWorker debug event:", event.data);
           return;
         }
-        resolve(URL.createObjectURL(event.data.audio));
+        resolve({
+          blobURL: URL.createObjectURL(event.data.audio),
+          error: null,
+        });
         this.worker.removeEventListener("message", handleMessage);
         timeout && clearTimeout(timeout);
       };
 
       timeout = setTimeout(() => {
-        reject("TTS Worker timed out.");
+        resolve({ blobURL: null, error: "PiperTTSWorker Worker timed out." });
       }, 30_000);
       this.worker.addEventListener("message", handleMessage);
     });
@@ -111,7 +122,16 @@ export default class PiperTTSClient {
         : `${window.location.origin}/`,
     });
 
-    const blobURL = await this.waitForBlobResponse();
+    const { blobURL, error } = await this.waitForBlobResponse();
+    if (!!error) {
+      showToast(
+        `Could not generate voice prediction. Error: ${error}`,
+        "error",
+        { clear: true }
+      );
+      return;
+    }
+
     return blobURL;
   }
 }

@@ -496,10 +496,10 @@
   resolved "https://registry.yarnpkg.com/@microsoft/fetch-event-source/-/fetch-event-source-2.0.1.tgz#9ceecc94b49fbaa15666e38ae8587f64acce007d"
   integrity sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==
 
-"@mintplex-labs/piper-tts-web@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@mintplex-labs/piper-tts-web/-/piper-tts-web-1.0.0.tgz#6e9746dba3fe063bcf9559d028e4fc6f9107b069"
-  integrity sha512-6P3jvM30VAVeHkYnzNA9O/xmQcROb7kj7CyPv8KtvwbE4tigYKU2GzlZ6z5PlzyTWvBWIHFmOEjkF03qKd2d9w==
+"@mintplex-labs/piper-tts-web@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@mintplex-labs/piper-tts-web/-/piper-tts-web-1.0.3.tgz#4440621a675c16485bd6369cb7cb36bb41e52243"
+  integrity sha512-vjYiEgigm0JHt9yKxj0euQd2eHIhtbGgWyeySLTPG+CdCH9RMf10WtczpeslboUYAvX5Eaxh6RMK+IuHU2rNhw==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
