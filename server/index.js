@@ -20,6 +20,7 @@ const { utilEndpoints } = require("./endpoints/utils");
 const { developerEndpoints } = require("./endpoints/api");
 const { extensionEndpoints } = require("./endpoints/extensions");
 const { documentEndpoints } = require("./endpoints/document");
+const { piperTTSStaticEndpoint } = require("./utils/piper");
 const setupTelemetry = require("./utils/telemetry");
 const { Telemetry } = require("./models/telemetry");
 const { workspaceThreadEndpoints } = require("./endpoints/workspaceThreads");
@@ -65,16 +66,11 @@ documentEndpoints(apiRouter);
 agentWebsocket(apiRouter);
 experimentalEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
+piperTTSStaticEndpoint(app);
 
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
 
-// Used for serving the WASM files via the server since we cannot access them in ASAR file
-// once bundled.
-app.use(
-  "/static/piper",
-  express.static(path.resolve(__dirname, "static", "piper"))
-);
 app.all("*", function (_, response) {
   response.sendStatus(404);
 });
