@@ -7,9 +7,11 @@ import CTAButton from "@/components/lib/CTAButton";
 import OpenAiLogo from "@/media/llmprovider/openai.png";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
 import ElevenLabsIcon from "@/media/ttsproviders/elevenlabs.png";
+import PiperTTSIcon from "@/media/ttsproviders/piper.png";
 import BrowserNative from "@/components/TextToSpeech/BrowserNative";
 import OpenAiTTSOptions from "@/components/TextToSpeech/OpenAiOptions";
 import ElevenLabsTTSOptions from "@/components/TextToSpeech/ElevenLabsOptions";
+import PiperTTSOptions from "@/components/TextToSpeech/PiperTTSOptions";
 
 const PROVIDERS = [
   {
@@ -32,6 +34,13 @@ const PROVIDERS = [
     logo: ElevenLabsIcon,
     options: (settings) => <ElevenLabsTTSOptions settings={settings} />,
     description: "Use ElevenLabs's text to speech voices and technology.",
+  },
+  {
+    name: "PiperTTS",
+    value: "piper_local",
+    logo: PiperTTSIcon,
+    options: (settings) => <PiperTTSOptions settings={settings} />,
+    description: "Run TTS models locally in your browser privately.",
   },
 ];
 
