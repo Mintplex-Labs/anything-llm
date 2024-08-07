@@ -117,9 +117,10 @@ export default class PiperTTSClient {
       type: "init",
       text: String(textToSpeak),
       voiceId: voiceId ?? this.voiceId,
-      baseUrl: import.meta.env.DEV
-        ? `${window.location.origin}/public`
-        : `${window.location.origin}/`,
+      // Don't reference WASM because in the docker image
+      // the user will be connected to internet (mostly)
+      // and it bloats the app size on the frontend or app significantly
+      // and running the docker image fully offline is not an intended use-case unlike the app.
     });
 
     const { blobURL, error } = await this.waitForBlobResponse();

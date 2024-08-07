@@ -73,10 +73,11 @@ function PiperTTSModelSelection({ settings }) {
         </label>
         <select
           name="TTSPiperTTSVoiceModel"
+          value=""
           disabled={true}
           className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
-          <option disabled={true} selected={true}>
+          <option value="" disabled={true}>
             -- loading available models --
           </option>
         </select>
@@ -102,10 +103,7 @@ function PiperTTSModelSelection({ settings }) {
               return (
                 <optgroup key={lang} label={lang}>
                   {voices.map((voice) => (
-                    <option
-                      selected={voice.key === selectedVoice}
-                      value={voice.key}
-                    >
+                    <option key={voice.key} value={voice.key}>
                       {voiceDisplayName(voice)}
                     </option>
                   ))}
@@ -116,8 +114,8 @@ function PiperTTSModelSelection({ settings }) {
           <DemoVoiceSample voiceId={selectedVoice} />
         </div>
         <p className="text-xs text-white/40">
-          The "✔" indicates this model is already stored in your browser and
-          does not need to be downloaded
+          The "✔" indicates this model is already stored locally and does not
+          need to be downloaded when run.
         </p>
       </div>
       {!!voices.find((voice) => voice.is_stored) && (
