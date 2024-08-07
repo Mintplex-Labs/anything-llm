@@ -14,17 +14,6 @@ async function grepCommand(message, user = null) {
   const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
   const availableCommands = Object.keys(VALID_COMMANDS);
 
-  // Check if the message starts with any preset command
-  const foundPreset = userPresets.find((p) => message.startsWith(p.command));
-  if (!!foundPreset) {
-    // Replace the preset command with the corresponding prompt
-    const updatedMessage = message.replace(
-      foundPreset.command,
-      foundPreset.prompt
-    );
-    return updatedMessage;
-  }
-
   // Check if the message starts with any built-in command
   for (let i = 0; i < availableCommands.length; i++) {
     const cmd = availableCommands[i];
@@ -34,7 +23,15 @@ async function grepCommand(message, user = null) {
     }
   }
 
-  return message;
+  // Replace all preset commands with their corresponding prompts
+  // Allows multiple commands in one message
+  let updatedMessage = message;
+  for (const preset of userPresets) {
+    const regex = new RegExp(preset.command, "g");
+    updatedMessage = updatedMessage.replace(regex, preset.prompt);
+  }
+
+  return updatedMessage;
 }
 
 async function chatWithWorkspace(
