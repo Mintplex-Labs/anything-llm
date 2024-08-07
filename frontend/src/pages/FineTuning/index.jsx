@@ -64,20 +64,24 @@ export default function FineTuningFlow() {
     ? FineTuningSteps[step]
     : FineTuningSteps.intro;
 
-  return (
-    <FineTuningCreationLayout setStep={setStep}>
-      {(settings, setSettings, setStep) => (
-        <div className="flex-1 flex gap-x-6 p-4 mt-10">
-          <div className="flex flex-col gap-y-[18px]">
-            <div className="text-white flex items-center gap-x-2">
-              <Sparkle size={24} />
-              <p className="text-lg font-medium">Custom Fine-Tuned Model</p>
+    return (
+      <FineTuningCreationLayout setStep={setStep}>
+        {(settings, setSettings, setStep) => (
+          <div className="flex-1 flex h-full">
+            <div className="flex flex-col gap-y-[18px] p-4 mt-10 w-[360px] flex-shrink-0">
+              <div className="text-white flex items-center gap-x-2">
+                <Sparkle size={24} />
+                <p className="text-lg font-medium">Custom Fine-Tuned Model</p>
+              </div>
+              <SideBarSelection setStep={setStep} currentStep={step} />
             </div>
-            <SideBarSelection setStep={setStep} currentStep={step} />
+            <div className="flex-1 overflow-y-auto p-4 mt-10 pb-16">
+              <div className=" ml-8">
+                {StepPage.component({ settings, setSettings, setStep })}
+              </div>
+            </div>
           </div>
-          {StepPage.component({ settings, setSettings, setStep })}
-        </div>
-      )}
-    </FineTuningCreationLayout>
-  );
+        )}
+      </FineTuningCreationLayout>
+    );
 }
