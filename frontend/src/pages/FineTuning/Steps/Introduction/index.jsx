@@ -1,4 +1,4 @@
-import { Check, CheckCircle, X, XCircle } from "@phosphor-icons/react";
+import { Check, X } from "@phosphor-icons/react";
 import FineTuningSteps from "..";
 import CTAButton from "@/components/lib/CTAButton";
 
