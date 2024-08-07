@@ -86,7 +86,8 @@ export default {
         ]
       },
       animation: {
-        sweep: "sweep 0.5s ease-in-out"
+        sweep: "sweep 0.5s ease-in-out",
+        pulse: "pulse 1.5s infinite"
       },
       keyframes: {
         sweep: {
@@ -100,6 +101,26 @@ export default {
         fadeOut: {
           "0%": { opacity: 1 },
           "100%": { opacity: 0 }
+        },
+        pulse: {
+          "0%": {
+            opacity: 1,
+            transform: "scale(1)",
+            boxShadow: "0 0 0 rgba(255, 255, 255, 0.0)",
+            backgroundColor: "rgba(255, 255, 255, 0.0)"
+          },
+          "50%": {
+            opacity: 1,
+            transform: "scale(1.1)",
+            boxShadow: "0 0 15px rgba(255, 255, 255, 0.2)",
+            backgroundColor: "rgba(255, 255, 255, 0.1)"
+          },
+          "100%": {
+            opacity: 1,
+            transform: "scale(1)",
+            boxShadow: "0 0 0 rgba(255, 255, 255, 0.0)",
+            backgroundColor: "rgba(255, 255, 255, 0.0)"
+          }
         }
       }
     }

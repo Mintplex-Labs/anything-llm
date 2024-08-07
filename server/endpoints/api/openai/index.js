@@ -154,6 +154,7 @@ function apiOpenAICompatibleEndpoints(app) {
               workspace.chatProvider ?? process.env.LLM_PROVIDER ?? "openai",
             Embedder: process.env.EMBEDDING_ENGINE || "inherit",
             VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+            TTSSelection: process.env.TTS_PROVIDER || "native",
           });
           await EventLogs.logEvent("api_sent_chat", {
             workspaceName: workspace?.name,
@@ -180,6 +181,7 @@ function apiOpenAICompatibleEndpoints(app) {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          TTSSelection: process.env.TTS_PROVIDER || "native",
         });
         await EventLogs.logEvent("api_sent_chat", {
           workspaceName: workspace?.name,
