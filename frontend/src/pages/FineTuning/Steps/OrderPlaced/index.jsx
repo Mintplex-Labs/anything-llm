@@ -20,7 +20,7 @@ export default function OrderPlaced({ settings }) {
               rel="noreferrer"
               className="text-sky-400 hover:underline hover:cursor-pointer"
             >
-              {/* {new URL(settings.checkoutUrl).origin} */}
+              {new URL(settings.checkoutUrl).origin}
             </a>
             <p className="text-xs text-white/80">
               Your fine-tune does not begin until this payment is completed.
