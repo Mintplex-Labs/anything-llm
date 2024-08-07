@@ -52,11 +52,15 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   type="text"
                   className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder="User's username"
-                  minLength={2}
                   defaultValue={user.username}
+                  minLength={2}
                   required={true}
                   autoComplete="off"
                 />
+                <p className="mt-2 text-xs text-white/60">
+                  Username must be only contain lowercase letters, numbers,
+                  underscores, and hyphens with no spaces
+                </p>
               </div>
               <div>
                 <label
@@ -71,7 +75,11 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   className="bg-zinc-900 placeholder:text-white/20 border-gray-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder={`${user.username}'s new password`}
                   autoComplete="off"
+                  minLength={8}
                 />
+                <p className="mt-2 text-xs text-white/60">
+                  Password must be at least 8 characters long
+                </p>
               </div>
               <div>
                 <label
@@ -85,7 +93,7 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   required={true}
                   defaultValue={user.role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white border-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                  className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white border-gray-500 focus:ring-blue-500 focus:border-blue-500 w-full"
                 >
                   <option value="default">Default</option>
                   <option value="manager">Manager</option>

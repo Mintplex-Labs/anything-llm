@@ -1,7 +1,7 @@
 <a name="readme-top"></a>
 
 <p align="center">
-  <a href="https://useanything.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
+  <a href="https://anythingllm.com"><img src="https://github.com/Mintplex-Labs/anything-llm/blob/master/images/wordmark.png?raw=true" alt="AnythingLLM logo"></a>
 </p>
 
 <div align='center'>
@@ -20,7 +20,7 @@
   <a href="https://github.com/Mintplex-Labs/anything-llm/blob/master/LICENSE" target="_blank">
       <img src="https://img.shields.io/static/v1?label=license&message=MIT&color=white" alt="License">
   </a> |
-  <a href="https://docs.useanything.com" target="_blank">
+  <a href="https://docs.anythingllm.com" target="_blank">
     Docs
   </a> |
    <a href="https://my.mintplexlabs.com/aio-checkout?product=anythingllm" target="_blank">
@@ -33,7 +33,7 @@
 </p>
 
 <p align="center">
-👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://useanything.com/download" target="_blank"> Download Now</a>
+👉 AnythingLLM for desktop (Mac, Windows, & Linux)! <a href="https://anythingllm.com/download" target="_blank"> Download Now</a>
 </p>
 
 A full-stack application that enables you to turn any document, resource, or piece of content into context that any LLM can use as references during chatting. This application allows you to pick and choose which LLM or Vector Database you want to use as well as supporting multi-user management and permissions.
@@ -53,19 +53,19 @@ AnythingLLM is a full-stack application where you can use commercial off-the-she
 
 AnythingLLM divides your documents into objects called `workspaces`. A Workspace functions a lot like a thread, but with the addition of containerization of your documents. Workspaces can share documents, but they do not talk to each other so you can keep your context for each workspace clean.
 
-Some cool features of AnythingLLM
+## Cool features of AnythingLLM
 
-- **Multi-user instance support and permissioning**
-- Agents inside your workspace (browse the web, run code, etc)
-- [Custom Embeddable Chat widget for your website](./embed/README.md)
-- Multiple document type support (PDF, TXT, DOCX, etc)
-- Manage documents in your vector database from a simple UI
-- Two chat modes `conversation` and `query`. Conversation retains previous questions and amendments. Query is simple QA against your documents
-- In-chat citations
+- 🆕 **Multi-modal support (both closed and open-source LLMs!)**
+- 👤 Multi-user instance support and permissioning _Docker version only_
+- 🦾 Agents inside your workspace (browse the web, run code, etc)
+- 💬 [Custom Embeddable Chat widget for your website](./embed/README.md) _Docker version only_
+- 📖 Multiple document type support (PDF, TXT, DOCX, etc)
+- Simple chat UI with Drag-n-Drop funcitonality and clear citations.
 - 100% Cloud deployment ready.
-- "Bring your own LLM" model.
-- Extremely efficient cost-saving measures for managing very large documents. You'll never pay to embed a massive document or transcript more than once. 90% more cost effective than other document chatbot solutions.
+- Works with all popular [closed and open-source LLM providers](#supported-llms-embedder-models-speech-models-and-vector-databases).
+- Built-in cost & time-saving measures for managing very large documents compared to any other chat UI.
 - Full Developer API for custom integrations!
+- Much more...install and find out!
 
 ### Supported LLMs, Embedder Models, Speech models, and Vector Databases
 
@@ -75,6 +75,7 @@ Some cool features of AnythingLLM
 - [OpenAI](https://openai.com)
 - [OpenAI (Generic)](https://openai.com)
 - [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+- [AWS Bedrock](https://aws.amazon.com/bedrock/)
 - [Anthropic](https://www.anthropic.com/)
 - [Google Gemini Pro](https://ai.google.dev/)
 - [Hugging Face (chat models)](https://huggingface.co/)
@@ -109,6 +110,7 @@ Some cool features of AnythingLLM
 **TTS (text-to-speech) support:**
 
 - Native Browser Built-in (default)
+- [PiperTTSLocal - runs in browser](https://github.com/rhasspy/piper)
 - [OpenAI TTS](https://platform.openai.com/docs/guides/text-to-speech/voice-options)
 - [ElevenLabs](https://elevenlabs.io/)
 
@@ -162,12 +164,6 @@ Mintplex Labs & the community maintain a number of deployment methods, scripts, 
 
 [Learn about vector caching](./server/storage/vector-cache/VECTOR_CACHE.md)
 
-## Contributing
-
-- create issue
-- create PR with branch name format of `<issue number>-<short name>`
-- yee haw let's merge
-
 ## Telemetry & Privacy
 
 AnythingLLM by Mintplex Labs Inc contains a telemetry feature that collects anonymous usage information.
@@ -198,6 +194,19 @@ You can verify these claims by finding all locations `Telemetry.sendTelemetry` i
 [View all telemetry events in source code](https://github.com/search?q=repo%3AMintplex-Labs%2Fanything-llm%20.sendTelemetry\(&type=code)
 
 </details>
+
+
+## 👋 Contributing
+
+- create issue
+- create PR with branch name format of `<issue number>-<short name>`
+- LGTM from core-team
+
+## 🌟 Contributors
+
+[![anythingllm contributors](https://contrib.rocks/image?repo=mintplex-labs/anything-llm)](https://github.com/mintplex-labs/anything-llm/graphs/contributors)
+
+[![Star History Chart](https://api.star-history.com/svg?repos=mintplex-labs/anything-llm&type=Timeline)](https://star-history.com/#mintplex-labs/anything-llm&Date)
 
 ## 🔗 More Products
 

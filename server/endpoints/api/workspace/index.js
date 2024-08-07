@@ -73,6 +73,7 @@ function apiWorkspaceEndpoints(app) {
         LLMSelection: process.env.LLM_PROVIDER || "openai",
         Embedder: process.env.EMBEDDING_ENGINE || "inherit",
         VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+        TTSSelection: process.env.TTS_PROVIDER || "native",
       });
       await EventLogs.logEvent("api_workspace_created", {
         workspaceName: workspace?.name || "Unknown Workspace",
@@ -103,7 +104,8 @@ function apiWorkspaceEndpoints(app) {
                   "openAiTemp": null,
                   "lastUpdatedAt": "2023-08-17 00:45:03",
                   "openAiHistory": 20,
-                  "openAiPrompt": null
+                  "openAiPrompt": null,
+                  "threads": []
                 }
               ],
             }
@@ -118,7 +120,17 @@ function apiWorkspaceEndpoints(app) {
     }
     */
     try {
-      const workspaces = await Workspace.where();
+      const workspaces = await Workspace._findMany({
+        where: {},
+        include: {
+          threads: {
+            select: {
+              user_id: true,
+              slug: true,
+            },
+          },
+        },
+      });
       response.status(200).json({ workspaces });
     } catch (e) {
       console.error(e.message, e);
@@ -152,7 +164,8 @@ function apiWorkspaceEndpoints(app) {
                 "lastUpdatedAt": "2023-08-17 00:45:03",
                 "openAiHistory": 20,
                 "openAiPrompt": null,
-                "documents": []
+                "documents": [],
+                "threads": []
               }
             }
           }
@@ -167,7 +180,21 @@ function apiWorkspaceEndpoints(app) {
     */
     try {
       const { slug } = request.params;
-      const workspace = await Workspace.get({ slug });
+      const workspace = await Workspace._findMany({
+        where: {
+          slug: String(slug),
+        },
+        include: {
+          documents: true,
+          threads: {
+            select: {
+              user_id: true,
+              slug: true,
+            },
+          },
+        },
+      });
+
       response.status(200).json({ workspace });
     } catch (e) {
       console.error(e.message, e);
@@ -596,6 +623,7 @@ function apiWorkspaceEndpoints(app) {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          TTSSelection: process.env.TTS_PROVIDER || "native",
         });
         await EventLogs.logEvent("api_sent_chat", {
           workspaceName: workspace?.name,
@@ -719,6 +747,7 @@ function apiWorkspaceEndpoints(app) {
           LLMSelection: process.env.LLM_PROVIDER || "openai",
           Embedder: process.env.EMBEDDING_ENGINE || "inherit",
           VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+          TTSSelection: process.env.TTS_PROVIDER || "native",
         });
         await EventLogs.logEvent("api_sent_chat", {
           workspaceName: workspace?.name,

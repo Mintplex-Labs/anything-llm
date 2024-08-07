@@ -15,11 +15,12 @@ on:
     branches: ['master'] # master branch only. Do not modify.
     paths-ignore:
       - '**.md'
-      - 'cloud-deployments/*'
+      - 'cloud-deployments/**/*'
       - 'images/**/*'
       - '.vscode/**/*'
       - '**/.env.example'
       - '.github/ISSUE_TEMPLATE/**/*'
+      - '.devcontainer/**/*'
       - 'embed/**/*' # Embed should be published to frontend (yarn build:publish) if any changes are introduced
       - 'server/utils/agents/aibitat/example/**/*' # Do not push new image for local dev testing of new aibitat images.
 
@@ -81,15 +82,52 @@ jobs:
             type=ref,event=tag
             type=ref,event=pr
 
-
       - name: Build and push multi-platform Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./docker/Dockerfile
           push: true
+          sbom: true
+          provenance: mode=max
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      
+      # For Docker scout there are some intermediary reported CVEs which exists outside
+      # of execution content or are unreachable by an attacker but exist in image.
+      # We create VEX files for these so they don't show in scout summary. 
+      - name: Collect known and verified CVE exceptions
+        id: cve-list
+        run: |
+          # Collect CVEs from filenames in vex folder
+          CVE_NAMES=""
+          for file in ./docker/vex/*.vex.json; do
+            [ -e "$file" ] || continue
+            filename=$(basename "$file")
+            stripped_filename=${filename%.vex.json}
+            CVE_NAMES+=" $stripped_filename"
+          done
+          echo "CVE_EXCEPTIONS=$CVE_NAMES" >> $GITHUB_OUTPUT
+        shell: bash
+
+      # About VEX attestations https://docs.docker.com/scout/explore/exceptions/
+      # Justifications https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#status-justifications
+      - name: Add VEX attestations
+        env:
+          CVE_EXCEPTIONS: ${{ steps.cve-list.outputs.CVE_EXCEPTIONS }}
+        run: |
+          echo $CVE_EXCEPTIONS
+          curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
+          for cve in $CVE_EXCEPTIONS; do
+            for tag in "${{ join(fromJSON(steps.meta.outputs.json).tags, ' ') }}"; do
+              echo "Attaching VEX exception $cve to $tag"
+              docker scout attestation add \
+              --file "./docker/vex/$cve.vex.json" \
+              --predicate-type https://openvex.dev/ns/v0.2.0 \
+              $tag
+            done
+          done
+        shell: bash

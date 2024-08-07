@@ -1,7 +1,16 @@
 | Organization | Model Name | Model String for API | Context length |
-| --- | --- | --- | --- |
-| 01.AI | 01-ai Yi Chat (34B) | zero-one-ai/Yi-34B-Chat | 4096 |
+|--------------|------------|----------------------|----------------|
+| Meta | Llama 3.1 8B Instruct Turbo | meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo | 128000 |
+| Meta | Llama 3.1 70B Instruct Turbo | meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo | 128000 |
+| Meta | Llama 3.1 405B Instruct Turbo | meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo | 4096 |
+| Meta | Llama 3 8B Instruct Turbo | meta-llama/Meta-Llama-3-8B-Instruct-Turbo | 8192 |
+| Meta | Llama 3 70B Instruct Turbo | meta-llama/Meta-Llama-3-70B-Instruct-Turbo | 8192 |
+| Meta | Llama 3 8B Instruct Lite | meta-llama/Meta-Llama-3-8B-Instruct-Lite | 8192 |
+| Meta | Llama 3 70B Instruct Lite | meta-llama/Meta-Llama-3-70B-Instruct-Lite | 8192 |
+| Google | Gemma 2 27B | google/gemma-2-27b-it | 8192 |
+| Google | Gemma 2 9B | google/gemma-2-9b-it | 8192 |
 | Allen AI | OLMo Instruct (7B) | allenai/OLMo-7B-Instruct | 2048 |
+| 01.AI | 01-ai Yi Chat (34B) | zero-one-ai/Yi-34B-Chat | 4096 |
 | Allen AI | OLMo Twin-2T (7B) | allenai/OLMo-7B-Twin-2T | 2048 |
 | Allen AI | OLMo (7B) | allenai/OLMo-7B | 2048 |
 | Austism | Chronos Hermes (13B) | Austism/chronos-hermes-13b | 2048 |
@@ -22,11 +31,11 @@
 | Meta | LLaMA-2 Chat (70B) | meta-llama/Llama-2-70b-chat-hf | 4096 |
 | Meta | LLaMA-2 Chat (13B) | meta-llama/Llama-2-13b-chat-hf | 4096 |
 | Meta | LLaMA-2 Chat (7B) | meta-llama/Llama-2-7b-chat-hf | 4096 |
-| Meta | LLaMA-3 Chat (8B) | meta-llama/Llama-3-8b-chat-hf | 8000 |
-| Meta | LLaMA-3 Chat (70B) | meta-llama/Llama-3-70b-chat-hf | 8000 |
-| Microsoft | WizardLM-2 (8x22B) | microsoft/WizardLM-2-8x22B | 65536 |
+| Meta | LLaMA-3 Chat (8B) | meta-llama/Llama-3-8b-chat-hf | 8192 |
+| Meta | LLaMA-3 Chat (70B) | meta-llama/Llama-3-70b-chat-hf | 8192 |
 | mistralai | Mistral (7B) Instruct | mistralai/Mistral-7B-Instruct-v0.1 | 8192 |
 | mistralai | Mistral (7B) Instruct v0.2 | mistralai/Mistral-7B-Instruct-v0.2 | 32768 |
+| mistralai | Mistral (7B) Instruct v0.3 | mistralai/Mistral-7B-Instruct-v0.3 | 32768 |
 | mistralai | Mixtral-8x7B Instruct (46.7B) | mistralai/Mixtral-8x7B-Instruct-v0.1 | 32768 |
 | mistralai | Mixtral-8x22B Instruct (141B) | mistralai/Mixtral-8x22B-Instruct-v0.1 | 65536 |
 | NousResearch | Nous Capybara v1.9 (7B) | NousResearch/Nous-Capybara-7B-V1p9 | 8192 |
@@ -45,7 +54,10 @@
 | Qwen | Qwen 1.5 Chat (14B) | Qwen/Qwen1.5-14B-Chat | 32768 |
 | Qwen | Qwen 1.5 Chat (32B) | Qwen/Qwen1.5-32B-Chat | 32768 |
 | Qwen | Qwen 1.5 Chat (72B) | Qwen/Qwen1.5-72B-Chat | 32768 |
+| Qwen | Qwen 1.5 Chat (110B) | Qwen/Qwen1.5-110B-Chat | 32768 |
+| Qwen | Qwen 2 Instruct (72B) | Qwen/Qwen2-72B-Instruct | 32768 |
 | Snorkel AI | Snorkel Mistral PairRM DPO (7B) | snorkelai/Snorkel-Mistral-PairRM-DPO | 32768 |
+| Snowflake | Snowflake Arctic Instruct | Snowflake/snowflake-arctic-instruct | 4096 |
 | Stanford | Alpaca (7B) | togethercomputer/alpaca-7b | 2048 |
 | Teknium | OpenHermes-2-Mistral (7B) | teknium/OpenHermes-2-Mistral-7B | 8192 |
 | Teknium | OpenHermes-2.5-Mistral (7B) | teknium/OpenHermes-2p5-Mistral-7B | 8192 |

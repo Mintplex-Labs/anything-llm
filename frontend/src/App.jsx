@@ -63,6 +63,7 @@ const ExperimentalFeatures = lazy(
 const LiveDocumentSyncManage = lazy(
   () => import("@/pages/Admin/ExperimentalFeatures/Features/LiveSync/manage")
 );
+const FineTuningWalkthrough = lazy(() => import("@/pages/FineTuning"));
 
 export default function App() {
   return (
@@ -185,6 +186,11 @@ export default function App() {
                 <Route
                   path="/settings/beta-features/live-document-sync/manage"
                   element={<AdminRoute Component={LiveDocumentSyncManage} />}
+                />
+
+                <Route
+                  path="/fine-tuning"
+                  element={<AdminRoute Component={FineTuningWalkthrough} />}
                 />
               </Routes>
               <ToastContainer />

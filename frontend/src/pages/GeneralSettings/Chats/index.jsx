@@ -7,9 +7,10 @@ import useQuery from "@/hooks/useQuery";
 import ChatRow from "./ChatRow";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
-import { CaretDown, Download, Trash } from "@phosphor-icons/react";
+import { CaretDown, Download, Sparkle, Trash } from "@phosphor-icons/react";
 import { saveAs } from "file-saver";
 import { useTranslation } from "react-i18next";
+import paths from "@/utils/paths";
 
 const exportOptions = {
   csv: {
@@ -159,13 +160,22 @@ export default function WorkspaceChats() {
                 </div>
               </div>
               {chats.length > 0 && (
-                <button
-                  onClick={handleClearAllChats}
-                  className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-white/40 text-white/40 rounded-lg bg-transparent hover:text-white text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
-                >
-                  <Trash size={18} weight="bold" />
-                  Clear Chats
-                </button>
+                <>
+                  <button
+                    onClick={handleClearAllChats}
+                    className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-white/40 text-white/40 rounded-lg bg-transparent hover:text-white text-xs font-semibold hover:bg-red-500 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                  >
+                    <Trash size={18} weight="bold" />
+                    Clear Chats
+                  </button>
+                  <a
+                    href={paths.orderFineTune()}
+                    className="flex items-center gap-x-2 px-4 py-1 border hover:border-transparent border-yellow-300 text-yellow-300/80 rounded-lg bg-transparent hover:text-white text-xs font-semibold hover:bg-yellow-300/75 shadow-[0_4px_14px_rgba(0,0,0,0.25)] h-[34px] w-fit"
+                  >
+                    <Sparkle size={18} weight="bold" />
+                    Order Fine-Tune Model
+                  </a>
+                </>
               )}
             </div>
             <p className="text-xs leading-[18px] font-base text-white text-opacity-60">

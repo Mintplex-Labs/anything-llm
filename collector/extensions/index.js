@@ -1,5 +1,6 @@
 const { setDataSigner } = require("../middleware/setDataSigner");
 const { verifyPayloadIntegrity } = require("../middleware/verifyIntegrity");
+const { resolveRepoLoader, resolveRepoLoaderFunction } = require("../utils/extensions/RepoLoader");
 const { reqBody } = require("../utils/http");
 const { validURL } = require("../utils/url");
 const RESYNC_METHODS = require("./resync");
@@ -28,15 +29,16 @@ function extensions(app) {
   )
 
   app.post(
-    "/ext/github-repo",
+    "/ext/:repo_platform-repo",
     [verifyPayloadIntegrity, setDataSigner],
     async function (request, response) {
       try {
-        const { loadGithubRepo } = require("../utils/extensions/GithubRepo");
-        const { success, reason, data } = await loadGithubRepo(
+        const loadRepo = resolveRepoLoaderFunction(request.params.repo_platform);
+        const { success, reason, data } = await loadRepo(
           reqBody(request),
           response,
         );
+        console.log({ success, reason, data })
         response.status(200).json({
           success,
           reason,
@@ -56,12 +58,12 @@ function extensions(app) {
 
   // gets all branches for a specific repo
   app.post(
-    "/ext/github-repo/branches",
+    "/ext/:repo_platform-repo/branches",
     [verifyPayloadIntegrity],
     async function (request, response) {
       try {
-        const GithubRepoLoader = require("../utils/extensions/GithubRepo/RepoLoader");
-        const allBranches = await new GithubRepoLoader(
+        const RepoLoader = resolveRepoLoader(request.params.repo_platform);
+        const allBranches = await new RepoLoader(
           reqBody(request)
         ).getRepoBranches();
         response.status(200).json({

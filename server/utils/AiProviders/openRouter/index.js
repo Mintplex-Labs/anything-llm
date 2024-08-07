@@ -24,7 +24,7 @@ class OpenRouterLLM {
       baseURL: this.basePath,
       apiKey: process.env.OPENROUTER_API_KEY ?? null,
       defaultHeaders: {
-        "HTTP-Referer": "https://useanything.com",
+        "HTTP-Referer": "https://anythingllm.com",
         "X-Title": "AnythingLLM",
       },
     });
@@ -38,6 +38,7 @@ class OpenRouterLLM {
 
     this.embedder = embedder ?? new NativeEmbedder();
     this.defaultTemp = 0.7;
+    this.timeout = this.#parseTimeout();
 
     if (!fs.existsSync(cacheFolder))
       fs.mkdirSync(cacheFolder, { recursive: true });
@@ -47,6 +48,22 @@ class OpenRouterLLM {
 
   log(text, ...args) {
     console.log(`\x1b[36m[${this.constructor.name}]\x1b[0m ${text}`, ...args);
+  }
+
+  /**
+   * OpenRouter has various models that never return `finish_reasons` and thus leave the stream open
+   * which causes issues in subsequent messages. This timeout value forces us to close the stream after
+   * x milliseconds. This is a configurable value via the OPENROUTER_TIMEOUT_MS value
+   * @returns {number} The timeout value in milliseconds (default: 500)
+   */
+  #parseTimeout() {
+    this.log(
+      `OpenRouter timeout is set to ${process.env.OPENROUTER_TIMEOUT_MS ?? 500}ms`
+    );
+    if (isNaN(Number(process.env.OPENROUTER_TIMEOUT_MS))) return 500;
+    const setValue = Number(process.env.OPENROUTER_TIMEOUT_MS);
+    if (setValue < 500) return 500;
+    return setValue;
   }
 
   // This checks if the .cached_at file has a timestamp that is more than 1Week (in millis)
@@ -111,17 +128,49 @@ class OpenRouterLLM {
     return availableModels.hasOwnProperty(model);
   }
 
+  /**
+   * Generates appropriate content array for a message + attachments.
+   * @param {{userPrompt:string, attachments: import("../../helpers").Attachment[]}}
+   * @returns {string|object[]}
+   */
+  #generateContent({ userPrompt, attachments = [] }) {
+    if (!attachments.length) {
+      return userPrompt;
+    }
+
+    const content = [{ type: "text", text: userPrompt }];
+    for (let attachment of attachments) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: attachment.contentString,
+          detail: "auto",
+        },
+      });
+    }
+    console.log(content.flat());
+    return content.flat();
+  }
+
   constructPrompt({
     systemPrompt = "",
     contextTexts = [],
     chatHistory = [],
     userPrompt = "",
+    attachments = [],
   }) {
     const prompt = {
       role: "system",
       content: `${systemPrompt}${this.#appendContext(contextTexts)}`,
     };
-    return [prompt, ...chatHistory, { role: "user", content: userPrompt }];
+    return [
+      prompt,
+      ...chatHistory,
+      {
+        role: "user",
+        content: this.#generateContent({ userPrompt, attachments }),
+      },
+    ];
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
@@ -161,7 +210,7 @@ class OpenRouterLLM {
   }
 
   handleStream(response, stream, responseProps) {
-    const timeoutThresholdMs = 500;
+    const timeoutThresholdMs = this.timeout;
     const { uuid = uuidv4(), sources = [] } = responseProps;
 
     return new Promise(async (resolve) => {
@@ -205,35 +254,48 @@ class OpenRouterLLM {
         }
       }, 500);
 
-      for await (const chunk of stream) {
-        const message = chunk?.choices?.[0];
-        const token = message?.delta?.content;
-        lastChunkTime = Number(new Date());
+      try {
+        for await (const chunk of stream) {
+          const message = chunk?.choices?.[0];
+          const token = message?.delta?.content;
+          lastChunkTime = Number(new Date());
 
-        if (token) {
-          fullText += token;
-          writeResponseChunk(response, {
-            uuid,
-            sources: [],
-            type: "textResponseChunk",
-            textResponse: token,
-            close: false,
-            error: false,
-          });
-        }
+          if (token) {
+            fullText += token;
+            writeResponseChunk(response, {
+              uuid,
+              sources: [],
+              type: "textResponseChunk",
+              textResponse: token,
+              close: false,
+              error: false,
+            });
+          }
 
-        if (message.finish_reason !== null) {
-          writeResponseChunk(response, {
-            uuid,
-            sources,
-            type: "textResponseChunk",
-            textResponse: "",
-            close: true,
-            error: false,
-          });
-          response.removeListener("close", handleAbort);
-          resolve(fullText);
+          if (message.finish_reason !== null) {
+            writeResponseChunk(response, {
+              uuid,
+              sources,
+              type: "textResponseChunk",
+              textResponse: "",
+              close: true,
+              error: false,
+            });
+            response.removeListener("close", handleAbort);
+            resolve(fullText);
+          }
         }
+      } catch (e) {
+        writeResponseChunk(response, {
+          uuid,
+          sources,
+          type: "abort",
+          textResponse: null,
+          close: true,
+          error: e.message,
+        });
+        response.removeListener("close", handleAbort);
+        resolve(fullText);
       }
     });
   }

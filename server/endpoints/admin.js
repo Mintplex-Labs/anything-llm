@@ -356,6 +356,14 @@ function adminEndpoints(app) {
             (await SystemSettings.get({ label: "custom_app_name" }))?.value ||
             null,
           feature_flags: (await SystemSettings.getFeatureFlags()) || {},
+          meta_page_title: await SystemSettings.getValueOrFallback(
+            { label: "meta_page_title" },
+            null
+          ),
+          meta_page_favicon: await SystemSettings.getValueOrFallback(
+            { label: "meta_page_favicon" },
+            null
+          ),
         };
         response.status(200).json({ settings });
       } catch (e) {
