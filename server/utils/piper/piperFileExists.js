@@ -21,7 +21,7 @@ async function downloadFromStorage(url, outputPath) {
   );
   const response = await fetch(url);
   if (!response.ok) {
-    console.log(
+    console.error(
       `PiperTTSStatic: Failed to get valid 200 response from ${url}. File will fail to download.`
     );
     throw new Error(`HTTP error! status: ${response.status}`);
