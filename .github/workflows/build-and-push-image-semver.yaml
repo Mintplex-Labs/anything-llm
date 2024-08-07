@@ -1,28 +1,12 @@
-# This Github action is for publishing of the primary image for AnythingLLM
-# It will publish a linux/amd64 and linux/arm64 image at the same time
-# This file should ONLY BY USED FOR `master` BRANCH. 
-# TODO: Update `runs-on` for arm64 when GitHub finally supports
-# native arm environments as QEMU takes around 1 hour to build
-# ref: https://github.com/actions/runner-images/issues/5631 :(
-name: Publish AnythingLLM Primary Docker image (amd64/arm64)
+name: Publish AnythingLLM Docker image on Release (amd64 & arm64)
 
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
 on:
-  push:
-    branches: ['master'] # master branch only. Do not modify.
-    paths-ignore:
-      - '**.md'
-      - 'cloud-deployments/**/*'
-      - 'images/**/*'
-      - '.vscode/**/*'
-      - '**/.env.example'
-      - '.github/ISSUE_TEMPLATE/**/*'
-      - '.devcontainer/**/*'
-      - 'embed/**/*' # Embed should be published to frontend (yarn build:publish) if any changes are introduced
-      - 'server/utils/agents/aibitat/example/**/*' # Do not push new image for local dev testing of new aibitat images.
+  release:
+    types: [published]
 
 jobs:
   push_multi_platform_to_registries:
@@ -77,10 +61,8 @@ jobs:
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
             ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
-            type=ref,event=tag
-            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v6

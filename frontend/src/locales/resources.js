@@ -19,15 +19,15 @@ import Korean from "./ko/common.js";
 import Spanish from "./es/common.js";
 import French from "./fr/common.js";
 import Mandarin from "./zh/common.js";
+import German from "./de/common.js";
 import Russian from "./ru/common.js";
+import Italian from "./it/common.js";
+import Portuguese from "./pt_BR/common.js";
 
 export const defaultNS = "common";
 export const resources = {
   en: {
     common: English,
-  },
-  ko: {
-    common: Korean,
   },
   zh: {
     common: Mandarin,
@@ -35,10 +35,22 @@ export const resources = {
   es: {
     common: Spanish,
   },
+  de: {
+    common: German,
+  },
   fr: {
     common: French,
   },
+  ko: {
+    common: Korean,
+  },
   ru: {
     common: Russian,
+  },
+  it: {
+    common: Italian,
+  },
+  pt: {
+    common: Portuguese,
   },
 };
