@@ -1,3 +1,4 @@
+import useUser from "@/hooks/useUser";
 import { PaperclipHorizontal } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 
@@ -6,6 +7,9 @@ import { Tooltip } from "react-tooltip";
  * @returns
  */
 export default function AttachItem() {
+  const { user } = useUser();
+  if (!!user && user.role === "default") return null;
+
   return (
     <>
       <button
