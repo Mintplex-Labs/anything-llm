@@ -53,6 +53,7 @@ export default function PiperTTS({ voiceId = null, message }) {
       <button
         type="button"
         onClick={speakMessage}
+        disabled={loading}
         data-tooltip-id="message-to-speech"
         data-tooltip-content={
           speaking ? "Pause TTS speech of message" : "TTS Speak message"
