@@ -9,11 +9,6 @@ dns.setDefaultResultOrder("verbatim")
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  assetsInclude: [
-    './public/piper/ort-wasm-simd-threaded.wasm',
-    './public/piper/piper_phonemize.wasm',
-    './public/piper/piper_phonemize.data',
-  ],
   worker: {
     format: 'es'
   },

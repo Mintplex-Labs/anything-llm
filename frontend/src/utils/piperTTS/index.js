@@ -1,3 +1,4 @@
+import { API_BASE } from "../api";
 import showToast from "../toast";
 
 export default class PiperTTSClient {
@@ -117,10 +118,7 @@ export default class PiperTTSClient {
       type: "init",
       text: String(textToSpeak),
       voiceId: voiceId ?? this.voiceId,
-      // Don't reference WASM because in the docker image
-      // the user will be connected to internet (mostly)
-      // and it bloats the app size on the frontend or app significantly
-      // and running the docker image fully offline is not an intended use-case unlike the app.
+      baseUrl: `${new URL(API_BASE()).origin}/static`,
     });
 
     const { blobURL, error } = await this.waitForBlobResponse();
