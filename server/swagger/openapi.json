@@ -3140,6 +3140,167 @@
           }
         }
       }
+    },
+    "/v1/embed": {
+      "get": {
+        "tags": [
+          "Embed"
+        ],
+        "description": "List all active embeds",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/embed/{embedUuid}/chats": {
+      "get": {
+        "tags": [
+          "Embed"
+        ],
+        "description": "Get all chats for a specific embed",
+        "parameters": [
+          {
+            "name": "embedUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "UUID of the embed"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "chats": [
+                      {
+                        "id": 1,
+                        "session_id": "session-uuid-1",
+                        "prompt": "Hello",
+                        "response": "Hi there!",
+                        "createdAt": "2023-04-01T12:00:00Z"
+                      },
+                      {
+                        "id": 2,
+                        "session_id": "session-uuid-2",
+                        "prompt": "How are you?",
+                        "response": "I'm doing well, thank you!",
+                        "createdAt": "2023-04-02T14:30:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Embed not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/embed/{embedUuid}/chats/{sessionUuid}": {
+      "get": {
+        "tags": [
+          "Embed"
+        ],
+        "description": "Get chats for a specific embed and session",
+        "parameters": [
+          {
+            "name": "embedUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "UUID of the embed"
+          },
+          {
+            "name": "sessionUuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "UUID of the session"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "chats": [
+                      {
+                        "id": 1,
+                        "prompt": "Hello",
+                        "response": "Hi there!",
+                        "createdAt": "2023-04-01T12:00:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Embed or session not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   },
   "components": {
