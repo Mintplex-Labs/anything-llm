@@ -1,4 +1,3 @@
-import React from "react";
 import { useLanguageOptions } from "@/hooks/useLanguageOptions";
 import usePfp from "@/hooks/usePfp";
 import System from "@/models/system";
@@ -136,7 +135,7 @@ export default function AccountModal({ user, hideModal }) {
                 autoComplete="off"
               />
               <p className="mt-2 text-xs text-white/60">
-                Username must be lowercase with no spaces
+                Username must be lowercase characters or numbers with no spaces
               </p>
             </div>
             <div>

@@ -58,13 +58,14 @@ export default function NewUserModal({ closeModal }) {
                   pattern="^[a-z0-9]+$"
                   onInvalid={(e) =>
                     e.target.setCustomValidity(
-                      "Username must be lowercase with no spaces"
+                      "Username must be only lowercase letters or numbers with no spaces"
                     )
                   }
                   onChange={(e) => e.target.setCustomValidity("")}
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  Username must be lowercase with no spaces
+                  Username must be lowercase characters or numbers with no
+                  spaces
                 </p>
               </div>
               <div>
