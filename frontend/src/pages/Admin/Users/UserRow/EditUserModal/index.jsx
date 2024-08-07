@@ -58,8 +58,8 @@ export default function EditUserModal({ currentUser, user, closeModal }) {
                   autoComplete="off"
                 />
                 <p className="mt-2 text-xs text-white/60">
-                  Username must be lowercase characters or numbers with no
-                  spaces
+                  Username must be only contain lowercase letters, numbers,
+                  underscores, and hyphens with no spaces
                 </p>
               </div>
               <div>

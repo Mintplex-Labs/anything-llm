@@ -2,6 +2,7 @@ const prisma = require("../utils/prisma");
 const { EventLogs } = require("./eventLogs");
 
 const User = {
+  usernameRegex: new RegExp(/^[a-z0-9_-]+$/),
   writable: [
     // Used for generic updates so we can validate keys in request body
     "username",
@@ -54,10 +55,11 @@ const User = {
     }
 
     try {
-      // Username validation only for create
-      if (!/^[a-z0-9]+$/.test(username)) {
-        throw new Error("Username must be lowercase and contain no spaces");
-      }
+      // Do not allow new users to bypass validation
+      if (!this.usernameRegex.test(username))
+        throw new Error(
+          "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces"
+        );
 
       const bcrypt = require("bcrypt");
       const hashedPassword = bcrypt.hashSync(password, 10);
@@ -114,6 +116,7 @@ const User = {
 
       if (Object.keys(updates).length === 0)
         return { success: false, error: "No valid updates applied." };
+
       // Handle password specific updates
       if (updates.hasOwnProperty("password")) {
         const passwordCheck = this.checkPasswordComplexity(updates.password);
@@ -123,6 +126,17 @@ const User = {
         const bcrypt = require("bcrypt");
         updates.password = bcrypt.hashSync(updates.password, 10);
       }
+
+      if (
+        updates.hasOwnProperty("username") &&
+        currentUser.username !== updates.username &&
+        !this.usernameRegex.test(updates.username)
+      )
+        return {
+          success: false,
+          error:
+            "Username must be only contain lowercase letters, numbers, underscores, and hyphens with no spaces",
+        };
 
       const user = await prisma.users.update({
         where: { id: parseInt(userId) },
