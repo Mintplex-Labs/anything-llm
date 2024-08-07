@@ -76,8 +76,11 @@ async function main(event) {
     });
   }
 
-  if (event.data.voiceId && PIPER_SESSION.voiceId !== event.data.voiceId)
+  if (event.data.voiceId && PIPER_SESSION.voiceId !== event.data.voiceId) {
+    console.log("Voice changed - reinitialized PiperTTS Session...");
     PIPER_SESSION.voiceId = event.data.voiceId;
+    await PIPER_SESSION.init();
+  }
 
   PIPER_SESSION.predict(event.data.text)
     .then((res) => {
