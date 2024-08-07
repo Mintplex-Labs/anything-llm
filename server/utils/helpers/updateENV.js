@@ -477,6 +477,12 @@ const KEY_MAPPING = {
     envKey: "TTS_ELEVEN_LABS_VOICE_MODEL",
     checks: [],
   },
+
+  // PiperTTS Local
+  TTSPiperTTSVoiceModel: {
+    envKey: "TTS_PIPER_VOICE_MODEL",
+    checks: [],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -536,7 +542,12 @@ function validOllamaLLMBasePath(input = "") {
 }
 
 function supportedTTSProvider(input = "") {
-  const validSelection = ["native", "openai", "elevenlabs"].includes(input);
+  const validSelection = [
+    "native",
+    "openai",
+    "elevenlabs",
+    "piper_local",
+  ].includes(input);
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
 
