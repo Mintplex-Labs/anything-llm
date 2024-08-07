@@ -35,6 +35,17 @@ function apiEmbedEndpoints(app) {
                     "chat_mode": "chat",
                     "createdAt": "2023-04-02T14:30:00Z",
                     "workspace": {
+                      "id": 1,
+                      "name": "Workspace 1"
+                    },
+                    "chat_count": 10
+                  }
+                ] 
+              }
+            }
+          }
+        }
+      }
       #swagger.responses[403] = {
         schema: {
           "$ref": "#/definitions/InvalidAPIKey"
