@@ -223,10 +223,6 @@ class GitLabRepoLoader {
         const objects = Array.isArray(data)
           ? data.filter((item) => item.type === "blob")
           : []; // only get files, not paths or submodules
-        if (objects.length === 0) {
-          fetching = false;
-          break;
-        }
 
         // Apply ignore path rules to found objects. If any rules match it is an invalid file path.
         console.log(
