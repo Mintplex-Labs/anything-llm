@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import FineTuning from "@/models/experimental/fineTuning";
 import Workspace from "@/models/workspace";
-import { CheckCircle, Warning, X } from "@phosphor-icons/react";
+import {
+  CheckCircle,
+  Warning,
+  X,
+  MagnifyingGlass,
+} from "@phosphor-icons/react";
 import FineTuningSteps from "..";
 import CTAButton from "@/components/lib/CTAButton";
 
@@ -150,56 +155,59 @@ function WorkspaceSelector({
   }
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="w-full h-fit">
-        <div className="w-full relative z-1">
-          <div className="p-2 flex bg-zinc-900 rounded-lg">
-            <div className="flex flex-wrap gap-2 w-full">
-              {selectedWorkspaces.map((workspace) => {
-                return (
-                  <div
-                    key={workspace.slug}
-                    className="flex items-center justify-between rounded-full bg-sky-600/20 px-3 py-1 text-sm font-medium text-sky-400 shadow-sm"
-                  >
-                    <span className="truncate mr-2">{workspace.name}</span>
-                    <button
-                      onClick={() => handleRemoveWorkspace(workspace)}
-                      type="button"
-                      className="hover:text-red-500 flex-shrink-0"
+    <div className="flex flex-col gap-y-2">
+      <div className="min-w-[150px] max-w-[300px] h-[32px] p-[10px] rounded-lg flex items-center bg-dark-highlight mt-1">
+        <MagnifyingGlass size={16} className="text-white" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setShowSuggestions(true)}
+          onBlur={() =>
+            setTimeout(() => {
+              setShowSuggestions(false);
+            }, 500)
+          }
+          placeholder="Enter a workspace name"
+          className="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-white text-xs placeholder:`text-white/50`"
+        />
+      </div>
+      <div className="flex flex-col items-center -ml-2">
+        <div className="w-full h-fit">
+          <div className="w-full relative z-1">
+            <div className="p-2 flex  rounded-lg">
+              <div className="flex flex-wrap gap-2 w-full">
+                {selectedWorkspaces.map((workspace) => {
+                  return (
+                    <div
+                      key={workspace.slug}
+                      className="flex items-center justify-between rounded-full h-[20px] bg-white/10 px-2 py-1 text-xs font-medium text-white shadow-sm"
                     >
-                      <X size={14} weight="bold" />
-                    </button>
-                  </div>
-                );
-              })}
-              <div className="flex-1 min-w-[150px]">
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onFocus={() => setShowSuggestions(true)}
-                  onBlur={() =>
-                    setTimeout(() => {
-                      setShowSuggestions(false);
-                    }, 500)
-                  }
-                  placeholder="Enter a workspace name"
-                  className="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full text-white text-sm"
-                />
+                      <span className="truncate mr-1">{workspace.name}</span>
+                      <button
+                        onClick={() => handleRemoveWorkspace(workspace)}
+                        type="button"
+                        className="hover:text-red-500 flex-shrink-0"
+                      >
+                        <X size={10} weight="bold" />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
-        </div>
-        {showSuggestions && (
-          <div className="w-full flex relative">
-            <div className="w-full absolute top-0 z-20">
-              <WorkspaceSuggestions
-                availableWorkspaces={availableWorkspaces}
-                addWorkspace={handleAddWorkspace}
-                query={query}
-              />
+          {showSuggestions && (
+            <div className="w-full flex relative">
+              <div className="w-full absolute top-0 z-20">
+                <WorkspaceSuggestions
+                  availableWorkspaces={availableWorkspaces}
+                  addWorkspace={handleAddWorkspace}
+                  query={query}
+                />
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

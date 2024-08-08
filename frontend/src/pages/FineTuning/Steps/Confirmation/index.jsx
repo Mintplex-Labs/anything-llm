@@ -2,9 +2,10 @@ import FineTuning from "@/models/experimental/fineTuning";
 import { dollarFormat } from "@/utils/numbers";
 import showToast from "@/utils/toast";
 import { Check } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FineTuningSteps from "../index";
 import CTAButton from "@/components/lib/CTAButton";
+import Workspace from "@/models/workspace";
 
 /**
  * @param {{settings: import("../index").OrderSettings}} param0
@@ -12,6 +13,18 @@ import CTAButton from "@/components/lib/CTAButton";
  */
 export default function Confirmation({ settings, setSettings, setStep }) {
   const [loading, setLoading] = useState(false);
+  const [workspaces, setWorkspaces] = useState([]);
+
+  useEffect(() => {
+    Workspace.all()
+      .then((fetchedWorkspaces) => {
+        setWorkspaces(fetchedWorkspaces);
+      })
+      .catch(() => {
+        showToast("Failed to fetch workspaces", "error");
+      });
+  }, []);
+
   async function handleCheckout() {
     setLoading(true);
     const data = await FineTuning.createOrder({
@@ -40,6 +53,11 @@ export default function Confirmation({ settings, setSettings, setStep }) {
     });
     setStep(FineTuningSteps.confirmation.next());
   }
+
+  const getWorkspaceName = (slug) => {
+    const workspace = workspaces.find((ws) => ws.slug === slug);
+    return workspace ? workspace.name : slug;
+  };
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
@@ -88,9 +106,9 @@ export default function Confirmation({ settings, setSettings, setStep }) {
                   {settings.trainingData.slugs.map((slug, i) => (
                     <span
                       key={slug}
-                      className={`rounded-full bg-sky-600/20 px-2 py-0.5 text-sm font-medium text-sky-400 shadow-sm`}
+                      className={`rounded-full bg-white/10 px-2 py-0.5 h-[20px] text-xs font-medium text-white shadow-sm`}
                     >
-                      {slug}
+                      {getWorkspaceName(slug)}
                     </span>
                   ))}
                 </div>
