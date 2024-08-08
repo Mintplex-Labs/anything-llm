@@ -1,6 +1,6 @@
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { useState } from "react";
-import { isMobile } from "react-device-detect";
+import { isMobile } from "@/utils/mobile";
 import Home from "./Home";
 import LLMPreference from "./LLMPreference";
 import UserSetup from "./UserSetup";

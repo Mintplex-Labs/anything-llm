@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
+import { isMobile } from "@/utils/mobile";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";

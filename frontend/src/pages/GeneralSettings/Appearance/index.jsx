@@ -1,5 +1,5 @@
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
+import { isMobile } from "@/utils/mobile";
 import FooterCustomization from "./FooterCustomization";
 import SupportEmail from "./SupportEmail";
 import CustomLogo from "./CustomLogo";

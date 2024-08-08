@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import Workspace from "@/models/workspace";
 import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
-import { isMobile } from "react-device-detect";
+import { isMobile } from "@/utils/mobile";
 import { FullScreenLoader } from "@/components/Preloader";
 import {
   ArrowUUpLeft,

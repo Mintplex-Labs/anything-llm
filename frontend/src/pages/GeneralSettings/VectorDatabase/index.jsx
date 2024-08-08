@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
+import { isMobile } from "@/utils/mobile";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import ChromaLogo from "@/media/vectordbs/chroma.png";

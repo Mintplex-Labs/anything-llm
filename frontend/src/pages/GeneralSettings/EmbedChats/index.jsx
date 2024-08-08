@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
+import { isMobile } from "@/utils/mobile";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import useQuery from "@/hooks/useQuery";

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
+import { isMobile } from "@/utils/mobile";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
 import CTAButton from "@/components/lib/CTAButton";

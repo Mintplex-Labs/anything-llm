@@ -1,4 +1,4 @@
-import { isMobile } from "react-device-detect";
+import { isMobile } from "@/utils/mobile";
 import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Introduction from "./Introduction";

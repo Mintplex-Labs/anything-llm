@@ -4,7 +4,7 @@ import { CLEAR_ATTACHMENTS_EVENT, DndUploaderContext } from "./DnDWrapper";
 import PromptInput, { PROMPT_INPUT_EVENT } from "./PromptInput";
 import Workspace from "@/models/workspace";
 import handleChat, { ABORT_STREAM_EVENT } from "@/utils/chat";
-import { isMobile } from "react-device-detect";
+import { isMobile } from "@/utils/mobile";
 import { SidebarMobileHeader } from "../../Sidebar";
 import { useParams } from "react-router-dom";
 import { v4 } from "uuid";

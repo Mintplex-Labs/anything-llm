@@ -3,7 +3,7 @@ import { X } from "@phosphor-icons/react";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
 import System from "../../../models/system";
-import { isMobile } from "react-device-detect";
+import { isMobile } from "@/utils/mobile";
 import useUser from "../../../hooks/useUser";
 import DocumentSettings from "./Documents";
 import DataConnectors from "./DataConnectors";

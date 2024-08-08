@@ -2,7 +2,7 @@ import Sidebar from "@/components/SettingsSidebar";
 import useQuery from "@/hooks/useQuery";
 import System from "@/models/system";
 import { useEffect, useState } from "react";
-import { isMobile } from "react-device-detect";
+import { isMobile } from "@/utils/mobile";
 import * as Skeleton from "react-loading-skeleton";
 import LogRow from "./LogRow";
 import showToast from "@/utils/toast";
