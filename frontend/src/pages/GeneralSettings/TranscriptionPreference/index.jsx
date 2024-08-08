@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -41,6 +41,7 @@ export default function TranscriptionModelPreference() {
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

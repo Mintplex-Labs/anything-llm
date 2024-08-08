@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import Workspace from "@/models/workspace";
 import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import { FullScreenLoader } from "@/components/Preloader";
 import {
   ArrowUUpLeft,
@@ -49,6 +49,7 @@ function ShowWorkspaceChat() {
   const { user } = useUser();
   const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     async function getWorkspace() {

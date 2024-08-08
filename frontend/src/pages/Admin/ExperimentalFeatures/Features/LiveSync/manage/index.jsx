@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import System from "@/models/system";
 import DocumentSyncQueueRow from "./DocumentSyncQueueRow";
 
 export default function LiveDocumentSyncManager() {
+  const isMobile = useIsMobile();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />

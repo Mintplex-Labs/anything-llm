@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import useQuery from "@/hooks/useQuery";
@@ -57,6 +57,7 @@ export default function WorkspaceChats() {
   const [offset, setOffset] = useState(Number(query.get("offset") || 0));
   const [canNext, setCanNext] = useState(false);
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   const handleDumpChats = async (exportType) => {
     const chats = await System.exportChats(exportType);

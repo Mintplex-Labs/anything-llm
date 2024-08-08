@@ -2,13 +2,14 @@ import React from "react";
 import DefaultChatContainer from "@/components/DefaultChat";
 import Sidebar from "@/components/Sidebar";
 import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import { FullScreenLoader } from "@/components/Preloader";
 import UserMenu from "@/components/UserMenu";
 import { FineTuningAlert } from "../FineTuning/Banner";
 
 export default function Main() {
   const { loading, requiresAuth, mode } = usePasswordModal();
+  const isMobile = useIsMobile();
 
   if (loading) return <FullScreenLoader />;
   if (requiresAuth !== false) {

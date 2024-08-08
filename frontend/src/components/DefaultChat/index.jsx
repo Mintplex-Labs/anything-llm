@@ -9,7 +9,7 @@ import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
 import paths from "@/utils/paths";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import { SidebarMobileHeader } from "../Sidebar";
 import ChatBubble from "../ChatBubble";
 import System from "@/models/system";
@@ -30,6 +30,8 @@ export default function DefaultChatContainer() {
   } = useNewWorkspaceModal();
   const popMsg = !window.localStorage.getItem("anythingllm_intro");
   const { t } = useTranslation();
+
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const fetchData = async () => {

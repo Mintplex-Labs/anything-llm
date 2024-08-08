@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import useQuery from "@/hooks/useQuery";
@@ -9,6 +9,7 @@ import Embed from "@/models/embed";
 import { useTranslation } from "react-i18next";
 
 export default function EmbedChats() {
+  const isMobile = useIsMobile();
   // TODO [FEAT]: Add export of embed chats
   const { t } = useTranslation();
   return (

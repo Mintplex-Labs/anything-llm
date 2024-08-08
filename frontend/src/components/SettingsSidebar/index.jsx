@@ -14,7 +14,7 @@ import {
 } from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import Footer from "../Footer";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -27,6 +27,7 @@ export default function SettingsSidebar() {
   const { t } = useTranslation();
   const { logo } = useLogo();
   const { user } = useUser();
+  const isMobile = useIsMobile();
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);

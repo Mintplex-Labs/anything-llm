@@ -13,7 +13,7 @@ import {
 } from "@phosphor-icons/react";
 import React, { useEffect, useState } from "react";
 import SettingsButton from "../SettingsButton";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import { Tooltip } from "react-tooltip";
 import { v4 } from "uuid";
 
@@ -32,6 +32,7 @@ export const ICON_COMPONENTS = {
 
 export default function Footer() {
   const [footerData, setFooterData] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     async function fetchFooterData() {

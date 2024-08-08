@@ -1,5 +1,5 @@
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import FooterCustomization from "./FooterCustomization";
 import SupportEmail from "./SupportEmail";
 import CustomLogo from "./CustomLogo";
@@ -11,6 +11,7 @@ import CustomSiteSettings from "./CustomSiteSettings";
 
 export default function Appearance() {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />

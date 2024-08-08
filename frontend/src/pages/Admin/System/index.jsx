@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
 import CTAButton from "@/components/lib/CTAButton";
@@ -12,6 +12,7 @@ export default function AdminSystem() {
     enabled: false,
     limit: 10,
   });
+  const isMobile = useIsMobile();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

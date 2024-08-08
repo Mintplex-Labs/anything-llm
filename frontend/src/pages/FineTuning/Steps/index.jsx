@@ -1,4 +1,4 @@
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Introduction from "./Introduction";
@@ -129,6 +129,7 @@ export function FineTuningCreationLayout({ setStep, children }) {
     checkoutUrl: null,
     jobId: null,
   });
+  const isMobile = useIsMobile();
 
   return (
     <div

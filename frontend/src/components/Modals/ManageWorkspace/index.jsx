@@ -3,7 +3,7 @@ import { X } from "@phosphor-icons/react";
 import { useParams } from "react-router-dom";
 import Workspace from "../../../models/workspace";
 import System from "../../../models/system";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import useUser from "../../../hooks/useUser";
 import DocumentSettings from "./Documents";
 import DataConnectors from "./DataConnectors";
@@ -15,6 +15,7 @@ const ManageWorkspace = ({ hideModal = noop, providedSlug = null }) => {
   const [workspace, setWorkspace] = useState(null);
   const [settings, setSettings] = useState({});
   const [selectedTab, setSelectedTab] = useState("documents");
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     async function getSettings() {

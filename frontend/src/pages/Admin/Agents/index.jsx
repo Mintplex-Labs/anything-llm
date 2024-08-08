@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import Admin from "@/models/admin";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
@@ -19,6 +19,7 @@ export default function AdminAgents() {
   const [loading, setLoading] = useState(true);
   const [showSkillModal, setShowSkillModal] = useState(false);
   const formEl = useRef(null);
+  const isMobile = useIsMobile();
 
   // Alert user if they try to leave the page with unsaved changes
   useEffect(() => {
@@ -278,6 +279,7 @@ export default function AdminAgents() {
 }
 
 function SkillLayout({ children, hasChanges, handleSubmit, handleCancel }) {
+  const isMobile = useIsMobile();
   return (
     <div
       id="workspace-agent-settings-container"
@@ -306,6 +308,7 @@ function SkillList({
   handleClick = null,
   activeSkills = [],
 }) {
+  const isMobile = useIsMobile();
   if (skills.length === 0) return null;
 
   return (

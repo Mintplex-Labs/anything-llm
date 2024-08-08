@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import Admin from "@/models/admin";
 import { FullScreenLoader } from "@/components/Preloader";
 import { CaretRight, Flask } from "@phosphor-icons/react";
@@ -15,6 +15,7 @@ export default function ExperimentalFeatures() {
   const [selectedFeature, setSelectedFeature] = useState(
     "experimental_live_file_sync"
   );
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     async function fetchSettings() {
@@ -87,6 +88,7 @@ export default function ExperimentalFeatures() {
 }
 
 function FeatureLayout({ children }) {
+  const isMobile = useIsMobile();
   return (
     <div
       id="workspace-feature-settings-container"
@@ -109,6 +111,7 @@ function FeatureList({
   handleClick = null,
   activeFeatures = [],
 }) {
+  const isMobile = useIsMobile();
   if (Object.keys(features).length === 0) return null;
 
   return (

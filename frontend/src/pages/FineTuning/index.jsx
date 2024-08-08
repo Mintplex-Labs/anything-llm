@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import FineTuningSteps, { FineTuningCreationLayout } from "./Steps";
 import { CheckCircle, Circle, Sparkle } from "@phosphor-icons/react";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 
 function SideBarSelection({ setStep, currentStep }) {
+  const isMobile = useIsMobile();
   const currentIndex = Object.keys(FineTuningSteps).indexOf(currentStep);
   return (
     <div

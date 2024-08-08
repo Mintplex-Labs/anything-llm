@@ -1,6 +1,6 @@
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { useState } from "react";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import Home from "./Home";
 import LLMPreference from "./LLMPreference";
 import UserSetup from "./UserSetup";
@@ -34,6 +34,7 @@ export function OnboardingLayout({ children }) {
     disabled: true,
     onClick: () => null,
   });
+  const isMobile = useIsMobile();
 
   if (isMobile) {
     return (

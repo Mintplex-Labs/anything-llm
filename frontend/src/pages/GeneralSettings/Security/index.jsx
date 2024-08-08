@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
 import paths from "@/utils/paths";
@@ -10,6 +10,7 @@ import CTAButton from "@/components/lib/CTAButton";
 import { useTranslation } from "react-i18next";
 
 export default function GeneralSecurity() {
+  const isMobile = useIsMobile();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />

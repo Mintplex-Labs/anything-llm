@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
@@ -125,6 +125,7 @@ export default function GeneralEmbeddingPreference() {
   const searchInputRef = useRef(null);
   const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   function embedderModelChanged(formEl) {
     try {

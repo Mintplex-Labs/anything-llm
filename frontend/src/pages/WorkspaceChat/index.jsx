@@ -4,7 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import { useParams } from "react-router-dom";
 import Workspace from "@/models/workspace";
 import PasswordModal, { usePasswordModal } from "@/components/Modals/Password";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import { FullScreenLoader } from "@/components/Preloader";
 import { FineTuningAlert } from "../FineTuning/Banner";
 
@@ -23,6 +23,7 @@ function ShowWorkspaceChat() {
   const { slug } = useParams();
   const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     async function getWorkspace() {

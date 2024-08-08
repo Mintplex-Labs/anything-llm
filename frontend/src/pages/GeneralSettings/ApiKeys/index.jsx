@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { PlusCircle } from "@phosphor-icons/react";
@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 export default function AdminApiKeys() {
   const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
       <Sidebar />

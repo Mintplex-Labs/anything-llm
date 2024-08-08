@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import AnythingLLMIcon from "@/media/logo/anything-llm-icon.png";
@@ -250,6 +250,7 @@ export default function GeneralLLMPreference() {
   const searchInputRef = useRef(null);
   const isHosted = window.location.hostname.includes("useanything.com");
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

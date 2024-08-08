@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import Sidebar from "@/components/SettingsSidebar";
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
@@ -9,6 +9,7 @@ import TextToSpeechProvider from "./tts";
 export default function AudioPreference() {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     async function fetchKeys() {

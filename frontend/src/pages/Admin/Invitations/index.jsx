@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "@/utils/mobile";
+import { useIsMobile } from "@/utils/mobile";
 import * as Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { EnvelopeSimple } from "@phosphor-icons/react";
@@ -14,6 +14,7 @@ import CTAButton from "@/components/lib/CTAButton";
 
 export default function AdminInvites() {
   const { isOpen, openModal, closeModal } = useModal();
+  const isMobile = useIsMobile();
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-sidebar flex">
