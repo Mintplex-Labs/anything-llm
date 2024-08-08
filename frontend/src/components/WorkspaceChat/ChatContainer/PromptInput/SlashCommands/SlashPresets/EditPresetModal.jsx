@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "@phosphor-icons/react";
 import ModalWrapper from "@/components/ModalWrapper";
 import { CMD_REGEX } from ".";
@@ -10,8 +10,14 @@ export default function EditPresetModal({
   onDelete,
   preset,
 }) {
-  const [command, setCommand] = useState(preset?.command?.slice(1) || "");
+  const [command, setCommand] = useState("");
   const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    if (preset && isOpen) {
+      setCommand(preset.command?.slice(1) || "");
+    }
+  }, [preset, isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
