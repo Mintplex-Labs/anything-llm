@@ -15,6 +15,7 @@ import i18n from "./i18n";
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
 import { FullScreenLoader } from "./components/Preloader";
+import { listenForWindowResize } from "./utils/mobile";
 
 const Main = lazy(() => import("@/pages/Main"));
 const InvitePage = lazy(() => import("@/pages/Invite"));
@@ -66,6 +67,7 @@ const LiveDocumentSyncManage = lazy(
 const FineTuningWalkthrough = lazy(() => import("@/pages/FineTuning"));
 
 export default function App() {
+  listenForWindowResize();
   return (
     <Suspense fallback={<FullScreenLoader />}>
       <ContextWrapper>

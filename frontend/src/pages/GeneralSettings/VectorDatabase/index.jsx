@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
+import { useIsMobile } from "@/utils/mobile";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import ChromaLogo from "@/media/vectordbs/chroma.png";
@@ -41,6 +41,7 @@ export default function GeneralVectorDatabase() {
   const searchInputRef = useRef(null);
   const { isOpen, openModal, closeModal } = useModal();
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

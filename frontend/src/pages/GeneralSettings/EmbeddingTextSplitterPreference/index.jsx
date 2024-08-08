@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
+import { useIsMobile } from "@/utils/mobile";
 import PreLoader from "@/components/Preloader";
 import CTAButton from "@/components/lib/CTAButton";
 import Admin from "@/models/admin";
@@ -19,6 +19,7 @@ export default function EmbeddingTextSplitterPreference() {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

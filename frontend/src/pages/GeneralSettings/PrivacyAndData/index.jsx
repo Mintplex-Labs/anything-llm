@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/SettingsSidebar";
-import { isMobile } from "react-device-detect";
+import { useIsMobile } from "@/utils/mobile";
 import showToast from "@/utils/toast";
 import System from "@/models/system";
 import PreLoader from "@/components/Preloader";
@@ -15,6 +15,7 @@ export default function PrivacyAndDataHandling() {
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   useEffect(() => {
     async function fetchSettings() {
       setLoading(true);
