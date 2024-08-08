@@ -75,7 +75,7 @@ export default function FineTuningFlow() {
             </div>
             <SideBarSelection setStep={setStep} currentStep={step} />
           </div>
-          <div className="flex-1 overflow-y-none p-4 mt-10 pb-16">
+          <div className="flex-1 overflow-y-auto p-4 mt-10 pb-[74px] h-screen">
             <div className=" ml-8">
               {StepPage.component({ settings, setSettings, setStep })}
             </div>
