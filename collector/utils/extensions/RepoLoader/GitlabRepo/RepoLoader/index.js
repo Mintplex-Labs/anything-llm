@@ -1,4 +1,4 @@
-const minimatch = require("minimatch");
+const ignore = require("ignore");
 
 /**
  * @typedef {Object} RepoLoaderArgs
@@ -39,6 +39,9 @@ class GitLabRepoLoader {
     this.author = null;
     this.project = null;
     this.branches = [];
+
+    // Create an ignore instance
+    this.ignoreFilter = ignore().add(this.ignorePaths);
   }
 
   #validGitlabUrl() {
@@ -229,10 +232,9 @@ class GitLabRepoLoader {
           `Found ${objects.length} blobs from repo from pg ${page}/${totalPages}`
         );
         for (const file of objects) {
-          const isIgnored = this.ignorePaths.some((ignorePattern) =>
-            minimatch(file.path, ignorePattern, { matchBase: true })
-          );
-          if (!isIgnored) files.push(file);
+          if (!this.ignoreFilter.ignores(file.path)) {
+            files.push(file);
+          }
         }
 
         if (page === totalPages) {
