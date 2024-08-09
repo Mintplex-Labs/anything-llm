@@ -1,3 +1,17 @@
+/**
+ * @typedef RecordedBlobResponse
+ * @property {AudioBuffer} buffer - AudioBuffer of blob
+ * @property {string} url - blob URL
+ * @property {'recording'} source
+ * @property {Blob['type']} mimeType - Mime of blob
+ */
+
+/**
+ * @typedef WorkerTranscriptionResponse
+ * @property {string|null} transcript - Full text transcript
+ * @property {string|null} error - error message
+ */
+
 function padTime(time) {
   return String(time).padStart(2, "0");
 }
@@ -12,7 +26,6 @@ export function formatAudioTimestamp(time) {
     seconds,
   )}`;
 }
-
 
 /*
  * There is a bug where `navigator.mediaDevices.getUserMedia` + `MediaRecorder`
@@ -554,3 +567,34 @@ export const webmFixDuration = (
     }
   });
 };
+
+/**
+ * Appends a blob URL object to the body of the document.
+ * @param {string} blobURL 
+ */
+export function debugAudioBlobUrl(blobURL) {
+  const audioEl = document.createElement('audio');
+  audioEl.src = blobURL;
+  audioEl.controls = "true"
+  document.querySelector('body').appendChild(audioEl)
+}
+
+/**
+ * Get supported Mimes for MediaRecorder
+ * @returns {("audio/webm"|"audio/mp4"|"audio/ogg"| "audio/wav"|"audio/aac")|undefined}
+ */
+export function getMimeType() {
+  const types = [
+    "audio/webm",
+    "audio/mp4",
+    "audio/ogg",
+    "audio/wav",
+    "audio/aac",
+  ];
+  for (let i = 0; i < types.length; i++) {
+    if (MediaRecorder.isTypeSupported(types[i])) {
+      return types[i];
+    }
+  }
+  return undefined;
+}

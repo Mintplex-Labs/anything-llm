@@ -14,7 +14,7 @@ import TextSizeButton from "./TextSizeMenu";
 import { Tooltip } from "react-tooltip";
 import AttachmentManager from "./Attachments";
 import AttachItem from "./AttachItem";
-import SpeechToText from "./SpeechToText";
+import SpeechToTextWhisper from "./SpeechToTextWhisper";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 export default function PromptInput({
@@ -174,8 +174,7 @@ export default function PromptInput({
                 <TextSizeButton />
               </div>
               <div className="flex gap-x-2">
-                {/* Why no support for Electron? https://stackoverflow.com/a/74114170 */}
-                <SpeechToText sendCommand={sendCommand} />
+                <SpeechToTextWhisper sendCommand={sendCommand} />
               </div>
             </div>
           </div>
