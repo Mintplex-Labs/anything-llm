@@ -8,7 +8,7 @@ export default function useSpeechRecognition({
   onTranscript = console.log,
 }) {
   const [loading, setLoading] = useState(true);
-  const [microphoneEnabled, setMicrophoneEnabled] = useState(false)
+  const [microphoneEnabled, setMicrophoneEnabled] = useState(false);
   const [recording, setRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
 
@@ -21,12 +21,12 @@ export default function useSpeechRecognition({
    * @returns {Promise<boolean>}
    */
   async function requestMicrophonePermissions() {
-    const enabled = await requestMediaAccess('microphone');
+    const enabled = await requestMediaAccess("microphone");
     setMicrophoneEnabled(enabled);
-    return enabled
+    return enabled;
   }
 
-  /** 
+  /**
    * Begins a recording session
    */
   async function startRecording() {
@@ -66,9 +66,6 @@ export default function useSpeechRecognition({
           const readerOutput = await new Promise((resolve) => {
             const blobUrl = URL.createObjectURL(blob);
             const fileReader = new FileReader();
-            fileReader.onprogress = (event) => {
-              console.log(event.loaded, event.total)
-            };
             fileReader.onloadend = async () => {
               const audioCTX = new AudioContext({
                 sampleRate: 16000,
@@ -78,20 +75,20 @@ export default function useSpeechRecognition({
               resolve({
                 buffer: decoded,
                 url: blobUrl,
-                source: 'recording',
+                source: "recording",
                 mimeType: blob.type,
-              })
+              });
             };
             fileReader.readAsArrayBuffer(blob);
-          })
+          });
 
           // setRecordedBlob(readerOutput);
-          if (debug) debugAudioBlobUrl(readerOutput.url)
+          if (debug) debugAudioBlobUrl(readerOutput.url);
           chunksRef.current = [];
           setTranscribing(true);
           await transcribeAudio(readerOutput.buffer)
             .then((response) => onTranscript?.(response))
-            .finally(() => setTranscribing(false))
+            .finally(() => setTranscribing(false));
         }
       });
       mediaRecorder.start();
@@ -114,9 +111,9 @@ export default function useSpeechRecognition({
   // Load current microphone permissions
   useEffect(() => {
     getMediaAccessLevels()
-      .then(({ microphone }) => setMicrophoneEnabled(microphone === 'granted'))
+      .then(({ microphone }) => setMicrophoneEnabled(microphone === "granted"))
       .catch((e) => console.error(e))
-      .finally(() => setLoading(false))
+      .finally(() => setLoading(false));
   }, []);
 
   // Manage stream
@@ -133,5 +130,5 @@ export default function useSpeechRecognition({
     startRecording,
     stopRecording,
     recording,
-  }
+  };
 }

@@ -23,7 +23,7 @@ export function formatAudioTimestamp(time) {
   time -= minutes * 60;
   const seconds = time | 0;
   return `${hours ? padTime(hours) + ":" : ""}${padTime(minutes)}:${padTime(
-    seconds,
+    seconds
   )}`;
 }
 
@@ -275,16 +275,16 @@ class WebmBase {
   source;
   data;
 
-  constructor(name = "Unknown", type = "Unknown") { }
+  constructor(name = "Unknown", type = "Unknown") {}
 
-  updateBySource() { }
+  updateBySource() {}
 
   setSource(source) {
     this.source = source;
     this.updateBySource();
   }
 
-  updateByData() { }
+  updateByData() {}
 
   setData(data) {
     this.data = data;
@@ -358,7 +358,6 @@ class WebmFloat extends WebmBase {
   }
 }
 
-
 class WebmContainer extends WebmBase {
   offset = 0;
   data = [];
@@ -384,11 +383,7 @@ class WebmContainer extends WebmBase {
   updateBySource() {
     let end = undefined;
     this.data = [];
-    for (
-      this.offset = 0;
-      this.offset < this.source.length;
-      this.offset = end
-    ) {
+    for (this.offset = 0; this.offset < this.source.length; this.offset = end) {
       const id = this.readUint();
       const len = this.readUint();
       end = Math.min(this.offset + len, this.source.length);
@@ -421,7 +416,7 @@ class WebmContainer extends WebmBase {
       var bytes = 1, flag = 0x80;
       x >= flag && bytes < 8;
       bytes++, flag *= 0x80
-    ) { }
+    ) {}
 
     if (!draft) {
       let value = flag + x;
@@ -484,16 +479,12 @@ class WebmFile extends WebmContainer {
       return false;
     }
 
-    const infoSection = segmentSection.getSectionById(
-      0x549a966,
-    );
+    const infoSection = segmentSection.getSectionById(0x549a966);
     if (!infoSection) {
       return false;
     }
 
-    const timeScaleSection = infoSection.getSectionById(
-      0xad7b1,
-    );
+    const timeScaleSection = infoSection.getSectionById(0xad7b1);
     if (!timeScaleSection) {
       return false;
     }
@@ -530,17 +521,13 @@ class WebmFile extends WebmContainer {
 }
 
 /**
-* Fixes duration on MediaRecorder output.
-* @param blob Input Blob with incorrect duration.
-* @param duration Correct duration (in milliseconds).
-* @param type Output blob mimetype (default: video/webm).
-* @returns
-*/
-export const webmFixDuration = (
-  blob,
-  duration,
-  type = "video/webm",
-) => {
+ * Fixes duration on MediaRecorder output.
+ * @param blob Input Blob with incorrect duration.
+ * @param duration Correct duration (in milliseconds).
+ * @param type Output blob mimetype (default: video/webm).
+ * @returns
+ */
+export const webmFixDuration = (blob, duration, type = "video/webm") => {
   return new Promise((resolve, reject) => {
     try {
       const reader = new FileReader();
@@ -570,13 +557,13 @@ export const webmFixDuration = (
 
 /**
  * Appends a blob URL object to the body of the document.
- * @param {string} blobURL 
+ * @param {string} blobURL
  */
 export function debugAudioBlobUrl(blobURL) {
-  const audioEl = document.createElement('audio');
+  const audioEl = document.createElement("audio");
   audioEl.src = blobURL;
-  audioEl.controls = "true"
-  document.querySelector('body').appendChild(audioEl)
+  audioEl.controls = "true";
+  document.querySelector("body").appendChild(audioEl);
 }
 
 /**

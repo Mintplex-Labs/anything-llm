@@ -51,15 +51,16 @@ class LocalWhisper {
         cache_dir: this.cacheDir,
         ...(!fs.existsSync(this.modelPath)
           ? {
-            // Show download progress if we need to download any files
-            progress_callback: (data) => {
-              if (!data.hasOwnProperty("progress")) return;
-              console.log(
-                `\x1b[34m[Whisper - Downloading Model Files]\x1b[0m ${data.file
-                } ${~~data?.progress}%`
-              );
-            },
-          }
+              // Show download progress if we need to download any files
+              progress_callback: (data) => {
+                if (!data.hasOwnProperty("progress")) return;
+                console.log(
+                  `\x1b[34m[Whisper - Downloading Model Files]\x1b[0m ${
+                    data.file
+                  } ${~~data?.progress}%`
+                );
+              },
+            }
           : {}),
       });
     } catch (error) {
@@ -70,20 +71,17 @@ class LocalWhisper {
 
   /**
    * Transcribe an audio stream into text with the class's model
-   * @param {{audio: Float32Array, language: string|null}} parameters 
+   * @param {{audio: Float32Array, language: string|null}} parameters
    * @returns {Promise<any>}
    */
-  async transcribe({
-    audio,
-    language = null,
-  }) {
+  async transcribe({ audio, language = null }) {
     const transcriber = await this.client();
     const time_precision =
       transcriber.processor.feature_extractor.config.chunk_length /
       transcriber.model.config.max_source_positions;
 
     // Storage for chunks to be processed. Initialize with an empty chunk.
-    let chunks_to_process = [{ tokens: [], finalized: false },];
+    let chunks_to_process = [{ tokens: [], finalized: false }];
 
     function chunk_callback(chunk) {
       let last = chunks_to_process[chunks_to_process.length - 1];
@@ -115,7 +113,7 @@ class LocalWhisper {
         return_timestamps: true,
         force_full_sequences: false,
       });
-      console.log('update event', data)
+      console.log("update event", data);
     }
 
     const output = await transcriber(audio, {
@@ -139,7 +137,7 @@ class LocalWhisper {
       // callback_function: callback_function, // after each generation step
       // chunk_callback: chunk_callback, // after each chunk is processed
     }).catch((error) => {
-      console.error('Error', error)
+      console.error("Error", error);
       return null;
     });
 

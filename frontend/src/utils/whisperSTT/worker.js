@@ -1,10 +1,11 @@
-/* eslint-disable camelcase */
 import { API_BASE } from "../api.js";
 import { pipeline, env } from "./transformers-electron/transformers.js";
 
-// Disable local models
-env.allowLocalModels = false;
-env.backends.onnx.wasm.wasmPaths = `${new URL(API_BASE()).origin}/static/stt/`
+env.allowLocalModels = true;
+env.backends.onnx.wasm.wasmPaths = `${new URL(API_BASE()).origin}/static/stt/assets/`;
+env.useBrowserCache = true;
+env.remoteHost = `${new URL(API_BASE()).origin}/static/stt/models/`; // This is where models should be downloaded from.
+env.remotePathTemplate = "{model}/"; // Our local static server url does not support revision File structure.
 
 // Define model factories
 // Ensures only one model is created of each type
@@ -27,7 +28,9 @@ class PipelineFactory {
         progress_callback,
 
         // For medium models, we need to load the `no_attentions` revision to avoid running out of memory
-        revision: this.model.includes("/whisper-medium") ? "no_attentions" : "main"
+        revision: this.model.includes("/whisper-medium")
+          ? "no_attentions"
+          : "main",
       });
     }
 
@@ -37,25 +40,31 @@ class PipelineFactory {
 
 self.addEventListener("message", async (event) => {
   const message = event.data;
+  try {
+    let transcript = await transcribe(
+      message.audio,
+      message.model,
+      message.multilingual,
+      message.quantized,
+      message.subtask,
+      message.language
+    );
+    if (transcript === null) return;
 
-  // Do some work...
-  // TODO use message data
-  let transcript = await transcribe(
-    message.audio,
-    message.model,
-    message.multilingual,
-    message.quantized,
-    message.subtask,
-    message.language,
-  );
-  if (transcript === null) return;
-
-  // Send the result back to the main thread
-  self.postMessage({
-    status: "complete",
-    task: "automatic-speech-recognition",
-    data: transcript,
-  });
+    // Send the result back to the main thread
+    self.postMessage({
+      status: "complete",
+      task: "automatic-speech-recognition",
+      data: transcript,
+    });
+  } catch (error) {
+    self.postMessage({
+      status: "error",
+      task: "automatic-speech-recognition",
+      data: error,
+    });
+    return null;
+  }
 });
 
 class AutomaticSpeechRecognitionPipelineFactory extends PipelineFactory {
@@ -70,13 +79,13 @@ const transcribe = async (
   multilingual,
   quantized,
   subtask,
-  language,
+  language
 ) => {
   const isDistilWhisper = model.startsWith("distil-whisper/");
 
   let modelName = model;
   if (!isDistilWhisper && !multilingual) {
-    modelName += ".en"
+    modelName += ".en";
   }
 
   const p = AutomaticSpeechRecognitionPipelineFactory;

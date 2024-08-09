@@ -27,9 +27,10 @@ ipcRenderer.on("backend-server-online", async (_evt, message) => {
   let polling = true;
   while (polling) {
     console.log(
-      `\x1b[32m[AnythingLLM${_APP_VERSION.value
-        ? ` v${_APP_VERSION.value} for ${_APP_PLATFORM.value}`
-        : ""
+      `\x1b[32m[AnythingLLM${
+        _APP_VERSION.value
+          ? ` v${_APP_VERSION.value} for ${_APP_PLATFORM.value}`
+          : ""
       }]\x1b[0m Polling for server...`
     );
     const online = await System.ping();
@@ -62,13 +63,13 @@ export function openElectronWindow(url) {
 export async function getMediaAccessLevels() {
   ipcRenderer.send("get-media-access");
   return new Promise((resolve) => {
-    const handleResponse = (_evt, message) => resolve(message)
-    ipcRenderer.once('get-media-access-response', handleResponse);
+    const handleResponse = (_evt, message) => resolve(message);
+    ipcRenderer.once("get-media-access-response", handleResponse);
     setTimeout(() => {
-      ipcRenderer.removeListener('get-media-access-response', handleResponse);
+      ipcRenderer.removeListener("get-media-access-response", handleResponse);
       resolve({ microphone: false, camera: false, screen: false });
     }, 10_000);
-  })
+  });
 }
 
 /**
@@ -80,10 +81,13 @@ export async function requestMediaAccess(mediaAsset) {
   ipcRenderer.send("request-media-access", { asset: mediaAsset });
   return new Promise((resolve) => {
     const handleResponse = (_evt, message) => resolve(message.enabled);
-    ipcRenderer.once('request-media-access-response', handleResponse);
+    ipcRenderer.once("request-media-access-response", handleResponse);
     setTimeout(() => {
-      ipcRenderer.removeListener('request-media-access-response', handleResponse);
+      ipcRenderer.removeListener(
+        "request-media-access-response",
+        handleResponse
+      );
       resolve({ enabled: false });
     }, 60_000);
-  })
+  });
 }

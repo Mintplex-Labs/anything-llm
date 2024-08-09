@@ -2,7 +2,8 @@ import { CircleNotch, Microphone } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import { PROMPT_INPUT_EVENT } from "../../PromptInput";
 import useSpeechRecognition from "./utils/useSpeechRecognition";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { TranscriptionWorker } from "@/utils/whisperSTT";
 
 export default function SpeechToTextWhisper({ sendCommand }) {
   /**
@@ -11,14 +12,16 @@ export default function SpeechToTextWhisper({ sendCommand }) {
    */
   function onTranscript({ transcript, error }) {
     if (!!error) return console.error(error); // we already alerts used via toast.
-    if (typeof transcript !== 'string' || transcript.length === 0) return console.error('Nothing found from transcription');
+    if (typeof transcript !== "string" || transcript.length === 0)
+      return console.error("Nothing found from transcription");
     sendCommand(transcript, false);
   }
 
-  const { loading, recording, startRecording, stopRecording, transcribing } = useSpeechRecognition({
-    debug: false,
-    onTranscript
-  })
+  const { loading, recording, startRecording, stopRecording, transcribing } =
+    useSpeechRecognition({
+      debug: false,
+      onTranscript,
+    });
 
   // Handle hotkey events for session
   const handleKeyPress = useCallback(
@@ -49,18 +52,35 @@ export default function SpeechToTextWhisper({ sendCommand }) {
       window?.removeEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
   }, []);
 
+  // On unload destroy worker if it was started.
+  useEffect(() => {
+    return () => {
+      // Worker was booted and does exist.
+      if (
+        !!TranscriptionWorker._instance &&
+        !!TranscriptionWorker._instance.worker
+      ) {
+        console.log("Cleaning up worker");
+        TranscriptionWorker._instance.worker.terminate();
+      }
+    };
+  }, []);
+
   if (loading) return null;
   return (
     <button
       id="text-size-btn"
       data-tooltip-id="tooltip-text-size-btn"
-      data-tooltip-content={transcribing ? "Transcribing voice" : "Speak your prompt"}
+      data-tooltip-content={
+        transcribing ? "Transcribing voice" : "Speak your prompt"
+      }
       aria-label={transcribing ? "Transcribing voice" : "Speak your prompt"}
       onClick={recording ? stopRecording : startRecording}
       disabled={transcribing}
       type="button"
-      className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${!!recording ? "!opacity-100" : ""
-        }`}
+      className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
+        !!recording ? "!opacity-100" : ""
+      }`}
     >
       {transcribing ? (
         <CircleNotch
@@ -69,8 +89,9 @@ export default function SpeechToTextWhisper({ sendCommand }) {
       ) : (
         <Microphone
           weight="fill"
-          className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full ${recording ? "animate-pulse-glow" : ""
-            }`}
+          className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full ${
+            recording ? "animate-pulse-glow" : ""
+          }`}
         />
       )}
       <Tooltip
