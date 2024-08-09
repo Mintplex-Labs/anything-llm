@@ -1,8 +1,10 @@
 /* eslint-disable camelcase */
+import { API_BASE } from "../api.js";
 import { pipeline, env } from "./transformers-electron/transformers.js";
 
 // Disable local models
 env.allowLocalModels = false;
+env.backends.onnx.wasm.wasmPaths = `${new URL(API_BASE()).origin}/static/stt/`
 
 // Define model factories
 // Ensures only one model is created of each type
