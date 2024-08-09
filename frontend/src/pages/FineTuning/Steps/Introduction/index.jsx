@@ -1,5 +1,6 @@
-import { CheckCircle, XCircle } from "@phosphor-icons/react";
+import { Check, X } from "@phosphor-icons/react";
 import FineTuningSteps from "..";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function Introduction({ setSettings, setStep }) {
   const handleAccept = () => {
@@ -11,12 +12,12 @@ export default function Introduction({ setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
-        <div className="w-full flex flex-col gap-y-4">
-          <h2 className="text-xl text-white font-semibold">
+      <div className="bg-[#303237] text-white rounded-xl flex-1 p-6">
+        <div className="w-full flex flex-col gap-y-2 max-w-[700px]">
+          <h2 className="text-base text-white font-semibold">
             What is a "Fine-Tuned" model?
           </h2>
-          <div className="flex flex-col gap-y-2 text-white/80">
+          <div className="flex flex-col gap-y-[25px] text-white/80 text-sm">
             <p>
               Fine-tuned models are basically "customized"
               Language-Learning-Models (LLMs). These can be based on popular
@@ -36,8 +37,8 @@ export default function Introduction({ setSettings, setStep }) {
             </p>
           </div>
 
-          <div className="flex flex-col gap-y-2 text-white/80">
-            <h3 className="text-lg text-white font-semibold">
+          <div className="flex flex-col gap-y-2 text-white/80 text-sm mt-4">
+            <h3 className="text-base text-white font-semibold">
               When should I get a fine-tuned model?
             </h3>
             <p>
@@ -45,48 +46,49 @@ export default function Introduction({ setSettings, setStep }) {
               following
             </p>
             <ul className="flex flex-col gap-y-1">
-              <li className="flex items-center gap-x-1">
-                <CheckCircle className="text-green-300" /> Setting the style,
-                tone, format, or other qualitative aspects without prompting
+              <li className="flex items-center gap-x-2">
+                <Check className="text-white" size={12} weight="bold" /> Setting
+                the style, tone, format, or other qualitative aspects without
+                prompting
               </li>
-              <li className="flex items-center gap-x-1">
-                <CheckCircle className="text-green-300" /> Improving reliability
-                at producing a desired output
+              <li className="flex items-center gap-x-2">
+                <Check className="text-white" size={12} weight="bold" />{" "}
+                Improving reliability at producing a desired output
               </li>
-              <li className="flex items-center gap-x-1">
-                <CheckCircle className="text-green-300" /> Correcting failures
-                to follow complex prompts, citations, or lack of background
-                knowledge
+              <li className="flex items-center gap-x-2">
+                <Check className="text-white" size={12} weight="bold" />{" "}
+                Correcting failures to follow complex prompts, citations, or
+                lack of background knowledge
               </li>
-              <li className="flex items-center gap-x-1">
-                <CheckCircle className="text-green-300" /> You want to run this
-                model privately or offline
+              <li className="flex items-center gap-x-2">
+                <Check className="text-white" size={12} weight="bold" /> You
+                want to run this model privately or offline
               </li>
             </ul>
           </div>
 
-          <div className="flex flex-col gap-y-2 text-white/80">
-            <h3 className="text-lg text-white font-semibold">
+          <div className="flex flex-col gap-y-2 text-white/80 text-sm mt-4">
+            <h3 className="text-base text-white font-semibold">
               What are fine-tunes bad for?
             </h3>
             <p>
-              Fine-tuned models powerful, but they are not the "silver bullet"
-              to any issues you have with RAG currently. Some notable
+              Fine-tuned models are powerful, but they are not the "silver
+              bullet" to any issues you have with RAG currently. Some notable
               limitations are
             </p>
             <ul>
               <li className="flex items-center gap-x-1">
-                <XCircle className="text-red-300" /> You need perfect recall of
-                some piece of literature or reference document
+                <X className="text-white" size={12} weight="bold" /> You need
+                perfect recall of some piece of literature or reference document
               </li>
               <li className="flex items-center gap-x-1">
-                <XCircle className="text-red-300" /> You want your model to have
-                perfect memory or recollection
+                <X className="text-white" size={12} weight="bold" /> You want
+                your model to have perfect memory or recollection
               </li>
             </ul>
           </div>
 
-          <div className="flex flex-col gap-y-2 text-white/80">
+          <div className="flex flex-col gap-y-2 text-white/80 text-sm">
             <p>
               In summary, if you are getting good results with RAG currently,
               creating a fine-tune can squeeze <b>even more performance</b> out
@@ -95,15 +97,14 @@ export default function Introduction({ setSettings, setStep }) {
               that is what RAG is for! Together, it is a powerful combination.
             </p>
           </div>
+          <CTAButton
+            className="text-dark-text w-full mt-[18px] h-[34px] hover:bg-accent"
+            onClick={handleAccept}
+            text="Create fine-tune model &rarr;"
+          >
+            Create a fine-tune model &rarr;
+          </CTAButton>
         </div>
-
-        <button
-          onClick={handleAccept}
-          type="button"
-          className="mt-8 w-full py-2 text-center text-white hover:bg-primary-button border-none rounded-lg"
-        >
-          Start a fine-tune &rarr;
-        </button>
       </div>
     </div>
   );

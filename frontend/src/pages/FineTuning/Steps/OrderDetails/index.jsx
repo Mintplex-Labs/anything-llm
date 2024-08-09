@@ -2,9 +2,11 @@ import FineTuning from "@/models/experimental/fineTuning";
 import { useEffect, useState } from "react";
 import FineTuningSteps from "..";
 import { CircleNotch } from "@phosphor-icons/react";
+import CTAButton from "@/components/lib/CTAButton";
 
 export default function OrderDetails({ setSettings, setStep }) {
   const [info, setInfo] = useState({});
+
   useEffect(() => {
     FineTuning.info()
       .then((res) => {
@@ -32,33 +34,30 @@ export default function OrderDetails({ setSettings, setStep }) {
 
   return (
     <div className="flex-[2] flex flex-col gap-y-[18px] mt-10">
-      <div className="bg-[#303237] text-white rounded-xl flex-1 p-4">
-        <form onSubmit={handleSubmit}>
-          <div className="w-full flex flex-col gap-y-4">
-            <h2 className="text-xl text-white font-semibold">
-              Time to create your fine tune!
-            </h2>
-            <p>
-              Creating a model is quite simple. Currently we have a limited base
-              model selection, however in the future we plan to expand support
-              to many more foundational models.
-            </p>
-
-            <div className="flex flex-col pr-10">
-              <div className="flex flex-col gap-y-1 mb-4">
-                <label className="text-white text-sm font-bold">
-                  Account e-mail
-                </label>
-                <p className="text-xs font-normal text-white/80">
-                  This e-mail is where you will receive all order information
-                  and updates. This e-mail <b>must be accurate</b> or else we
-                  won't be able to contact you with your fine-tuned model!
-                </p>
-              </div>
+      <div className="bg-[#303237] text-white rounded-xl flex-1 p-6">
+        <div className="w-full flex flex-col gap-y-3 max-w-[700px]">
+          <h2 className="text-base text-white font-semibold">
+            Time to create your fine tune!
+          </h2>
+          <p className="text-white/80 text-sm">
+            Creating a model is quite simple. Currently we have a limited base
+            model selection, however in the future we plan to expand support to
+            many more foundational models.
+          </p>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-y-6 mt-4">
+            <div className="flex flex-col">
+              <label className="text-white text-sm font-semibold block mb-3">
+                Account e-mail
+              </label>
+              <p className="text-xs font-normal text-white/80 mb-2">
+                This e-mail is where you will receive all order information and
+                updates. This e-mail <b>must be accurate</b> or else we won't be
+                able to contact you with your fine-tuned model!
+              </p>
               <input
                 type="email"
                 name="email"
-                className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full max-w-[200px] p-2.5"
                 placeholder="jdoe@example.com"
                 required={true}
                 autoComplete="off"
@@ -66,33 +65,29 @@ export default function OrderDetails({ setSettings, setStep }) {
               />
             </div>
 
-            <div className="flex flex-col pr-10">
-              <div className="flex flex-col gap-y-1 mb-4">
-                <label className="text-white text-sm font-bold">
-                  Preferred Base Model
-                </label>
-                <p className="text-xs font-normal text-white/80">
-                  This is the foundational model your fine-tune will be based
-                  on. We recommend Llama 3 8B.
-                </p>
-              </div>
+            <div className="flex flex-col">
+              <label className="text-white text-sm font-semibold block mb-3">
+                Preferred Base Model
+              </label>
+              <p className="text-xs font-normal text-white/80 mb-2">
+                This is the foundational model your fine-tune will be based on.
+                We recommend Llama 3 8B.
+              </p>
               {info.hasOwnProperty("availableBaseModels") ? (
                 <select
                   name="baseModel"
                   required={true}
-                  className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-fit p-2.5"
+                  className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full max-w-[200px] p-2.5"
                 >
-                  <option disabled="true" selected="true" value="">
+                  <option disabled value="">
                     -- select a base model --
                   </option>
                   <optgroup label="Available base models">
-                    {(info?.availableBaseModels || []).map((model) => {
-                      return (
-                        <option key={model} value={model}>
-                          {model}
-                        </option>
-                      );
-                    })}
+                    {(info?.availableBaseModels || []).map((model) => (
+                      <option key={model} value={model}>
+                        {model}
+                      </option>
+                    ))}
                   </optgroup>
                 </select>
               ) : (
@@ -103,35 +98,34 @@ export default function OrderDetails({ setSettings, setStep }) {
               )}
             </div>
 
-            <div className="flex flex-col pr-10">
-              <div className="flex flex-col gap-y-1 mb-4">
-                <label className="text-white text-sm font-bold">
-                  Model name
-                </label>
-                <p className="text-xs font-normal text-white/80">
-                  What would you like to call your model? This has no impact on
-                  its output or training and is only used for how we communicate
-                  with you about the model.
-                </p>
-              </div>
+            <div className="flex flex-col">
+              <label className="text-white text-sm font-semibold block mb-3">
+                Model name
+              </label>
+              <p className="text-xs font-normal text-white/80 mb-2">
+                What would you like to call your model? This has no impact on
+                its output or training and is only used for how we communicate
+                with you about the model.
+              </p>
               <input
                 type="text"
                 name="modelName"
-                className="border-none bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full p-2.5"
+                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:outline-primary-button active:outline-primary-button outline-none block w-full max-w-[200px] p-2.5"
                 placeholder="My really cool model!"
                 required={true}
                 autoComplete="off"
                 spellCheck={false}
               />
             </div>
-          </div>
-          <button
-            type="submit"
-            className="mt-8 w-full py-2 text-center text-white hover:bg-primary-button border-none rounded-lg"
-          >
-            Proceed to data selection &rarr;
-          </button>
-        </form>
+
+            <CTAButton
+              type="submit"
+              className="text-dark-text w-full mt-[18px] h-[34px] hover:bg-accent"
+            >
+              Proceed to data selection &rarr;
+            </CTAButton>
+          </form>
+        </div>
       </div>
     </div>
   );
