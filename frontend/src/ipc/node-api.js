@@ -27,10 +27,9 @@ ipcRenderer.on("backend-server-online", async (_evt, message) => {
   let polling = true;
   while (polling) {
     console.log(
-      `\x1b[32m[AnythingLLM${
-        _APP_VERSION.value
-          ? ` v${_APP_VERSION.value} for ${_APP_PLATFORM.value}`
-          : ""
+      `\x1b[32m[AnythingLLM${_APP_VERSION.value
+        ? ` v${_APP_VERSION.value} for ${_APP_PLATFORM.value}`
+        : ""
       }]\x1b[0m Polling for server...`
     );
     const online = await System.ping();
@@ -53,4 +52,38 @@ export function refocusApplication() {
 export function openElectronWindow(url) {
   ipcRenderer.send("open-child-win", { url });
   return;
+}
+
+/** @typedef {("not-determined" | "granted" | "denied" | "restricted" | "unknown")} MediaAccessLevelResponse */
+/**
+ * Get the user permission levels for media assets (microphone|camera|screen)
+ * @returns {Promise<{microphone: MediaAccessLevelResponse, camera: MediaAccessLevelResponse, screen: MediaAccessLevelResponse}>}
+ */
+export async function getMediaAccessLevels() {
+  ipcRenderer.send("get-media-access");
+  return new Promise((resolve) => {
+    const handleResponse = (_evt, message) => resolve(message)
+    ipcRenderer.once('get-media-access-response', handleResponse);
+    setTimeout(() => {
+      ipcRenderer.removeListener('get-media-access-response', handleResponse);
+      resolve({ microphone: false, camera: false, screen: false });
+    }, 10_000);
+  })
+}
+
+/**
+ * Request media permission for (microphone|camera)
+ * @property {'microphone'|'camera'}
+ * @returns {Promise<{microphone: MediaAccessLevelResponse, camera: MediaAccessLevelResponse, screen: MediaAccessLevelResponse}>}
+ */
+export async function requestMediaAccess(mediaAsset) {
+  ipcRenderer.send("request-media-access", { asset: mediaAsset });
+  return new Promise((resolve) => {
+    const handleResponse = (_evt, message) => resolve(message.enabled);
+    ipcRenderer.once('request-media-access-response', handleResponse);
+    setTimeout(() => {
+      ipcRenderer.removeListener('request-media-access-response', handleResponse);
+      resolve({ enabled: false });
+    }, 60_000);
+  })
 }

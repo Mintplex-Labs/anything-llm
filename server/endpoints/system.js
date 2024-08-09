@@ -52,6 +52,7 @@ const {
   generateRecoveryCodes,
 } = require("../utils/PasswordRecovery");
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
+const { LocalWhisper } = require("../utils/WhisperProviders/localWhisper");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -1143,6 +1144,19 @@ function systemEndpoints(app) {
       }
     }
   );
+
+  app.post('/system/transcribe-audio', async (request, response) => {
+    try {
+      const { audio, model, language } = reqBody(request)
+      const audioData = new Float32Array(audio);
+      const Transcriber = new LocalWhisper({ model });
+      const output = await Transcriber.transcribe({ audio: audioData, language })
+      response.status(200).json({ success: true, output });
+    } catch (e) {
+      console.error(e);
+      response.status(500).json({ success: false, error: e.message });
+    }
+  })
 }
 
 module.exports = { systemEndpoints };

@@ -1,119 +1,216 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Microphone } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
-import _regeneratorRuntime from "regenerator-runtime";
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from "react-speech-recognition";
 import { PROMPT_INPUT_EVENT } from "../../PromptInput";
+import { getMediaAccessLevels, requestMediaAccess } from "@/ipc/node-api";
+import { webmFixDuration } from "./utils";
+import { transcribeAudio } from "@/utils/whisperSTT";
 
-let timeout;
-const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
-export default function SpeechToText({ sendCommand }) {
-  const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition,
-    browserSupportsContinuousListening,
-    isMicrophoneAvailable,
-  } = useSpeechRecognition({
-    clearTranscriptOnListen: true,
-  });
+const addAudioElement = (blob) => {
+  const url = URL.createObjectURL(blob);
+  const audio = document.createElement("audio");
+  audio.src = url;
+  audio.controls = true;
+  document.body.appendChild(audio);
+};
 
-  function startSTTSession() {
-    if (!isMicrophoneAvailable) {
-      alert(
-        "AnythingLLM does not have access to microphone. Please enable for this site to use this feature."
-      );
-      return;
-    }
+/**
+ * 
+ * @param {import("react-audio-voice-recorder/dist/hooks/useAudioRecorder").recorderControls} recorderControls 
+ * @returns 
+ */
+function useMicrophone() {
+  const [loading, setLoading] = useState(true);
+  const [microphoneEnabled, setMicrophoneEnabled] = useState(false)
 
-    resetTranscript();
-    SpeechRecognition.startListening({
-      continuous: browserSupportsContinuousListening,
-      language: window?.navigator?.language ?? "en-US",
-    });
-  }
-
-  function endTTSSession() {
-    SpeechRecognition.stopListening();
-    if (transcript.length > 0) {
-      sendCommand(transcript, true);
-    }
-
-    resetTranscript();
-    clearTimeout(timeout);
-  }
-
-  const handleKeyPress = useCallback(
-    (event) => {
-      if (event.ctrlKey && event.keyCode === 77) {
-        if (listening) {
-          endTTSSession();
-        } else {
-          startSTTSession();
-        }
-      }
-    },
-    [listening, endTTSSession, startSTTSession]
-  );
-
-  function handlePromptUpdate(e) {
-    if (!e?.detail && timeout) {
-      endTTSSession();
-      clearTimeout(timeout);
-    }
+  async function requestPermissions() {
+    const enabled = await requestMediaAccess('microphone');
+    setMicrophoneEnabled(enabled);
+    return enabled
   }
 
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyPress);
-    return () => {
-      document.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [handleKeyPress]);
-
-  useEffect(() => {
-    if (!!window)
-      window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
-    return () =>
-      window?.removeEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
+    async function getPermissions() {
+      const permissions = await getMediaAccessLevels();
+      setMicrophoneEnabled(permissions.microphone === 'granted');
+      setLoading(false)
+    }
+    getPermissions()
   }, []);
 
-  useEffect(() => {
-    if (transcript?.length > 0 && listening) {
-      sendCommand(transcript, false);
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        endTTSSession();
-      }, SILENCE_INTERVAL);
-    }
-  }, [transcript, listening]);
+  return {
+    loading,
+    microphoneEnabled,
+    requestPermissions,
+  }
+}
 
-  if (!browserSupportsSpeechRecognition) return null;
+function getMimeType() {
+  const types = [
+    "audio/webm",
+    "audio/mp4",
+    "audio/ogg",
+    "audio/wav",
+    "audio/aac",
+  ];
+  for (let i = 0; i < types.length; i++) {
+    if (MediaRecorder.isTypeSupported(types[i])) {
+      return types[i];
+    }
+  }
+  return undefined;
+}
+
+export default function SpeechToText({ sendCommand }) {
+  const { loading, microphoneEnabled, requestPermissions } = useMicrophone();
+  const [recording, setRecording] = useState(false);
+  const [duration, setDuration] = useState(0);
+  const [recordedBlob, setRecordedBlob] = useState(null);
+
+  const streamRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const chunksRef = useRef([]);
+  const audioRef = useRef(null);
+
+  const startSTTSession = async () => {
+    if (!microphoneEnabled) await requestPermissions();
+    // Reset recording (if any)
+    setRecordedBlob(null);
+    let startTime = Date.now();
+
+    try {
+      if (!streamRef.current) {
+        streamRef.current = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+      }
+
+      const mimeType = getMimeType();
+      const mediaRecorder = new MediaRecorder(streamRef.current, {
+        mimeType,
+      });
+
+      mediaRecorderRef.current = mediaRecorder;
+      mediaRecorder.addEventListener("dataavailable", async (event) => {
+        if (event.data.size > 0) {
+          chunksRef.current.push(event.data);
+        }
+        if (mediaRecorder.state === "inactive") {
+          const duration = Date.now() - startTime;
+
+          // Received a stop event
+          let blob = new Blob(chunksRef.current, { type: mimeType });
+
+          if (mimeType === "audio/webm") {
+            blob = await webmFixDuration(blob, duration, blob.type);
+          }
+
+          const readerOutput = await new Promise((resolve) => {
+            const blobUrl = URL.createObjectURL(blob);
+            const fileReader = new FileReader();
+            fileReader.onprogress = (event) => {
+              console.log(event.loaded, event.total)
+            };
+            fileReader.onloadend = async () => {
+              const audioCTX = new AudioContext({
+                sampleRate: 16000,
+              });
+              const arrayBuffer = fileReader.result;
+              const decoded = await audioCTX.decodeAudioData(arrayBuffer);
+              resolve({
+                buffer: decoded,
+                url: blobUrl,
+                source: 'recording',
+                mimeType: blob.type,
+              })
+            };
+            fileReader.readAsArrayBuffer(blob);
+          })
+
+          setRecordedBlob(blob);
+          await transcribeAudio(readerOutput.buffer);
+          chunksRef.current = [];
+        }
+      });
+      mediaRecorder.start();
+      setRecording(true);
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+    }
+  };
+
+  const endTTSSession = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
+      mediaRecorderRef.current.stop(); // set state to inactive
+      setDuration(0);
+      setRecording(false);
+    }
+  };
+
+  useEffect(() => {
+    let stream = null;
+
+    if (recording) {
+      const timer = setInterval(() => {
+        setDuration((prevDuration) => prevDuration + 1);
+      }, 1000);
+
+      return () => {
+        clearInterval(timer);
+      };
+    }
+
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [recording]);
+
+  const handleToggleRecording = () => {
+    if (!recording) {
+      startSTTSession();
+    } else {
+      endTTSSession();
+    }
+  };
+
+
+  if (loading) return null;
   return (
-    <div
-      id="text-size-btn"
-      data-tooltip-id="tooltip-text-size-btn"
-      data-tooltip-content="Speak your prompt"
-      aria-label="Speak your prompt"
-      onClick={listening ? endTTSSession : startSTTSession}
-      className={`relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
-        !!listening ? "!opacity-100" : ""
-      }`}
-    >
-      <Microphone
-        weight="fill"
-        className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full ${
-          listening ? "animate-pulse" : ""
-        }`}
-      />
-      <Tooltip
-        id="tooltip-text-size-btn"
-        place="top"
-        delayShow={300}
-        className="tooltip !text-xs z-99"
-      />
-    </div>
+    <>
+      <div
+        id="text-size-btn"
+        data-tooltip-id="tooltip-text-size-btn"
+        data-tooltip-content="Speak your prompt"
+        aria-label="Speak your prompt"
+        onClick={handleToggleRecording}
+        className={`relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${!!recording ? "!opacity-100" : ""
+          }`}
+      >
+        <Microphone
+          weight="fill"
+          className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full ${recording ? "animate-pulse" : ""
+            }`}
+        />
+        <Tooltip
+          id="tooltip-text-size-btn"
+          place="top"
+          delayShow={300}
+          className="tooltip !text-xs z-99"
+        />
+      </div>
+      {recordedBlob && (
+        <audio className='w-full' ref={audioRef} controls>
+          <source
+            src={URL.createObjectURL(recordedBlob)}
+            type={recordedBlob.type}
+          />
+        </audio>
+      )}
+    </>
   );
 }
