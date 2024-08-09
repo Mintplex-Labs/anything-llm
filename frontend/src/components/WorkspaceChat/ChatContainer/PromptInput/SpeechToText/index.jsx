@@ -105,7 +105,7 @@ export default function SpeechToText({ sendCommand }) {
       <Microphone
         weight="fill"
         className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full ${
-          listening ? "animate-pulse" : ""
+          listening ? "animate-pulse-glow" : ""
         }`}
       />
       <Tooltip

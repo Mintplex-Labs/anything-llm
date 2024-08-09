@@ -87,7 +87,7 @@ export default {
       },
       animation: {
         sweep: "sweep 0.5s ease-in-out",
-        pulse: "pulse 1.5s infinite"
+        "pulse-glow": "pulse-glow 1.5s infinite"
       },
       keyframes: {
         sweep: {
@@ -102,7 +102,7 @@ export default {
           "0%": { opacity: 1 },
           "100%": { opacity: 0 }
         },
-        pulse: {
+        "pulse-glow": {
           "0%": {
             opacity: 1,
             transform: "scale(1)",
