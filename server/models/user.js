@@ -71,7 +71,7 @@ const User = {
     }
   },
 
-  createWithAzureLoginProvider: async function ({ username }) {
+  createWithAzureAuthProviders: async function ({ username }) {
     try {
       const user = await prisma.users.create({
         data: {

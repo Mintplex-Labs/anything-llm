@@ -1,4 +1,4 @@
-class AzureLoginProvider {
+class AzureAuthProviders {
   constructor() {}
   async login({ accessToken }) {
     console.log(accessToken);
@@ -6,4 +6,4 @@ class AzureLoginProvider {
   }
 }
 
-module.exports.AzureLoginProvider = AzureLoginProvider;
+module.exports.AzureAuthProviders = AzureAuthProviders;

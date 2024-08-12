@@ -6,7 +6,7 @@ import showToast from "@/utils/toast";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
-import AzureLoginProviders from "./AzureLoginProviders";
+import AzureAuthProviders from "./AzureAuthProviders";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
 
@@ -299,7 +299,7 @@ export default function MultiUserAuth() {
               </p>
             </div>
           </div>
-          <AzureLoginProviders/>
+          <AzureAuthProviders/>
           <div className="w-full px-4 md:px-12">
             <div className="w-full flex flex-col gap-y-4">
               <div className="w-screen md:w-full md:px-0 px-6">

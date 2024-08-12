@@ -1,9 +1,7 @@
 import { PublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
-import { useEffect, useState } from "react";
 
-export default function AzureLoginProviders({}) {
-  const [settings, setSettings] = useState(null);
+export default function AzureAuthProviders({}) {
   const msalConfig = {
     auth: {
       clientId: 'YOUR_CLIENT_ID', // Replace with your client ID

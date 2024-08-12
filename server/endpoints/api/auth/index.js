@@ -1,6 +1,6 @@
 const { validApiKey } = require("../../../utils/middleware/validApiKey");
 const { SystemSettings } = require("../../../models/systemSettings");
-const { AzureLoginProvider } = require("../../../utils/AzureLoginProviders");
+const { AzureAuthProviders } = require("../../../utils/AzureAuthProviders");
 const { User } = require("../../../models/user");
 const { EventLogs } = require("../../../models/eventLogs");
 
@@ -54,12 +54,12 @@ function apiAuthEndpoints(app) {
       }
 
       const data = reqBody(request);
-      const azureLoginProvider = new AzureLoginProvider();
-      const { username } = await azureLoginProvider.login(data);
+      const azureAuthProviders = new AzureAuthProviders();
+      const { username } = await azureAuthProviders.login(data);
       let user = await User.get({ username: String(username) });
 
       if (!user) {
-        const { user: newUser, error } = await User.createWithAzureLoginProvider({
+        const { user: newUser, error } = await User.createWithAzureAuthProviders({
           username: String(username),
         });
         if (!newUser) {
