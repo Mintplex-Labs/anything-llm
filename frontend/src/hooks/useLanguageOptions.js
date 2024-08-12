@@ -1,6 +1,8 @@
 import i18n from "@/i18n";
 import { resources as languages } from "@/locales/resources";
 
+i18n.changeLanguage("es");
+
 export function useLanguageOptions() {
   const supportedLanguages = Object.keys(languages);
   const languageNames = new Intl.DisplayNames(supportedLanguages, {
