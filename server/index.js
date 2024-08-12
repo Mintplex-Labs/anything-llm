@@ -62,7 +62,7 @@ developerEndpoints(app, apiRouter);
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
 
-const ORIGIN_DOMAIN_WHITELIST = ["venturatravel.org", "viventura.de"];
+const ORIGIN_DOMAIN_WHITELIST = ["venturatravel.org"];
 
 function onlyVenturaOrigin(request, response, next) {
   const origin =
