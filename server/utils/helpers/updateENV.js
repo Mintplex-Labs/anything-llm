@@ -480,6 +480,15 @@ const KEY_MAPPING = {
     envKey: "TTS_PIPER_VOICE_MODEL",
     checks: [],
   },
+
+  SpeechToTextProvider: {
+    envKey: "STT_PROVIDER",
+    checks: [supportedSTTProvider],
+  },
+  SpeechToTextLocalWhisperModel: {
+    envKey: "STT_LOCAL_WHISPER_MODEL",
+    checks: [validLocalWhisper],
+  },
 };
 
 function isNotEmpty(input = "") {
@@ -548,9 +557,16 @@ function supportedTTSProvider(input = "") {
   return validSelection ? null : `${input} is not a valid TTS provider.`;
 }
 
+function supportedSTTProvider(input = "") {
+  const validSelection = ["local_whisper"].includes(input);
+  return validSelection ? null : `${input} is not a valid STT provider.`;
+}
+
 function validLocalWhisper(input = "") {
   const validSelection = [
+    "Xenova/whisper-tiny",
     "Xenova/whisper-small",
+    "Xenova/whisper-base",
     "Xenova/whisper-large",
   ].includes(input);
   return validSelection

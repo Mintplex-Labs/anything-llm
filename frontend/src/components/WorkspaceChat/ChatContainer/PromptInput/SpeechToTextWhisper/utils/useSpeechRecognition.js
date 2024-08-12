@@ -2,12 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { getMediaAccessLevels, requestMediaAccess } from "@/ipc/node-api";
 import { getMimeType, webmFixDuration, debugAudioBlobUrl } from "./utils.js";
 import { transcribeAudio } from "@/utils/whisperSTT/index.js";
+import i18next from "i18next";
 
 export default function useSpeechRecognition({
   debug = false, // Will append the audio player to the document body to debug.
   onTranscript = console.log,
 }) {
   const [loading, setLoading] = useState(true);
+  // We currently don't allow other models due to resource limitations
+  const [sttModel, _setSttModel] = useState("Xenova/whisper-tiny");
   const [microphoneEnabled, setMicrophoneEnabled] = useState(false);
   const [recording, setRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
@@ -86,7 +89,10 @@ export default function useSpeechRecognition({
           if (debug) debugAudioBlobUrl(readerOutput.url);
           chunksRef.current = [];
           setTranscribing(true);
-          await transcribeAudio(readerOutput.buffer)
+          await transcribeAudio(readerOutput.buffer, {
+            model: sttModel,
+            multilingual: i18next.language.startsWith("en") !== true,
+          })
             .then((response) => onTranscript?.(response))
             .finally(() => setTranscribing(false));
         }

@@ -204,8 +204,12 @@ const SystemSettings = {
 
       // --------------------------------------------------------
       // TTS/STT  Selection Settings & Configs
-      // - Currently the only 3rd party is OpenAI or the native browser-built in
+      // - Currently the only 3rd party is OpenAI or the native built in
       // --------------------------------------------------------
+      SpeechToTextProvider: process.env.STT_PROVIDER || "local_whisper",
+      SpeechToTextLocalWhisperModel:
+        process.env.STT_LOCAL_WHISPER_MODEL || "Xenova/whisper-tiny",
+
       TextToSpeechProvider: process.env.TTS_PROVIDER || "native",
       TTSOpenAIKey: !!process.env.TTS_OPEN_AI_KEY,
       TTSOpenAIVoiceModel: process.env.TTS_OPEN_AI_VOICE_MODEL,

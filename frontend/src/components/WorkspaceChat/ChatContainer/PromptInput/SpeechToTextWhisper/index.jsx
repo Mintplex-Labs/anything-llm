@@ -2,7 +2,7 @@ import { CircleNotch, Microphone } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import { PROMPT_INPUT_EVENT } from "../../PromptInput";
 import useSpeechRecognition from "./utils/useSpeechRecognition";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { TranscriptionWorker } from "@/utils/whisperSTT";
 
 export default function SpeechToTextWhisper({ sendCommand }) {

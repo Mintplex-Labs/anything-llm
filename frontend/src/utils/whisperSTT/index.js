@@ -39,9 +39,10 @@ export class TranscriptionWorker {
  * Todo:
  * - Do chunk streaming on each audioBuffer so you don't have to wait on entire audio to be formed.
  * @param {AudioBuffer} audioBuffer
+ * @param {{model: string, multilingual: boolean|null}} options
  * @returns {Promise<{transcript: null|string, error: null|string}>}
  */
-export async function transcribeAudio(audioBuffer) {
+export async function transcribeAudio(audioBuffer, options = {}) {
   if (!(audioBuffer instanceof AudioBuffer))
     return showToast("No valid audio buffer found!", "error", { clear: true });
   const audio = await bufferToMergedAudioChannel(audioBuffer);
@@ -95,9 +96,11 @@ export async function transcribeAudio(audioBuffer) {
     transcriptionWorker.addEventListener("message", messageEventHandler);
     transcriptionWorker.postMessage({
       audio,
-      model: CONSTANTS.DEFAULT_MODEL,
-      multilingual: CONSTANTS.DEFAULT_MULTILINGUAL,
-      quantized: CONSTANTS.DEFAULT_QUANTIZED,
+      model: options?.model ?? CONSTANTS.DEFAULT_MODEL,
+      multilingual: options.hasOwnProperty("multilingual")
+        ? options.multilingual
+        : CONSTANTS.DEFAULT_MULTILINGUAL,
+      quantized: CONSTANTS.DEFAULT_QUANTIZED, // always true.
       subtask: null,
       language: null,
     });
