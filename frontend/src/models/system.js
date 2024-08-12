@@ -79,8 +79,8 @@ const System = {
         return { valid: false, message: e.message };
       });
   },
-  socialLogin: async function (body, provider) {
-    return await fetch(`${API_BASE}/social-login/${provider}`, {
+  azureLogin: async function (body, provider) {
+    return await fetch(`${API_BASE}/azure-login`, {
       method: "POST",
       body: JSON.stringify({ ...body }),
     })

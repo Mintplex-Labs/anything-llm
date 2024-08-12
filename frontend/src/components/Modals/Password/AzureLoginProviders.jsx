@@ -1,10 +1,10 @@
 import System from "@/models/system";
 import { AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import paths from "@/utils/paths";
-import { GoogleLogin } from "@react-oauth/google";
+import { AzureLogin } from '@azure/msal-react';
 import { useEffect, useState } from "react";
 
-export default function SocialProviders({
+export default function AzureLoginProviders({
   setError,
   setLoading,
   setUser,
@@ -20,12 +20,11 @@ export default function SocialProviders({
     fetchSettings();
   }, []);
 
-  const handleGoogleLogin = async (data) => {
+  const handleAzureLogin = async (data) => {
     setError(null);
     setLoading(true);
-    const { valid, user, token, message } = await System.socialLogin(
-      data,
-      "google"
+    const { valid, user, token, message } = await System.azureLogin(
+      data
     );
     if (valid && !!token && !!user) {
       setUser(user);
@@ -43,11 +42,11 @@ export default function SocialProviders({
 
   return (
     <>
-      {settings?.GoogleAuthClientId && (
+      {settings?.AzureADClientId && (
         <>
           <GoogleLogin
             onSuccess={(credentialResponse) => {
-              handleGoogleLogin(credentialResponse);
+              handleAzureLogin(credentialResponse);
             }}
             onError={() => {
               setError("Something went wrong");

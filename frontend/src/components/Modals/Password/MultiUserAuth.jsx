@@ -6,7 +6,7 @@ import showToast from "@/utils/toast";
 import ModalWrapper from "@/components/ModalWrapper";
 import { useModal } from "@/hooks/useModal";
 import RecoveryCodeModal from "@/components/Modals/DisplayRecoveryCodeModal";
-import SocialProviders from "./SocialProviders";
+import AzureLoginProviders from "./AzureLoginProviders";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
 
@@ -299,7 +299,7 @@ export default function MultiUserAuth() {
               </p>
             </div>
           </div>
-          <SocialProviders
+          <AzureLoginProviders
             setError={setError}
             setLoading={setLoading}
             setUser={setUser}
