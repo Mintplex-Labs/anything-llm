@@ -352,8 +352,8 @@ function adminEndpoints(app) {
                 ?.value,
               []
             ) || [],
-          users_can_login_with_google:
-            (await SystemSettings.get({ label: "users_can_login_with_google" }))
+          users_can_login_with_azure:
+            (await SystemSettings.get({ label: "users_can_login_with_azure" }))
               ?.value === "true",
           allowed_domain: (
             await SystemSettings.get({ label: "allowed_domain" })

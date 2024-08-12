@@ -1,8 +1,8 @@
 const { OAuth2Client } = require("google-auth-library");
 
-class SocialProviderAbstract {
+class AzureLoginProviderAbstract {
   constructor() {
-    if (this.constructor === SocialProviderAbstract) {
+    if (this.constructor === AzureLoginProviderAbstract) {
       throw new Error("Cannot instantiate abstract class");
     }
   }
@@ -11,7 +11,7 @@ class SocialProviderAbstract {
   }
 }
 
-class GoogleProvider extends SocialProviderAbstract {
+class AzureLoginProvider extends AzureLoginProviderAbstract {
   constructor() {
     super();
     this.client = new OAuth2Client();
@@ -19,7 +19,7 @@ class GoogleProvider extends SocialProviderAbstract {
   async login({ credential }) {
     const { email, name, picture, error } = await this._verify(credential);
     if (error) {
-      throw new Error("Google Sign-In failed");
+      throw new Error("Azure Login failed");
     }
     return { username: email };
   }
@@ -38,19 +38,4 @@ class GoogleProvider extends SocialProviderAbstract {
   }
 }
 
-const providers = {
-  google: new GoogleProvider(),
-  // Add here new providers
-};
-
-class SocialProvider {
-  constructor(provider) {
-    this.instance = providers[provider];
-  }
-
-  async login(data) {
-    return await this.instance.login(data);
-  }
-}
-
-module.exports.SocialProvider = SocialProvider;
+module.exports.AzureLoginProvider = AzureLoginProvider;

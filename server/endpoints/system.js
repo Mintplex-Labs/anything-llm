@@ -50,7 +50,7 @@ const {
   resetPassword,
   generateRecoveryCodes,
 } = require("../utils/PasswordRecovery");
-const { SocialProvider } = require("../utils/socialProviders");
+const { AzureLoginProvider } = require("../utils/AzureLoginProviders");
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 
 function systemEndpoints(app) {
@@ -130,10 +130,9 @@ function systemEndpoints(app) {
           });
           return;
         }
-        // Users who created their account with a social provider do not have a password. So they can only log in with the social provider.
-        if (existingUser.use_social_provider) {
+        if (existingUser.use_azure_login_provider) {
           await EventLogs.logEvent(
-            "failed_login_user_use_social_provider",
+            "failed_login_user_use_azure_login_provider",
             {
               ip: request.ip || "Unknown IP",
               username: username || "Unknown user",
@@ -264,22 +263,21 @@ function systemEndpoints(app) {
     }
   });
   
-  app.post("/social-login/:provider", async (request, response) => {
+  app.post("/azure-login", async (request, response) => {
     try {
       if (!(await SystemSettings.isMultiUserMode())) {
         response.status(200).json({
           user: null,
           valid: false,
           token: null,
-          message: "Social login is available on multi-user mode",
+          message: "Azure login is available on multi-user mode",
         });
         return;
       }
 
-      const { provider } = request.params;
       const data = reqBody(request);
-      const socialProvider = new SocialProvider(provider);
-      const { username } = await socialProvider.login(data);
+      const azureLoginProvider = new AzureLoginProvider();
+      const { username } = await azureLoginProvider.login(data);
       let user = await User.get({ username: String(username) });
 
       const allowedDomain = (
@@ -304,7 +302,7 @@ function systemEndpoints(app) {
       }
 
       if (!user) {
-        const { user: newUser, error } = await User.createWithSocialProvider({
+        const { user: newUser, error } = await User.createWithAzureLoginProvider({
           username: String(username),
         });
         if (!newUser) {
@@ -380,6 +378,7 @@ function systemEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+
   app.post(
     "/system/recover-account",
     [isMultiUserSetup],

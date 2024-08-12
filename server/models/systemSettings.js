@@ -27,7 +27,7 @@ const SystemSettings = {
     "text_splitter_chunk_overlap",
     "agent_search_provider",
     "default_agent_skills",
-    "users_can_login_with_google",
+    "users_can_login_with_azure",
     "allowed_domain",
     "agent_sql_connections",
     "custom_app_name",
@@ -180,13 +180,25 @@ const SystemSettings = {
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
 
+
+
       // --------------------------------------------------------
-      // Social Providers
+      // Azure Providers
       // --------------------------------------------------------
-      GoogleAuthClientId:
-        (await this.get({ label: "users_can_login_with_google" }))?.value ===
+      AzureADClientId:
+      (await this.get({ label: "users_can_login_with_azure" }))?.value ===
+      "true"
+        ? process.env.AZURE_AD_CLIENT_ID
+        : null,
+      AzureADCredential:
+        (await this.get({ label: "users_can_login_with_azure" }))?.value ===
         "true"
-          ? process.env.GOOGLE_AUTH_CLIENT_ID
+          ? process.env.AZURE_AD_CREDENTIAL
+          : null,
+      AzureADAuthorization:
+        (await this.get({ label: "users_can_login_with_azure" }))?.value ===
+        "true"
+          ? process.env.AZURE_AD_AUTHORITY
           : null,
 
       // --------------------------------------------------------

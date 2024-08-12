@@ -71,12 +71,12 @@ const User = {
     }
   },
 
-  createWithSocialProvider: async function ({ username }) {
+  createWithAzureLoginProvider: async function ({ username }) {
     try {
       const user = await prisma.users.create({
         data: {
           username,
-          use_social_provider: true,
+          use_azure_login_provider: true,
         },
       });
       return { user, error: null };

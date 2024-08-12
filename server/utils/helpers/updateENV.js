@@ -448,9 +448,17 @@ const KEY_MAPPING = {
     checks: [],
   },
 
-  // Social Providers
-  GoogleAuthClientId: {
-    envKey: "GOOGLE_AUTH_CLIENT_ID",
+  // Azure Login Providers
+  AzureADClientId: {
+    envKey: "AZURE_AD_CLIENT_ID",
+    checks: [isNotEmpty],
+  },
+  AzureADCredential: {
+    envKey: "AZURE_AD_CREDENTIAL",
+    checks: [isNotEmpty],
+  },
+  AzureADAuthority: {
+    envKey: "AZURE_AD_AUTHORITY",
     checks: [isNotEmpty],
   },
 

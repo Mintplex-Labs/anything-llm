@@ -4,7 +4,7 @@ CREATE TABLE "new_users" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "username" TEXT,
     "password" TEXT,
-    "use_social_provider" BOOLEAN NOT NULL DEFAULT false,
+    "use_azure_login_provider" BOOLEAN NOT NULL DEFAULT false,
     "pfpFilename" TEXT,
     "role" TEXT NOT NULL DEFAULT 'default',
     "suspended" INTEGER NOT NULL DEFAULT 0,

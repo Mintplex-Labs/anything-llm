@@ -26,7 +26,7 @@ export default function AdminSystem() {
     await Admin.updateSystemPreferences({
       limit_user_messages: messageLimit.enabled,
       message_limit: messageLimit.limit,
-      users_can_login_with_google: canLoginWithGoogle.enabled,
+      users_can_login_with_azure: canLoginWithGoogle.enabled,
       allowed_domain: canLoginWithGoogle.allowedDomain,
     });
     if (canLoginWithGoogle.enabled && canLoginWithGoogle.clientId) {
@@ -49,8 +49,8 @@ export default function AdminSystem() {
       });
       setCanLoginWithGoogle({
         ...canLoginWithGoogle,
-        enabled: settings.users_can_login_with_google,
-        clientId: settings.users_can_login_with_google ? "*".repeat(20) : "",
+        enabled: settings.users_can_login_with_azure,
+        clientId: settings.users_can_login_with_azure ? "*".repeat(20) : "",
         allowedDomain: settings.allowed_domain,
       });
     }
@@ -157,7 +157,7 @@ export default function AdminSystem() {
                 <label className="relative inline-flex cursor-pointer items-center">
                   <input
                     type="checkbox"
-                    name="users_can_login_with_google"
+                    name="users_can_login_with_azure"
                     checked={canLoginWithGoogle.enabled}
                     onChange={(e) => {
                       setCanLoginWithGoogle({
