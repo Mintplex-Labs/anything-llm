@@ -8,15 +8,15 @@ export function useLanguageOptions() {
   const languageNames = new Intl.DisplayNames(supportedLanguages, {
     type: "language",
   });
-  const changeLanguage = (newLang = "en") => {
+  const changeLanguage = (newLang = "es") => {
     if (!Object.keys(languages).includes(newLang)) return false;
     i18n.changeLanguage(newLang);
   };
 
   return {
-    currentLanguage: i18n.language || "en",
+    currentLanguage: i18n.language || "es",
     supportedLanguages,
-    getLanguageName: (lang = "en") => languageNames.of(lang),
+    getLanguageName: (lang = "es") => languageNames.of(lang),
     changeLanguage,
   };
 }

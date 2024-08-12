@@ -173,10 +173,7 @@ export default function AccountModal({ user, hideModal }) {
 
 function LanguagePreference() {
   const {
-    currentLanguage,
-    supportedLanguages,
     getLanguageName,
-    changeLanguage,
   } = useLanguageOptions();
 
   return (
@@ -190,16 +187,10 @@ function LanguagePreference() {
       <select
         name="userLang"
         className="bg-zinc-900 w-fit mt-2 px-4 border-gray-500 text-white text-sm rounded-lg block py-2"
-        defaultValue={currentLanguage || "en"}
-        onChange={(e) => changeLanguage(e.target.value)}
+        value={"es"}
+        disabled
       >
-        {supportedLanguages.map((lang) => {
-          return (
-            <option key={lang} value={lang}>
-              {getLanguageName(lang)}
-            </option>
-          );
-        })}
+        <option value="es">{getLanguageName("es")}</option>
       </select>
     </div>
   );

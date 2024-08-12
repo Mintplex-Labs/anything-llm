@@ -10,7 +10,7 @@ export default function LanguagePreference() {
           Display Language
         </h2>
         <p className="text-xs leading-[18px] font-base text-white/60">
-          AnythingLLM&apos;s UI is displayed in Spanish.
+          UI is displayed in Spanish.
         </p>
       </div>
       <div className="flex items-center gap-x-4">
