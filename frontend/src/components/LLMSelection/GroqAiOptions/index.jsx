@@ -89,13 +89,16 @@ function GroqAIModelSelection({ apiKey, settings }) {
         name="GroqModelPref"
         required={true}
         className="border-none bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
-        defaultValue={settings?.GroqModelPref}
       >
         {customModels.length > 0 && (
           <optgroup label="Available models">
             {customModels.map((model) => {
               return (
-                <option key={model.id} value={model.id}>
+                <option
+                  key={model.id}
+                  value={model.id}
+                  selected={settings?.GroqModelPref === model.id}
+                >
                   {model.id}
                 </option>
               );

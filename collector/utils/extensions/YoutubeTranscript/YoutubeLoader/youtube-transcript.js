@@ -47,10 +47,12 @@ class YoutubeTranscript {
       let transcript = "";
       const chunks = transcriptXML.getElementsByTagName("text");
       for (const chunk of chunks) {
-        transcript += chunk.textContent;
+        // Add space after each text chunk
+        transcript += chunk.textContent + " ";
       }
 
-      return transcript;
+      // Trim extra whitespace
+      return transcript.trim().replace(/\s+/g, " ");
     } catch (e) {
       throw new YoutubeTranscriptError(e);
     }

@@ -62,13 +62,18 @@ export default function SlashPresets({ setShowing, sendCommand }) {
     }
 
     fetchPresets();
-    closeEditModal();
+    closeEditModalAndResetPreset();
   };
 
   const handleDeletePreset = async (presetId) => {
     await System.deleteSlashCommandPreset(presetId);
     fetchPresets();
+    closeEditModalAndResetPreset();
+  };
+
+  const closeEditModalAndResetPreset = () => {
     closeEditModal();
+    setSelectedPreset(null);
   };
 
   return (
@@ -116,7 +121,7 @@ export default function SlashPresets({ setShowing, sendCommand }) {
       {selectedPreset && (
         <EditPresetModal
           isOpen={isEditModalOpen}
-          onClose={closeEditModal}
+          onClose={closeEditModalAndResetPreset}
           onSave={handleUpdatePreset}
           onDelete={handleDeletePreset}
           preset={selectedPreset}

@@ -142,6 +142,7 @@ const Document = {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+      TTSSelection: process.env.TTS_PROVIDER || "native",
     });
     await EventLogs.logEvent(
       "workspace_documents_added",
@@ -185,6 +186,7 @@ const Document = {
       LLMSelection: process.env.LLM_PROVIDER || "openai",
       Embedder: process.env.EMBEDDING_ENGINE || "inherit",
       VectorDbSelection: process.env.VECTOR_DB || "lancedb",
+      TTSSelection: process.env.TTS_PROVIDER || "native",
     });
     await EventLogs.logEvent(
       "workspace_documents_removed",
