@@ -14,7 +14,6 @@
     "@metamask/jazzicon": "^2.0.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@mintplex-labs/piper-tts-web": "^1.0.4",
-    "@mintplex-labs/transformers-electron": "^1.0.2",
     "@phosphor-icons/react": "^2.1.7",
     "@tremor/react": "^3.15.1",
     "dompurify": "^3.0.8",
