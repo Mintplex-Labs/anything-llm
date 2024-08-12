@@ -14,7 +14,7 @@ export default function SpeechToTextWhisper({ sendCommand }) {
     if (!!error) return console.error(error); // we already alerts used via toast.
     if (typeof transcript !== "string" || transcript.length === 0)
       return console.error("Nothing found from transcription");
-    sendCommand(transcript, false);
+    sendCommand(transcript, true);
   }
 
   const { loading, recording, startRecording, stopRecording, transcribing } =
@@ -78,9 +78,8 @@ export default function SpeechToTextWhisper({ sendCommand }) {
       onClick={recording ? stopRecording : startRecording}
       disabled={transcribing}
       type="button"
-      className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
-        !!recording ? "!opacity-100" : ""
-      }`}
+      className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${!!recording ? "!opacity-100" : ""
+        }`}
     >
       {transcribing ? (
         <CircleNotch
@@ -89,9 +88,8 @@ export default function SpeechToTextWhisper({ sendCommand }) {
       ) : (
         <Microphone
           weight="fill"
-          className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full ${
-            recording ? "animate-pulse-glow" : ""
-          }`}
+          className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full ${recording ? "animate-pulse-glow" : ""
+            }`}
         />
       )}
       <Tooltip
