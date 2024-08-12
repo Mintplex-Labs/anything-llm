@@ -1,5 +1,4 @@
 import System from "@/models/system";
-import paths from "@/utils/paths";
 import {
   BookOpen,
   DiscordLogo,
@@ -48,51 +47,7 @@ export default function Footer() {
   if (!Array.isArray(footerData) || footerData.length === 0) {
     return (
       <div className="flex justify-center mb-2">
-        <div className="flex space-x-4">
-          <ToolTipWrapper id="open-github">
-            <a
-              href={paths.github()}
-              target="_blank"
-              rel="noreferrer"
-              className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-              aria-label="Find us on Github"
-              data-tooltip-id="open-github"
-              data-tooltip-content="View source code on Github"
-            >
-              <GithubLogo weight="fill" className="h-5 w-5 " />
-            </a>
-          </ToolTipWrapper>
-          <ToolTipWrapper id="open-documentation">
-            <a
-              href={paths.docs()}
-              target="_blank"
-              rel="noreferrer"
-              className="w-fit transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-              aria-label="Docs"
-              data-tooltip-id="open-documentation"
-              data-tooltip-content="Open AnythingLLM help docs"
-            >
-              <BookOpen weight="fill" className="h-5 w-5 " />
-            </a>
-          </ToolTipWrapper>
-          <ToolTipWrapper id="open-discord">
-            <a
-              href={paths.discord()}
-              target="_blank"
-              rel="noreferrer"
-              className="transition-all duration-300 p-2 rounded-full text-white bg-sidebar-button hover:bg-menu-item-selected-gradient hover:border-slate-100 hover:border-opacity-50 border-transparent border"
-              aria-label="Join our Discord server"
-              data-tooltip-id="open-discord"
-              data-tooltip-content="Join the AnythingLLM Discord"
-            >
-              <DiscordLogo
-                weight="fill"
-                className="h-5 w-5 stroke-slate-200 group-hover:stroke-slate-200"
-              />
-            </a>
-          </ToolTipWrapper>
-          {!isMobile && <SettingsButton />}
-        </div>
+        <div>{!isMobile && <SettingsButton />}</div>
       </div>
     );
   }

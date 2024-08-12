@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  GithubLogo,
-  GitMerge,
-  EnvelopeSimple,
-  Plus,
-} from "@phosphor-icons/react";
+import { Plus } from "@phosphor-icons/react";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
-import paths from "@/utils/paths";
 import { isMobile } from "react-device-detect";
 import { SidebarMobileHeader } from "../Sidebar";
 import ChatBubble from "../ChatBubble";
@@ -38,87 +32,6 @@ export default function DefaultChatContainer() {
   }, []);
 
   const MESSAGES = [
-    <React.Fragment>
-      <div
-        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR} md:mt-0 mt-[40px]`}
-      >
-        <div
-          className={`pt-10 pb-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
-        >
-          <div className="flex gap-x-5">
-            <UserIcon user={{ uid: "system" }} role={"assistant"} />
-
-            <span
-              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-            >
-              Welcome to AnythingLLM, AnythingLLM is an open-source AI tool by
-              Mintplex Labs that turns anything into a trained chatbot you can
-              query and chat with. AnythingLLM is a BYOK (bring-your-own-keys)
-              software so there is no subscription, fee, or charges for this
-              software outside of the services you want to use with it.
-            </span>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>,
-
-    <React.Fragment>
-      <div
-        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
-      >
-        <div
-          className={`pb-4 pt-2 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
-        >
-          <div className="flex gap-x-5">
-            <UserIcon user={{ uid: "system" }} role={"assistant"} />
-
-            <span
-              className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-            >
-              AnythingLLM is the easiest way to put powerful AI products like
-              OpenAi, GPT-4, LangChain, PineconeDB, ChromaDB, and other services
-              together in a neat package with no fuss to increase your
-              productivity by 100x.
-            </span>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>,
-
-    <React.Fragment>
-      <div
-        className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
-      >
-        <div
-          className={`pt-2 pb-6 px-4 w-full flex gap-x-5 md:max-w-[80%] flex-col`}
-        >
-          <div className="flex gap-x-5">
-            <UserIcon user={{ uid: "system" }} role={"assistant"} />
-            <div>
-              <span
-                className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
-              >
-                AnythingLLM can run totally locally on your machine with little
-                overhead you wont even notice it's there! No GPU needed. Cloud
-                and on-premises installation is available as well.
-                <br />
-                The AI tooling ecosystem gets more powerful everyday.
-                AnythingLLM makes it easy to use.
-              </span>
-              <a
-                href={paths.github()}
-                target="_blank"
-                className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-              >
-                <GitMerge className="h-4 w-4" />
-                <p>Create an issue on Github</p>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>,
-
     <React.Fragment>
       <div
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
@@ -279,24 +192,6 @@ export default function DefaultChatContainer() {
               >
                 Have Fun!
               </span>
-
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-4">
-                <a
-                  href={paths.github()}
-                  target="_blank"
-                  className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                >
-                  <GithubLogo className="h-4 w-4" />
-                  <p>Star on GitHub</p>
-                </a>
-                <a
-                  href={paths.mailToMintplex()}
-                  className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
-                >
-                  <EnvelopeSimple className="h-4 w-4" />
-                  <p>Contact Mintplex Labs</p>
-                </a>
-              </div>
             </div>
           </div>
         </div>
@@ -306,7 +201,7 @@ export default function DefaultChatContainer() {
 
   useEffect(() => {
     function processMsgs() {
-      if (!!window.localStorage.getItem("anythingllm_intro")) {
+      if (window.localStorage.getItem("anythingllm_intro")) {
         setMockMessages([...MESSAGES]);
         return false;
       } else {
@@ -337,23 +232,23 @@ export default function DefaultChatContainer() {
       {isMobile && <SidebarMobileHeader />}
       {fetchedMessages.length === 0
         ? mockMsgs.map((content, i) => {
-            return <React.Fragment key={i}>{content}</React.Fragment>;
-          })
+          return <React.Fragment key={i}>{content}</React.Fragment>;
+        })
         : fetchedMessages.map((fetchedMessage, i) => {
-            return (
-              <React.Fragment key={i}>
-                <ChatBubble
-                  message={
-                    fetchedMessage.user === ""
-                      ? fetchedMessage.response
-                      : fetchedMessage.user
-                  }
-                  type={fetchedMessage.user === "" ? "response" : "user"}
-                  popMsg={popMsg}
-                />
-              </React.Fragment>
-            );
-          })}
+          return (
+            <React.Fragment key={i}>
+              <ChatBubble
+                message={
+                  fetchedMessage.user === ""
+                    ? fetchedMessage.response
+                    : fetchedMessage.user
+                }
+                type={fetchedMessage.user === "" ? "response" : "user"}
+                popMsg={popMsg}
+              />
+            </React.Fragment>
+          );
+        })}
       {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
     </div>
   );

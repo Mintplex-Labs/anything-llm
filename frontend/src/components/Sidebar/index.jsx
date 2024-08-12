@@ -16,7 +16,6 @@ import { useUploadedModel } from "./UploadDocuments/useUploadedModel";
 
 export default function Sidebar() {
   const { user } = useUser();
-  const { logo } = useLogo();
   const sidebarRef = useRef(null);
   const {
     showing: showingNewWsModal,
@@ -33,13 +32,13 @@ export default function Sidebar() {
     <div>
       <Link
         to={paths.home()}
-        className="flex shrink-0 max-w-[55%] items-center justify-start mx-[38px] my-[18px]"
+        className="flex shrink-0 max-w-[55%] items-center justify-start mx-[35px] my-[15px]"
         aria-label="Home"
       >
         <img
-          src={logo}
+          src={'/logo.png'}
           alt="Logo"
-          className="rounded max-h-[24px] object-contain"
+          className="rounded max-h-[36px] object-contain"
         />
       </Link>
       <div
@@ -137,7 +136,7 @@ export function SidebarMobileHeader() {
         </button>
         <div className="flex items-center justify-center flex-grow">
           <img
-            src={logo}
+            src={'/logo.png'}
             alt="Logo"
             className="block mx-auto h-6 w-auto"
             style={{ maxHeight: "40px", objectFit: "contain" }}
@@ -161,14 +160,14 @@ export function SidebarMobileHeader() {
         />
         <div
           ref={sidebarRef}
-          className="relative h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-sidebar w-[80%] p-[18px] "
+          className="h-[100vh] fixed top-0 left-0  rounded-r-[26px] bg-sidebar w-[80%] p-[18px] "
         >
           <div className="w-full h-full flex flex-col overflow-x-hidden items-between">
             {/* Header Information */}
             <div className="flex w-full items-center justify-between gap-x-4">
               <div className="flex shrink-1 w-fit items-center justify-start">
                 <img
-                  src={logo}
+                  src={'/logo.png'}
                   alt="Logo"
                   className="rounded w-full max-h-[40px]"
                   style={{ objectFit: "contain" }}
