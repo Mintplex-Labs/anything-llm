@@ -4,6 +4,7 @@ import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
 import CTAButton from "@/components/lib/CTAButton";
+import System from "@/models/system";
 
 export default function AdminSystem() {
   const [saving, setSaving] = useState(false);
@@ -13,13 +14,26 @@ export default function AdminSystem() {
     limit: 10,
   });
 
+  const [canLoginWithGoogle, setCanLoginWithGoogle] = useState({
+    enabled: false,
+    clientId: null,
+    allowedDomain: null,
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     await Admin.updateSystemPreferences({
       limit_user_messages: messageLimit.enabled,
       message_limit: messageLimit.limit,
+      users_can_login_with_google: canLoginWithGoogle.enabled,
+      allowed_domain: canLoginWithGoogle.allowedDomain,
     });
+    if (canLoginWithGoogle.enabled && canLoginWithGoogle.clientId) {
+      await System.updateSystem({
+        GoogleAuthClientId: canLoginWithGoogle.clientId,
+      });
+    }
     setSaving(false);
     setHasChanges(false);
     showToast("System preferences updated successfully.", "success");
@@ -32,6 +46,12 @@ export default function AdminSystem() {
       setMessageLimit({
         enabled: settings.limit_user_messages,
         limit: settings.message_limit,
+      });
+      setCanLoginWithGoogle({
+        ...canLoginWithGoogle,
+        enabled: settings.users_can_login_with_google,
+        clientId: settings.users_can_login_with_google ? "*".repeat(20) : "",
+        allowedDomain: settings.allowed_domain,
       });
     }
     fetchSettings();
@@ -117,6 +137,87 @@ export default function AdminSystem() {
                     min={1}
                     max={300}
                     className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-60 p-2.5"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div className="mb-8">
+            <div className="flex flex-col gap-y-1">
+              <h2 className="text-base leading-6 font-bold text-white">
+                Users can login with Google
+              </h2>
+              <p className="text-xs leading-[18px] font-base text-white/60">
+                Enable this option if you want users to be able to log in using
+                their Google accounts. You can restrict access to users with
+                emails from your organization's domain.
+              </p>
+              <div className="mt-2">
+                <label className="relative inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    name="users_can_login_with_google"
+                    checked={canLoginWithGoogle.enabled}
+                    onChange={(e) => {
+                      setCanLoginWithGoogle({
+                        ...canLoginWithGoogle,
+                        enabled: e.target.checked,
+                      });
+                    }}
+                    className="peer sr-only"
+                  />
+                  <div className="pointer-events-none peer h-6 w-11 rounded-full bg-stone-400 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:shadow-xl after:border after:border-gray-600 after:bg-white after:box-shadow-md after:transition-all after:content-[''] peer-checked:bg-lime-300 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800"></div>
+                  <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"></span>
+                </label>
+              </div>
+            </div>
+            {canLoginWithGoogle.enabled && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-white">
+                  Client ID
+                </label>
+                <div className="relative mt-2">
+                  <input
+                    type="password"
+                    name="google_client_id"
+                    onScroll={(e) => e.target.blur()}
+                    onChange={(e) => {
+                      setCanLoginWithGoogle({
+                        ...canLoginWithGoogle,
+                        clientId: e.target.value,
+                      });
+                    }}
+                    value={canLoginWithGoogle.clientId}
+                    min={1}
+                    max={300}
+                    className="w-1/3 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-slate-200 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                  />
+                </div>
+
+                <label className="block text-sm font-medium text-white mt-2">
+                  Organization domain
+                </label>
+                <p className="text-xs leading-[18px] font-base text-white/60">
+                  Restrict access to a specific domain, or leave empty to allow
+                  login with any Google account.
+                </p>
+                <div className="relative mt-2">
+                  <input
+                    type="text"
+                    placeholder="example.com"
+                    name="allowed_domain"
+                    onScroll={(e) => e.target.blur()}
+                    onChange={(e) => {
+                      setCanLoginWithGoogle({
+                        ...canLoginWithGoogle,
+                        allowedDomain: e.target.value,
+                      });
+                    }}
+                    value={canLoginWithGoogle.allowedDomain}
+                    min={1}
+                    max={300}
+                    className="w-1/3 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-slate-200 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                   />
                 </div>
               </div>

@@ -50,6 +50,7 @@ const {
   resetPassword,
   generateRecoveryCodes,
 } = require("../utils/PasswordRecovery");
+const { SocialProvider } = require("../utils/socialProviders");
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
 
 function systemEndpoints(app) {
@@ -129,7 +130,24 @@ function systemEndpoints(app) {
           });
           return;
         }
-
+        // Users who created their account with a social provider do not have a password. So they can only log in with the social provider.
+        if (existingUser.use_social_provider) {
+          await EventLogs.logEvent(
+            "failed_login_user_use_social_provider",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
+          response.status(200).json({
+            user: null,
+            valid: false,
+            token: null,
+            message: "[005] Invalid login credentials.",
+          });
+          return;
+        }
         if (!bcrypt.compareSync(String(password), existingUser.password)) {
           await EventLogs.logEvent(
             "failed_login_invalid_password",
@@ -245,7 +263,123 @@ function systemEndpoints(app) {
       response.sendStatus(500).end();
     }
   });
+  
+  app.post("/social-login/:provider", async (request, response) => {
+    try {
+      if (!(await SystemSettings.isMultiUserMode())) {
+        response.status(200).json({
+          user: null,
+          valid: false,
+          token: null,
+          message: "Social login is available on multi-user mode",
+        });
+        return;
+      }
 
+      const { provider } = request.params;
+      const data = reqBody(request);
+      const socialProvider = new SocialProvider(provider);
+      const { username } = await socialProvider.login(data);
+      let user = await User.get({ username: String(username) });
+
+      const allowedDomain = (
+        await SystemSettings.get({ label: "allowed_domain" })
+      )?.value;
+      if (allowedDomain && allowedDomain !== username.split("@")[1]) {
+        await EventLogs.logEvent(
+          "failed_login_domain_not_allowed",
+          {
+            ip: request.ip || "Unknown IP",
+            username: username || "Unknown user",
+          },
+          user?.id
+        );
+        response.status(200).json({
+          user: null,
+          valid: false,
+          token: null,
+          message: "[006] Domain not allowed by admin.",
+        });
+        return;
+      }
+
+      if (!user) {
+        const { user: newUser, error } = await User.createWithSocialProvider({
+          username: String(username),
+        });
+        if (!newUser) {
+          await EventLogs.logEvent(
+            "failed_login_error_creating_user",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
+          response.status(200).json({
+            user: null,
+            valid: false,
+            token: null,
+            message: error,
+          });
+          return;
+        }
+        await EventLogs.logEvent(
+          "user_created",
+          {
+            userName: newUser.username,
+            createdBy: newUser.username,
+          },
+          newUser.id
+        );
+        user = newUser;
+      }
+
+      if (user.suspended) {
+        await EventLogs.logEvent(
+          "failed_login_account_suspended",
+          {
+            ip: request.ip || "Unknown IP",
+            username: username || "Unknown user",
+          },
+          user?.id
+        );
+        response.status(200).json({
+          user: null,
+          valid: false,
+          token: null,
+          message: "[004] Account suspended by admin.",
+        });
+        return;
+      }
+
+      await Telemetry.sendTelemetry(
+        "login_event",
+        { multiUserMode: false },
+        user?.id
+      );
+
+      await EventLogs.logEvent(
+        "login_event",
+        {
+          ip: request.ip || "Unknown IP",
+          username: user.username || "Unknown user",
+        },
+        user?.id
+      );
+
+      response.status(200).json({
+        valid: true,
+        user: user,
+        token: makeJWT({ id: user.id, username: user.username }, "30d"),
+        message: null,
+      });
+      return;
+    } catch (e) {
+      console.log(e.message, e);
+      response.sendStatus(500).end();
+    }
+  });
   app.post(
     "/system/recover-account",
     [isMultiUserSetup],

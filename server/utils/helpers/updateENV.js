@@ -448,6 +448,12 @@ const KEY_MAPPING = {
     checks: [],
   },
 
+  // Social Providers
+  GoogleAuthClientId: {
+    envKey: "GOOGLE_AUTH_CLIENT_ID",
+    checks: [isNotEmpty],
+  },
+
   // TTS/STT Integration ENVS
   TextToSpeechProvider: {
     envKey: "TTS_PROVIDER",
