@@ -1,16 +1,18 @@
 import { useLanguageOptions } from "@/hooks/useLanguageOptions";
+import { useTranslation } from "react-i18next";
 
 export default function LanguagePreference() {
   const { getLanguageName } = useLanguageOptions();
+  const { t } = useTranslation();
 
   return (
     <>
       <div className="flex flex-col gap-y-1">
         <h2 className="text-base leading-6 font-bold text-white">
-          Display Language
+          {t("appearance.language.title")}
         </h2>
         <p className="text-xs leading-[18px] font-base text-white/60">
-          UI is displayed in Spanish.
+          {t("appearance.language.description")}
         </p>
       </div>
       <div className="flex items-center gap-x-4">

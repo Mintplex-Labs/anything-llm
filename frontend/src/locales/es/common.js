@@ -11,6 +11,15 @@ const TRANSLATIONS = {
     next: "Página siguiente",
   },
 
+  dashboard: {
+    upload: "Documento Subido",
+    workspace: "Nuevo Espacio de Trabajo",
+    search: "Buscar Espacios de Trabajo....",
+    notFound: "No se encontraron espacios de trabajo coincidentes.",
+    name: "Nombre del Espacio de Trabajo",
+    mySpace: "Mi Espacio de Trabajo",
+  },
+
   settings: {
     title: "Configuración de instancia",
     system: "Preferencias del sistema",
@@ -258,6 +267,10 @@ const TRANSLATIONS = {
   appearance: {
     title: "Apariencia",
     description: "Personaliza la configuración de apariencia de tu plataforma.",
+    language: {
+      title: "Idioma de visualización",
+      description: "La interfaz de usuario se muestra en español.",
+    },
     logo: {
       title: "Personalizar logotipo",
       description:
@@ -266,6 +279,13 @@ const TRANSLATIONS = {
       recommended: "Tamaño recomendado: 800 x 200",
       remove: "Eliminar",
       replace: "Reemplazar",
+    },
+    appName: {
+      title: "Nombre de la aplicación personalizado",
+      description:
+        "Establezca un nombre de aplicación personalizado que se muestre en la página de inicio de sesión.",
+      clear: "Limpiar",
+      save: "Guardar",
     },
     message: {
       title: "Personalizar mensajes",

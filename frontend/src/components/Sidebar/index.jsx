@@ -1,4 +1,3 @@
-import useLogo from "@/hooks/useLogo";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
 import paths from "@/utils/paths";
@@ -13,9 +12,11 @@ import SettingsButton from "../SettingsButton";
 import ActiveWorkspaces from "./ActiveWorkspaces";
 import UploadedDocuments from "./UploadDocuments";
 import { useUploadedModel } from "./UploadDocuments/useUploadedModel";
+import { useTranslation } from "react-i18next";
 
 export default function Sidebar() {
   const { user } = useUser();
+  const { t } = useTranslation();
   const sidebarRef = useRef(null);
   const {
     showing: showingNewWsModal,
@@ -36,7 +37,7 @@ export default function Sidebar() {
         aria-label="Home"
       >
         <img
-          src={'/logo.png'}
+          src={"/logo.png"}
           alt="Logo"
           className="rounded max-h-[36px] object-contain"
         />
@@ -57,7 +58,7 @@ export default function Sidebar() {
                     >
                       <UploadSimple size={18} weight="bold" />
                       <p className="text-sidebar text-sm font-semibold">
-                        Uploaded Document
+                        {t("dashboard.upload")}
                       </p>
                     </button>
                   )}
@@ -70,7 +71,7 @@ export default function Sidebar() {
                     >
                       <Plus size={18} weight="bold" />
                       <p className="text-sidebar text-sm font-semibold">
-                        New Workspace
+                        {t("dashboard.workspace")}
                       </p>
                     </button>
                   )}
@@ -91,7 +92,7 @@ export default function Sidebar() {
 }
 
 export function SidebarMobileHeader() {
-  const { logo } = useLogo();
+  const { t } = useTranslation();
   const sidebarRef = useRef(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showBgOverlay, setShowBgOverlay] = useState(false);
@@ -136,7 +137,7 @@ export function SidebarMobileHeader() {
         </button>
         <div className="flex items-center justify-center flex-grow">
           <img
-            src={'/logo.png'}
+            src={"/logo.png"}
             alt="Logo"
             className="block mx-auto h-6 w-auto"
             style={{ maxHeight: "40px", objectFit: "contain" }}
@@ -151,11 +152,10 @@ export function SidebarMobileHeader() {
         className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
       >
         <div
-          className={`${
-            showBgOverlay
+          className={`${showBgOverlay
               ? "transition-all opacity-1"
               : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
+            }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div
@@ -167,7 +167,7 @@ export function SidebarMobileHeader() {
             <div className="flex w-full items-center justify-between gap-x-4">
               <div className="flex shrink-1 w-fit items-center justify-start">
                 <img
-                  src={'/logo.png'}
+                  src={"/logo.png"}
                   alt="Logo"
                   className="rounded w-full max-h-[40px]"
                   style={{ objectFit: "contain" }}
@@ -187,12 +187,25 @@ export function SidebarMobileHeader() {
                   <div className="flex gap-x-2 items-center justify-between">
                     {(!user || user?.role !== "default") && (
                       <button
+                        onClick={showUploadedModal}
+                        className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-2.5 mb-2 bg-white rounded-[8px] text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
+                      >
+                        <UploadSimple size={18} weight="bold" />
+                        <p className="text-sidebar text-sm font-semibold">
+                          {t("dashboard.upload")}
+                        </p>
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex gap-x-2 items-center justify-between">
+                    {(!user || user?.role !== "default") && (
+                      <button
                         onClick={showNewWsModal}
                         className="flex flex-grow w-[75%] h-[44px] gap-x-2 py-[5px] px-4 bg-white rounded-lg text-sidebar justify-center items-center hover:bg-opacity-80 transition-all duration-300"
                       >
                         <Plus className="h-5 w-5" />
                         <p className="text-sidebar text-sm font-semibold">
-                          New Workspace
+                          {t("dashboard.workspace")}
                         </p>
                       </button>
                     )}

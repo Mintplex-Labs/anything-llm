@@ -10,6 +10,15 @@ const TRANSLATIONS = {
     previous: "Previous Page",
     next: "Next Page",
   },
+  //Dashboard items
+  dashboard: {
+    upload: "Uploaded Document",
+    workspace: "New Workspace",
+    search: "Search Workspaces...",
+    notFound: "No matching workspaces found.",
+    name: "Workspace Name",
+    mySpace: "My Workspace",
+  },
 
   // Setting Sidebar menu items.
   settings: {
@@ -263,6 +272,10 @@ const TRANSLATIONS = {
   appearance: {
     title: "Appearance",
     description: "Customize the appearance settings of your platform.",
+    language: {
+      title: "Display Language",
+      description: "UI is displayed in Spanish.",
+    },
     logo: {
       title: "Customize Logo",
       description: "Upload your custom logo to make your chatbot yours.",
@@ -270,6 +283,12 @@ const TRANSLATIONS = {
       recommended: "Recommended size: 800 x 200",
       remove: "Remove",
       replace: "Replace",
+    },
+    appName: {
+      title: "Custom App Name",
+      description: "Set a custom app name that is displayed on the login page.",
+      clear: "Clear",
+      save: "Save",
     },
     message: {
       title: "Customize Messages",

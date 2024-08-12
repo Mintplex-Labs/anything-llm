@@ -2,6 +2,7 @@ import Admin from "@/models/admin";
 import System from "@/models/system";
 import showToast from "@/utils/toast";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function CustomAppName() {
   const [loading, setLoading] = useState(true);
@@ -9,6 +10,7 @@ export default function CustomAppName() {
   const [customAppName, setCustomAppName] = useState("");
   const [originalAppName, setOriginalAppName] = useState("");
   const [canCustomize, setCanCustomize] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchInitialParams = async () => {
@@ -60,10 +62,10 @@ export default function CustomAppName() {
     <form className="mb-6" onSubmit={updateCustomAppName}>
       <div className="flex flex-col gap-y-1">
         <h2 className="text-base leading-6 font-bold text-white">
-          Custom App Name
+          {t("appearance.appName.title")}
         </h2>
         <p className="text-xs leading-[18px] font-base text-white/60">
-          Set a custom app name that is displayed on the login page.
+          {t("appearance.appName.description")}
         </p>
       </div>
       <div className="flex items-center gap-x-4">
@@ -83,7 +85,7 @@ export default function CustomAppName() {
             onClick={(e) => updateCustomAppName(e, "")}
             className="mt-4 text-white text-base font-medium hover:text-opacity-60"
           >
-            Clear
+            {t("appearance.appName.clear")}
           </button>
         )}
       </div>
@@ -92,7 +94,7 @@ export default function CustomAppName() {
           type="submit"
           className="transition-all mt-6 w-fit duration-300 border border-slate-200 px-5 py-2.5 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
         >
-          Save
+          {t("appearance.appName.save")}
         </button>
       )}
     </form>
