@@ -38,7 +38,7 @@ app.use(
   })
 );
 
-if (!!process.env.ENABLE_HTTPS) {
+if (process.env.ENABLE_HTTPS) {
   bootSSL(app, process.env.SERVER_PORT || 3001);
 } else {
   require("@mintplex-labs/express-ws").default(app); // load WebSockets in non-SSL mode.
@@ -62,26 +62,46 @@ developerEndpoints(app, apiRouter);
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);
 
+const ORIGIN_DOMAIN_WHITELIST = ["venturatravel.org", "viventura.de"];
+
+function onlyVenturaOrigin(request, response, next) {
+  const origin =
+    request.headers.host ||
+    request.headers.origin ||
+    request.headers["x-forwarded-for"];
+
+  const ok = ORIGIN_DOMAIN_WHITELIST.some((allowed) =>
+    origin.includes(allowed)
+  );
+  if (ok) {
+    response.header("X-FRAME-OPTIONS", "ALLOW-FROM " + request.query.domain);
+    next();
+  } else {
+    response.sendStatus(401);
+  }
+}
+
 if (process.env.NODE_ENV !== "development") {
   const { MetaGenerator } = require("./utils/boot/MetaGenerator");
   const IndexPage = new MetaGenerator();
+
+  app.use(onlyVenturaOrigin);
 
   app.use(
     express.static(path.resolve(__dirname, "public"), {
       extensions: ["js"],
       setHeaders: (res) => {
-        // Disable I-framing of entire site UI
         res.removeHeader("X-Powered-By");
       },
     })
   );
 
-  app.use("/", function(_, response) {
+  app.use("/", function (_, response) {
     IndexPage.generate(response);
     return;
   });
 
-  app.get("/robots.txt", function(_, response) {
+  app.get("/robots.txt", function (_, response) {
     response.type("text/plain");
     response.send("User-agent: *\nDisallow: /").end();
   });
@@ -116,7 +136,7 @@ if (process.env.NODE_ENV !== "development") {
   });
 }
 
-app.all("*", function(_, response) {
+app.all("*", function (_, response) {
   response.sendStatus(404);
 });
 
