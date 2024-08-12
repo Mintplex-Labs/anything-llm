@@ -52,7 +52,6 @@ const {
   generateRecoveryCodes,
 } = require("../utils/PasswordRecovery");
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
-const { LocalWhisper } = require("../utils/WhisperProviders/localWhisper");
 
 function systemEndpoints(app) {
   if (!app) return;
