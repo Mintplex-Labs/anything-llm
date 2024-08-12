@@ -61,10 +61,6 @@ function WhisperSTTModelSelection({ settings }) {
             })}
           </select>
         </div>
-        {/* <p className="text-xs text-white/40">
-          The "✔" indicates this model is already stored locally and does not
-          need to be downloaded when run.
-        </p> */}
       </div>
     </div>
   );

@@ -39,7 +39,7 @@ export default defineConfig({
         replacement: fileURLToPath(new URL("./src", import.meta.url))
       },
       {
-        // process: "process/browser",
+        process: "process/browser",
         stream: "stream-browserify",
         zlib: "browserify-zlib",
         util: "util",
