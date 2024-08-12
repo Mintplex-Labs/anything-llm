@@ -60,8 +60,8 @@ model system_settings {
 model users {
   id                          Int                           @id @default(autoincrement())
   username                    String?                       @unique
-  password                    String
-  use_azure_login_provider         Boolean                       @default(false)
+  password                    String?
+  use_azure_login_provider    Boolean                       @default(false)
   pfpFilename                 String?
   role                        String                        @default("default")
   suspended                   Int                           @default(0)

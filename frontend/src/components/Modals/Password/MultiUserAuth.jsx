@@ -299,12 +299,7 @@ export default function MultiUserAuth() {
               </p>
             </div>
           </div>
-          <AzureLoginProviders
-            setError={setError}
-            setLoading={setLoading}
-            setUser={setUser}
-            setToken={setToken}
-          />
+          <AzureLoginProviders/>
           <div className="w-full px-4 md:px-12">
             <div className="w-full flex flex-col gap-y-4">
               <div className="w-screen md:w-full md:px-0 px-6">

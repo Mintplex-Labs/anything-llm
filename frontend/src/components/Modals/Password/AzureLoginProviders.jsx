@@ -1,62 +1,28 @@
-import System from "@/models/system";
-import { AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
-import paths from "@/utils/paths";
-import { AzureLogin } from '@azure/msal-react';
+import { PublicClientApplication } from '@azure/msal-browser';
+import { MsalProvider } from '@azure/msal-react';
 import { useEffect, useState } from "react";
 
-export default function AzureLoginProviders({
-  setError,
-  setLoading,
-  setUser,
-  setToken,
-}) {
+export default function AzureLoginProviders({}) {
   const [settings, setSettings] = useState(null);
-
-  useEffect(() => {
-    async function fetchSettings() {
-      const _settings = await System.keys();
-      setSettings(_settings);
-    }
-    fetchSettings();
-  }, []);
-
-  const handleAzureLogin = async (data) => {
-    setError(null);
-    setLoading(true);
-    const { valid, user, token, message } = await System.azureLogin(
-      data
-    );
-    if (valid && !!token && !!user) {
-      setUser(user);
-      setToken(token);
-
-      window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
-      window.localStorage.setItem(AUTH_TOKEN, token);
-      window.location = paths.home();
-    } else {
-      setError(message);
-      setLoading(false);
-    }
-    setLoading(false);
+  const msalConfig = {
+    auth: {
+      clientId: 'YOUR_CLIENT_ID', // Replace with your client ID
+      authority: 'https://login.microsoftonline.com/YOUR_TENANT_ID', // Replace with your tenant ID
+      redirectUri: 'http://localhost:3000/', // Replace with your app's redirect URI
+    },
+    cache: {
+      cacheLocation: 'localStorage',
+      storeAuthStateInCookie: false,
+    },
   };
+
+  const pca = new PublicClientApplication(msalConfig);
 
   return (
     <>
-      {settings?.AzureADClientId && (
-        <>
-          <GoogleLogin
-            onSuccess={(credentialResponse) => {
-              handleAzureLogin(credentialResponse);
-            }}
-            onError={() => {
-              setError("Something went wrong");
-            }}
-            theme={"filled_black"}
-          />
-          {/* Add here other social providers */}
-          <p className="text-sm text-white/90 text-center my-2">or</p>
-        </>
-      )}
+      <MsalProvider instance={pca}>
+        <App />
+      </MsalProvider>
     </>
   );
 }

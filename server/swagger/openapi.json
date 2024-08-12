@@ -50,6 +50,20 @@
         }
       }
     },
+    "/v1/auth/azure": {
+      "post": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/v1/admin/is-multi-user-mode": {
       "get": {
         "tags": [

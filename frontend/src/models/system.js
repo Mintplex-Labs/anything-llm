@@ -80,7 +80,7 @@ const System = {
       });
   },
   azureLogin: async function (body, provider) {
-    return await fetch(`${API_BASE}/azure-login`, {
+    return await fetch(`${API_BASE}/auth/azure`, {
       method: "POST",
       body: JSON.stringify({ ...body }),
     })
