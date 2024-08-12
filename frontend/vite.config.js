@@ -9,6 +9,14 @@ dns.setDefaultResultOrder("verbatim")
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  assetsInclude: [
+    './public/piper/ort-wasm-simd-threaded.wasm',
+    './public/piper/piper_phonemize.wasm',
+    './public/piper/piper_phonemize.data',
+  ],
+  worker: {
+    format: 'es'
+  },
   server: {
     port: 3000,
     host: "localhost"
@@ -60,7 +68,7 @@ export default defineConfig({
       },
       external: [
         // Reduces transformation time by 50% and we don't even use this variant, so we can ignore.
-        /@phosphor-icons\/react\/dist\/ssr/
+        /@phosphor-icons\/react\/dist\/ssr/,
       ]
     },
     commonjsOptions: {
@@ -68,6 +76,7 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
+    include: ["@mintplex-labs/piper-tts-web"],
     esbuildOptions: {
       define: {
         global: "globalThis"

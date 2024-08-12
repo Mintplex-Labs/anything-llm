@@ -1,21 +1,12 @@
-name: AnythingLLM Development Docker image (amd64)
+name: Publish AnythingLLM Docker image on Release (amd64 & arm64)
 
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
 on:
-  push:
-    branches: ['pipertts-support'] # put your current branch to create a build. Core team only.
-    paths-ignore:
-      - '**.md'
-      - 'cloud-deployments/*'
-      - 'images/**/*'
-      - '.vscode/**/*'
-      - '**/.env.example'
-      - '.github/ISSUE_TEMPLATE/**/*'
-      - 'embed/**/*' # Embed should be published to frontend (yarn build:publish) if any changes are introduced
-      - 'server/utils/agents/aibitat/example/**/*' # Do not push new image for local dev testing of new aibitat images.
+  release:
+    types: [published]
 
 jobs:
   push_multi_platform_to_registries:
@@ -41,6 +32,9 @@ jobs:
           fi
         id: dockerhub
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
@@ -51,15 +45,24 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-   
+      
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: |
             ${{ steps.dockerhub.outputs.enabled == 'true' && 'mintplexlabs/anythingllm' || '' }}
+            ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=dev
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       - name: Build and push multi-platform Docker image
         uses: docker/build-push-action@v6
@@ -69,12 +72,12 @@ jobs:
           push: true
           sbom: true
           provenance: mode=max
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
+      
       # For Docker scout there are some intermediary reported CVEs which exists outside
       # of execution content or are unreachable by an attacker but exist in image.
       # We create VEX files for these so they don't show in scout summary. 
@@ -110,5 +113,3 @@ jobs:
             done
           done
         shell: bash
-
-      

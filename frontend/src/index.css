@@ -794,3 +794,12 @@ does not extend the close button beyond the viewport. */
     top: -3.5rem;
   }
 }
+
+/* Math/Katex formatting to prevent duplication of content on screen */
+.katex-html[aria-hidden="true"] {
+  display: none;
+}
+
+.katex-mathml {
+  font-size: 20px;
+}
