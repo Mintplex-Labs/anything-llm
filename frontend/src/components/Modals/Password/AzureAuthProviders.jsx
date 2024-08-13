@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import System from "@/models/system";
 import logo from "@/media/logo/microsoft-login.png";
@@ -7,7 +7,16 @@ export default function AzureAuthProviders({
   setUser,
   setToken,
 }) {
+  const [settings, setSettings] = useState(null);
   const { instance, accounts } = useMsal();
+
+  useEffect(() => {
+    async function fetchSettings() {
+      const _settings = await System.keys();
+      setSettings(_settings);
+    }
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,10 +57,14 @@ export default function AzureAuthProviders({
 
   return (
     <>
-      <div>
-        <button type="button" onClick={handleLogin}><img src={logo} alt="Sign in with microsoft" width="300px" /></button>
-      </div>
-      <p className="text-sm text-white/90 text-center my-2">or</p>
+      {settings?.AzureADClientId && (
+        <>
+          <div>
+            <button type="button" onClick={handleLogin}><img src={logo} alt="Sign in with microsoft" width="300px" /></button>
+          </div>
+          <p className="text-sm text-white/90 text-center my-2">or</p>
+        </>
+      )}
     </>
   );
 }
