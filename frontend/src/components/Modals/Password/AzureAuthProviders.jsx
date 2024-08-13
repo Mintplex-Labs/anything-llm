@@ -6,6 +6,8 @@ import { AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
 import paths from "@/utils/paths";
 
 export default function AzureAuthProviders({
+  setError,
+  setLoading,
   setUser,
   setToken,
 }) {
@@ -24,6 +26,8 @@ export default function AzureAuthProviders({
     const fetchData = async () => {
       try {
         if (accounts.length > 0) {
+          setError(null);
+          setLoading(true);
           const account = accounts[0];
   
           const response = await instance.acquireTokenSilent({
@@ -56,10 +60,11 @@ export default function AzureAuthProviders({
           }
         }
       } catch (error) {
-        console.error('Error fetching data or acquiring token:', error);
+        setError('Error fetching data or acquiring token:', error);
       }
+      setLoading(false);
     };
-  
+    
     fetchData();
   }, [accounts, instance]);
 

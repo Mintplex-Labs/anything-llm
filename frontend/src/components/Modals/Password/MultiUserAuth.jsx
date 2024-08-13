@@ -300,6 +300,8 @@ export default function MultiUserAuth() {
             </div>
           </div>
           <AzureAuthProviders
+            setError={setError}
+            setLoading={setLoading}
             setUser={setUser}
             setToken={setToken}
           />

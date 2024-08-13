@@ -9,13 +9,12 @@ export const AuthContext = createContext(null);
 export function ContextWrapper(props) {
   const localUser = localStorage.getItem(AUTH_USER);
   const localAuthToken = localStorage.getItem(AUTH_TOKEN);
-  const [azureADClientId, setAzureADClientId] = useState(null);
-  const [azureADRedirectUri, setAzureADRedirectUri] = useState(null);
-  const [azureADTenantId, setAzureADTenantId] = useState(null);
   const [store, setStore] = useState({
     user: localUser ? JSON.parse(localUser) : null,
     authToken: localAuthToken ? localAuthToken : null,
   });
+  const [settings, setSettings] = useState(null);
+  const [msalInstance, setMsalInstance] = useState(null);
 
   const [actions] = useState({
     updateUser: (user, authToken = "") => {
@@ -31,25 +30,21 @@ export function ContextWrapper(props) {
     },
   });
 
-  const [msalInstance, setMsalInstance] = useState(null);
-
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await System.keys();
-      setAzureADClientId(_settings?.AzureADClientId);
-      setAzureADRedirectUri(_settings?.AzureADRedirectUri);
-      setAzureADTenantId(_settings?.AzureADTenantId);
+      setSettings(_settings);
     }
     fetchSettings();
   }, []);
 
   useEffect(() => {
-    if (azureADClientId && azureADRedirectUri && azureADTenantId) {
+    if (settings?.AzureADClientId && settings?.AzureADRedirectUri && settings?.AzureADTenantId) {
       const msalConfig = {
         auth: {
-          clientId: azureADClientId,
-          authority: `https://login.microsoftonline.com/${azureADTenantId}`,
-          redirectUri: azureADRedirectUri,
+          clientId: settings?.AzureADClientId,
+          authority: `https://login.microsoftonline.com/${settings?.AzureADTenantId}`,
+          redirectUri: settings?.AzureADRedirectUri,
         },
         cache: {
           cacheLocation: 'localStorage',
@@ -59,18 +54,25 @@ export function ContextWrapper(props) {
 
       setMsalInstance(new PublicClientApplication(msalConfig));
     }
-  }, [azureADClientId, azureADRedirectUri, azureADTenantId]);
+  }, [settings]);
 
-  // Show nothing or a loading indicator until MSAL instance is ready
   if (!msalInstance) {
     return <div>Loading...</div>; // or return null
   }
 
-  return (
-    <MsalProvider instance={msalInstance}>
+  if (settings?.AzureADClientId) {
+    return (
+      <MsalProvider instance={msalInstance}>
+        <AuthContext.Provider value={{ store, actions }}>
+          {props.children}
+        </AuthContext.Provider>
+      </MsalProvider>
+    );
+  } else {
+    return (
       <AuthContext.Provider value={{ store, actions }}>
         {props.children}
       </AuthContext.Provider>
-    </MsalProvider>
-  );
+    );
+  }
 }
