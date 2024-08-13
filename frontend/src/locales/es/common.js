@@ -18,6 +18,34 @@ const TRANSLATIONS = {
     notFound: "No se encontraron espacios de trabajo coincidentes.",
     name: "Nombre del Espacio de Trabajo",
     mySpace: "Mi Espacio de Trabajo",
+    openingMessages: {
+      message_1: "¿Cómo empiezo?",
+      message_2: {
+        p1: "Es simple. Todas las colecciones están organizadas en grupos que llamamos 'Espacios de trabajo'. Los espacios de trabajo son grupos de archivos, documentos, imágenes, PDF y otros archivos que se transformarán en algo que los LLM puedan entender y usar en conversaciones.",
+        p2: "Puedes agregar y eliminar archivos en cualquier momento.",
+        button: "Crea tu primer espacio de trabajo",
+      },
+      message_3:
+        "¿Es esto como un Dropbox con IA o algo así? ¿Y qué hay del chat? ¿No es un chatbot?",
+      message_4: {
+        span1: "AnythingLLM es más que un Dropbox más inteligente.",
+        span2: "AnythingLLM ofrece dos formas de hablar con tus datos:",
+        query: {
+          title: "Consulta:",
+          description:
+            "Tus chats devolverán datos o inferencias encontradas con los documentos en tu espacio de trabajo al que tiene acceso. ¡Agregar más documentos al espacio de trabajo lo hace más inteligente!",
+        },
+        conversational: {
+          title: "Conversacional:",
+          description:
+            "Tus documentos + tu historial de chat en curso contribuyen al conocimiento del LLM al mismo tiempo. Es ideal para agregar información en tiempo real basada en texto o corregir malentendidos que pueda tener el LLM.",
+        },
+        span3:
+          "¡Puedes alternar entre ambos modos en medio de la conversación!",
+      },
+      message_5: "¡Vaya, esto suena increíble, déjame probarlo ya!",
+      message_6: "¡Diviértete!",
+    },
   },
 
   settings: {

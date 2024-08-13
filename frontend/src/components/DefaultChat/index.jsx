@@ -11,10 +11,12 @@ import UserIcon from "../UserIcon";
 import { userFromStorage } from "@/utils/request";
 import { AI_BACKGROUND_COLOR, USER_BACKGROUND_COLOR } from "@/utils/constants";
 import useUser from "@/hooks/useUser";
+import { useTranslation } from "react-i18next";
 
 export default function DefaultChatContainer() {
   const [mockMsgs, setMockMessages] = useState([]);
   const { user } = useUser();
+  const { t } = useTranslation();
   const [fetchedMessages, setFetchedMessages] = useState([]);
   const {
     showing: showingNewWsModal,
@@ -32,7 +34,7 @@ export default function DefaultChatContainer() {
   }, []);
 
   const MESSAGES = [
-    <React.Fragment>
+    <React.Fragment key="message-1">
       <div
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
@@ -48,14 +50,14 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              How do I get started?!
+              {t("dashboard.openingMessages.message_1")}
             </span>
           </div>
         </div>
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="message-2">
       <div
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
@@ -68,13 +70,10 @@ export default function DefaultChatContainer() {
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               >
-                It's simple. All collections are organized into buckets we call{" "}
-                "Workspaces". Workspaces are buckets of files, documents,
-                images, PDFs, and other files which will be transformed into
-                something LLM's can understand and use in conversation.
+                {t("dashboard.openingMessages.message_2.p1")}
                 <br />
                 <br />
-                You can add and remove files at anytime.
+                {t("dashboard.openingMessages.message_2.p2")}
               </span>
 
               {(!user || user?.role !== "default") && (
@@ -83,7 +82,7 @@ export default function DefaultChatContainer() {
                   className="mt-5 w-fit transition-all duration-300 border border-slate-200 px-4 py-2 rounded-lg text-white text-sm items-center flex gap-x-2 hover:bg-slate-200 hover:text-slate-800 focus:ring-gray-800"
                 >
                   <Plus className="h-4 w-4" />
-                  <p>Create your first workspace</p>
+                  <p>{t("dashboard.openingMessages.message_2.button")}</p>
                 </button>
               )}
             </div>
@@ -92,7 +91,7 @@ export default function DefaultChatContainer() {
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="message-3">
       <div
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
@@ -108,15 +107,14 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              Is this like an AI dropbox or something? What about chatting? It
-              is a chatbot isn't it?
+              {t("dashboard.openingMessages.message_3")}
             </span>
           </div>
         </div>
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="message-4">
       <div
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
@@ -129,32 +127,32 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              AnythingLLM is more than a smarter Dropbox.
+              {t("dashboard.openingMessages.message_4.span1")}
               <br />
               <br />
-              AnythingLLM offers two ways of talking with your data:
+              {t("dashboard.openingMessages.message_4.span2")}
               <br />
               <br />
-              <i>Query:</i> Your chats will return data or inferences found with
-              the documents in your workspace it has access to. Adding more
-              documents to the Workspace make it smarter!
+              <i>{t("dashboard.openingMessages.message_4.query.title")}</i>
+              {t("dashboard.openingMessages.message_4.query.description")}
               <br />
               <br />
-              <i>Conversational:</i> Your documents + your on-going chat history
-              both contribute to the LLM knowledge at the same time. Great for
-              appending real-time text-based info or corrections and
-              misunderstandings the LLM might have.
+              <i>
+                {t("dashboard.openingMessages.message_4.conversational.title")}
+              </i>
+              {t(
+                "dashboard.openingMessages.message_4.conversational.description"
+              )}
               <br />
               <br />
-              You can toggle between either mode{" "}
-              <i>in the middle of chatting!</i>
+              {t("dashboard.openingMessages.message_4.span3")}
             </span>
           </div>
         </div>
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="message-5">
       <div
         className={`flex justify-center items-end w-full ${USER_BACKGROUND_COLOR}`}
       >
@@ -170,14 +168,14 @@ export default function DefaultChatContainer() {
             <span
               className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
             >
-              Wow, this sounds amazing, let me try it out already!
+              {t("dashboard.openingMessages.message_5")}
             </span>
           </div>
         </div>
       </div>
     </React.Fragment>,
 
-    <React.Fragment>
+    <React.Fragment key="message-6">
       <div
         className={`flex justify-center items-end w-full ${AI_BACKGROUND_COLOR}`}
       >
@@ -190,7 +188,7 @@ export default function DefaultChatContainer() {
               <span
                 className={`whitespace-pre-line text-white font-normal text-sm md:text-sm flex flex-col gap-y-1 mt-2`}
               >
-                Have Fun!
+                {t("dashboard.openingMessages.message_6")}
               </span>
             </div>
           </div>
