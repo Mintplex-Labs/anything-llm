@@ -4,7 +4,6 @@ import { isMobile } from "react-device-detect";
 import Admin from "@/models/admin";
 import showToast from "@/utils/toast";
 import CTAButton from "@/components/lib/CTAButton";
-import System from "@/models/system";
 
 export default function AdminSystem() {
   const [saving, setSaving] = useState(false);

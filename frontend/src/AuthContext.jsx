@@ -5,6 +5,7 @@ import { MsalProvider } from '@azure/msal-react';
 import System from "./models/system";
 
 export const AuthContext = createContext(null);
+
 export function ContextWrapper(props) {
   const localUser = localStorage.getItem(AUTH_USER);
   const localAuthToken = localStorage.getItem(AUTH_TOKEN);
@@ -30,6 +31,8 @@ export function ContextWrapper(props) {
     },
   });
 
+  const [msalInstance, setMsalInstance] = useState(null);
+
   useEffect(() => {
     async function fetchSettings() {
       const _settings = await System.keys();
@@ -40,24 +43,31 @@ export function ContextWrapper(props) {
     fetchSettings();
   }, []);
 
-  const msalConfig = {
-    auth: {
-      clientId: azureADClientId,
-      authority: "https://login.microsoftonline.com/"+azureADTenantId,
-      redirectUri: azureADRedirectUri,
-    },
-    cache: {
-      cacheLocation: 'localStorage',
-      storeAuthStateInCookie: false,
-    },
+  useEffect(() => {
+    if (azureADClientId && azureADRedirectUri && azureADTenantId) {
+      const msalConfig = {
+        auth: {
+          clientId: azureADClientId,
+          authority: `https://login.microsoftonline.com/${azureADTenantId}`,
+          redirectUri: azureADRedirectUri,
+        },
+        cache: {
+          cacheLocation: 'localStorage',
+          storeAuthStateInCookie: false,
+        },
+      };
+
+      setMsalInstance(new PublicClientApplication(msalConfig));
+    }
+  }, [azureADClientId, azureADRedirectUri, azureADTenantId]);
+
+  // Show nothing or a loading indicator until MSAL instance is ready
+  if (!msalInstance) {
+    return <div>Loading...</div>; // or return null
   }
 
-  console.log(msalConfig);
-
-  const pca = new PublicClientApplication(msalConfig);  
-
   return (
-    <MsalProvider instance={pca}>
+    <MsalProvider instance={msalInstance}>
       <AuthContext.Provider value={{ store, actions }}>
         {props.children}
       </AuthContext.Provider>
