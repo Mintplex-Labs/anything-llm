@@ -18,6 +18,7 @@ import ManageWorkspace, {
   useManageWorkspaceModal,
 } from "../../Modals/ManageWorkspace";
 import ThreadContainer from "./ThreadContainer";
+import { useTranslation } from "react-i18next";
 
 function groupWorkspacesByYear(workspaces) {
   const groupedWorkspaces = workspaces.reduce((acc, item) => {
@@ -39,6 +40,7 @@ function groupWorkspacesByYear(workspaces) {
 }
 
 export default function ActiveWorkspaces() {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const [loading, setLoading] = useState(true);
   const [groupedWorkspaces, setGroupedWorkspaces] = useState({});
@@ -135,7 +137,7 @@ export default function ActiveWorkspaces() {
       <div className="relative">
         <input
           type="text"
-          placeholder="Search workspaces..."
+          placeholder={t("dashboard.search")}
           value={searchTerm}
           onChange={handleSearchChange}
           className="w-full px-4 py-2 pl-10 border rounded-md bg-gray-700 text-white border-gray-600 focus:outline-none focus:border-blue-500"
@@ -152,7 +154,7 @@ export default function ActiveWorkspaces() {
       >
         {Object.keys(filteredGroupedWorkspaces).length === 0 ? (
           <div className="text-white text-center py-4">
-            No matching workspaces found.
+            {t("dashboard.notFound")}
           </div>
         ) : (
           Object.entries(filteredGroupedWorkspaces).map(
@@ -205,11 +207,10 @@ export default function ActiveWorkspaces() {
                     transition-all duration-[200ms]
                       flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] text-white justify-start items-center
                       hover:bg-workspace-item-selected-gradient hover:font-bold border-2 border-outline
-                      ${
-                        isActive
-                          ? "bg-workspace-item-selected-gradient font-bold"
-                          : ""
-                      }`}
+                      ${isActive
+                                    ? "bg-workspace-item-selected-gradient font-bold"
+                                    : ""
+                                  }`}
                               >
                                 <div className="flex flex-row justify-between w-full">
                                   <div className="flex items-center space-x-2">
@@ -219,11 +220,10 @@ export default function ActiveWorkspaces() {
                                       size={24}
                                     />
                                     <p
-                                      className={`text-[14px] leading-loose whitespace-nowrap overflow-hidden ${
-                                        isActive
+                                      className={`text-[14px] leading-loose whitespace-nowrap overflow-hidden ${isActive
                                           ? "text-white "
                                           : "text-zinc-200"
-                                      }`}
+                                        }`}
                                     >
                                       {isActive || isHovered
                                         ? truncate(workspace.name, 15)
@@ -233,14 +233,13 @@ export default function ActiveWorkspaces() {
                                   {(isActive ||
                                     isHovered ||
                                     gearHover[workspace.id]) &&
-                                  user?.role !== "default" ? (
+                                    user?.role !== "default" ? (
                                     <div className="flex items-center gap-x-[2px]">
                                       <div
-                                        className={`flex hover:bg-[#646768] p-[2px] rounded-[4px] text-[#A7A8A9] hover:text-white ${
-                                          uploadHover[workspace.id]
+                                        className={`flex hover:bg-[#646768] p-[2px] rounded-[4px] text-[#A7A8A9] hover:text-white ${uploadHover[workspace.id]
                                             ? "bg-[#646768]"
                                             : ""
-                                        }`}
+                                          }`}
                                       >
                                         <button
                                           type="button"
@@ -269,11 +268,11 @@ export default function ActiveWorkspaces() {
                                         to={
                                           isInWorkspaceSettings
                                             ? paths.workspace.chat(
-                                                workspace.slug
-                                              )
+                                              workspace.slug
+                                            )
                                             : paths.workspace.settings.generalAppearance(
-                                                workspace.slug
-                                              )
+                                              workspace.slug
+                                            )
                                         }
                                         onMouseEnter={() =>
                                           handleGearMouseEnter(workspace.id)
@@ -288,11 +287,11 @@ export default function ActiveWorkspaces() {
                                           <GearSix
                                             color={
                                               isInWorkspaceSettings &&
-                                              workspace.slug === slug
+                                                workspace.slug === slug
                                                 ? "#46C8FF"
                                                 : gearHover[workspace.id]
-                                                ? "#FFFFFF"
-                                                : "#A7A8A9"
+                                                  ? "#FFFFFF"
+                                                  : "#A7A8A9"
                                             }
                                             weight="bold"
                                             className="h-[20px] w-[20px]"

@@ -5,6 +5,7 @@ import { Plus, CircleNotch, Trash } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import ThreadItem from "./ThreadItem";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 export const THREAD_RENAME_EVENT = "renameThread";
 
 export default function ThreadContainer({ workspace }) {
@@ -114,9 +115,7 @@ export default function ThreadContainer({ workspace }) {
     );
   }
 
-  const activeThreadIdx = !!threads.find(
-    (thread) => thread?.slug === threadSlug
-  )
+  const activeThreadIdx = threads.find((thread) => thread?.slug === threadSlug)
     ? threads.findIndex((thread) => thread?.slug === threadSlug) + 1
     : 0;
 
@@ -155,10 +154,11 @@ export default function ThreadContainer({ workspace }) {
 
 function NewThreadButton({ workspace }) {
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
   const onClick = async () => {
     setLoading(true);
     const { thread, error } = await Workspace.threads.new(workspace.slug);
-    if (!!error) {
+    if (error) {
       showToast(`Could not create thread - ${error}`, "error", { clear: true });
       setLoading(false);
       return;
@@ -189,7 +189,9 @@ function NewThreadButton({ workspace }) {
         {loading ? (
           <p className="text-left text-slate-100 text-sm">Starting Thread...</p>
         ) : (
-          <p className="text-left text-slate-100 text-sm">New Thread</p>
+          <p className="text-left text-slate-100 text-sm">
+            {t("newWorkspace.new")}
+          </p>
         )}
       </div>
     </button>

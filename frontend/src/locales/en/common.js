@@ -10,6 +10,42 @@ const TRANSLATIONS = {
     previous: "Previous Page",
     next: "Next Page",
   },
+  //Dashboard items
+  dashboard: {
+    upload: "Uploaded Document",
+    workspace: "New Workspace",
+    search: "Search Workspaces...",
+    notFound: "No matching workspaces found.",
+    name: "Workspace Name",
+    mySpace: "My Workspace",
+    openingMessages: {
+      message_1: "How do I get started?!",
+      message_2: {
+        p1: "It's simple. All collections are organized into buckets we call 'Workspaces'.Workspaces are buckets of files, documents,images, PDFs, and other files which will be transformed into something LLM's can understand and use in conversation. ",
+        p2: "You can add and remove files at anytime.",
+        button: "Create your first workspace",
+      },
+      message_3:
+        " Is this like an AI dropbox or something? What about chatting? It is a chatbot isn't it?",
+      message_4: {
+        span1: "AnythingLLM is more than a smarter Dropbox.",
+        span2: "AnythingLLM offers two ways of talking with your data:",
+        query: {
+          title: "Query:",
+          description:
+            "Your chats will return data or inferences found with the documents in your workspace it has access to.Adding more documents to the Workspace make it smarter!",
+        },
+        conversational: {
+          title: "Conversational:",
+          description:
+            "Your documents + your on-going chat history both contribute to the LLM knowledge at the same time. Great for appending real-time text-based info or corrections and misunderstandings the LLM might have.",
+        },
+        span3: "You can toggle between either mode in the middle of chatting!",
+      },
+      message_5: "Wow, this sounds amazing, let me try it out already!",
+      message_6: "Have Fun!",
+    },
+  },
 
   // Setting Sidebar menu items.
   settings: {
@@ -48,6 +84,18 @@ const TRANSLATIONS = {
       start: "Sign in to your",
       end: "account.",
     },
+  },
+
+  // new workspace
+
+  newWorkspace: {
+    welcomeMsg: "Welcome to your new workspace.",
+    p: "To get started either",
+    span: "upload a document",
+    or: "or",
+    b: "send a chat.",
+    placeholder: "Send a message",
+    new: "New Thread",
   },
 
   // Workspace Settings menu items
@@ -263,6 +311,10 @@ const TRANSLATIONS = {
   appearance: {
     title: "Appearance",
     description: "Customize the appearance settings of your platform.",
+    language: {
+      title: "Display Language",
+      description: "UI is displayed in Spanish.",
+    },
     logo: {
       title: "Customize Logo",
       description: "Upload your custom logo to make your chatbot yours.",
@@ -270,6 +322,12 @@ const TRANSLATIONS = {
       recommended: "Recommended size: 800 x 200",
       remove: "Remove",
       replace: "Replace",
+    },
+    appName: {
+      title: "Custom App Name",
+      description: "Set a custom app name that is displayed on the login page.",
+      clear: "Clear",
+      save: "Save",
     },
     message: {
       title: "Customize Messages",
