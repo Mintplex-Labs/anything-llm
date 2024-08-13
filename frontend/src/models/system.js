@@ -79,7 +79,7 @@ const System = {
         return { valid: false, message: e.message };
       });
   },
-  azureAuth: async function (body, provider) {
+  azureAuth: async function (body) {
     return await fetch(`${API_BASE}/v1/auth/azure`, {
       method: "POST",
       body: JSON.stringify({ ...body }),

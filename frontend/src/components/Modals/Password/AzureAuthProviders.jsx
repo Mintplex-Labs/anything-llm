@@ -11,19 +11,29 @@ export default function AzureAuthProviders({
 
   useEffect(() => {
     const fetchData = async () => {
-      if (accounts.length > 0) {
-        const { valid, user, token } = await System.azureAuth(accounts[0]);
-        if (valid && !!token && !!user) {
-          setUser(user);
-          setToken(token);
+      try {
+        if (accounts.length > 0) {
+          const account = accounts[0];
   
-          window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
-          window.localStorage.setItem(AUTH_TOKEN, token);
-          window.location = paths.home();
+          const response = await instance.acquireTokenSilent({
+            scopes: ["user.read"],
+            account: account
+          });
+  
+          const accessToken = response.accessToken;
+          const { valid, user, token } = await System.azureAuth({'accessToken': accessToken});
+          
+          if (valid && token && user) {
+            setUser(user);
+            setToken(token);
+  
+            window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
+            window.localStorage.setItem(AUTH_TOKEN, token);
+            window.location = paths.home();
+          }
         }
-        const account = accounts[0];
-  
-        console.log('User Account:', account);
+      } catch (error) {
+        console.error('Error fetching data or acquiring token:', error);
       }
     };
   

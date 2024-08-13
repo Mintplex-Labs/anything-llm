@@ -54,6 +54,7 @@ function apiAuthEndpoints(app) {
       }
 
       const data = reqBody(request);
+      console.log(data);
       const azureAuthProviders = new AzureAuthProviders();
       const { username } = await azureAuthProviders.login(data);
       let user = await User.get({ username: String(username) });
