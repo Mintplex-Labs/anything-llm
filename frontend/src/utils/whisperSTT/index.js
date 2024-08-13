@@ -11,15 +11,27 @@ const CONSTANTS = {
 export class TranscriptionWorker {
   /** @type {TranscriptionWorker}  */
   static _instance;
-  /** @type {Worker} - the webworker to use for transcribing */
-  worker;
+  /** @type {Worker} - the direct webworker instance to use for transcribing */
+  _worker;
 
   constructor() {
     if (TranscriptionWorker._instance) return TranscriptionWorker._instance;
-    this.worker = new Worker(new URL("./worker.js", import.meta.url), {
+    this._worker = new Worker(new URL("./worker.js", import.meta.url), {
       type: "module",
     });
     TranscriptionWorker._instance = this;
+  }
+
+  /**
+   * Gets or instantiates a new worker for Whisper predictions
+   * @returns {Worker}
+   */
+  get worker() {
+    if (this._worker) return this._worker;
+    this._worker = new Worker(new URL("./worker.js", import.meta.url), {
+      type: "module",
+    });
+    return this._worker;
   }
 }
 
@@ -47,13 +59,20 @@ export async function transcribeAudio(audioBuffer, options = {}) {
     return showToast("No valid audio buffer found!", "error", { clear: true });
   const audio = await bufferToMergedAudioChannel(audioBuffer);
   const transcriptionWorker = new TranscriptionWorker().worker;
+  const hasCachedFiles = await browserCacheExists(
+    options.model ?? CONSTANTS.DEFAULT_MODEL
+  );
 
   return new Promise((resolve) => {
+    let neededToDownload = false;
     async function messageEventHandler(event) {
       const message = event.data;
       switch (message.status) {
         case "progress":
-          // console.log("progress on modelfile", message.progress);
+          if (!hasCachedFiles) {
+            emitDownloadProgressEvent();
+            neededToDownload = true;
+          }
           break;
         case "update":
           // Received partial update
@@ -77,7 +96,8 @@ export async function transcribeAudio(audioBuffer, options = {}) {
           // console.log("Loading model", message)
           break;
         case "ready":
-          // console.log("Ready")
+          if (neededToDownload) emitDownloadProgressEvent(true);
+          console.log("Model ready for prediction");
           break;
         case "error":
           console.log("Error", message);
@@ -130,4 +150,20 @@ export async function bufferToMergedAudioChannel(audioData) {
   }
 
   return audio;
+}
+
+function emitDownloadProgressEvent(done = false) {
+  return window.dispatchEvent(
+    new CustomEvent(`whisper_model_downloading${done ? "_done" : ""}`)
+  );
+}
+
+async function browserCacheExists(model = CONSTANTS.DEFAULT_MODEL) {
+  const modelKey = model.toLowerCase();
+  return await window.caches
+    .open("transformers-cache")
+    .then((transformersCache) => transformersCache)
+    .then((tCache) => tCache.keys())
+    .then((keys) => keys.map((k) => k.url))
+    .then((urls) => urls.some((url) => url.toLowerCase().includes(modelKey)));
 }

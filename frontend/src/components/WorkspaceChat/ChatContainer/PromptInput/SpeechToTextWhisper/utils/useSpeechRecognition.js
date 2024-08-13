@@ -14,6 +14,7 @@ export default function useSpeechRecognition({
   const [microphoneEnabled, setMicrophoneEnabled] = useState(false);
   const [recording, setRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const streamRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -35,8 +36,6 @@ export default function useSpeechRecognition({
   async function startRecording() {
     if (!microphoneEnabled) await requestMicrophonePermissions();
 
-    // Reset recording (if any)
-    // setRecordedBlob(null);
     let startTime = Date.now();
     try {
       if (!streamRef.current) {
@@ -46,6 +45,10 @@ export default function useSpeechRecognition({
       }
 
       const mimeType = getMimeType();
+      const { listenForSilence, cleanupSilenceListener } = silenceListener(
+        streamRef,
+        stopRecording
+      );
       const mediaRecorder = new MediaRecorder(streamRef.current, {
         mimeType,
       });
@@ -55,6 +58,7 @@ export default function useSpeechRecognition({
         if (event.data.size > 0) chunksRef.current.push(event.data);
 
         if (mediaRecorder.state === "inactive") {
+          cleanupSilenceListener();
           const duration = Date.now() - startTime;
 
           // Received a stop event
@@ -85,7 +89,6 @@ export default function useSpeechRecognition({
             fileReader.readAsArrayBuffer(blob);
           });
 
-          // setRecordedBlob(readerOutput);
           if (debug) debugAudioBlobUrl(readerOutput.url);
           chunksRef.current = [];
           setTranscribing(true);
@@ -97,8 +100,11 @@ export default function useSpeechRecognition({
             .finally(() => setTranscribing(false));
         }
       });
+
+      listenForSilence();
       mediaRecorder.start();
       setRecording(true);
+      setDownloading(false);
     } catch (error) {
       console.error("Failed to start recording:", error);
     }
@@ -111,6 +117,7 @@ export default function useSpeechRecognition({
     ) {
       mediaRecorderRef.current.stop(); // set state to inactive
       setRecording(false);
+      setDownloading(false);
     }
   }
 
@@ -130,11 +137,88 @@ export default function useSpeechRecognition({
     };
   }, [recording]);
 
+  const handleDownloadEvent = () => {
+    if (!downloading) setDownloading(true);
+  };
+  const handleDownloadDoneEvent = () => {
+    setDownloading(false);
+  };
+  useEffect(() => {
+    window.addEventListener("whisper_model_downloading", handleDownloadEvent);
+    window.addEventListener(
+      "whisper_model_downloading_done",
+      handleDownloadDoneEvent
+    );
+    return () => {
+      window.removeEventListener(
+        "whisper_model_downloading",
+        handleDownloadEvent
+      );
+      window.removeEventListener(
+        "whisper_model_downloading_done",
+        handleDownloadDoneEvent
+      );
+    };
+  }, []);
+
   return {
     loading,
     transcribing,
     startRecording,
     stopRecording,
     recording,
+    downloading,
   };
+}
+
+const SILENCE_THRESHOLD = -30;
+const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
+/**
+ * Creates listener function that waits for silence for 3.2s intervals below some average volume decibels
+ * @param {import("react").MutableRefObject} streamRef
+ * @param {VoidFunction} onSilence
+ * @returns {{listenForSilence: VoidFunction, cleanupSilenceListener: VoidFunction}}
+ */
+function silenceListener(streamRef, onSilence) {
+  if (!streamRef?.current) return;
+  let animationFrameId;
+  let silenceTimer;
+
+  const audioContext = new AudioContext();
+  const source = audioContext.createMediaStreamSource(streamRef.current);
+  const analyzer = audioContext.createAnalyser();
+  source.connect(analyzer);
+
+  analyzer.fftSize = 2048;
+  const bufferLength = analyzer.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+
+  function cleanupSilenceListener() {
+    if (audioContext.state !== "closed") audioContext.close();
+    if (!!silenceTimer) clearTimeout(silenceTimer);
+    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+  }
+
+  function checkAudioLevel() {
+    analyzer.getByteFrequencyData(dataArray);
+    const average =
+      dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
+    const volume = 20 * Math.log10(average / 255);
+    if (volume < SILENCE_THRESHOLD) {
+      if (!silenceTimer) {
+        silenceTimer = setTimeout(() => {
+          cleanupSilenceListener();
+          onSilence?.();
+        }, SILENCE_INTERVAL);
+      }
+    } else {
+      if (silenceTimer) {
+        clearTimeout(silenceTimer);
+        silenceTimer = null;
+      }
+    }
+    animationFrameId = requestAnimationFrame(checkAudioLevel);
+  }
+
+  return { listenForSilence: checkAudioLevel, cleanupSilenceListener };
 }

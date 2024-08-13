@@ -1,4 +1,4 @@
-import { CircleNotch, Microphone } from "@phosphor-icons/react";
+import { CircleNotch, DownloadSimple, Microphone } from "@phosphor-icons/react";
 import { Tooltip } from "react-tooltip";
 import { PROMPT_INPUT_EVENT } from "../../PromptInput";
 import useSpeechRecognition from "./utils/useSpeechRecognition";
@@ -17,19 +17,30 @@ export default function SpeechToTextWhisper({ sendCommand }) {
     sendCommand(transcript, true);
   }
 
-  const { loading, recording, startRecording, stopRecording, transcribing } =
-    useSpeechRecognition({
-      debug: false,
-      onTranscript,
-    });
+  const {
+    loading,
+    recording,
+    startRecording,
+    stopRecording,
+    transcribing,
+    downloading,
+  } = useSpeechRecognition({
+    debug: false,
+    onTranscript,
+  });
 
   // Handle hotkey events for session
   const handleKeyPress = useCallback(
+    /**
+     * @param {KeyboardEvent} event
+     */
     (event) => {
       // Pressing ctrl (both win & mac) + M
-      if (event.ctrlKey && event.keyCode === 77) {
+      if (event.ctrlKey && event.code === "KeyM") {
         recording ? stopRecording() : startRecording();
       }
+
+      if (event.key === "Enter" && recording) stopRecording();
     },
     [recording, stopRecording, startRecording]
   );
@@ -58,10 +69,11 @@ export default function SpeechToTextWhisper({ sendCommand }) {
       // Worker was booted and does exist.
       if (
         !!TranscriptionWorker._instance &&
-        !!TranscriptionWorker._instance.worker
+        !!TranscriptionWorker._instance._worker
       ) {
         console.log("Cleaning up worker");
-        TranscriptionWorker._instance.worker.terminate();
+        TranscriptionWorker._instance._worker.terminate();
+        TranscriptionWorker._instance._worker = null;
       }
     };
   }, []);
@@ -72,24 +84,44 @@ export default function SpeechToTextWhisper({ sendCommand }) {
       id="text-size-btn"
       data-tooltip-id="tooltip-text-size-btn"
       data-tooltip-content={
-        transcribing ? "Transcribing voice" : "Speak your prompt"
+        transcribing
+          ? downloading
+            ? "Downloading whisper model from local or remote storage"
+            : "Transcribing voice"
+          : "Speak your prompt"
       }
-      aria-label={transcribing ? "Transcribing voice" : "Speak your prompt"}
+      aria-label={
+        transcribing
+          ? downloading
+            ? "Downloading whisper model from local or remote storage"
+            : "Transcribing voice"
+          : "Speak your prompt"
+      }
       onClick={recording ? stopRecording : startRecording}
       disabled={transcribing}
       type="button"
-      className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${!!recording ? "!opacity-100" : ""
-        }`}
+      className={`border-none relative flex justify-center items-center opacity-60 hover:opacity-100 cursor-pointer ${
+        !!recording ? "!opacity-100" : ""
+      }`}
     >
       {transcribing ? (
-        <CircleNotch
-          className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full animate-spin`}
-        />
+        <>
+          {downloading ? (
+            <DownloadSimple
+              className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full animate-pulse-glow`}
+            />
+          ) : (
+            <CircleNotch
+              className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full animate-spin`}
+            />
+          )}
+        </>
       ) : (
         <Microphone
           weight="fill"
-          className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full ${recording ? "animate-pulse-glow" : ""
-            }`}
+          className={`w-6 h-6 pointer-events-none text-white overflow-hidden rounded-full ${
+            recording ? "animate-pulse-glow" : ""
+          }`}
         />
       )}
       <Tooltip
