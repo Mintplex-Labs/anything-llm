@@ -453,12 +453,12 @@ const KEY_MAPPING = {
     envKey: "AZURE_AD_CLIENT_ID",
     checks: [isNotEmpty],
   },
-  AzureADCredential: {
+  AzureADRedirectUri: {
     envKey: "AZURE_AD_CREDENTIAL",
     checks: [isNotEmpty],
   },
-  AzureADAuthority: {
-    envKey: "AZURE_AD_AUTHORITY",
+  AzureADTenantId: {
+    envKey: "AZURE_AD_TENANT_ID",
     checks: [isNotEmpty],
   },
 

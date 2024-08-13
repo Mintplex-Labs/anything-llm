@@ -14,10 +14,11 @@ export default function AdminSystem() {
     limit: 10,
   });
 
-  const [canLoginWithGoogle, setCanLoginWithGoogle] = useState({
+  const [canLoginWithAzure, setCanLoginWithAzure] = useState({
     enabled: false,
     clientId: null,
-    allowedDomain: null,
+    tenantId: null,
+    redirectUri: null,
   });
 
   const handleSubmit = async (e) => {
@@ -26,12 +27,13 @@ export default function AdminSystem() {
     await Admin.updateSystemPreferences({
       limit_user_messages: messageLimit.enabled,
       message_limit: messageLimit.limit,
-      users_can_login_with_azure: canLoginWithGoogle.enabled,
-      allowed_domain: canLoginWithGoogle.allowedDomain,
+      users_can_login_with_azure: canLoginWithAzure.enabled,
     });
-    if (canLoginWithGoogle.enabled && canLoginWithGoogle.clientId) {
+    if (canLoginWithAzure.enabled && canLoginWithAzure.clientId) {
       await System.updateSystem({
-        GoogleAuthClientId: canLoginWithGoogle.clientId,
+        AzureADClientId: canLoginWithAzure.clientId,
+        AzureADTenantId: canLoginWithAzure.tenantId,
+        AzureADRedirectUri: canLoginWithAzure.redirectUri,
       });
     }
     setSaving(false);
@@ -42,16 +44,18 @@ export default function AdminSystem() {
   useEffect(() => {
     async function fetchSettings() {
       const settings = (await Admin.systemPreferences())?.settings;
+      const systemSettings = await System.keys();
       if (!settings) return;
       setMessageLimit({
         enabled: settings.limit_user_messages,
         limit: settings.message_limit,
       });
-      setCanLoginWithGoogle({
-        ...canLoginWithGoogle,
+      setCanLoginWithAzure({
+        ...canLoginWithAzure,
         enabled: settings.users_can_login_with_azure,
         clientId: settings.users_can_login_with_azure ? "*".repeat(20) : "",
-        allowedDomain: settings.allowed_domain,
+        tenantId: settings.users_can_login_with_azure ? "*".repeat(20) : "",
+        redirectUri: systemSettings?.AzureADRedirectUri,
       });
     }
     fetchSettings();
@@ -146,22 +150,21 @@ export default function AdminSystem() {
           <div className="mb-8">
             <div className="flex flex-col gap-y-1">
               <h2 className="text-base leading-6 font-bold text-white">
-                Users can login with Google
+                Users can login with Azure
               </h2>
               <p className="text-xs leading-[18px] font-base text-white/60">
                 Enable this option if you want users to be able to log in using
-                their Google accounts. You can restrict access to users with
-                emails from your organization's domain.
+                their Azure accounts.
               </p>
               <div className="mt-2">
                 <label className="relative inline-flex cursor-pointer items-center">
                   <input
                     type="checkbox"
                     name="users_can_login_with_azure"
-                    checked={canLoginWithGoogle.enabled}
+                    checked={canLoginWithAzure.enabled}
                     onChange={(e) => {
-                      setCanLoginWithGoogle({
-                        ...canLoginWithGoogle,
+                      setCanLoginWithAzure({
+                        ...canLoginWithAzure,
                         enabled: e.target.checked,
                       });
                     }}
@@ -172,7 +175,7 @@ export default function AdminSystem() {
                 </label>
               </div>
             </div>
-            {canLoginWithGoogle.enabled && (
+            {canLoginWithAzure.enabled && (
               <div className="mt-4">
                 <label className="block text-sm font-medium text-white">
                   Client ID
@@ -180,41 +183,63 @@ export default function AdminSystem() {
                 <div className="relative mt-2">
                   <input
                     type="password"
-                    name="google_client_id"
+                    name="azure_ad_client_id"
                     onScroll={(e) => e.target.blur()}
                     onChange={(e) => {
-                      setCanLoginWithGoogle({
-                        ...canLoginWithGoogle,
+                      setCanLoginWithAzure({
+                        ...canLoginWithAzure,
                         clientId: e.target.value,
                       });
                     }}
-                    value={canLoginWithGoogle.clientId}
+                    value={canLoginWithAzure.clientId}
                     min={1}
                     max={300}
                     className="w-1/3 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-slate-200 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                   />
                 </div>
-
-                <label className="block text-sm font-medium text-white mt-2">
-                  Organization domain
+              </div>
+            )}
+            {canLoginWithAzure.enabled && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-white">
+                  Tenant ID
                 </label>
-                <p className="text-xs leading-[18px] font-base text-white/60">
-                  Restrict access to a specific domain, or leave empty to allow
-                  login with any Google account.
-                </p>
+                <div className="relative mt-2">
+                  <input
+                    type="password"
+                    name="azure_ad_tenant_id"
+                    onScroll={(e) => e.target.blur()}
+                    onChange={(e) => {
+                      setCanLoginWithAzure({
+                        ...canLoginWithAzure,
+                        tenantId: e.target.value,
+                      });
+                    }}
+                    value={canLoginWithAzure.tenantId}
+                    min={1}
+                    max={300}
+                    className="w-1/3 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-slate-200 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                  />
+                </div>
+              </div>
+            )}
+            {canLoginWithAzure.enabled && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-white">
+                  Redirect Uri
+                </label>
                 <div className="relative mt-2">
                   <input
                     type="text"
-                    placeholder="example.com"
-                    name="allowed_domain"
+                    name="azure_ad_redirect_uri"
                     onScroll={(e) => e.target.blur()}
                     onChange={(e) => {
-                      setCanLoginWithGoogle({
-                        ...canLoginWithGoogle,
-                        allowedDomain: e.target.value,
+                      setCanLoginWithAzure({
+                        ...canLoginWithAzure,
+                        redirectUri: e.target.value,
                       });
                     }}
-                    value={canLoginWithGoogle.allowedDomain}
+                    value={canLoginWithAzure.redirectUri}
                     min={1}
                     max={300}
                     className="w-1/3 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-slate-200 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"

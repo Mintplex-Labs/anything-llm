@@ -28,7 +28,6 @@ const SystemSettings = {
     "agent_search_provider",
     "default_agent_skills",
     "users_can_login_with_azure",
-    "allowed_domain",
     "agent_sql_connections",
     "custom_app_name",
 
@@ -190,15 +189,15 @@ const SystemSettings = {
       "true"
         ? process.env.AZURE_AD_CLIENT_ID
         : null,
-      AzureADCredential:
+      AzureADRedirectUri:
         (await this.get({ label: "users_can_login_with_azure" }))?.value ===
         "true"
           ? process.env.AZURE_AD_CREDENTIAL
           : null,
-      AzureADAuthorization:
+      AzureADTenantId:
         (await this.get({ label: "users_can_login_with_azure" }))?.value ===
         "true"
-          ? process.env.AZURE_AD_AUTHORITY
+          ? process.env.AZURE_AD_TENANT_ID
           : null,
 
       // --------------------------------------------------------
