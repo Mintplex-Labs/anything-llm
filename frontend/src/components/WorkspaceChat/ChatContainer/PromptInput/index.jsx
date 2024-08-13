@@ -13,6 +13,7 @@ import AvailableAgentsButton, {
 import TextSizeButton from "./TextSizeMenu";
 import SpeechToText from "./SpeechToText";
 import { Tooltip } from "react-tooltip";
+import { useTranslation } from "react-i18next";
 
 export const PROMPT_INPUT_EVENT = "set_prompt_input";
 export default function PromptInput({
@@ -26,6 +27,7 @@ export default function PromptInput({
   const { showAgents, setShowAgents } = useAvailableAgents();
   const { showSlashCommand, setShowSlashCommand } = useSlashCommands();
   const formRef = useRef(null);
+  const { t } = useTranslation();
   const textareaRef = useRef(null);
   const [_, setFocused] = useState(false);
 
@@ -37,8 +39,7 @@ export default function PromptInput({
   }
 
   useEffect(() => {
-    if (!!window)
-      window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
+    if (window) window.addEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
     return () =>
       window?.removeEventListener(PROMPT_INPUT_EVENT, handlePromptUpdate);
   }, []);
@@ -130,7 +131,7 @@ export default function PromptInput({
                 }}
                 value={promptInput}
                 className="cursor-text max-h-[50vh] md:max-h-[350px] md:min-h-[40px] mx-2 md:mx-0 py-2 w-full text-[16px] md:text-md text-white bg-transparent placeholder:text-white/60 resize-none active:outline-none focus:outline-none flex-grow"
-                placeholder={"Send a message"}
+                placeholder={t("newWorkspace.placeholder")}
               />
               {buttonDisabled ? (
                 <StopGenerationButton />

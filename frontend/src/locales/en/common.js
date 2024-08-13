@@ -86,6 +86,17 @@ const TRANSLATIONS = {
     },
   },
 
+  // new workspace
+
+  newWorkspace: {
+    welcomeMsg: "Welcome to your new workspace.",
+    p: "To get started either",
+    span: "upload a document",
+    or: "or",
+    b: "send a chat.",
+    placeholder: "Send a message",
+  },
+
   // Workspace Settings menu items
   "workspaces—settings": {
     general: "General Settings",

@@ -85,6 +85,15 @@ const TRANSLATIONS = {
     },
   },
 
+  newWorkspace: {
+    welcomeMsg: "Bienvenido a tu nuevo espacio de trabajo.",
+    p: "Para comenzar,",
+    span: "sube un documento",
+    or: "o",
+    b: "envía un mensaje.",
+    placeholder: "Enviar un mensaje",
+  },
+
   "workspaces—settings": {
     general: "Configuración general",
     chat: "Configuración de chat",

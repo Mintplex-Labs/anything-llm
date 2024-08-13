@@ -10,6 +10,7 @@ import Chartable from "./Chartable";
 import Workspace from "@/models/workspace";
 import { useParams } from "react-router-dom";
 import paths from "@/utils/paths";
+import { useTranslation } from "react-i18next";
 
 export default function ChatHistory({
   history = [],
@@ -19,6 +20,7 @@ export default function ChatHistory({
   regenerateAssistantMessage,
 }) {
   const { user } = useUser();
+  const { t } = useTranslation();
   const { threadSlug = null } = useParams();
   const { showing, showModal, hideModal } = useManageWorkspaceModal();
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -149,22 +151,24 @@ export default function ChatHistory({
       <div className="flex flex-col h-full md:mt-0 pb-44 md:pb-40 w-full justify-end items-center">
         <div className="flex flex-col items-center md:items-start md:max-w-[600px] w-full px-4">
           <p className="text-white/60 text-lg font-base py-4">
-            Welcome to your new workspace.
+            {t("newWorkspace.welcomeMsg")}
           </p>
           {!user || user.role !== "default" ? (
             <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
-              To get started either{" "}
+              {t("newWorkspace.p")}
               <span
                 className="underline font-medium cursor-pointer"
                 onClick={showModal}
               >
-                upload a document
+                {t("newWorkspace.span")}
               </span>
-              or <b className="font-medium italic">send a chat.</b>
+              {t("newWorkspace.or")}{" "}
+              <b className="font-medium italic">{t("newWorkspace.b")}</b>
             </p>
           ) : (
             <p className="w-full items-center text-white/60 text-lg font-base flex flex-col md:flex-row gap-x-1">
-              To get started <b className="font-medium italic">send a chat.</b>
+              {t("newWorkspace.p")}{" "}
+              <b className="font-medium italic">{t("newWorkspace.b")}</b>
             </p>
           )}
           <WorkspaceChatSuggestions
