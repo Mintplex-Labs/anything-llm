@@ -3,6 +3,7 @@ import { getMediaAccessLevels, requestMediaAccess } from "@/ipc/node-api";
 import { getMimeType, webmFixDuration, debugAudioBlobUrl } from "./utils.js";
 import { transcribeAudio } from "@/utils/whisperSTT/index.js";
 import i18next from "i18next";
+import showToast from "@/utils/toast.js";
 
 export default function useSpeechRecognition({
   debug = false, // Will append the audio player to the document body to debug.
@@ -16,6 +17,7 @@ export default function useSpeechRecognition({
   const [transcribing, setTranscribing] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
+  /** @type {import("react").MutableRefObject<MediaStream|null>} */
   const streamRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
@@ -59,6 +61,7 @@ export default function useSpeechRecognition({
 
         if (mediaRecorder.state === "inactive") {
           cleanupSilenceListener();
+          streamRef.current.getAudioTracks().forEach((track) => track.stop());
           const duration = Date.now() - startTime;
 
           // Received a stop event
@@ -96,8 +99,20 @@ export default function useSpeechRecognition({
             model: sttModel,
             multilingual: i18next.language.startsWith("en") !== true,
           })
-            .then((response) => onTranscript?.(response))
-            .finally(() => setTranscribing(false));
+            .then((response) => {
+              if (!!response.error || response.transcript === "[BLANK_AUDIO]")
+                throw new Error(response.error ?? "Audio recording was blank.");
+              onTranscript?.(response);
+            })
+            .catch((e) => showToast(e.message, "error", { clear: true }))
+            .finally(() => {
+              // Detach tracks and stop them and release stream so we don't show Mic as busy when not in use.
+              streamRef.current
+                .getAudioTracks()
+                .forEach((track) => track.stop());
+              streamRef.current = null;
+              setTranscribing(false);
+            });
         }
       });
 
@@ -128,14 +143,6 @@ export default function useSpeechRecognition({
       .catch((e) => console.error(e))
       .finally(() => setLoading(false));
   }, []);
-
-  // Manage stream
-  useEffect(() => {
-    let stream = null;
-    return () => {
-      if (stream) stream.getTracks().forEach((track) => track.stop());
-    };
-  }, [recording]);
 
   const handleDownloadEvent = () => {
     if (!downloading) setDownloading(true);
