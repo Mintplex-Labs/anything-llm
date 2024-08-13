@@ -52,6 +52,8 @@ export function ContextWrapper(props) {
     },
   }
 
+  console.log(msalConfig);
+
   const pca = new PublicClientApplication(msalConfig);  
 
   return (

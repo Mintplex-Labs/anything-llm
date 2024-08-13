@@ -454,7 +454,7 @@ const KEY_MAPPING = {
     checks: [isNotEmpty],
   },
   AzureADRedirectUri: {
-    envKey: "AZURE_AD_CREDENTIAL",
+    envKey: "AZURE_AD_REDIRECT_URI",
     checks: [isNotEmpty],
   },
   AzureADTenantId: {

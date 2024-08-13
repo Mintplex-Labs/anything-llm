@@ -192,7 +192,7 @@ const SystemSettings = {
       AzureADRedirectUri:
         (await this.get({ label: "users_can_login_with_azure" }))?.value ===
         "true"
-          ? process.env.AZURE_AD_CREDENTIAL
+          ? process.env.AZURE_AD_REDIRECT_URI
           : null,
       AzureADTenantId:
         (await this.get({ label: "users_can_login_with_azure" }))?.value ===
