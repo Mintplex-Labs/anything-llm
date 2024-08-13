@@ -52,9 +52,7 @@ export function ContextWrapper(props) {
     },
   }
 
-  const pca = new PublicClientApplication(msalConfig);
-  console.log("azureADTenantId",azureADTenantId);
-  console.log("msalconfig",msalConfig);
+  const pca = new PublicClientApplication(msalConfig);  
 
   return (
     <MsalProvider instance={pca}>
