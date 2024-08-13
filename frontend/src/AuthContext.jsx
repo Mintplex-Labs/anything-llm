@@ -5,7 +5,6 @@ import { MsalProvider } from '@azure/msal-react';
 import System from "./models/system";
 
 export const AuthContext = createContext(null);
-
 export function ContextWrapper(props) {
   const localUser = localStorage.getItem(AUTH_USER);
   const localAuthToken = localStorage.getItem(AUTH_TOKEN);

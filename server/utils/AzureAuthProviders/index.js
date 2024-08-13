@@ -4,6 +4,7 @@ class AzureAuthProviders {
   constructor() {}
   async login({ accessToken }) {
     try {
+      console.log('accessToken:', accessToken);
       const response = await axios.get('https://graph.microsoft.com/v1.0/me', {
           headers: {
               Authorization: `Bearer ${accessToken}`,

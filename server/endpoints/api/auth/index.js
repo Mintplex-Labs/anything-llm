@@ -8,9 +8,6 @@ const { Telemetry } = require("../../../models/telemetry");
 const {
   reqBody,
   makeJWT,
-  userFromSession,
-  multiUserMode,
-  queryParams,
 } = require("../../../utils/http");
 
 function apiAuthEndpoints(app) {
@@ -43,6 +40,55 @@ function apiAuthEndpoints(app) {
   });
 
   app.post("/v1/auth/azure", async (request, response) => {
+    /* 
+    #swagger.tags = ['Authentication']
+    #swagger.description = 'Verify the Azure Authentication header contains a valid API token.'
+    #swagger.requestBody = {
+        required: true,
+        type: 'object',
+        content: {
+          "application/json": {
+            example: {
+              accessToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik5HVEZ2ZEstZnl0a...'
+            }
+          }
+        }
+      }
+    #swagger.responses[200] = {
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            example: {
+      "valid": true,
+      "user": {
+                "id": 2,
+                "username": "useremail@company.com",
+                "use_azure_login_provider": true,
+                "pfpFilename": null,
+                "role": "default",
+                "suspended": 0,
+                "seen_recovery_codes": false,
+                "createdAt": "2024-08-13T11:31:34.590Z",
+                "lastUpdatedAt": "2024-08-13T11:31:34.590Z"
+              },
+              "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik5HVEZ2ZEstZnl0a...",
+              "message": null
+            }
+          }
+        }
+      }
+    }
+    #swagger.responses[403] = {
+      schema: {
+        "$ref": "#/definitions/InvalidAPIKey"
+      }
+    }
+     #swagger.responses[401] = {
+      description: "Instance is not in Multi-User mode. Method denied",
+    }
+    */
+
     try {
       if (!(await SystemSettings.isMultiUserMode())) {
         response.status(200).json({

@@ -52,14 +52,69 @@
     },
     "/v1/auth/azure": {
       "post": {
-        "description": "",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Verify the Azure Authentication header contains a valid API token.",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "example": {
+                    "valid": true,
+                    "user": {
+                      "id": 2,
+                      "username": "useremail@company.com",
+                      "use_azure_login_provider": true,
+                      "pfpFilename": null,
+                      "role": "default",
+                      "suspended": 0,
+                      "seen_recovery_codes": false,
+                      "createdAt": "2024-08-13T11:31:34.590Z",
+                      "lastUpdatedAt": "2024-08-13T11:31:34.590Z"
+                    },
+                    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik5HVEZ2ZEstZnl0a...",
+                    "message": null
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Instance is not in Multi-User mode. Method denied"
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidAPIKey"
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "type": "object",
+          "content": {
+            "application/json": {
+              "example": {
+                "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik5HVEZ2ZEstZnl0a..."
+              }
+            }
           }
         }
       }
