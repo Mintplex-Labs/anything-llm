@@ -16,9 +16,6 @@ export default function AdminSystem() {
 
   const [canLoginWithAzure, setCanLoginWithAzure] = useState({
     enabled: false,
-    clientId: null,
-    tenantId: null,
-    redirectUri: null,
   });
 
   const handleSubmit = async (e) => {
@@ -29,13 +26,6 @@ export default function AdminSystem() {
       message_limit: messageLimit.limit,
       users_can_login_with_azure: canLoginWithAzure.enabled,
     });
-    if (canLoginWithAzure.enabled && canLoginWithAzure.clientId) {
-      await System.updateSystem({
-        AzureADClientId: canLoginWithAzure.clientId,
-        AzureADTenantId: canLoginWithAzure.tenantId,
-        AzureADRedirectUri: canLoginWithAzure.redirectUri,
-      });
-    }
     setSaving(false);
     setHasChanges(false);
     showToast("System preferences updated successfully.", "success");
@@ -44,7 +34,6 @@ export default function AdminSystem() {
   useEffect(() => {
     async function fetchSettings() {
       const settings = (await Admin.systemPreferences())?.settings;
-      const systemSettings = await System.keys();
       if (!settings) return;
       setMessageLimit({
         enabled: settings.limit_user_messages,
@@ -53,9 +42,6 @@ export default function AdminSystem() {
       setCanLoginWithAzure({
         ...canLoginWithAzure,
         enabled: settings.users_can_login_with_azure,
-        clientId: settings.users_can_login_with_azure ? "*".repeat(20) : "",
-        tenantId: settings.users_can_login_with_azure ? "*".repeat(20) : "",
-        redirectUri: systemSettings?.AzureADRedirectUri,
       });
     }
     fetchSettings();
@@ -175,78 +161,6 @@ export default function AdminSystem() {
                 </label>
               </div>
             </div>
-            {canLoginWithAzure.enabled && (
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-white">
-                  Client ID
-                </label>
-                <div className="relative mt-2">
-                  <input
-                    type="password"
-                    name="azure_ad_client_id"
-                    onScroll={(e) => e.target.blur()}
-                    onChange={(e) => {
-                      setCanLoginWithAzure({
-                        ...canLoginWithAzure,
-                        clientId: e.target.value,
-                      });
-                    }}
-                    value={canLoginWithAzure.clientId}
-                    min={1}
-                    max={300}
-                    className="w-1/3 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-slate-200 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                  />
-                </div>
-              </div>
-            )}
-            {canLoginWithAzure.enabled && (
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-white">
-                  Tenant ID
-                </label>
-                <div className="relative mt-2">
-                  <input
-                    type="password"
-                    name="azure_ad_tenant_id"
-                    onScroll={(e) => e.target.blur()}
-                    onChange={(e) => {
-                      setCanLoginWithAzure({
-                        ...canLoginWithAzure,
-                        tenantId: e.target.value,
-                      });
-                    }}
-                    value={canLoginWithAzure.tenantId}
-                    min={1}
-                    max={300}
-                    className="w-1/3 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-slate-200 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                  />
-                </div>
-              </div>
-            )}
-            {canLoginWithAzure.enabled && (
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-white">
-                  Redirect Uri
-                </label>
-                <div className="relative mt-2">
-                  <input
-                    type="text"
-                    name="azure_ad_redirect_uri"
-                    onScroll={(e) => e.target.blur()}
-                    onChange={(e) => {
-                      setCanLoginWithAzure({
-                        ...canLoginWithAzure,
-                        redirectUri: e.target.value,
-                      });
-                    }}
-                    value={canLoginWithAzure.redirectUri}
-                    min={1}
-                    max={300}
-                    className="w-1/3 rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-slate-200 dark:text-slate-200 outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                  />
-                </div>
-              </div>
-            )}
           </div>
         </form>
       </div>
