@@ -112,6 +112,8 @@ export default function useSpeechRecognition({
                 .forEach((track) => track.stop());
               streamRef.current = null;
               setTranscribing(false);
+              setRecording(false);
+              setDownloading(false);
             });
         }
       });
@@ -122,6 +124,11 @@ export default function useSpeechRecognition({
       setDownloading(false);
     } catch (error) {
       console.error("Failed to start recording:", error);
+      setTranscribing(false);
+      setRecording(false);
+      setDownloading(false);
+      if (streamRef.current)
+        streamRef.current.getAudioTracks().forEach((track) => track.stop());
     }
   }
 
