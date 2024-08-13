@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import System from "@/models/system";
 import logo from "@/media/logo/microsoft-login.png";
+import { AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import paths from "@/utils/paths";
 
 export default function AzureAuthProviders({
   setUser,
@@ -35,6 +37,10 @@ export default function AzureAuthProviders({
           if (valid && token && user) {
             setUser(user);
             setToken(token);
+
+            console.log('User:', user);
+            console.log('Token:', token);
+            console.log('Valid:', valid);
   
             window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
             window.localStorage.setItem(AUTH_TOKEN, token);

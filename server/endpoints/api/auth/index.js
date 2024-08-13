@@ -3,6 +3,7 @@ const { SystemSettings } = require("../../../models/systemSettings");
 const { AzureAuthProviders } = require("../../../utils/AzureAuthProviders");
 const { User } = require("../../../models/user");
 const { EventLogs } = require("../../../models/eventLogs");
+const { Telemetry } = require("../../../models/telemetry");
 
 const {
   reqBody,
