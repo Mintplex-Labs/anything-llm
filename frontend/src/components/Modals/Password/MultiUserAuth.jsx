@@ -299,7 +299,10 @@ export default function MultiUserAuth() {
               </p>
             </div>
           </div>
-          <AzureAuthProviders/>
+          <AzureAuthProviders
+            setUser={setUser}
+            setToken={setToken}
+          />
           <div className="w-full px-4 md:px-12">
             <div className="w-full flex flex-col gap-y-4">
               <div className="w-screen md:w-full md:px-0 px-6">
