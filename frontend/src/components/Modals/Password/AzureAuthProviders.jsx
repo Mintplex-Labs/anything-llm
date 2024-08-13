@@ -41,10 +41,6 @@ export default function AzureAuthProviders({
           if (valid && token && user) {
             setUser(user);
             setToken(token);
-
-            console.log('User:', user);
-            console.log('Token:', token);
-            console.log('Valid:', valid);
   
             window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
             window.localStorage.setItem(AUTH_TOKEN, token);
