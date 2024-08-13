@@ -44,6 +44,14 @@ export default function AzureAuthProviders({
   
             window.localStorage.setItem(AUTH_USER, JSON.stringify(user));
             window.localStorage.setItem(AUTH_TOKEN, token);
+
+            const items = [];
+            for (let i = 0; i < localStorage.length; i++) {
+              const key = localStorage.key(i);
+              if (key.includes('login.windows.net') || key.includes('msal.token.keys' || key.includes('msal.account.keys'))){
+                window.localStorage.removeItem(key);
+              }
+            }
             window.location = paths.home();
           }
         }
