@@ -5,15 +5,15 @@ import LLMItem from "@/components/LLMSelection/LLMItem";
 import { CaretUpDown, MagnifyingGlass, X } from "@phosphor-icons/react";
 import CTAButton from "@/components/lib/CTAButton";
 import AnythingLLMIcon from "@/assets/logo/anything-llm-icon.png";
-import BrowserNative from "@/components/SpeechToText/BrowserNative";
+import LocalWhisper from "@/components/SpeechToText/LocalWhisper";
 
 const PROVIDERS = [
   {
-    name: "System native",
-    value: "native",
+    name: "Local Whisper",
+    value: "local_whisper",
     logo: AnythingLLMIcon,
-    options: (settings) => <BrowserNative settings={settings} />,
-    description: "Uses your browser's built in STT service if supported.",
+    options: (settings) => <LocalWhisper settings={settings} />,
+    description: "Runs a whisper model locally on device.",
   },
 ];
 
@@ -23,7 +23,7 @@ export default function SpeechToTextProvider({ settings }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProviders, setFilteredProviders] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState(
-    settings?.SpeechToTextProvider || "native"
+    settings?.SpeechToTextProvider || "local_whisper"
   );
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
@@ -84,10 +84,10 @@ export default function SpeechToTextProvider({ settings }) {
             </p>
           </div>
           <p className="text-xs leading-[18px] font-base text-white text-opacity-60">
-            Here you can specify what kind of text-to-speech and speech-to-text
-            providers you would want to use in your AnythingLLM experience. By
-            default, we use the browser's built in support for these services,
-            but you may want to use others.
+            Here you can specify what version of whisper you would like to run
+            locally. If your language preference is set to anything other than
+            English we will download the multilingual version of whisper when
+            needed.
           </p>
         </div>
         <div className="w-full justify-end flex">

@@ -71,7 +71,7 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    exclude: ['js-levenshtein'],
+    exclude: ["js-levenshtein"],
     include: ["@mintplex-labs/piper-tts-web"],
     esbuildOptions: {
       define: {

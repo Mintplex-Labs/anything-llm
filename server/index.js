@@ -32,6 +32,7 @@ const { agentWebsocket } = require("./endpoints/agentWebsocket");
 const { experimentalEndpoints } = require("./endpoints/experimental");
 const { EncryptionManager } = require("./utils/EncryptionManager");
 const { BackgroundService } = require("./utils/BackgroundWorkers");
+const { whisperSTTStaticEndpoint } = require("./utils/whisper");
 const app = express();
 const apiRouter = express.Router();
 const FILE_LIMIT = "3GB";
@@ -67,6 +68,7 @@ agentWebsocket(apiRouter);
 experimentalEndpoints(apiRouter);
 developerEndpoints(app, apiRouter);
 piperTTSStaticEndpoint(app);
+whisperSTTStaticEndpoint(app);
 
 // Externally facing embedder endpoints
 embeddedEndpoints(apiRouter);

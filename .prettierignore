@@ -6,6 +6,7 @@
 
 #frontend
 frontend/bundleinspector.html
+frontend/src/utils/whisperSTT/transformers-electron/*
 **/dist
 
 #server
