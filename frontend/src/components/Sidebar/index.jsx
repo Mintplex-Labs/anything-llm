@@ -3,6 +3,7 @@ import { USER_BACKGROUND_COLOR } from "@/utils/constants";
 import paths from "@/utils/paths";
 import { List, Plus, UploadSimple } from "@phosphor-icons/react";
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import Footer from "../Footer";
 import NewWorkspaceModal, {
@@ -12,7 +13,6 @@ import SettingsButton from "../SettingsButton";
 import ActiveWorkspaces from "./ActiveWorkspaces";
 import UploadedDocuments from "./UploadDocuments";
 import { useUploadedModel } from "./UploadDocuments/useUploadedModel";
-import { useTranslation } from "react-i18next";
 
 export default function Sidebar() {
   const { user } = useUser();
@@ -33,14 +33,15 @@ export default function Sidebar() {
     <div>
       <Link
         to={paths.home()}
-        className="flex shrink-0 max-w-[55%] items-center justify-start mx-[35px] my-[15px]"
+        className="flex shrink-0 max-w-[55%] items-center justify-start mx-[35px] my-[15px] gap-1"
         aria-label="Home"
       >
         <img
-          src={"/logo.png"}
+          src={"/logo.jpeg"}
           alt="Logo"
           className="rounded max-h-[36px] object-contain"
         />
+        <div className="w-12 text-2xl font-medium text-white">OssorioIA</div>
       </Link>
       <div
         ref={sidebarRef}
@@ -137,11 +138,12 @@ export function SidebarMobileHeader() {
         </button>
         <div className="flex items-center justify-center flex-grow">
           <img
-            src={"/logo.png"}
+            src={"/logo.jpeg"}
             alt="Logo"
             className="block mx-auto h-6 w-auto"
             style={{ maxHeight: "40px", objectFit: "contain" }}
           />
+          <div className="w-12">OssorioIA</div>
         </div>
         <div className="w-12"></div>
       </div>
@@ -152,10 +154,11 @@ export function SidebarMobileHeader() {
         className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
       >
         <div
-          className={`${showBgOverlay
+          className={`${
+            showBgOverlay
               ? "transition-all opacity-1"
               : "transition-none opacity-0"
-            }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
+          }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div
@@ -167,11 +170,12 @@ export function SidebarMobileHeader() {
             <div className="flex w-full items-center justify-between gap-x-4">
               <div className="flex shrink-1 w-fit items-center justify-start">
                 <img
-                  src={"/logo.png"}
+                  src={"/logo.jpeg"}
                   alt="Logo"
                   className="rounded w-full max-h-[40px]"
                   style={{ objectFit: "contain" }}
                 />
+                <div className="w-12">OssorioIA</div>
               </div>
               {(!user || user?.role !== "default") && (
                 <div className="flex gap-x-2 items-center text-slate-500 shink-0">

@@ -1,37 +1,37 @@
-import React, { useEffect, useRef, useState } from "react";
-import paths from "@/utils/paths";
 import useLogo from "@/hooks/useLogo";
-import {
-  EnvelopeSimple,
-  SquaresFour,
-  Users,
-  BookOpen,
-  ChatCenteredText,
-  Eye,
-  Key,
-  ChatText,
-  Database,
-  Lock,
-  House,
-  List,
-  FileCode,
-  Notepad,
-  CodeBlock,
-  Barcode,
-  ClosedCaptioning,
-  EyeSlash,
-  SplitVertical,
-  Microphone,
-  Robot,
-  Flask,
-} from "@phosphor-icons/react";
 import useUser from "@/hooks/useUser";
 import { USER_BACKGROUND_COLOR } from "@/utils/constants";
-import { isMobile } from "react-device-detect";
-import Footer from "../Footer";
-import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import paths from "@/utils/paths";
 import showToast from "@/utils/toast";
+import {
+  Barcode,
+  BookOpen,
+  ChatCenteredText,
+  ChatText,
+  ClosedCaptioning,
+  CodeBlock,
+  Database,
+  EnvelopeSimple,
+  Eye,
+  EyeSlash,
+  FileCode,
+  Flask,
+  House,
+  Key,
+  List,
+  Lock,
+  Microphone,
+  Notepad,
+  Robot,
+  SplitVertical,
+  SquaresFour,
+  Users,
+} from "@phosphor-icons/react";
+import React, { useEffect, useRef, useState } from "react";
+import { isMobile } from "react-device-detect";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import Footer from "../Footer";
 
 export default function SettingsSidebar() {
   const { t } = useTranslation();
@@ -66,13 +66,14 @@ export default function SettingsSidebar() {
           </button>
           <div className="flex items-center justify-center flex-grow">
             <img
-              src={'/logo.png'}
+              src={"/logo.jpeg"}
               alt="Logo"
               className="block mx-auto h-6 w-auto"
               style={{ maxHeight: "40px", objectFit: "contain" }}
             />
+            <div className="w-12">OssorioIA</div>
           </div>
-          <div className="w-12"></div>
+          <div className="w-12">OssorioIA</div>
         </div>
         <div
           style={{
@@ -81,10 +82,11 @@ export default function SettingsSidebar() {
           className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
         >
           <div
-            className={`${showBgOverlay
+            className={`${
+              showBgOverlay
                 ? "transition-all opacity-1"
                 : "transition-none opacity-0"
-              }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
+            }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
             onClick={() => setShowSidebar(false)}
           />
           <div
@@ -96,11 +98,12 @@ export default function SettingsSidebar() {
               <div className="flex w-full items-center justify-between gap-x-4">
                 <div className="flex shrink-1 w-fit items-center justify-start">
                   <img
-                    src={'/logo.png'}
+                    src={"/logo.jpeg"}
                     alt="Logo"
                     className="rounded w-full max-h-[40px]"
                     style={{ objectFit: "contain" }}
                   />
+                  <div className="w-12">OssorioIA</div>
                 </div>
                 <div className="flex gap-x-2 items-center text-slate-500 shrink-0">
                   <a
@@ -137,11 +140,12 @@ export default function SettingsSidebar() {
         className="flex shrink-0 max-w-[55%] items-center justify-start mx-[35px] my-[15px]"
       >
         <img
-          src={'/logo.png'}
+          src={"/logo.jpeg"}
           alt="Logo"
           className="rounded max-h-[36px]"
           style={{ objectFit: "contain" }}
         />
+        <div className="w-12 text-2xl">OssorioIA</div>
       </Link>
       <div
         ref={sidebarRef}
@@ -198,10 +202,11 @@ const Option = ({
           transition-all duration-[200ms]
           flex flex-grow w-[75%] gap-x-2 py-[6px] px-[12px] rounded-[4px] justify-start items-center
           hover:bg-workspace-item-selected-gradient hover:text-white hover:font-medium
-          ${isActive
+          ${
+            isActive
               ? "bg-menu-item-selected-gradient font-medium border-outline text-white"
               : "hover:bg-menu-item-selected-gradient text-zinc-200"
-            }
+          }
         `}
         >
           {React.cloneElement(icon, { weight: isActive ? "fill" : "regular" })}
@@ -212,8 +217,9 @@ const Option = ({
       </div>
       {!!subOptions && (isActive || hasActiveChild) && (
         <div
-          className={`ml-4 ${hasActiveChild ? "" : "border-l-2 border-slate-400"
-            } rounded-r-lg`}
+          className={`ml-4 ${
+            hasActiveChild ? "" : "border-l-2 border-slate-400"
+          } rounded-r-lg`}
         >
           {subOptions}
         </div>
