@@ -186,7 +186,7 @@ export default function useSpeechRecognition({
 }
 
 const SILENCE_THRESHOLD = -30;
-const SILENCE_INTERVAL = 3_200; // wait in seconds of silence before closing.
+const SILENCE_INTERVAL = 2_000; // wait in seconds of silence before closing.
 /**
  * Creates listener function that waits for silence for 3.2s intervals below some average volume decibels
  * @param {import("react").MutableRefObject} streamRef
