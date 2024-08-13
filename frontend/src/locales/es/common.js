@@ -92,6 +92,7 @@ const TRANSLATIONS = {
     or: "o",
     b: "envía un mensaje.",
     placeholder: "Enviar un mensaje",
+    new: "Nuevo Hilo",
   },
 
   "workspaces—settings": {

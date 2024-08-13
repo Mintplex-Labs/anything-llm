@@ -95,6 +95,7 @@ const TRANSLATIONS = {
     or: "or",
     b: "send a chat.",
     placeholder: "Send a message",
+    new: "New Thread",
   },
 
   // Workspace Settings menu items
