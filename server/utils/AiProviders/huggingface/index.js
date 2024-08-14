@@ -80,7 +80,7 @@ class HuggingFaceLLM {
   }
 
   async getChatCompletion(messages = null, { temperature = 0.7 }) {
-    const result = await this.openai.createChatCompletion({
+    const result = await this.openai.chat.completions.create({
       model: this.model,
       messages,
       temperature,
