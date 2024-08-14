@@ -237,7 +237,10 @@ function systemEndpoints(app) {
         });
         response.status(200).json({
           valid: true,
-          token: makeJWT({ p: new EncryptionManager().encrypt(password) }, "30d"),
+          token: makeJWT(
+            { p: new EncryptionManager().encrypt(password) },
+            "30d"
+          ),
           message: null,
         });
       }
