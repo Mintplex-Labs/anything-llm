@@ -44,6 +44,10 @@ class OpenAiLLM {
       case "gpt-3.5-turbo-1106":
         return 16_385;
       case "gpt-4o":
+      case "gpt-4o-2024-08-06":
+      case "gpt-4o-2024-05-13":
+      case "gpt-4o-mini":
+      case "gpt-4o-mini-2024-07-18":
       case "gpt-4-turbo":
       case "gpt-4-1106-preview":
       case "gpt-4-turbo-preview":
