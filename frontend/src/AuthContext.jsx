@@ -1,5 +1,8 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 import { AUTH_TIMESTAMP, AUTH_TOKEN, AUTH_USER } from "@/utils/constants";
+import { PublicClientApplication } from '@azure/msal-browser';
+import { MsalProvider } from '@azure/msal-react';
+import System from "./models/system";
 
 export const AuthContext = createContext(null);
 export function ContextWrapper(props) {
@@ -9,6 +12,8 @@ export function ContextWrapper(props) {
     user: localUser ? JSON.parse(localUser) : null,
     authToken: localAuthToken ? localAuthToken : null,
   });
+  const [settings, setSettings] = useState(null);
+  const [msalInstance, setMsalInstance] = useState(null);
 
   const [actions] = useState({
     updateUser: (user, authToken = "") => {
@@ -24,9 +29,49 @@ export function ContextWrapper(props) {
     },
   });
 
-  return (
-    <AuthContext.Provider value={{ store, actions }}>
-      {props.children}
-    </AuthContext.Provider>
-  );
+  useEffect(() => {
+    async function fetchSettings() {
+      const _settings = await System.keys();
+      setSettings(_settings);
+    }
+    fetchSettings();
+  }, []);
+
+  useEffect(() => {
+    if (settings?.AzureADClientId && settings?.AzureADRedirectUri && settings?.AzureADTenantId) {
+      const msalConfig = {
+        auth: {
+          clientId: settings?.AzureADClientId,
+          authority: `https://login.microsoftonline.com/${settings?.AzureADTenantId}`,
+          redirectUri: settings?.AzureADRedirectUri,
+        },
+        cache: {
+          cacheLocation: 'localStorage',
+          storeAuthStateInCookie: false,
+        },
+      };
+
+      setMsalInstance(new PublicClientApplication(msalConfig));
+    }
+  }, [settings]);
+
+  if (!msalInstance) {
+    return <div>Loading...</div>; // or return null
+  }
+
+  if (settings?.AzureADClientId) {
+    return (
+      <MsalProvider instance={msalInstance}>
+        <AuthContext.Provider value={{ store, actions }}>
+          {props.children}
+        </AuthContext.Provider>
+      </MsalProvider>
+    );
+  } else {
+    return (
+      <AuthContext.Provider value={{ store, actions }}>
+        {props.children}
+      </AuthContext.Provider>
+    );
+  }
 }

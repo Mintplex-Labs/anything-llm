@@ -129,7 +129,23 @@ function systemEndpoints(app) {
           });
           return;
         }
-
+        if (existingUser.use_azure_login_provider) {
+          await EventLogs.logEvent(
+            "failed_login_user_use_azure_login_provider",
+            {
+              ip: request.ip || "Unknown IP",
+              username: username || "Unknown user",
+            },
+            existingUser?.id
+          );
+          response.status(200).json({
+            user: null,
+            valid: false,
+            token: null,
+            message: "[005] Invalid login credentials.",
+          });
+          return;
+        }
         if (!bcrypt.compareSync(String(password), existingUser.password)) {
           await EventLogs.logEvent(
             "failed_login_invalid_password",

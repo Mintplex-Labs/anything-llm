@@ -27,6 +27,7 @@ const SystemSettings = {
     "text_splitter_chunk_overlap",
     "agent_search_provider",
     "default_agent_skills",
+    "users_can_login_with_azure",
     "agent_sql_connections",
     "custom_app_name",
 
@@ -177,6 +178,27 @@ const SystemSettings = {
         process.env.EMBEDDING_MODEL_MAX_CHUNK_LENGTH,
       GenericOpenAiEmbeddingApiKey:
         !!process.env.GENERIC_OPEN_AI_EMBEDDING_API_KEY,
+
+
+
+      // --------------------------------------------------------
+      // Azure Providers
+      // --------------------------------------------------------
+      AzureADClientId:
+      (await this.get({ label: "users_can_login_with_azure" }))?.value ===
+      "true"
+        ? process.env.AZURE_AD_CLIENT_ID
+        : null,
+      AzureADRedirectUri:
+        (await this.get({ label: "users_can_login_with_azure" }))?.value ===
+        "true"
+          ? process.env.AZURE_AD_REDIRECT_URI
+          : null,
+      AzureADTenantId:
+        (await this.get({ label: "users_can_login_with_azure" }))?.value ===
+        "true"
+          ? process.env.AZURE_AD_TENANT_ID
+          : null,
 
       // --------------------------------------------------------
       // VectorDB Provider Selection Settings & Configs
