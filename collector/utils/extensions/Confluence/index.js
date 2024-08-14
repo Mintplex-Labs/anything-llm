@@ -190,82 +190,133 @@ async function fetchConfluencePage({
 }
 
 /**
- * Validates and parses the correct information from a given Confluence URL
- * @param {string} spaceUrl - The organization's Confluence URL to parse
- * @returns {{
- *  valid: boolean,
- *  result: (Object|null),
- * }}
+ * A match result for a url-pattern of a Confluence URL
+ * @typedef {Object} ConfluenceMatchResult
+ * @property {string} subdomain - the subdomain of an organization's Confluence space
+ * @property {string} spaceKey - the spaceKey of an organization that determines the documents to collect.
+ * @property {string} apiBase - the correct REST API url to use for loader.
  */
-function validSpaceUrl(spaceUrl = "") {
-  const urlObj = new URL(spaceUrl);
-  const pathParts = urlObj.pathname.split("/").filter(Boolean);
-
-  let subdomain, spaceKey, contextPath;
-
-  // Handle Atlassian domain
-  if (urlObj.hostname.endsWith("atlassian.net")) {
-    subdomain = urlObj.hostname.split(".")[0];
-    spaceKey =
-      pathParts[pathParts.indexOf("spaces") + 1] ||
-      pathParts[pathParts.length - 1];
-  }
-  // Handle custom domains
-  else {
-    subdomain = urlObj.hostname;
-    if (pathParts.includes("display")) {
-      spaceKey = pathParts[pathParts.indexOf("display") + 1];
-      contextPath = pathParts.slice(0, pathParts.indexOf("display")).join("/");
-    } else if (pathParts.includes("spaces")) {
-      spaceKey = pathParts[pathParts.indexOf("spaces") + 1];
-      contextPath = pathParts.slice(0, pathParts.indexOf("spaces")).join("/");
-    } else {
-      spaceKey = pathParts[pathParts.length - 1];
-      contextPath = pathParts.slice(0, -1).join("/");
-    }
-  }
-
-  if (!spaceKey) {
-    return { valid: false, result: null };
-  }
-
-  const apiBase = generateAPIBaseUrl(
-    {
-      subdomain,
-      contextPath,
-      port: urlObj.port,
-      protocol: urlObj.protocol.replace(":", ""),
-    },
-    !urlObj.hostname.endsWith("atlassian.net")
-  );
-
-  return {
-    valid: true,
-    result: {
-      subdomain,
-      spaceKey,
-      apiBase,
-      contextPath: contextPath || "",
-    },
-  };
-}
 
 /**
  * Generates the correct API base URL for interfacing with the Confluence REST API
+ * depending on the URL pattern being used since there are various ways to host/access a
+ * Confluence space.
  * @param {Object} params - Parameters for generating the API base URL
  * @param {boolean} isCustomDomain - determines if we need to coerce the subpath of the provided URL
  * @returns {string} - the resulting REST API URL
  */
 function generateAPIBaseUrl(
-  { subdomain, contextPath, port, protocol },
+  { subdomain, customDomain, contextPath, port, protocol },
   isCustomDomain = false
 ) {
-  let domain = isCustomDomain ? subdomain : `${subdomain}.atlassian.net`;
+  let domain = isCustomDomain
+    ? customDomain || subdomain
+    : `${subdomain}.atlassian.net`;
   let portString = port ? `:${port}` : "";
   let contextPathString = contextPath ? `/${contextPath}` : "";
   let wikiPath = isCustomDomain ? "" : "/wiki";
 
-  return `${protocol}://${domain}${portString}${contextPathString}${wikiPath}`;
+  return `${
+    protocol || "https"
+  }://${domain}${portString}${contextPathString}${wikiPath}`;
+}
+
+/**
+ * Validates and parses the correct information from a given Confluence URL
+ * @param {string} spaceUrl - The organization's Confluence URL to parse
+ * @returns {{
+ *  valid: boolean,
+ *  result: (ConfluenceMatchResult|null),
+ * }}
+ */
+function validSpaceUrl(spaceUrl = "") {
+  let matchResult;
+  const patterns = {
+    default: new UrlPattern(
+      "https\\://(:subdomain).atlassian.net/wiki/spaces/(:spaceKey)*"
+    ),
+    subdomain: new UrlPattern(
+      "https\\://(:subdomain.):domain.:tld/wiki/spaces/(:spaceKey)*"
+    ),
+    custom: new UrlPattern(
+      "https\\://(:subdomain.):domain.:tld/display/(:spaceKey)*"
+    ),
+  };
+
+  // Try UrlPattern matching first
+  for (const pattern of Object.values(patterns)) {
+    matchResult = pattern.match(spaceUrl);
+    if (matchResult && matchResult.hasOwnProperty("spaceKey")) {
+      const isCustomDomain =
+        !matchResult.subdomain || matchResult.subdomain.includes(".");
+      return {
+        valid: true,
+        result: {
+          ...matchResult,
+          apiBase: generateAPIBaseUrl(matchResult, isCustomDomain),
+        },
+      };
+    }
+  }
+
+  // If UrlPattern matching fails, fall back to manual URL parsing
+  try {
+    const urlObj = new URL(spaceUrl);
+    const pathParts = urlObj.pathname.split("/").filter(Boolean);
+
+    let subdomain, spaceKey, contextPath;
+
+    // Handle Atlassian domain
+    if (urlObj.hostname.endsWith("atlassian.net")) {
+      subdomain = urlObj.hostname.split(".")[0];
+      spaceKey =
+        pathParts[pathParts.indexOf("spaces") + 1] ||
+        pathParts[pathParts.length - 1];
+    }
+    // Handle custom domains
+    else {
+      subdomain = urlObj.hostname;
+      if (pathParts.includes("display")) {
+        spaceKey = pathParts[pathParts.indexOf("display") + 1];
+        contextPath = pathParts
+          .slice(0, pathParts.indexOf("display"))
+          .join("/");
+      } else if (pathParts.includes("spaces")) {
+        spaceKey = pathParts[pathParts.indexOf("spaces") + 1];
+        contextPath = pathParts.slice(0, pathParts.indexOf("spaces")).join("/");
+      } else {
+        spaceKey = pathParts[pathParts.length - 1];
+        contextPath = pathParts.slice(0, -1).join("/");
+      }
+    }
+
+    if (!spaceKey) {
+      return { valid: false, result: null };
+    }
+
+    const apiBase = generateAPIBaseUrl(
+      {
+        subdomain,
+        contextPath,
+        port: urlObj.port,
+        protocol: urlObj.protocol.replace(":", ""),
+      },
+      !urlObj.hostname.endsWith("atlassian.net")
+    );
+
+    return {
+      valid: true,
+      result: {
+        subdomain,
+        spaceKey,
+        apiBase,
+        contextPath: contextPath || "",
+      },
+    };
+  } catch (error) {
+    console.error("Error parsing URL:", error);
+    return { valid: false, result: null };
+  }
 }
 
 /**
