@@ -90,7 +90,7 @@ export default function Introduction({ setSettings, setStep }) {
             <p>
               In summary, if you are getting good results with RAG currently,
               creating a fine-tune can squeeze <b>even more performance</b> out
-              of a model. Fine-Tunes are are for improving response quality and
+              of a model. Fine-Tunes are for improving response quality and
               general responses, but they are <b>not for knowledge recall</b> -
               that is what RAG is for! Together, it is a powerful combination.
             </p>
