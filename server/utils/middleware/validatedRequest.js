@@ -1,6 +1,8 @@
 const { SystemSettings } = require("../../models/systemSettings");
 const { User } = require("../../models/user");
+const { EncryptionManager } = require("../EncryptionManager");
 const { decodeJWT } = require("../http");
+const EncryptionMgr = new EncryptionManager();
 
 async function validatedRequest(request, response, next) {
   const multiUserMode = await SystemSettings.isMultiUserMode();
@@ -10,14 +12,14 @@ async function validatedRequest(request, response, next) {
 
   // When in development passthrough auth token for ease of development.
   // Or if the user simply did not set an Auth token or JWT Secret
-  if (
-    process.env.NODE_ENV === "development" ||
-    !process.env.AUTH_TOKEN ||
-    !process.env.JWT_SECRET
-  ) {
-    next();
-    return;
-  }
+  // if (
+  //   process.env.NODE_ENV === "development" ||
+  //   !process.env.AUTH_TOKEN ||
+  //   !process.env.JWT_SECRET
+  // ) {
+  //   next();
+  //   return;
+  // }
 
   if (!process.env.AUTH_TOKEN) {
     response.status(401).json({
@@ -39,14 +41,14 @@ async function validatedRequest(request, response, next) {
   const bcrypt = require("bcrypt");
   const { p } = decodeJWT(token);
 
-  if (p === null) {
+  if (p === null || !/\w{32}:\w{32}/.test(p)) {
     response.status(401).json({
       error: "Token expired or failed validation.",
     });
     return;
   }
 
-  if (!bcrypt.compareSync(p, bcrypt.hashSync(process.env.AUTH_TOKEN, 10))) {
+  if (!bcrypt.compareSync(EncryptionMgr.decrypt(p), bcrypt.hashSync(process.env.AUTH_TOKEN, 10))) {
     response.status(401).json({
       error: "Invalid auth credentials.",
     });
