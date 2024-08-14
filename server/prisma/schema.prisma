@@ -297,3 +297,10 @@ model document_sync_executions {
   createdAt DateTime             @default(now())
   queue     document_sync_queues @relation(fields: [queueId], references: [id], onDelete: Cascade)
 }
+
+model browser_extension_api_keys {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
