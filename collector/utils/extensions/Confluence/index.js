@@ -27,7 +27,7 @@ async function loadConfluence({ pageUrl, username, accessToken }, response) {
     return {
       success: false,
       reason:
-        "Confluence space URL is not in the expected format of one of https://domain.atlassian.net/wiki/space/~SPACEID/* or https://customDomain/wiki/space/~SPACEID/* or https://customDomain/display/~SPACEID/*",
+        "Confluence space URL is not in a valid format. Please check your URL and try again.",
     };
   }
 
@@ -138,7 +138,7 @@ async function fetchConfluencePage({
       success: false,
       content: null,
       reason:
-        "Confluence space URL is not in the expected format of https://domain.atlassian.net/wiki/space/~SPACEID/* or https://customDomain/wiki/space/~SPACEID/*",
+        "Confluence space URL is not in a valid format. Please check your URL and try again.",
     };
   }
 
@@ -190,92 +190,82 @@ async function fetchConfluencePage({
 }
 
 /**
- * A match result for a url-pattern of a Confluence URL
- * @typedef {Object} ConfluenceMatchResult
- * @property {string} subdomain - the subdomain of an organization's Confluence space
- * @property {string} spaceKey - the spaceKey of an organization that determines the documents to collect.
- * @property {string} apiBase - the correct REST API url to use for loader.
- */
-
-/**
- * Generates the correct API base URL for interfacing with the Confluence REST API
- * depending on the URL pattern being used since there are various ways to host/access a
- * Confluence space.
- * @param {ConfluenceMatchResult} matchResult - result from `url-pattern`.match
- * @param {boolean} isCustomDomain - determines if we need to coerce the subpath of the provided URL
- * @returns {string} - the resulting REST API URL
- */
-function generateAPIBaseUrl(matchResult = {}, isCustomDomain = false) {
-  const { subdomain } = matchResult;
-  let subpath = isCustomDomain ? `` : `/wiki`;
-  if (isCustomDomain) return `https://${customDomain}${subpath}`;
-  return `https://${subdomain}.atlassian.net${subpath}`;
-}
-
-/**
  * Validates and parses the correct information from a given Confluence URL
  * @param {string} spaceUrl - The organization's Confluence URL to parse
  * @returns {{
  *  valid: boolean,
- *  result: (ConfluenceMatchResult|null),
+ *  result: (Object|null),
  * }}
  */
 function validSpaceUrl(spaceUrl = "") {
-  let matchResult;
-  const patterns = {
-    default: new UrlPattern(
-      "https\\://(:subdomain).atlassian.net/wiki/spaces/(:spaceKey)*"
-    ),
-    subdomain: new UrlPattern(
-      "https\\://(:subdomain.):domain.:tld/wiki/spaces/(:spaceKey)*"
-    ),
-    custom: new UrlPattern(
-      "https\\://(:subdomain.):domain.:tld/display/(:spaceKey)*"
-    ),
+  const urlObj = new URL(spaceUrl);
+  const pathParts = urlObj.pathname.split("/").filter(Boolean);
+
+  let subdomain, spaceKey, contextPath;
+
+  // Handle Atlassian domain
+  if (urlObj.hostname.endsWith("atlassian.net")) {
+    subdomain = urlObj.hostname.split(".")[0];
+    spaceKey =
+      pathParts[pathParts.indexOf("spaces") + 1] ||
+      pathParts[pathParts.length - 1];
+  }
+  // Handle custom domains
+  else {
+    subdomain = urlObj.hostname;
+    if (pathParts.includes("display")) {
+      spaceKey = pathParts[pathParts.indexOf("display") + 1];
+      contextPath = pathParts.slice(0, pathParts.indexOf("display")).join("/");
+    } else if (pathParts.includes("spaces")) {
+      spaceKey = pathParts[pathParts.indexOf("spaces") + 1];
+      contextPath = pathParts.slice(0, pathParts.indexOf("spaces")).join("/");
+    } else {
+      spaceKey = pathParts[pathParts.length - 1];
+      contextPath = pathParts.slice(0, -1).join("/");
+    }
+  }
+
+  if (!spaceKey) {
+    return { valid: false, result: null };
+  }
+
+  const apiBase = generateAPIBaseUrl(
+    {
+      subdomain,
+      contextPath,
+      port: urlObj.port,
+      protocol: urlObj.protocol.replace(":", ""),
+    },
+    !urlObj.hostname.endsWith("atlassian.net")
+  );
+
+  return {
+    valid: true,
+    result: {
+      subdomain,
+      spaceKey,
+      apiBase,
+      contextPath: contextPath || "",
+    },
   };
+}
 
-  // If using the default Atlassian Confluence URL pattern.
-  // We can proceed because the Library/API can use this base url scheme.
-  matchResult = patterns.default.match(spaceUrl);
-  if (matchResult)
-    return {
-      valid: matchResult.hasOwnProperty("spaceKey"),
-      result: {
-        ...matchResult,
-        apiBase: generateAPIBaseUrl(matchResult),
-      },
-    };
+/**
+ * Generates the correct API base URL for interfacing with the Confluence REST API
+ * @param {Object} params - Parameters for generating the API base URL
+ * @param {boolean} isCustomDomain - determines if we need to coerce the subpath of the provided URL
+ * @returns {string} - the resulting REST API URL
+ */
+function generateAPIBaseUrl(
+  { subdomain, contextPath, port, protocol },
+  isCustomDomain = false
+) {
+  let domain = isCustomDomain ? subdomain : `${subdomain}.atlassian.net`;
+  let portString = port ? `:${port}` : "";
+  let contextPathString = contextPath ? `/${contextPath}` : "";
+  let wikiPath = isCustomDomain ? "" : "/wiki";
 
-  // If using a custom subdomain Confluence URL pattern.
-  // We need to attach the customDomain as a property to the match result
-  // so we can form the correct REST API base from the subdomain.
-  matchResult = patterns.subdomain.match(spaceUrl);
-  if (matchResult) {
-    return {
-      valid: matchResult.hasOwnProperty("spaceKey"),
-      result: {
-        ...matchResult,
-        apiBase: generateAPIBaseUrl(matchResult),
-      },
-    };
-  }
-
-  // If using a base FQDN Confluence URL pattern.
-  // We need to attach the customDomain as a property to the match result
-  // so we can form the correct REST API base from the root domain since /display/ is basically a URL mask.
-  matchResult = patterns.custom.match(spaceUrl);
-  if (matchResult) {
-    return {
-      valid: matchResult.hasOwnProperty("spaceKey"),
-      result: {
-        ...matchResult,
-        apiBase: generateAPIBaseUrl(matchResult, true),
-      },
-    };
-  }
-
-  // No match
-  return { valid: false, result: null };
+  return `${protocol}://${domain}${portString}${contextPathString}${wikiPath}`;
 }
 
 /**
