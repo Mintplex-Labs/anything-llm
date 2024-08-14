@@ -51,6 +51,7 @@ const {
   generateRecoveryCodes,
 } = require("../utils/PasswordRecovery");
 const { SlashCommandPresets } = require("../models/slashCommandsPresets");
+const { EncryptionManager } = require("../utils/EncryptionManager");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -236,7 +237,10 @@ function systemEndpoints(app) {
         });
         response.status(200).json({
           valid: true,
-          token: makeJWT({ p: password }, "30d"),
+          token: makeJWT(
+            { p: new EncryptionManager().encrypt(password) },
+            "30d"
+          ),
           message: null,
         });
       }
