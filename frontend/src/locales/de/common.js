@@ -50,13 +50,13 @@ const TRANSLATIONS = {
       reset: "Zurücksetzen",
     },
     "sign-in": {
-      start: "Melden Sie sich bei Ihrem",
+      start: "Melde dich bei deinem",
       end: "Konto an.",
     },
     "password-reset": {
       title: "Passwort zurücksetzen",
       description:
-        "Geben Sie die erforderlichen Informationen unten ein, um Ihr Passwort zurückzusetzen.",
+        "Gebe die erforderlichen Informationen unten ein, um dein Passwort zurückzusetzen.",
       "recovery-codes": "Wiederherstellungscodes",
       "recovery-code": "Wiederherstellungscode {{index}}",
       "back-to-login": "Zurück zur Anmeldung",
@@ -65,29 +65,26 @@ const TRANSLATIONS = {
 
   welcomeMessage: {
     part1:
-      "Willkommen bei AnythingLLM, AnythingLLM ist ein Open-Source-KI-Tool von Mintplex Labs, das alles in einen trainierten Chatbot verwandelt, den Sie abfragen und mit dem Sie chatten können. AnythingLLM ist eine BYOK-Software (Bring-Your-Own-Keys), daher gibt es keine Abonnements, Gebühren oder Kosten für diese Software außerhalb der Dienste, die Sie damit nutzen möchten.",
+      "Herzlich Willkommen bei der ITSC-K.I. Testumgebung!",
     part2:
-      "AnythingLLM ist der einfachste Weg, leistungsstarke KI-Produkte wie OpenAI, GPT-4, LangChain, PineconeDB, ChromaDB und andere Dienste in einem übersichtlichen Paket ohne Aufwand zusammenzufassen, um Ihre Produktivität um das 100-fache zu steigern.",
+      "",
     part3:
-      "AnythingLLM kann vollständig lokal auf Ihrem Computer mit geringem Overhead laufen - Sie werden nicht einmal bemerken, dass es da ist! Keine GPU erforderlich. Cloud- und On-Premises-Installation ist ebenfalls verfügbar.\nDas KI-Tool-Ökosystem wird jeden Tag leistungsfähiger. AnythingLLM macht es einfach, es zu nutzen.",
-    githubIssue: "Erstellen Sie ein Problem auf Github",
-    user1: "Wie fange ich an?!",
+      "",
+    user1: "Alles klar! Wie fange ich an?",
     part4:
-      'Es ist einfach. Alle Sammlungen sind in Behältern organisiert, die wir "Arbeitsbereiche" nennen. Arbeitsbereiche sind Behälter für Dateien, Dokumente, Bilder, PDFs und andere Dateien, die in etwas umgewandelt werden, das LLMs verstehen und in Gesprächen verwenden können.\n\nSie können jederzeit Dateien hinzufügen und entfernen.',
-    createWorkspace: "Erstellen Sie Ihren ersten Arbeitsbereich",
+      'Es ist einfach. Alle Sammlungen sind in "Arbeitsbereichen" organisiert, die wir Workspaces nennen. Workspaces sind Behälter für Dateien, Dokumente, Bilder, PDFs und vieles mehr, die in etwas umgewandelt werden, welche die ITSC-K.I. verstehen und in Gesprächen verwenden kann.\n\nSie können jederzeit Dateien hinzufügen und entfernen.',
+    createWorkspace: "Erstelle deinen ersten Workspace",
     user2:
-      "Ist das so eine Art KI-Dropbox oder so? Was ist mit dem Chatten? Es ist doch ein Chatbot, oder?",
+      "Bist du so eine Art KI-Dropbox? Was ist mit dem Chatten? Du bist doch ein Chatbot, oder?",
     part5:
-      "AnythingLLM ist mehr als eine intelligentere Dropbox.\n\nAnythingLLM bietet zwei Möglichkeiten, mit Ihren Daten zu sprechen:\n\n<i>Abfrage:</i> Ihre Chats geben Daten oder Schlussfolgerungen zurück, die in den Dokumenten Ihres Arbeitsbereichs gefunden wurden, auf die es Zugriff hat. Je mehr Dokumente Sie dem Arbeitsbereich hinzufügen, desto intelligenter wird er! \n\n<i>Konversation:</i> Ihre Dokumente + Ihr laufender Chat-Verlauf tragen gleichzeitig zum LLM-Wissen bei. Großartig für das Anhängen von Echtzeit-Textinformationen oder Korrekturen und Missverständnissen, die das LLM haben könnte. \n\nSie können zwischen beiden Modi wechseln \n<i>mitten im Chatten!</i>",
-    user3: "Wow, das klingt erstaunlich, lass es mich gleich ausprobieren!",
-    part6: "Viel Spaß!",
-    starOnGithub: "Stern auf GitHub",
-    contact: "Kontaktieren Sie Mintplex Labs",
+      "Ich bin mehr als eine intelligentere Dropbox.\n\nSo biete ich dir zwei Möglichkeiten an, wie du mit deinen Dateien interagieren kannst:\n\n<i>Abfrage:</i> Die Chats geben Daten oder Schlussfolgerungen zurück, die Ich in den Dokumenten deines Workspace gefunden habe, auf die ich Zugriff habe. Je mehr Dokumente du einem Workspace hinzufügst, desto intelligenter werde ich in diesem Workspace! \n\n<i>Konversation:</i> Deine Dokumente und der Chat-Verlauf tragen gleichzeitig zu meinem Wissen bei. So hast du die Möglichkeit, Korrekturen oder zusätzliche Informationen im Falle von Missverständnissen, die Ich haben könnte, anzuhängen. \n\nDu kannst zwischen beiden Modi wechseln \n<i>mitten im Chatten!</i>",
+    user3: "Wow, das klingt spannend! Lass es mich gleich ausprobieren!",
+    part6: "Viel Spaß!"
   },
 
   "new-workspace": {
-    title: "Neuer Arbeitsbereich",
-    placeholder: "Mein Arbeitsbereich",
+    title: "Neuer Workspace",
+    placeholder: "Mein Workspace",
   },
 
   "workspaces—settings": {
@@ -101,50 +98,50 @@ const TRANSLATIONS = {
   general: {
     vector: {
       title: "Vektoranzahl",
-      description: "Gesamtanzahl der Vektoren in Ihrer Vektordatenbank.",
+      description: "Gesamtanzahl der Vektoren in der Vektordatenbank.",
     },
     names: {
-      description: "Dies ändert nur den Anzeigenamen Ihres Arbeitsbereichs.",
+      description: "Dies ändert nur den Anzeigenamen des Workspace.",
     },
     message: {
       title: "Vorgeschlagene Chat-Nachrichten",
       description:
-        "Passen Sie die Nachrichten an, die Ihren Arbeitsbereich-Benutzern vorgeschlagen werden.",
+        "Passe die Nachrichten an, die deinen Workspace-Benutzern vorgeschlagen werden.",
       add: "Neue Nachricht hinzufügen",
       save: "Nachrichten speichern",
       heading: "Erkläre mir",
-      body: "die Vorteile von AnythingLLM",
+      body: "die Vorteile der ITSC-K.I.",
     },
     pfp: {
-      title: "Assistent-Profilbild",
+      title: "Workspace-Bild",
       description:
-        "Passen Sie das Profilbild des Assistenten für diesen Arbeitsbereich an.",
-      image: "Arbeitsbereich-Bild",
-      remove: "Arbeitsbereich-Bild entfernen",
+        "Passe das Profilbild des Workspace an.",
+      image: "Workspace-Bild",
+      remove: "Workspace-Bild entfernen",
     },
     delete: {
-      title: "Arbeitsbereich löschen",
+      title: "Workspace löschen",
       description:
-        "Löschen Sie diesen Arbeitsbereich und alle seine Daten. Dies löscht den Arbeitsbereich für alle Benutzer.",
-      delete: "Arbeitsbereich löschen",
-      deleting: "Arbeitsbereich wird gelöscht...",
-      "confirm-start": "Sie sind dabei, Ihren gesamten",
+        "Löschen des Workspace und alle darin enthaltenen Daten. Achtung! Dies löscht den Workspace für alle Benutzer.",
+      delete: "Workspace löschen",
+      deleting: "Workspace wird gelöscht...",
+      "confirm-start": "Du bist dabei, deinen gesamten",
       "confirm-end":
-        "Arbeitsbereich zu löschen. Dies entfernt alle Vektoreinbettungen in Ihrer Vektordatenbank.\n\nDie ursprünglichen Quelldateien bleiben unberührt. Diese Aktion ist irreversibel.",
+        "Workspace zu löschen. Dies entfernt alle Einbettungen, die in diesem Workspace gespeichert sind.\n\nDie ursprünglichen Quelldateien bleiben unberührt. Diese Aktion ist irreversibel.",
     },
   },
 
   chat: {
     llm: {
-      title: "Arbeitsbereich-LLM-Anbieter",
+      title: "Workspace-LLM-Anbieter",
       description:
         "Der spezifische LLM-Anbieter und das Modell, das für diesen Arbeitsbereich verwendet wird. Standardmäßig wird der System-LLM-Anbieter und dessen Einstellungen verwendet.",
-      search: "Durchsuchen Sie alle LLM-Anbieter",
+      search: "Durchsuche alle LLM-Anbieter",
     },
     model: {
-      title: "Arbeitsbereich-Chat-Modell",
+      title: "Workspace-Chat-Modell",
       description:
-        "Das spezifische Chat-Modell, das für diesen Arbeitsbereich verwendet wird. Wenn leer, wird die System-LLM-Präferenz verwendet.",
+        "Das spezifische Chat-Modell, das für diesen Workspace verwendet wird. Wenn leer, wird die System-LLM-Präferenz verwendet.",
       wait: "-- warte auf Modelle --",
     },
     mode: {
@@ -173,14 +170,14 @@ const TRANSLATIONS = {
     prompt: {
       title: "Prompt",
       description:
-        "Der Prompt, der in diesem Arbeitsbereich verwendet wird. Definieren Sie den Kontext und die Anweisungen für die KI, um eine Antwort zu generieren. Sie sollten einen sorgfältig formulierten Prompt bereitstellen, damit die KI eine relevante und genaue Antwort generieren kann.",
+        "Der Prompt, der in diesem Arbeitsbereich verwendet wird. Definiere den Kontext und die Anweisungen für die KI, um eine Antwort zu generieren. Du solltest einen sorgfältig formulierten Prompt bereitstellen, damit die KI eine relevante und genaue Antwort generieren kann.",
     },
     refusal: {
       title: "Abfragemodus-Ablehnungsantwort",
       "desc-start": "Wenn im",
       query: "Abfrage",
       "desc-end":
-        "modus, möchten Sie vielleicht eine benutzerdefinierte Ablehnungsantwort zurückgeben, wenn kein Kontext gefunden wird.",
+        "modus, möchtest du vielleicht eine benutzerdefinierte Ablehnungsantwort zurückgeben, wenn kein Kontext gefunden wird.",
     },
     temperature: {
       title: "LLM-Temperatur",
@@ -188,7 +185,7 @@ const TRANSLATIONS = {
         'Diese Einstellung steuert, wie "kreativ" Ihre LLM-Antworten sein werden.',
       "desc-end":
         "Je höher die Zahl, desto kreativer. Bei einigen Modellen kann dies zu unverständlichen Antworten führen, wenn sie zu hoch eingestellt ist.",
-      hint: "Die meisten LLMs haben verschiedene akzeptable Bereiche gültiger Werte. Konsultieren Sie Ihren LLM-Anbieter für diese Informationen.",
+      hint: "Die meisten LLMs haben verschiedene akzeptable Bereiche gültiger Werte. Konsultiere deinen LLM-Anbieter für diese Informationen.",
     },
   },
 
@@ -224,55 +221,55 @@ const TRANSLATIONS = {
     "performance-warning":
       "Die Leistung von LLMs, die Werkzeugaufrufe nicht explizit unterstützen, hängt stark von den Fähigkeiten und der Genauigkeit des Modells ab. Einige Fähigkeiten können eingeschränkt oder nicht funktionsfähig sein.",
     provider: {
-      title: "Arbeitsbereich-Agent LLM-Anbieter",
+      title: "Workspace-Agent LLM-Anbieter",
       description:
-        "Der spezifische LLM-Anbieter und das Modell, das für den @agent-Agenten dieses Arbeitsbereichs verwendet wird.",
+        "Der spezifische LLM-Anbieter und das Modell, das für den @agent-Agenten dieses Workspace verwendet wird.",
     },
     mode: {
       chat: {
-        title: "Arbeitsbereich-Agent Chat-Modell",
+        title: "Workspace-Agent Chat-Modell",
         description:
-          "Das spezifische Chat-Modell, das für den @agent-Agenten dieses Arbeitsbereichs verwendet wird.",
+          "Das spezifische Chat-Modell, das für den @agent-Agenten dieses Workspace verwendet wird.",
       },
-      title: "Arbeitsbereich-Agent-Modell",
+      title: "Workspace-Agent-Modell",
       description:
-        "Das spezifische LLM-Modell, das für den @agent-Agenten dieses Arbeitsbereichs verwendet wird.",
+        "Das spezifische LLM-Modell, das für den @agent-Agenten dieses Workspace verwendet wird.",
       wait: "-- warte auf Modelle --",
     },
 
     skill: {
       title: "Standard-Agentenfähigkeiten",
       description:
-        "Verbessern Sie die natürlichen Fähigkeiten des Standard-Agenten mit diesen vorgefertigten Fähigkeiten. Diese Einrichtung gilt für alle Arbeitsbereiche.",
+        "Verbessern der natürlichen Fähigkeiten des Standard-Agenten mit diesen vorgefertigten Fähigkeiten. Diese Einrichtung gilt für alle Arbeitsbereiche.",
       rag: {
         title: "RAG & Langzeitgedächtnis",
         description:
-          'Erlauben Sie dem Agenten, Ihre lokalen Dokumente zu nutzen, um eine Abfrage zu beantworten oder bitten Sie den Agenten, Inhalte für den Langzeitabruf zu "merken".',
+          'Erlaube dem Agenten, deine lokalen Dokumente zu nutzen, um eine Abfrage zu beantworten oder bitten Sie den Agenten, Inhalte für den Langzeitabruf zu "merken".',
       },
       view: {
         title: "Dokumente anzeigen & zusammenfassen",
         description:
-          "Erlauben Sie dem Agenten, den Inhalt der aktuell eingebetteten Arbeitsbereichsdateien aufzulisten und zusammenzufassen.",
+          "Erlaube dem Agenten, den Inhalt der aktuell eingebetteten Workspace-Dateien aufzulisten und zusammenzufassen.",
       },
       scrape: {
         title: "Websites durchsuchen",
         description:
-          "Erlauben Sie dem Agenten, Websites zu besuchen und deren Inhalt zu extrahieren.",
+          "Erlaube dem Agenten, Websites zu besuchen und deren Inhalt zu extrahieren.",
       },
       generate: {
         title: "Diagramme generieren",
         description:
-          "Aktivieren Sie den Standard-Agenten, um verschiedene Arten von Diagrammen aus bereitgestellten oder im Chat gegebenen Daten zu generieren.",
+          "Aktiviere den Standard-Agenten, um verschiedene Arten von Diagrammen aus bereitgestellten oder im Chat gegebenen Daten zu generieren.",
       },
       save: {
         title: "Dateien generieren & im Browser speichern",
         description:
-          "Aktivieren Sie den Standard-Agenten, um Dateien zu generieren und zu schreiben, die gespeichert und in Ihrem Browser heruntergeladen werden können.",
+          "Aktiviere den Standard-Agenten, um Dateien zu generieren und zu schreiben, die gespeichert und in deinem Browser heruntergeladen werden können.",
       },
       web: {
         title: "Live-Websuche und -Browsing",
         "desc-start":
-          "Ermöglichen Sie Ihrem Agenten, das Web zu durchsuchen, um Ihre Fragen zu beantworten, indem Sie eine Verbindung zu einem Websuche-Anbieter (SERP) herstellen.",
+          "Ermögliche deinen Agenten, das Web zu durchsuchen, um deine Fragen zu beantworten, indem Sie eine Verbindung zu einem Websuche-Anbieter (SERP) herstellen.",
         "desc-end":
           "Die Websuche während Agentensitzungen funktioniert erst, wenn dies eingerichtet ist.",
       },
@@ -280,7 +277,7 @@ const TRANSLATIONS = {
   },
 
   recorded: {
-    title: "Arbeitsbereich-Chats",
+    title: "Workspace-Chats",
     description:
       "Dies sind alle aufgezeichneten Chats und Nachrichten, die von Benutzern gesendet wurden, geordnet nach ihrem Erstellungsdatum.",
     export: "Exportieren",
@@ -296,11 +293,11 @@ const TRANSLATIONS = {
 
   appearance: {
     title: "Erscheinungsbild",
-    description: "Passen Sie die Erscheinungseinstellungen Ihrer Plattform an.",
+    description: "Passe die Erscheinungseinstellungen Ihrer Plattform an.",
     logo: {
       title: "Logo anpassen",
       description:
-        "Laden Sie Ihr eigenes Logo hoch, um Ihren Chatbot zu personalisieren.",
+        "Lade dein eigenes Logo hoch, um deinen Chatbot zu personalisieren.",
       add: "Benutzerdefiniertes Logo hinzufügen",
       recommended: "Empfohlene Größe: 800 x 200",
       remove: "Entfernen",
@@ -314,14 +311,14 @@ const TRANSLATIONS = {
       system: "System",
       user: "Benutzer",
       message: "Nachricht",
-      assistant: "AnythingLLM Chat-Assistent",
+      assistant: "ITSC K.I. Chat-Assistent",
       "double-click": "Doppelklicken zum Bearbeiten...",
       save: "Nachrichten speichern",
     },
     icons: {
       title: "Benutzerdefinierte Fußzeilen-Icons",
       description:
-        "Passen Sie die Fußzeilen-Icons an, die am unteren Rand der Seitenleiste angezeigt werden.",
+        "Passen die Fußzeilen-Icons an, die am unteren Rand der Seitenleiste angezeigt werden.",
       icon: "Icon",
       link: "Link",
     },
@@ -330,8 +327,8 @@ const TRANSLATIONS = {
   api: {
     title: "API-Schlüssel",
     description:
-      "API-Schlüssel ermöglichen es dem Besitzer, programmatisch auf diese AnythingLLM-Instanz zuzugreifen und sie zu verwalten.",
-    link: "Lesen Sie die API-Dokumentation",
+      "API-Schlüssel ermöglichen es dem Besitzer, programmatisch auf diese Instanz zuzugreifen und sie zu verwalten.",
+    link: "API-Dokumentation lesen",
     generate: "Neuen API-Schlüssel generieren",
     table: {
       key: "API-Schlüssel",
@@ -343,7 +340,7 @@ const TRANSLATIONS = {
   llm: {
     title: "LLM-Präferenz",
     description:
-      "Dies sind die Anmeldeinformationen und Einstellungen für Ihren bevorzugten LLM-Chat- und Einbettungsanbieter. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind, sonst wird AnythingLLM nicht richtig funktionieren.",
+      "Dies sind die Anmeldeinformationen und Einstellungen für deinen bevorzugten LLM-Chat- und Einbettungsanbieter. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind.",
     provider: "LLM-Anbieter",
   },
 
@@ -353,7 +350,7 @@ const TRANSLATIONS = {
       "Dies sind die Anmeldeinformationen und Einstellungen für Ihren bevorzugten Transkriptionsmodellanbieter. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind, sonst werden Mediendateien und Audio nicht transkribiert.",
     provider: "Transkriptionsanbieter",
     "warn-start":
-      "Die Verwendung des lokalen Whisper-Modells auf Maschinen mit begrenztem RAM oder CPU kann AnythingLLM bei der Verarbeitung von Mediendateien zum Stillstand bringen.",
+      "Die Verwendung des lokalen Whisper-Modells auf Maschinen mit begrenztem RAM oder CPU kann bei der Verarbeitung von Mediendateien zum Stillstand bringen.",
     "warn-recommend":
       "Wir empfehlen mindestens 2 GB RAM und das Hochladen von Dateien <10 MB.",
     "warn-end":
@@ -365,20 +362,20 @@ const TRANSLATIONS = {
     "desc-start":
       "Bei der Verwendung eines LLM, das keine native Unterstützung für eine Einbettungs-Engine bietet, müssen Sie möglicherweise zusätzlich Anmeldeinformationen für die Texteinbettung angeben.",
     "desc-end":
-      "Einbettung ist der Prozess, Text in Vektoren umzuwandeln. Diese Anmeldeinformationen sind erforderlich, um Ihre Dateien und Prompts in ein Format umzuwandeln, das AnythingLLM zur Verarbeitung verwenden kann.",
+      "Einbettung ist der Prozess, Text in Vektoren umzuwandeln. Diese Anmeldeinformationen sind erforderlich, um Ihre Dateien und Prompts in ein Format umzuwandeln, das zur Verarbeitung verwendet werden kann.",
     provider: {
       title: "Einbettungsanbieter",
       description:
-        "Bei Verwendung der nativen Einbettungs-Engine von AnythingLLM ist keine Einrichtung erforderlich.",
+        "Bei Verwendung der nativen Einbettungs-Engine von ITSC K.I. ist keine Einrichtung erforderlich.",
     },
   },
 
   text: {
     title: "Textsplitting & Chunking-Präferenzen",
     "desc-start":
-      "Manchmal möchten Sie vielleicht die Standardmethode ändern, wie neue Dokumente gesplittet und gechunkt werden, bevor sie in Ihre Vektordatenbank eingefügt werden.",
+      "Manchmal möchtest du vielleicht die Standardmethode ändern, wie neue Dokumente gesplittet und gechunkt werden, bevor sie in deine Vektordatenbank eingefügt werden.",
     "desc-end":
-      "Sie sollten diese Einstellung nur ändern, wenn Sie verstehen, wie Textsplitting funktioniert und welche Nebenwirkungen es hat.",
+      "Du solltest diese Einstellung nur ändern, wenn du verstehst, wie Textsplitting funktioniert und welche Nebenwirkungen es hat.",
     "warn-start": "Änderungen hier gelten nur für",
     "warn-center": "neu eingebettete Dokumente",
     "warn-end": ", nicht für bestehende Dokumente.",
@@ -399,7 +396,7 @@ const TRANSLATIONS = {
   vector: {
     title: "Vektordatenbank",
     description:
-      "Dies sind die Anmeldeinformationen und Einstellungen für die Funktionsweise Ihrer AnythingLLM-Instanz. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind.",
+      "Dies sind die Anmeldeinformationen und Einstellungen für die Funktionsweise Ihrer Instanz. Es ist wichtig, dass diese Schlüssel aktuell und korrekt sind.",
     provider: {
       title: "Vektordatenbankanbieter",
       description: "Für LanceDB ist keine Konfiguration erforderlich.",
@@ -421,7 +418,7 @@ const TRANSLATIONS = {
   "embed-chats": {
     title: "Eingebettete Chats",
     description:
-      "Dies sind alle aufgezeichneten Chats und Nachrichten von jeder Einbettung, die Sie veröffentlicht haben.",
+      "Dies sind alle aufgezeichneten Chats und Nachrichten von jeder Einbettung, die du veröffentlicht hast.",
     table: {
       embed: "Einbettung",
       sender: "Absender",
@@ -434,24 +431,24 @@ const TRANSLATIONS = {
   multi: {
     title: "Mehrbenutzer-Modus",
     description:
-      "Richten Sie Ihre Instanz ein, um Ihr Team zu unterstützen, indem Sie den Mehrbenutzer-Modus aktivieren.",
+      "Richte die Instanz ein, um dein Team zu unterstützen, indem du den Mehrbenutzer-Modus aktivierst.",
     enable: {
       "is-enable": "Mehrbenutzer-Modus ist aktiviert",
       enable: "Mehrbenutzer-Modus aktivieren",
       description:
-        "Standardmäßig sind Sie der einzige Administrator. Als Administrator müssen Sie Konten für alle neuen Benutzer oder Administratoren erstellen. Verlieren Sie Ihr Passwort nicht, da nur ein Administrator-Benutzer Passwörter zurücksetzen kann.",
+        "Standardmäßig sind der einzige Administrator. Als Administrator müssen Sie Konten für alle neuen Benutzer oder Administratoren erstellen. Verlieren Sie Ihr Passwort nicht, da nur ein Administrator-Benutzer Passwörter zurücksetzen kann.",
       username: "Administrator-Kontoname",
       password: "Administrator-Kontopasswort",
     },
     password: {
       title: "Passwortschutz",
       description:
-        "Schützen Sie Ihre AnythingLLM-Instanz mit einem Passwort. Wenn Sie dieses vergessen, gibt es keine Wiederherstellungsmethode, also stellen Sie sicher, dass Sie dieses Passwort speichern.",
+        "Schütze die Instanz mit einem Passwort. Wenn du dieses vergessen hast, gibt es keine Wiederherstellungsmethode, also stelle sicher, dass du dieses Passwort speicherst.",
     },
     instance: {
       title: "Instanz mit Passwort schützen",
       description:
-        "Standardmäßig sind Sie der einzige Administrator. Als Administrator müssen Sie Konten für alle neuen Benutzer oder Administratoren erstellen. Verlieren Sie Ihr Passwort nicht, da nur ein Administrator-Benutzer Passwörter zurücksetzen kann.",
+        "Standardmäßig bist du der einzige Administrator. Als Administrator müssen Sie Konten für alle neuen Benutzer oder Administratoren erstellen. Verlieren Sie Ihr Passwort nicht, da nur ein Administrator-Benutzer Passwörter zurücksetzen kann.",
       password: "Instanz-Passwort",
     },
   },
@@ -459,7 +456,7 @@ const TRANSLATIONS = {
   event: {
     title: "Ereignisprotokolle",
     description:
-      "Sehen Sie alle Aktionen und Ereignisse, die auf dieser Instanz zur Überwachung stattfinden.",
+      "Anzeigen aller Aktionen und Ereignisse, die auf dieser Instanz zur Überwachung stattfinden.",
     clear: "Ereignisprotokolle löschen",
     table: {
       type: "Ereignistyp",
@@ -471,7 +468,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "Datenschutz & Datenverarbeitung",
     description:
-      "Dies ist Ihre Konfiguration dafür, wie verbundene Drittanbieter und AnythingLLM Ihre Daten behandeln.",
+      "Dies ist deine Konfiguration dafür, wie die ITSC K.I., AnythingLLM und verbundene Drittanbieter die Daten behandeln.",
     llm: "LLM-Auswahl",
     embedding: "Einbettungspräferenz",
     vector: "Vektordatenbank",
