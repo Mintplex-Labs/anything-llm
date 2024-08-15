@@ -63,9 +63,24 @@ function handleDefaultStreamResponseV2(response, stream, responseProps) {
 
 function convertToChatHistory(history = []) {
   const formattedHistory = [];
-  history.forEach((history) => {
-    const { prompt, response, createdAt, feedbackScore = null, id } = history;
+  for (const record of history) {
+    const { prompt, response, createdAt, feedbackScore = null, id } = record;
     const data = JSON.parse(response);
+
+    // In the event that a bad response was stored - we should skip its entire record
+    // because it was likely an error and cannot be used in chats and will fail to render on UI.
+    if (typeof prompt !== "string") {
+      console.log(
+        `[convertToChatHistory] ChatHistory #${record.id} prompt property is not a string - skipping record.`
+      );
+      continue;
+    } else if (typeof data.text !== "string") {
+      console.log(
+        `[convertToChatHistory] ChatHistory #${record.id} response.text property is not a string - skipping record.`
+      );
+      continue;
+    }
+
     formattedHistory.push([
       {
         role: "user",
@@ -84,21 +99,36 @@ function convertToChatHistory(history = []) {
         feedbackScore,
       },
     ]);
-  });
+  }
 
   return formattedHistory.flat();
 }
 
 function convertToPromptHistory(history = []) {
   const formattedHistory = [];
-  history.forEach((history) => {
-    const { prompt, response } = history;
+  for (const record of history) {
+    const { prompt, response } = record;
     const data = JSON.parse(response);
+
+    // In the event that a bad response was stored - we should skip its entire record
+    // because it was likely an error and cannot be used in chats and will fail to render on UI.
+    if (typeof prompt !== "string") {
+      console.log(
+        `[convertToPromptHistory] ChatHistory #${record.id} prompt property is not a string - skipping record.`
+      );
+      continue;
+    } else if (typeof data.text !== "string") {
+      console.log(
+        `[convertToPromptHistory] ChatHistory #${record.id} response.text property is not a string - skipping record.`
+      );
+      continue;
+    }
+
     formattedHistory.push([
       { role: "user", content: prompt },
       { role: "assistant", content: data.text },
     ]);
-  });
+  }
   return formattedHistory.flat();
 }
 
