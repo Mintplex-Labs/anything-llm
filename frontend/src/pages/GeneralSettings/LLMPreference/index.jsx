@@ -232,7 +232,7 @@ export default function GeneralLLMPreference() {
   const [selectedLLM, setSelectedLLM] = useState(null);
   const [searchMenuOpen, setSearchMenuOpen] = useState(false);
   const searchInputRef = useRef(null);
-  const isHosted = window.location.hostname.includes("useanything.com");
+  const isHosted = window.location.hostname.includes("ossorioia.com");
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {

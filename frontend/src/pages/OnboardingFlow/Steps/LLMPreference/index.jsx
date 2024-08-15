@@ -203,7 +203,7 @@ export default function LLMPreference({
   const [settings, setSettings] = useState(null);
   const formRef = useRef(null);
   const hiddenSubmitButtonRef = useRef(null);
-  const isHosted = window.location.hostname.includes("useanything.com");
+  const isHosted = window.location.hostname.includes("ossorioia.com");
   const navigate = useNavigate();
 
   useEffect(() => {
