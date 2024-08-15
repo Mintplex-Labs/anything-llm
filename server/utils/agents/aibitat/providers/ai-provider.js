@@ -15,6 +15,7 @@ const { ChatAnthropic } = require("@langchain/anthropic");
 const { ChatBedrockConverse } = require("@langchain/aws");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber } = require("../../../http");
+const { getLLMProviderClass } = require("../../../helpers");
 
 const DEFAULT_WORKSPACE_PROMPT =
   "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
@@ -173,15 +174,16 @@ class Provider {
     }
   }
 
-  static contextLimit(provider = "openai") {
-    switch (provider) {
-      case "openai":
-        return 8_000;
-      case "anthropic":
-        return 100_000;
-      default:
-        return 8_000;
-    }
+  /**
+   * Get the context limit for a provider/model combination using static method in AIProvider class.
+   * @param {string} provider
+   * @param {string} modelName
+   * @returns {number}
+   */
+  static contextLimit(provider = "openai", modelName) {
+    const llm = getLLMProviderClass({ provider });
+    if (!llm || !llm.hasOwnProperty("promptWindowLimit")) return 8_000;
+    return llm.promptWindowLimit(modelName);
   }
 
   // For some providers we may want to override the system prompt to be more verbose.

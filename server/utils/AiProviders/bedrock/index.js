@@ -82,6 +82,13 @@ class AWSBedrockLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(_modelName) {
+    const limit = process.env.AWS_BEDROCK_LLM_MODEL_TOKEN_LIMIT || 8191;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No valid token context limit was set.");
+    return Number(limit);
+  }
+
   // Ensure the user set a value for the token limit
   // and if undefined - assume 4096 window.
   promptWindowLimit() {

@@ -117,6 +117,17 @@ class OpenRouterLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    const cacheModelPath = path.resolve(cacheFolder, "models.json");
+    const availableModels = fs.existsSync(cacheModelPath)
+      ? safeJsonParse(
+          fs.readFileSync(cacheModelPath, { encoding: "utf-8" }),
+          {}
+        )
+      : {};
+    return availableModels[modelName]?.maxLength || 4096;
+  }
+
   promptWindowLimit() {
     const availableModels = this.models();
     return availableModels[this.model]?.maxLength || 4096;
