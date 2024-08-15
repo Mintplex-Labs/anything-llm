@@ -37,6 +37,7 @@ const TRANSLATIONS = {
     tools: "Инструменты",
     "experimental-features": "Экспериментальные функции",
     contact: "联系支持Связаться с Поддержкой",
+    "browser-extension": "Расширение браузера",
   },
 
   login: {

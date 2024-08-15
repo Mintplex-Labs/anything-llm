@@ -49,6 +49,9 @@ const GeneralVectorDatabase = lazy(
   () => import("@/pages/GeneralSettings/VectorDatabase")
 );
 const GeneralSecurity = lazy(() => import("@/pages/GeneralSettings/Security"));
+const GeneralBrowserExtension = lazy(
+  () => import("@/pages/GeneralSettings/BrowserExtension")
+);
 const WorkspaceSettings = lazy(() => import("@/pages/WorkspaceSettings"));
 const EmbedConfigSetup = lazy(
   () => import("@/pages/GeneralSettings/EmbedConfigs")
@@ -156,6 +159,10 @@ export default function App() {
                 <Route
                   path="/settings/api-keys"
                   element={<AdminRoute Component={GeneralApiKeys} />}
+                />
+                <Route
+                  path="/settings/browser-extension"
+                  element={<AdminRoute Component={GeneralBrowserExtension} />}
                 />
                 <Route
                   path="/settings/workspace-chats"
