@@ -89,6 +89,23 @@ class GeminiLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    switch (modelName) {
+      case "gemini-pro":
+        return 30_720;
+      case "gemini-1.0-pro":
+        return 30_720;
+      case "gemini-1.5-flash-latest":
+        return 1_048_576;
+      case "gemini-1.5-pro-latest":
+        return 2_097_152;
+      case "gemini-1.5-pro-exp-0801":
+        return 2_097_152;
+      default:
+        return 30_720; // assume a gemini-pro model
+    }
+  }
+
   promptWindowLimit() {
     switch (this.model) {
       case "gemini-pro":

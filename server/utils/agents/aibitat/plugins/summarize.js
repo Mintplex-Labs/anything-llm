@@ -138,7 +138,7 @@ const docSummarizer = {
 
               if (
                 document.content?.length <
-                Provider.contextLimit(this.super.provider)
+                Provider.contextLimit(this.super.provider, this.super.model)
               ) {
                 return document.content;
               }

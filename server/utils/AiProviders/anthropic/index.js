@@ -32,6 +32,27 @@ class AnthropicLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    switch (modelName) {
+      case "claude-instant-1.2":
+        return 100_000;
+      case "claude-2.0":
+        return 100_000;
+      case "claude-2.1":
+        return 200_000;
+      case "claude-3-opus-20240229":
+        return 200_000;
+      case "claude-3-sonnet-20240229":
+        return 200_000;
+      case "claude-3-haiku-20240307":
+        return 200_000;
+      case "claude-3-5-sonnet-20240620":
+        return 200_000;
+      default:
+        return 100_000; // assume a claude-instant-1.2 model
+    }
+  }
+
   promptWindowLimit() {
     switch (this.model) {
       case "claude-instant-1.2":

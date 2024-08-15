@@ -77,7 +77,10 @@ const webScraping = {
               throw new Error("There was no content to be collected or read.");
             }
 
-            if (content.length < Provider.contextLimit(this.super.provider)) {
+            if (
+              content.length <
+              Provider.contextLimit(this.super.provider, this.super.model)
+            ) {
               return content;
             }
 

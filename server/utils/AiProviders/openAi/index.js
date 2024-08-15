@@ -38,6 +38,29 @@ class OpenAiLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    switch (modelName) {
+      case "gpt-3.5-turbo":
+      case "gpt-3.5-turbo-1106":
+        return 16_385;
+      case "gpt-4o":
+      case "gpt-4o-2024-08-06":
+      case "gpt-4o-2024-05-13":
+      case "gpt-4o-mini":
+      case "gpt-4o-mini-2024-07-18":
+      case "gpt-4-turbo":
+      case "gpt-4-1106-preview":
+      case "gpt-4-turbo-preview":
+        return 128_000;
+      case "gpt-4":
+        return 8_192;
+      case "gpt-4-32k":
+        return 32_000;
+      default:
+        return 4_096; // assume a fine-tune 3.5?
+    }
+  }
+
   promptWindowLimit() {
     switch (this.model) {
       case "gpt-3.5-turbo":

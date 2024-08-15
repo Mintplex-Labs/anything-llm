@@ -40,6 +40,23 @@ class GroqLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    switch (modelName) {
+      case "gemma2-9b-it":
+      case "gemma-7b-it":
+      case "llama3-70b-8192":
+      case "llama3-8b-8192":
+        return 8192;
+      case "llama-3.1-70b-versatile":
+      case "llama-3.1-8b-instant":
+        return 8000;
+      case "mixtral-8x7b-32768":
+        return 32768;
+      default:
+        return 8192;
+    }
+  }
+
   promptWindowLimit() {
     switch (this.model) {
       case "gemma2-9b-it":
