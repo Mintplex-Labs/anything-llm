@@ -71,12 +71,11 @@ function FileUploadProgressComponent({
   if (rejected) {
     return (
       <div
-        className={`${
-          isFadingOut ? "file-upload-fadeout" : "file-upload"
-        } h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40`}
+        className={`${isFadingOut ? "file-upload-fadeout" : "file-upload"
+          } h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40`}
       >
         <div className="w-6 h-6 flex-shrink-0">
-          <XCircle className="w-6 h-6 stroke-white bg-red-500 rounded-full p-1 w-full h-full" />
+          <XCircle className="w-6 h-6 stroke-white bg-red-500 rounded-full p-1" />
         </div>
         <div className="flex flex-col">
           <p className="text-white text-xs font-medium">
@@ -91,12 +90,11 @@ function FileUploadProgressComponent({
   if (status === "failed") {
     return (
       <div
-        className={`${
-          isFadingOut ? "file-upload-fadeout" : "file-upload"
-        } h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40 overflow-y-auto`}
+        className={`${isFadingOut ? "file-upload-fadeout" : "file-upload"
+          } h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40 overflow-y-auto`}
       >
         <div className="w-6 h-6 flex-shrink-0">
-          <XCircle className="w-6 h-6 stroke-white bg-red-500 rounded-full p-1 w-full h-full" />
+          <XCircle className="w-6 h-6 stroke-white bg-red-500 rounded-full p-1" />
         </div>
         <div className="flex flex-col">
           <p className="text-white text-xs font-medium">
@@ -110,9 +108,8 @@ function FileUploadProgressComponent({
 
   return (
     <div
-      className={`${
-        isFadingOut ? "file-upload-fadeout" : "file-upload"
-      } h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40`}
+      className={`${isFadingOut ? "file-upload-fadeout" : "file-upload"
+        } h-14 px-2 py-2 flex items-center gap-x-4 rounded-lg bg-white/5 border border-white/40`}
     >
       <div className="w-6 h-6 flex-shrink-0">
         {status !== "complete" ? (
@@ -120,7 +117,7 @@ function FileUploadProgressComponent({
             <PreLoader size="6" />
           </div>
         ) : (
-          <CheckCircle className="w-6 h-6 stroke-white bg-green-500 rounded-full p-1 w-full h-full" />
+          <CheckCircle className="w-6 h-6 stroke-white bg-green-500 rounded-full p-1" />
         )}
       </div>
       <div className="flex flex-col">
