@@ -45,6 +45,13 @@ class HuggingFaceLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(_modelName) {
+    const limit = process.env.HUGGING_FACE_LLM_TOKEN_LIMIT || 4096;
+    if (!limit || isNaN(Number(limit)))
+      throw new Error("No HuggingFace token context limit was set.");
+    return Number(limit);
+  }
+
   promptWindowLimit() {
     const limit = process.env.HUGGING_FACE_LLM_TOKEN_LIMIT || 4096;
     if (!limit || isNaN(Number(limit)))

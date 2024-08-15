@@ -52,6 +52,11 @@ class PerplexityLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    const availableModels = perplexityModels();
+    return availableModels[modelName]?.maxLength || 4096;
+  }
+
   promptWindowLimit() {
     const availableModels = this.allModelInformation();
     return availableModels[this.model]?.maxLength || 4096;

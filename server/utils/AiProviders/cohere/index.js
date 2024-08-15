@@ -1,6 +1,7 @@
 const { v4 } = require("uuid");
 const { writeResponseChunk } = require("../../helpers/chat/responses");
 const { NativeEmbedder } = require("../../EmbeddingEngines/native");
+const { MODEL_MAP } = require("../modelMap");
 
 class CohereLLM {
   constructor(embedder = null) {
@@ -58,23 +59,12 @@ class CohereLLM {
     return "streamGetChatCompletion" in this;
   }
 
+  static promptWindowLimit(modelName) {
+    return MODEL_MAP.cohere[modelName] ?? 4_096;
+  }
+
   promptWindowLimit() {
-    switch (this.model) {
-      case "command-r":
-        return 128_000;
-      case "command-r-plus":
-        return 128_000;
-      case "command":
-        return 4_096;
-      case "command-light":
-        return 4_096;
-      case "command-nightly":
-        return 8_192;
-      case "command-light-nightly":
-        return 8_192;
-      default:
-        return 4_096;
-    }
+    return MODEL_MAP.cohere[this.model] ?? 4_096;
   }
 
   async isValidChatCompletionModel(model = "") {
