@@ -15,8 +15,7 @@ const { ChatAnthropic } = require("@langchain/anthropic");
 const { ChatBedrockConverse } = require("@langchain/aws");
 const { ChatOllama } = require("@langchain/community/chat_models/ollama");
 const { toValidNumber } = require("../../../http");
-const { OpenAiLLM } = require("../../../AiProviders/openAi");
-const { getLLMProvider, getLLMProviderClass } = require("../../../helpers");
+const { getLLMProviderClass } = require("../../../helpers");
 
 const DEFAULT_WORKSPACE_PROMPT =
   "You are a helpful ai assistant who can assist the user and use tools available to help answer the users prompts and questions.";
