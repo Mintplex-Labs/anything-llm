@@ -1,6 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
-const { assert } = require("joi");
 
 function clientAbortedHandler(resolve, fullText) {
   console.log(
