@@ -93,6 +93,8 @@ REQUIRED data attributes:
 
 - `data-text-size` - Set the text size of the chats in pixels.
 
+- `data-username` - A specific readable name or identifier for the client for your reference. Will be shown in AnythingLLM chat logs. If empty it will not be reported.
+
 **Behavior Overrides**
 
 - `data-open-on-load` — Once loaded, open the chat as default. It can still be closed by the user. To enable set this attribute to `on`. All other values will be ignored.
