@@ -506,13 +506,15 @@ function systemEndpoints(app) {
           multiUserMode: true,
         });
         await EventLogs.logEvent("multi_user_mode_enabled", {}, user?.id);
-        response.status(200).json({ success: true, error: null });
+        response.status(200).json({ success: !!user, error });
       } catch (e) {
-        console.error(e.message, e);
-        response.status(500).json({
-          success: false,
-          error: "An unexpected error occurred.",
+        await User.delete({});
+        await SystemSettings._updateSettings({
+          multi_user_mode: false,
         });
+
+        console.error(e.message, e);
+        response.sendStatus(500).end();
       }
     }
   );
