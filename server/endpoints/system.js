@@ -481,6 +481,15 @@ function systemEndpoints(app) {
           password,
           role: ROLES.admin,
         });
+
+        if (error || !user) {
+          response.status(400).json({
+            success: false,
+            error: error || "Failed to enable multi-user mode.",
+          });
+          return;
+        }
+
         await SystemSettings._updateSettings({
           multi_user_mode: true,
           limit_user_messages: false,
