@@ -29,6 +29,7 @@ function embeddedEndpoints(app) {
           prompt = null,
           model = null,
           temperature = null,
+          username = null,
         } = reqBody(request);
 
         response.setHeader("Cache-Control", "no-cache");
@@ -41,6 +42,7 @@ function embeddedEndpoints(app) {
           prompt,
           model,
           temperature,
+          username,
         });
         await Telemetry.sendTelemetry("embed_sent_chat", {
           multiUserMode: multiUserMode(response),

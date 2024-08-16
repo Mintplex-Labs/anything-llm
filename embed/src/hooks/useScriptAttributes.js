@@ -30,6 +30,7 @@ const DEFAULT_SETTINGS = {
   // behaviors
   openOnLoad: "off", // or "on"
   supportEmail: null, // string of email for contact
+  username: null, // The display or readable name set on a script
 };
 
 export default function useGetScriptAttributes() {
