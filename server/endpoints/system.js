@@ -481,6 +481,15 @@ function systemEndpoints(app) {
           password,
           role: ROLES.admin,
         });
+
+        if (error || !user) {
+          response.status(400).json({
+            success: false,
+            error: error || "Failed to enable multi-user mode.",
+          });
+          return;
+        }
+
         await SystemSettings._updateSettings({
           multi_user_mode: true,
           limit_user_messages: false,
@@ -497,15 +506,13 @@ function systemEndpoints(app) {
           multiUserMode: true,
         });
         await EventLogs.logEvent("multi_user_mode_enabled", {}, user?.id);
-        response.status(200).json({ success: !!user, error });
+        response.status(200).json({ success: true, error: null });
       } catch (e) {
-        await User.delete({});
-        await SystemSettings._updateSettings({
-          multi_user_mode: false,
-        });
-
         console.error(e.message, e);
-        response.sendStatus(500).end();
+        response.status(500).json({
+          success: false,
+          error: "An unexpected error occurred.",
+        });
       }
     }
   );
