@@ -41,7 +41,7 @@ export default function Sidebar() {
           alt="Logo"
           className="rounded max-h-[36px] object-contain"
         />
-        <div className="w-12 text-2xl font-medium text-white">OssorioIA</div>
+        <h1 className="text-2xl font-medium text-white">OssorioIA</h1>
       </Link>
       <div
         ref={sidebarRef}
@@ -154,11 +154,10 @@ export function SidebarMobileHeader() {
         className={`z-99 fixed top-0 left-0 transition-all duration-500 w-[100vw] h-[100vh]`}
       >
         <div
-          className={`${
-            showBgOverlay
-              ? "transition-all opacity-1"
-              : "transition-none opacity-0"
-          }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
+          className={`${showBgOverlay
+            ? "transition-all opacity-1"
+            : "transition-none opacity-0"
+            }  duration-500 fixed top-0 left-0 ${USER_BACKGROUND_COLOR} bg-opacity-75 w-screen h-screen`}
           onClick={() => setShowSidebar(false)}
         />
         <div

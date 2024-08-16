@@ -73,7 +73,7 @@ export default function CustomAppName() {
           name="customAppName"
           type="text"
           className="bg-zinc-900 mt-3 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 max-w-[275px] placeholder:text-white/20"
-          placeholder="AnythingLLM"
+          placeholder="BajajCodes"
           required={true}
           autoComplete="off"
           onChange={handleChange}

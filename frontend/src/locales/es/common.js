@@ -28,8 +28,8 @@ const TRANSLATIONS = {
       message_3:
         "¿Es esto como un Dropbox con IA o algo así? ¿Y qué hay del chat? ¿No es un chatbot?",
       message_4: {
-        span1: "AnythingLLM es más que un Dropbox más inteligente.",
-        span2: "AnythingLLM ofrece dos formas de hablar con tus datos:",
+        span1: "Bajajcodes es más que un Dropbox más inteligente.",
+        span2: "Bajajcodes ofrece dos formas de hablar con tus datos:",
         query: {
           title: "Consulta:",
           description:
@@ -93,7 +93,21 @@ const TRANSLATIONS = {
     b: "envía un mensaje.",
     placeholder: "Enviar un mensaje",
     new: "Nuevo Hilo",
+    loading: "Inicializando Hilo..."
   },
+
+  modal: {
+    error: {
+      title: "Procesador de Documentos No Disponible",
+      description: "No podemos subir tus archivos en este momento porque el procesador de documentos está fuera de línea. Por favor, inténtalo de nuevo más tarde."
+    },
+    upload: {
+      title: "Haz clic para subir o arrastra y suelta",
+      description: "¡Soporta archivos de texto, CSV, hojas de cálculo, archivos de audio, y más!"
+    },
+    info: "Estos archivos se subirán al procesador de documentos que se ejecuta en esta instancia de LLM. Estos archivos no se envían ni se comparten con terceros."
+  },
+
 
   "workspaces—settings": {
     general: "Configuración general",
@@ -119,7 +133,7 @@ const TRANSLATIONS = {
       add: "Agregar nuevo mensaje",
       save: "Guardar mensajes",
       heading: "Explícame",
-      body: "los beneficios de AnythingLLM",
+      body: "los beneficios de Bajajcodes",
     },
     pfp: {
       title: "Imagen de perfil del asistente",
@@ -333,7 +347,7 @@ const TRANSLATIONS = {
       system: "sistema",
       user: "usuario",
       message: "mensaje",
-      assistant: "Asistente de chat AnythingLLM",
+      assistant: "Asistente de chat Bajajcodes",
       "double-click": "Haz doble clic para editar...",
       save: "Guardar mensajes",
     },
@@ -349,7 +363,7 @@ const TRANSLATIONS = {
   api: {
     title: "Claves API",
     description:
-      "Las claves API permiten al titular acceder y gestionar programáticamente esta instancia de AnythingLLM.",
+      "Las claves API permiten al titular acceder y gestionar programáticamente esta instancia de Bajajcodes.",
     link: "Leer la documentación de la API",
     generate: "Generar nueva clave API",
     table: {
@@ -362,7 +376,7 @@ const TRANSLATIONS = {
   llm: {
     title: "Preferencia de LLM",
     description:
-      "Estas son las credenciales y configuraciones para tu proveedor preferido de chat y incrustación de LLM. Es importante que estas claves estén actualizadas y correctas, de lo contrario AnythingLLM no funcionará correctamente.",
+      "Estas son las credenciales y configuraciones para tu proveedor preferido de chat y incrustación de LLM. Es importante que estas claves estén actualizadas y correctas, de lo contrario Bajajcodes no funcionará correctamente.",
     provider: "Proveedor de LLM",
   },
 
@@ -372,7 +386,7 @@ const TRANSLATIONS = {
       "Estas son las credenciales y configuraciones para tu proveedor preferido de modelo de transcripción. Es importante que estas claves estén actualizadas y correctas, de lo contrario los archivos multimedia y de audio no se transcribirán.",
     provider: "Proveedor de transcripción",
     "warn-start":
-      "El uso del modelo local Whisper en máquinas con RAM o CPU limitadas puede bloquear AnythingLLM al procesar archivos multimedia.",
+      "El uso del modelo local Whisper en máquinas con RAM o CPU limitadas puede bloquear Bajajcodes al procesar archivos multimedia.",
     "warn-recommend":
       "Recomendamos al menos 2GB de RAM y subir archivos <10Mb.",
     "warn-end":
@@ -384,11 +398,11 @@ const TRANSLATIONS = {
     "desc-start":
       "Cuando uses un LLM que no admita de forma nativa un motor de incrustación, es posible que necesites especificar credenciales adicionales para incrustar texto.",
     "desc-end":
-      "La incrustación es el proceso de convertir texto en vectores. Estas credenciales son necesarias para convertir tus archivos y prompts en un formato que AnythingLLM pueda usar para procesar.",
+      "La incrustación es el proceso de convertir texto en vectores. Estas credenciales son necesarias para convertir tus archivos y prompts en un formato que Bajajcodes pueda usar para procesar.",
     provider: {
       title: "Proveedor de incrustación",
       description:
-        "No se requiere configuración cuando se utiliza el motor de incrustación nativo de AnythingLLM.",
+        "No se requiere configuración cuando se utiliza el motor de incrustación nativo de Bajajcodes.",
     },
   },
 
@@ -418,7 +432,7 @@ const TRANSLATIONS = {
   vector: {
     title: "Base de datos de vectores",
     description:
-      "Estas son las credenciales y configuraciones para cómo funcionará tu instancia de AnythingLLM. Es importante que estas claves estén actualizadas y correctas.",
+      "Estas son las credenciales y configuraciones para cómo funcionará tu instancia de Bajajcodes. Es importante que estas claves estén actualizadas y correctas.",
     provider: {
       title: "Proveedor de base de datos de vectores",
       description: "No se necesita configuración para LanceDB.",
@@ -465,7 +479,7 @@ const TRANSLATIONS = {
     password: {
       title: "Protección con contraseña",
       description:
-        "Protege tu instancia de AnythingLLM con una contraseña. Si olvidas esta contraseña, no hay método de recuperación, así que asegúrate de guardar esta contraseña.",
+        "Protege tu instancia de Bajajcodes con una contraseña. Si olvidas esta contraseña, no hay método de recuperación, así que asegúrate de guardar esta contraseña.",
     },
     instance: {
       title: "Proteger instancia con contraseña",
@@ -490,7 +504,7 @@ const TRANSLATIONS = {
   privacy: {
     title: "Privacidad y manejo de datos",
     description:
-      "Esta es tu configuración para cómo los proveedores de terceros conectados y AnythingLLM manejan tus datos.",
+      "Esta es tu configuración para cómo los proveedores de terceros conectados y Bajajcodes manejan tus datos.",
     llm: "Selección de LLM",
     embedding: "Preferencia de incrustación",
     vector: "Base de datos de vectores",

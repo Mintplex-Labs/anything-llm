@@ -218,13 +218,12 @@ function Directory({
         </div>
 
         <div
-          className={`relative w-[70vw] bg-zinc-900 rounded-2xl overflow-hidden ${
-            isUploadedDoc ? "h-[600px]" : "h-[310px]"
-          }`}
+          className={`relative w-[70vw] bg-zinc-900 rounded-2xl overflow-hidden ${isUploadedDoc ? "h-[600px]" : "h-[310px]"
+            }`}
           style={{ maxWidth: !isUploadedDoc ? "97%" : null }}
         >
           <div className="absolute top-0 left-0 right-0 z-10 rounded-t-2xl text-white/80 text-xs grid grid-cols-[1.5fr_repeat(6,1fr)] py-2 px-8 border-b border-white/20 shadow-lg bg-zinc-900">
-            <p className="place-self-start">Name</p>
+            <p className="place-self-center">Name</p>
             {Object.values(folderColumns).map((tag, index) => (
               <p key={index} className="place-self-center">
                 {tag.label}
