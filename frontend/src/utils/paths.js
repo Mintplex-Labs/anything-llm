@@ -138,8 +138,8 @@ export default {
     embedChats: () => {
       return `/settings/embed-chats`;
     },
-    broswerExtension: () => {
-      return `/settings/broswer-extension`;
+    browserExtension: () => {
+      return `/settings/browser-extension`;
     },
     experimental: () => {
       return `/settings/beta-features`;
